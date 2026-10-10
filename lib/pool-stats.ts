@@ -15,6 +15,9 @@ export interface ProGame {
   event: MetaEvent | undefined;
   eventName: string;
   label: string; // "Gen.G Finals G1" or "JDG vs BRO"
+  team?: string; // the side these picks belong to, when known
+  opponent?: string;
+  gameSource?: string; // the Gol.gg game page id, shared by both sides of one game
   patch?: string;
   date?: string;
   picks: Partial<Record<Role, string>>; // a supplied duo has only BOT and SUPPORT
@@ -53,8 +56,8 @@ export function proGames({ meta, proDrafts, botPairings, sources }: Omit<PoolInp
   const out: ProGame[] = proDrafts.map((d) => {
     const ev = eventByName(meta.events, d.tournament);
     const game = d.sources.map((id) => sources[id]).find((s) => s?.type === "golgg-game");
-    return { key: d.id, event: ev, eventName: ev?.short ?? d.tournament, label: `${d.team} ${d.seriesGame}`, patch: d.patch ?? ev?.patch,
-      date: game?.date, picks: d.picks, draftId: d.id, pending: false, sources: d.sources };
+    return { key: d.id, event: ev, eventName: ev?.short ?? d.tournament, label: `${d.team} ${d.seriesGame}`, team: d.team, opponent: d.opponent, gameSource: game?.id,
+      patch: d.patch ?? ev?.patch, date: game?.date, picks: d.picks, draftId: d.id, pending: false, sources: d.sources };
   });
   for (const b of botPairings) for (const o of b.observedProPairings) {
     if (o.backedByGame) continue; // its recorded draft is already listed
@@ -63,7 +66,8 @@ export function proGames({ meta, proDrafts, botPairings, sources }: Omit<PoolInp
     for (const s of cited as Source[]) {
       const ev = o.event ? meta.events.find((e) => e.id === o.event) : eventByName(meta.events, s.tournament);
       out.push({ key: `${s.id}-${b.champion}-${o.champion}`, event: ev, eventName: ev?.short ?? s.tournament ?? o.context,
-        label: s.seriesGame ?? `${s.team} vs ${s.opponent}`, patch: s.patch ?? ev?.patch, date: s.date,
+        label: s.seriesGame ?? `${s.team} vs ${s.opponent}`, team: s.team, opponent: s.opponent, gameSource: s.id,
+        patch: s.patch ?? ev?.patch, date: s.date,
         picks: { BOT: b.champion, SUPPORT: o.champion }, pending: true, sources: [s.id] });
     }
   }
