@@ -1,0 +1,606 @@
+[
+  {
+    "id": "lck26po-finals-g1-geng",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "Finals G1",
+    "stage": "Finals",
+    "team": "Gen.G",
+    "opponent": "HLE",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "rumble",
+      "JUNGLE": "vi",
+      "MID": "ryze",
+      "BOT": "lucian",
+      "SUPPORT": "milio"
+    },
+    "read": "objective zone + skirmish",
+    "sources": [
+      "golgg-game-82962"
+    ],
+    "note": "Current clean Gen.G shell: AP top zone, point-click engage, side-lane mid, lane-pressure bot."
+  },
+  {
+    "id": "lck26po-finals-g1-hle",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "Finals G1",
+    "stage": "Finals",
+    "team": "HLE",
+    "opponent": "Gen.G",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "galio",
+      "JUNGLE": "naafiri",
+      "MID": "orianna",
+      "BOT": "caitlyn",
+      "SUPPORT": "bard"
+    },
+    "read": "frontline + control + lane-pressure bot",
+    "sources": [
+      "golgg-game-82962"
+    ]
+  },
+  {
+    "id": "lck26po-finals-g2-geng",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "Finals G2",
+    "stage": "Finals",
+    "team": "Gen.G",
+    "opponent": "HLE",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "varus",
+      "JUNGLE": "nocturne",
+      "MID": "lissandra",
+      "BOT": "kalista",
+      "SUPPORT": "renata-glasc"
+    },
+    "read": "pick / tempo",
+    "sources": [
+      "golgg-game-82963"
+    ],
+    "note": "Pick/dive with strong lane pressure and a flexed ranged top."
+  },
+  {
+    "id": "lck26po-finals-g2-hle",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "Finals G2",
+    "stage": "Finals",
+    "team": "HLE",
+    "opponent": "Gen.G",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "anivia",
+      "JUNGLE": "jarvan-iv",
+      "MID": "akali",
+      "BOT": "yunara",
+      "SUPPORT": "lulu"
+    },
+    "read": "zone + dive + protected carry",
+    "sources": [
+      "golgg-game-82963"
+    ]
+  },
+  {
+    "id": "lck26po-finals-g3-geng",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "Finals G3",
+    "stage": "Finals",
+    "team": "Gen.G",
+    "opponent": "HLE",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "sion",
+      "JUNGLE": "lee-sin",
+      "MID": "sylas",
+      "BOT": "zeri",
+      "SUPPORT": "yuumi"
+    },
+    "read": "weakside tank + hypercarry",
+    "sources": [
+      "golgg-game-82964"
+    ],
+    "note": "Weakside tank + disruptive mid/jg + protected hypercarry."
+  },
+  {
+    "id": "lck26po-finals-g3-hle",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "Finals G3",
+    "stage": "Finals",
+    "team": "HLE",
+    "opponent": "Gen.G",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "dr-mundo",
+      "JUNGLE": "chogath",
+      "MID": "syndra",
+      "BOT": "ashe",
+      "SUPPORT": "seraphine"
+    },
+    "read": "frontline + utility control",
+    "sources": [
+      "golgg-game-82964"
+    ]
+  },
+  {
+    "id": "lck26po-finals-g4-geng",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "Finals G4",
+    "stage": "Finals",
+    "team": "Gen.G",
+    "opponent": "HLE",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "gwen",
+      "JUNGLE": "trundle",
+      "MID": "viktor",
+      "BOT": "corki",
+      "SUPPORT": "alistar"
+    },
+    "read": "side carry + scaling mixed damage",
+    "sources": [
+      "golgg-game-82965"
+    ],
+    "note": "Scaling side carry and mixed damage with simple front line."
+  },
+  {
+    "id": "lck26po-finals-g4-hle",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "Finals G4",
+    "stage": "Finals",
+    "team": "HLE",
+    "opponent": "Gen.G",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "fiora",
+      "JUNGLE": "skarner",
+      "MID": "locke",
+      "BOT": "jhin",
+      "SUPPORT": "karma"
+    },
+    "read": "split pressure + pick",
+    "sources": [
+      "golgg-game-82965"
+    ]
+  },
+  {
+    "id": "lck26po-hle-t1-g1-hle",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "HLE-T1 G1",
+    "stage": "HLE-T1",
+    "team": "HLE",
+    "opponent": "T1",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "jayce",
+      "JUNGLE": "qiyana",
+      "MID": "ryze",
+      "BOT": "jhin",
+      "SUPPORT": "alistar"
+    },
+    "read": "poke + catch",
+    "sources": [
+      "golgg-game-82745"
+    ]
+  },
+  {
+    "id": "lck26po-hle-t1-g1-t1",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "HLE-T1 G1",
+    "stage": "HLE-T1",
+    "team": "T1",
+    "opponent": "HLE",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "gragas",
+      "JUNGLE": "naafiri",
+      "MID": "orianna",
+      "BOT": "lucian",
+      "SUPPORT": "milio"
+    },
+    "read": "frontline + lane-pressure bot",
+    "sources": [
+      "golgg-game-82745"
+    ]
+  },
+  {
+    "id": "lck26po-hle-t1-g2-t1",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "HLE-T1 G2",
+    "stage": "HLE-T1",
+    "team": "T1",
+    "opponent": "HLE",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "rumble",
+      "JUNGLE": "pantheon",
+      "MID": "syndra",
+      "BOT": "yunara",
+      "SUPPORT": "lulu"
+    },
+    "read": "objective zone + protected carry",
+    "sources": [
+      "golgg-game-82746"
+    ]
+  },
+  {
+    "id": "lck26po-hle-t1-g2-hle",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "HLE-T1 G2",
+    "stage": "HLE-T1",
+    "team": "HLE",
+    "opponent": "T1",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "galio",
+      "JUNGLE": "jarvan-iv",
+      "MID": "yone",
+      "BOT": "caitlyn",
+      "SUPPORT": "karma"
+    },
+    "read": "engage + side threat + lane-pressure bot",
+    "sources": [
+      "golgg-game-82746"
+    ]
+  },
+  {
+    "id": "lck26po-hle-t1-g3-hle",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "HLE-T1 G3",
+    "stage": "HLE-T1",
+    "team": "HLE",
+    "opponent": "T1",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "olaf",
+      "JUNGLE": "lee-sin",
+      "MID": "twisted-fate",
+      "BOT": "ashe",
+      "SUPPORT": "seraphine"
+    },
+    "read": "anti-CC skirmish + utility",
+    "sources": [
+      "golgg-game-82747"
+    ]
+  },
+  {
+    "id": "lck26po-hle-t1-g3-t1",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "HLE-T1 G3",
+    "stage": "HLE-T1",
+    "team": "T1",
+    "opponent": "HLE",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "ksante",
+      "JUNGLE": "vi",
+      "MID": "akali",
+      "BOT": "zeri",
+      "SUPPORT": "yuumi"
+    },
+    "read": "stable top + dive mid/jg + hypercarry",
+    "sources": [
+      "golgg-game-82747"
+    ]
+  },
+  {
+    "id": "lck26po-hle-t1-g4-t1",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "HLE-T1 G4",
+    "stage": "HLE-T1",
+    "team": "T1",
+    "opponent": "HLE",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "jax",
+      "JUNGLE": "nocturne",
+      "MID": "azir",
+      "BOT": "jinx",
+      "SUPPORT": "tahm-kench"
+    },
+    "read": "dive / scaling backline",
+    "sources": [
+      "golgg-game-82748"
+    ]
+  },
+  {
+    "id": "lck26po-hle-t1-g4-hle",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "HLE-T1 G4",
+    "stage": "HLE-T1",
+    "team": "HLE",
+    "opponent": "T1",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "gnar",
+      "JUNGLE": "chogath",
+      "MID": "viktor",
+      "BOT": "xayah",
+      "SUPPORT": "rakan"
+    },
+    "read": "front-to-back + counter-engage",
+    "sources": [
+      "golgg-game-82748"
+    ]
+  },
+  {
+    "id": "lck26po-t1-dk-g1-dk",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "T1-DK G1",
+    "stage": "T1-DK",
+    "team": "DK",
+    "opponent": "T1",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "gnar",
+      "JUNGLE": "vi",
+      "MID": "taliyah",
+      "BOT": "lucian",
+      "SUPPORT": "milio"
+    },
+    "read": "tempo + lane carry",
+    "sources": [
+      "golgg-game-82692"
+    ]
+  },
+  {
+    "id": "lck26po-t1-dk-g1-t1",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "T1-DK G1",
+    "stage": "T1-DK",
+    "team": "T1",
+    "opponent": "DK",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "rumble",
+      "JUNGLE": "lee-sin",
+      "MID": "cassiopeia",
+      "BOT": "xayah",
+      "SUPPORT": "rakan"
+    },
+    "read": "objective zone + counter-engage",
+    "sources": [
+      "golgg-game-82692"
+    ]
+  },
+  {
+    "id": "lck26po-t1-dk-g2-dk",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "T1-DK G2",
+    "stage": "T1-DK",
+    "team": "DK",
+    "opponent": "T1",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "ksante",
+      "JUNGLE": "jarvan-iv",
+      "MID": "ryze",
+      "BOT": "ashe",
+      "SUPPORT": "lulu"
+    },
+    "read": "front-to-back utility",
+    "sources": [
+      "golgg-game-82693"
+    ]
+  },
+  {
+    "id": "lck26po-t1-dk-g2-t1",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "T1-DK G2",
+    "stage": "T1-DK",
+    "team": "T1",
+    "opponent": "DK",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "jayce",
+      "JUNGLE": "qiyana",
+      "MID": "anivia",
+      "BOT": "mel",
+      "SUPPORT": "alistar"
+    },
+    "read": "control siege",
+    "sources": [
+      "golgg-game-82693"
+    ]
+  },
+  {
+    "id": "lck26po-t1-dk-g3-dk",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "T1-DK G3",
+    "stage": "T1-DK",
+    "team": "DK",
+    "opponent": "T1",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "trundle",
+      "JUNGLE": "pantheon",
+      "MID": "viktor",
+      "BOT": "jhin",
+      "SUPPORT": "rell"
+    },
+    "read": "frontline + pick",
+    "sources": [
+      "golgg-game-82694"
+    ]
+  },
+  {
+    "id": "lck26po-t1-dk-g3-t1",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "T1-DK G3",
+    "stage": "T1-DK",
+    "team": "T1",
+    "opponent": "DK",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "olaf",
+      "JUNGLE": "skarner",
+      "MID": "locke",
+      "BOT": "sivir",
+      "SUPPORT": "karma"
+    },
+    "read": "speed-up skirmish",
+    "sources": [
+      "golgg-game-82694"
+    ]
+  },
+  {
+    "id": "lck26po-t1-dk-g4-dk",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "T1-DK G4",
+    "stage": "T1-DK",
+    "team": "DK",
+    "opponent": "T1",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "jax",
+      "JUNGLE": "chogath",
+      "MID": "annie",
+      "BOT": "ezreal",
+      "SUPPORT": "seraphine"
+    },
+    "read": "frontline + simple engage",
+    "sources": [
+      "golgg-game-82695"
+    ]
+  },
+  {
+    "id": "lck26po-t1-dk-g4-t1",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "T1-DK G4",
+    "stage": "T1-DK",
+    "team": "T1",
+    "opponent": "DK",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "camille",
+      "JUNGLE": "naafiri",
+      "MID": "galio",
+      "BOT": "kalista",
+      "SUPPORT": "renata-glasc"
+    },
+    "read": "dive + utility bot",
+    "sources": [
+      "golgg-game-82695"
+    ]
+  },
+  {
+    "id": "lck26po-round-2-g1-geng",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "Round 2 G1",
+    "stage": "Round 2",
+    "team": "Gen.G",
+    "opponent": "KT Rolster",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "camille",
+      "JUNGLE": "lee-sin",
+      "MID": "ryze",
+      "BOT": "yunara",
+      "SUPPORT": "lulu"
+    },
+    "read": "Side pressure + tempo jungle + protected bot. Clean carry split between top and bot.",
+    "sources": [
+      "golgg-game-82414"
+    ]
+  },
+  {
+    "id": "lck26po-round-2-g3-geng",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "Round 2 G3",
+    "stage": "Round 2",
+    "team": "Gen.G",
+    "opponent": "KT Rolster",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "twisted-fate",
+      "JUNGLE": "skarner",
+      "MID": "syndra",
+      "BOT": "sivir",
+      "SUPPORT": "karma"
+    },
+    "read": "Global top, hard-start jungle, control mid, speed-up bot. Strong map-tempo shell.",
+    "sources": [
+      "golgg-game-82416"
+    ]
+  },
+  {
+    "id": "lck26po-round-4-g1-geng",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "Round 4 G1",
+    "stage": "Round 4",
+    "team": "Gen.G",
+    "opponent": "HLE",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "yorick",
+      "JUNGLE": "chogath",
+      "MID": "ryze",
+      "BOT": "ezreal",
+      "SUPPORT": "karma"
+    },
+    "read": "Side-lane top with safe bot and heavy map control. Gen.G lost this one.",
+    "sources": [
+      "golgg-game-82625"
+    ]
+  },
+  {
+    "id": "lck26po-round-4-g2-geng",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "Round 4 G2",
+    "stage": "Round 4",
+    "team": "Gen.G",
+    "opponent": "HLE",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "rumble",
+      "JUNGLE": "jarvan-iv",
+      "MID": "locke",
+      "BOT": "jhin",
+      "SUPPORT": "shen"
+    },
+    "read": "Objective-fight top with hard engage and Jhin follow-up. Fearless support flex with Shen.",
+    "sources": [
+      "golgg-game-82626"
+    ]
+  },
+  {
+    "id": "lck26po-round-4-g3-geng",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "Round 4 G3",
+    "stage": "Round 4",
+    "team": "Gen.G",
+    "opponent": "HLE",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "gwen",
+      "JUNGLE": "aatrox",
+      "MID": "akali",
+      "BOT": "ashe",
+      "SUPPORT": "seraphine"
+    },
+    "read": "Double melee solo carry with utility bot. Aatrox jungle enabled front-to-back and skirmish entry.",
+    "sources": [
+      "golgg-game-82627"
+    ]
+  },
+  {
+    "id": "lck26po-round-4-g4-geng",
+    "tournament": "LCK 2026 Season Playoffs",
+    "seriesGame": "Round 4 G4",
+    "stage": "Round 4",
+    "team": "Gen.G",
+    "opponent": "HLE",
+    "patch": "16.16",
+    "picks": {
+      "TOP": "varus",
+      "JUNGLE": "vi",
+      "MID": "vex",
+      "BOT": "miss-fortune",
+      "SUPPORT": "neeko"
+    },
+    "read": "Ranged top pressure + guaranteed Vi start + MF/Neeko wombo.",
+    "sources": [
+      "golgg-game-82628"
+    ]
+  }
+]

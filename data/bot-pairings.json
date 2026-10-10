@@ -1,0 +1,940 @@
+[
+  {
+    "champion": "caitlyn",
+    "role": "BOT",
+    "clashDefault": [
+      "bard",
+      "karma"
+    ],
+    "alternatives": [
+      "lux",
+      "milio",
+      "leona"
+    ],
+    "alternativeNotes": {},
+    "observedProPairings": [
+      {
+        "champion": "bard",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g1-hle"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82962"
+        ]
+      },
+      {
+        "champion": "karma",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g2-hle"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82746"
+        ]
+      }
+    ],
+    "surrounding": {
+      "jungle": [
+        "vi",
+        "jarvan-iv",
+        "lee-sin"
+      ],
+      "mid": [
+        "orianna",
+        "syndra",
+        "ryze"
+      ]
+    },
+    "logic": {
+      "warning": "Do not pair with a support that neither pressures lane nor creates picks."
+    },
+    "confidence": "high",
+    "identities": [
+      "lane-pressure",
+      "plates",
+      "siege",
+      "pick-control"
+    ],
+    "playoffRead": "Both Bard and Karma showed up in the last two rounds. Bard is the roam/catch version; Karma is the pure lane-pressure version.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82962",
+      "golgg-game-82746",
+      "golgg-game-82626"
+    ]
+  },
+  {
+    "champion": "corki",
+    "role": "BOT",
+    "clashDefault": [
+      "nami"
+    ],
+    "alternatives": [
+      "bard",
+      "karma",
+      "milio"
+    ],
+    "alternativeNotes": {},
+    "observedProPairings": [
+      {
+        "champion": "alistar",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g4-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82965"
+        ]
+      }
+    ],
+    "surrounding": {
+      "jungle": [
+        "trundle",
+        "jarvan-iv",
+        "vi"
+      ],
+      "mid": [
+        "viktor",
+        "orianna",
+        "ryze"
+      ]
+    },
+    "logic": {
+      "warning": "Current playoff sample is tiny. Do not overreact to one Finals game."
+    },
+    "confidence": "medium",
+    "identities": [
+      "poke",
+      "scaling",
+      "sustained-lane-trading"
+    ],
+    "playoffRead": "Your old Corki+Nami read is still a good lane default. The playoffs only gave a clear late-stage Corki+Alistar example, so Nami stays the Clash default while Alistar is the current observed variant.",
+    "status": "keep",
+    "sources": [
+      "golgg-game-82965",
+      "golgg-tournament-picksandbans"
+    ]
+  },
+  {
+    "champion": "sivir",
+    "role": "BOT",
+    "clashDefault": [
+      "lulu"
+    ],
+    "alternatives": [
+      "karma",
+      "bard",
+      "rakan",
+      "seraphine"
+    ],
+    "alternativeNotes": {
+      "karma": "Observed playoff / tempo alternative, not the Clash default."
+    },
+    "observedProPairings": [
+      {
+        "champion": "karma",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g3-t1",
+          "lck26po-round-2-g3-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82694",
+          "golgg-game-82416"
+        ]
+      }
+    ],
+    "surrounding": {
+      "jungle": [
+        "skarner",
+        "jarvan-iv",
+        "vi"
+      ],
+      "mid": [
+        "locke",
+        "orianna",
+        "viktor"
+      ]
+    },
+    "logic": {
+      "warning": "Avoid drafting Sivir as your only damage source."
+    },
+    "confidence": "medium-high",
+    "identities": [
+      "waveclear",
+      "speed-up",
+      "front-to-back-scaling"
+    ],
+    "playoffRead": "Playoffs repeatedly showed the Karma tempo version, including T1-DK and Gen.G-KT. Lulu remains the cleaner protect-carry option for Clash.",
+    "status": "updated",
+    "sources": [
+      "golgg-game-82694",
+      "golgg-game-82416"
+    ]
+  },
+  {
+    "champion": "ezreal",
+    "role": "BOT",
+    "clashDefault": [
+      "karma"
+    ],
+    "alternatives": [
+      "seraphine",
+      "bard",
+      "milio",
+      "neeko",
+      "nautilus"
+    ],
+    "alternativeNotes": {},
+    "observedProPairings": [
+      {
+        "champion": "seraphine",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g4-dk"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82695"
+        ]
+      },
+      {
+        "champion": "karma",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-round-4-g1-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82625"
+        ]
+      },
+      {
+        "champion": "nautilus",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [],
+        "backedByGame": false,
+        "sources": [
+          "golgg-game-82625",
+          "golgg-game-82695",
+          "golgg-game-82416"
+        ]
+      }
+    ],
+    "surrounding": {
+      "jungle": [
+        "jarvan-iv",
+        "naafiri",
+        "vi"
+      ],
+      "mid": [
+        "ryze",
+        "galio",
+        "annie"
+      ]
+    },
+    "logic": {
+      "warning": "Engage supports need actual mid-jungle follow-up; otherwise you waste the lane's safety."
+    },
+    "confidence": "high",
+    "identities": [
+      "safe-blind",
+      "weakside",
+      "poke",
+      "flexible-support-map-play"
+    ],
+    "playoffRead": "One of the safest bot anchors in Fearless. Playoff examples included Ezreal+Karma, Ezreal+Seraphine and Ezreal+Nautilus.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82625",
+      "golgg-game-82695",
+      "golgg-game-82416"
+    ]
+  },
+  {
+    "champion": "yunara",
+    "role": "BOT",
+    "clashDefault": [
+      "lulu"
+    ],
+    "alternatives": [
+      "braum",
+      "milio",
+      "renata-glasc"
+    ],
+    "alternativeNotes": {
+      "braum": "Anti-dive / protection option."
+    },
+    "observedProPairings": [
+      {
+        "champion": "lulu",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g2-hle",
+          "lck26po-hle-t1-g2-t1",
+          "lck26po-round-2-g1-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82963",
+          "golgg-game-82746",
+          "golgg-game-82414"
+        ]
+      }
+    ],
+    "surrounding": {
+      "jungle": [
+        "jarvan-iv",
+        "lee-sin",
+        "pantheon"
+      ],
+      "mid": [
+        "akali",
+        "ryze",
+        "syndra"
+      ]
+    },
+    "logic": {
+      "warning": "Do not leave Yunara alone with a roam-heavy support unless jungle can cover the lane."
+    },
+    "confidence": "high",
+    "identities": [
+      "protected-hypercarry",
+      "scaling-dps"
+    ],
+    "playoffRead": "Lulu is the clearest playoff pairing: Finals G2, HLE-T1 G2, and Gen.G-KT G1 all reinforce the same protect-carry shape.",
+    "status": "confirmed",
+    "sources": [
+      "golgg-game-82963",
+      "golgg-game-82746",
+      "golgg-game-82414"
+    ]
+  },
+  {
+    "champion": "jhin",
+    "role": "BOT",
+    "clashDefault": [
+      "alistar",
+      "karma"
+    ],
+    "alternatives": [
+      "bard",
+      "neeko",
+      "nautilus"
+    ],
+    "alternativeNotes": {},
+    "observedProPairings": [
+      {
+        "champion": "karma",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g4-hle"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82965"
+        ]
+      },
+      {
+        "champion": "alistar",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g1-hle"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82745"
+        ]
+      },
+      {
+        "champion": "rell",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g3-dk"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82694"
+        ]
+      },
+      {
+        "champion": "shen",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-round-4-g2-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82626"
+        ]
+      }
+    ],
+    "surrounding": {
+      "jungle": [
+        "qiyana",
+        "jarvan-iv",
+        "pantheon"
+      ],
+      "mid": [
+        "ryze",
+        "locke",
+        "viktor"
+      ]
+    },
+    "logic": {
+      "warning": "Jhin needs setup. Avoid a support with no CC unless the rest of the team already starts fights."
+    },
+    "confidence": "high",
+    "identities": [
+      "pick",
+      "catch",
+      "long-range-follow-up",
+      "low-risk-objective-setup"
+    ],
+    "playoffRead": "Fearless spread Jhin across several supports. The consistent rule is setup, not one mandatory duo.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82745",
+      "golgg-game-82965",
+      "golgg-game-82626",
+      "golgg-game-82694"
+    ]
+  },
+  {
+    "champion": "ashe",
+    "role": "BOT",
+    "clashDefault": [
+      "seraphine",
+      "lulu"
+    ],
+    "alternatives": [
+      "karma",
+      "bard",
+      "milio"
+    ],
+    "alternativeNotes": {},
+    "observedProPairings": [
+      {
+        "champion": "seraphine",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g3-hle",
+          "lck26po-hle-t1-g3-hle",
+          "lck26po-round-4-g3-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82964",
+          "golgg-game-82747",
+          "golgg-game-82627"
+        ]
+      },
+      {
+        "champion": "lulu",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g2-dk"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82693"
+        ]
+      }
+    ],
+    "surrounding": {
+      "jungle": [
+        "lee-sin",
+        "jarvan-iv",
+        "vi"
+      ],
+      "mid": [
+        "twisted-fate",
+        "ryze",
+        "viktor"
+      ]
+    },
+    "logic": {
+      "warning": "Do not overload the comp with utility. Make sure mid or top supplies real damage."
+    },
+    "confidence": "high",
+    "identities": [
+      "vision-control",
+      "pick",
+      "utility-carry"
+    ],
+    "playoffRead": "Seraphine was the clearest late-round partner; Lulu was also used. Ashe is more comp-enabler than solo carry.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82747",
+      "golgg-game-82627",
+      "golgg-game-82693"
+    ]
+  },
+  {
+    "champion": "lucian",
+    "role": "BOT",
+    "clashDefault": [
+      "milio"
+    ],
+    "alternatives": [
+      "nami",
+      "karma",
+      "shen"
+    ],
+    "alternativeNotes": {},
+    "observedProPairings": [
+      {
+        "champion": "milio",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g1-geng",
+          "lck26po-hle-t1-g1-t1",
+          "lck26po-t1-dk-g1-dk"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82962",
+          "golgg-game-82745",
+          "golgg-game-82692"
+        ]
+      }
+    ],
+    "surrounding": {
+      "jungle": [
+        "vi",
+        "lee-sin",
+        "jarvan-iv"
+      ],
+      "mid": [
+        "orianna",
+        "ryze",
+        "ahri"
+      ]
+    },
+    "logic": {
+      "warning": "Only pick Lucian when your draft will actually use bot pressure."
+    },
+    "confidence": "high",
+    "identities": [
+      "lane-pressure",
+      "early-trades",
+      "skirmish-tempo"
+    ],
+    "playoffRead": "Milio was the repeated late-playoff pairing, including Finals G1 and HLE-T1 G1.",
+    "status": "confirmed",
+    "sources": [
+      "golgg-game-82962",
+      "golgg-game-82745"
+    ]
+  },
+  {
+    "champion": "miss-fortune",
+    "role": "BOT",
+    "clashDefault": [
+      "neeko",
+      "nautilus"
+    ],
+    "alternatives": [
+      "leona",
+      "rell",
+      "alistar"
+    ],
+    "alternativeNotes": {},
+    "observedProPairings": [
+      {
+        "champion": "neeko",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-round-4-g4-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82628"
+        ]
+      }
+    ],
+    "surrounding": {
+      "jungle": [
+        "vi",
+        "jarvan-iv",
+        "nocturne"
+      ],
+      "mid": [
+        "syndra",
+        "orianna",
+        "galio"
+      ]
+    },
+    "logic": {
+      "warning": "MF needs hard setup. Passive peel-only supports waste Bullet Time."
+    },
+    "confidence": "medium-high",
+    "identities": [
+      "aoe-wombo",
+      "dragon-fights",
+      "layered-cc"
+    ],
+    "playoffRead": "Gen.G used MF+Neeko in Round 4. Keep Nautilus/Leona as the simple Clash versions.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82628"
+    ]
+  },
+  {
+    "champion": "ziggs",
+    "role": "BOT",
+    "clashDefault": [
+      "nautilus",
+      "leona"
+    ],
+    "alternatives": [],
+    "alternativeNotes": {},
+    "observedProPairings": [
+      {
+        "champion": "pyke",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [],
+        "backedByGame": false,
+        "sources": [
+          "golgg-game-82627"
+        ]
+      },
+      {
+        "champion": "camille",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [],
+        "backedByGame": false,
+        "sources": [
+          "golgg-game-82627"
+        ]
+      }
+    ],
+    "surrounding": {
+      "jungle": [
+        "jarvan-iv",
+        "pantheon",
+        "vi"
+      ],
+      "mid": [
+        "ahri",
+        "taliyah",
+        "orianna"
+      ]
+    },
+    "logic": {
+      "warning": "Ziggs needs reliable engage or catch somewhere else in the composition if support is not providing it."
+    },
+    "confidence": "medium-high",
+    "identities": [
+      "mage-bot",
+      "siege",
+      "tower-pressure",
+      "waveclear"
+    ],
+    "playoffRead": "Your preferred Nautilus/Leona setup still makes the most sense for Clash execution. The major playoff variant was Ziggs+Pyke in Gen.G-HLE Round 4.",
+    "status": "keep",
+    "sources": [
+      "golgg-game-82627"
+    ]
+  },
+  {
+    "champion": "kalista",
+    "role": "BOT",
+    "clashDefault": [
+      "renata-glasc"
+    ],
+    "alternatives": [
+      "rell",
+      "alistar",
+      "nautilus"
+    ],
+    "alternativeNotes": {},
+    "observedProPairings": [
+      {
+        "champion": "renata-glasc",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g2-geng",
+          "lck26po-t1-dk-g4-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82963",
+          "golgg-game-82695"
+        ]
+      }
+    ],
+    "surrounding": {
+      "jungle": [
+        "nocturne",
+        "naafiri",
+        "jarvan-iv"
+      ],
+      "mid": [
+        "lissandra",
+        "galio",
+        "orianna"
+      ]
+    },
+    "logic": {
+      "warning": "Do not draft Kalista passively. The lane needs a fight plan."
+    },
+    "confidence": "high",
+    "identities": [
+      "early-skirmish",
+      "lane-all-in",
+      "objective-control"
+    ],
+    "playoffRead": "Renata was repeated in the playoffs: Finals G2, Gen.G-KT G1, and T1-DK G4.",
+    "status": "confirmed",
+    "sources": [
+      "golgg-game-82963",
+      "golgg-game-82414",
+      "golgg-game-82695"
+    ]
+  },
+  {
+    "champion": "xayah",
+    "role": "BOT",
+    "clashDefault": [
+      "rakan"
+    ],
+    "alternatives": [
+      "renata-glasc",
+      "milio",
+      "lulu"
+    ],
+    "alternativeNotes": {},
+    "observedProPairings": [
+      {
+        "champion": "rakan",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g4-hle",
+          "lck26po-t1-dk-g1-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82748",
+          "golgg-game-82692"
+        ]
+      }
+    ],
+    "surrounding": {
+      "jungle": [
+        "lee-sin",
+        "chogath",
+        "jarvan-iv"
+      ],
+      "mid": [
+        "cassiopeia",
+        "viktor",
+        "orianna"
+      ]
+    },
+    "logic": {
+      "warning": "Do not pick Xayah just for lane pressure. Pick her when enemy engage actually matters."
+    },
+    "confidence": "high",
+    "identities": [
+      "anti-dive",
+      "counter-engage",
+      "self-peel-carry"
+    ],
+    "playoffRead": "Rakan was the clean playoff pairing in T1-DK G1 and HLE-T1 G4.",
+    "status": "confirmed",
+    "sources": [
+      "golgg-game-82692",
+      "golgg-game-82748"
+    ]
+  },
+  {
+    "champion": "zeri",
+    "role": "BOT",
+    "clashDefault": [
+      "yuumi"
+    ],
+    "alternatives": [
+      "milio",
+      "lulu",
+      "braum"
+    ],
+    "alternativeNotes": {},
+    "observedProPairings": [
+      {
+        "champion": "yuumi",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g3-geng",
+          "lck26po-hle-t1-g3-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82964",
+          "golgg-game-82747"
+        ]
+      }
+    ],
+    "surrounding": {
+      "jungle": [
+        "vi",
+        "lee-sin",
+        "jarvan-iv"
+      ],
+      "mid": [
+        "akali",
+        "sylas",
+        "orianna"
+      ]
+    },
+    "logic": {
+      "warning": "Needs peel and enough frontline. Do not draft into five forms of unavoidable engage."
+    },
+    "confidence": "high",
+    "identities": [
+      "protected-late-game-carry",
+      "reset",
+      "kite-fights"
+    ],
+    "playoffRead": "Yuumi was paired with Zeri in both T1-HLE G3 and the Finals G3.",
+    "status": "confirmed",
+    "sources": [
+      "golgg-game-82747",
+      "golgg-game-82964"
+    ]
+  },
+  {
+    "champion": "jinx",
+    "role": "BOT",
+    "clashDefault": [
+      "tahm-kench",
+      "lulu"
+    ],
+    "alternatives": [
+      "milio",
+      "braum",
+      "thresh"
+    ],
+    "alternativeNotes": {},
+    "observedProPairings": [
+      {
+        "champion": "tahm-kench",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g4-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82748"
+        ]
+      }
+    ],
+    "surrounding": {
+      "jungle": [
+        "nocturne",
+        "jarvan-iv",
+        "vi"
+      ],
+      "mid": [
+        "azir",
+        "orianna",
+        "viktor"
+      ]
+    },
+    "logic": {
+      "warning": "Needs front line and peel. Do not ask Jinx to self-start fights."
+    },
+    "confidence": "medium",
+    "identities": [
+      "front-to-back-scaling",
+      "resets",
+      "anti-dive-protection"
+    ],
+    "playoffRead": "Late playoff sample showed Jinx+Tahm Kench. Lulu/Milio remain the simpler protect-carry variants.",
+    "status": "added",
+    "sources": [
+      "golgg-game-82748"
+    ]
+  },
+  {
+    "champion": "mel",
+    "role": "BOT",
+    "clashDefault": [
+      "alistar"
+    ],
+    "alternatives": [
+      "karma",
+      "bard",
+      "neeko"
+    ],
+    "alternativeNotes": {},
+    "observedProPairings": [
+      {
+        "champion": "alistar",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g2-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82693"
+        ]
+      }
+    ],
+    "surrounding": {
+      "jungle": [
+        "qiyana",
+        "vi",
+        "jarvan-iv"
+      ],
+      "mid": [
+        "anivia",
+        "orianna",
+        "syndra"
+      ]
+    },
+    "logic": {
+      "warning": "Make sure another role gives sustained damage and frontline."
+    },
+    "confidence": "medium",
+    "identities": [
+      "mage-bot",
+      "siege",
+      "control",
+      "flexible-damage-profile"
+    ],
+    "playoffRead": "T1 used Mel+Alistar with Jayce/Qiyana/Anivia. Treat as a prepared mage-bot flex.",
+    "status": "added",
+    "sources": [
+      "golgg-game-82693"
+    ]
+  }
+]

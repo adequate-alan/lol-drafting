@@ -1,0 +1,706 @@
+[
+  {
+    "champion": "jayce",
+    "blindGrade": "A",
+    "surrounding": {
+      "jungle": [
+        "qiyana",
+        "lee-sin",
+        "vi",
+        "naafiri"
+      ],
+      "mid": [
+        "ryze",
+        "anivia",
+        "orianna",
+        "syndra"
+      ],
+      "botShapes": [
+        {
+          "bot": "jhin",
+          "support": "alistar"
+        },
+        {
+          "bot": "mel",
+          "support": "alistar"
+        },
+        {
+          "bot": "caitlyn",
+          "support": "karma"
+        }
+      ]
+    },
+    "observedProPairings": [
+      {
+        "champion": "qiyana",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g1-hle",
+          "lck26po-t1-dk-g2-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82745",
+          "golgg-game-82693"
+        ]
+      }
+    ],
+    "logic": {
+      "gives": "lane pressure, poke, ranged safety, side threat",
+      "avoid": "triple AD; no peel into hard dive"
+    },
+    "identities": [
+      "poke",
+      "siege",
+      "tempo"
+    ],
+    "playoffRead": "Most picked top, 100% series presence, average pick round 1.33. Results were mixed, but priority was real.",
+    "status": "current",
+    "sources": [
+      "golgg-champion-36"
+    ]
+  },
+  {
+    "champion": "gnar",
+    "blindGrade": "A",
+    "surrounding": {
+      "jungle": [
+        "vi",
+        "chogath",
+        "jarvan-iv",
+        "lee-sin"
+      ],
+      "mid": [
+        "viktor",
+        "taliyah",
+        "orianna",
+        "ryze"
+      ],
+      "botShapes": [
+        {
+          "bot": "xayah",
+          "support": "rakan"
+        },
+        {
+          "bot": "lucian",
+          "support": "milio"
+        },
+        {
+          "bot": "ezreal",
+          "support": "karma"
+        }
+      ]
+    },
+    "observedProPairings": [
+      {
+        "champion": "chogath",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g4-hle"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82748"
+        ]
+      },
+      {
+        "champion": "vi",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g1-dk"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82692"
+        ]
+      }
+    ],
+    "logic": {
+      "gives": "stable ranged lane, side pressure, Mega engage",
+      "avoid": "comps that must engage instantly before Mega"
+    },
+    "identities": [
+      "balanced-teamfight",
+      "side-pressure"
+    ],
+    "playoffRead": "Best clean blind when you want top to survive lane and still provide a teamfight button.",
+    "status": "current",
+    "sources": [
+      "golgg-team-2809",
+      "golgg-team-2802",
+      "golgg-team-2806",
+      "golgg-team-2805"
+    ]
+  },
+  {
+    "champion": "ksante",
+    "blindGrade": "A-",
+    "surrounding": {
+      "jungle": [
+        "vi",
+        "jarvan-iv",
+        "skarner"
+      ],
+      "mid": [
+        "akali",
+        "ryze",
+        "viktor",
+        "orianna"
+      ],
+      "botShapes": [
+        {
+          "bot": "zeri",
+          "support": "yuumi"
+        },
+        {
+          "bot": "ashe",
+          "support": "lulu"
+        },
+        {
+          "bot": "yunara",
+          "support": "lulu"
+        }
+      ]
+    },
+    "observedProPairings": [
+      {
+        "champion": "vi",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g3-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82747"
+        ]
+      },
+      {
+        "champion": "jarvan-iv",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g2-dk"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82693"
+        ]
+      }
+    ],
+    "logic": {
+      "gives": "weakside tank/bruiser, peel, side durability",
+      "avoid": "low-damage mid and bot together"
+    },
+    "identities": [
+      "front-to-back",
+      "protected-carry"
+    ],
+    "playoffRead": "Strong playoff results and easy to slot when you want resources elsewhere.",
+    "status": "current",
+    "sources": [
+      "golgg-team-2809",
+      "golgg-team-2802",
+      "golgg-team-2806",
+      "golgg-team-2805"
+    ]
+  },
+  {
+    "champion": "rumble",
+    "blindGrade": "A-",
+    "surrounding": {
+      "jungle": [
+        "vi",
+        "lee-sin",
+        "jarvan-iv",
+        "skarner"
+      ],
+      "mid": [
+        "ryze",
+        "cassiopeia",
+        "syndra",
+        "orianna"
+      ],
+      "botShapes": [
+        {
+          "bot": "lucian",
+          "support": "milio"
+        },
+        {
+          "bot": "xayah",
+          "support": "rakan"
+        },
+        {
+          "bot": "caitlyn",
+          "support": "karma"
+        }
+      ]
+    },
+    "observedProPairings": [
+      {
+        "champion": "vi",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g1-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82962"
+        ]
+      },
+      {
+        "champion": "pantheon",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g2-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82746"
+        ]
+      },
+      {
+        "champion": "lee-sin",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g1-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82692"
+        ]
+      },
+      {
+        "champion": "jarvan-iv",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-round-4-g2-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82626"
+        ]
+      }
+    ],
+    "logic": {
+      "gives": "AP top, objective zones, strong midgame fights",
+      "avoid": "no reliable lockdown; too much AP elsewhere"
+    },
+    "identities": [
+      "objective-fight",
+      "wombo"
+    ],
+    "playoffRead": "Seven picks, 57.1% win rate. Current comps paired him with active skirmish junglers.",
+    "status": "current",
+    "sources": [
+      "golgg-champion-75"
+    ]
+  },
+  {
+    "champion": "ambessa",
+    "blindGrade": "B+",
+    "surrounding": {
+      "jungle": [
+        "vi",
+        "lee-sin",
+        "pantheon",
+        "jarvan-iv"
+      ],
+      "mid": [
+        "ahri",
+        "akali",
+        "orianna",
+        "syndra"
+      ],
+      "botShapes": [
+        {
+          "bot": "kaisa",
+          "support": "rell"
+        },
+        {
+          "bot": "jhin",
+          "support": "alistar"
+        },
+        {
+          "bot": "ziggs",
+          "support": "nautilus"
+        }
+      ]
+    },
+    "observedProPairings": [],
+    "logic": {
+      "gives": "carry/dive top, backline access, side pressure",
+      "avoid": "no frontline; no other target access"
+    },
+    "identities": [
+      "dive",
+      "skirmish"
+    ],
+    "playoffRead": "Good prepared carry top, not the safest universal blind.",
+    "status": "current",
+    "sources": [
+      "golgg-team-2802",
+      "golgg-team-2806",
+      "golgg-team-2805"
+    ]
+  },
+  {
+    "champion": "gwen",
+    "blindGrade": "B+",
+    "surrounding": {
+      "jungle": [
+        "trundle",
+        "jarvan-iv",
+        "skarner",
+        "vi"
+      ],
+      "mid": [
+        "viktor",
+        "orianna",
+        "cassiopeia"
+      ],
+      "botShapes": [
+        {
+          "bot": "corki",
+          "support": "alistar"
+        },
+        {
+          "bot": "ezreal",
+          "support": "karma"
+        },
+        {
+          "bot": "jinx",
+          "support": "lulu"
+        }
+      ]
+    },
+    "observedProPairings": [
+      {
+        "champion": "trundle",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g4-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82965"
+        ]
+      },
+      {
+        "champion": "aatrox",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-round-4-g3-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82627"
+        ]
+      }
+    ],
+    "logic": {
+      "gives": "scaling AP side carry, anti-frontline DPS",
+      "avoid": "multiple losing lanes early; no engage"
+    },
+    "identities": [
+      "side-carry",
+      "scaling"
+    ],
+    "playoffRead": "Finals G4 showed a clean Gwen scaling shell around Trundle/Viktor/Corki/Alistar.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82965",
+      "golgg-team-2804"
+    ]
+  },
+  {
+    "champion": "camille",
+    "blindGrade": "B",
+    "surrounding": {
+      "jungle": [
+        "nocturne",
+        "vi",
+        "lee-sin",
+        "jarvan-iv"
+      ],
+      "mid": [
+        "lissandra",
+        "ahri",
+        "orianna"
+      ],
+      "botShapes": [
+        {
+          "bot": "jhin",
+          "support": "bard"
+        },
+        {
+          "bot": "caitlyn",
+          "support": "karma"
+        },
+        {
+          "bot": "kalista",
+          "support": "renata-glasc"
+        }
+      ]
+    },
+    "observedProPairings": [
+      {
+        "champion": "naafiri",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g4-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82695"
+        ]
+      },
+      {
+        "champion": "lee-sin",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-round-2-g1-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82414"
+        ]
+      }
+    ],
+    "logic": {
+      "gives": "side pressure, pick threat, backline access",
+      "avoid": "no waveclear or follow-up"
+    },
+    "identities": [
+      "pick",
+      "dive",
+      "side-lane"
+    ],
+    "playoffRead": "Strong sample, but more matchup dependent than Jayce/Gnar/K'Sante.",
+    "status": "current",
+    "sources": [
+      "golgg-team-2809",
+      "golgg-team-2805",
+      "golgg-team-2804"
+    ]
+  },
+  {
+    "champion": "olaf",
+    "blindGrade": "B-",
+    "surrounding": {
+      "jungle": [
+        "lee-sin",
+        "skarner",
+        "vi"
+      ],
+      "mid": [
+        "twisted-fate",
+        "locke",
+        "ryze"
+      ],
+      "botShapes": [
+        {
+          "bot": "ashe",
+          "support": "seraphine"
+        },
+        {
+          "bot": "sivir",
+          "support": "karma"
+        },
+        {
+          "bot": "zeri",
+          "support": "yuumi"
+        }
+      ]
+    },
+    "observedProPairings": [
+      {
+        "champion": "lee-sin",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g3-hle"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82747"
+        ]
+      },
+      {
+        "champion": "skarner",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g3-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82694"
+        ]
+      }
+    ],
+    "logic": {
+      "gives": "anti-CC threat, lane pressure, side skirmish",
+      "avoid": "range, slows, disengage"
+    },
+    "identities": [
+      "anti-cc-skirmish"
+    ],
+    "playoffRead": "Huge draft priority but terrible result: 1-7. Treat as an answer to a specific enemy comp, not a blind default.",
+    "status": "current",
+    "sources": [
+      "golgg-champion-66"
+    ]
+  },
+  {
+    "champion": "sion",
+    "blindGrade": "C+",
+    "surrounding": {
+      "jungle": [
+        "lee-sin",
+        "jarvan-iv",
+        "wukong"
+      ],
+      "mid": [
+        "sylas",
+        "orianna",
+        "anivia"
+      ],
+      "botShapes": [
+        {
+          "bot": "zeri",
+          "support": "yuumi"
+        },
+        {
+          "bot": "jinx",
+          "support": "lulu"
+        },
+        {
+          "bot": "ezreal",
+          "support": "karma"
+        }
+      ]
+    },
+    "observedProPairings": [
+      {
+        "champion": "lee-sin",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g3-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82964"
+        ]
+      }
+    ],
+    "logic": {
+      "gives": "weakside tank, engage, face-checking",
+      "avoid": "too many passive lanes"
+    },
+    "identities": [
+      "weakside-front-to-back"
+    ],
+    "playoffRead": "Useful deep in Fearless, but no longer a primary blind.",
+    "status": "downgraded",
+    "sources": [
+      "golgg-game-82964",
+      "golgg-team-2804"
+    ]
+  },
+  {
+    "champion": "ornn",
+    "blindGrade": "C+",
+    "surrounding": {
+      "jungle": [
+        "vi",
+        "jarvan-iv",
+        "poppy"
+      ],
+      "mid": [
+        "orianna",
+        "viktor",
+        "anivia"
+      ],
+      "botShapes": [
+        {
+          "bot": "jinx",
+          "support": "lulu"
+        },
+        {
+          "bot": "ezreal",
+          "support": "karma"
+        },
+        {
+          "bot": "yunara",
+          "support": "lulu"
+        }
+      ]
+    },
+    "observedProPairings": [],
+    "logic": {
+      "gives": "tank, long-range engage, item scaling",
+      "avoid": "low damage across mid+bot"
+    },
+    "identities": [
+      "scaling-front-to-back"
+    ],
+    "playoffRead": "Deep Fearless tank, not current priority.",
+    "status": "current",
+    "sources": [
+      "golgg-team-2809"
+    ]
+  },
+  {
+    "champion": "renekton",
+    "blindGrade": "C",
+    "surrounding": {
+      "jungle": [
+        "lee-sin",
+        "naafiri",
+        "vi"
+      ],
+      "mid": [
+        "syndra",
+        "ahri",
+        "taliyah"
+      ],
+      "botShapes": [
+        {
+          "bot": "caitlyn",
+          "support": "karma"
+        },
+        {
+          "bot": "lucian",
+          "support": "milio"
+        }
+      ]
+    },
+    "observedProPairings": [],
+    "logic": {
+      "gives": "early lane pressure, dive setup",
+      "avoid": "passive scaling lanes elsewhere"
+    },
+    "identities": [
+      "early-dive",
+      "snowball"
+    ],
+    "playoffRead": "Only one playoff top game in DK's team sample. No longer a core blind.",
+    "status": "downgraded",
+    "sources": [
+      "golgg-team-2802"
+    ]
+  }
+]

@@ -1,0 +1,1437 @@
+[
+  {
+    "anchor": "ryze",
+    "role": "MID",
+    "clashDefault": [
+      "jarvan-iv",
+      "vi"
+    ],
+    "alternatives": [
+      "qiyana",
+      "lee-sin",
+      "nocturne"
+    ],
+    "botShapes": [
+      {
+        "bot": "jhin",
+        "support": "alistar"
+      },
+      {
+        "bot": "lucian",
+        "support": "milio"
+      },
+      {
+        "bot": "ezreal",
+        "support": "karma"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "vi",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g1-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82962"
+        ]
+      },
+      {
+        "champion": "qiyana",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g1-hle"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82745"
+        ]
+      },
+      {
+        "champion": "jarvan-iv",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g2-dk"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82693"
+        ]
+      },
+      {
+        "champion": "lee-sin",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-round-2-g1-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82414"
+        ]
+      },
+      {
+        "champion": "chogath",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-round-4-g1-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82625"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "high",
+    "identities": [
+      "side-lane-control",
+      "skirmish",
+      "front-to-back"
+    ],
+    "playoffRead": "Seen with Qiyana, Vi, Jarvan and Lee Sin in the late playoffs. Ryze is a flexible anchor rather than a one-jungle combo.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82745",
+      "golgg-game-82962",
+      "golgg-game-82693",
+      "golgg-game-82414"
+    ]
+  },
+  {
+    "anchor": "orianna",
+    "role": "MID",
+    "clashDefault": [
+      "naafiri",
+      "nocturne"
+    ],
+    "alternatives": [
+      "jarvan-iv",
+      "vi",
+      "lee-sin"
+    ],
+    "botShapes": [
+      {
+        "bot": "caitlyn",
+        "support": "bard"
+      },
+      {
+        "bot": "lucian",
+        "support": "milio"
+      },
+      {
+        "bot": "ezreal",
+        "support": "karma"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "naafiri",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g1-hle",
+          "lck26po-hle-t1-g1-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82962",
+          "golgg-game-82745"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "high",
+    "identities": [
+      "control-mage",
+      "hard-entry-delivery"
+    ],
+    "playoffRead": "Naafiri+Orianna appeared in Finals G1 on HLE, while Gen.G used Nocturne+Orianna in Round 4 G1. She still wants a reliable first entrant.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82962",
+      "golgg-game-82625"
+    ]
+  },
+  {
+    "anchor": "akali",
+    "role": "MID",
+    "clashDefault": [
+      "vi",
+      "jarvan-iv"
+    ],
+    "alternatives": [
+      "aatrox",
+      "lee-sin",
+      "nocturne"
+    ],
+    "botShapes": [
+      {
+        "bot": "zeri",
+        "support": "yuumi"
+      },
+      {
+        "bot": "yunara",
+        "support": "lulu"
+      },
+      {
+        "bot": "kalista",
+        "support": "renata-glasc"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "jarvan-iv",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g2-hle"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82963"
+        ]
+      },
+      {
+        "champion": "vi",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g3-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82747"
+        ]
+      },
+      {
+        "champion": "aatrox",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-round-4-g3-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82627"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "high",
+    "identities": [
+      "dive",
+      "skirmish",
+      "backline-access"
+    ],
+    "playoffRead": "Finals G2 had Jarvan+Akali; HLE-T1 G3 had Vi+Akali; Gen.G used Aatrox jungle with Akali in Round 4.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82963",
+      "golgg-game-82747",
+      "golgg-game-82627"
+    ]
+  },
+  {
+    "anchor": "syndra",
+    "role": "MID",
+    "clashDefault": [
+      "pantheon",
+      "qiyana"
+    ],
+    "alternatives": [
+      "chogath",
+      "vi",
+      "jarvan-iv"
+    ],
+    "botShapes": [
+      {
+        "bot": "yunara",
+        "support": "lulu"
+      },
+      {
+        "bot": "caitlyn",
+        "support": "karma"
+      },
+      {
+        "bot": "miss-fortune",
+        "support": "neeko"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "chogath",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g3-hle"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82964"
+        ]
+      },
+      {
+        "champion": "pantheon",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g2-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82746"
+        ]
+      },
+      {
+        "champion": "skarner",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-round-2-g3-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82416"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "high",
+    "identities": [
+      "pick",
+      "burst",
+      "objective-control"
+    ],
+    "playoffRead": "T1 used Pantheon+Syndra, HLE used Qiyana+Syndra, and Finals G3 showed Cho'Gath+Syndra.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82746",
+      "golgg-game-82626",
+      "golgg-game-82964"
+    ]
+  },
+  {
+    "anchor": "viktor",
+    "role": "MID",
+    "clashDefault": [
+      "chogath",
+      "trundle"
+    ],
+    "alternatives": [
+      "pantheon",
+      "jarvan-iv",
+      "vi"
+    ],
+    "botShapes": [
+      {
+        "bot": "xayah",
+        "support": "rakan"
+      },
+      {
+        "bot": "corki",
+        "support": "alistar"
+      },
+      {
+        "bot": "jhin",
+        "support": "rell"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "trundle",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g4-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82965"
+        ]
+      },
+      {
+        "champion": "chogath",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g4-hle"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82748"
+        ]
+      },
+      {
+        "champion": "pantheon",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g3-dk"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82694"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "high",
+    "identities": [
+      "scaling-control",
+      "frontline"
+    ],
+    "playoffRead": "Viktor was paired with Cho'Gath in HLE-T1 G4, Trundle in Finals G4, and Pantheon in T1-DK G3.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82748",
+      "golgg-game-82965",
+      "golgg-game-82694"
+    ]
+  },
+  {
+    "anchor": "anivia",
+    "role": "MID",
+    "clashDefault": [
+      "qiyana",
+      "lee-sin"
+    ],
+    "alternatives": [
+      "nocturne",
+      "jarvan-iv",
+      "skarner"
+    ],
+    "botShapes": [
+      {
+        "bot": "mel",
+        "support": "alistar"
+      },
+      {
+        "bot": "caitlyn",
+        "support": "bard"
+      },
+      {
+        "bot": "ezreal",
+        "support": "seraphine"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "qiyana",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g2-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82693"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "medium-high",
+    "identities": [
+      "terrain-control",
+      "pick",
+      "objective-choke"
+    ],
+    "playoffRead": "T1 used Anivia with Qiyana against DK. She still wants an active jungle/frontline that forces enemies through her terrain.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82693",
+      "golgg-team-2809"
+    ]
+  },
+  {
+    "anchor": "lissandra",
+    "role": "MID",
+    "clashDefault": [
+      "nocturne"
+    ],
+    "alternatives": [
+      "vi",
+      "jarvan-iv",
+      "lee-sin"
+    ],
+    "botShapes": [
+      {
+        "bot": "kalista",
+        "support": "renata-glasc"
+      },
+      {
+        "bot": "jhin",
+        "support": "alistar"
+      },
+      {
+        "bot": "kaisa",
+        "support": "rell"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "nocturne",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g2-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82963"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "high",
+    "identities": [
+      "hard-pick",
+      "dive",
+      "lockdown"
+    ],
+    "playoffRead": "Finals G2 is the clean current example: Nocturne+Lissandra with Kalista/Renata.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82963"
+    ]
+  },
+  {
+    "anchor": "cassiopeia",
+    "role": "MID",
+    "clashDefault": [
+      "lee-sin"
+    ],
+    "alternatives": [
+      "pantheon",
+      "jarvan-iv",
+      "chogath"
+    ],
+    "botShapes": [
+      {
+        "bot": "xayah",
+        "support": "rakan"
+      },
+      {
+        "bot": "ezreal",
+        "support": "karma"
+      },
+      {
+        "bot": "sivir",
+        "support": "lulu"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "lee-sin",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g1-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82692"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "medium-high",
+    "identities": [
+      "front-to-back-control",
+      "skirmish"
+    ],
+    "playoffRead": "T1-DK G1 paired Cassiopeia with Lee Sin and Xayah/Rakan, a very clean front-to-back shell.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82692"
+    ]
+  },
+  {
+    "anchor": "taliyah",
+    "role": "MID",
+    "clashDefault": [
+      "vi"
+    ],
+    "alternatives": [
+      "jarvan-iv",
+      "pantheon",
+      "lee-sin"
+    ],
+    "botShapes": [
+      {
+        "bot": "lucian",
+        "support": "milio"
+      },
+      {
+        "bot": "jhin",
+        "support": "alistar"
+      },
+      {
+        "bot": "ziggs",
+        "support": "nautilus"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "vi",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g1-dk"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82692"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "high",
+    "identities": [
+      "pick",
+      "control",
+      "guaranteed-setup"
+    ],
+    "playoffRead": "DK used Taliyah+Vi with Lucian/Milio. This is one of the easiest setup chains to execute.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82692"
+    ]
+  },
+  {
+    "anchor": "galio",
+    "role": "MID",
+    "clashDefault": [
+      "naafiri"
+    ],
+    "alternatives": [
+      "pantheon",
+      "jarvan-iv",
+      "vi"
+    ],
+    "botShapes": [
+      {
+        "bot": "kalista",
+        "support": "renata-glasc"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "naafiri",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g4-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82695"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "high",
+    "identities": [
+      "engage-glue",
+      "follow-up",
+      "global-protection"
+    ],
+    "playoffRead": "T1-DK G4 used Naafiri+Galio with Camille top and Kalista/Renata.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82695"
+    ]
+  },
+  {
+    "anchor": "annie",
+    "role": "MID",
+    "clashDefault": [
+      "chogath"
+    ],
+    "alternatives": [
+      "pantheon",
+      "vi",
+      "jarvan-iv"
+    ],
+    "botShapes": [
+      {
+        "bot": "ezreal",
+        "support": "seraphine"
+      },
+      {
+        "bot": "jhin",
+        "support": "rell"
+      },
+      {
+        "bot": "caitlyn",
+        "support": "karma"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "chogath",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g4-dk"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82695"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "medium",
+    "identities": [
+      "simple-engage",
+      "burst-follow-up"
+    ],
+    "playoffRead": "DK used Cho'Gath+Annie in T1-DK G4. Keep as a simple backup engage pairing.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82695"
+    ]
+  },
+  {
+    "anchor": "ahri",
+    "role": "MID",
+    "clashDefault": [
+      "pantheon",
+      "wukong"
+    ],
+    "alternatives": [
+      "vi",
+      "nocturne",
+      "lee-sin"
+    ],
+    "botShapes": [
+      {
+        "bot": "ziggs",
+        "support": "pyke"
+      },
+      {
+        "bot": "caitlyn",
+        "support": "bard"
+      },
+      {
+        "bot": "jhin",
+        "support": "alistar"
+      }
+    ],
+    "observedProPairings": [],
+    "history": [],
+    "logic": {},
+    "confidence": "medium-high",
+    "identities": [
+      "pick",
+      "side-lane-tempo"
+    ],
+    "playoffRead": "HLE used Pantheon+Ahri in Round 4 G3; KT also used Ahri with Wukong in the playoffs.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82627",
+      "golgg-team-2806"
+    ]
+  },
+  {
+    "anchor": "locke",
+    "role": "MID",
+    "clashDefault": [
+      "skarner"
+    ],
+    "alternatives": [
+      "nocturne",
+      "jarvan-iv",
+      "vi"
+    ],
+    "botShapes": [
+      {
+        "bot": "sivir",
+        "support": "karma"
+      },
+      {
+        "bot": "jhin",
+        "support": "rell"
+      },
+      {
+        "bot": "corki",
+        "support": "alistar"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "skarner",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g4-hle",
+          "lck26po-t1-dk-g3-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82965",
+          "golgg-game-82694"
+        ]
+      },
+      {
+        "champion": "jarvan-iv",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-round-4-g2-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82626"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "high",
+    "identities": [
+      "close-range-control",
+      "engage-follow-up"
+    ],
+    "playoffRead": "Skarner+Locke appeared in T1-DK G3 and again in Finals G4. This is one of the clearest new playoff pairings.",
+    "status": "added",
+    "sources": [
+      "golgg-game-82694",
+      "golgg-game-82965"
+    ]
+  },
+  {
+    "anchor": "jarvan-iv",
+    "role": "JUNGLE",
+    "clashDefault": [
+      "ryze",
+      "akali"
+    ],
+    "alternatives": [
+      "locke",
+      "annie",
+      "orianna"
+    ],
+    "botShapes": [
+      {
+        "bot": "jhin",
+        "support": "alistar"
+      },
+      {
+        "bot": "yunara",
+        "support": "lulu"
+      },
+      {
+        "bot": "caitlyn",
+        "support": "karma"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "akali",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g2-hle"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82963"
+        ]
+      },
+      {
+        "champion": "yone",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g2-hle"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82746"
+        ]
+      },
+      {
+        "champion": "ryze",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g2-dk"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82693"
+        ]
+      },
+      {
+        "champion": "locke",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-round-4-g2-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82626"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "high",
+    "identities": [
+      "universal-engage",
+      "frontline"
+    ],
+    "playoffRead": "Nine tournament picks. Works with both control mids and dive mids; don't lock him into only Orianna-style comps.",
+    "status": "current",
+    "sources": [
+      "golgg-champion-34",
+      "golgg-game-82963"
+    ]
+  },
+  {
+    "anchor": "vi",
+    "role": "JUNGLE",
+    "clashDefault": [
+      "akali",
+      "syndra"
+    ],
+    "alternatives": [
+      "ryze",
+      "taliyah",
+      "orianna"
+    ],
+    "botShapes": [
+      {
+        "bot": "zeri",
+        "support": "yuumi"
+      },
+      {
+        "bot": "lucian",
+        "support": "milio"
+      },
+      {
+        "bot": "miss-fortune",
+        "support": "neeko"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "ryze",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g1-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82962"
+        ]
+      },
+      {
+        "champion": "akali",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g3-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82747"
+        ]
+      },
+      {
+        "champion": "taliyah",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g1-dk"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82692"
+        ]
+      },
+      {
+        "champion": "vex",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-round-4-g4-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82628"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "high",
+    "identities": [
+      "point-click-pick",
+      "dive"
+    ],
+    "playoffRead": "Late playoffs repeatedly used Vi as the guaranteed starter for carry mids.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82747",
+      "golgg-game-82962",
+      "golgg-game-82628"
+    ]
+  },
+  {
+    "anchor": "lee-sin",
+    "role": "JUNGLE",
+    "clashDefault": [
+      "cassiopeia",
+      "ryze"
+    ],
+    "alternatives": [
+      "sylas",
+      "twisted-fate",
+      "anivia"
+    ],
+    "botShapes": [
+      {
+        "bot": "xayah",
+        "support": "rakan"
+      },
+      {
+        "bot": "jhin",
+        "support": "alistar"
+      },
+      {
+        "bot": "ashe",
+        "support": "seraphine"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "sylas",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g3-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82964"
+        ]
+      },
+      {
+        "champion": "twisted-fate",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g3-hle"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82747"
+        ]
+      },
+      {
+        "champion": "cassiopeia",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g1-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82692"
+        ]
+      },
+      {
+        "champion": "ryze",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-round-2-g1-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82414"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "high",
+    "identities": [
+      "tempo",
+      "skirmish",
+      "early-cover"
+    ],
+    "playoffRead": "Lee Sin had 7 picks and 13 bans; late rounds paired him with Cassiopeia, TF and Sylas.",
+    "status": "current",
+    "sources": [
+      "golgg-champion-47",
+      "golgg-game-82964"
+    ]
+  },
+  {
+    "anchor": "naafiri",
+    "role": "JUNGLE",
+    "clashDefault": [
+      "orianna",
+      "galio"
+    ],
+    "alternatives": [
+      "sylas",
+      "syndra",
+      "ahri"
+    ],
+    "botShapes": [
+      {
+        "bot": "caitlyn",
+        "support": "bard"
+      },
+      {
+        "bot": "ezreal",
+        "support": "karma"
+      },
+      {
+        "bot": "kalista",
+        "support": "renata-glasc"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "orianna",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g1-hle",
+          "lck26po-hle-t1-g1-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82962",
+          "golgg-game-82745"
+        ]
+      },
+      {
+        "champion": "galio",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g4-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82695"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "high",
+    "identities": [
+      "damage-jungle",
+      "reliable-access"
+    ],
+    "playoffRead": "Naafiri was used with Orianna in Finals G1 and Galio in T1-DK G4.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82962",
+      "golgg-game-82695"
+    ]
+  },
+  {
+    "anchor": "skarner",
+    "role": "JUNGLE",
+    "clashDefault": [
+      "locke"
+    ],
+    "alternatives": [
+      "anivia",
+      "viktor",
+      "akali"
+    ],
+    "botShapes": [
+      {
+        "bot": "sivir",
+        "support": "karma"
+      },
+      {
+        "bot": "corki",
+        "support": "alistar"
+      },
+      {
+        "bot": "zeri",
+        "support": "yuumi"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "locke",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g4-hle",
+          "lck26po-t1-dk-g3-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82965",
+          "golgg-game-82694"
+        ]
+      },
+      {
+        "champion": "syndra",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-round-2-g3-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82416"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "high",
+    "identities": [
+      "hard-start",
+      "frontline"
+    ],
+    "playoffRead": "Big correction from the old sheet: current playoff evidence points to Skarner+Locke, not Azir+Skarner.",
+    "status": "updated",
+    "sources": [
+      "golgg-game-82694",
+      "golgg-game-82965"
+    ]
+  },
+  {
+    "anchor": "qiyana",
+    "role": "JUNGLE",
+    "clashDefault": [
+      "ryze",
+      "anivia"
+    ],
+    "alternatives": [
+      "syndra",
+      "ahri",
+      "orianna"
+    ],
+    "botShapes": [
+      {
+        "bot": "jhin",
+        "support": "alistar"
+      },
+      {
+        "bot": "mel",
+        "support": "alistar"
+      },
+      {
+        "bot": "caitlyn",
+        "support": "bard"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "ryze",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g1-hle"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82745"
+        ]
+      },
+      {
+        "champion": "anivia",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g2-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82693"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "medium-high",
+    "identities": [
+      "tempo",
+      "burst",
+      "terrain-fight"
+    ],
+    "playoffRead": "Late playoff examples include Qiyana+Ryze and Qiyana+Anivia.",
+    "status": "current",
+    "sources": [
+      "golgg-game-82745",
+      "golgg-game-82693"
+    ]
+  },
+  {
+    "anchor": "chogath",
+    "role": "JUNGLE",
+    "clashDefault": [
+      "viktor",
+      "syndra"
+    ],
+    "alternatives": [
+      "orianna",
+      "annie",
+      "ryze"
+    ],
+    "botShapes": [
+      {
+        "bot": "xayah",
+        "support": "rakan"
+      },
+      {
+        "bot": "ashe",
+        "support": "seraphine"
+      },
+      {
+        "bot": "ezreal",
+        "support": "karma"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "syndra",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-finals-g3-hle"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82964"
+        ]
+      },
+      {
+        "champion": "viktor",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g4-hle"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82748"
+        ]
+      },
+      {
+        "champion": "annie",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-t1-dk-g4-dk"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82695"
+        ]
+      },
+      {
+        "champion": "ryze",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-round-4-g1-geng"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82625"
+        ]
+      }
+    ],
+    "history": [],
+    "logic": {},
+    "confidence": "medium-high",
+    "identities": [
+      "frontline",
+      "objective-control",
+      "guaranteed-cc"
+    ],
+    "playoffRead": "Cho jungle was real in the playoffs: Finals G3 with Syndra and HLE-T1 G4 with Viktor.",
+    "status": "added",
+    "sources": [
+      "golgg-game-82964",
+      "golgg-game-82748"
+    ]
+  },
+  {
+    "anchor": "azir",
+    "role": "MID",
+    "clashDefault": [
+      "jarvan-iv"
+    ],
+    "alternatives": [
+      "vi",
+      "xin-zhao"
+    ],
+    "botShapes": [
+      {
+        "bot": "caitlyn",
+        "support": "karma"
+      },
+      {
+        "bot": "yunara",
+        "support": "lulu"
+      }
+    ],
+    "observedProPairings": [
+      {
+        "champion": "nocturne",
+        "context": "LCK 2026 Season Playoffs",
+        "era": "current-playoffs",
+        "proDraftIds": [
+          "lck26po-hle-t1-g4-t1"
+        ],
+        "backedByGame": true,
+        "sources": [
+          "golgg-game-82748"
+        ]
+      }
+    ],
+    "history": [
+      {
+        "partner": "skarner",
+        "era": "earlier-2026",
+        "note": "Azir+Skarner was the go-to pairing earlier in 2026. Not the current Gen.G default: Azir had 2 playoff picks and went 0-2."
+      }
+    ],
+    "logic": {},
+    "confidence": "low",
+    "identities": [
+      "legacy-front-to-back"
+    ],
+    "playoffRead": "Do not prioritize this because it was good earlier in the year. Azir only had 2 playoff picks and went 0-2.",
+    "status": "downgraded",
+    "sources": [
+      "golgg-champion-120"
+    ]
+  }
+]

@@ -1,0 +1,238 @@
+[
+  {
+    "kind": "context",
+    "title": "Playoff identity",
+    "era": "current-playoffs",
+    "detail": "Exact visible Gen.G playoff games. Biggest correction from the old board: current Gen.G was not an Azir+Skarner team. They rotated top, bot and support aggressively while keeping clear comp identities.",
+    "proDraftIds": [
+      "lck26po-finals-g1-geng",
+      "lck26po-finals-g2-geng",
+      "lck26po-finals-g3-geng",
+      "lck26po-finals-g4-geng",
+      "lck26po-round-2-g1-geng",
+      "lck26po-round-2-g3-geng",
+      "lck26po-round-4-g1-geng",
+      "lck26po-round-4-g2-geng",
+      "lck26po-round-4-g3-geng",
+      "lck26po-round-4-g4-geng"
+    ],
+    "sources": [
+      "golgg-tournament-stats"
+    ]
+  },
+  {
+    "kind": "context",
+    "title": "Azir + Skarner is an earlier-2026 tendency",
+    "era": "earlier-2026",
+    "detail": "The previous board treated Azir+Skarner as Gen.G's signature pairing from earlier in 2026. None of the recorded playoff games used it; do not treat it as current.",
+    "proDraftIds": [],
+    "sources": [
+      "golgg-tournament-stats"
+    ]
+  },
+  {
+    "kind": "recurring-pick",
+    "title": "Rumble top x2",
+    "detail": "Gen.G picked Rumble in 2 of 10 recorded playoff games.",
+    "era": "current-playoffs",
+    "proDraftIds": [
+      "lck26po-finals-g1-geng",
+      "lck26po-round-4-g2-geng"
+    ],
+    "sources": [
+      "golgg-game-82962",
+      "golgg-game-82626"
+    ]
+  },
+  {
+    "kind": "recurring-pick",
+    "title": "Varus top x2",
+    "detail": "Gen.G picked Varus in 2 of 10 recorded playoff games.",
+    "era": "current-playoffs",
+    "proDraftIds": [
+      "lck26po-finals-g2-geng",
+      "lck26po-round-4-g4-geng"
+    ],
+    "sources": [
+      "golgg-game-82963",
+      "golgg-game-82628"
+    ]
+  },
+  {
+    "kind": "recurring-pick",
+    "title": "Gwen top x2",
+    "detail": "Gen.G picked Gwen in 2 of 10 recorded playoff games.",
+    "era": "current-playoffs",
+    "proDraftIds": [
+      "lck26po-finals-g4-geng",
+      "lck26po-round-4-g3-geng"
+    ],
+    "sources": [
+      "golgg-game-82965",
+      "golgg-game-82627"
+    ]
+  },
+  {
+    "kind": "role-flex",
+    "title": "Top rotation: 7 champions in 10 games",
+    "detail": "Rumble (2), Varus (2), Gwen (2), Sion (1), Camille (1), Twisted Fate (1), Yorick (1)",
+    "era": "current-playoffs",
+    "proDraftIds": [
+      "lck26po-finals-g1-geng",
+      "lck26po-finals-g2-geng",
+      "lck26po-finals-g3-geng",
+      "lck26po-finals-g4-geng",
+      "lck26po-round-2-g1-geng",
+      "lck26po-round-2-g3-geng",
+      "lck26po-round-4-g1-geng",
+      "lck26po-round-4-g2-geng",
+      "lck26po-round-4-g3-geng",
+      "lck26po-round-4-g4-geng"
+    ],
+    "sources": [
+      "golgg-tournament-stats"
+    ]
+  },
+  {
+    "kind": "recurring-pick",
+    "title": "Vi jungle x2",
+    "detail": "Gen.G picked Vi in 2 of 10 recorded playoff games.",
+    "era": "current-playoffs",
+    "proDraftIds": [
+      "lck26po-finals-g1-geng",
+      "lck26po-round-4-g4-geng"
+    ],
+    "sources": [
+      "golgg-game-82962",
+      "golgg-game-82628"
+    ]
+  },
+  {
+    "kind": "recurring-pick",
+    "title": "Lee Sin jungle x2",
+    "detail": "Gen.G picked Lee Sin in 2 of 10 recorded playoff games.",
+    "era": "current-playoffs",
+    "proDraftIds": [
+      "lck26po-finals-g3-geng",
+      "lck26po-round-2-g1-geng"
+    ],
+    "sources": [
+      "golgg-game-82964",
+      "golgg-game-82414"
+    ]
+  },
+  {
+    "kind": "role-flex",
+    "title": "Jungle rotation: 8 champions in 10 games",
+    "detail": "Vi (2), Lee Sin (2), Nocturne (1), Trundle (1), Skarner (1), Cho'Gath (1), Jarvan IV (1), Aatrox (1)",
+    "era": "current-playoffs",
+    "proDraftIds": [
+      "lck26po-finals-g1-geng",
+      "lck26po-finals-g2-geng",
+      "lck26po-finals-g3-geng",
+      "lck26po-finals-g4-geng",
+      "lck26po-round-2-g1-geng",
+      "lck26po-round-2-g3-geng",
+      "lck26po-round-4-g1-geng",
+      "lck26po-round-4-g2-geng",
+      "lck26po-round-4-g3-geng",
+      "lck26po-round-4-g4-geng"
+    ],
+    "sources": [
+      "golgg-tournament-stats"
+    ]
+  },
+  {
+    "kind": "recurring-pick",
+    "title": "Ryze mid x3",
+    "detail": "Gen.G picked Ryze in 3 of 10 recorded playoff games.",
+    "era": "current-playoffs",
+    "proDraftIds": [
+      "lck26po-finals-g1-geng",
+      "lck26po-round-2-g1-geng",
+      "lck26po-round-4-g1-geng"
+    ],
+    "sources": [
+      "golgg-game-82962",
+      "golgg-game-82414",
+      "golgg-game-82625"
+    ]
+  },
+  {
+    "kind": "role-flex",
+    "title": "Mid rotation: 8 champions in 10 games",
+    "detail": "Ryze (3), Lissandra (1), Sylas (1), Viktor (1), Syndra (1), Locke (1), Akali (1), Vex (1)",
+    "era": "current-playoffs",
+    "proDraftIds": [
+      "lck26po-finals-g1-geng",
+      "lck26po-finals-g2-geng",
+      "lck26po-finals-g3-geng",
+      "lck26po-finals-g4-geng",
+      "lck26po-round-2-g1-geng",
+      "lck26po-round-2-g3-geng",
+      "lck26po-round-4-g1-geng",
+      "lck26po-round-4-g2-geng",
+      "lck26po-round-4-g3-geng",
+      "lck26po-round-4-g4-geng"
+    ],
+    "sources": [
+      "golgg-tournament-stats"
+    ]
+  },
+  {
+    "kind": "role-flex",
+    "title": "Bot rotation: 10 champions in 10 games",
+    "detail": "Lucian (1), Kalista (1), Zeri (1), Corki (1), Yunara (1), Sivir (1), Ezreal (1), Jhin (1), Ashe (1), Miss Fortune (1)",
+    "era": "current-playoffs",
+    "proDraftIds": [
+      "lck26po-finals-g1-geng",
+      "lck26po-finals-g2-geng",
+      "lck26po-finals-g3-geng",
+      "lck26po-finals-g4-geng",
+      "lck26po-round-2-g1-geng",
+      "lck26po-round-2-g3-geng",
+      "lck26po-round-4-g1-geng",
+      "lck26po-round-4-g2-geng",
+      "lck26po-round-4-g3-geng",
+      "lck26po-round-4-g4-geng"
+    ],
+    "sources": [
+      "golgg-tournament-stats"
+    ]
+  },
+  {
+    "kind": "recurring-pick",
+    "title": "Karma support x2",
+    "detail": "Gen.G picked Karma in 2 of 10 recorded playoff games.",
+    "era": "current-playoffs",
+    "proDraftIds": [
+      "lck26po-round-2-g3-geng",
+      "lck26po-round-4-g1-geng"
+    ],
+    "sources": [
+      "golgg-game-82416",
+      "golgg-game-82625"
+    ]
+  },
+  {
+    "kind": "role-flex",
+    "title": "Support rotation: 9 champions in 10 games",
+    "detail": "Karma (2), Milio (1), Renata Glasc (1), Yuumi (1), Alistar (1), Lulu (1), Shen (1), Seraphine (1), Neeko (1)",
+    "era": "current-playoffs",
+    "proDraftIds": [
+      "lck26po-finals-g1-geng",
+      "lck26po-finals-g2-geng",
+      "lck26po-finals-g3-geng",
+      "lck26po-finals-g4-geng",
+      "lck26po-round-2-g1-geng",
+      "lck26po-round-2-g3-geng",
+      "lck26po-round-4-g1-geng",
+      "lck26po-round-4-g2-geng",
+      "lck26po-round-4-g3-geng",
+      "lck26po-round-4-g4-geng"
+    ],
+    "sources": [
+      "golgg-tournament-stats"
+    ]
+  }
+]
