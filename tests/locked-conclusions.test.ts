@@ -74,7 +74,7 @@ describe("bot lane Clash defaults", () => {
 
   it("twelve more bots: joint preferred supports, alan's Synergy preferences, not Pro Evidence (alan, 2026-10-10)", () => {
     const saved: Record<string, string[]> = {
-      draven: ["nautilus", "rell"], "kog-maw": ["lulu", "milio"], nilah: ["rakan", "seraphine"], samira: ["nautilus", "rell"],
+      draven: ["nautilus", "rell"], "kog-maw": ["lulu", "milio", "braum"], nilah: ["rakan", "seraphine"], samira: ["nautilus", "rell"],
       senna: ["tahm-kench", "seraphine"], smolder: ["lulu", "milio"], swain: ["nautilus", "leona"], tristana: ["nautilus", "rell"],
       twitch: ["lulu", "yuumi"], varus: ["karma", "nautilus"], vayne: ["lulu", "milio"], yasuo: ["rell", "alistar"],
     };
@@ -84,8 +84,7 @@ describe("bot lane Clash defaults", () => {
       expect(bot(id).sources, id).toEqual([]);
       expect(bot(id).alternatives, id).toEqual(id === "swain" ? ["seraphine"] : []);
     }
-    // alan's changes to the proposal: Milio over Braum for Kog'Maw, Milio over Renata for Vayne, Seraphine not preferred for Swain.
-    expect(bot("kog-maw").clashDefault).not.toContain("braum");
+    // alan's changes to the proposal: Milio added beside Braum for Kog'Maw, Milio over Renata for Vayne, Seraphine not preferred for Swain.
     expect(bot("vayne").clashDefault).not.toContain("renata-glasc");
     expect(bot("swain").clashDefault).not.toContain("seraphine");
   });

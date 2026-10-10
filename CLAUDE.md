@@ -95,7 +95,7 @@ Change these only when alan explicitly says so, then update the test in the same
 - Kai'Sa → Nautilus + Rakan, Aphelios → Thresh + Lulu: joint preferred, no alternatives (alan, 2026-10-10). Kai'Sa + Rell
   is not saved. Every BOT pool champion has a record (`tests/locked-conclusions.test.ts`).
 - Joint preferred supports for bots outside the pool (alan, 2026-10-10; Synergy preferences, not Pro Evidence): Draven,
-  Samira, Tristana → Nautilus + Rell; Kog'Maw, Smolder, Vayne → Lulu + Milio; Nilah → Rakan + Seraphine; Senna → Tahm
+  Samira, Tristana → Nautilus + Rell; Kog'Maw → Lulu + Milio + Braum; Smolder, Vayne → Lulu + Milio; Nilah → Rakan + Seraphine; Senna → Tahm
   Kench + Seraphine; Swain → Nautilus + Leona (Seraphine a plain alternative); Twitch → Lulu + Yuumi; Varus → Karma +
   Nautilus; Yasuo → Rell + Alistar.
 - Ahri ↔ Vi are each other's primary. Yone (mid) ↔ Maokai and Yone ↔ Sejuani are saved pairs, both ways. LeBlanc ↔ Lee Sin is saved (LeBlanc a

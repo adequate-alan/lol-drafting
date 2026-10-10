@@ -1082,7 +1082,8 @@
     "role": "BOT",
     "clashDefault": [
       "lulu",
-      "milio"
+      "milio",
+      "braum"
     ],
     "alternatives": [],
     "alternativeNotes": {},
@@ -1094,7 +1095,7 @@
     "logic": {},
     "confidence": "medium",
     "identities": [],
-    "notes": "Synergy record set by alan (2026-10-10): Lulu and Milio are joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "notes": "Synergy record set by alan (2026-10-10): Lulu, Milio and Braum are joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
     "status": "added",
     "sources": []
   },
