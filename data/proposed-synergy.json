@@ -11,22 +11,12 @@
      "role": "BOT",
      "preferred": [
       {
-       "id": "samira",
-       "confidence": "strong",
-       "reason": "Alistar's Pulverize knock-up holds targets in place so Samira can dash in, build style and channel Inferno Trigger."
-      },
-      {
-       "id": "draven",
-       "confidence": "strong",
-       "reason": "Headbutt into Pulverize gives Draven a guaranteed level 2 all-in where every Spinning Axe lands on a knocked-up target."
-      }
-     ],
-     "alternatives": [
-      {
        "id": "lucian",
        "confidence": "moderate",
        "reason": "Lucian's dash and double-shot burst follow Alistar's level 2 combo, giving the lane early kill pressure."
-      },
+      }
+     ],
+     "alternatives": [
       {
        "id": "tristana",
        "confidence": "moderate",
@@ -95,17 +85,12 @@
      "role": "BOT",
      "preferred": [
       {
-       "id": "varus",
-       "confidence": "moderate",
-       "reason": "Tempered Fate freezes targets in place so Varus can land a fully charged Piercing Arrow and Chain of Corruption."
-      }
-     ],
-     "alternatives": [
-      {
        "id": "senna",
        "confidence": "moderate",
        "reason": "Senna's range lets her hold lane alone while Bard roams, and both scale by collecting stacks across the map."
-      },
+      }
+     ],
+     "alternatives": [
       {
        "id": "smolder",
        "confidence": "provisional",
@@ -223,11 +208,6 @@
        "id": "twitch",
        "confidence": "moderate",
        "reason": "Twitch's fast attacks stack Concussive Blows, and Stand Behind Me shields him when he is caught out of stealth."
-      },
-      {
-       "id": "vayne",
-       "confidence": "moderate",
-       "reason": "Unbreakable covers short-range Vayne in fights, and her Silver Bolts autos stack Concussive Blows for a stun."
       }
      ]
     }
@@ -396,11 +376,6 @@
        "id": "jinx",
        "confidence": "moderate",
        "reason": "Mantra Inspire speeds Jinx into range and out of dives, covering her lack of mobility until she gets resets."
-      },
-      {
-       "id": "senna",
-       "confidence": "moderate",
-       "reason": "Karma's shield and speed let Senna farm souls safely, while Inner Flame poke wins range trades."
       }
      ],
      "alternatives": [
@@ -408,11 +383,6 @@
        "id": "kaisa",
        "confidence": "moderate",
        "reason": "Focused Resolve's root adds Kai'Sa plasma stacks, and Inspire speed helps her chase or escape after dives."
-      },
-      {
-       "id": "smolder",
-       "confidence": "moderate",
-       "reason": "Karma's lane poke lets Smolder stack safely, and Inspire shields cover him through early all-ins."
       }
      ]
     }
@@ -474,11 +444,6 @@
        "id": "kaisa",
        "confidence": "strong",
        "reason": "Wild Growth on Kai'Sa as she lands Killer Instinct knocks up the enemies around her and keeps her alive."
-      },
-      {
-       "id": "tristana",
-       "confidence": "moderate",
-       "reason": "Help Pix and Whimsy speed protect Tristana as she scales, and Wild Growth turns her Rocket Jump dives into knock-ups."
       }
      ],
      "alternatives": [
@@ -622,22 +587,12 @@
      "role": "BOT",
      "preferred": [
       {
-       "id": "twitch",
-       "confidence": "moderate",
-       "reason": "Cozy Campfire adds attack range to Twitch's Spray and Pray, letting him hit the backline from farther away."
-      },
-      {
-       "id": "aphelios",
-       "confidence": "moderate",
-       "reason": "Cozy Campfire extends Aphelios's range and Breath of Life cleanses the CC that would let divers kill him."
-      }
-     ],
-     "alternatives": [
-      {
        "id": "kaisa",
        "confidence": "moderate",
        "reason": "Breath of Life cleanses CC after Kai'Sa dives with Killer Instinct, and Cozy Campfire extends her short range."
-      },
+      }
+     ],
+     "alternatives": [
       {
        "id": "varus",
        "confidence": "moderate",
@@ -733,11 +688,6 @@
     {
      "role": "BOT",
      "preferred": [
-      {
-       "id": "yasuo",
-       "confidence": "strong",
-       "reason": "Depth Charge knocks up every enemy in its line, letting Yasuo cast Last Breath on them."
-      },
       {
        "id": "lucian",
        "confidence": "moderate",
@@ -980,17 +930,12 @@
      "role": "BOT",
      "preferred": [
       {
-       "id": "nilah",
-       "confidence": "moderate",
-       "reason": "Magnet Storm pulls a group together, so Nilah's Apotheosis catches every target in one cast."
-      }
-     ],
-     "alternatives": [
-      {
        "id": "lucian",
        "confidence": "moderate",
        "reason": "Rell's engage stuns the target, and Lucian follows with dash and double-shot burst for early kills."
-      },
+      }
+     ],
+     "alternatives": [
       {
        "id": "ziggs",
        "confidence": "moderate",
@@ -1284,11 +1229,6 @@
        "id": "aphelios",
        "confidence": "moderate",
        "reason": "Devour swallows Aphelios out of a dive, and Tongue Lash stuns attackers after his Gravitum slows."
-      },
-      {
-       "id": "kog-maw",
-       "confidence": "moderate",
-       "reason": "Devour saves immobile Kog'Maw from divers, letting him keep attacking from range after he is spat out."
       }
      ],
      "alternatives": [
@@ -2921,11 +2861,6 @@
        "id": "wukong",
        "confidence": "strong",
        "reason": "Wukong's Cyclone knocks up a whole group, giving Yasuo a multi-target Last Breath on demand."
-      },
-      {
-       "id": "xin-zhao",
-       "confidence": "strong",
-       "reason": "Xin Zhao's Three Talon Strike knocks up its target, enabling Yasuo's Last Breath in early skirmishes."
       }
      ],
      "alternatives": [

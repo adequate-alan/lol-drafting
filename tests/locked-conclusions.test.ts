@@ -74,7 +74,7 @@ describe("bot lane Clash defaults", () => {
     expect(bot("kaisa").alternatives).toEqual(["alistar"]);
     expect(bot("kaisa").clashDefault).not.toContain("rell");
     expect(bot("aphelios").clashDefault).toEqual(["thresh", "lulu"]);
-    expect(bot("aphelios").alternatives).toEqual([]);
+    expect(bot("aphelios").alternatives).toEqual(["milio"]);
   });
 
   it("twelve more bots: joint preferred supports, alan's Synergy preferences, not Pro Evidence (alan, 2026-10-10)", () => {
@@ -87,7 +87,7 @@ describe("bot lane Clash defaults", () => {
       expect(bot(id).clashDefault, id).toEqual(supports);
       expect(bot(id).observedProPairings, id).toEqual([]);
       expect(bot(id).sources, id).toEqual([]);
-      expect(bot(id).alternatives, id).toEqual(id === "swain" ? ["seraphine"] : []);
+      expect(bot(id).alternatives, id).toEqual(id === "swain" ? ["seraphine"] : [SAVED_ALTERNATIVES[`${id} BOT`]]);
     }
     // alan's changes to the proposal: Milio added beside Braum for Kog'Maw, Milio over Renata for Vayne, Seraphine not preferred for Swain.
     expect(bot("vayne").clashDefault).not.toContain("renata-glasc");
@@ -157,7 +157,8 @@ describe("mid / jungle", () => {
       const r = mj(id);
       expect(r.observedProPairings, id).toEqual([]);
       expect(r.sources, id).toEqual([]);
-      for (const p of [...r.clashDefault, ...r.alternatives]) {
+      // The one alternative alan approved on 2026-10-10 is his own pick, not a mirrored link.
+      for (const p of [...r.clashDefault, ...r.alternatives].filter((x) => x !== SAVED_ALTERNATIVES[`${id} ${r.role}`])) {
         const back = mj(p);
         expect(back.role, `${id} ↔ ${p}`).not.toBe(r.role);
         expect([...back.clashDefault, ...back.alternatives], `${p} lists ${id}`).toContain(id);
@@ -202,5 +203,27 @@ describe("mid / jungle", () => {
     const current = getGenG().filter((p) => p.era === "current-playoffs");
     for (const p of current) expect(/azir/i.test(p.title) && /skarner/i.test(p.title)).toBe(false);
     expect(getGenG().some((p) => p.era === "earlier-2026" && /azir/i.test(p.title))).toBe(true);
+  });
+});
+
+// alan, 2026-10-10 ("ok" to the proposed list): one saved alternative for each record that had none.
+const SAVED_ALTERNATIVES: Record<string, string> = {
+  "aphelios BOT": "milio", "draven BOT": "alistar", "kog-maw BOT": "tahm-kench", "nilah BOT": "rell", "samira BOT": "alistar",
+  "senna BOT": "karma", "smolder BOT": "karma", "tristana BOT": "lulu", "twitch BOT": "milio", "varus BOT": "bard",
+  "vayne BOT": "braum", "yasuo BOT": "nautilus",
+  "yone MID": "wukong", "maokai JUNGLE": "orianna", "sejuani JUNGLE": "syndra", "leblanc MID": "jarvan-iv",
+  "trundle JUNGLE": "syndra", "wukong JUNGLE": "orianna", "aatrox JUNGLE": "ahri", "xin-zhao JUNGLE": "yasuo",
+  "sylas MID": "jarvan-iv", "twisted-fate MID": "nocturne", "poppy JUNGLE": "viktor", "vex MID": "vi",
+};
+
+describe("saved alternatives for records that had none (alan, 2026-10-10)", () => {
+  it("each record carries its approved alternative, and the defaults are unchanged", () => {
+    for (const [key, alt] of Object.entries(SAVED_ALTERNATIVES)) {
+      const [id, role] = key.split(" ");
+      const r = role === "BOT" ? getBotPairings().find((b) => b.champion === id)! : getMidJungle().find((m) => m.anchor === id && m.role === role)!;
+      expect(r, key).toBeDefined();
+      expect(r.alternatives, key).toEqual([alt]);
+      expect(r.clashDefault, key).not.toContain(alt);
+    }
   });
 });

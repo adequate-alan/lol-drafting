@@ -1559,7 +1559,9 @@
       "maokai",
       "sejuani"
     ],
-    "alternatives": [],
+    "alternatives": [
+      "wukong"
+    ],
     "botShapes": [],
     "observedBotShapes": [],
     "observedProPairings": [],
@@ -1580,7 +1582,9 @@
     "clashDefault": [
       "yone"
     ],
-    "alternatives": [],
+    "alternatives": [
+      "orianna"
+    ],
     "botShapes": [],
     "observedBotShapes": [],
     "observedProPairings": [],
@@ -1601,7 +1605,9 @@
     "clashDefault": [
       "yone"
     ],
-    "alternatives": [],
+    "alternatives": [
+      "syndra"
+    ],
     "botShapes": [],
     "observedBotShapes": [],
     "observedProPairings": [],
@@ -1622,7 +1628,9 @@
     "clashDefault": [
       "lee-sin"
     ],
-    "alternatives": [],
+    "alternatives": [
+      "jarvan-iv"
+    ],
     "botShapes": [],
     "observedBotShapes": [],
     "observedProPairings": [],
@@ -1693,7 +1701,9 @@
     "clashDefault": [
       "viktor"
     ],
-    "alternatives": [],
+    "alternatives": [
+      "syndra"
+    ],
     "botShapes": [],
     "observedBotShapes": [],
     "observedProPairings": [],
@@ -1711,7 +1721,9 @@
     "clashDefault": [
       "ahri"
     ],
-    "alternatives": [],
+    "alternatives": [
+      "orianna"
+    ],
     "botShapes": [],
     "observedBotShapes": [],
     "observedProPairings": [],
@@ -1729,7 +1741,9 @@
     "clashDefault": [
       "akali"
     ],
-    "alternatives": [],
+    "alternatives": [
+      "ahri"
+    ],
     "botShapes": [],
     "observedBotShapes": [],
     "observedProPairings": [],
@@ -1747,7 +1761,9 @@
     "clashDefault": [
       "azir"
     ],
-    "alternatives": [],
+    "alternatives": [
+      "yasuo"
+    ],
     "botShapes": [],
     "observedBotShapes": [],
     "observedProPairings": [],
@@ -1766,7 +1782,9 @@
       "lee-sin",
       "naafiri"
     ],
-    "alternatives": [],
+    "alternatives": [
+      "jarvan-iv"
+    ],
     "botShapes": [],
     "observedBotShapes": [],
     "observedProPairings": [],
@@ -1784,7 +1802,9 @@
     "clashDefault": [
       "lee-sin"
     ],
-    "alternatives": [],
+    "alternatives": [
+      "nocturne"
+    ],
     "botShapes": [],
     "observedBotShapes": [],
     "observedProPairings": [],
@@ -1803,7 +1823,9 @@
       "orianna",
       "syndra"
     ],
-    "alternatives": [],
+    "alternatives": [
+      "viktor"
+    ],
     "botShapes": [],
     "observedBotShapes": [],
     "observedProPairings": [],
@@ -1822,7 +1844,9 @@
       "jarvan-iv",
       "sejuani"
     ],
-    "alternatives": [],
+    "alternatives": [
+      "vi"
+    ],
     "botShapes": [],
     "observedBotShapes": [],
     "observedProPairings": [],
