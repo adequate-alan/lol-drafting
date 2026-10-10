@@ -95,11 +95,12 @@ export function Chip({ id, name, role, note, strong, dim }: { id?: string; name:
     <span className={`chip ${strong ? "strong" : ""} ${dim ? "dim" : ""} ${role ? `role-${role}` : ""}`} title={note}>
       <ChampIcon id={id} name={name} role={role} size="xs" />
       {name}
-      {note && <small>{note}</small>}
     </span>
   );
   // Inside a ChampionProvider the chip shows the quick card on hover and opens the drawer on click.
-  return id ? <InteractiveChampion id={id} role={role}>{chip}</InteractiveChampion> : chip;
+  const champ = id ? <InteractiveChampion id={id} role={role}>{chip}</InteractiveChampion> : chip;
+  // A note is explanatory text: it sits beside the compact chip and wraps inside its column, never inside the chip.
+  return note ? <span className="chip-noted">{champ}<small className="chip-note">{note}</small></span> : champ;
 }
 
 export function ChipList({ ids, names, role, empty = "none", notes, strong, dim }: {

@@ -330,11 +330,17 @@ th .role-tag { font-size: inherit; letter-spacing: inherit; color: inherit; }
   background: var(--surface-subtle); border: 1px solid var(--border); font-size: var(--fs-sm); white-space: nowrap;
   color: var(--text); font-weight: 500;
 }
-.chip small { color: var(--text-muted); font-size: var(--fs-2xs); font-weight: 500; }
 .chip.plain { padding-left: 7px; }
 .chip.strong { border-color: var(--clash-line); background: var(--clash-subtle); font-weight: 650; }
 .chip.dim { color: var(--text-muted); border-style: dashed; }
-.chip-list { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.chip-list { display: flex; flex-wrap: wrap; gap: var(--s2); min-width: 0; }
+/* A chip with a written note takes its own line; the chip stays compact and the note wraps within the column. */
+.chip-noted { display: flex; align-items: flex-start; gap: var(--s3); flex: 1 1 100%; min-width: 0; }
+.chip-noted > * { flex: none; }
+.chip-noted > .chip-note {
+  flex: 1 1 auto; min-width: 0; padding-top: 5px; color: var(--text-muted); font-size: var(--fs-2xs); font-weight: 500;
+  line-height: 1.35; white-space: normal; overflow-wrap: anywhere;
+}
 .duo { display: inline-flex; align-items: center; gap: 3px; }
 .duo .plus { color: var(--text-faint); font-size: var(--fs-xs); }
 
@@ -508,7 +514,16 @@ td.wrap { white-space: normal; min-width: 220px; line-height: 1.35; }
 .scout .layer.clash .scout-title { color: var(--clash); }
 .scout .layer.pro .scout-title { color: var(--pro); }
 .scout .layer.logic .scout-title { color: var(--logic); }
-.scout-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--s5) var(--s6); }
+/* Synergy columns follow the section's own width, not the viewport: 1 → 2 → 3/4, and a grid with written notes keeps
+   two columns until each of four would still read comfortably. Every child is min-width: 0 so nothing crosses a column. */
+.scout .scout-sec { container-type: inline-size; }
+.scout-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s5) var(--s6); }
+.scout-grid > * { min-width: 0; }
+.scout-grid .duo { flex-wrap: wrap; height: auto; min-height: 24px; max-width: 100%; }
+@container (min-width: 460px) { .scout-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container (min-width: 780px) { .scout-grid.n3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@container (min-width: 960px) { .scout-grid.n4:not(.noted) { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@container (min-width: 1240px) { .scout-grid.n4.noted { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .scout-group { min-width: 0; }
 .scout-group-title { margin-bottom: var(--s3); font-size: var(--fs-xs); font-weight: 600; color: var(--text-muted); }
 .scout-group + .scout-group { margin-top: 0; }
@@ -522,7 +537,7 @@ td.wrap { white-space: normal; min-width: 220px; line-height: 1.35; }
 .scout-table th { position: static; background: transparent; height: 22px; }
 .scout-table th, .scout-table td { padding-left: var(--s4); padding-right: var(--s4); }
 .scout-table tbody tr:hover td { background: transparent; }
-.scout-table td.notes { color: var(--text-muted); font-size: var(--fs-xs); white-space: nowrap; }
+.scout-table td.notes { min-width: 160px; color: var(--text-muted); font-size: var(--fs-xs); overflow-wrap: anywhere; }
 .scout-table tr.older td { color: var(--text-muted); }
 .scout-read { margin-top: var(--s4); font-size: var(--fs-sm); color: var(--text-muted); }
 .scout-read b { color: var(--pro); font-weight: 650; }
