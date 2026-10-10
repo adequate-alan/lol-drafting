@@ -165,7 +165,7 @@ export function ScoutingReport({ item, names, sources, events, draftLabels }: {
         <Section layer="clash" title="Synergy">
           <SBox>
             <Group title={`Preferred ${otherName}`}><ChipList ids={r.clashDefault} names={names} role={other} strong /></Group>
-            <Group title="Alternatives"><ChipList ids={r.alternatives} names={names} role={other} /></Group>
+            <Group title="Alternatives"><ChipList ids={r.alternatives} names={names} role={other} notes={r.alternativeNotes} /></Group>
             <Group title="Bot shape"><Shapes list={r.botShapes} names={names} /></Group>
           </SBox>
         </Section>

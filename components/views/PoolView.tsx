@@ -5,6 +5,7 @@ import { Select } from "@/components/Select";
 import { ChampionRow, ChipList, LayerBlock, PageHeader, SourceLinks, pct } from "@/components/ui";
 import { describeLine, groupObserved, shortDate, type EventMap } from "@/lib/evidence";
 import { PARTNER_ROLE, SORTS, TIERS, allRoles, poolRows, presenceOf, roleShare, roleUnconfirmed, sortRows, type PoolInput, type PoolRow, type SortKey, type Tier } from "@/lib/pool-stats";
+import { handAlts } from "@/lib/pro-alternatives";
 import { ROLES, type BotPairing, type MidJunglePairing, type ObservedPairing, type Role, type TopPick } from "@/lib/schema";
 
 const TIER_LABEL = Object.fromEntries(TIERS) as Record<Tier, string>;
@@ -141,7 +142,7 @@ function Detail({ row: r, names, data, eventMap, bot, midJungle, top }: {
   let observed: ObservedPairing[] = [];
   if (r.role === "BOT") {
     const b = bot.find((x) => x.champion === r.id);
-    if (b) { saved = [{ label: "Preferred", ids: b.clashDefault, role: "SUPPORT" }, { label: "Alternatives", ids: b.alternatives, role: "SUPPORT" }]; observed = b.observedProPairings; }
+    if (b) { saved = [{ label: "Preferred", ids: b.clashDefault, role: "SUPPORT" }, { label: "Alternatives", ids: handAlts(b), role: "SUPPORT" }, { label: "From pro games", ids: b.proAlternatives ?? [], role: "SUPPORT" }]; observed = b.observedProPairings; }
   } else if (r.role === "SUPPORT") {
     saved = [{ label: "Preferred with", ids: bot.filter((b) => b.clashDefault.includes(r.id)).map((b) => b.champion), role: "BOT" },
       { label: "Alternative for", ids: bot.filter((b) => b.alternatives.includes(r.id)).map((b) => b.champion), role: "BOT" }];
@@ -151,7 +152,7 @@ function Detail({ row: r, names, data, eventMap, bot, midJungle, top }: {
     if (t) { saved = [{ label: "Jungle", ids: t.surrounding.jungle, role: "JUNGLE" }, { label: "Mid", ids: t.surrounding.mid, role: "MID" }]; observed = t.observedProPairings; }
   } else {
     const m = midJungle.find((x) => x.anchor === r.id && x.role === r.role);
-    if (m) { saved = [{ label: "Primary", ids: m.clashDefault, role: partnerRole }, { label: "Secondary", ids: m.alternatives, role: partnerRole }]; observed = m.observedProPairings; }
+    if (m) { saved = [{ label: "Primary", ids: m.clashDefault, role: partnerRole }, { label: "Secondary", ids: handAlts(m), role: partnerRole }, { label: "From pro games", ids: m.proAlternatives ?? [], role: partnerRole }]; observed = m.observedProPairings; }
   }
   const withGames = r.stats.map((s) => s.event.id);
   const gameEvents = [...new Set(r.games.map((g) => g.event?.id).filter((x): x is string => !!x && !withGames.includes(x)))];
@@ -160,7 +161,7 @@ function Detail({ row: r, names, data, eventMap, bot, midJungle, top }: {
       <LayerBlock layer="clash" title="My pool">
         <dl className="kv">
           <dt>Tier</dt><dd className="small">{TIER_LABEL[r.tier]}{r.reason && <span className="muted"> · {r.reason}</span>}</dd>
-          {saved.map((s) => <Fragment key={s.label}><dt>{s.label}</dt><dd><ChipList ids={s.ids} names={names} role={s.role} empty="none saved" /></dd></Fragment>)}
+          {saved.filter((s) => s.ids.length || s.label !== "From pro games").map((s) => <Fragment key={s.label}><dt>{s.label}</dt><dd><ChipList ids={s.ids} names={names} role={s.role} empty="none saved" /></dd></Fragment>)}
           {!saved.length && <><dt>Synergy</dt><dd className="small muted">No saved pairing record for this role.</dd></>}
         </dl>
       </LayerBlock>

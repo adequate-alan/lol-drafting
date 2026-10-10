@@ -99,6 +99,7 @@ export const BotPairing = z.object({
   clashDefault: z.array(ChampionId).min(1),
   alternatives: z.array(ChampionId),
   alternativeNotes: z.record(z.string()).default({}),
+  proAlternatives: z.array(ChampionId).optional(), // derived at load (lib/pro-alternatives.ts), never stored
   observedProPairings: z.array(ObservedPairing),
   surrounding: z.object({ jungle: z.array(ChampionId), mid: z.array(ChampionId) }),
   logic: z.object({ warning: z.string().optional() }),
@@ -117,6 +118,8 @@ export const MidJunglePairing = z.object({
   role: z.enum(["MID", "JUNGLE"]),
   clashDefault: z.array(ChampionId).min(1),
   alternatives: z.array(ChampionId),
+  alternativeNotes: z.record(z.string()).default({}),
+  proAlternatives: z.array(ChampionId).optional(), // derived at load (lib/pro-alternatives.ts), never stored
   botShapes: z.array(Duo), // Clash: only duos whose bot has a Clash record that lists the support
   observedBotShapes: z.array(ObservedBotShape),
   observedProPairings: z.array(ObservedPairing),
