@@ -10,13 +10,20 @@ const D = (damageThreat: RoleDamage["damageThreat"], damageSplit: RoleDamage["da
 type N = 0 | 1 | 2 | 3;
 // Column order: waveclear, range, tankDamage, backlineAccess, disengage, counterEngage, followUp, aoeCc,
 // resourceDemand, ultDependency, setupDependency, [early, mid, late], global (map-wide ultimate).
-const K = (wc: N, ra: N, td: N, ba: N, de: N, ce: N, fu: N, ao: N, rd: N, ud: N, sd: N, [early, mid, late]: [N, N, N], global = false): Kit => ({
+const K = (wc: N, ra: N, td: N, ba: N, de: N, ce: N, fu: N, ao: N, rd: N, ud: N, sd: N, [early, mid, late]: [N, N, N], global = false): Omit<Kit, "selfPeel"> => ({
   ...(global ? { global: true as const } : {}),
   waveclear: wc, range: ra, tankDamage: td, backlineAccess: ba, disengage: de, counterEngage: ce, followUp: fu, aoeCc: ao,
   resourceDemand: rd, ultDependency: ud, setupDependency: sd, curve: { early, mid, late },
 });
 
-interface KitEntry { fightStart?: FightStart; damageByRole?: Partial<Record<Role, RoleDamage>>; kit: Kit; why: string }
+// Self-peel for carries (spell shield, dashes, untargetability): how well the carry survives a diver alone.
+// Everyone not listed is 0. Only the enemy-dive read uses it.
+const SELF_PEEL: Record<string, Kit["selfPeel"]> = {
+  sivir: 1, ezreal: 2, kaisa: 2, corki: 1, caitlyn: 1, ziggs: 1, jhin: 0, jinx: 0,
+  ahri: 2, akali: 2, syndra: 1, viktor: 1, orianna: 1, azir: 2, ryze: 1, "twisted-fate": 1, fiora: 2, gwen: 2, camille: 2, jayce: 1,
+};
+
+interface KitEntry { fightStart?: FightStart; damageByRole?: Partial<Record<Role, RoleDamage>>; kit: Omit<Kit, "selfPeel">; why: string }
 
 export const KITS: Record<string, KitEntry> = {
   // ---------- top ----------
@@ -39,8 +46,8 @@ export const KITS: Record<string, KitEntry> = {
     why: "Mega Gnar wall stun is huge AoE but depends on rage timing: follow-up and counter-engage, not on-demand." },
   renekton: { fightStart: "follow-up", damageByRole: { TOP: D(2, S(1, 0)) }, kit: K(2, 0, 1, 2, 0, 0, 2, 0, 2, 1, 0, [3, 2, 1]),
     why: "Early bully who dives a target someone else engaged; falls off." },
-  trundle: { fightStart: "follow-up", damageByRole: { JUNGLE: D(2, S(1, 0)), TOP: D(2, S(1, 0)) }, kit: K(2, 0, 3, 1, 0, 1, 1, 0, 1, 1, 0, [3, 2, 2]),
-    why: "Tank killer (ultimate steals resists) and split-pusher; pillar helps a fight already happening." },
+  trundle: { fightStart: "catch", damageByRole: { JUNGLE: D(2, S(1, 0)), TOP: D(2, S(1, 0)) }, kit: K(2, 0, 3, 1, 1, 1, 2, 0, 1, 1, 0, [3, 2, 2]),
+    why: "Tank killer (ultimate steals resists) and split-pusher; pillar is a real catch or start tool and cuts off an engage." },
 
   // ---------- jungle ----------
   sejuani: { fightStart: "primary", damageByRole: { JUNGLE: D(1, S(0, 1)) }, kit: K(1, 0, 1, 1, 0, 2, 3, 3, 0, 2, 0, [2, 3, 2]),
@@ -68,7 +75,7 @@ export const KITS: Record<string, KitEntry> = {
     why: "Assassin who reaches backliners; no CC." },
   "twisted-fate": { fightStart: "catch", damageByRole: { MID: D(2, S(0, 1)), TOP: D(2, S(0, 1)) }, kit: K(2, 2, 0, 1, 0, 0, 1, 0, 1, 2, 0, [2, 3, 2], true),
     why: "Map pressure through Destiny and a point-click stun; modest fight damage." },
-  ryze: { fightStart: "follow-up", damageByRole: { MID: D(3, S(0, 1)) }, kit: K(3, 1, 2, 0, 0, 0, 1, 0, 3, 0, 0, [1, 2, 3]),
+  ryze: { fightStart: "follow-up", damageByRole: { MID: D(3, S(0, 1)) }, kit: K(3, 1, 2, 0, 1, 0, 2, 0, 3, 0, 0, [1, 2, 3]),
     why: "Gold-hungry scaling DPS mage; short range for a mage; single-target root." },
   ahri: { fightStart: "catch", damageByRole: { MID: D(3, S(0, 1)) }, kit: K(2, 1, 0, 2, 0, 0, 2, 0, 2, 1, 0, [2, 3, 2]),
     why: "Charm picks one target; ultimate gives reach." },
@@ -125,6 +132,6 @@ export function convertKits(champions: Champion[]): ChampionKit[] {
     const damageByRole = k.damageByRole ?? samples[id]?.damageByRole;
     if (!fightStart || !damageByRole) throw new Error(`${id}: no fightStart / damageByRole`);
     const { engage: _engage, ...attrs } = c.attrs;
-    return { id: c.id, name: c.name, aliases: c.aliases, roles: c.roles, flags: c.flags, reviewed: false, attrs, fightStart, damageByRole, kit: k.kit };
+    return { id: c.id, name: c.name, aliases: c.aliases, roles: c.roles, flags: c.flags, reviewed: false, attrs, fightStart, damageByRole, kit: { ...k.kit, selfPeel: SELF_PEEL[id] ?? 0 } };
   });
 }

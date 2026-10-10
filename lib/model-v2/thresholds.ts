@@ -23,7 +23,7 @@ export const ANALYSIS = {
   earlyRead: 2,               // 2–3 picks: "Early read"; team-wide weaknesses wait for teamRules
   teamRules: 4,               // weaknesses about the whole comp need this many picks
   carryThreat: 2,             // damageThreat at or above this makes a pick a damage source
-  concentration: { major: 0.5, moderate: 0.42 }, // one pick's share of the team's damage threat
+  concentration: { major: 0.6, moderate: 0.5, onlySource: 0.42 }, // one pick's share of the team's damage threat; onlySource when it is the only sustained damage
   followUpNeeded: 5,          // allies' combined followUp an engage needs behind it (4+ picks)
   followUpRich: 5,            // combined followUp that makes "follow-up without engage" the right label
   tankDamage: { best: 2, total: 5 },

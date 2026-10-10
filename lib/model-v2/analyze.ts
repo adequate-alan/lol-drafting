@@ -23,12 +23,14 @@ export interface Insight {
   short?: string;        // the "but …" in the headline
   fixes: NeedId[];       // what a pick would need to provide to address it
   weight: number;        // ranking inside a severity
+  covers?: string[];     // rule ids this insight stands for when two warnings with one cause are shown as one
 }
 
 export type NeedId = "engage" | "fight-start" | "frontline" | "second-frontline" | "peel" | "disengage" | "second-threat"
   | "magic" | "physical" | "sustained" | "tank-damage" | "range" | "waveclear" | "access" | "follow-up" | "early" | "late" | "low-economy";
 export interface NeedDef { label: string; test: (c: ChampionKit, role: Role) => boolean }
 
+const pokeWeight = (s: { threat: number }) => (s.threat >= 2 ? 1 : s.threat === 1 ? 0.5 : 0.25);
 const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
 const mean = (xs: number[]) => (xs.length ? sum(xs) / xs.length : 0);
 const r1 = (n: number) => Math.round(n * 10) / 10;
@@ -53,7 +55,7 @@ export const NEEDS: Record<NeedId, NeedDef> = {
   waveclear: { label: "Waveclear", test: (c) => c.kit.waveclear >= 2 },
   access: { label: "Backline access", test: (c) => c.kit.backlineAccess >= 2 },
   "follow-up": { label: "Follow-up", test: (c) => c.kit.followUp >= 2 },
-  early: { label: "Early pressure", test: (c) => c.kit.curve.early >= 3 },
+  early: { label: "Early pressure", test: (c) => c.kit.curve.early >= 3 || c.attrs.lanePressure >= 3 },
   late: { label: "Late-game scaling", test: (c) => c.kit.curve.late >= 3 },
   "low-economy": { label: "Low-economy pick", test: (c) => c.kit.resourceDemand <= 1 },
 };
@@ -95,8 +97,10 @@ export function facts(slots: Slot[]) {
     tankTotal: k((s) => (s.threat >= 1 ? s.c.kit.tankDamage : 0)),
     carryRange: mean(carries.map((s) => s.c.kit.range)),
     shortRange: carries.filter((s) => s.c.kit.range <= 1),
-    poke: k((s) => s.c.attrs.poke),
-    pokers: slots.filter((s) => s.c.attrs.poke >= 2),
+    // Poke counts by role-aware damage threat: a carry's poke in full, a support's utility poke at half.
+    poke: k((s) => s.c.attrs.poke * pokeWeight(s)),
+    pokers: slots.filter((s) => s.c.attrs.poke >= 2 && s.threat >= 2),
+    utilityPokers: slots.filter((s) => s.c.attrs.poke >= 2 && s.threat < 2),
     peel: k((s) => s.c.attrs.peel),
     disengage: k((s) => s.c.kit.disengage),
     counterEngage: k((s) => s.c.kit.counterEngage),
@@ -140,11 +144,14 @@ export function identities(slots: Slot[], f: Facts = facts(slots)): IdentityScor
     out.push({ id: "pick", score: 2 * f.catchers.length + bursty.length + (f.primary.length ? 0 : 1),
       because: `catch from ${names(f.catchers)}${bursty.length ? `, burst from ${names(bursty)}` : ""}` });
   if (f.pokers.length >= 2 && f.poke >= 6)
-    out.push({ id: "poke", score: f.poke + slots.filter((s) => s.c.kit.range >= 3 && s.threat >= 2).length, because: `poke from ${names(f.pokers)} (total ${f.poke})` });
+    out.push({ id: "poke", score: f.poke + slots.filter((s) => s.c.kit.range >= 3 && s.threat >= 2).length,
+      because: `poke from ${names(f.pokers)}${f.utilityPokers.length ? `; ${names(f.utilityPokers)} ${verb(f.utilityPokers, "adds", "add")} utility poke` : ""}` });
   const carry = slots.find(needsPeel);
   const peelers = carry ? slots.filter((s) => s !== carry && peeler(s)) : [];
   if (carry && peelers.length >= 2)
-    out.push({ id: "protect", score: 3 + sum(peelers.map((s) => s.c.attrs.peel + s.c.kit.disengage)) / 2 + (peelers.some((s) => s.c.attrs.peel >= 3 && s.threat <= 1) ? 2 : 0), because: `${names(peelers)} protect ${carry.c.name}` });
+    out.push({ id: "protect", score: 3 + sum(peelers.map((s) => (s.c.attrs.peel + s.c.kit.disengage) * (s.c.attrs.frontline >= 2 ? 0.5 : 1))) / 2
+      + (peelers.some((s) => s.c.attrs.peel >= 3 && s.threat <= 1 && s.c.attrs.frontline < 2) ? 3 : 0)
+      + (carry === f.main && f.mainShare >= 0.4 ? 2.5 : 0), because: `${names(peelers)} protect ${carry.c.name}` });
   const skirmishers = slots.filter((s) => s.threat >= 2 && s.c.kit.range <= 1 && s.c.kit.curve.early + s.c.kit.curve.mid >= 5 && (s.c.attrs.sustainedDps >= 2 || s.c.attrs.burst >= 2));
   if (skirmishers.length >= 2 && skirmishers.some((s) => s.role === "JUNGLE" || s.role === "MID"))
     out.push({ id: "skirmish", score: 2 * skirmishers.length + f.lanePressure, because: `${names(skirmishers)} win short fights before items` });
@@ -213,7 +220,9 @@ export function weaknesses(slots: Slot[], f: Facts = facts(slots), ids: Identity
 
   // Damage
   if (team) {
-    if (f.mainShare >= T.concentration.moderate && f.main && f.carries.length <= 2) {
+    // 50% / 60% of the damage threat; 42% is enough when the main carry is the only sustained damage source.
+    const onlySustained = f.sustained.length === 1 && f.sustained[0] === f.main;
+    if (f.main && f.carries.length <= 2 && (f.mainShare >= T.concentration.moderate || (onlySustained && f.mainShare >= T.concentration.onlySource))) {
       const sev: Severity = f.mainShare >= T.concentration.major ? "major" : "moderate";
       const second = f.carries.filter((s) => s !== f.main);
       out.push(W("single-threat", "tension", sev, "Single-threat damage profile", `Most meaningful damage comes from ${f.main.c.name}${second.length ? ` (${second.map((s) => s.c.name).join(", ")} is a secondary threat)` : ""}. If ${f.main.c.name} cannot play, the comp has very little damage.`, ["second-threat"], 2 + f.mainShare, "one-threat"));
@@ -243,8 +252,11 @@ export function weaknesses(slots: Slot[], f: Facts = facts(slots), ids: Identity
     out.push(W("falls-off", "weakness", "moderate", "Falls off late", "The comp is strongest before three items; a long game favours the enemy.", ["late"], 0.5, "falls off"));
 
   // Tensions
-  if (f.hungry.length >= T.resourceHungry)
-    out.push(W("resource-conflict", "tension", f.hungry.length >= 4 ? "major" : "moderate", "Too many resource-hungry picks", `${names(f.hungry)} all want gold and farm priority, and nobody plays a useful low-economy role.`, ["low-economy"], 1));
+  // Three gold-hungry carries in the three carry roles is normal. The conflict is a fourth, or a hungry pick in a
+  // role that cannot farm (support, or a jungler beside three hungry laners).
+  const lowEconRole = (s: Slot) => s.role === "SUPPORT" || s.role === "JUNGLE";
+  if (f.hungry.length >= 4 || (f.hungry.length >= T.resourceHungry && f.hungry.some(lowEconRole)))
+    out.push(W("resource-conflict", "tension", f.hungry.length >= 4 ? "major" : "moderate", "Too many resource-hungry picks", `${names(f.hungry)} all want gold and farm priority${f.hungry.some(lowEconRole) ? `, and ${names(f.hungry.filter(lowEconRole))} ${verb(f.hungry.filter(lowEconRole), "plays", "play")} a role that cannot feed it` : ""}.`, ["low-economy"], 1));
   if (team && has("poke") && f.disengage + f.counterEngage < 4)
     out.push(W("poke-no-disengage", "tension", "moderate", "Poke without disengage", "The comp wants to siege slowly but has poor tools to stop an engage before the poke has worked.", ["disengage", "peel"], 1));
   if (team && has("dive") && f.carries.filter((s) => s.c.kit.backlineAccess >= 2).length < 2)
@@ -256,7 +268,16 @@ export function weaknesses(slots: Slot[], f: Facts = facts(slots), ids: Identity
   if (team && f.ultHeavy.length + f.setup.length >= 3)
     out.push(W("execution", "weakness", "minor", "High execution", `${names([...f.ultHeavy, ...f.setup.filter((s) => !f.ultHeavy.includes(s))])} depend on ultimates or setup; fights fall apart when one is down or mistimed.`, [], 0));
 
-  return rank(out);
+  return rank(collapse(out));
+}
+
+// Two warnings with one cause read as one: almost all physical damage plus no tank damage is "poor into armor".
+function collapse(out: Insight[]): Insight[] {
+  const ad = out.find((w) => w.id === "all-ad"), tank = out.find((w) => w.id === "low-tank-damage");
+  if (!ad || !tank) return out;
+  const merged = W("armor-frontline", "weakness", "major", "Poor into armor and frontline", `${ad.text.split(";")[0]}, and no damage source shreds a frontline. One armor item on each enemy tank blunts the whole comp.`, ["magic", "tank-damage"], ad.weight, "poor into armor");
+  merged.covers = ["all-ad", "low-tank-damage"];
+  return [merged, ...out.filter((w) => w !== ad && w !== tank)];
 }
 
 const SEV: Record<Severity, number> = { major: 3, moderate: 2, minor: 1 };
@@ -280,9 +301,15 @@ export function versus(ours: Slot[], theirs: Slot[]): Insight[] {
   const divers = theirs.filter((s) => s.c.kit.backlineAccess >= 2 || s.c.fightStart === "primary");
   const main = a.main;
   if (main && main.threat >= 2 && main.c.kit.backlineAccess === 0 && divers.length >= 2) {
-    const protect = sum(ours.filter((s) => s !== main).map((s) => s.c.attrs.peel + s.c.kit.disengage + (s.c.kit.counterEngage >= 3 ? 1 : 0)));
-    if (protect < Math.min(8, 2 * divers.length) || a.mainShare >= T.concentration.moderate)
-      out.push(W("vulnerable-to-dive", "threat", protect < 4 ? "major" : "moderate", "Vulnerable to dive", `${main.c.name} is your main damage source and the enemy already has ${names(divers)}. Your remaining picks should add peel or a second threat.`, ["peel", "disengage", "second-threat"], 2.5, "fragile"));
+    // Dive pressure (their reach onto the backline) against what already protects the carry: allies' peel,
+    // disengage and counter-engage, the frontline standing in the way, and the carry's own self-peel.
+    const pressure = sum(divers.map((s) => Math.max(s.c.kit.backlineAccess, s.c.fightStart === "primary" ? 2 : 0)));
+    const others = ours.filter((s) => s !== main);
+    const protect = sum(others.map((s) => s.c.attrs.peel + s.c.kit.disengage + s.c.kit.counterEngage))
+      + 0.5 * sum(others.filter((s) => s.c.attrs.frontline >= 2).map((s) => s.c.attrs.frontline)) + 2 * main.c.kit.selfPeel;
+    const sev: Severity | null = protect < pressure ? "major" : protect < 1.25 * pressure ? "moderate" : protect < 1.75 * pressure ? "minor" : null;
+    if (sev)
+      out.push(W("vulnerable-to-dive", "threat", sev, "Vulnerable to dive", `${main.c.name} is your main damage source and the enemy has ${names(divers)}. ${sev === "minor" ? `Your frontline and peel already cover most of it; keep ${main.c.name} protected with the last picks.` : "Your remaining picks should add peel or a second threat."}`, ["peel", "disengage", "second-threat"], 2.5, "fragile"));
   }
   if (a.side.length && Math.max(0, ...theirs.map((s) => s.c.attrs.sidePressure)) <= 1)
     out.push(W("side-unanswered", "opportunity", "moderate", "No answer to our side lane", `Nobody on their side can match ${names(a.side)} in a side lane; send them away from the group and make them answer.`, [], 1));
@@ -357,7 +384,7 @@ export function jobs(slots: Slot[], f: Facts, insights: Insight[], dive = false)
     const cur = need.get(id);
     if (!cur || cur.priority < priority) need.set(id, { id, label: NEEDS[id].label, because, priority });
   };
-  for (const w of insights) w.fixes.forEach((id, i) => add(id, SEV[w.severity] * 2 + w.weight / 4 - i * 0.6, w.label));
+  for (const w of insights) w.fixes.forEach((id, i) => add(id, SEV[w.severity] * 2 + w.weight / 4 - i * 0.3, w.label));
   // Baseline jobs, so an early draft still gets direction before team-wide rules fire.
   if (!f.primary.length) add(f.catchers.length ? "engage" : "fight-start", 3, "no primary engage yet");
   if (!f.frontliners.length) add("frontline", 3, "no frontline yet");
@@ -379,10 +406,17 @@ export function jobs(slots: Slot[], f: Facts, insights: Insight[], dive = false)
 }
 
 /** Which jobs a role can realistically provide: at least one converted champion for that role does it. */
+// A team-wide "early pressure" need, asked of one role, is that role's lane priority.
+const LANE_LABEL: Record<Role, string> = { TOP: "Top lane priority", JUNGLE: "Early jungle pressure", MID: "Mid priority", BOT: "Bot lane priority", SUPPORT: "Bot lane priority" };
+
 export function roleNeeds(open: Role[], all: RoleNeed[], champions: ChampionKit[], taken: Set<string>): Partial<Record<Role, RoleNeed[]>> {
   return Object.fromEntries(open.map((role) => {
     const pool = champions.filter((c) => c.roles.includes(role) && !taken.has(c.id));
-    return [role, all.filter((j) => pool.some((c) => NEEDS[j.id].test(c, role))).slice(0, T.needsShown)];
+    const jobsHere = all.filter((j) => pool.some((c) => NEEDS[j.id].test(c, role)))
+      // Lane priority is a real job for any role, but it ranks below protection and engage jobs from the same weakness list.
+      .map((j) => (j.id === "early" ? { ...j, label: LANE_LABEL[role], priority: j.priority - 2 } : j))
+      .sort((a, b) => b.priority - a.priority);
+    return [role, jobsHere.slice(0, T.needsShown)];
   }));
 }
 
@@ -462,7 +496,8 @@ export function analyze(draft: Draft, champions: ChampionKit[], enemyIds: string
   const needs = n ? jobs(slots, f, ranked, dive) : [];
   const open = ROLES.filter((r) => !draft[r]);
   const taken = new Set([...slots.map((s) => s.c.id), ...theirs.map((s) => s.c.id)]);
-  const label = (i: IdentityScore | null) => (i ? IDENTITY_LABEL[i.id] : null);
+  const protectedCarry = exposedCarries(slots, false)[0] ?? f.main;
+  const label = (i: IdentityScore | null) => (!i ? null : i.id === "protect" && protectedCarry ? `Protect ${protectedCarry.c.name}` : IDENTITY_LABEL[i.id]);
   const top = ranked[0];
   const idText = [label(primary), label(secondary)].filter(Boolean).join(" · ") || "No clear identity yet";
   const headline = confidence === "early"
@@ -490,4 +525,37 @@ export function candidatesFor(role: Role, draft: Draft, champions: ChampionKit[]
   return champions.filter((c) => c.roles.includes(role) && !taken.has(c.id))
     .map((c) => readCandidate(c, role, draft, champions, needs, enemyIds))
     .sort((x, y) => y.fixScore - x.fixScore || x.tradeoffs.length - y.tradeoffs.length || x.champion.localeCompare(y.champion));
+}
+
+// ---------- best fix inside alan's saved pairings ----------
+
+export interface SavedBotRecord { champion: string; clashDefault: string[]; alternatives: string[] }
+
+/** Champions alan's saved bot-lane records allow in this slot, or null when no record applies. */
+export function savedEligible(role: Role, draft: Draft, botPairings: SavedBotRecord[]): string[] | null {
+  if (role === "SUPPORT" && draft.BOT) {
+    const rec = botPairings.find((b) => b.champion === draft.BOT);
+    return rec ? [...rec.clashDefault, ...rec.alternatives] : null;
+  }
+  if (role === "BOT" && draft.SUPPORT) {
+    const bots = botPairings.filter((b) => [...b.clashDefault, ...b.alternatives].includes(draft.SUPPORT!)).map((b) => b.champion);
+    return bots.length ? bots : null;
+  }
+  return null;
+}
+
+/**
+ * Best fix for an open role. Actionable fixes respect the saved bot-lane pairings (with Ziggs locked, only Nautilus
+ * or Leona); champions that would fix the comp but sit outside them are returned separately as theoretical fixes.
+ * The overall draft-fit ranking (lib/recommend.ts) is unchanged: saved pairings stay a bonus there, not a filter.
+ */
+export function bestFix(role: Role, draft: Draft, champions: ChampionKit[], botPairings: SavedBotRecord[], enemyIds: string[] = []) {
+  const all = candidatesFor(role, draft, champions, enemyIds);
+  const allowed = savedEligible(role, draft, botPairings);
+  if (!allowed) return { fixes: all, theoretical: [] as CandidateRead[], restricted: false };
+  return {
+    fixes: all.filter((c) => allowed.includes(c.champion)),
+    theoretical: all.filter((c) => !allowed.includes(c.champion) && c.fixScore > 0),
+    restricted: true,
+  };
 }
