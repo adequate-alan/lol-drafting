@@ -227,8 +227,7 @@
         "proDraftIds": [],
         "backedByGame": false,
         "sources": [
-          "golgg-game-82625",
-          "golgg-game-82695",
+          "golgg-game-82383",
           "golgg-game-82416"
         ]
       }
@@ -260,7 +259,8 @@
     "sources": [
       "golgg-game-82625",
       "golgg-game-82695",
-      "golgg-game-82416"
+      "golgg-game-82416",
+      "golgg-game-82383"
     ]
   },
   {
@@ -628,7 +628,7 @@
         "proDraftIds": [],
         "backedByGame": false,
         "sources": [
-          "golgg-game-82627"
+          "golgg-game-82413"
         ]
       }
     ],
@@ -657,7 +657,8 @@
     "playoffRead": "Your preferred Nautilus/Leona setup still makes the most sense for Clash execution. The major playoff variant was Ziggs+Pyke in Gen.G-HLE Round 4.",
     "status": "keep",
     "sources": [
-      "golgg-game-82627"
+      "golgg-game-82627",
+      "golgg-game-82413"
     ]
   },
   {

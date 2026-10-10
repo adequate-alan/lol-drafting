@@ -20,7 +20,9 @@ function Observed({ list, names, sources, role, draftLabels }: {
           <span className={`chip role-${role}`}><span className="dot" />{names[o.champion] ?? o.champion}</span>
           {o.backedByGame
             ? <span className="small muted">{o.proDraftIds.length} recorded game{o.proDraftIds.length > 1 ? "s" : ""}{draftLabels ? `: ${o.proDraftIds.map((d) => draftLabels[d] ?? d).join(", ")}` : ""}</span>
-            : <span className="badge warn" title="Cited by the workbook; no recorded draft shows it yet">not in recorded drafts</span>}
+            : o.sources.some((id) => sources[id]?.userVerified)
+              ? <span className="badge pro" title="Not in the recorded drafts; the cited Gol.gg game page was checked by hand">game page checked</span>
+              : <span className="badge warn" title="Cited by the workbook; no recorded draft shows it yet">not in recorded drafts</span>}
           <span className="small muted">{o.context}{o.era === "earlier-2026" ? " (earlier 2026)" : ""}</span>
           <SourceLinks ids={o.sources} sources={sources} />
         </div>

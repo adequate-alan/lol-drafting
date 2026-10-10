@@ -24,12 +24,19 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   recorded draft stay, flagged `backedByGame: false`.
 - Keep priority (pick/ban presence) separate from win rate, and mark small samples (`lowSample`, fewer than 5 picks).
 - A low-sample champion can only be in a pool's `core` tier with a written `coreReasons` entry.
+- Clash bot/support eligibility is a hard rule (`lib/suggest.ts`, `tests/clash-eligibility.test.ts`): with BOT locked,
+  only that bot's `clashDefault` + `alternatives` can be Clash supports (and the reverse with SUPPORT locked). Pro
+  pairings and bot-lane shapes on other records can only boost an eligible pick, never add one, and a Clash default
+  always ranks above an alternative.
 
 ## Gol.gg research rules
 
 - Gol.gg is the primary external source for pro drafts, picks, bans and team stats.
 - Every source records: URL, type, tournament, team, opponent, series/game, patch, `lastChecked`, `refreshStatus`.
 - When a page is re-checked, set `lastChecked` to the date and `refreshStatus: "verified"`, `origin: "golgg-refresh"`.
+- A source alan checked himself gets `origin: "user-verified"` and a `userVerified` {by, on, claim} entry. It stays
+  `refreshStatus: "not-refreshed"` until Claude reads the page too.
+- A claim cites only games that actually show it. Remove a citation whose game shows something else; don't drop the claim.
 - If Gol.gg or the web is unavailable: say the research could not be refreshed, keep the last verified data, leave
   `refreshStatus: "not-refreshed"`, and **never invent tournament data or pretend a refresh happened**.
 

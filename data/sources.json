@@ -227,7 +227,12 @@
     "patch": "16.16",
     "lastChecked": null,
     "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "origin": "workbook",
+    "userVerified": {
+      "by": "alan",
+      "on": "2026-10-10",
+      "claim": "HLE drafted Ziggs bot + Pyke support. Camille is a top laner in this game, so it does not show Ziggs + Camille support."
+    }
   },
   {
     "id": "golgg-game-82628",
@@ -421,5 +426,37 @@
     "lastChecked": null,
     "refreshStatus": "not-refreshed",
     "origin": "workbook"
+  },
+  {
+    "id": "golgg-game-82413",
+    "url": "https://gol.gg/game/stats/82413/page-builds/",
+    "type": "golgg-game",
+    "tournament": "LCK 2026 Season Playoffs",
+    "team": "DK",
+    "opponent": "BNK FearX",
+    "lastChecked": null,
+    "refreshStatus": "not-refreshed",
+    "origin": "user-verified",
+    "userVerified": {
+      "by": "alan",
+      "on": "2026-10-10",
+      "claim": "DK drafted Varus top, Kindred jungle, Taliyah mid, Ziggs bot, Camille support."
+    }
+  },
+  {
+    "id": "golgg-game-82383",
+    "url": "https://gol.gg/game/stats/82383/page-fullstats/",
+    "type": "golgg-game",
+    "tournament": "LCK 2026 Season Playoffs",
+    "team": "KT Rolster",
+    "opponent": "DK",
+    "lastChecked": null,
+    "refreshStatus": "not-refreshed",
+    "origin": "user-verified",
+    "userVerified": {
+      "by": "alan",
+      "on": "2026-10-10",
+      "claim": "KT drafted Ezreal bot + Nautilus support."
+    }
   }
 ]
