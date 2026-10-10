@@ -1,6 +1,6 @@
 {
  "updated": "2026-10-10",
- "basis": "Written by Claude from champion kits and how each champion plays in a draft (ability interactions, CC setup and follow-up, lane priority, roams, engage and peel, damage profile, scaling). Gol.gg and DPM.LOL were not readable from Claude's environment and DPM has no duo data in this repo, so no proposal relies on a statistic. Pro games are shown beside a proposal only when a recorded game has the pair.",
+ "basis": "Kit-based: champion kits and how each champion plays in a draft (ability interactions, CC setup and follow-up, lane priority, roams, engage and peel, damage profile, scaling). Gol.gg and DPM.LOL were not readable when the records were written and DPM has no duo data in this repo, so no proposal relies on a statistic. Pro games are shown beside a proposal only when a recorded game has the pair. Written by Claude (internal note).",
  "records": [
   {
    "champion": "alistar",

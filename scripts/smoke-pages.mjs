@@ -26,7 +26,7 @@ async function choose(trigger, value) {
 async function h1() { return (await page.locator("main h1").first().textContent())?.trim(); }
 
 // Sections, direct loads and refreshes
-const sections = [["/", "Draft Room"], ["/first-pick/bot/", "First Pick"], ["/first-pick/mid-jungle/", "First Pick"], ["/first-pick/top/", "First Pick"],
+const sections = [["/", "Draft Room"], ["/first-pick/bot/", "First Pick"], ["/first-pick/support/", "First Pick"], ["/first-pick/mid-jungle/", "First Pick"], ["/first-pick/top/", "First Pick"],
   ["/comps/", "Comp Library"], ["/pool/", "Champion Pool"], ["/pro-drafts/", "Pro Drafts"], ["/geng/", "Gen.G"], ["/meta/", "Meta / Research"]];
 for (const [path, title] of sections) {
   const res = await open(path);
@@ -294,7 +294,7 @@ await page.locator(".theme-toggle").click();
   const marks = await page.locator("#mage-bot-siege .lu-slot.has-saved .lu-name").allTextContents();
   check("comps: clicking Nautilus opens the drawer and marks Ziggs as Synergy", (await drawer.locator("h2").textContent()) === "Nautilus" && marks.includes("Ziggs"), marks.join(", "));
   const layers = await drawer.locator(".layer").evaluateAll((els) => els.map((e) => e.className));
-  check("comps: drawer keeps Synergy, Pro and Logic separate", layers.join() === "layer clash,layer pro,layer logic", layers.join(" | "));
+  check("comps: drawer keeps Synergy, Pro and Logic separate", /^layer clash,(layer clash proposed,)?layer pro,layer logic$/.test(layers.join()), layers.join(" | "));
   await drawer.locator("[aria-label='Next champion']").click();
   check("comps: next moves through the comp in place", (await drawer.locator("h2").textContent()) === "Gnar" && page.url().endsWith("/comps/"), page.url());
   await page.keyboard.press("Escape");
@@ -333,6 +333,22 @@ await page.locator(".theme-toggle").click();
   check("comps: Reset restores the original comp", (await yp.locator(".lu-top .lu-name").textContent()) === "Rumble" && (await yp.locator(".shell-preview").count()) === 0, "");
   await yp.locator(".src-toggle").click();
   check("comps: Sources (1) expands the exact evidence and refresh status", /Gol\.gg game/.test((await yp.locator(".shell-sources").textContent()) ?? ""), "");
+}
+// First Pick: a champion with no saved record gets a Proposed profile (alan, 2026-10-10), notes inside their column
+{
+  await open("/first-pick/mid-jungle/?champ=fizz&role=MID");
+  const prop = page.locator(".scout .layer.clash.proposed");
+  const text = (await prop.first().textContent().catch(() => "")) ?? "";
+  check("first pick: Fizz mid gets proposed jungle partners, labelled Proposed · kit-based", (await page.locator(".pick-rail a.active .rail-name").textContent().catch(() => "")) === "Fizz"
+    && /Proposed jungle/.test(text) && /Proposed · kit-based/.test(text), text.slice(0, 120));
+  const spill = await page.locator(".scout .prop-partner .chip-note").evaluateAll((els) => els.filter((e) => {
+    const sec = e.closest(".scout-sec").getBoundingClientRect(), r = e.getBoundingClientRect();
+    return r.right > sec.right + 1 || e.scrollWidth > e.clientWidth + 1;
+  }).length);
+  check("first pick: proposed reasons wrap inside their column", spill === 0, `${spill} overflowing`);
+  await open("/first-pick/support/?champ=nami");
+  const conf = (await page.locator(".scout .layer.clash:not(.proposed)").first().textContent().catch(() => "")) ?? "";
+  check("first pick: Support tab keeps Saved synergy (Nami with Corki) apart from Proposed", /Saved synergy/.test(conf) && /Corki/.test(conf) && (await page.locator(".scout .layer.clash.proposed").count()) === 1, conf.slice(0, 80));
 }
 // First Pick: hover card on desktop, drawer on click
 {

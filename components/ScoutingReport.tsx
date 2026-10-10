@@ -135,7 +135,7 @@ const allSources = (own: string[], pairings: ObservedPairing[], shapes: Observed
 function ProposedSection({ links, names, proCount, noteFor }: { links: ProposedLink[]; names: Names; proCount?: ProCount; noteFor?: (l: ProposedLink) => string | undefined }) {
   if (!links.length) return null;
   return (
-    <Section layer="clash" proposed title="Synergy · Proposed" end={<ProposedTag />}>
+    <Section layer="clash" proposed title="Proposed synergy" end={<ProposedTag />}>
       <ProposedGroups links={links} names={names} proCount={proCount} noteFor={noteFor} />
     </Section>
   );
@@ -181,11 +181,11 @@ export function ScoutingReport({ item, names, sources, events, draftLabels, prop
       <article className="panel pick-card scout">
         <Header role={item.role} id={item.id} name={names[item.id]} identities={[]}><ProposedTag /></Header>
         {item.confirmed.length > 0 && (
-          <Section layer="clash" title="Synergy · Confirmed" end={<span className="faint">from your saved records</span>}>
+          <Section layer="clash" title="Saved synergy" end={<span className="faint">from your saved records</span>}>
             <SBox>{item.confirmed.map((g) => <Group key={g.label} title={g.label}><ChipList ids={g.ids} names={names} role={g.role} strong /></Group>)}</SBox>
           </Section>
         )}
-        <Section layer="clash" proposed title="Synergy · Proposed" end={<ProposedTag />}>
+        <Section layer="clash" proposed title="Proposed synergy" end={<ProposedTag />}>
           {item.identity && <p className="prop-identity">{item.identity}</p>}
           <ProposedGroups links={item.links} names={names} proCount={proCount} noteFor={noteFor} />
         </Section>

@@ -1,4 +1,4 @@
-// Synergy · Proposed (alan, 2026-10-10: "Complete Champion Synergy Expansion"): Claude's kit-based partners for every
+// Proposed synergy (alan, 2026-10-10: "Complete Champion Synergy Expansion"): kit-based partners for every
 // champion and role, kept apart from alan's Confirmed records. These tests hold the separation and the coverage.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -107,5 +107,16 @@ describe("proposed synergy in the draft engine", () => {
     expect(card.links.some((l) => l.role === "BOT")).toBe(true);
     const nami = proposedCard("nami", "SUPPORT", records, data);
     expect(nami.confirmed.find((g) => g.label === "Preferred with")?.ids).toContain("corki");
+  });
+});
+
+describe("user-facing copy", () => {
+  it("never names Claude or AI outside code comments (alan, 2026-10-10)", async () => {
+    const { readdirSync, statSync } = await import("node:fs");
+    const walk = (d: string): string[] => readdirSync(d).flatMap((f) => (statSync(join(d, f)).isDirectory() ? walk(join(d, f)) : f.endsWith(".tsx") ? [join(d, f)] : []));
+    for (const f of [...walk("components"), ...walk("app")]) {
+      const code = readFileSync(f, "utf8").split("\n").filter((l) => !/^\s*(\/\/|\*|\/\*)/.test(l)).map((l) => l.replace(/\/\/ .*$/, ""));
+      for (const l of code) expect(l, f).not.toMatch(/\bClaude\b|\bAI\b/);
+    }
   });
 });

@@ -202,7 +202,7 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
 
         {proposed.length > 0 && (
           <section className="layer clash proposed">
-            <div className="layer-label"><span className="ldot" />Synergy · Proposed<span style={{ marginLeft: "auto" }}><ProposedTag /></span></div>
+            <div className="layer-label"><span className="ldot" />Proposed synergy<span style={{ marginLeft: "auto" }}><ProposedTag /></span></div>
             <ProposedGroups links={proposed} names={names} compact
               proCount={(p, pr) => games.filter((g) => g.picks[pr] === p).length} />
           </section>

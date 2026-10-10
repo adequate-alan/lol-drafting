@@ -121,6 +121,14 @@ Change these only when alan explicitly says so, then update the test in the same
   Sejuani; top flex blind grades Dr. Mundo B, Gragas B, Galio B-, Jax B-, Varus C+, Fiora C+, Anivia C.
 - Skarner + Locke is the current pairing. Azir + Skarner is an earlier-2026 tendency only, never the current Gen.G default.
 
+## User-facing copy
+
+- The site never names Claude, AI or how a recommendation was produced (alan, 2026-10-10). Vocabulary: **Saved
+  synergy** (alan's confirmed preferences), **Proposed synergy** (unconfirmed kit-based recommendations), **Pro pairing**
+  (supported by recorded professional games). Confidence and source distinctions stay. Attribution belongs in code
+  comments, internal data notes and docs only. Follow-up alan floated: shorten the "Proposed · kit-based" badge to
+  "Proposed", with the tooltip carrying the distinction.
+
 ## Hosting and security
 
 - Static export only (`output: "export"`, base path `/lol-drafting` in `lib/site.ts`), deployed by
