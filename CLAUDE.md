@@ -95,11 +95,13 @@ Change these only when alan explicitly says so, then update the test in the same
 
 ## UI
 
-- Gen.G black + gold design system (brand primitives `--gold`, `--charcoal`, etc. mapped to semantic tokens); every color, spacing, radius and type size is a token in `app/globals.css`
+- Gen.G ivory + champagne gold + black design system (alan, 2026-10-10: no navy; light mode is the strongest Gen.G look,
+  dark mode is warm near-black; primitives `--ivory`, `--champagne`, `--black`, etc. mapped to semantic tokens; role
+  colors only in the small role marker; Pro evidence a muted gray-teal); every color, spacing, radius and type size is a token in `app/globals.css`
   (`:root[data-theme="light" | "dark"]`). Components use tokens only; don't add raw hex values in components.
 - Gold (`--accent`) marks selection and importance. Each layer keeps its own treatment: Synergy = strongest (gold rule;
   CSS/class name `clash` is historical),
-  Pro = teal evidence styling, Logic = neutral gray. Don't restyle one layer to look like another.
+  Pro = muted gray-teal evidence styling, Logic = neutral gray. Don't restyle one layer to look like another.
 - Shared pieces live in `components/ui.tsx` (PageHeader, Panel, SourceBadge, ChampIcon, ChampionRow, DataTable,
   WarningBadge, Metric), `components/ChampionDrawer.tsx` (champion + role drawer, optional comp context; links in
   `lib/comp-links.ts`; data from `getDrawerData()`), `components/ChampionInteraction.tsx` (ChampionProvider + ChampionHoverCard; `InteractiveChampion`
