@@ -347,7 +347,7 @@ async function main() {
     const picks = num(r.playoff_picks)!, wr = num(r.playoff_wr)!;
     const existing = stats.find((s) => s.champion === id);
     if (existing) {
-      if (existing.picks !== picks || Math.abs(existing.winRate - wr) > 1e-6) report.errors.push(`TOP and PLAYOFF META disagree for ${r.top_pick}`);
+      if (existing.picks !== picks || Math.abs((existing.winRate ?? 0) - wr) > 1e-6) report.errors.push(`TOP and PLAYOFF META disagree for ${r.top_pick}`);
       continue;
     }
     stats.push({

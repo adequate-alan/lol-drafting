@@ -3,7 +3,7 @@
 // nothing is computed from champion attributes. Where the data cannot support a number, the number is left out.
 import { comparePatchDesc, fresher } from "./evidence";
 import { eventStats, listsRole, presenceOf, proGames, type EventStat, type ProGame } from "./pool-stats";
-import type { BotPairing, Meta, MetaEvent, ProDraft, Role, Source } from "./schema";
+import { ROLES, type BotPairing, type Meta, type MetaEvent, type ProDraft, type Role, type Source } from "./schema";
 
 export interface HubInput { meta: Meta; proDrafts: ProDraft[]; botPairings: BotPairing[]; sources: Record<string, Source> }
 
@@ -14,10 +14,11 @@ export interface HubData {
 }
 
 export function hubData(input: HubInput): HubData {
+  const games = proGames(input);
   return {
     events: [...input.meta.events].sort((a, b) => comparePatchDesc(a.patch, b.patch)),
-    games: proGames(input),
-    stats: eventStats(input.meta),
+    games,
+    stats: eventStats(input.meta, games),
   };
 }
 
@@ -51,27 +52,34 @@ export function eventSummary(d: HubData, event: MetaEvent, sources: Record<strin
 
 // ---------- role table ----------
 
+/** A role tab, or ALL: every champion in scope, including those no source or recorded game places in a role. */
+export type RoleTab = Role | "ALL";
+
 export interface RoleRow {
   id: string;
-  role: Role;
-  stat?: EventStat; // tournament aggregate: newest matching event stat for this role
+  role?: Role; // the tab's role; undefined on the ALL tab
+  roles: Role[]; // roles the evidence shows (source-named or recorded); empty when none does
+  stat?: EventStat; // tournament aggregate: newest matching event stat
   stats: EventStat[]; // every matching event stat, newest first
-  games: ProGame[]; // recorded evidence: stored games in this role, newest first
+  games: ProGame[]; // recorded evidence: stored games (in this role, or any role on ALL), newest first
   latest?: { event?: MetaEvent; eventName: string; patch?: string; date?: string };
 }
 
-export function roleRows(d: HubData, role: Role, eventId?: string): RoleRow[] {
-  const stats = d.stats.filter(inEvent(eventId)).filter((s) => listsRole(s.stat, role)).sort((a, b) => fresher(a.event, b.event));
-  const games = d.games.filter(inEvent(eventId)).filter((g) => g.picks[role]);
-  const ids = new Set([...stats.map((s) => s.stat.champion), ...games.map((g) => g.picks[role]!)]);
+export function roleRows(d: HubData, role: RoleTab, eventId?: string): RoleRow[] {
+  const all = role === "ALL";
+  const stats = d.stats.filter(inEvent(eventId)).filter((s) => all || listsRole(s, role)).sort((a, b) => fresher(a.event, b.event));
+  const games = d.games.filter(inEvent(eventId)).filter((g) => all || g.picks[role]);
+  const playedAs = (g: ProGame, id: string) => (all ? ROLES.filter((r) => g.picks[r] === id) : g.picks[role] === id ? [role] : []);
+  const ids = new Set([...stats.map((s) => s.stat.champion), ...games.flatMap((g) => (all ? Object.values(g.picks) : [g.picks[role]]) as string[])]);
   return [...ids].map((id) => {
     const mine = stats.filter((s) => s.stat.champion === id);
     const stat = mine[0];
-    const played = games.filter((g) => g.picks[role] === id);
+    const played = games.filter((g) => playedAs(g, id).length);
+    const seen = new Set<Role>([...mine.flatMap((s) => s.roles), ...played.flatMap((g) => playedAs(g, id))]);
     const fromGame = played[0] && { event: played[0].event, eventName: played[0].eventName, patch: played[0].patch, date: played[0].date };
     const fromStat = stat && { event: stat.event, eventName: stat.event.short, patch: stat.event.patch };
     const latest = fromGame && fromStat ? (fresher(fromStat, fromGame) < 0 ? fromStat : fromGame) : fromGame ?? fromStat;
-    return { id, role, stat, stats: mine, games: played, latest };
+    return { id, role: all ? undefined : role, roles: all ? ROLES.filter((r) => seen.has(r)) : [role], stat, stats: mine, games: played, latest };
   });
 }
 
@@ -84,7 +92,7 @@ export function sortRoleRows(rows: RoleRow[], key: HubSort): RoleRow[] {
     if (key === "picks") return s?.picks;
     if (key === "bans") return s?.bans ?? undefined;
     if (key === "presence") return r.stat ? presenceOf(r.stat) ?? undefined : undefined;
-    if (key === "winRate") return s?.winRate;
+    if (key === "winRate") return s?.winRate ?? undefined;
     return undefined;
   };
   const tie = (a: RoleRow, b: RoleRow) => b.games.length - a.games.length || a.id.localeCompare(b.id);
@@ -101,11 +109,12 @@ export function sortRoleRows(rows: RoleRow[], key: HubSort): RoleRow[] {
 
 // ---------- trending ----------
 
-export interface Trend { id: string; role: Role; from: number; to: number; fromPicks: number; toPicks: number }
+export interface Trend { id: string; role?: Role; from: number; to: number; fromPicks: number; toPicks: number }
 export interface Trending { older?: MetaEvent; newer?: MetaEvent; rising: Trend[]; falling: Trend[]; blocked?: string }
 
 // A move counts only with a pick rate in both events (picks / total games), at least MIN_PICKS picks on the side that
-// carries the claim, and a change of at least MIN_SHIFT. One game never makes a trend.
+// carries the claim, and a change of at least MIN_SHIFT. One game never makes a trend. Picks are champion-wide, so a
+// trend is per champion; role is only a label from the stat's roles.
 export const MIN_PICKS = 3;
 export const MIN_SHIFT = 0.1;
 
@@ -114,20 +123,16 @@ export function trending(d: HubData): Trending {
   if (!newer || !older) return { rising: [], falling: [], blocked: "Only one tournament is recorded." };
   const missing = [newer, older].filter((e) => !e.games).map((e) => e.short);
   if (missing.length) return { older, newer, rising: [], falling: [], blocked: `No total game count for ${missing.join(" and ")}, so pick rates can't be compared.` };
-  const rate = (e: MetaEvent, id: string, role: Role) => {
-    const s = d.stats.find((x) => x.event.id === e.id && x.stat.champion === id && listsRole(x.stat, role));
-    return s ? { picks: s.stat.picks, rate: s.stat.picks / e.games! } : undefined;
-  };
-  const keys = new Set(d.stats.filter((s) => s.event.id === newer.id || s.event.id === older.id).map((s) => `${s.stat.champion}|${s.stat.role}`));
+  const statOf = (e: MetaEvent, id: string) => d.stats.find((x) => x.event.id === e.id && x.stat.champion === id);
+  const ids = new Set(d.stats.filter((s) => s.event.id === newer.id || s.event.id === older.id).map((s) => s.stat.champion));
   const rising: Trend[] = [], falling: Trend[] = [];
-  for (const k of keys) {
-    const [id, role] = k.split("|") as [string, Role];
-    const n = rate(newer, id, role), o = rate(older, id, role);
+  for (const id of ids) {
+    const n = statOf(newer, id), o = statOf(older, id);
     // A champion missing from a partial stats list may simply be unlisted, so absence only counts as zero when complete.
-    const nv = n ?? (newer.statsComplete ? { picks: 0, rate: 0 } : undefined);
-    const ov = o ?? (older.statsComplete ? { picks: 0, rate: 0 } : undefined);
+    const nv = n ? { picks: n.stat.picks, rate: n.stat.picks / newer.games! } : newer.statsComplete ? { picks: 0, rate: 0 } : undefined;
+    const ov = o ? { picks: o.stat.picks, rate: o.stat.picks / older.games! } : older.statsComplete ? { picks: 0, rate: 0 } : undefined;
     if (!nv || !ov) continue;
-    const t = { id, role, from: ov.rate, to: nv.rate, fromPicks: ov.picks, toPicks: nv.picks };
+    const t = { id, role: (n ?? o)!.roles[0], from: ov.rate, to: nv.rate, fromPicks: ov.picks, toPicks: nv.picks };
     if (nv.rate - ov.rate >= MIN_SHIFT && nv.picks >= MIN_PICKS) rising.push(t);
     if (ov.rate - nv.rate >= MIN_SHIFT && ov.picks >= MIN_PICKS) falling.push(t);
   }
@@ -150,9 +155,9 @@ export function comparison(d: HubData, role?: Role): CompareRow[] {
     return rows.get(k)!;
   };
   const cell = (x: CompareRow, e: MetaEvent) => (x.cells[e.id] ??= { games: 0 });
-  for (const s of d.stats) {
-    if (role && s.stat.role !== role) continue;
-    const c = cell(row(s.stat.champion, s.stat.role), s.event);
+  for (const s of d.stats) for (const r of s.roles) {
+    if (role && r !== role) continue;
+    const c = cell(row(s.stat.champion, r), s.event);
     c.picks = s.stat.picks;
     c.presence = presenceOf(s);
   }

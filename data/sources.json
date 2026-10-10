@@ -251,9 +251,10 @@
     "url": "https://gol.gg/tournament/tournament-picksandbans/LCK%202026%20Season%20Playoffs/",
     "type": "golgg-tournament",
     "tournament": "LCK 2026 Season Playoffs",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-10",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "patch": "16.16"
   },
   {
     "id": "golgg-team-2809",
@@ -422,9 +423,10 @@
     "url": "https://gol.gg/tournament/tournament-matchlist/LCK%202026%20Season%20Playoffs/",
     "type": "golgg-tournament",
     "tournament": "LCK 2026 Season Playoffs",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-10",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "patch": "16.16"
   },
   {
     "id": "golgg-game-82413",
@@ -544,5 +546,45 @@
       "providedOn": "2026-10-10",
       "providedBy": "alan"
     }
+  },
+  {
+    "id": "golgg-tournament-championlist",
+    "url": "https://gol.gg/champion/list/season-ALL/split-ALL/tournament-LCK%202026%20Season%20Playoffs/",
+    "type": "golgg-tournament",
+    "tournament": "LCK 2026 Season Playoffs",
+    "lastChecked": "2026-10-10",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "patch": "16.16"
+  },
+  {
+    "id": "golgg-tournament-picksandbans-demacia-cup-2026",
+    "url": "https://gol.gg/tournament/tournament-picksandbans/Demacia%20Cup%20Global%20Invitational%202026/",
+    "type": "golgg-tournament",
+    "tournament": "Demacia Cup Global Invitational 2026",
+    "lastChecked": "2026-10-10",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "patch": "16.18"
+  },
+  {
+    "id": "golgg-tournament-matchlist-demacia-cup-2026",
+    "url": "https://gol.gg/tournament/tournament-matchlist/Demacia%20Cup%20Global%20Invitational%202026/",
+    "type": "golgg-tournament",
+    "tournament": "Demacia Cup Global Invitational 2026",
+    "lastChecked": "2026-10-10",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "patch": "16.18"
+  },
+  {
+    "id": "golgg-tournament-championlist-demacia-cup-2026",
+    "url": "https://gol.gg/champion/list/season-ALL/split-ALL/tournament-Demacia%20Cup%20Global%20Invitational%202026/",
+    "type": "golgg-tournament",
+    "tournament": "Demacia Cup Global Invitational 2026",
+    "lastChecked": "2026-10-10",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "patch": "16.18"
   }
 ]

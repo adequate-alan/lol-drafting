@@ -16,7 +16,7 @@ import type { BotPairing, MetaStat, MidJunglePairing, PoolEntry, Role, Source, T
 const GRADE_ORDER = ["A", "A-", "B+", "B", "B-", "C+", "C"];
 
 export function FirstPickView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top, pool, drawerData }: {
-  drawerData: DrawerData; tab: Tab; names: Record<string, string>; sources: Record<string, Source>; events: EventMap; stats: Record<string, MetaStat>;
+  drawerData: DrawerData; tab: Tab; names: Record<string, string>; sources: Record<string, Source>; events: EventMap; stats: Record<string, MetaStat & { winRate: number }>;
   draftLabels: Record<string, string>; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; pool: PoolEntry[];
 }) {
   const params = useSearchParams();

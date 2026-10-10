@@ -12,94 +12,76 @@
   },
   "stats": [
     {
-      "champion": "jayce",
-      "role": "TOP",
-      "picks": 9,
-      "bans": 4,
-      "winRate": 0.4444,
-      "lowSample": false,
-      "priorityRead": "Elite top priority",
-      "note": "Picked early despite middling results; 100% series presence.",
+      "champion": "cassiopeia",
+      "picks": 2,
+      "bans": 35,
+      "wins": 2,
+      "winRate": 1,
+      "lowSample": true,
       "sources": [
-        "golgg-champion-36"
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
       ]
     },
     {
-      "champion": "jarvan-iv",
-      "role": "JUNGLE",
-      "picks": 9,
-      "bans": 6,
-      "winRate": 0.4444,
+      "champion": "nocturne",
+      "picks": 5,
+      "bans": 26,
+      "wins": 2,
+      "winRate": 0.4,
       "lowSample": false,
-      "priorityRead": "Universal engage",
-      "note": "100% series presence, easy to pair with many mid styles.",
       "sources": [
-        "golgg-champion-34"
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
       ]
     },
     {
-      "champion": "olaf",
-      "role": "TOP",
-      "picks": 8,
-      "bans": 11,
-      "winRate": 0.125,
-      "lowSample": false,
-      "priorityRead": "High priority, bad outcome",
-      "note": "Do not confuse draft priority with blind safety.",
-      "sources": [
-        "golgg-champion-66"
-      ]
-    },
-    {
-      "champion": "yunara",
-      "role": "BOT",
-      "picks": 8,
-      "bans": 0,
-      "winRate": 0.375,
-      "lowSample": false,
-      "priorityRead": "High bot volume",
-      "note": "Lulu is the clearest protect pairing.",
-      "sources": [
-        "golgg-champion-171"
-      ]
-    },
-    {
-      "champion": "jhin",
-      "role": "BOT",
-      "picks": 8,
-      "bans": 3,
-      "winRate": 0.5,
-      "lowSample": false,
-      "priorityRead": "High Fearless value",
-      "note": "Pairing rotates, but setup is mandatory.",
-      "sources": [
-        "golgg-champion-129"
-      ]
-    },
-    {
-      "champion": "renata-glasc",
-      "role": "SUPPORT",
-      "picks": 8,
-      "bans": 1,
-      "winRate": 0.625,
-      "lowSample": false,
-      "priorityRead": "Strong support rotation",
-      "note": "Best current example is Kalista+Renata.",
-      "sources": [
-        "golgg-champion-159"
-      ]
-    },
-    {
-      "champion": "rumble",
-      "role": "TOP",
+      "champion": "vi",
       "picks": 7,
-      "bans": 2,
+      "bans": 21,
+      "wins": 4,
       "winRate": 0.5714,
       "lowSample": false,
-      "priorityRead": "Strong AP top",
-      "note": "Needs reliable lockdown and mixed damage around him.",
       "sources": [
-        "golgg-champion-75"
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "orianna",
+      "picks": 7,
+      "bans": 18,
+      "wins": 3,
+      "winRate": 0.4286,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "bard",
+      "picks": 6,
+      "bans": 18,
+      "wins": 2,
+      "winRate": 0.3333,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "camille",
+      "role": "TOP",
+      "picks": 5,
+      "bans": 16,
+      "wins": 4,
+      "winRate": 0.8,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
       ]
     },
     {
@@ -107,26 +89,252 @@
       "role": "JUNGLE",
       "picks": 7,
       "bans": 13,
+      "wins": 4,
       "winRate": 0.5714,
       "lowSample": false,
       "priorityRead": "Elite tempo jungle",
       "note": "100% series presence and strong draft pressure.",
       "sources": [
-        "golgg-champion-47"
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
       ]
     },
     {
-      "champion": "gnar",
-      "role": "TOP",
+      "champion": "syndra",
       "picks": 7,
-      "bans": null,
-      "winRate": 0.4286,
+      "bans": 13,
+      "wins": 2,
+      "winRate": 0.2857,
       "lowSample": false,
       "sources": [
-        "golgg-team-2809",
-        "golgg-team-2802",
-        "golgg-team-2806",
-        "golgg-team-2805"
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "kalista",
+      "picks": 8,
+      "bans": 11,
+      "wins": 4,
+      "winRate": 0.5,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "olaf",
+      "role": "TOP",
+      "picks": 8,
+      "bans": 11,
+      "wins": 1,
+      "winRate": 0.125,
+      "lowSample": false,
+      "priorityRead": "High priority, bad outcome",
+      "note": "Do not confuse draft priority with blind safety.",
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "karma",
+      "picks": 8,
+      "bans": 9,
+      "wins": 4,
+      "winRate": 0.5,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "lulu",
+      "picks": 9,
+      "bans": 8,
+      "wins": 4,
+      "winRate": 0.4444,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "vayne",
+      "picks": 1,
+      "bans": 15,
+      "wins": 1,
+      "winRate": 1,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "ezreal",
+      "picks": 7,
+      "bans": 8,
+      "wins": 2,
+      "winRate": 0.2857,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "jarvan-iv",
+      "role": "JUNGLE",
+      "picks": 9,
+      "bans": 6,
+      "wins": 4,
+      "winRate": 0.4444,
+      "lowSample": false,
+      "priorityRead": "Universal engage",
+      "note": "100% series presence, easy to pair with many mid styles.",
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "pantheon",
+      "picks": 8,
+      "bans": 7,
+      "wins": 4,
+      "winRate": 0.5,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "poppy",
+      "picks": 1,
+      "bans": 14,
+      "wins": 1,
+      "winRate": 1,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "caitlyn",
+      "picks": 6,
+      "bans": 8,
+      "wins": 4,
+      "winRate": 0.6667,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "ryze",
+      "picks": 10,
+      "bans": 4,
+      "wins": 6,
+      "winRate": 0.6,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "seraphine",
+      "picks": 10,
+      "bans": 4,
+      "wins": 5,
+      "winRate": 0.5,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "jayce",
+      "role": "TOP",
+      "picks": 9,
+      "bans": 4,
+      "wins": 4,
+      "winRate": 0.4444,
+      "lowSample": false,
+      "priorityRead": "Elite top priority",
+      "note": "Picked early despite middling results; 100% series presence.",
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "ksante",
+      "role": "TOP",
+      "picks": 6,
+      "bans": 7,
+      "wins": 4,
+      "winRate": 0.6667,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "lucian",
+      "picks": 8,
+      "bans": 5,
+      "wins": 3,
+      "winRate": 0.375,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "naafiri",
+      "picks": 9,
+      "bans": 4,
+      "wins": 4,
+      "winRate": 0.4444,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "nautilus",
+      "picks": 4,
+      "bans": 9,
+      "wins": 2,
+      "winRate": 0.5,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "akali",
+      "picks": 7,
+      "bans": 5,
+      "wins": 4,
+      "winRate": 0.5714,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
       ]
     },
     {
@@ -134,90 +342,181 @@
       "role": "MID",
       "picks": 6,
       "bans": 6,
+      "wins": 3,
       "winRate": 0.5,
       "lowSample": false,
       "priorityRead": "Reliable backup engage",
       "note": "Simple point-click engage still valuable in Fearless.",
       "sources": [
-        "golgg-champion-7"
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
       ]
     },
     {
-      "champion": "ksante",
-      "role": "TOP",
+      "champion": "chogath",
+      "picks": 9,
+      "bans": 3,
+      "wins": 4,
+      "winRate": 0.4444,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "ahri",
+      "picks": 7,
+      "bans": 4,
+      "wins": 3,
+      "winRate": 0.4286,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "jhin",
+      "role": "BOT",
+      "picks": 8,
+      "bans": 3,
+      "wins": 4,
+      "winRate": 0.5,
+      "lowSample": false,
+      "priorityRead": "High Fearless value",
+      "note": "Pairing rotates, but setup is mandatory.",
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "trundle",
+      "picks": 4,
+      "bans": 7,
+      "wins": 3,
+      "winRate": 0.75,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "viktor",
       "picks": 6,
-      "bans": null,
+      "bans": 5,
+      "wins": 4,
       "winRate": 0.6667,
       "lowSample": false,
       "sources": [
-        "golgg-team-2809",
-        "golgg-team-2802",
-        "golgg-team-2806",
-        "golgg-team-2805"
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "anivia",
+      "picks": 4,
+      "bans": 5,
+      "wins": 2,
+      "winRate": 0.5,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "renata-glasc",
+      "role": "SUPPORT",
+      "picks": 8,
+      "bans": 1,
+      "wins": 5,
+      "winRate": 0.625,
+      "lowSample": false,
+      "priorityRead": "Strong support rotation",
+      "note": "Best current example is Kalista+Renata.",
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "rumble",
+      "role": "TOP",
+      "picks": 7,
+      "bans": 2,
+      "wins": 4,
+      "winRate": 0.5714,
+      "lowSample": false,
+      "priorityRead": "Strong AP top",
+      "note": "Needs reliable lockdown and mixed damage around him.",
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "skarner",
+      "picks": 7,
+      "bans": 2,
+      "wins": 4,
+      "winRate": 0.5714,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "twisted-fate",
+      "picks": 3,
+      "bans": 6,
+      "wins": 2,
+      "winRate": 0.6667,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
       ]
     },
     {
       "champion": "ambessa",
       "role": "TOP",
       "picks": 5,
-      "bans": null,
+      "bans": 3,
+      "wins": 2,
       "winRate": 0.4,
       "lowSample": false,
       "sources": [
-        "golgg-team-2802",
-        "golgg-team-2806",
-        "golgg-team-2805"
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
       ]
     },
     {
-      "champion": "lissandra",
-      "role": "MID",
-      "picks": 4,
+      "champion": "ashe",
+      "picks": 8,
+      "bans": 0,
+      "wins": 5,
+      "winRate": 0.625,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "gnar",
+      "role": "TOP",
+      "picks": 7,
       "bans": 1,
-      "winRate": 0.25,
-      "lowSample": true,
-      "priorityRead": "Niche pick tool",
-      "note": "Useful with Nocturne/Vi; not a blind priority.",
+      "wins": 3,
+      "winRate": 0.4286,
+      "lowSample": false,
       "sources": [
-        "golgg-champion-49"
-      ]
-    },
-    {
-      "champion": "miss-fortune",
-      "role": "BOT",
-      "picks": 4,
-      "bans": 3,
-      "winRate": 1,
-      "lowSample": true,
-      "priorityRead": "Small sample, perfect result",
-      "note": "Use with hard CC / AOE setup.",
-      "sources": [
-        "golgg-champion-57"
-      ]
-    },
-    {
-      "champion": "gwen",
-      "role": "TOP",
-      "picks": 4,
-      "bans": null,
-      "winRate": 0.75,
-      "lowSample": true,
-      "sources": [
-        "golgg-game-82965",
-        "golgg-team-2804"
-      ]
-    },
-    {
-      "champion": "camille",
-      "role": "TOP",
-      "picks": 4,
-      "bans": null,
-      "winRate": 0.75,
-      "lowSample": true,
-      "sources": [
-        "golgg-team-2809",
-        "golgg-team-2805",
-        "golgg-team-2804"
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
       ]
     },
     {
@@ -225,12 +524,239 @@
       "role": "MID",
       "picks": 3,
       "bans": 5,
+      "wins": 2,
       "winRate": 0.6667,
       "lowSample": true,
       "priorityRead": "Rising playoff pick",
       "note": "Especially relevant with Skarner in late rounds. Still picked at the Demacia Cup on 16.18 (see Current meta).",
       "sources": [
-        "golgg-champion-173"
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "milio",
+      "picks": 8,
+      "bans": 0,
+      "wins": 3,
+      "winRate": 0.375,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "xin-zhao",
+      "picks": 4,
+      "bans": 4,
+      "wins": 1,
+      "winRate": 0.25,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "yunara",
+      "role": "BOT",
+      "picks": 8,
+      "bans": 0,
+      "wins": 3,
+      "winRate": 0.375,
+      "lowSample": false,
+      "priorityRead": "High bot volume",
+      "note": "Lulu is the clearest protect pairing.",
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "alistar",
+      "picks": 5,
+      "bans": 2,
+      "wins": 2,
+      "winRate": 0.4,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "miss-fortune",
+      "role": "BOT",
+      "picks": 4,
+      "bans": 3,
+      "wins": 4,
+      "winRate": 1,
+      "lowSample": true,
+      "priorityRead": "Small sample, perfect result",
+      "note": "Use with hard CC / AOE setup.",
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "shen",
+      "picks": 4,
+      "bans": 3,
+      "wins": 3,
+      "winRate": 0.75,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "taliyah",
+      "picks": 5,
+      "bans": 2,
+      "wins": 3,
+      "winRate": 0.6,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "zeri",
+      "picks": 5,
+      "bans": 2,
+      "wins": 3,
+      "winRate": 0.6,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "galio",
+      "picks": 5,
+      "bans": 1,
+      "wins": 3,
+      "winRate": 0.6,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "varus",
+      "picks": 6,
+      "bans": 0,
+      "wins": 5,
+      "winRate": 0.8333,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "wukong",
+      "picks": 2,
+      "bans": 4,
+      "wins": 1,
+      "winRate": 0.5,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "yuumi",
+      "picks": 5,
+      "bans": 1,
+      "wins": 3,
+      "winRate": 0.6,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "ziggs",
+      "picks": 2,
+      "bans": 4,
+      "wins": 1,
+      "winRate": 0.5,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "lissandra",
+      "role": "MID",
+      "picks": 4,
+      "bans": 1,
+      "wins": 1,
+      "winRate": 0.25,
+      "lowSample": true,
+      "priorityRead": "Niche pick tool",
+      "note": "Useful with Nocturne/Vi; not a blind priority.",
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "neeko",
+      "picks": 3,
+      "bans": 2,
+      "wins": 3,
+      "winRate": 1,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "qiyana",
+      "picks": 5,
+      "bans": 0,
+      "wins": 3,
+      "winRate": 0.6,
+      "lowSample": false,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "rakan",
+      "picks": 3,
+      "bans": 2,
+      "wins": 2,
+      "winRate": 0.6667,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "yone",
+      "picks": 3,
+      "bans": 2,
+      "wins": 2,
+      "winRate": 0.6667,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
       ]
     },
     {
@@ -238,46 +764,495 @@
       "role": "MID",
       "picks": 2,
       "bans": 2,
+      "wins": 0,
       "winRate": 0,
       "lowSample": true,
       "priorityRead": "Downgraded",
       "note": "Old Azir+Skarner priority did not carry into playoffs.",
       "sources": [
-        "golgg-champion-120"
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
       ]
     },
     {
-      "champion": "sion",
+      "champion": "gwen",
       "role": "TOP",
-      "picks": 1,
-      "bans": null,
-      "winRate": 1,
+      "picks": 4,
+      "bans": 0,
+      "wins": 3,
+      "winRate": 0.75,
       "lowSample": true,
       "sources": [
-        "golgg-game-82964",
-        "golgg-team-2804"
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
       ]
     },
     {
-      "champion": "ornn",
-      "role": "TOP",
-      "picks": 1,
-      "bans": null,
+      "champion": "jax",
+      "picks": 2,
+      "bans": 2,
+      "wins": 0,
       "winRate": 0,
       "lowSample": true,
       "sources": [
-        "golgg-team-2809"
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "kaisa",
+      "picks": 3,
+      "bans": 1,
+      "wins": 2,
+      "winRate": 0.6667,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "kennen",
+      "picks": 2,
+      "bans": 2,
+      "wins": 1,
+      "winRate": 0.5,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "kled",
+      "picks": 2,
+      "bans": 2,
+      "wins": 1,
+      "winRate": 0.5,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "maokai",
+      "picks": 3,
+      "bans": 1,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
       ]
     },
     {
       "champion": "renekton",
       "role": "TOP",
       "picks": 1,
-      "bans": null,
+      "bans": 3,
+      "wins": 1,
       "winRate": 1,
       "lowSample": true,
       "sources": [
-        "golgg-team-2802"
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "sylas",
+      "picks": 2,
+      "bans": 2,
+      "wins": 1,
+      "winRate": 0.5,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "xayah",
+      "picks": 3,
+      "bans": 1,
+      "wins": 2,
+      "winRate": 0.6667,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "yorick",
+      "picks": 3,
+      "bans": 1,
+      "wins": 1,
+      "winRate": 0.3333,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "aatrox",
+      "picks": 3,
+      "bans": 0,
+      "wins": 2,
+      "winRate": 0.6667,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "nasus",
+      "picks": 2,
+      "bans": 1,
+      "wins": 1,
+      "winRate": 0.5,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "sivir",
+      "picks": 3,
+      "bans": 0,
+      "wins": 2,
+      "winRate": 0.6667,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "aurora",
+      "picks": 2,
+      "bans": 0,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "blitzcrank",
+      "picks": 1,
+      "bans": 1,
+      "wins": 1,
+      "winRate": 1,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "corki",
+      "picks": 2,
+      "bans": 0,
+      "wins": 1,
+      "winRate": 0.5,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "gragas",
+      "picks": 2,
+      "bans": 0,
+      "wins": 1,
+      "winRate": 0.5,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "jinx",
+      "picks": 2,
+      "bans": 0,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "sejuani",
+      "picks": 1,
+      "bans": 1,
+      "wins": 1,
+      "winRate": 1,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "sion",
+      "role": "TOP",
+      "picks": 1,
+      "bans": 1,
+      "wins": 1,
+      "winRate": 1,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "tristana",
+      "picks": 1,
+      "bans": 1,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "aphelios",
+      "picks": 1,
+      "bans": 0,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "dr-mundo",
+      "picks": 1,
+      "bans": 0,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "fiora",
+      "picks": 1,
+      "bans": 0,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "hecarim",
+      "picks": 1,
+      "bans": 0,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "hwei",
+      "picks": 1,
+      "bans": 0,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "kindred",
+      "picks": 1,
+      "bans": 0,
+      "wins": 1,
+      "winRate": 1,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "leblanc",
+      "picks": 0,
+      "bans": 1,
+      "winRate": null,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "leona",
+      "picks": 1,
+      "bans": 0,
+      "wins": 1,
+      "winRate": 1,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "mel",
+      "picks": 1,
+      "bans": 0,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "mordekaiser",
+      "picks": 0,
+      "bans": 1,
+      "winRate": null,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "nami",
+      "picks": 1,
+      "bans": 0,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "ornn",
+      "role": "TOP",
+      "picks": 1,
+      "bans": 0,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "pyke",
+      "picks": 1,
+      "bans": 0,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "rell",
+      "picks": 1,
+      "bans": 0,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "shyvana",
+      "picks": 0,
+      "bans": 1,
+      "winRate": null,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "soraka",
+      "picks": 1,
+      "bans": 0,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "tahm-kench",
+      "picks": 1,
+      "bans": 0,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "thresh",
+      "picks": 1,
+      "bans": 0,
+      "wins": 0,
+      "winRate": 0,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
+      ]
+    },
+    {
+      "champion": "vex",
+      "picks": 1,
+      "bans": 0,
+      "wins": 1,
+      "winRate": 1,
+      "lowSample": true,
+      "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans"
       ]
     }
   ],
@@ -331,21 +1306,1001 @@
       },
       "stats": [
         {
-          "champion": "locke",
-          "role": "MID",
-          "picks": 3,
+          "champion": "nocturne",
+          "picks": 2,
+          "bans": 36,
+          "wins": 2,
+          "winRate": 1,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "cassiopeia",
+          "picks": 5,
+          "bans": 30,
+          "wins": 4,
+          "winRate": 0.8,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "vi",
+          "picks": 5,
+          "bans": 29,
+          "wins": 3,
+          "winRate": 0.6,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "qiyana",
+          "picks": 9,
+          "bans": 23,
+          "wins": 5,
+          "winRate": 0.5556,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "olaf",
+          "picks": 12,
+          "bans": 15,
+          "wins": 5,
+          "winRate": 0.4167,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "syndra",
+          "picks": 8,
+          "bans": 19,
+          "wins": 6,
+          "winRate": 0.75,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "ezreal",
+          "picks": 6,
+          "bans": 20,
+          "wins": 4,
+          "winRate": 0.6667,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "lee-sin",
+          "picks": 9,
+          "bans": 16,
+          "wins": 4,
+          "winRate": 0.4444,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "lucian",
+          "picks": 14,
+          "bans": 11,
+          "wins": 8,
+          "winRate": 0.5714,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "jarvan-iv",
+          "picks": 9,
+          "bans": 15,
+          "wins": 4,
+          "winRate": 0.4444,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "rumble",
+          "picks": 16,
+          "bans": 6,
+          "wins": 7,
+          "winRate": 0.4375,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "lulu",
+          "picks": 14,
+          "bans": 7,
+          "wins": 7,
+          "winRate": 0.5,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "ksante",
+          "picks": 9,
+          "bans": 10,
+          "wins": 5,
+          "winRate": 0.5556,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "nautilus",
+          "picks": 7,
+          "bans": 12,
+          "wins": 2,
+          "winRate": 0.2857,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "ryze",
+          "picks": 17,
           "bans": 1,
+          "wins": 8,
+          "winRate": 0.4706,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "seraphine",
+          "picks": 7,
+          "bans": 11,
+          "wins": 3,
+          "winRate": 0.4286,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "pantheon",
+          "picks": 8,
+          "bans": 9,
+          "wins": 1,
+          "winRate": 0.125,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "orianna",
+          "picks": 12,
+          "bans": 3,
+          "wins": 5,
+          "winRate": 0.4167,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "yunara",
+          "picks": 14,
+          "bans": 1,
+          "wins": 7,
+          "winRate": 0.5,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "milio",
+          "picks": 14,
+          "bans": 0,
+          "wins": 8,
+          "winRate": 0.5714,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "wukong",
+          "picks": 8,
+          "bans": 5,
+          "wins": 5,
+          "winRate": 0.625,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "caitlyn",
+          "picks": 3,
+          "bans": 9,
+          "wins": 2,
           "winRate": 0.6667,
           "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "galio",
+          "picks": 5,
+          "bans": 7,
+          "wins": 3,
+          "winRate": 0.6,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "jayce",
+          "picks": 6,
+          "bans": 6,
+          "wins": 4,
+          "winRate": 0.6667,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "jhin",
+          "picks": 8,
+          "bans": 4,
+          "wins": 5,
+          "winRate": 0.625,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "kalista",
+          "picks": 7,
+          "bans": 5,
+          "wins": 5,
+          "winRate": 0.7143,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "karma",
+          "picks": 7,
+          "bans": 5,
+          "wins": 3,
+          "winRate": 0.4286,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "naafiri",
+          "picks": 7,
+          "bans": 5,
+          "wins": 3,
+          "winRate": 0.4286,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "akali",
+          "picks": 6,
+          "bans": 5,
+          "wins": 1,
+          "winRate": 0.1667,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "ambessa",
+          "picks": 6,
+          "bans": 4,
+          "wins": 2,
+          "winRate": 0.3333,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "viktor",
+          "picks": 7,
+          "bans": 3,
+          "wins": 2,
+          "winRate": 0.2857,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "locke",
+          "role": "MID",
+          "picks": 5,
+          "bans": 4,
+          "wins": 2,
+          "winRate": 0.4,
+          "lowSample": false,
           "priorityRead": "Still picked on 16.18",
-          "note": "Reported by alan on 2026-10-10; no Gol.gg page was supplied for these numbers yet. Presence needs the event game count.",
-          "sources": [],
-          "rolePicks": {
-            "MID": 3
-          }
+          "note": "Gol.gg champion list, 2026-10-10: 5 picks / 4 bans / 2 wins so far (alan's earlier report was 3 picks / 1 ban). Roles of the 5 picks not broken down.",
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "bard",
+          "picks": 6,
+          "bans": 2,
+          "wins": 3,
+          "winRate": 0.5,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "renata-glasc",
+          "picks": 7,
+          "bans": 1,
+          "wins": 5,
+          "winRate": 0.7143,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "skarner",
+          "picks": 5,
+          "bans": 3,
+          "wins": 5,
+          "winRate": 1,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "xin-zhao",
+          "picks": 4,
+          "bans": 4,
+          "wins": 2,
+          "winRate": 0.5,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "anivia",
+          "picks": 3,
+          "bans": 4,
+          "wins": 1,
+          "winRate": 0.3333,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "poppy",
+          "picks": 2,
+          "bans": 5,
+          "wins": 2,
+          "winRate": 1,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "ashe",
+          "picks": 6,
+          "bans": 0,
+          "wins": 2,
+          "winRate": 0.3333,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "gnar",
+          "picks": 2,
+          "bans": 4,
+          "wins": 1,
+          "winRate": 0.5,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "twisted-fate",
+          "picks": 2,
+          "bans": 4,
+          "wins": 1,
+          "winRate": 0.5,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "xayah",
+          "picks": 4,
+          "bans": 2,
+          "wins": 2,
+          "winRate": 0.5,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "alistar",
+          "picks": 2,
+          "bans": 3,
+          "wins": 2,
+          "winRate": 1,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "annie",
+          "picks": 2,
+          "bans": 3,
+          "wins": 1,
+          "winRate": 0.5,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "ornn",
+          "picks": 4,
+          "bans": 1,
+          "wins": 3,
+          "winRate": 0.75,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "rakan",
+          "picks": 5,
+          "bans": 0,
+          "wins": 2,
+          "winRate": 0.4,
+          "lowSample": false,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "sejuani",
+          "picks": 3,
+          "bans": 2,
+          "wins": 0,
+          "winRate": 0,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "sylas",
+          "picks": 4,
+          "bans": 1,
+          "wins": 4,
+          "winRate": 1,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "ahri",
+          "picks": 3,
+          "bans": 1,
+          "wins": 2,
+          "winRate": 0.6667,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "camille",
+          "picks": 1,
+          "bans": 3,
+          "wins": 1,
+          "winRate": 1,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "jax",
+          "picks": 4,
+          "bans": 0,
+          "wins": 2,
+          "winRate": 0.5,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "renekton",
+          "picks": 3,
+          "bans": 1,
+          "wins": 2,
+          "winRate": 0.6667,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "trundle",
+          "picks": 1,
+          "bans": 3,
+          "wins": 0,
+          "winRate": 0,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "varus",
+          "picks": 3,
+          "bans": 1,
+          "wins": 1,
+          "winRate": 0.3333,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "yorick",
+          "picks": 4,
+          "bans": 0,
+          "wins": 1,
+          "winRate": 0.25,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "kled",
+          "picks": 2,
+          "bans": 1,
+          "wins": 1,
+          "winRate": 0.5,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "miss-fortune",
+          "picks": 3,
+          "bans": 0,
+          "wins": 1,
+          "winRate": 0.3333,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "shyvana",
+          "picks": 3,
+          "bans": 0,
+          "wins": 2,
+          "winRate": 0.6667,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "sivir",
+          "picks": 3,
+          "bans": 0,
+          "wins": 1,
+          "winRate": 0.3333,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "aphelios",
+          "picks": 2,
+          "bans": 0,
+          "wins": 1,
+          "winRate": 0.5,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "chogath",
+          "picks": 2,
+          "bans": 0,
+          "wins": 1,
+          "winRate": 0.5,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "corki",
+          "picks": 2,
+          "bans": 0,
+          "wins": 0,
+          "winRate": 0,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "kaisa",
+          "picks": 1,
+          "bans": 1,
+          "wins": 0,
+          "winRate": 0,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "leona",
+          "picks": 1,
+          "bans": 1,
+          "wins": 1,
+          "winRate": 1,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "mel",
+          "picks": 2,
+          "bans": 0,
+          "wins": 1,
+          "winRate": 0.5,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "neeko",
+          "picks": 1,
+          "bans": 1,
+          "wins": 0,
+          "winRate": 0,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "thresh",
+          "picks": 1,
+          "bans": 1,
+          "wins": 0,
+          "winRate": 0,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "zaahen",
+          "picks": 2,
+          "bans": 0,
+          "wins": 0,
+          "winRate": 0,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "amumu",
+          "picks": 1,
+          "bans": 0,
+          "wins": 1,
+          "winRate": 1,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "aurora",
+          "picks": 1,
+          "bans": 0,
+          "wins": 0,
+          "winRate": 0,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "blitzcrank",
+          "picks": 1,
+          "bans": 0,
+          "wins": 1,
+          "winRate": 1,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "elise",
+          "picks": 1,
+          "bans": 0,
+          "wins": 0,
+          "winRate": 0,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "gwen",
+          "picks": 1,
+          "bans": 0,
+          "wins": 1,
+          "winRate": 1,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "hwei",
+          "picks": 1,
+          "bans": 0,
+          "wins": 0,
+          "winRate": 0,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "maokai",
+          "picks": 0,
+          "bans": 1,
+          "winRate": null,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "pyke",
+          "picks": 1,
+          "bans": 0,
+          "wins": 0,
+          "winRate": 0,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "rell",
+          "picks": 1,
+          "bans": 0,
+          "wins": 0,
+          "winRate": 0,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "senna",
+          "picks": 1,
+          "bans": 0,
+          "wins": 0,
+          "winRate": 0,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "sion",
+          "picks": 1,
+          "bans": 0,
+          "wins": 0,
+          "winRate": 0,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "taliyah",
+          "picks": 1,
+          "bans": 0,
+          "wins": 1,
+          "winRate": 1,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "tristana",
+          "picks": 1,
+          "bans": 0,
+          "wins": 1,
+          "winRate": 1,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
+        },
+        {
+          "champion": "vayne",
+          "picks": 1,
+          "bans": 0,
+          "wins": 1,
+          "winRate": 1,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-picksandbans-demacia-cup-2026"
+          ]
         }
       ],
       "notes": [
+        {
+          "topic": "Gol.gg tables",
+          "note": "Picks, bans, wins and losses from Gol.gg's tournament champion list (the picks-and-bans page only has them as tooltips; they agree). Gol.gg has no presence column: presence here is computed as (picks + bans) / total games. Bans are champion-level. Gol.gg shows a site-wide 'stats not updated since 4 April' banner, but both tables include this event's games. Total games = 39, the sum of series scores in the match list: 20 of 24 series played, the 4 quarterfinals (Oct 12–13) not yet.",
+          "sources": [
+            "golgg-tournament-championlist-demacia-cup-2026",
+            "golgg-tournament-matchlist-demacia-cup-2026"
+          ]
+        },
         {
           "topic": "Ezreal + Karma",
           "note": "Played together in JDG vs BRO on Oct 3. Current evidence for the saved Ezreal → Karma default.",
@@ -388,11 +2343,16 @@
         }
       ],
       "sources": [
+        "golgg-tournament-championlist-demacia-cup-2026",
+        "golgg-tournament-picksandbans-demacia-cup-2026",
+        "golgg-tournament-matchlist-demacia-cup-2026",
         "golgg-game-83452",
         "golgg-game-83460",
         "golgg-game-83459",
         "golgg-game-83462"
-      ]
+      ],
+      "games": 39,
+      "statsComplete": true
     },
     {
       "id": "lck-2026-playoffs",
@@ -405,10 +2365,23 @@
       "scope": "Main sample: the Meta table, recorded pro drafts and the Gen.G page all come from this event.",
       "games": 41,
       "stats": [],
-      "notes": [],
+      "notes": [
+        {
+          "topic": "Gol.gg tables",
+          "note": "Picks, bans, wins and losses from Gol.gg's tournament champion list (the picks-and-bans page only has them as tooltips; they agree). Gol.gg has no presence column: presence here is computed as (picks + bans) / total games. Bans are champion-level. Gol.gg shows a site-wide 'stats not updated since 4 April' banner, but both tables include this event's games. Total games = 41 (10 series, all on 16.16).",
+          "sources": [
+            "golgg-tournament-championlist",
+            "golgg-tournament-matchlist"
+          ]
+        }
+      ],
       "sources": [
+        "golgg-tournament-championlist",
+        "golgg-tournament-picksandbans",
+        "golgg-tournament-matchlist",
         "golgg-tournament-stats"
-      ]
+      ],
+      "statsComplete": true
     }
   ]
 }

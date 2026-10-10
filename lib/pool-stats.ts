@@ -26,7 +26,9 @@ export interface ProGame {
   sources: string[];
 }
 
-export interface EventStat { event: MetaEvent; stat: MetaStat }
+// roles: where this champion-wide aggregate is shown. From the source (stat.role, verified rolePicks) or, when the source
+// names none, from the roles recorded games show the champion in. Never from the roster's role list.
+export interface EventStat { event: MetaEvent; stat: MetaStat; roles: Role[] }
 
 export interface PoolRow {
   id: string;
@@ -75,14 +77,27 @@ export function proGames({ meta, proDrafts, botPairings, sources }: Omit<PoolInp
 }
 
 /** Tournament stats per event. The LCK playoffs keep theirs in meta.stats; other events carry their own. */
-export function eventStats(meta: Meta): EventStat[] {
+export function eventStats(meta: Meta, games: ProGame[] = []): EventStat[] {
   const main = eventByName(meta.events, meta.tournament.name);
+  const played = new Map<string, Set<Role>>();
+  for (const g of games) for (const [r, id] of Object.entries(g.picks) as [Role, string][]) {
+    if (!played.has(id)) played.set(id, new Set());
+    played.get(id)!.add(r);
+  }
   const out: EventStat[] = [];
   for (const e of meta.events) {
     const list = e === main ? [...meta.stats, ...e.stats] : e.stats;
-    for (const stat of list) out.push({ event: e, stat });
+    for (const stat of list) out.push({ event: e, stat, roles: statRoles(stat, played.get(stat.champion)) });
   }
   return out;
+}
+
+function statRoles(stat: MetaStat, played?: Set<Role>): Role[] {
+  const verified = Object.entries(stat.rolePicks ?? {}).filter(([, n]) => n > 0).map(([r]) => r as Role);
+  const named = [stat.role, stat.flexRole].filter((r): r is Role => !!r);
+  const roles = new Set<Role>([...named, ...verified]);
+  if (!roles.size) for (const r of played ?? []) roles.add(r);
+  return [...roles];
 }
 
 // ---------- tournament aggregates ----------
@@ -94,8 +109,13 @@ export function eventStats(meta: Meta): EventStat[] {
 export const presenceOf = ({ event, stat }: EventStat): number | null =>
   stat.bans == null || !event.games ? null : (stat.picks + stat.bans) / event.games;
 
-/** The aggregate belongs to a role row when it is listed under that role or a source gives picks in it. */
-export const listsRole = (stat: MetaStat, role: Role) => stat.role === role || (stat.rolePicks?.[role] ?? 0) > 0;
+/** The aggregate is shown on a role row when the source names that role or recorded games show the champion there. */
+export const listsRole = (x: EventStat, role: Role) => x.roles.includes(role);
+
+/** Picks and win rate are for all roles unless verified role picks say otherwise; worth flagging on a flex champion. */
+/** True when the evidence does not place this aggregate in `role`: the number is the champion's, not this role's. */
+export const roleUnconfirmed = (x: EventStat, role: Role) => !listsRole(x, role);
+export const allRoles = (x: EventStat) => x.roles.length > 1 && !x.stat.rolePicks;
 
 const ROLE_ABBR: Record<Role, string> = { TOP: "TOP", JUNGLE: "JG", MID: "MID", BOT: "BOT", SUPPORT: "SUP" };
 
@@ -111,14 +131,16 @@ export function poolRows(input: PoolInput, filter: PoolFilter = {}): PoolRow[] {
   const keep = (ev: MetaEvent | undefined, patch?: string) =>
     (!filter.event || ev?.id === filter.event) && (!filter.patch || (patch ?? ev?.patch) === filter.patch);
   const games = proGames(input).filter((g) => keep(g.event, g.patch));
-  const stats = eventStats(input.meta).filter((s) => keep(s.event)).sort((a, b) => fresher(a.event, b.event));
+  const stats = eventStats(input.meta, proGames(input)).filter((s) => keep(s.event)).sort((a, b) => fresher(a.event, b.event));
   const rows: PoolRow[] = [];
   let order = 0;
   for (const p of input.pool) {
     for (const [tier] of TIERS) for (const id of p[tier]) {
       const role = p.role;
       // Role-aware: a stat counts only for the role it is recorded under (Camille top stats never show on Camille support).
-      const mine = stats.filter((s) => s.stat.champion === id && listsRole(s.stat, role));
+      // A champion-wide total that no source or recorded game places in any role still belongs to this champion, so it
+      // shows on its pool rows marked "role not shown" (roleUnconfirmed) rather than disappearing.
+      const mine = stats.filter((s) => s.stat.champion === id && (listsRole(s, role) || !s.roles.length));
       const played = games.filter((g) => g.picks[role] === id);
       const counts = new Map<string, number>();
       for (const g of played) { const pid = g.picks[PARTNER_ROLE[role]]; if (pid) counts.set(pid, (counts.get(pid) ?? 0) + 1); }
@@ -148,7 +170,7 @@ export function sortRows(rows: PoolRow[], key: SortKey): PoolRow[] {
     if (key === "picks") return s?.picks;
     if (key === "bans") return s?.bans ?? undefined;
     if (key === "presence") return r.stat ? presenceOf(r.stat) ?? undefined : undefined;
-    if (key === "winRate") return s?.winRate;
+    if (key === "winRate") return s?.winRate ?? undefined;
     return undefined;
   };
   const byTier = (a: PoolRow, b: PoolRow) => TIER_RANK[a.tier] - TIER_RANK[b.tier] || a.order - b.order;

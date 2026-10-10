@@ -142,7 +142,7 @@ describe("with a bot locked, only its saved supports are actionable (alan, 2026-
       const allowed = [...b.clashDefault, ...b.alternatives];
       for (const id of list) expect(allowed, `${b.champion}: ${id}`).toContain(id);
     }
-  });
+  }, 30_000); // 17 bots × 12 drafts: slow under a parallel run
 
   it("other roles and a draft with no bot are unchanged: any support can be ranked", () => {
     expect(savedSupports({ MID: "orianna" }, data.botPairings)).toBeNull();

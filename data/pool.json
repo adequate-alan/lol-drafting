@@ -152,7 +152,9 @@
       "leona",
       "lux"
     ],
-    "coreReasons": {},
+    "coreReasons": {
+      "rakan": "Only 3 LCK playoff picks (Gol.gg, 16.16), but alan's saved support for Xayah and joint preferred for Kai'Sa. Tier unchanged."
+    },
     "changed": "Fearless expands the support pool, but the job still matters more than the exact champion.",
     "sources": [
       "golgg-tournament-picksandbans"

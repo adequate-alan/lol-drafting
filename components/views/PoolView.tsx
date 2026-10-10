@@ -4,7 +4,7 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import { Select } from "@/components/Select";
 import { ChampionRow, ChipList, LayerBlock, PageHeader, SourceLinks, pct } from "@/components/ui";
 import { describeLine, groupObserved, shortDate, type EventMap } from "@/lib/evidence";
-import { PARTNER_ROLE, SORTS, TIERS, poolRows, presenceOf, roleShare, sortRows, type PoolInput, type PoolRow, type SortKey, type Tier } from "@/lib/pool-stats";
+import { PARTNER_ROLE, SORTS, TIERS, allRoles, poolRows, presenceOf, roleShare, roleUnconfirmed, sortRows, type PoolInput, type PoolRow, type SortKey, type Tier } from "@/lib/pool-stats";
 import { ROLES, type BotPairing, type MidJunglePairing, type ObservedPairing, type Role, type TopPick } from "@/lib/schema";
 
 const TIER_LABEL = Object.fromEntries(TIERS) as Record<Tier, string>;
@@ -88,10 +88,10 @@ export function PoolView({ names, data, bot, midJungle, top }: {
                     <td><ChampionRow id={r.id} name={names[r.id] ?? r.id} role={r.role} size="md" /></td>
                     <td className="hide-sm"><span className={`role-tag role-${r.role}`}>{r.role}</span></td>
                     <td><span className={`tier ${r.tier}`}>{TIER_LABEL[r.tier]}</span></td>
-                    <td className="num" title={r.stat && !event ? `${r.stat.event.short} ${r.stat.event.patch} tournament stats` : undefined}>{s ? <>{s.picks}{s.lowSample && <span className="low" title="Fewer than 5 picks">*</span>}</> : DASH}</td>
+                    <td className="num" title={r.stat && !event ? `${r.stat.event.short} ${r.stat.event.patch} tournament stats` : undefined}>{s ? <>{s.picks}{s.lowSample && <span className="low" title="Fewer than 5 picks">*</span>}{(roleUnconfirmed(r.stat!, r.role) || allRoles(r.stat!)) && <span className="xs faint" title="Champion-wide tournament total; the source does not split it by role"> all roles</span>}</> : DASH}</td>
                     <td className="num hide-sm">{s?.bans ?? DASH}</td>
                     <td className="num hide-sm">{pres != null ? <span className={`heat ${pres >= 0.3 ? "hi" : ""}`}>{pct(pres)}</span> : DASH}</td>
-                    <td className="num">{s ? pct(s.winRate) : DASH}</td>
+                    <td className="num">{s?.winRate != null ? pct(s.winRate) : DASH}</td>
                     <td className="num hide-sm">{r.games.length || DASH}</td>
                     <td className="nowrap">{r.latest ? <>{r.latest.eventName}{r.latest.event?.status === "ongoing" && <span className="badge pro ongoing" title="Event still running; numbers are not final">Ongoing</span>}</> : <span className="xs faint">No verified data</span>}</td>
                     <td className="num hide-sm">{r.latest?.patch ?? DASH}</td>

@@ -18,7 +18,7 @@ describe("pool stats", () => {
   });
 
   it("is role-aware: a stat recorded for one role never shows on another", () => {
-    for (const r of rows) for (const s of r.stats) expect(s.stat.role).toBe(r.role);
+    for (const r of rows) for (const s of r.stats) if (s.roles.length) expect(s.roles, `${r.id} ${r.role}`).toContain(r.role);
     for (const r of rows) for (const g of r.games) expect(g.picks[r.role]).toBe(r.id);
     // Galio is pooled at TOP and MID; neither row borrows the other's games.
     const top = find(rows, "galio", "TOP"), mid = find(rows, "galio", "MID");

@@ -34,6 +34,10 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   Never compute one from the other. Presence = (picks + bans) / tournament games (`presenceOf`), never stored. Bans are
   champion-wide. Without an aggregate, picks / bans / presence / WR show "—". "Recorded" labels stored-game counts. Meta
   defaults to the newest tournament; "All tournaments" is explicit and names each row's tournament.
+  Aggregates are Gol.gg's full tournament tables (`scripts/import-golgg-tournament.mjs`, LCK 41 games, Demacia 39 as of
+  2026-10-10). They are champion-wide: a stat sits under a role only when its source names the role or a recorded game
+  shows it (`EventStat.roles`), never from the roster; otherwise it is marked "all roles" (Pool, drawer) or listed only on
+  the Meta ALL tab. Aggregates never create Synergy records or touch saved pairings.
 - A low-sample champion can only be in a pool's `core` tier with a written `coreReasons` entry.
 - Draft Room recommendations are ranked by overall draft fit (alan, 2026-10-10), in `lib/recommend.ts` and
   `tests/recommend.test.ts`. Every champion who plays the open role is a candidate. The score adds saved pairings
