@@ -13,7 +13,6 @@ import { TABS, type Tab } from "./first-pick-tabs";
 import { poolTierRank, sortBotPicks, sortMidJunglePicks } from "@/lib/first-pick-order";
 import { proGames } from "@/lib/pool-stats";
 import { proposedCard, proposedPartners, shownPartners } from "@/lib/proposed";
-import { KITS } from "@/lib/model-v2/kits";
 import type { BotPairing, MetaStat, MidJunglePairing, PoolEntry, Role, Source, TopPick } from "@/lib/schema";
 
 const GRADE_ORDER = ["A", "A-", "B+", "B", "B-", "C+", "C"];
@@ -41,7 +40,7 @@ export function FirstPickView({ tab, names, sources, events, stats, draftLabels,
       const first = pref.filter((l) => l.role === pref[0]?.role);
       return { id: c.id, role, label: names[c.id], proposed: true, sub: `${tab === "mid-jungle" ? `${role === "MID" ? "Mid" : "Jungle"} · ` : ""}Proposed${first.length ? ` · ${first.map((l) => names[l.id]).join(" / ")}` : ""}` };
     });
-  const profile = (id: string, role: Role): CardRecord => proposedCard(id, role, records, drawerData, KITS[id]?.why);
+  const profile = (id: string, role: Role): CardRecord => proposedCard(id, role, records, drawerData);
   if (tab === "bot") {
     const rows = sortBotPicks(bot, pool, names);
     list = [...rows.map((r) => ({ id: r.champion, label: names[r.champion], sub: r.clashDefault.map((s) => names[s]).join(" / ") })),

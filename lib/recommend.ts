@@ -281,7 +281,9 @@ export function recommend(draft: Draft, enemyIds: string[], data: RecommendData,
       if (c.rosterOnly || !c.roles.includes(role) || taken.has(c.id)) continue;
       if (role === "SUPPORT" && eligibleSupports && !eligibleSupports.includes(c.id)) continue;
       const { parts, tier } = savedParts(c, role, draft, data, name);
-      const prop = proposedParts(c, role, draft, data.proposed, name);
+      // With a saved bot locked, its own record alone orders the supports (preferred before alternative): no proposed
+      // bonus may reorder them.
+      const prop = role === "SUPPORT" && eligibleSupports ? { parts: [], tier: null } : proposedParts(c, role, draft, data.proposed, name);
       parts.push(...prop.parts);
       parts.push(...synergyParts(c, role, allies));
       const kit = kitById.get(c.id);
