@@ -386,13 +386,18 @@ await page.setViewportSize({ width: 1440, height: 900 });
 await open("/");
 check("sidebar brand is the custom Draft Assistant mark", /^Draft Assistant/.test((await text("aside.sidebar .brand-name")) ?? "") && (await page.locator("aside.sidebar svg.brand-mark").count()) === 1, "");
 check("fan-project notice in the footer", /Legal Jibber Jabber/.test((await text("footer.site-foot")) ?? "") && /does not endorse or sponsor/.test(await text("footer.site-foot")), "");
+check("Gen.G trademark line in the footer", /Gen\.G and GenRang are trademarks of Gen\.G Esports/.test((await text("footer.site-foot")) ?? ""), "");
+const mascotOk = async () => page.$$eval("img.genrang", (ims) => ims.length > 0 && ims.every((i) => i.complete && i.naturalWidth > 0 && i.getAttribute("src").startsWith("/lol-drafting/")));
+check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
+await open("/geng/");
+check("GenRang on the Gen.G page", (await page.locator(".brand-band img.genrang").count()) === 1 && await mascotOk(), "");
 // Review screenshots: desktop and mobile, light and dark
 if (shots) {
   for (const theme of ["light", "dark"]) {
     await page.evaluate((t) => localStorage.setItem("theme", t), theme);
     for (const [w, h, tag] of [[1440, 900, "desk"], [390, 844, "mob"]]) {
       await page.setViewportSize({ width: w, height: h });
-      for (const [path, name] of [["/?top=ambessa&jungle=vi&bot=ziggs&vs=top:renekton,bot:sivir,support:lulu", "draft"], ["/first-pick/bot/?champ=sivir", "firstpick"], ["/pool/", "pool"], ["/meta/", "meta"]]) {
+      for (const [path, name] of [["/?top=ambessa&jungle=vi&bot=ziggs&vs=top:renekton,bot:sivir,support:lulu", "draft"], ["/", "empty"], ["/geng/", "geng"], ["/first-pick/bot/?champ=sivir", "firstpick"], ["/pool/", "pool"], ["/meta/", "meta"]]) {
         await open(path);
         await page.waitForTimeout(700);
         await page.screenshot({ path: `${shots}/review-${name}-${tag}-${theme}.png` });
