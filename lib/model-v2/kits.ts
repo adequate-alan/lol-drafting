@@ -113,7 +113,7 @@ export const KITS: Record<string, KitEntry> = {
 
   // ---------- mid ----------
   orianna: { kit: K(3, 2, 1, 1, 1, 1, 3, 3, 2, 2, 2, [1, 3, 3]), why: "Shockwave is the best follow-up in the pool once someone carries the ball in." },
-  viktor: { fightStart: "follow-up", damageByRole: { MID: D(3, S(0, 1)) }, kit: K(3, 2, 1, 0, 0, 1, 2, 2, 3, 1, 0, [1, 3, 3]),
+  viktor: { fightStart: "follow-up", damageByRole: { MID: D(3, S(0, 1)), BOT: D(3, S(0, 1)) }, kit: K(3, 2, 1, 0, 0, 1, 2, 2, 3, 1, 0, [1, 3, 3]),
     why: "Zone-control mage with fast waveclear; immobile; wants gold." },
   syndra: { kit: K(3, 2, 0, 1, 1, 1, 2, 1, 2, 1, 0, [2, 3, 2]), why: "Burst mage; E stun picks or peels." },
   akali: { fightStart: "none", damageByRole: { MID: D(3, S(0, 1)), TOP: D(3, S(0, 1)) }, kit: K(2, 0, 1, 3, 0, 0, 2, 0, 2, 1, 0, [2, 3, 2]),

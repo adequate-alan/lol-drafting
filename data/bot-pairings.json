@@ -1320,5 +1320,26 @@
     "notes": "Synergy record set by alan (2026-10-10): Rell and Alistar are joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
     "status": "added",
     "sources": []
+  },
+  {
+    "champion": "viktor",
+    "role": "BOT",
+    "clashDefault": [
+      "leona",
+      "nautilus"
+    ],
+    "alternatives": [],
+    "alternativeNotes": {},
+    "observedProPairings": [],
+    "surrounding": {
+      "jungle": [],
+      "mid": []
+    },
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "notes": "Synergy record set by alan (2026-10-10): Viktor bot with Leona and Nautilus as joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
   }
 ]

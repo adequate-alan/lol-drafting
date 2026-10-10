@@ -101,6 +101,13 @@ describe("bot lane Clash defaults", () => {
     expect(bot("mel").observedProPairings.map((o) => o.champion)).toEqual(["alistar"]);
   });
 
+  it("Viktor bot → Leona + Nautilus, joint preferred; his mid record is separate (alan, 2026-10-10)", () => {
+    expect(bot("viktor").clashDefault).toEqual(["leona", "nautilus"]);
+    expect(bot("viktor").alternatives).toEqual([]);
+    expect(bot("viktor").observedProPairings).toEqual([]);
+    expect(getMidJungle().find((m) => m.anchor === "viktor")!.role).toBe("MID");
+  });
+
   it("every BOT pool champion has a Synergy record", () => {
     const pool = getPool().find((p) => p.role === "BOT")!;
     for (const id of [...pool.core, ...pool.depth, ...pool.flex]) expect(bot(id).clashDefault.length, id).toBeGreaterThan(0);
