@@ -69,9 +69,9 @@ describe("bot lane Clash defaults", () => {
     expect(bot("zeri").clashDefault).toEqual(["yuumi"]);
   });
 
-  it("Kai'Sa → Nautilus + Rakan and Aphelios → Thresh + Lulu, joint preferred (alan, 2026-10-10)", () => {
+  it("Kai'Sa → Nautilus + Rakan (Alistar an alternative) and Aphelios → Thresh + Lulu, joint preferred (alan, 2026-10-10)", () => {
     expect(bot("kaisa").clashDefault).toEqual(["nautilus", "rakan"]);
-    expect(bot("kaisa").alternatives).toEqual([]);
+    expect(bot("kaisa").alternatives).toEqual(["alistar"]);
     expect(bot("kaisa").clashDefault).not.toContain("rell");
     expect(bot("aphelios").clashDefault).toEqual(["thresh", "lulu"]);
     expect(bot("aphelios").alternatives).toEqual([]);

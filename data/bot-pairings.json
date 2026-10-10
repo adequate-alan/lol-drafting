@@ -1023,8 +1023,12 @@
       "nautilus",
       "rakan"
     ],
-    "alternatives": [],
-    "alternativeNotes": {},
+    "alternatives": [
+      "alistar"
+    ],
+    "alternativeNotes": {
+      "alistar": "alan (2026-10-10): saved alternative; engage follow-up for Killer Instinct."
+    },
     "observedProPairings": [],
     "surrounding": {
       "jungle": [],
@@ -1036,7 +1040,7 @@
       "dive",
       "engage-follow-up"
     ],
-    "notes": "Synergy record set by alan (2026-10-10): Nautilus and Rakan are joint preferred supports. No recorded pro game backs it; Kai'Sa + Rell is not saved.",
+    "notes": "Synergy record set by alan (2026-10-10): Nautilus and Rakan are joint preferred supports, Alistar an alternative. No recorded pro game backs it; Kai'Sa + Rell is not saved.",
     "status": "added",
     "sources": []
   },

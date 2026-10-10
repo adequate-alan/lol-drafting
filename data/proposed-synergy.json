@@ -23,11 +23,6 @@
      ],
      "alternatives": [
       {
-       "id": "kaisa",
-       "confidence": "moderate",
-       "reason": "Alistar's knock-up and stun add plasma stacks, so Kai'Sa can follow with Killer Instinct onto the locked target."
-      },
-      {
        "id": "lucian",
        "confidence": "moderate",
        "reason": "Lucian's dash and double-shot burst follow Alistar's level 2 combo, giving the lane early kill pressure."
