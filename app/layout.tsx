@@ -3,7 +3,7 @@ import "@fontsource-variable/inter";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Clash Draft Room",
+  title: "League of Legends Draft Assistant",
   robots: { index: false, follow: false },
 };
 

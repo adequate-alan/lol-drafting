@@ -835,8 +835,8 @@
     ]
   },
   {
-    "id": "classic-clash-front-to-back",
-    "name": "Classic Clash Front-to-Back",
+    "id": "classic-front-to-back",
+    "name": "Classic Front-to-Back",
     "kind": "generalized",
     "slots": {
       "TOP": {

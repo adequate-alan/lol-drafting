@@ -14,8 +14,8 @@ export function PoolView({ names, sources, stats, entries }: {
   const href = (r?: string) => (r ? `/pool?role=${r}` : "/pool");
   return (
     <>
-      <PageHeader title="Champion Pool" desc="Tiers are my Clash calls; pick/ban numbers beside them are pro evidence. A low-sample pick only sits in core with a written reason."
-        actions={<span className="row tight"><SourceBadge layer="clash" label="Tier: my Clash call" /><SourceBadge layer="pro" label="Stats: LCK playoffs" /></span>} />
+      <PageHeader title="Champion Pool" desc="Tiers are my pool calls; pick/ban numbers beside them are pro evidence. A low-sample pick only sits in core with a written reason."
+        actions={<span className="row tight"><SourceBadge layer="clash" label="Tier: my pool call" /><SourceBadge layer="pro" label="Stats: LCK playoffs" /></span>} />
       <div className="row" style={{ marginBottom: 12 }}>
         <nav className="seg" aria-label="Role">
           <Link href={href()} className={!role ? "active" : undefined}>All roles</Link>
@@ -26,7 +26,7 @@ export function PoolView({ names, sources, stats, entries }: {
       <div className="aside-layout">
         <div className="table-wrap tall">
           <table>
-            <thead><tr><th>Role</th><th>Champion</th><th>Clash tier</th><th className="num">Picks</th><th className="num">Bans</th><th className="num">Win rate</th><th>Sample</th><th>Why core</th></tr></thead>
+            <thead><tr><th>Role</th><th>Champion</th><th>Tier</th><th className="num">Picks</th><th className="num">Bans</th><th className="num">Win rate</th><th>Sample</th><th>Why core</th></tr></thead>
             <tbody>
               {rows.map((r) => {
                 const st = stats[r.id];

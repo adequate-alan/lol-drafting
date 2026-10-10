@@ -60,29 +60,27 @@ check("Pro Drafts filter + selected game from URL", /Gen\.G vs/.test(card ?? "")
 await open("/first-pick/bot/?champ=ziggs");
 check("First Pick ?champ=ziggs selects Ziggs", (await page.locator("main").textContent()).includes("Ziggs"), "");
 
-// Draft Room rules
-const chips = async (layer, role) => page.locator(`.rec-group.${layer} .rec-role.role-${role} .rec-row .name`).allTextContents();
+// Draft Room: recommendations ranked by draft fit, pro evidence kept apart
+const recNames = async (role) => page.locator(`.recs .fit-role.role-${role} .fit-head .name`).allTextContents();
 const text = async (sel) => (await page.locator(sel).allTextContents()).join(" ");
 for (const [bot, first] of [["sivir", "Lulu"], ["ezreal", "Karma"], ["corki", "Nami"]]) {
   await open(`/?bot=${bot}`);
-  const c = await chips("clash", "SUPPORT");
-  check(`${bot} → ${first} first (Clash)`, c[0] === first, c.join(", "));
+  const c = await recNames("SUPPORT");
+  check(`${bot} → ${first} first (Recommended Picks)`, c[0] === first, c.join(", "));
 }
 await open("/?bot=ziggs");
-const zc = await chips("clash", "SUPPORT");
-const zl = await chips("logic", "SUPPORT");
-const zp = await chips("pro", "SUPPORT");
-check("Ziggs Clash supports are only Nautilus / Leona", zc.length > 0 && zc.every((x) => ["Nautilus", "Leona"].includes(x)), zc.join(", "));
-check("Ziggs Logic supports are only Nautilus / Leona (or the no-fix note)", zl.every((x) => ["Nautilus", "Leona"].includes(x)), zl.join(", ") || (await text(".rec-group.logic")).slice(0, 120));
-const zigCard = await text("main");
-check("Pyke / Camille not Clash for Ziggs", !zc.some((x) => /Pyke|Camille/.test(x)), zc.join(", "));
+const zc = await recNames("SUPPORT");
+check("Ziggs: Nautilus / Leona lead the recommendations", zc.slice(0, 2).sort().join() === "Leona,Nautilus", zc.join(", "));
 const zigPro = await text(".layer.pro");
 check("Pyke / Camille still shown as pro evidence for Ziggs", /Pyke/.test(zigPro) && /Camille/.test(zigPro), zigPro.match(/.{0,40}(Pyke|Camille).{0,40}/g)?.join(" | ") ?? "");
-for (const q of ["?support=rell", "?mid=lissandra", "?top=ambessa", "?mid=lissandra&support=rell"]) {
-  await open(`/${q}`);
-  const clashText = await text(".rec-group.clash");
-  check(`no Kai'Sa in Clash picks (${q})`, !/Kai'Sa/.test(clashText), clashText.slice(0, 160));
-}
+const why = await text(".recs .fit-role.role-SUPPORT .fit-why");
+check("recommendations explain why", /Saved pairing|fight starter/.test(why), why.slice(0, 160));
+check("Pro Pairings panel is separate from Recommended Picks", (await page.locator(".rec-group.pro h3", { hasText: "Pro Pairings" }).count()) === 1, "");
+await open("/?bot=jinx&vs=ornn,jarvan-iv");
+const enemyText = await text(".draft-slot.enemy .slot-name");
+const vsWhy = await text(".recs .fit-why");
+check("enemy picks from ?vs= load and add matchup reasons", /Ornn/.test(enemyText) && /Matchup/i.test(vsWhy), enemyText);
+check("no Clash wording on the Draft Room", !/Clash/.test(await text("body")), "");
 // Locking through the UI keeps the base path in the URL and survives a refresh
 await open("/");
 await page.locator('input[aria-label="BOT champion"]').fill("Sivi");

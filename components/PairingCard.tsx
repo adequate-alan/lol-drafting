@@ -15,7 +15,7 @@ function ObservedShapes({ list, names, sources, anchor, draftLabels }: {
   if (!list.length) return null;
   return (
     <div style={{ marginTop: 6 }}>
-      <div className="xs muted" style={{ marginBottom: 2 }}><b>Bot-lane duos seen in pro play</b> (not Clash picks)</div>
+      <div className="xs muted" style={{ marginBottom: 2 }}><b>Bot-lane duos seen in pro play</b> (evidence, not recommendations)</div>
       {list.map((o) => (
         <div key={o.bot + o.support} className="obs-row">
           <Duo bot={o.bot} support={o.support} names={names} />
@@ -80,7 +80,7 @@ export function PairingCard({ item, names, sources, compact = false, draftLabels
         <div className="identities">{r.identities.join(" · ")}</div>
         <LayerBlock layer="clash">
           <dl className="kv">
-            <dt>Clash default</dt><dd><ChipList ids={r.clashDefault} names={names} role="SUPPORT" strong /></dd>
+            <dt>Preferred</dt><dd><ChipList ids={r.clashDefault} names={names} role="SUPPORT" strong /></dd>
             <dt>Alternatives</dt><dd><ChipList ids={r.alternatives} names={names} role="SUPPORT" notes={r.alternativeNotes} empty="none (default only)" /></dd>
             {!compact && <>
               <dt>Jungle</dt><dd><ChipList ids={r.surrounding.jungle} names={names} role="JUNGLE" /></dd>
@@ -133,11 +133,11 @@ export function PairingCard({ item, names, sources, compact = false, draftLabels
   return (
     <article className="panel pick-card">
       <Head role="TOP" id={r.champion} name={names[r.champion]}>
-        <span className="badge clash" title="Clash blind grade">Blind {r.blindGrade}</span>
+        <span className="badge clash" title="Blind-pick grade">Blind {r.blindGrade}</span>
         <span className={`badge ${r.status === "downgraded" ? "caution" : "plain"}`}>{r.status}</span>
       </Head>
       <div className="identities">{r.identities.join(" · ")}</div>
-      <LayerBlock layer="clash" title="My Clash Recommendation: surrounding comp">
+      <LayerBlock layer="clash" title="Synergy Recommendation: surrounding comp">
         <dl className="kv">
           <dt>Jungle</dt><dd><ChipList ids={r.surrounding.jungle} names={names} role="JUNGLE" /></dd>
           <dt>Mid</dt><dd><ChipList ids={r.surrounding.mid} names={names} role="MID" /></dd>

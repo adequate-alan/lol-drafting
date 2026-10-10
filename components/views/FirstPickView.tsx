@@ -41,7 +41,7 @@ export function FirstPickView({ tab, names, sources, stats, draftLabels, bot, mi
 
   return (
     <>
-      <PageHeader title="First Pick" desc="Your Clash default always leads; pro pairings are evidence, never the default."
+      <PageHeader title="First Pick" desc="The preferred synergy pairing leads; pro pairings are evidence, never the default."
         actions={draftHref && <Link className="btn primary sm" href={draftHref}>Open in Draft Room →</Link>} />
       <nav className="tabs">
         {(Object.keys(TABS) as Tab[]).map((t) => <Link key={t} href={`/first-pick/${t}`} className={t === tab ? "active" : undefined}>{TABS[t]}</Link>)}
@@ -49,7 +49,7 @@ export function FirstPickView({ tab, names, sources, stats, draftLabels, bot, mi
       <div className="split">
         <div className="table-wrap">
           <table>
-            <thead><tr><th>Pick</th><th>{tab === "top" ? "Grade" : <span className="row tight">Clash default <EvidenceBadge layer="clash" /></span>}</th></tr></thead>
+            <thead><tr><th>Pick</th><th>{tab === "top" ? "Grade" : <span className="row tight">Preferred pairing <EvidenceBadge layer="clash" /></span>}</th></tr></thead>
             <tbody>
               {list.map((x) => (
                 <tr key={x.id + (x.role ?? "")} className={`clickable ${x.id === selectedId && (!x.role || selected?.kind !== "mid-jungle" || selected.record.role === x.role) ? "selected" : ""}`}>
