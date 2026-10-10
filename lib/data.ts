@@ -39,6 +39,7 @@ export function getDraftData() {
     proDrafts: getProDrafts(),
     shells: getCompShells(),
     pool: getPool(),
+    events: getMeta().events,
   };
 }
 export type DraftData = ReturnType<typeof getDraftData>;

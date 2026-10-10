@@ -1,4 +1,5 @@
 import type { BotPairing, MidJunglePairing, ObservedBotShape, ObservedPairing, Role, Source, TopPick } from "@/lib/schema";
+import { describeLine, groupObserved, type EventMap } from "@/lib/evidence";
 import { ChampIcon, Chip, ChipList, Duo, EvidenceBadge, LayerBlock, SourceLinks } from "./ui";
 
 type Names = Record<string, string>;
@@ -30,25 +31,31 @@ function ObservedShapes({ list, names, sources, anchor, draftLabels }: {
   );
 }
 
-function Observed({ list, names, sources, role, draftLabels }: {
-  list: ObservedPairing[]; names: Names; sources: Sources; role: Role; draftLabels?: Record<string, string>;
+function Observed({ list, names, sources, events, role, draftLabels }: {
+  list: ObservedPairing[]; names: Names; sources: Sources; events: EventMap; role: Role; draftLabels?: Record<string, string>;
 }) {
   if (!list.length) return <p className="muted xs">No recorded pro game shows a pairing for this pick.</p>;
+  // One block per partner, freshest event first (16.18 above 16.16); older evidence sits under it.
   return (
     <div>
-      {list.map((o) => (
-        <div key={o.champion} className="obs-row">
-          <Chip id={o.champion} name={names[o.champion] ?? o.champion} role={role} />
-          {o.backedByGame
-            ? <span className="badge pro tnum">{o.proDraftIds.length} game{o.proDraftIds.length > 1 ? "s" : ""}</span>
-            : o.sources.length > 0 && o.sources.every((id) => sources[id]?.pendingClaim)
-              ? <span className="badge plain" title="Not in the recorded drafts; the cited Gol.gg game page was supplied during review and is pending refresh">pending refresh</span>
-              : <span className="badge caution" title="Cited by the workbook; no recorded draft shows it yet">not in recorded drafts</span>}
-          <span className="ctx">
-            {o.backedByGame && draftLabels ? `${o.proDraftIds.map((d) => draftLabels[d] ?? d).join(", ")} · ` : ""}
-            {o.context}{o.era === "earlier-2026" ? " (earlier 2026)" : ""}
-          </span>
-          <SourceLinks ids={o.sources} sources={sources} />
+      {groupObserved(list, events, sources).map((g) => (
+        <div key={g.champion} className="obs-group">
+          {g.lines.map((l, i) => {
+            const o = l.pairing;
+            return (
+              <div key={i} className="obs-row">
+                {i === 0 ? <Chip id={o.champion} name={names[o.champion] ?? o.champion} role={role} /> : <span className="obs-older">older</span>}
+                <span className="badge pro tnum">{describeLine(l)}</span>
+                {l.ongoing && <span className="badge plain" title="Event still running; counts are not final">ongoing</span>}
+                {!o.backedByGame && (o.sources.length > 0 && o.sources.every((id) => sources[id]?.pendingClaim)
+                  ? <span className="badge plain" title="Not in the recorded drafts; the cited Gol.gg page was supplied during review and is pending refresh">pending refresh</span>
+                  : <span className="badge caution" title="Cited by the workbook; no recorded draft shows it yet">not in recorded drafts</span>)}
+                {o.backedByGame && draftLabels && <span className="ctx">{o.proDraftIds.map((d) => draftLabels[d] ?? d).join(", ")}</span>}
+                {o.era === "earlier-2026" && <span className="ctx">earlier 2026</span>}
+                <SourceLinks ids={o.sources} sources={sources} />
+              </div>
+            );
+          })}
         </div>
       ))}
     </div>
@@ -67,8 +74,8 @@ function Head({ role, id, name, children }: { role: Role; id: string; name: stri
   );
 }
 
-export function PairingCard({ item, names, sources, compact = false, draftLabels }: {
-  item: CardRecord; names: Names; sources: Sources; compact?: boolean; draftLabels?: Record<string, string>;
+export function PairingCard({ item, names, sources, events, compact = false, draftLabels }: {
+  item: CardRecord; names: Names; sources: Sources; events: EventMap; compact?: boolean; draftLabels?: Record<string, string>;
 }) {
   if (item.kind === "bot") {
     const r = item.record;
@@ -89,7 +96,7 @@ export function PairingCard({ item, names, sources, compact = false, draftLabels
           </dl>
         </LayerBlock>
         <LayerBlock layer="pro" title="Pro pairings">
-          <Observed list={r.observedProPairings} names={names} sources={sources} role="SUPPORT" draftLabels={draftLabels} />
+          <Observed list={r.observedProPairings} names={names} sources={sources} events={events} role="SUPPORT" draftLabels={draftLabels} />
           {!compact && r.playoffRead && <p className="small" style={{ marginTop: 6 }}><b>Current playoff read:</b> {r.playoffRead}</p>}
         </LayerBlock>
         {r.logic.warning && <LayerBlock layer="logic" title="Warning"><p className="small">{r.logic.warning}</p></LayerBlock>}
@@ -115,7 +122,7 @@ export function PairingCard({ item, names, sources, compact = false, draftLabels
           </dl>
         </LayerBlock>
         <LayerBlock layer="pro" title={`Pro ${other.toLowerCase()} partners`}>
-          <Observed list={r.observedProPairings} names={names} sources={sources} role={other} draftLabels={draftLabels} />
+          <Observed list={r.observedProPairings} names={names} sources={sources} events={events} role={other} draftLabels={draftLabels} />
           {!compact && <ObservedShapes list={r.observedBotShapes} names={names} sources={sources} anchor={r.anchor} draftLabels={draftLabels} />}
           {!compact && r.playoffRead && <p className="small" style={{ marginTop: 6 }}><b>Current playoff read:</b> {r.playoffRead}</p>}
         </LayerBlock>
@@ -146,7 +153,7 @@ export function PairingCard({ item, names, sources, compact = false, draftLabels
       </LayerBlock>
       <LayerBlock layer="pro" title="Pro evidence"
         end={item.stats && <span className="xs muted tnum">{item.stats.picks} playoff picks · {Math.round(item.stats.winRate * 100)}% WR{item.stats.lowSample ? " · low sample" : ""}</span>}>
-        {!compact && <Observed list={r.observedProPairings} names={names} sources={sources} role="JUNGLE" draftLabels={draftLabels} />}
+        {!compact && <Observed list={r.observedProPairings} names={names} sources={sources} events={events} role="JUNGLE" draftLabels={draftLabels} />}
         {!compact && <ObservedShapes list={r.observedBotShapes} names={names} sources={sources} anchor={r.champion} draftLabels={draftLabels} />}
         {r.playoffRead && <p className="small" style={{ marginTop: 6 }}><b>Current playoff read:</b> {r.playoffRead}</p>}
       </LayerBlock>
