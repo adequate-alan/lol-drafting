@@ -17,6 +17,12 @@ async function open(path) {
   const res = await page.goto(base + path, { waitUntil: "networkidle" });
   return res;
 }
+// Shared dropdown (components/Select.tsx): open the trigger, then click the option by value.
+async function choose(trigger, value) {
+  await page.locator(trigger).click();
+  await page.locator(`.select-menu [role=option][data-value="${value}"]`).click();
+  await page.waitForTimeout(150);
+}
 async function h1() { return (await page.locator("main h1").first().textContent())?.trim(); }
 
 // Sections, direct loads and refreshes
@@ -181,7 +187,7 @@ await page.locator(".theme-toggle").click();
   check("pool: default sort is pool tier", r.length > 50 && r.every((x, i) => i === 0 || rank[r[i - 1][2]] <= rank[x[2]]), `${r.length} rows`);
   await page.click(".seg button:has(.role-tag:text-is('MID'))"); r = await rows();
   check("pool: role filter", r.length > 0 && r.every((x) => x[1] === "MID"), `${r.length} MID rows`);
-  await page.selectOption("select[aria-label='Pool tier']", "core"); r = await rows();
+  await choose("[role=combobox][aria-label='Pool tier']", "core"); r = await rows();
   check("pool: tier filter", r.length > 0 && r.every((x) => x[2] === "Core"), `${r.length} rows`);
   await open("/pool/?event=demacia-cup-2026");
   r = (await rows()).filter((x) => !/No verified data/.test(x[7]));
@@ -217,7 +223,7 @@ await page.locator(".theme-toggle").click();
   await page.click(".seg.scroll button:has(.role-tag:text-is('BOT'))");
   const botRows = await page.$$eval(".hub-table.tall tbody tr", (rs) => rs.length);
   check("meta: role tabs switch the table", botRows > 0, `${botRows} BOT rows`);
-  await page.selectOption(".hub-tools select", "demacia-cup-2026");
+  await choose(".hub-tools [role=combobox]", "demacia-cup-2026");
   const duos = await page.locator("text=Bot lane pairings").locator("xpath=following::table[1]").locator("tbody tr").count();
   check("meta: tournament selector filters pairings (Demacia duos)", duos === 4, `${duos} duos`);
   await page.locator(".hub-table .champ-link").first().click();
@@ -395,6 +401,51 @@ check("fan-project notice in the footer", /Legal Jibber Jabber/.test((await text
 check("Gen.G trademark line in the footer", /Gen\.G and GenRang are trademarks of Gen\.G Esports/.test((await text("footer.site-foot")) ?? ""), "");
 const mascotOk = async () => page.$$eval("img.genrang", (ims) => ims.length > 0 && ims.every((i) => i.complete && i.naturalWidth > 0 && i.getAttribute("src").startsWith("/lol-drafting/")));
 check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
+// Dropdowns: one shared component, no native selects, keyboard and screen-reader behaviour, viewport-aware
+{
+  let natives = 0;
+  for (const path of ["/pool/", "/meta/", "/pro-drafts/", "/comps/"]) { await open(path); natives += await page.locator("main select").count(); }
+  check("dropdowns: no native <select> on filter pages", natives === 0, `${natives} native`);
+  await open("/pro-drafts/");
+  const team = page.locator(".select-field", { hasText: "Team" }).locator("[role=combobox]");
+  await team.focus();
+  await page.keyboard.press("ArrowDown");
+  const opened = await page.locator(".select-menu[role=listbox]").isVisible();
+  const look = await page.evaluate(() => {
+    const m = document.querySelector(".select-menu"), sel = m?.querySelector("[aria-selected=true]");
+    const cs = (e) => e && getComputedStyle(e);
+    return { font: cs(m)?.fontFamily, selBg: cs(sel)?.backgroundColor, check: cs(sel?.querySelector(".select-check"))?.visibility, label: m?.getAttribute("aria-labelledby") };
+  });
+  await page.keyboard.press("ArrowDown");
+  const activeId = await team.getAttribute("aria-activedescendant");
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(200);
+  const picked = new URL(page.url()).searchParams.get("team");
+  check("dropdowns: arrows + Enter choose an option, focus stays on the trigger", opened && !!activeId && !!picked && (await team.evaluate((e) => e === document.activeElement)) && (await page.locator(".select-menu").count()) === 0, `team=${picked}`);
+  check("dropdowns: menu uses the display font, tinted selected row with a check, labelled for screen readers", /grotesk/i.test(look.font ?? "") && look.selBg && look.selBg !== "rgba(0, 0, 0, 0)" && look.check === "visible" && !!look.label, JSON.stringify(look));
+  await page.keyboard.press("Space");
+  await page.keyboard.press("Escape");
+  const afterEsc = new URL(page.url()).searchParams.get("team");
+  check("dropdowns: Escape closes without changing the value", (await page.locator(".select-menu").count()) === 0 && afterEsc === picked, "");
+  await team.click();
+  await page.locator("main h1").click();
+  check("dropdowns: clicking outside closes the menu", (await page.locator(".select-menu").count()) === 0, "");
+  await open("/pro-drafts/");
+  const champ = page.locator(".select-field", { hasText: "Champion" }).locator("[role=combobox]");
+  const tb = await champ.boundingBox();
+  await page.setViewportSize({ width: 1440, height: Math.round(tb.y + tb.height + 60) });
+  await champ.click();
+  const flip = await page.evaluate(() => { const m = document.querySelector(".select-menu"); const r = m.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, vh: innerHeight, scrolls: m.scrollHeight > m.clientHeight }; });
+  check("dropdowns: menu flips above the trigger near the bottom and scrolls inside", flip.bottom <= tb.y + 1 && flip.top >= 0 && flip.scrolls, JSON.stringify(flip));
+  await page.keyboard.press("Escape");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await open("/meta/");
+  await page.locator(".hub-tools [role=combobox]").click();
+  const mb = await page.locator(".select-menu").boundingBox();
+  check("dropdowns at 390px: menu stays inside the viewport", !!mb && mb.x >= 0 && mb.x + mb.width <= 390 && mb.y >= 0 && mb.y + mb.height <= 844, JSON.stringify(mb));
+  await page.keyboard.press("Escape");
+  await page.setViewportSize({ width: 1440, height: 900 });
+}
 await open("/geng/");
 check("GenRang on the Gen.G page", (await page.locator(".brand-band img.genrang").count()) === 1 && await mascotOk(), "");
 // Review screenshots: desktop and mobile, light and dark
@@ -412,6 +463,10 @@ if (shots) {
       await page.locator(".lu-champ").first().click();
       await page.waitForTimeout(400);
       await page.screenshot({ path: `${shots}/review-drawer-${tag}-${theme}.png` });
+      await open("/pool/?event=demacia-cup-2026");
+      await page.locator("[role=combobox][aria-label='Tournament']").click();
+      await page.waitForTimeout(200);
+      await page.screenshot({ path: `${shots}/review-dropdown-${tag}-${theme}.png` });
     }
   }
   await page.evaluate(() => localStorage.removeItem("theme"));

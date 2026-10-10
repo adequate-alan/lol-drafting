@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Select } from "@/components/Select";
 import { ChampIcon, ChampionRow, PageHeader, SourceBadge, SourceLinks } from "@/components/ui";
 import { ROLES, type ProDraft, type Role, type Source } from "@/lib/schema";
 
@@ -43,11 +44,8 @@ export function ProDraftsView({ names, sources, all }: {
     router.replace(`/pro-drafts${q.size ? `?${q}` : ""}`, { scroll: false });
   };
   const sel = (key: keyof Filters, label: string, any: string, options: [string, string][]) => (
-    <label>{label}
-      <select name={key} defaultValue={f[key] ?? ""} className={f[key] ? "active" : undefined} onChange={(e) => setFilter(key, e.target.value)}>
-        <option value="">{any}</option>{options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-      </select>
-    </label>
+    <Select showLabel label={label} value={f[key] ?? ""} onChange={(v) => setFilter(key, v)}
+      options={[{ value: "", label: any }, ...options.map(([value, l]) => ({ value, label: l }))]} />
   );
   const active = KEYS.filter((k) => k !== "id" && f[k]).length;
 
