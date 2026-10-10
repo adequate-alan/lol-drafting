@@ -1550,5 +1550,69 @@
     "sources": [
       "golgg-champion-120"
     ]
+  },
+  {
+    "anchor": "yone",
+    "role": "MID",
+    "clashDefault": [
+      "maokai",
+      "sejuani"
+    ],
+    "alternatives": [],
+    "botShapes": [],
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "history": [],
+    "logic": {},
+    "confidence": "medium",
+    "identities": [
+      "dive",
+      "engage-follow-up"
+    ],
+    "playoffRead": "Saved pairing set by alan (2026-10-10): Yone with Maokai or Sejuani. No recorded pro game backs this pairing.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "anchor": "maokai",
+    "role": "JUNGLE",
+    "clashDefault": [
+      "yone"
+    ],
+    "alternatives": [],
+    "botShapes": [],
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "history": [],
+    "logic": {},
+    "confidence": "medium",
+    "identities": [
+      "engage",
+      "frontline"
+    ],
+    "playoffRead": "Saved pairing set by alan (2026-10-10): Yone with Maokai or Sejuani. No recorded pro game backs this pairing.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "anchor": "sejuani",
+    "role": "JUNGLE",
+    "clashDefault": [
+      "yone"
+    ],
+    "alternatives": [],
+    "botShapes": [],
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "history": [],
+    "logic": {},
+    "confidence": "medium",
+    "identities": [
+      "engage",
+      "frontline"
+    ],
+    "playoffRead": "Saved pairing set by alan (2026-10-10): Yone with Maokai or Sejuani. No recorded pro game backs this pairing.",
+    "status": "added",
+    "sources": []
   }
 ]
