@@ -116,7 +116,12 @@ function SourcesSection({ ids, sources }: { ids: string[]; sources: Sources }) {
   );
 }
 
-const SBox = ({ children }: { children: React.ReactNode }) => <div className="scout-grid">{children}</div>;
+/** Synergy groups. Columns follow the section's width (container queries in globals.css), and a grid holding written
+ *  notes stays at two columns until there is room for four readable ones. */
+const SBox = ({ children, noted }: { children: React.ReactNode; noted?: boolean }) => {
+  const n = Array.isArray(children) ? children.filter(Boolean).length : 1;
+  return <div className={`scout-grid n${n}${noted ? " noted" : ""}`}>{children}</div>;
+};
 const Shapes = ({ list, names }: { list: { bot: string; support: string }[]; names: Names }) =>
   list.length ? <span className="chip-list">{list.map((d) => <Duo key={d.bot + d.support} bot={d.bot} support={d.support} names={names} />)}</span> : <span className="muted small">none</span>;
 
@@ -132,7 +137,7 @@ export function ScoutingReport({ item, names, sources, events, draftLabels }: {
       <article className="panel pick-card scout">
         <Header role="BOT" id={r.champion} name={names[r.champion]} confidence={r.confidence} identities={r.identities} />
         <Section layer="clash" title="Synergy">
-          <SBox>
+          <SBox noted={r.alternatives.some((id) => r.alternativeNotes[id])}>
             <Group title="Preferred"><ChipList ids={r.clashDefault} names={names} role="SUPPORT" strong /></Group>
             <Group title="Alternatives"><ChipList ids={r.alternatives} names={names} role="SUPPORT" notes={r.alternativeNotes} empty="none (default only)" /></Group>
             <Group title="Best jungle partners"><ChipList ids={r.surrounding.jungle} names={names} role="JUNGLE" /></Group>
