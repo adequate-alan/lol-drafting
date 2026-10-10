@@ -2,17 +2,18 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { picksOf, profile, RULES, warnings, type Draft, type DraftWarning } from "@/lib/evaluate";
-import { recommend, teamNeeds, winConditions, type Need, type Recommendation } from "@/lib/recommend";
+import { recommend, teamNeeds, type Need, type Recommendation } from "@/lib/recommend";
 import { ROLES, type Attr, type Role, type Source } from "@/lib/schema";
 import { describeLine } from "@/lib/evidence";
 import { counterPicks, describeEvidence, describePro, enemyParam, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
 import { proSuggestions, similarProDrafts, similarShells, type ProSuggestion, type SuggestData } from "@/lib/suggest";
 import type { DraftData, DrawerData } from "@/lib/data";
 import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
+import { CompCheck } from "./CompCheck";
 import { ChampionHoverCard, useHoverIntent } from "./ChampionInteraction";
 import { GenRang } from "./GenRang";
 import { PairingCard, type CardRecord } from "./PairingCard";
-import { ChampIcon, ChampionRow, SourceBadge, WarningBadge, type Severity } from "./ui";
+import { ChampIcon, ChampionRow, WarningBadge, type Severity } from "./ui";
 
 const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
 // Lane partner: with Bot locked, Support is the natural next pick (and the other way round).
@@ -82,12 +83,9 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
   const enemyIds = enemy.filter((e): e is string => !!e);
   const taken = [...(Object.values(draft).filter(Boolean) as string[]), ...enemyIds];
   const picks = picksOf(draft, data.champions);
-  const enemyPicks = enemyIds.map((id) => data.champions.find((c) => c.id === id)!).filter(Boolean);
   const prof = profile(draft, data.champions);
   const warns = warnings(draft, data.champions);
   const needs = picks.length ? teamNeeds(picks) : [];
-  const plans = winConditions(picks);
-  const enemyPlans = winConditions(enemyPicks);
   const enemyDraft = enemyDraftOf(enemy);
   // The full draft-fit list, so a counter can say where it ranks overall. The visible list is its top REC_LIMIT.
   const fits = recommend(draft, enemyIds, data, Infinity);
@@ -269,36 +267,23 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
           </section>
         </div>
 
-        <aside className="comp-check" aria-label="Comp Check">
-          <div className="cc-head"><h2>Comp Check</h2><SourceBadge layer="logic" /></div>
-          <Indicators prof={prof} needs={needs} picks={picks.length} />
-          {picks.some((c) => c.rosterOnly) && (
-            <p className="xs muted">
-              {picks.filter((c) => c.rosterOnly).map((c) => c.name).join(", ")}: attributes not reviewed yet, so Comp Check counts
-              nothing from {picks.filter((c) => c.rosterOnly).length === 1 ? "this pick" : "these picks"}.
-            </p>
-          )}
-
+        <CompCheck draft={draft} enemyIds={enemyIds} champions={data.champions} botPairings={data.botPairings} active={active}
+          bestOverall={activeRecs[0]?.champion} names={names}>
           <div className="cc-section">
-            <div className="cc-label">Warnings</div>
+            <div className="cc-label">Detail</div>
+            <Indicators prof={prof} needs={needs} picks={picks.length} />
+          </div>
+          <div className="cc-section">
+            <div className="cc-label">Rule checks</div>
             {!warns.length && (lockedCount < 2 ? <p className="xs muted">Needs two picks.</p> : <p className="cc-ok">No warnings.</p>)}
             {[...warns].sort((a, b) => Number(severityOf(b) === "critical") - Number(severityOf(a) === "critical")).map((w) => (
-              <details key={w.id} className={`warning-item ${severityOf(w)}`} open={severityOf(w) === "critical"}>
+              <details key={w.id} className={`warning-item ${severityOf(w)}`}>
                 <summary><WarningBadge severity={severityOf(w)} />{w.label}</summary>
                 <p>{w.why}</p>
                 <p className="xs muted">Rule: {w.rule}.</p>
               </details>
             ))}
           </div>
-
-          <div className="cc-section">
-            <div className="cc-label">Win condition</div>
-            {!plans.length
-              ? <p className="xs muted">{picks.length < 2 ? "Needs two picks." : "No clear plan yet."}</p>
-              : plans.slice(0, 3).map((w, i) => <div key={w.id} className={`plan ${i === 0 ? "lead" : ""}`}><b>{w.title}</b>{i === 0 && <p>{w.text}</p>}</div>)}
-            {enemyPlans.length > 0 && <div className="plan enemy"><span className="cc-label inline">Enemy</span><b>{enemyPlans[0].title}</b></div>}
-          </div>
-
           {pickNotes.length > 0 && (
             <div className="cc-section notes">
               <div className="cc-label">Pick notes</div>
@@ -309,7 +294,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
             <summary>All {RULES.length} rules</summary>
             <ul>{RULES.map((r) => <li key={r.id}><b>{r.label}:</b> {r.rule}</li>)}</ul>
           </details>
-        </aside>
+        </CompCheck>
       </div>
 
       {hoverCard.card && !drawer && (

@@ -1245,3 +1245,37 @@ h2, h3, .panel-head h2, .panel-head h3 { font-weight: 600; letter-spacing: -.005
 .chip.strong, .cell-champ.hit { font-weight: 600; }
 th { letter-spacing: .06em; font-weight: 600; }
 .role-tab .role-name { font-weight: 600; letter-spacing: .06em; }
+
+/* ---------- Comp Check diagnosis (components/CompCheck.tsx) ---------- */
+.cc-head-tags { display: inline-flex; align-items: center; gap: var(--s3); }
+.cc-conf { font-size: var(--fs-2xs); font-weight: 650; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); border: 1px solid var(--border-strong); border-radius: var(--r-sm); padding: 0 var(--s2); }
+.cc-conf.early { color: var(--caution); border-color: var(--caution-line); }
+.cc-headline { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: var(--fs); color: var(--text); }
+.cc-win { margin: 0; font-size: var(--fs-xs); color: var(--text-muted); }
+.cc-point { border-left: 2px solid var(--logic-line); padding: 1px 0 1px var(--s4); }
+.cc-point.major { border-left-color: var(--danger); }
+.cc-point.moderate { border-left-color: var(--caution); }
+.cc-point summary { display: flex; align-items: baseline; gap: var(--s3); cursor: pointer; list-style: none; font-size: var(--fs-sm); font-weight: 600; }
+.cc-point summary::-webkit-details-marker { display: none; }
+.cc-point p { margin: 2px 0 0; font-size: var(--fs-xs); color: var(--text-muted); }
+.sev { flex: none; font-size: var(--fs-3xs); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--logic); }
+.sev.major { color: var(--danger); }
+.sev.moderate { color: var(--caution); }
+.cc-needs { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--s2); counter-reset: need; }
+.cc-needs li { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--s3); font-size: var(--fs-sm); counter-increment: need; }
+.cc-needs li::before { content: counter(need); font-family: var(--font-mono); font-size: var(--fs-2xs); color: var(--accent-text); grid-row: span 2; padding-top: 1px; }
+.cc-needs li span { font-size: var(--fs-xs); color: var(--text-muted); }
+.cc-picks { display: grid; gap: var(--s2); padding-top: var(--s3); border-top: 1px dashed var(--border); }
+.cc-picks > div { display: grid; grid-template-columns: 76px minmax(0, 1fr); column-gap: var(--s3); font-size: var(--fs-sm); }
+.cc-picks .k { font-size: var(--fs-2xs); text-transform: uppercase; letter-spacing: .06em; color: var(--text-faint); padding-top: 2px; grid-row: span 2; }
+.cc-picks .t { font-size: var(--fs-xs); color: var(--text-muted); }
+.cc-picks .theory .t { color: var(--text-faint); }
+.cc-timing { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); }
+.cc-phase { display: grid; grid-template-columns: 1fr auto; row-gap: var(--s1); font-size: var(--fs-sm); }
+.cc-bar { grid-column: span 2; height: 3px; background: var(--surface-sunken); border-radius: var(--r-sm); overflow: hidden; }
+.cc-bar span { display: block; height: 100%; background: var(--accent); }
+.cc-more > summary { cursor: pointer; font-size: var(--fs-sm); font-weight: 600; color: var(--text-muted); }
+.cc-more[open] > summary { margin-bottom: var(--s3); }
+.cc-more > .cc-section + .cc-section { margin-top: var(--s5); }
+.cc-scores { margin: 0; padding: 0; list-style: none; display: grid; gap: 1px; }
+.cc-scores li { display: flex; justify-content: space-between; font-size: var(--fs-xs); color: var(--text-muted); }

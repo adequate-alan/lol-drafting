@@ -74,13 +74,13 @@ describe("v2 warnings on the five review comps", () => {
   });
 });
 
-describe("v2 is not wired into the site yet", () => {
+describe("v2 reaches the site only through Comp Check", () => {
   const files = (dir: string): string[] => readdirSync(dir).flatMap((f) => {
     const p = join(dir, f);
     return statSync(p).isDirectory() ? files(p) : p.endsWith(".tsx") || p.endsWith(".ts") ? [p] : [];
   });
-  it("no page or component imports lib/model-v2", () => {
-    for (const f of [...files("app"), ...files("components"), "lib/suggest.ts", "lib/evaluate.ts", "lib/data.ts"])
+  it("no page, component or active engine imports lib/model-v2 except components/CompCheck.tsx", () => {
+    for (const f of [...files("app"), ...files("components"), "lib/suggest.ts", "lib/evaluate.ts", "lib/data.ts", "lib/recommend.ts"].filter((f) => !f.endsWith("CompCheck.tsx")))
       expect(readFileSync(f, "utf8"), f).not.toMatch(/model-v2/);
   });
 });
