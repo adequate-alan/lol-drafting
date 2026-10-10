@@ -43,3 +43,18 @@ export function getDraftData() {
   };
 }
 export type DraftData = ReturnType<typeof getDraftData>;
+
+// Everything the champion drawer (Comp Library, Meta) needs in the browser.
+export function getDrawerData() {
+  return {
+    champions: getChampions(),
+    botPairings: getBotPairings(),
+    midJungle: getMidJungle(),
+    topPicks: getTopPicks(),
+    proDrafts: getProDrafts(),
+    pool: getPool(),
+    meta: getMeta(),
+    sources: Object.fromEntries(getSources().map((s) => [s.id, s])),
+  };
+}
+export type DrawerData = ReturnType<typeof getDrawerData>;

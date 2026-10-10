@@ -161,6 +161,40 @@ await page.locator(".theme-toggle").click();
   await open("/first-pick/bot/?champ=ezreal");
   check("pro pairings show event · patch · date (Ezreal + Karma)", /1 game · Demacia Cup · 16\.18 · Oct 3/.test(await page.locator("main").textContent()), "");
 }
+// Comp Library champion drawer
+{
+  await open("/comps/");
+  await page.evaluate(() => window.scrollTo(0, 400));
+  const naut = page.locator("#mage-bot-siege .comp-slot", { hasText: "Nautilus" });
+  await naut.scrollIntoViewIfNeeded();
+  const y = await page.evaluate(() => scrollY);
+  await naut.click();
+  const drawer = page.locator(".drawer");
+  await drawer.waitFor({ timeout: 5000 }).catch(() => {});
+  const marks = await page.locator("#mage-bot-siege .comp-slot-row.has-saved b").allTextContents();
+  check("comps: clicking Nautilus opens the drawer and marks Ziggs as Synergy", (await drawer.locator("h2").textContent()) === "Nautilus" && marks.includes("Ziggs"), marks.join(", "));
+  const layers = await drawer.locator(".layer").evaluateAll((els) => els.map((e) => e.className));
+  check("comps: drawer keeps Synergy, Pro and Logic separate", layers.join() === "layer clash,layer pro,layer logic", layers.join(" | "));
+  await drawer.locator("[aria-label='Next champion']").click();
+  check("comps: next moves through the comp in place", (await drawer.locator("h2").textContent()) === "Gnar" && page.url().endsWith("/comps/"), page.url());
+  await page.keyboard.press("Escape");
+  check("comps: Escape closes and keeps the scroll position", (await drawer.count()) === 0 && (await page.evaluate(() => scrollY)) === y, "");
+  await naut.click();
+  await page.goBack();
+  await page.waitForTimeout(400);
+  check("comps: Back closes the drawer without leaving the page", (await drawer.count()) === 0 && page.url().endsWith("/comps/"), page.url());
+  await naut.click();
+  await drawer.locator("a", { hasText: "Use in Draft Room" }).click();
+  await page.waitForURL(/\?support=nautilus/, { timeout: 8000 }).catch(() => {});
+  await page.waitForTimeout(500);
+  check("comps: Use in Draft Room loads the champion in its role", /\/lol-drafting\/\?support=nautilus$/.test(page.url()) && /Nautilus/.test(await page.locator(".draft-slots").first().textContent()), page.url());
+  await open("/comps/");
+  await page.locator("#mage-bot-siege .comp-slot", { hasText: "Nautilus" }).click();
+  await page.locator(".drawer a", { hasText: "View in Champion Pool" }).click();
+  await page.waitForURL(/champ=nautilus/, { timeout: 8000 }).catch(() => {});
+  await page.waitForTimeout(500);
+  check("comps: View in Champion Pool opens that row", (await page.locator("tr.pool-row.open").textContent())?.includes("Nautilus") ?? false, page.url());
+}
 // Mobile navigation
 await page.setViewportSize({ width: 390, height: 844 });
 await open("/pool/");
@@ -176,6 +210,12 @@ await open("/pool/");
 await page.locator("tr.pool-row").first().click();
 const poolOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
 check("pool at 390px with a row open: any scroll stays inside the table", poolOverflow <= 0, `${poolOverflow}px`);
+await open("/comps/");
+await page.locator(".comp-slot").first().click();
+await page.waitForTimeout(400); // let the slide-up finish
+const sheet = await page.locator(".drawer").boundingBox().catch(() => null);
+const sheetOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+check("comps at 390px: drawer is a bottom sheet with no page overflow", !!sheet && sheet.width === 390 && sheet.y > 100 && Math.round(sheet.y + sheet.height) === 844 && sheetOverflow <= 0, JSON.stringify(sheet));
 await page.setViewportSize({ width: 1440, height: 900 });
 // Adobe Fonts kit: read its families from the kit CSS, then confirm the browser can load them on this domain
 const kitCss = await fetch("https://use.typekit.net/lvt6ebv.css").then((r) => r.text()).catch(() => "");
