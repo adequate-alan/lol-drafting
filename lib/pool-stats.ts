@@ -1,0 +1,141 @@
+// Champion Pool stats: role-aware Observed Pro Evidence next to alan's pool tiers. Built only from recorded pro drafts,
+// game pages supplied during review (pending refresh) and Gol.gg tournament stats in meta.json. Never from champion
+// attributes or saved pairings, and nothing here changes a pool tier.
+import { fresher } from "./evidence";
+import type { BotPairing, Meta, MetaEvent, MetaStat, PoolEntry, ProDraft, Role, Source } from "./schema";
+
+export type Tier = "core" | "depth" | "flex";
+export const TIERS: [Tier, string][] = [["core", "Core"], ["depth", "Depth"], ["flex", "Prepared / flex"]];
+
+// The lane partner a pairing is read against.
+export const PARTNER_ROLE: Record<Role, Role> = { TOP: "JUNGLE", JUNGLE: "MID", MID: "JUNGLE", BOT: "SUPPORT", SUPPORT: "BOT" };
+
+export interface ProGame {
+  key: string;
+  event: MetaEvent | undefined;
+  eventName: string;
+  label: string; // "Gen.G Finals G1" or "JDG vs BRO"
+  patch?: string;
+  date?: string;
+  picks: Partial<Record<Role, string>>; // a supplied duo has only BOT and SUPPORT
+  draftId?: string;
+  pending: boolean; // game page supplied during review, not a recorded draft
+  sources: string[];
+}
+
+export interface EventStat { event: MetaEvent; stat: MetaStat }
+
+export interface PoolRow {
+  id: string;
+  role: Role;
+  tier: Tier;
+  order: number; // position in alan's pool list
+  reason?: string;
+  stat?: EventStat; // newest event with a stat for this champion in this role
+  stats: EventStat[]; // every event's stat for this champion in this role, newest first
+  games: ProGame[]; // games where the champion played this role, newest first
+  latest?: { event: MetaEvent | undefined; eventName: string; patch?: string; date?: string };
+  partner?: { id: string; games: number };
+}
+
+export interface PoolInput {
+  pool: PoolEntry[];
+  meta: Meta;
+  proDrafts: ProDraft[];
+  botPairings: BotPairing[];
+  sources: Record<string, Source>;
+}
+
+const eventByName = (events: MetaEvent[], name?: string) => events.find((e) => e.name === name || e.id === name);
+
+/** Every pro game the repo can show by role: recorded drafts plus supplied bot/support game pages. */
+export function proGames({ meta, proDrafts, botPairings, sources }: Omit<PoolInput, "pool">): ProGame[] {
+  const out: ProGame[] = proDrafts.map((d) => {
+    const ev = eventByName(meta.events, d.tournament);
+    const game = d.sources.map((id) => sources[id]).find((s) => s?.type === "golgg-game");
+    return { key: d.id, event: ev, eventName: ev?.short ?? d.tournament, label: `${d.team} ${d.seriesGame}`, patch: d.patch ?? ev?.patch,
+      date: game?.date, picks: d.picks, draftId: d.id, pending: false, sources: d.sources };
+  });
+  for (const b of botPairings) for (const o of b.observedProPairings) {
+    if (o.backedByGame) continue; // its recorded draft is already listed
+    const cited = o.sources.map((id) => sources[id]);
+    if (!cited.length || !cited.every((s) => s?.type === "golgg-game" && s.pendingClaim)) continue;
+    for (const s of cited as Source[]) {
+      const ev = o.event ? meta.events.find((e) => e.id === o.event) : eventByName(meta.events, s.tournament);
+      out.push({ key: `${s.id}-${b.champion}-${o.champion}`, event: ev, eventName: ev?.short ?? s.tournament ?? o.context,
+        label: s.seriesGame ?? `${s.team} vs ${s.opponent}`, patch: s.patch ?? ev?.patch, date: s.date,
+        picks: { BOT: b.champion, SUPPORT: o.champion }, pending: true, sources: [s.id] });
+    }
+  }
+  return out.sort(fresher);
+}
+
+/** Tournament stats per event. The LCK playoffs keep theirs in meta.stats; other events carry their own. */
+export function eventStats(meta: Meta): EventStat[] {
+  const main = eventByName(meta.events, meta.tournament.name);
+  const out: EventStat[] = [];
+  for (const e of meta.events) {
+    const list = e === main ? [...meta.stats, ...e.stats] : e.stats;
+    for (const stat of list) out.push({ event: e, stat });
+  }
+  return out;
+}
+
+export interface PoolFilter { event?: string; patch?: string }
+
+export function poolRows(input: PoolInput, filter: PoolFilter = {}): PoolRow[] {
+  const keep = (ev: MetaEvent | undefined, patch?: string) =>
+    (!filter.event || ev?.id === filter.event) && (!filter.patch || (patch ?? ev?.patch) === filter.patch);
+  const games = proGames(input).filter((g) => keep(g.event, g.patch));
+  const stats = eventStats(input.meta).filter((s) => keep(s.event)).sort((a, b) => fresher(a.event, b.event));
+  const rows: PoolRow[] = [];
+  let order = 0;
+  for (const p of input.pool) {
+    for (const [tier] of TIERS) for (const id of p[tier]) {
+      const role = p.role;
+      // Role-aware: a stat counts only for the role it is recorded under (Camille top stats never show on Camille support).
+      const mine = stats.filter((s) => s.stat.champion === id && s.stat.role === role);
+      const played = games.filter((g) => g.picks[role] === id);
+      const counts = new Map<string, number>();
+      for (const g of played) { const pid = g.picks[PARTNER_ROLE[role]]; if (pid) counts.set(pid, (counts.get(pid) ?? 0) + 1); }
+      // Most games first; on a tie, the partner from the fresher game (played is already newest first).
+      const partner = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
+      const g0 = played[0];
+      // Latest appearance: the fresher of the newest game and the newest event stat.
+      const fromGame = g0 && { event: g0.event, eventName: g0.eventName, patch: g0.patch, date: g0.date };
+      const fromStat = mine[0] && { event: mine[0].event, eventName: mine[0].event.short, patch: mine[0].event.patch };
+      const latest = fromGame && fromStat ? (fresher(fromStat, fromGame) < 0 ? fromStat : fromGame) : fromGame ?? fromStat;
+      rows.push({ id, role, tier, order: order++, reason: tier === "core" ? p.coreReasons[id] : undefined,
+        stat: mine[0], stats: mine, games: played, latest, partner: partner && { id: partner[0], games: partner[1] } });
+    }
+  }
+  return rows;
+}
+
+export const SORTS = { tier: "Pool tier", picks: "Picks", bans: "Bans", presence: "Presence", winRate: "Win rate", recency: "Recency" } as const;
+export type SortKey = keyof typeof SORTS;
+
+const TIER_RANK: Record<Tier, number> = { core: 0, depth: 1, flex: 2 };
+
+/** Pool tier is the default order (alan's call, not pro popularity). Missing values sort last. */
+export function sortRows(rows: PoolRow[], key: SortKey): PoolRow[] {
+  const num = (r: PoolRow) => {
+    const s = r.stat?.stat;
+    if (key === "picks") return s?.picks;
+    if (key === "bans") return s?.bans ?? undefined;
+    if (key === "presence") return s?.presence ?? undefined;
+    if (key === "winRate") return s?.winRate;
+    return undefined;
+  };
+  const byTier = (a: PoolRow, b: PoolRow) => TIER_RANK[a.tier] - TIER_RANK[b.tier] || a.order - b.order;
+  return [...rows].sort((a, b) => {
+    if (key === "tier") return byTier(a, b);
+    if (key === "recency") {
+      if (!a.latest || !b.latest) return Number(!a.latest) - Number(!b.latest) || byTier(a, b);
+      return fresher(a.latest, b.latest) || b.games.length - a.games.length || byTier(a, b);
+    }
+    const x = num(a), y = num(b);
+    if (x == null || y == null) return Number(x == null) - Number(y == null) || byTier(a, b);
+    return y - x || byTier(a, b);
+  });
+}
