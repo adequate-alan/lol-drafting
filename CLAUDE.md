@@ -100,6 +100,8 @@ Change these only when alan explicitly says so, then update the test in the same
   Nautilus; Yasuo → Rell + Alistar.
 - Ahri ↔ Vi are each other's primary. Yone (mid) ↔ Maokai and Yone ↔ Sejuani are saved pairs, both ways. LeBlanc ↔ Lee Sin is saved (LeBlanc a
   secondary mid for Lee Sin; Lee Sin LeBlanc's only partner).
+- Every MID / JUNGLE / TOP pool champion has a record (alan, 2026-10-10): Poppy → Orianna + Syndra; Vex → Jarvan IV +
+  Sejuani; top flex blind grades Dr. Mundo B, Gragas B, Galio B-, Jax B-, Varus C+, Fiora C+, Anivia C.
 - Skarner + Locke is the current pairing. Azir + Skarner is an earlier-2026 tendency only, never the current Gen.G default.
 
 ## Hosting and security

@@ -1795,5 +1795,43 @@
     "playoffRead": "Synergy record derived from alan's saved pairings (2026-10-10): Lee Sin lists Twisted Fate as a saved partner (as an alternative; the only saved partner, so the default here). No recorded pro game backs it.",
     "status": "added",
     "sources": []
+  },
+  {
+    "anchor": "poppy",
+    "role": "JUNGLE",
+    "clashDefault": [
+      "orianna",
+      "syndra"
+    ],
+    "alternatives": [],
+    "botShapes": [],
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "history": [],
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "playoffRead": "Synergy record set by alan (2026-10-10): Orianna and Syndra are joint preferred mids. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "anchor": "vex",
+    "role": "MID",
+    "clashDefault": [
+      "jarvan-iv",
+      "sejuani"
+    ],
+    "alternatives": [],
+    "botShapes": [],
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "history": [],
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "playoffRead": "Synergy record set by alan (2026-10-10): Jarvan IV and Sejuani are joint preferred junglers. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
   }
 ]
