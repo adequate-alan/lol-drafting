@@ -10,7 +10,7 @@ const D = (damageThreat: RoleDamage["damageThreat"], damageSplit: RoleDamage["da
 type N = 0 | 1 | 2 | 3;
 // Column order: waveclear, range, tankDamage, backlineAccess, disengage, counterEngage, followUp, aoeCc,
 // resourceDemand, ultDependency, setupDependency, [early, mid, late], global (map-wide ultimate).
-const K = (wc: N, ra: N, td: N, ba: N, de: N, ce: N, fu: N, ao: N, rd: N, ud: N, sd: N, [early, mid, late]: [N, N, N], global = false): Omit<Kit, "selfPeel"> => ({
+const K = (wc: N, ra: N, td: N, ba: N, de: N, ce: N, fu: N, ao: N, rd: N, ud: N, sd: N, [early, mid, late]: [N, N, N], global = false): Omit<Kit, "selfPeel" | "structurePressure"> => ({
   ...(global ? { global: true as const } : {}),
   waveclear: wc, range: ra, tankDamage: td, backlineAccess: ba, disengage: de, counterEngage: ce, followUp: fu, aoeCc: ao,
   resourceDemand: rd, ultDependency: ud, setupDependency: sd, curve: { early, mid, late },
@@ -27,7 +27,19 @@ const SELF_PEEL: Record<string, Kit["selfPeel"]> = {
   akshan: 2, "aurelion-sol": 1, aurora: 2, belveth: 1, ekko: 2, elise: 1, evelynn: 1, fizz: 2, gangplank: 1, garen: 1, graves: 1, irelia: 1, kassadin: 2, katarina: 2, kayle: 1, kayn: 2, kennen: 1, khazix: 1, kindred: 2, leblanc: 2, lillia: 1, malzahar: 1, "master-yi": 2, nidalee: 1, nilah: 1, quinn: 1, riven: 1, samira: 1, senna: 1, shaco: 2, singed: 1, smolder: 1, talon: 1, tristana: 2, tryndamere: 2, vayne: 2, viego: 1, vladimir: 2, yasuo: 1, zed: 2, zoe: 1,
 };
 
-interface KitEntry { fightStart?: FightStart; damageByRole?: Partial<Record<Role, RoleDamage>>; kit: Omit<Kit, "selfPeel">; why: string }
+// Structure pressure (see schema): artillery, traps, turrets and long-range tower damage. Everyone not listed is 0;
+// side-lane split pushing is Side lane, not Siege.
+const STRUCTURE: Record<string, Kit["structurePressure"]> = {
+  ziggs: 3, caitlyn: 3, heimerdinger: 3, xerath: 3, tristana: 3,
+  jayce: 2, varus: 2, azir: 2, velkoz: 2, hwei: 2, mel: 2, lux: 2, anivia: 2, viktor: 2, corki: 2, ezreal: 2, jinx: 2,
+  "kog-maw": 2, ashe: 2, senna: 2, aphelios: 2, jhin: 2, nidalee: 2, zoe: 2, zyra: 2, brand: 2, gangplank: 2,
+  "aurelion-sol": 2, taliyah: 2,
+  karma: 1, orianna: 1, sivir: 1, smolder: 1, xayah: 1, zeri: 1, yunara: 1, kaisa: 1, draven: 1, lucian: 1, kalista: 1,
+  "miss-fortune": 1, twitch: 1, teemo: 1, kayle: 1, quinn: 1, malzahar: 1, cassiopeia: 1, "twisted-fate": 1, syndra: 1,
+  ryze: 1, swain: 1, seraphine: 1, veigar: 1, karthus: 1, akshan: 1, morgana: 1, zilean: 1,
+};
+
+interface KitEntry { fightStart?: FightStart; damageByRole?: Partial<Record<Role, RoleDamage>>; kit: Omit<Kit, "selfPeel" | "structurePressure">; why: string }
 
 export const KITS: Record<string, KitEntry> = {
   // ---------- top ----------
@@ -381,6 +393,6 @@ export function convertKits(champions: Champion[]): ChampionKit[] {
     const damageByRole = k.damageByRole ?? samples[id]?.damageByRole;
     if (!fightStart || !damageByRole) throw new Error(`${id}: no fightStart / damageByRole`);
     const { engage: _engage, ...attrs } = c.attrs;
-    return { id: c.id, name: c.name, aliases: c.aliases, roles: c.roles, flags: c.flags, reviewed: false, attrs, fightStart, damageByRole, kit: { ...k.kit, selfPeel: SELF_PEEL[id] ?? 0 } };
+    return { id: c.id, name: c.name, aliases: c.aliases, roles: c.roles, flags: c.flags, reviewed: false, attrs, fightStart, damageByRole, kit: { ...k.kit, selfPeel: SELF_PEEL[id] ?? 0, structurePressure: STRUCTURE[id] ?? 0 } };
   });
 }

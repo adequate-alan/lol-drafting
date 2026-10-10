@@ -76,6 +76,9 @@ export const Kit = z.object({
   global: z.literal(true).optional(),
   // A carry surviving a diver alone (spell shield, dashes). Only the enemy-dive read uses it.
   selfPeel: Scale,
+  // Pressure on structures: hits towers or the defenders under them safely from range, or zones the ground in front
+  // of a tower (artillery, traps, mines, turrets). The team Siege metric adds waveclear, poke, range and disengage.
+  structurePressure: Scale,
 });
 export type Kit = z.infer<typeof Kit>;
 export type ChampionKit = ChampionV2 & { kit: Kit };

@@ -1279,3 +1279,4 @@ th { letter-spacing: .06em; font-weight: 600; }
 .cc-more > .cc-section + .cc-section { margin-top: var(--s5); }
 .cc-scores { margin: 0; padding: 0; list-style: none; display: grid; gap: 1px; }
 .cc-scores li { display: flex; justify-content: space-between; font-size: var(--fs-xs); color: var(--text-muted); }
+.cc-cell:last-child:nth-child(odd) { grid-column: 1 / -1; }

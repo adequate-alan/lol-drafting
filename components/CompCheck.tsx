@@ -4,7 +4,7 @@
 // win condition, the top weak points, what the active open role should bring, and the timing curve up front; the
 // numeric detail, the remaining reads and the old rule checks behind "Full analysis". Pro evidence never feeds it.
 import { useMemo, type ReactNode } from "react";
-import { analyze, bestFix, CONFIDENCE_LABEL, IDENTITY_LABEL, type Insight } from "@/lib/model-v2/analyze";
+import { analyze, bestFix, CONFIDENCE_LABEL, IDENTITY_LABEL, SIEGE_LABEL, type Insight } from "@/lib/model-v2/analyze";
 import type { Draft } from "@/lib/model-v2/analyze";
 import { convertKits } from "@/lib/model-v2/kits";
 import type { BotPairing, Champion, Role } from "@/lib/schema";
@@ -21,9 +21,11 @@ function Point({ w, open = false }: { w: Insight; open?: boolean }) {
   );
 }
 
-export function CompCheck({ draft, enemyIds, champions, botPairings, active, bestOverall, names, children }: {
+export interface SiegeCell { value: string; title: string }
+
+export function CompCheck({ draft, enemyIds, champions, botPairings, active, bestOverall, names, grid, children }: {
   draft: Draft; enemyIds: string[]; champions: Champion[]; botPairings: BotPairing[]; active?: Role; bestOverall?: string;
-  names: Record<string, string>; children?: ReactNode;
+  names: Record<string, string>; grid?: (siege: SiegeCell) => ReactNode; children?: ReactNode;
 }) {
   const kits = useMemo(() => convertKits(champions), [champions]);
   // The enemy list is rebuilt on every Draft Room render; key the reads on its contents.
@@ -35,6 +37,11 @@ export function CompCheck({ draft, enemyIds, champions, botPairings, active, bes
   const needs = active ? (r.roleNeeds[active] ?? []).slice(0, 3) : [];
   const best = fix?.fixes.find((c) => c.fixScore > 0);
   const opportunities = r.versus.filter((v) => v.kind === "opportunity");
+  const sg = r.facts.siege;
+  const siege: SiegeCell = !r.facts.n ? { value: "—", title: "No picks yet" } : {
+    value: SIEGE_LABEL(sg.score),
+    title: `Siege ${sg.score}/3 · structure pressure ${sg.pressure}${sg.sources.length ? ` (${sg.sources.map((s) => s.c.name).join(", ")})` : ""} · range ${sg.reach} · waveclear ${sg.clear} · poke ${sg.poke} · disengage ${sg.safety}`,
+  };
   const identities = r.identity.all.filter((i) => i.score > 0).sort((a, b) => b.score - a.score);
 
   return (
@@ -96,6 +103,8 @@ export function CompCheck({ draft, enemyIds, champions, botPairings, active, bes
           )}
         </>
       )}
+
+      {grid?.(siege)}
 
       <details className="cc-section cc-more">
         <summary>Full analysis</summary>

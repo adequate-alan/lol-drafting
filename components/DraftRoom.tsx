@@ -9,7 +9,7 @@ import { counterPicks, describeEvidence, describePro, enemyParam, tierLabel, typ
 import { proSuggestions, similarProDrafts, similarShells, type ProSuggestion, type SuggestData } from "@/lib/suggest";
 import type { DraftData, DrawerData } from "@/lib/data";
 import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
-import { CompCheck } from "./CompCheck";
+import { CompCheck, type SiegeCell } from "./CompCheck";
 import { ChampionHoverCard, useHoverIntent } from "./ChampionInteraction";
 import { GenRang } from "./GenRang";
 import { PairingCard, type CardRecord } from "./PairingCard";
@@ -268,11 +268,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
         </div>
 
         <CompCheck draft={draft} enemyIds={enemyIds} champions={data.champions} botPairings={data.botPairings} active={active}
-          bestOverall={activeRecs[0]?.champion} names={names}>
-          <div className="cc-section">
-            <div className="cc-label">Detail</div>
-            <Indicators prof={prof} needs={needs} picks={picks.length} />
-          </div>
+          bestOverall={activeRecs[0]?.champion} names={names} grid={(siege) => <Indicators prof={prof} needs={needs} picks={picks.length} siege={siege} />}>
           <div className="cc-section">
             <div className="cc-label">Rule checks</div>
             {!warns.length && (lockedCount < 2 ? <p className="xs muted">Needs two picks.</p> : <p className="cc-ok">No warnings.</p>)}
@@ -565,7 +561,7 @@ function MiniBoard({ show, draft, enemy, active, names, onActivate }: {
 
 const scale = (v: number) => (v >= 3 ? "High" : v >= 2 ? "Mid" : "Low");
 
-function Indicators({ prof, needs, picks }: { prof: ReturnType<typeof profile>; needs: Need[]; picks: number }) {
+function Indicators({ prof, needs, picks, siege }: { prof: ReturnType<typeof profile>; needs: Need[]; picks: number; siege: SiegeCell }) {
   const m = Object.fromEntries(prof.meters.map((x) => [x.attr, x])) as Record<Attr, (typeof prof.meters)[number]>;
   // A missing job only reads as a problem once it matters: a need tied to a locked champion, or three picks in.
   const problem = (...ids: Need["id"][]) => needs.find((n) => ids.includes(n.id) && (n.personal || picks >= 3));
@@ -579,7 +575,8 @@ function Indicators({ prof, needs, picks }: { prof: ReturnType<typeof profile>; 
     { label: "Scaling", value: picks ? scale(m.scaling.best) : "—" },
     { label: "Burst", value: picks ? String(m.burst.best) : "—" },
     { label: "Poke", value: picks ? String(m.poke.best) : "—" },
-    { label: "Objectives", value: picks ? scale(m.objectiveControl.best) : "—" },
+    { label: "Siege", value: siege.value, title: siege.title },
+    { label: "Objective control", value: picks ? scale(m.objectiveControl.best) : "—" },
     { label: "Side lane", value: picks ? scale(m.sidePressure.best) : "—" },
   ];
   return (

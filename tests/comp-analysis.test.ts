@@ -4,7 +4,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { getBotPairings, getChampions } from "@/lib/data";
-import { analyze, bestFix, candidatesFor, economyBurden, slotsOf, type Draft, type Insight } from "@/lib/model-v2/analyze";
+import { analyze, bestFix, candidatesFor, economyBurden, SIEGE_LABEL, siegeOf, slotsOf, type Draft, type Insight } from "@/lib/model-v2/analyze";
 import { ARCHETYPES, EXTRA } from "@/lib/model-v2/archetypes";
 import { convertKits, KITS } from "@/lib/model-v2/kits";
 import { ChampionV2, Kit } from "@/lib/model-v2/schema";
@@ -161,6 +161,37 @@ describe("economy is one team-wide income rule (alan, checkpoint 2 review)", () 
   });
   it("Gwen / Trundle / Viktor / Ezreal / Karma keeps no resource warning", () => {
     expect(conflict(ARCHETYPES.find((a) => a.id === "no-engage")!.draft)).toBe(false);
+  });
+});
+
+describe("Siege is its own metric, not a copy of Poke (alan, 2026-10-10)", () => {
+  const siege = (d: Draft) => siegeOf(slotsOf(d, kits)).score;
+  const band = (d: Draft) => SIEGE_LABEL(siege(d));
+  const arch = (id: string) => ARCHETYPES.find((a) => a.id === id)!.draft;
+
+  it("Caitlyn with Lux or Karma rates high", () => {
+    expect(band({ BOT: "caitlyn", SUPPORT: "lux" })).toBe("High");
+    expect(band({ BOT: "caitlyn", SUPPORT: "karma" })).toBe("High");
+  });
+  it("Ziggs heavily improves siege; Jayce improves it through poke and pressure", () => {
+    const base: Draft = { TOP: "ornn", JUNGLE: "sejuani", MID: "orianna", BOT: "kaisa", SUPPORT: "nautilus" };
+    expect(siege({ ...base, BOT: "ziggs" }) - siege(base)).toBeGreaterThanOrEqual(0.6);
+    const fighters: Draft = { TOP: "gnar", JUNGLE: "vi", MID: "ahri", BOT: "sivir", SUPPORT: "lulu" };
+    expect(siege({ ...fighters, TOP: "jayce" })).toBeGreaterThan(siege(fighters));
+  });
+  it("full dive has strong engage but weak siege; front-to-back is only average; the poke comp is high", () => {
+    expect(band(arch("dive"))).toBe("Low");
+    expect(band(arch("front-to-back"))).toBe("Mid");
+    expect(band(arch("poke"))).toBe("High");
+  });
+  it("siege is not poke: a burst pick comp with poke still sieges less than the artillery comp", () => {
+    expect(siege(arch("pick"))).toBeLessThan(siege(arch("poke")));
+    expect(analyze(arch("pick"), kits).identity.primary!.id).toBe("pick");
+  });
+  it("siege feeds identity: Caitlyn + Karma already reads as Poke / siege at two picks", () => {
+    const r = analyze({ BOT: "caitlyn", SUPPORT: "karma" }, kits);
+    expect(r.identity.primary?.id).toBe("poke");
+    expect(r.identity.primary!.because).toMatch(/siege high through Caitlyn/);
   });
 });
 
