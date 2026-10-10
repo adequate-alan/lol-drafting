@@ -86,11 +86,12 @@ describe("needs and best fix", () => {
     expect(r.roleNeeds.SUPPORT!.map((n) => n.id).slice(0, 2)).toEqual(["frontline", "engage"]);
   });
 
-  it("with Ziggs locked, best fix is only Nautilus or Leona; other fixes are theoretical", () => {
+  it("with Ziggs locked, best fix comes only from his saved supports; other fixes are theoretical", () => {
     const r = bestFix("SUPPORT", extra("support-open").draft, kits, getBotPairings());
     expect(r.restricted).toBe(true);
-    expect(r.fixes.map((c) => c.champion).sort()).toEqual(["leona", "nautilus"]);
-    expect(r.theoretical.map((c) => c.champion)).toEqual(expect.arrayContaining(["alistar", "maokai", "rell"]));
+    expect(r.fixes.map((c) => c.champion)).toEqual(expect.arrayContaining(["leona", "nautilus"]));
+    expect(r.fixes.every((c) => ["nautilus", "leona", "camille", "alistar"].includes(c.champion))).toBe(true);
+    expect(r.theoretical.map((c) => c.champion)).toEqual(expect.arrayContaining(["maokai", "rell"]));
   });
 
   it("Nautilus fixes engage and frontline; a pure enchanter fixes neither", () => {

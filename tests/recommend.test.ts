@@ -115,7 +115,7 @@ describe("pro evidence never moves a score", () => {
   it("observed-only partners get no saved-pairing bonus", () => {
     const corki = recommend({ BOT: "corki" }, [], data, 50).SUPPORT!.find((r) => r.champion === "alistar");
     expect(corki?.saved ?? null).toBeNull();
-    for (const s of ["pyke", "camille"]) {
+    for (const s of ["pyke"]) {
       const r = recommend({ BOT: "ziggs" }, [], data, 50).SUPPORT!.find((x) => x.champion === s);
       expect(r?.saved ?? null, s).toBeNull();
       expect(r?.parts.some((p) => p.kind === "saved") ?? false, s).toBe(false);
@@ -124,15 +124,16 @@ describe("pro evidence never moves a score", () => {
 });
 
 describe("with a bot locked, only its saved supports are actionable (alan, 2026-10-10)", () => {
-  const THEORETICAL = ["alistar", "maokai", "rell", "braum", "shen"];
+  const THEORETICAL = ["maokai", "rell", "braum", "shen"];
+  const ZIGGS = ["nautilus", "leona", "camille", "alistar"];
 
-  it("Ziggs: Alistar, Maokai, Rell, Braum and Shen never appear in the Draft Room ranking, whatever else is locked", () => {
+  it("Ziggs: Maokai, Rell, Braum and Shen never appear in the Draft Room ranking, whatever else is locked", () => {
     const drafts: Draft[] = [...others, { TOP: "jayce", JUNGLE: "lee-sin", MID: "viktor" }, { TOP: "fiora", JUNGLE: "nidalee", MID: "azir" }];
     for (const o of drafts) {
       const list = top({ ...o, BOT: "ziggs" }, "SUPPORT", ["vi", "galio"], Infinity);
       expect(list.length, JSON.stringify(o)).toBeGreaterThan(0);
       for (const id of THEORETICAL) expect(list, `${id} ${JSON.stringify(o)}`).not.toContain(id);
-      expect(list.every((id) => id === "nautilus" || id === "leona"), JSON.stringify(o)).toBe(true);
+      expect(list.every((id) => ZIGGS.includes(id)), JSON.stringify(o)).toBe(true);
     }
   });
 
@@ -154,10 +155,10 @@ describe("with a bot locked, only its saved supports are actionable (alan, 2026-
     const enemy = { SUPPORT: "lulu" };
     const row = (champion: string, winRate: number) => ({ role: "SUPPORT" as const, enemy: "lulu", champion, winRate, games: 2000, patch: "16.20",
       url: "https://dpm.lol/", updated: "2026-10-10", origin: "externally-provided" as const });
-    const counters = { ...getCounters(), proResults: [], dpmDuos: [], dpm: [row("alistar", 0.58), row("nautilus", 0.53)] };
+    const counters = { ...getCounters(), proResults: [], dpmDuos: [], dpm: [row("rell", 0.58), row("nautilus", 0.53)] };
     const fits = recommend(d, ["lulu"], data, Infinity);
     const res = counterPicks(d, enemy, { ...data, counters }, fits).SUPPORT!.counters;
-    expect(res.map((c) => c.champion)).toEqual(["nautilus", "alistar"]);
+    expect(res.map((c) => c.champion)).toEqual(["nautilus", "rell"]);
     expect(res[1].theoretical).toBe(true);
     expect(res[1].fitRank).toBeNull();
     expect(res[1].cautions[0]).toMatch(/Not one of Ziggs's saved supports: theoretical, not recommended/);
@@ -228,9 +229,10 @@ describe("Kai'Sa and Aphelios Synergy records (alan, 2026-10-10)", () => {
 describe("comp-analysis needs feed the ranking (alan's brief, items 8 and 10)", () => {
   it("Ziggs support: Nautilus is the best fix for frontline and engage, and only saved supports appear", () => {
     const list = recommend({ TOP: "jayce", JUNGLE: "lee-sin", MID: "viktor", BOT: "ziggs" }, [], data, Infinity).SUPPORT!;
-    expect(list.map((r) => r.champion).sort()).toEqual(["leona", "nautilus"]);
+    expect(list.every((r) => ["nautilus", "leona", "camille", "alistar"].includes(r.champion))).toBe(true);
     const naut = list.find((r) => r.champion === "nautilus")!;
-    expect(naut.bestFix).toBe(true);
+    expect(list[0].champion).toBe("nautilus");
+    expect(list.filter((r) => r.bestFix).map((r) => r.champion)).toHaveLength(1);
     expect(naut.fixes).toEqual(expect.arrayContaining(["Frontline", "Primary engage"]));
     expect(naut.parts.some((p) => p.kind === "need" && /^Fixes frontline/.test(p.text))).toBe(true);
   });

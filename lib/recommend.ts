@@ -297,7 +297,9 @@ export function recommend(draft: Draft, enemyIds: string[], data: RecommendData,
     const fs = (r: Recommendation) => fixScore.get(r.champion) ?? 0;
     const fix = recs.filter((r) => fs(r) > 0).sort((a, b) => fs(b) - fs(a) || a.tradeoffs.length - b.tradeoffs.length || b.score - a.score)[0];
     if (fix) fix.bestFix = true;
-    out[role] = recs.sort((a, b) => b.score - a.score || a.champion.localeCompare(b.champion)).slice(0, limit);
+    // On a tied score, alan's saved tier decides (preferred before alternative before fits), then the name.
+    const tierRank = (r: Recommendation) => (r.saved ? { default: 0, alt: 1, fits: 2 }[r.saved] : 3);
+    out[role] = recs.sort((a, b) => b.score - a.score || tierRank(a) - tierRank(b) || a.champion.localeCompare(b.champion)).slice(0, limit);
   }
   return out;
 }

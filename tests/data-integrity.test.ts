@@ -83,7 +83,7 @@ describe("layer separation", () => {
 
   it("observed-only pro pairings never appear as Clash picks unless alan listed them", () => {
     // Known pro-only pairings from the locked conclusions.
-    const proOnly: Record<string, string[]> = { corki: ["alistar"], ziggs: ["pyke", "camille"] };
+    const proOnly: Record<string, string[]> = { corki: ["alistar"], ziggs: ["pyke"] }; // Camille became a saved Ziggs alternative on alan's word (2026-10-10)
     for (const r of records()) for (const id of proOnly[r.name] ?? []) expect(r.clash).not.toContain(id);
   });
 

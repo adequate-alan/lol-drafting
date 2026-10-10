@@ -671,7 +671,10 @@
       "nautilus",
       "leona"
     ],
-    "alternatives": [],
+    "alternatives": [
+      "camille",
+      "alistar"
+    ],
     "alternativeNotes": {},
     "observedProPairings": [
       {
@@ -724,7 +727,8 @@
     "sources": [
       "golgg-game-82627",
       "golgg-game-82413"
-    ]
+    ],
+    "notes": "alan (2026-10-10): Camille and Alistar are Synergy alternatives; Nautilus / Leona stay the only preferred supports. Camille's LCK game (82413) and Pyke's (82627) stay separate Pro Evidence."
   },
   {
     "champion": "kalista",
