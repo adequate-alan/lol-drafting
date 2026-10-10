@@ -1328,7 +1328,9 @@
       "leona",
       "nautilus"
     ],
-    "alternatives": [],
+    "alternatives": [
+      "camille"
+    ],
     "alternativeNotes": {},
     "observedProPairings": [],
     "surrounding": {
@@ -1338,7 +1340,7 @@
     "logic": {},
     "confidence": "medium",
     "identities": [],
-    "notes": "Synergy record set by alan (2026-10-10): Viktor bot with Leona and Nautilus as joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "notes": "Synergy record set by alan (2026-10-10): Viktor bot with Leona and Nautilus as joint preferred supports, Camille an alternative. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
     "status": "added",
     "sources": []
   }

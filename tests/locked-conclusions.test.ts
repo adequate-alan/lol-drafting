@@ -103,7 +103,7 @@ describe("bot lane Clash defaults", () => {
 
   it("Viktor bot → Leona + Nautilus, joint preferred; his mid record is separate (alan, 2026-10-10)", () => {
     expect(bot("viktor").clashDefault).toEqual(["leona", "nautilus"]);
-    expect(bot("viktor").alternatives).toEqual([]);
+    expect(bot("viktor").alternatives).toEqual(["camille"]);
     expect(bot("viktor").observedProPairings).toEqual([]);
     expect(getMidJungle().find((m) => m.anchor === "viktor")!.role).toBe("MID");
   });
