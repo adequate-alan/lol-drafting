@@ -228,10 +228,9 @@
     "lastChecked": null,
     "refreshStatus": "not-refreshed",
     "origin": "workbook",
-    "userVerified": {
-      "by": "alan",
-      "on": "2026-10-10",
-      "claim": "HLE drafted Ziggs bot + Pyke support. Camille is a top laner in this game, so it does not show Ziggs + Camille support."
+    "pendingClaim": {
+      "claim": "HLE drafted Ziggs bot + Pyke support. Camille is a top laner in this game, so it does not show Ziggs + Camille support.",
+      "providedOn": "2026-10-10"
     }
   },
   {
@@ -436,11 +435,10 @@
     "opponent": "BNK FearX",
     "lastChecked": null,
     "refreshStatus": "not-refreshed",
-    "origin": "user-verified",
-    "userVerified": {
-      "by": "alan",
-      "on": "2026-10-10",
-      "claim": "DK drafted Varus top, Kindred jungle, Taliyah mid, Ziggs bot, Camille support."
+    "origin": "externally-provided",
+    "pendingClaim": {
+      "claim": "DK drafted Varus top, Kindred jungle, Taliyah mid, Ziggs bot, Camille support.",
+      "providedOn": "2026-10-10"
     }
   },
   {
@@ -452,11 +450,10 @@
     "opponent": "DK",
     "lastChecked": null,
     "refreshStatus": "not-refreshed",
-    "origin": "user-verified",
-    "userVerified": {
-      "by": "alan",
-      "on": "2026-10-10",
-      "claim": "KT drafted Ezreal bot + Nautilus support."
+    "origin": "externally-provided",
+    "pendingClaim": {
+      "claim": "KT drafted Ezreal bot + Nautilus support.",
+      "providedOn": "2026-10-10"
     }
   }
 ]

@@ -127,23 +127,49 @@ export function proSuggestions(draft: Draft, proDrafts: ProDraft[]): ByRole {
   return result();
 }
 
+// Candidates for the General Logic list. Bot/support follow the same Clash eligibility as the Clash list:
+// with BOT locked, only that bot's Clash supports; with SUPPORT locked, only bots whose Clash record allows it.
+// Otherwise the role's pool (core + depth).
+function logicCandidates(role: Role, draft: Draft, data: SuggestData): { ids: string[]; core: Set<string>; restricted: boolean } {
+  const entry = data.pool.find((p) => p.role === role);
+  const core = new Set(entry?.core ?? []);
+  if (role === "SUPPORT" && draft.BOT) {
+    const r = data.botPairings.find((b) => b.champion === draft.BOT);
+    return { ids: r ? [...r.clashDefault, ...r.alternatives] : [], core: new Set(r?.clashDefault ?? []), restricted: true };
+  }
+  if (role === "BOT" && draft.SUPPORT) {
+    const s = draft.SUPPORT;
+    const bots = data.botPairings.filter((b) => b.clashDefault.includes(s) || b.alternatives.includes(s));
+    return { ids: bots.map((b) => b.champion), core: new Set(bots.filter((b) => b.clashDefault.includes(s)).map((b) => b.champion)), restricted: true };
+  }
+  return { ids: entry ? [...entry.core, ...entry.depth] : [], core, restricted: false };
+}
+
 export function logicSuggestions(draft: Draft, data: SuggestData): ByRole {
   const { add, result } = collector(draft);
   const active = warnings(draft, data.champions);
   const byId = new Map(data.champions.map((c) => [c.id, c]));
   for (const role of openRoles(draft)) {
-    const entry = data.pool.find((p) => p.role === role);
-    const candidates = entry ? [...entry.core, ...entry.depth] : [];
+    const { ids, core } = logicCandidates(role, draft, data);
     for (const w of active) {
       const fix = FIXES[w.id];
       if (!fix) continue;
-      for (const id of candidates) {
+      for (const id of ids) {
         const c = byId.get(id);
-        if (c && fix.test(c)) add(role, id, entry!.core.includes(id) ? 2 : 1, fix.label);
+        if (c && fix.test(c)) add(role, id, core.has(id) ? 2 : 1, fix.label);
       }
     }
   }
   return result(5);
+}
+
+// Open bot-lane roles where a fixable warning is active, the list is limited to Clash-approved pairs, and none of
+// them fixes it. The Draft Room shows a message instead of reaching outside the Clash record.
+export function logicBlockedRoles(draft: Draft, data: SuggestData): Role[] {
+  const active = warnings(draft, data.champions).filter((w) => FIXES[w.id]);
+  if (!active.length) return [];
+  const list = logicSuggestions(draft, data);
+  return openRoles(draft).filter((r) => logicCandidates(r, draft, data).restricted && !list[r]?.length);
 }
 
 export function similarProDrafts(draft: Draft, proDrafts: ProDraft[], limit = 6) {

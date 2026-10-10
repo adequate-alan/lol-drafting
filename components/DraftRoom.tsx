@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { profile, RULES, warnings, type Draft } from "@/lib/evaluate";
 import { ATTRS, ROLES, type Attr, type Role, type Source } from "@/lib/schema";
-import { clashSuggestions, logicSuggestions, proSuggestions, similarProDrafts, similarShells, type ByRole, type SuggestData } from "@/lib/suggest";
+import { clashSuggestions, logicBlockedRoles, logicSuggestions, proSuggestions, similarProDrafts, similarShells, type ByRole, type SuggestData } from "@/lib/suggest";
 import { PairingCard, type CardRecord } from "./PairingCard";
 import { EvidenceBadge, type Layer } from "./ui";
 
@@ -42,6 +42,7 @@ export function DraftRoom({ data, sources, initial, metaPicks }: {
   const clash = clashSuggestions(draft, data);
   const pro = proSuggestions(draft, data.proDrafts);
   const logic = logicSuggestions(draft, data);
+  const logicBlocked = logicBlockedRoles(draft, data);
   const similar = similarProDrafts(draft, data.proDrafts);
   const shells = similarShells(draft, data.shells);
   const open = ROLES.filter((r) => !draft[r]);
@@ -121,7 +122,8 @@ export function DraftRoom({ data, sources, initial, metaPicks }: {
             <SuggestColumn layer="pro" title="Played alongside (pro)" data={pro} open={open} names={names} onPick={lock} showCount
               empty={lockedCount ? "No recorded pro game uses these picks." : "Lock a pick to see pro drafts."} />
             <SuggestColumn layer="logic" title="Fixes a warning" data={logic} open={open} names={names} onPick={lock}
-              empty={warns.length ? "No pool champion fixes the open warnings." : "Shows up when a warning fires."} />
+              empty={warns.length ? "No pool champion fixes the open warnings." : "Shows up when a warning fires."}
+              notes={Object.fromEntries(logicBlocked.map((r) => [r, r === "SUPPORT" ? "No Clash-approved support fixes this warning." : "No Clash-approved bot fixes this warning."]))} />
           </div>
 
           {cards.length > 0 && <div className="grid cols-auto">{cards.map((c) => (
@@ -202,11 +204,11 @@ function MeterRow({ label, best, total, by, empty }: { label: string; best: numb
   );
 }
 
-function SuggestColumn({ layer, title, data, open, names, onPick, empty, showCount }: {
+function SuggestColumn({ layer, title, data, open, names, onPick, empty, showCount, notes = {} }: {
   layer: Layer; title: string; data: ByRole; open: Role[]; names: Record<string, string>;
-  onPick: (role: Role, id: string) => void; empty: string; showCount?: boolean;
+  onPick: (role: Role, id: string) => void; empty: string; showCount?: boolean; notes?: Partial<Record<Role, string>>;
 }) {
-  const any = open.some((r) => data[r]?.length);
+  const any = open.some((r) => data[r]?.length || notes[r]);
   return (
     <div className={`card layer ${layer}`} style={{ marginTop: 0 }}>
       <div className="row" style={{ justifyContent: "space-between", marginBottom: 6 }}><h3 style={{ margin: 0 }}>{title}</h3><EvidenceBadge layer={layer} /></div>
@@ -218,6 +220,11 @@ function SuggestColumn({ layer, title, data, open, names, onPick, empty, showCou
             <button key={s.champion} className={`chip role-${role}`} title={s.reasons.join("\n")} onClick={() => onPick(role, s.champion)}>
               <span className="dot" />{names[s.champion] ?? s.champion}{showCount && <small>{s.score}×</small>}
             </button>))}</span>
+        </div>
+      ) : notes[role] ? (
+        <div key={role} className={`sugg-role role-${role}`}>
+          <span className="role-tag">{role}</span>
+          <span className="small muted">{notes[role]}</span>
         </div>
       ) : null)}
     </div>

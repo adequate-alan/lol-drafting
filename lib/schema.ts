@@ -30,12 +30,12 @@ export const Source = z.object({
   patch: z.string().optional(),
   lastChecked: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
   refreshStatus: z.enum(["verified", "not-refreshed"]), // "verified" only when Claude itself re-read the page
-  origin: z.enum(["workbook", "golgg-refresh", "user-verified"]),
-  // alan checked this page himself. Kept apart from refreshStatus, which records Claude's own checks.
-  userVerified: z.object({
-    by: z.string(),
-    on: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  origin: z.enum(["workbook", "golgg-refresh", "externally-provided"]),
+  // A link and claim supplied during review that nobody in this project has confirmed on the page yet.
+  // It stays not-refreshed until Claude reads the page.
+  pendingClaim: z.object({
     claim: z.string(),
+    providedOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   }).optional(),
 });
 export type Source = z.infer<typeof Source>;
@@ -74,6 +74,17 @@ export type ObservedPairing = z.infer<typeof ObservedPairing>;
 const Duo = z.object({ bot: ChampionId, support: ChampionId });
 export type Duo = z.infer<typeof Duo>;
 
+// A bot/support duo seen in pro play, attached to a mid/jungle/top record as Observed Pro Evidence only.
+// withAnchor: a cited draft also had the record's champion; otherwise the duo was seen elsewhere.
+export const ObservedBotShape = z.object({
+  bot: ChampionId,
+  support: ChampionId,
+  withAnchor: z.boolean(),
+  proDraftIds: z.array(z.string()),
+  sources: z.array(SourceId).min(1),
+});
+export type ObservedBotShape = z.infer<typeof ObservedBotShape>;
+
 // ---------- bot-pairings.json ----------
 export const BotPairing = z.object({
   champion: ChampionId,
@@ -99,7 +110,8 @@ export const MidJunglePairing = z.object({
   role: z.enum(["MID", "JUNGLE"]),
   clashDefault: z.array(ChampionId).min(1),
   alternatives: z.array(ChampionId),
-  botShapes: z.array(Duo),
+  botShapes: z.array(Duo), // Clash: only duos in the bot's Clash record (or bots with no Clash record yet)
+  observedBotShapes: z.array(ObservedBotShape),
   observedProPairings: z.array(ObservedPairing),
   history: z.array(z.object({ partner: ChampionId, era: Era, note: z.string() })),
   logic: z.object({ warning: z.string().optional() }),
@@ -117,6 +129,7 @@ export const TopPick = z.object({
   champion: ChampionId,
   blindGrade: BlindGrade,
   surrounding: z.object({ jungle: z.array(ChampionId), mid: z.array(ChampionId), botShapes: z.array(Duo) }),
+  observedBotShapes: z.array(ObservedBotShape),
   observedProPairings: z.array(ObservedPairing),
   logic: z.object({ gives: z.string(), avoid: z.string() }),
   identities: z.array(z.string()),
