@@ -133,6 +133,15 @@ check("picker keeps the highlighted option visible", await page.evaluate(() => {
   if (!l || !a) return false; const r = a.getBoundingClientRect(), b = l.getBoundingClientRect(); return r.top >= b.top - 1 && r.bottom <= b.bottom + 1;
 }), "");
 await page.keyboard.press("Escape");
+// Locked slot: one "Change" control; Escape keeps the pick, the picker's first row removes it
+await open("/?jungle=chogath&bot=ziggs");
+await page.locator(".draft-slot.role-JUNGLE .slot-change").click();
+await page.keyboard.press("Escape");
+const kept = await text(".draft-slot.role-JUNGLE .slot-name");
+await page.locator(".draft-slot.role-JUNGLE .slot-change").click();
+await page.locator(".picker-list li.remove").click();
+await page.waitForTimeout(200);
+check("Change keeps the pick on Escape; Remove clears it", /Cho'Gath/.test(kept) && (await page.locator(".draft-slot.role-JUNGLE .slot-name").count()) === 0 && !page.url().includes("jungle="), page.url());
 // Champion icons load from Data Dragon in both themes; a failed icon falls back to initials
 for (const theme of ["light", "dark"]) {
   await page.evaluate((t) => localStorage.setItem("theme", t), theme);
