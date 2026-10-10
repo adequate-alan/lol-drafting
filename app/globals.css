@@ -14,9 +14,10 @@
   --black: #090909; --black-2: #111215; --black-3: #18191D; --black-line: #2B2925;
   --cream-text: #F7F1E7; --taupe: #6B6255; --taupe-light: #AAA398;
   --oxblood: #8A4A44;
-  /* alan's Adobe Fonts kit (lib/site.ts); Inter is the fallback while it loads or if it is blocked. */
-  --font: "neue-haas-grotesk-text", "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "neue-haas-grotesk-display", var(--font);
+  /* Type (alan, 2026-10-10): Space Grotesk for titles, nav, tabs, buttons, labels and champion names; Inter for body
+     copy; JetBrains Mono for numbers. All self-hosted (app/layout.tsx); no font CDN. */
+  --font: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-grotesk), "Space Grotesk", var(--font);
   --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --fs-3xs: 9px; --fs-2xs: 10px; --fs-xs: 11px; --fs-sm: 12px; --fs: 13px; --fs-md: 14px; --fs-lg: 15px; --fs-xl: 18px; --fs-2xl: 22px; --fs-3xl: 30px;
   --lh: 1.38;
@@ -726,7 +727,7 @@ a.badge:hover { text-decoration: none; border-color: var(--accent); color: var(-
 .badge { border-radius: 2px; }
 
 /* Display cut of Neue Haas Grotesk for headings and the brand. */
-h1, .brand-name, .page-header h1, .brand-band h1 { font-family: var(--font-display); letter-spacing: -.01em; }
+h1, .brand-name, .page-header h1, .brand-band h1 { font-family: var(--font-display); }
 
 /* Shown when a newer deploy is live */
 .update-notice {
@@ -1187,3 +1188,27 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .side-mascot span { display: grid; font-size: var(--fs-sm); font-weight: 600; line-height: 1.15; }
 .side-mascot small { font-size: var(--fs-2xs); font-weight: 500; color: var(--side-muted); }
 .rec-empty.start { display: flex; align-items: center; gap: var(--s5); }
+
+/* ==========================================================================
+   Typography: Space Grotesk carries the interface, Inter the reading, JetBrains Mono the numbers.
+   700 major headings · 600 champion names, navigation, labels · 500 tabs and buttons · 400–500 supporting text.
+   ========================================================================== */
+h1, h2, h3, .brand-name, .nav-item, .nav-label, .tabs a, .seg a, .seg button, .btn, .role-tab, .team-label,
+.section-header, .panel-head, .layer-label, .cc-label, .cc-head, th, .role-tag, .status-tag, .src, .theme-toggle,
+.slot-name, .fit-head .name, .rec-row .name, .rail-name, .cell-champ, .chip, .comp-slot-name b, .picker-list .name,
+.mate, .hc-head b, .drawer-title h2, .pick-head h2, .band-eyebrow, .side-mascot span, .mini-active, .slot-change {
+  font-family: var(--font-display);
+}
+/* Major page titles: uppercase, slightly wide, editorial */
+.page-header h1, .brand-band h1 { font-weight: 700; text-transform: uppercase; letter-spacing: .02em; line-height: 1.05; }
+.brand-name { font-weight: 700; letter-spacing: -.005em; }
+h2, h3, .panel-head h2, .panel-head h3 { font-weight: 600; letter-spacing: -.005em; }
+.nav-item { font-weight: 500; letter-spacing: 0; }
+.nav-item.active { font-weight: 600; }
+.tabs a, .seg a, .seg button, .btn { font-weight: 500; }
+.tabs a.active, .seg a.active, .seg button.active, .btn.primary { font-weight: 600; }
+.slot-name, .fit-head .name, .rec-row .name, .rail-name, .comp-slot-name b, .picker-list .name, .drawer-title h2, .pick-head h2, .hc-head b { font-weight: 600; letter-spacing: -.01em; }
+.chip, .cell-champ { font-weight: 500; }
+.chip.strong, .cell-champ.hit { font-weight: 600; }
+th { letter-spacing: .06em; font-weight: 600; }
+.role-tab .role-name { font-weight: 600; letter-spacing: .06em; }

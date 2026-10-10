@@ -1,8 +1,18 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import "@fontsource-variable/inter";
 import "@fontsource-variable/jetbrains-mono";
 import "./globals.css";
-import { TYPEKIT_CSS } from "@/lib/site";
+
+// Space Grotesk (SIL OFL 1.1, github.com/floriankarsten/space-grotesk; license in assets/fonts) for titles, navigation,
+// tabs, buttons, labels and champion names. Self-hosted and preloaded by the build; nothing loads from a font CDN.
+const grotesk = localFont({
+  src: "../assets/fonts/SpaceGrotesk-Variable.woff2",
+  weight: "300 700",
+  variable: "--font-grotesk",
+  display: "swap",
+  fallback: ["Inter Variable", "system-ui", "sans-serif"],
+});
 
 export const metadata: Metadata = {
   title: "Draft Assistant",
@@ -15,12 +25,9 @@ const THEME_SCRIPT = `try{var t=localStorage.getItem("theme");if(t!=="light"&&t!
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={grotesk.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
-        <link rel="preconnect" href="https://use.typekit.net" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://p.typekit.net" crossOrigin="anonymous" />
-        <link rel="stylesheet" href={TYPEKIT_CSS} />
       </head>
       <body>{children}</body>
     </html>
