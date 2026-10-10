@@ -1,0 +1,899 @@
+[
+  {
+    "id": "poke-catch",
+    "name": "Poke + Catch",
+    "kind": "observed",
+    "observedBy": "HLE",
+    "proDraftId": "lck26po-hle-t1-g1-hle",
+    "slots": {
+      "TOP": {
+        "champion": "jayce",
+        "job": "Ranged lane pressure and poke",
+        "swaps": [
+          "varus",
+          "fiora",
+          "renekton"
+        ]
+      },
+      "JUNGLE": {
+        "champion": "qiyana",
+        "job": "Catch engage on poked targets",
+        "swaps": [
+          "naafiri",
+          "jarvan-iv",
+          "vi"
+        ]
+      },
+      "MID": {
+        "champion": "ryze",
+        "job": "Side-lane pressure to pull attention",
+        "swaps": [
+          "cassiopeia",
+          "anivia",
+          "yone"
+        ]
+      },
+      "BOT": {
+        "champion": "jhin",
+        "job": "Long-range follow-up damage",
+        "swaps": [
+          "miss-fortune",
+          "varus",
+          "ashe"
+        ]
+      },
+      "SUPPORT": {
+        "champion": "alistar",
+        "job": "Point-click engage for the carry",
+        "swaps": [
+          "leona",
+          "rell",
+          "nautilus"
+        ]
+      }
+    },
+    "identities": [
+      "poke",
+      "tempo",
+      "catch"
+    ],
+    "winCondition": "Chip targets with poke, then catch whoever walks up and fight 5v4.",
+    "why": "Jayce+Ryze pressure creates space; Qiyana/Alistar give Jhin the setup he needs.",
+    "difficulty": "medium",
+    "sources": [
+      "golgg-game-82745"
+    ]
+  },
+  {
+    "id": "protected-hypercarry",
+    "name": "Protected Hypercarry",
+    "kind": "observed",
+    "observedBy": "T1",
+    "proDraftId": "lck26po-hle-t1-g3-t1",
+    "slots": {
+      "TOP": {
+        "champion": "ksante",
+        "job": "Weakside frontline that absorbs pressure",
+        "swaps": [
+          "shen",
+          "gnar",
+          "sion"
+        ]
+      },
+      "JUNGLE": {
+        "champion": "vi",
+        "job": "Dive the enemy backline",
+        "swaps": [
+          "wukong",
+          "jarvan-iv",
+          "nocturne"
+        ]
+      },
+      "MID": {
+        "champion": "akali",
+        "job": "Assassin threat on the backline",
+        "swaps": [
+          "ahri",
+          "twisted-fate",
+          "sylas"
+        ]
+      },
+      "BOT": {
+        "champion": "zeri",
+        "job": "Hypercarry DPS",
+        "swaps": [
+          "yunara",
+          "aphelios",
+          "jinx"
+        ]
+      },
+      "SUPPORT": {
+        "champion": "yuumi",
+        "job": "Attach and keep the carry alive",
+        "swaps": [
+          "milio",
+          "lulu",
+          "renata-glasc"
+        ]
+      }
+    },
+    "identities": [
+      "dive-mid-jg",
+      "protected-bot"
+    ],
+    "winCondition": "Survive to extended fights where the hypercarry outdamages everything.",
+    "why": "Top absorbs pressure; Vi/Akali threaten backline while Zeri/Yuumi wins extended fights.",
+    "difficulty": "medium",
+    "sources": [
+      "golgg-game-82747"
+    ]
+  },
+  {
+    "id": "objective-zone",
+    "name": "Objective Zone",
+    "kind": "observed",
+    "observedBy": "Gen.G",
+    "proDraftId": "lck26po-finals-g1-geng",
+    "slots": {
+      "TOP": {
+        "champion": "rumble",
+        "job": "Zone the objective pit with AoE",
+        "swaps": [
+          "trundle",
+          "akali",
+          "ambessa"
+        ]
+      },
+      "JUNGLE": {
+        "champion": "vi",
+        "job": "Hard start onto a priority target",
+        "swaps": [
+          "wukong",
+          "jarvan-iv",
+          "nocturne"
+        ]
+      },
+      "MID": {
+        "champion": "ryze",
+        "job": "Sustained mid damage around the pit",
+        "swaps": [
+          "cassiopeia",
+          "anivia",
+          "yone"
+        ]
+      },
+      "BOT": {
+        "champion": "lucian",
+        "job": "Lane tempo into objective priority",
+        "swaps": [
+          "caitlyn",
+          "kalista",
+          "ezreal"
+        ]
+      },
+      "SUPPORT": {
+        "champion": "milio",
+        "job": "Sustain and speed for the bot lane",
+        "swaps": [
+          "lulu",
+          "yuumi",
+          "renata-glasc"
+        ]
+      }
+    },
+    "identities": [
+      "skirmish",
+      "objective-zone"
+    ],
+    "winCondition": "Win the fight on the objective by starting it and cutting off exits.",
+    "why": "Vi gives hard start, Rumble cuts off exits, Lucian/Milio supplies lane tempo and DPS.",
+    "difficulty": "easy-medium",
+    "sources": [
+      "golgg-game-82962"
+    ]
+  },
+  {
+    "id": "yunara-protect",
+    "name": "Yunara Protect",
+    "kind": "observed",
+    "observedBy": "T1",
+    "proDraftId": "lck26po-hle-t1-g2-t1",
+    "slots": {
+      "TOP": {
+        "champion": "rumble",
+        "job": "Zone space and cut off exits",
+        "swaps": [
+          "trundle",
+          "akali",
+          "ambessa"
+        ]
+      },
+      "JUNGLE": {
+        "champion": "pantheon",
+        "job": "Point-click lockdown",
+        "swaps": [
+          "naafiri",
+          "qiyana",
+          "jarvan-iv"
+        ]
+      },
+      "MID": {
+        "champion": "syndra",
+        "job": "Burst the guaranteed target",
+        "swaps": [
+          "taliyah",
+          "vex",
+          "lux"
+        ]
+      },
+      "BOT": {
+        "champion": "yunara",
+        "job": "Protected late-game DPS",
+        "swaps": [
+          "zeri",
+          "aphelios",
+          "jinx"
+        ]
+      },
+      "SUPPORT": {
+        "champion": "lulu",
+        "job": "Shields and polymorph peel",
+        "swaps": [
+          "milio",
+          "nami",
+          "yuumi"
+        ]
+      }
+    },
+    "identities": [
+      "protected-carry",
+      "point-click-setup"
+    ],
+    "winCondition": "Pick a target with point-click setup, then let the protected carry clean up.",
+    "why": "Pantheon/Syndra create guaranteed targets while Rumble controls space and Lulu protects Yunara.",
+    "difficulty": "easy",
+    "sources": [
+      "golgg-game-82746"
+    ]
+  },
+  {
+    "id": "counter-engage-front-to-back",
+    "name": "Counter-Engage Front-to-Back",
+    "kind": "observed",
+    "observedBy": "HLE",
+    "proDraftId": "lck26po-hle-t1-g4-hle",
+    "slots": {
+      "TOP": {
+        "champion": "gnar",
+        "job": "Frontline and Mega engage on divers",
+        "swaps": [
+          "aatrox",
+          "ambessa",
+          "ksante"
+        ]
+      },
+      "JUNGLE": {
+        "champion": "chogath",
+        "job": "Frontline and guaranteed CC",
+        "swaps": [
+          "skarner",
+          "sejuani",
+          "gragas"
+        ]
+      },
+      "MID": {
+        "champion": "viktor",
+        "job": "Scaling zone control from the back",
+        "swaps": [
+          "cassiopeia",
+          "anivia",
+          "azir"
+        ]
+      },
+      "BOT": {
+        "champion": "xayah",
+        "job": "Front-to-back DPS",
+        "swaps": [
+          "aphelios",
+          "yunara",
+          "ashe"
+        ]
+      },
+      "SUPPORT": {
+        "champion": "rakan",
+        "job": "Counter-engage onto divers",
+        "swaps": [
+          "thresh",
+          "bard",
+          "renata-glasc"
+        ]
+      }
+    },
+    "identities": [
+      "front-to-back",
+      "counter-engage"
+    ],
+    "winCondition": "Let them dive, layer peel and zone, then turn the fight.",
+    "why": "Multiple layers of peel and zone control make diving the backline miserable.",
+    "difficulty": "easy-medium",
+    "sources": [
+      "golgg-game-82748"
+    ]
+  },
+  {
+    "id": "pick-tempo",
+    "name": "Pick Tempo",
+    "kind": "observed",
+    "observedBy": "Gen.G",
+    "proDraftId": "lck26po-finals-g2-geng",
+    "slots": {
+      "TOP": {
+        "champion": "varus",
+        "job": "Ranged lane pressure and catch",
+        "swaps": [
+          "ambessa",
+          "jayce",
+          "wukong"
+        ]
+      },
+      "JUNGLE": {
+        "champion": "nocturne",
+        "job": "Global dive onto the first target",
+        "swaps": [
+          "vi",
+          "wukong",
+          "jarvan-iv"
+        ]
+      },
+      "MID": {
+        "champion": "lissandra",
+        "job": "Lockdown follow-up",
+        "swaps": [
+          "galio",
+          "vex",
+          "neeko"
+        ]
+      },
+      "BOT": {
+        "champion": "kalista",
+        "job": "Lane tempo and objective damage",
+        "swaps": [
+          "lucian",
+          "caitlyn",
+          "xayah"
+        ]
+      },
+      "SUPPORT": {
+        "champion": "renata-glasc",
+        "job": "Save and re-engage tool",
+        "swaps": [
+          "milio",
+          "lulu",
+          "rakan"
+        ]
+      }
+    },
+    "identities": [
+      "pick",
+      "tempo",
+      "side-pressure"
+    ],
+    "winCondition": "Force the first pick with lockdown, then take objectives a player down.",
+    "why": "Nocturne+Lissandra force the first target while Varus and Kalista pressure lanes.",
+    "difficulty": "medium",
+    "sources": [
+      "golgg-game-82963"
+    ]
+  },
+  {
+    "id": "weakside-tank-carry-bot",
+    "name": "Weakside Tank + Carry Bot",
+    "kind": "observed",
+    "observedBy": "Gen.G",
+    "proDraftId": "lck26po-finals-g3-geng",
+    "slots": {
+      "TOP": {
+        "champion": "sion",
+        "job": "Weakside frontline and engage",
+        "swaps": [
+          "ornn",
+          "ksante",
+          "wukong"
+        ]
+      },
+      "JUNGLE": {
+        "champion": "lee-sin",
+        "job": "Early tempo and playmaking",
+        "swaps": [
+          "jarvan-iv",
+          "naafiri",
+          "vi"
+        ]
+      },
+      "MID": {
+        "champion": "sylas",
+        "job": "Chaos and ult-steal in fights",
+        "swaps": [
+          "annie",
+          "twisted-fate",
+          "akali"
+        ]
+      },
+      "BOT": {
+        "champion": "zeri",
+        "job": "Hypercarry DPS",
+        "swaps": [
+          "yunara",
+          "aphelios",
+          "jinx"
+        ]
+      },
+      "SUPPORT": {
+        "champion": "yuumi",
+        "job": "Attach and keep the carry alive",
+        "swaps": [
+          "milio",
+          "lulu",
+          "renata-glasc"
+        ]
+      }
+    },
+    "identities": [
+      "weakside",
+      "protect-carry"
+    ],
+    "winCondition": "Hold the early game evenly; the hypercarry wins late fights.",
+    "why": "Sion gives frontline, Lee/Sylas create chaos, Zeri/Yuumi becomes the late fight win condition.",
+    "difficulty": "medium",
+    "sources": [
+      "golgg-game-82964"
+    ]
+  },
+  {
+    "id": "side-carry-scaling",
+    "name": "Side Carry Scaling",
+    "kind": "observed",
+    "observedBy": "Gen.G",
+    "proDraftId": "lck26po-finals-g4-geng",
+    "slots": {
+      "TOP": {
+        "champion": "gwen",
+        "job": "Scaling side-lane carry",
+        "swaps": [
+          "jax",
+          "fiora",
+          "yorick"
+        ]
+      },
+      "JUNGLE": {
+        "champion": "trundle",
+        "job": "Stabilize fights and shred tanks",
+        "swaps": [
+          "aatrox",
+          "olaf",
+          "nocturne"
+        ]
+      },
+      "MID": {
+        "champion": "viktor",
+        "job": "Scaling control mage",
+        "swaps": [
+          "cassiopeia",
+          "anivia",
+          "azir"
+        ]
+      },
+      "BOT": {
+        "champion": "corki",
+        "job": "Ranged mixed damage",
+        "swaps": [
+          "ezreal",
+          "kaisa",
+          "mel"
+        ]
+      },
+      "SUPPORT": {
+        "champion": "alistar",
+        "job": "Engage and peel to stabilize fights",
+        "swaps": [
+          "leona",
+          "rell",
+          "nautilus"
+        ]
+      }
+    },
+    "identities": [
+      "scaling",
+      "side-lane",
+      "mixed-dps"
+    ],
+    "winCondition": "Scale safely, then split the map with a side carry while the team holds mid.",
+    "why": "Trundle/Alistar stabilize fights while Gwen and Viktor shred frontline and Corki supplies ranged damage.",
+    "difficulty": "easy-medium",
+    "sources": [
+      "golgg-game-82965"
+    ]
+  },
+  {
+    "id": "stable-top-carry-bot",
+    "name": "Stable Top + Carry Bot",
+    "kind": "observed",
+    "observedBy": "DK",
+    "proDraftId": "lck26po-t1-dk-g1-dk",
+    "slots": {
+      "TOP": {
+        "champion": "gnar",
+        "job": "Stable lane that never needs help",
+        "swaps": [
+          "aatrox",
+          "ambessa",
+          "ksante"
+        ]
+      },
+      "JUNGLE": {
+        "champion": "vi",
+        "job": "Point-click pick setup",
+        "swaps": [
+          "wukong",
+          "jarvan-iv",
+          "nocturne"
+        ]
+      },
+      "MID": {
+        "champion": "taliyah",
+        "job": "Setup follow-up and map control",
+        "swaps": [
+          "syndra",
+          "seraphine",
+          "mel"
+        ]
+      },
+      "BOT": {
+        "champion": "lucian",
+        "job": "Lane-dominant bot carry",
+        "swaps": [
+          "caitlyn",
+          "kalista",
+          "ezreal"
+        ]
+      },
+      "SUPPORT": {
+        "champion": "milio",
+        "job": "Sustain and lane tempo",
+        "swaps": [
+          "lulu",
+          "yuumi",
+          "renata-glasc"
+        ]
+      }
+    },
+    "identities": [
+      "tempo",
+      "lane-carry"
+    ],
+    "winCondition": "Use bot priority to snowball while top stays even.",
+    "why": "Gnar stays stable, Vi/Taliyah guarantee picks, Lucian/Milio uses bot priority.",
+    "difficulty": "easy",
+    "sources": [
+      "golgg-game-82692"
+    ]
+  },
+  {
+    "id": "control-siege",
+    "name": "Control Siege",
+    "kind": "observed",
+    "observedBy": "T1",
+    "proDraftId": "lck26po-t1-dk-g2-t1",
+    "slots": {
+      "TOP": {
+        "champion": "jayce",
+        "job": "Poke and siege pressure",
+        "swaps": [
+          "varus",
+          "fiora",
+          "renekton"
+        ]
+      },
+      "JUNGLE": {
+        "champion": "qiyana",
+        "job": "Punish anyone who walks in",
+        "swaps": [
+          "naafiri",
+          "jarvan-iv",
+          "vi"
+        ]
+      },
+      "MID": {
+        "champion": "anivia",
+        "job": "Terrain and space control",
+        "swaps": [
+          "cassiopeia",
+          "azir",
+          "orianna"
+        ]
+      },
+      "BOT": {
+        "champion": "mel",
+        "job": "Mage poke from the bot lane",
+        "swaps": [
+          "ziggs",
+          "corki",
+          "ezreal"
+        ]
+      },
+      "SUPPORT": {
+        "champion": "alistar",
+        "job": "Engage and peel for the siege",
+        "swaps": [
+          "leona",
+          "rell",
+          "nautilus"
+        ]
+      }
+    },
+    "identities": [
+      "poke",
+      "control",
+      "siege"
+    ],
+    "winCondition": "Siege towers behind poke and terrain; punish anyone who walks in.",
+    "why": "Jayce+Anivia/Mel control space while Qiyana/Alistar punish anyone walking in.",
+    "difficulty": "hard",
+    "sources": [
+      "golgg-game-82693"
+    ]
+  },
+  {
+    "id": "speed-up-skirmish",
+    "name": "Speed-Up Skirmish",
+    "kind": "observed",
+    "observedBy": "T1",
+    "proDraftId": "lck26po-t1-dk-g3-t1",
+    "slots": {
+      "TOP": {
+        "champion": "olaf",
+        "job": "Anti-CC frontline that runs at the backline",
+        "swaps": [
+          "renekton",
+          "aatrox",
+          "trundle"
+        ]
+      },
+      "JUNGLE": {
+        "champion": "skarner",
+        "job": "Hard start that drags targets",
+        "swaps": [
+          "sejuani",
+          "maokai",
+          "chogath"
+        ]
+      },
+      "MID": {
+        "champion": "locke",
+        "job": "Close-range follow-up damage",
+        "swaps": [
+          "corki",
+          "twisted-fate",
+          "akali"
+        ]
+      },
+      "BOT": {
+        "champion": "sivir",
+        "job": "Speed-up and sustained DPS",
+        "swaps": [
+          "jinx",
+          "aphelios",
+          "yunara"
+        ]
+      },
+      "SUPPORT": {
+        "champion": "karma",
+        "job": "Speed-up and shields for the dive",
+        "swaps": [
+          "lulu",
+          "lux",
+          "milio"
+        ]
+      }
+    },
+    "identities": [
+      "speed-up",
+      "anti-cc-skirmish"
+    ],
+    "winCondition": "Accelerate into short skirmishes before the enemy can set up.",
+    "why": "Karma+Sivir accelerate Olaf/Skarner into fights while Locke supplies close-range damage.",
+    "difficulty": "medium",
+    "sources": [
+      "golgg-game-82694"
+    ]
+  },
+  {
+    "id": "dive-utility-bot",
+    "name": "Dive + Utility Bot",
+    "kind": "observed",
+    "observedBy": "T1",
+    "proDraftId": "lck26po-t1-dk-g4-t1",
+    "slots": {
+      "TOP": {
+        "champion": "camille",
+        "job": "Dive access onto the backline",
+        "swaps": [
+          "ambessa",
+          "aatrox",
+          "akali"
+        ]
+      },
+      "JUNGLE": {
+        "champion": "naafiri",
+        "job": "Second dive threat",
+        "swaps": [
+          "qiyana",
+          "pantheon",
+          "jarvan-iv"
+        ]
+      },
+      "MID": {
+        "champion": "galio",
+        "job": "Engage glue and follow-up",
+        "swaps": [
+          "lissandra",
+          "neeko",
+          "sylas"
+        ]
+      },
+      "BOT": {
+        "champion": "kalista",
+        "job": "Lane priority and objective damage",
+        "swaps": [
+          "lucian",
+          "caitlyn",
+          "xayah"
+        ]
+      },
+      "SUPPORT": {
+        "champion": "renata-glasc",
+        "job": "Save the diver and stabilize fights",
+        "swaps": [
+          "milio",
+          "lulu",
+          "rakan"
+        ]
+      }
+    },
+    "identities": [
+      "dive",
+      "engage",
+      "utility"
+    ],
+    "winCondition": "Get access to the backline with two divers and follow up as five.",
+    "why": "Camille+Naafiri create access, Galio follows, Kalista/Renata stabilizes the bot lane and fight.",
+    "difficulty": "medium",
+    "sources": [
+      "golgg-game-82695"
+    ]
+  },
+  {
+    "id": "mage-bot-siege",
+    "name": "Mage Bot Siege",
+    "kind": "generalized",
+    "slots": {
+      "TOP": {
+        "champion": "gnar",
+        "job": "Stable side lane",
+        "swaps": [
+          "aatrox",
+          "ambessa",
+          "ksante"
+        ]
+      },
+      "JUNGLE": {
+        "champion": "jarvan-iv",
+        "job": "Reliable engage",
+        "swaps": [
+          "wukong",
+          "vi",
+          "qiyana"
+        ]
+      },
+      "MID": {
+        "champion": "orianna",
+        "job": "Control damage around the siege",
+        "swaps": [
+          "anivia",
+          "viktor",
+          "azir"
+        ]
+      },
+      "BOT": {
+        "champion": "ziggs",
+        "job": "Waveclear and structure damage",
+        "swaps": [
+          "caitlyn",
+          "mel",
+          "ezreal"
+        ]
+      },
+      "SUPPORT": {
+        "champion": "nautilus",
+        "job": "Hard engage so Ziggs never starts fights",
+        "swaps": [
+          "leona",
+          "alistar",
+          "rell"
+        ]
+      }
+    },
+    "identities": [
+      "siege",
+      "objective-control"
+    ],
+    "winCondition": "Take towers with waveclear and structure damage; fight only with a reliable start.",
+    "why": "Ziggs supplies waveclear and structure damage while J4/Naut/Orianna give reliable start.",
+    "difficulty": "easy",
+    "sources": [
+      "golgg-tournament-picksandbans"
+    ]
+  },
+  {
+    "id": "classic-clash-front-to-back",
+    "name": "Classic Clash Front-to-Back",
+    "kind": "generalized",
+    "slots": {
+      "TOP": {
+        "champion": "ksante",
+        "job": "Frontline and peel",
+        "swaps": [
+          "shen",
+          "gnar",
+          "sion"
+        ]
+      },
+      "JUNGLE": {
+        "champion": "jarvan-iv",
+        "job": "Clean engage",
+        "swaps": [
+          "wukong",
+          "vi",
+          "qiyana"
+        ]
+      },
+      "MID": {
+        "champion": "viktor",
+        "job": "Scaling control damage",
+        "swaps": [
+          "cassiopeia",
+          "anivia",
+          "azir"
+        ]
+      },
+      "BOT": {
+        "champion": "jinx",
+        "job": "Protected ADC",
+        "swaps": [
+          "aphelios",
+          "sivir",
+          "yunara"
+        ]
+      },
+      "SUPPORT": {
+        "champion": "lulu",
+        "job": "Shields and peel for the ADC",
+        "swaps": [
+          "milio",
+          "nami",
+          "yuumi"
+        ]
+      }
+    },
+    "identities": [
+      "front-to-back",
+      "scaling"
+    ],
+    "winCondition": "Frontline engages, ADC shoots whatever is in front: low execution burden.",
+    "why": "Simple frontline, clean engage, protected ADC, low execution burden.",
+    "difficulty": "easy",
+    "sources": [
+      "golgg-tournament-picksandbans"
+    ]
+  }
+]

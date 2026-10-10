@@ -1,0 +1,32 @@
+[
+  {
+    "id": "rule-1",
+    "layer": "clash",
+    "text": "Use the Clash Default first. Fearless Draft creates one-off pairings that are not automatically better for your team."
+  },
+  {
+    "id": "rule-2",
+    "layer": "logic",
+    "text": "Jhin, Miss Fortune and Ziggs need somebody else to start the fight."
+  },
+  {
+    "id": "rule-3",
+    "layer": "logic",
+    "text": "Yunara, Zeri and Jinx need real peel/frontline. Do not spend all five picks on damage."
+  },
+  {
+    "id": "rule-4",
+    "layer": "logic",
+    "text": "Jayce/Rumble/Ambessa top should not be your only pressure AND your only engage plan."
+  },
+  {
+    "id": "rule-5",
+    "layer": "clash",
+    "text": "When a pro comp looks hard to execute, copy the jobs, not the exact champions."
+  },
+  {
+    "id": "rule-6",
+    "layer": "clash",
+    "text": "Do not force Azir+Skarner because it worked earlier in the year. The playoff evidence moved away from it."
+  }
+]

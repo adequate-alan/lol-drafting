@@ -1,0 +1,2112 @@
+[
+  {
+    "id": "aatrox",
+    "name": "Aatrox",
+    "aliases": [
+      "Aatrox jungle"
+    ],
+    "roles": [
+      "TOP",
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 1,
+      "frontline": 2,
+      "peel": 0,
+      "sustainedDps": 2,
+      "burst": 1,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 3,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "ahri",
+    "name": "Ahri",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 1,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 3,
+      "poke": 1,
+      "scaling": 1,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "akali",
+    "name": "Akali",
+    "aliases": [],
+    "roles": [
+      "MID",
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 1,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 1,
+      "burst": 3,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 3,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "alistar",
+    "name": "Alistar",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 3,
+      "frontline": 2,
+      "peel": 2,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 2
+    },
+    "flags": [
+      "disengage"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "ambessa",
+    "name": "Ambessa",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 2,
+      "frontline": 1,
+      "peel": 0,
+      "sustainedDps": 2,
+      "burst": 2,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 3,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "anivia",
+    "name": "Anivia",
+    "aliases": [],
+    "roles": [
+      "MID",
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 1,
+      "frontline": 0,
+      "peel": 2,
+      "sustainedDps": 2,
+      "burst": 1,
+      "poke": 1,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "annie",
+    "name": "Annie",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 3,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 1,
+      "burst": 3,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 1,
+      "sidePressure": 0,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "aphelios",
+    "name": "Aphelios",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 3,
+      "burst": 1,
+      "poke": 1,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 0,
+      "objectiveControl": 2
+    },
+    "flags": [
+      "needs-peel"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "ashe",
+    "name": "Ashe",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 2,
+      "frontline": 0,
+      "peel": 1,
+      "sustainedDps": 2,
+      "burst": 0,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "azir",
+    "name": "Azir",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 2,
+      "frontline": 0,
+      "peel": 2,
+      "sustainedDps": 3,
+      "burst": 0,
+      "poke": 2,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "bard",
+    "name": "Bard",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 2,
+      "frontline": 0,
+      "peel": 2,
+      "sustainedDps": 0,
+      "burst": 1,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "braum",
+    "name": "Braum",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 1,
+      "frontline": 2,
+      "peel": 3,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 1
+    },
+    "flags": [
+      "disengage"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "caitlyn",
+    "name": "Caitlyn",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 2,
+      "burst": 1,
+      "poke": 3,
+      "scaling": 2,
+      "lanePressure": 3,
+      "sidePressure": 1,
+      "objectiveControl": 3
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "camille",
+    "name": "Camille",
+    "aliases": [],
+    "roles": [
+      "TOP",
+      "SUPPORT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 2,
+      "frontline": 1,
+      "peel": 0,
+      "sustainedDps": 2,
+      "burst": 3,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 3,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "cassiopeia",
+    "name": "Cassiopeia",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 1,
+      "frontline": 0,
+      "peel": 1,
+      "sustainedDps": 3,
+      "burst": 1,
+      "poke": 1,
+      "scaling": 3,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "chogath",
+    "name": "Cho'Gath",
+    "aliases": [
+      "Cho"
+    ],
+    "roles": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 2,
+      "frontline": 3,
+      "peel": 1,
+      "sustainedDps": 1,
+      "burst": 2,
+      "poke": 0,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 3
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "corki",
+    "name": "Corki",
+    "aliases": [],
+    "roles": [
+      "BOT",
+      "MID"
+    ],
+    "damage": "mixed",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 2,
+      "burst": 2,
+      "poke": 3,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "dr-mundo",
+    "name": "Dr. Mundo",
+    "aliases": [
+      "Mundo"
+    ],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 3,
+      "peel": 0,
+      "sustainedDps": 2,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 2,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "ezreal",
+    "name": "Ezreal",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 2,
+      "burst": 1,
+      "poke": 3,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "fiora",
+    "name": "Fiora",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 3,
+      "burst": 2,
+      "poke": 0,
+      "scaling": 3,
+      "lanePressure": 3,
+      "sidePressure": 3,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "galio",
+    "name": "Galio",
+    "aliases": [],
+    "roles": [
+      "MID",
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 3,
+      "frontline": 2,
+      "peel": 2,
+      "sustainedDps": 0,
+      "burst": 2,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 1
+    },
+    "flags": [
+      "disengage"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "gnar",
+    "name": "Gnar",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 2,
+      "frontline": 2,
+      "peel": 1,
+      "sustainedDps": 2,
+      "burst": 1,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 2,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "gragas",
+    "name": "Gragas",
+    "aliases": [],
+    "roles": [
+      "TOP",
+      "JUNGLE"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 2,
+      "frontline": 2,
+      "peel": 2,
+      "sustainedDps": 0,
+      "burst": 2,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [
+      "disengage"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "gwen",
+    "name": "Gwen",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 1,
+      "peel": 0,
+      "sustainedDps": 3,
+      "burst": 1,
+      "poke": 0,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 3,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "jarvan-iv",
+    "name": "Jarvan IV",
+    "aliases": [
+      "J4"
+    ],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 3,
+      "frontline": 2,
+      "peel": 0,
+      "sustainedDps": 1,
+      "burst": 2,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "jax",
+    "name": "Jax",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 1,
+      "frontline": 1,
+      "peel": 0,
+      "sustainedDps": 3,
+      "burst": 1,
+      "poke": 0,
+      "scaling": 3,
+      "lanePressure": 2,
+      "sidePressure": 3,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "jayce",
+    "name": "Jayce",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 1,
+      "burst": 2,
+      "poke": 3,
+      "scaling": 1,
+      "lanePressure": 3,
+      "sidePressure": 2,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "jhin",
+    "name": "Jhin",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 1,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 1,
+      "burst": 3,
+      "poke": 2,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 2
+    },
+    "flags": [
+      "needs-setup"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "jinx",
+    "name": "Jinx",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 3,
+      "burst": 1,
+      "poke": 1,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 0,
+      "objectiveControl": 3
+    },
+    "flags": [
+      "needs-peel"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "ksante",
+    "name": "K'Sante",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 2,
+      "frontline": 3,
+      "peel": 2,
+      "sustainedDps": 1,
+      "burst": 1,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 2,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "kaisa",
+    "name": "Kai'Sa",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "mixed",
+    "attrs": {
+      "engage": 1,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 3,
+      "burst": 2,
+      "poke": 0,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 0,
+      "objectiveControl": 2
+    },
+    "flags": [
+      "needs-peel"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "kalista",
+    "name": "Kalista",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 1,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 2,
+      "burst": 1,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 3,
+      "sidePressure": 0,
+      "objectiveControl": 3
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "karma",
+    "name": "Karma",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 2,
+      "sustainedDps": 0,
+      "burst": 1,
+      "poke": 3,
+      "scaling": 1,
+      "lanePressure": 3,
+      "sidePressure": 0,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "lee-sin",
+    "name": "Lee Sin",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 2,
+      "frontline": 1,
+      "peel": 1,
+      "sustainedDps": 1,
+      "burst": 2,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 3
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "leona",
+    "name": "Leona",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 3,
+      "frontline": 2,
+      "peel": 1,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "lissandra",
+    "name": "Lissandra",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 3,
+      "frontline": 1,
+      "peel": 2,
+      "sustainedDps": 0,
+      "burst": 2,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 0,
+      "objectiveControl": 2
+    },
+    "flags": [
+      "disengage"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "locke",
+    "name": "Locke",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "mixed",
+    "attrs": {
+      "engage": 1,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 2,
+      "burst": 2,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 2,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false,
+    "note": "Not enough reference material to rate confidently; values are placeholders inferred from the workbook's descriptions. Review first."
+  },
+  {
+    "id": "lucian",
+    "name": "Lucian",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 2,
+      "burst": 2,
+      "poke": 1,
+      "scaling": 1,
+      "lanePressure": 3,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "lulu",
+    "name": "Lulu",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 3,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 1
+    },
+    "flags": [
+      "disengage"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "lux",
+    "name": "Lux",
+    "aliases": [],
+    "roles": [
+      "SUPPORT",
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 1,
+      "frontline": 0,
+      "peel": 1,
+      "sustainedDps": 0,
+      "burst": 3,
+      "poke": 3,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "maokai",
+    "name": "Maokai",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 3,
+      "frontline": 3,
+      "peel": 2,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 0,
+      "objectiveControl": 3
+    },
+    "flags": [
+      "disengage"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "mel",
+    "name": "Mel",
+    "aliases": [],
+    "roles": [
+      "BOT",
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 1,
+      "sustainedDps": 2,
+      "burst": 2,
+      "poke": 3,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "milio",
+    "name": "Milio",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 3,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 0,
+      "objectiveControl": 1
+    },
+    "flags": [
+      "disengage"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "miss-fortune",
+    "name": "Miss Fortune",
+    "aliases": [
+      "MF"
+    ],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 1,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 1,
+      "burst": 3,
+      "poke": 2,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 2
+    },
+    "flags": [
+      "needs-setup"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "naafiri",
+    "name": "Naafiri",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "MID"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 2,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 1,
+      "burst": 3,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "nami",
+    "name": "Nami",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 2,
+      "frontline": 0,
+      "peel": 3,
+      "sustainedDps": 0,
+      "burst": 1,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 1
+    },
+    "flags": [
+      "disengage"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "nautilus",
+    "name": "Nautilus",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 3,
+      "frontline": 2,
+      "peel": 1,
+      "sustainedDps": 0,
+      "burst": 1,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "neeko",
+    "name": "Neeko",
+    "aliases": [],
+    "roles": [
+      "SUPPORT",
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 3,
+      "frontline": 0,
+      "peel": 1,
+      "sustainedDps": 0,
+      "burst": 3,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "nocturne",
+    "name": "Nocturne",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 3,
+      "frontline": 1,
+      "peel": 0,
+      "sustainedDps": 2,
+      "burst": 2,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 2,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "olaf",
+    "name": "Olaf",
+    "aliases": [],
+    "roles": [
+      "TOP",
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 1,
+      "frontline": 2,
+      "peel": 0,
+      "sustainedDps": 3,
+      "burst": 1,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 3,
+      "sidePressure": 2,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "orianna",
+    "name": "Orianna",
+    "aliases": [
+      "Ori"
+    ],
+    "roles": [
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 2,
+      "frontline": 0,
+      "peel": 2,
+      "sustainedDps": 2,
+      "burst": 2,
+      "poke": 1,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 0,
+      "objectiveControl": 3
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "ornn",
+    "name": "Ornn",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 3,
+      "frontline": 3,
+      "peel": 1,
+      "sustainedDps": 0,
+      "burst": 1,
+      "poke": 0,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "pantheon",
+    "name": "Pantheon",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "SUPPORT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 2,
+      "frontline": 1,
+      "peel": 0,
+      "sustainedDps": 1,
+      "burst": 3,
+      "poke": 1,
+      "scaling": 1,
+      "lanePressure": 3,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "poppy",
+    "name": "Poppy",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "SUPPORT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 2,
+      "frontline": 2,
+      "peel": 3,
+      "sustainedDps": 0,
+      "burst": 1,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [
+      "disengage"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "pyke",
+    "name": "Pyke",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 2,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 3,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "qiyana",
+    "name": "Qiyana",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "MID"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 3,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 1,
+      "burst": 3,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "rakan",
+    "name": "Rakan",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 3,
+      "frontline": 0,
+      "peel": 2,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 0,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "rell",
+    "name": "Rell",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 3,
+      "frontline": 2,
+      "peel": 1,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 1,
+      "sidePressure": 0,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "renata-glasc",
+    "name": "Renata Glasc",
+    "aliases": [
+      "Renata"
+    ],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 1,
+      "frontline": 0,
+      "peel": 3,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 0,
+      "objectiveControl": 2
+    },
+    "flags": [
+      "disengage"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "renekton",
+    "name": "Renekton",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 2,
+      "frontline": 2,
+      "peel": 0,
+      "sustainedDps": 2,
+      "burst": 2,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 3,
+      "sidePressure": 2,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "rumble",
+    "name": "Rumble",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 1,
+      "frontline": 1,
+      "peel": 0,
+      "sustainedDps": 3,
+      "burst": 2,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 2,
+      "objectiveControl": 3
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "ryze",
+    "name": "Ryze",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 1,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 3,
+      "burst": 1,
+      "poke": 0,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 3,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "sejuani",
+    "name": "Sejuani",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 3,
+      "frontline": 3,
+      "peel": 1,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 0,
+      "objectiveControl": 3
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "seraphine",
+    "name": "Seraphine",
+    "aliases": [],
+    "roles": [
+      "SUPPORT",
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 2,
+      "frontline": 0,
+      "peel": 2,
+      "sustainedDps": 1,
+      "burst": 0,
+      "poke": 2,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "shen",
+    "name": "Shen",
+    "aliases": [],
+    "roles": [
+      "TOP",
+      "SUPPORT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 2,
+      "frontline": 2,
+      "peel": 3,
+      "sustainedDps": 1,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 1,
+      "sidePressure": 2,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "sion",
+    "name": "Sion",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 3,
+      "frontline": 3,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 1,
+      "poke": 0,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 2,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "sivir",
+    "name": "Sivir",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 1,
+      "sustainedDps": 3,
+      "burst": 0,
+      "poke": 1,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 0,
+      "objectiveControl": 3
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "skarner",
+    "name": "Skarner",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 3,
+      "frontline": 3,
+      "peel": 1,
+      "sustainedDps": 0,
+      "burst": 1,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 0,
+      "objectiveControl": 3
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "sylas",
+    "name": "Sylas",
+    "aliases": [],
+    "roles": [
+      "MID",
+      "JUNGLE"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 2,
+      "frontline": 1,
+      "peel": 0,
+      "sustainedDps": 2,
+      "burst": 3,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "syndra",
+    "name": "Syndra",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 2,
+      "frontline": 0,
+      "peel": 1,
+      "sustainedDps": 1,
+      "burst": 3,
+      "poke": 2,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "tahm-kench",
+    "name": "Tahm Kench",
+    "aliases": [],
+    "roles": [
+      "SUPPORT",
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 1,
+      "frontline": 3,
+      "peel": 3,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 1
+    },
+    "flags": [
+      "disengage"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "taliyah",
+    "name": "Taliyah",
+    "aliases": [],
+    "roles": [
+      "MID",
+      "JUNGLE"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 2,
+      "frontline": 0,
+      "peel": 1,
+      "sustainedDps": 1,
+      "burst": 2,
+      "poke": 2,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "thresh",
+    "name": "Thresh",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 3,
+      "frontline": 1,
+      "peel": 3,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 1
+    },
+    "flags": [
+      "disengage"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "trundle",
+    "name": "Trundle",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 1,
+      "frontline": 2,
+      "peel": 0,
+      "sustainedDps": 3,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 3,
+      "objectiveControl": 3
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "twisted-fate",
+    "name": "Twisted Fate",
+    "aliases": [
+      "TF"
+    ],
+    "roles": [
+      "MID",
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 2,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 1,
+      "burst": 2,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 2,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "varus",
+    "name": "Varus",
+    "aliases": [],
+    "roles": [
+      "TOP",
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 2,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 2,
+      "burst": 2,
+      "poke": 3,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "vex",
+    "name": "Vex",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 3,
+      "frontline": 0,
+      "peel": 1,
+      "sustainedDps": 0,
+      "burst": 3,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "vi",
+    "name": "Vi",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 3,
+      "frontline": 1,
+      "peel": 0,
+      "sustainedDps": 1,
+      "burst": 2,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "viktor",
+    "name": "Viktor",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 1,
+      "frontline": 0,
+      "peel": 1,
+      "sustainedDps": 3,
+      "burst": 1,
+      "poke": 2,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 0,
+      "objectiveControl": 3
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "wukong",
+    "name": "Wukong",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 3,
+      "frontline": 2,
+      "peel": 0,
+      "sustainedDps": 1,
+      "burst": 2,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "xayah",
+    "name": "Xayah",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 1,
+      "sustainedDps": 3,
+      "burst": 1,
+      "poke": 0,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 0,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "xin-zhao",
+    "name": "Xin Zhao",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 2,
+      "frontline": 1,
+      "peel": 1,
+      "sustainedDps": 2,
+      "burst": 1,
+      "poke": 0,
+      "scaling": 1,
+      "lanePressure": 3,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "yone",
+    "name": "Yone",
+    "aliases": [],
+    "roles": [
+      "MID",
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 2,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 3,
+      "burst": 2,
+      "poke": 0,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 2,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "yorick",
+    "name": "Yorick",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 1,
+      "peel": 0,
+      "sustainedDps": 2,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 3,
+      "objectiveControl": 3
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "yunara",
+    "name": "Yunara",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 3,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 0,
+      "objectiveControl": 2
+    },
+    "flags": [
+      "needs-peel"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "yuumi",
+    "name": "Yuumi",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 3,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 1,
+      "scaling": 3,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 1
+    },
+    "flags": [],
+    "reviewed": false
+  },
+  {
+    "id": "zeri",
+    "name": "Zeri",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 3,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 2
+    },
+    "flags": [
+      "needs-peel"
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "ziggs",
+    "name": "Ziggs",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 2,
+      "burst": 1,
+      "poke": 3,
+      "scaling": 2,
+      "lanePressure": 3,
+      "sidePressure": 0,
+      "objectiveControl": 3
+    },
+    "flags": [
+      "needs-setup"
+    ],
+    "reviewed": false
+  }
+]

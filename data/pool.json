@@ -1,0 +1,161 @@
+[
+  {
+    "role": "TOP",
+    "core": [
+      "jayce",
+      "gnar",
+      "ksante",
+      "rumble"
+    ],
+    "depth": [
+      "ambessa",
+      "gwen",
+      "camille",
+      "olaf"
+    ],
+    "flex": [
+      "sion",
+      "ornn",
+      "renekton",
+      "varus",
+      "galio",
+      "anivia",
+      "dr-mundo",
+      "fiora",
+      "jax",
+      "gragas"
+    ],
+    "coreReasons": {},
+    "changed": "Sion/Ornn down; Jayce/Gnar/Rumble/K'Sante up. Olaf is high-priority but not safe by results.",
+    "sources": [
+      "golgg-tournament-picksandbans"
+    ]
+  },
+  {
+    "role": "JUNGLE",
+    "core": [
+      "jarvan-iv",
+      "lee-sin",
+      "vi",
+      "naafiri",
+      "skarner"
+    ],
+    "depth": [
+      "qiyana",
+      "pantheon",
+      "chogath",
+      "nocturne",
+      "trundle"
+    ],
+    "flex": [
+      "aatrox",
+      "wukong",
+      "xin-zhao",
+      "poppy",
+      "sejuani",
+      "maokai"
+    ],
+    "coreReasons": {},
+    "changed": "Cho'Gath jungle and Qiyana jungle matter more now. Jarvan/Lee/Vi remain the cleanest Clash anchors.",
+    "sources": [
+      "golgg-tournament-picksandbans"
+    ]
+  },
+  {
+    "role": "MID",
+    "core": [
+      "ryze",
+      "orianna",
+      "syndra",
+      "viktor",
+      "akali",
+      "locke"
+    ],
+    "depth": [
+      "anivia",
+      "lissandra",
+      "cassiopeia",
+      "taliyah",
+      "ahri",
+      "galio"
+    ],
+    "flex": [
+      "annie",
+      "sylas",
+      "vex",
+      "yone",
+      "twisted-fate",
+      "azir"
+    ],
+    "coreReasons": {
+      "locke": "Only 3 picks, but the clearest new repeated pairing: Skarner+Locke in T1-DK G3 and HLE Finals G4 (2-1 overall, 5 bans)."
+    },
+    "changed": "Locke rose; Azir fell hard. Control mids remain the easiest way to stabilize draft.",
+    "sources": [
+      "golgg-tournament-picksandbans"
+    ]
+  },
+  {
+    "role": "BOT",
+    "core": [
+      "yunara",
+      "jhin",
+      "caitlyn",
+      "ezreal",
+      "kalista",
+      "ashe",
+      "zeri"
+    ],
+    "depth": [
+      "lucian",
+      "xayah",
+      "miss-fortune",
+      "sivir",
+      "ziggs"
+    ],
+    "flex": [
+      "corki",
+      "jinx",
+      "mel",
+      "kaisa",
+      "aphelios"
+    ],
+    "coreReasons": {},
+    "changed": "More protect-carry and utility lanes. Kalista+Renata and Zeri+Yuumi are clear current shells.",
+    "sources": [
+      "golgg-tournament-picksandbans"
+    ]
+  },
+  {
+    "role": "SUPPORT",
+    "core": [
+      "renata-glasc",
+      "alistar",
+      "milio",
+      "lulu",
+      "bard",
+      "rakan",
+      "seraphine",
+      "karma"
+    ],
+    "depth": [
+      "yuumi",
+      "neeko",
+      "rell",
+      "nautilus",
+      "shen"
+    ],
+    "flex": [
+      "pyke",
+      "tahm-kench",
+      "braum",
+      "leona",
+      "lux"
+    ],
+    "coreReasons": {},
+    "changed": "Fearless expands the support pool, but the job still matters more than the exact champion.",
+    "sources": [
+      "golgg-tournament-picksandbans"
+    ]
+  }
+]
