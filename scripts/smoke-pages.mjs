@@ -80,13 +80,31 @@ await open("/?bot=jinx&vs=ornn,jarvan-iv");
 const enemyText = await text(".draft-slot.enemy .slot-name");
 const vsWhy = await text(".recs .fit-why");
 check("enemy picks from ?vs= load and add matchup reasons", /Ornn/.test(enemyText) && /Matchup/i.test(vsWhy), enemyText);
-// Counters: a separate panel once an enemy lane opponent is known; enemy roles are detected from bare ids.
-const roleTags = await text(".draft-slot.enemy .role-tag");
-check("enemy roles detected from ?vs= (Ornn top, Jarvan IV jungle)", /Enemy TOP/.test(roleTags) && /Enemy JUNGLE/.test(roleTags), roleTags);
+// Counters: a separate block for the role being picked once its lane opponent is known; enemy roles are detected from bare ids.
+const enemyTop = await text('.draft-slot.enemy[data-role="TOP"] .slot-name');
+const enemyJungle = await text('.draft-slot.enemy[data-role="JUNGLE"] .slot-name');
+check("enemy roles detected from ?vs= (Ornn top, Jarvan IV jungle)", /Ornn/.test(enemyTop) && /Jarvan IV/.test(enemyJungle), `${enemyTop} / ${enemyJungle}`);
+await page.locator(".role-tab.role-TOP").click();
+const vsLine = await text(".recs .fit-context .vs");
+check("open role is linked to its lane opponent (Top vs Ornn)", /vs Ornn/.test(vsLine), vsLine);
 const counterText = await text('section.counters');
 check("Counters panel is separate and never invents a counter", /Counters/.test(counterText) && /vs Ornn/.test(counterText)
   && ((await page.locator("section.counters .counter-row").count()) > 0 || /No reliable counter data for Ornn/.test(counterText)), counterText.slice(0, 160));
 check("no Clash wording on the Draft Room", !/Clash/.test(await text("body")), "");
+// Draft Room workspace: the open role drives the list, one row per champion, Comp Check rail, pinned draft bar
+await open("/?bot=sivir&vs=renekton,,,ezreal,karma");
+check("Bot locked: Support is the active role", (await page.locator(".draft-slot.role-SUPPORT.active").count()) === 1
+  && /Support/.test(await text(".role-tab.active")), await text(".role-tab.active"));
+check("Support recommendations read vs the enemy bot lane", /vs Ezreal \+ Karma/.test(await text(".recs .fit-context .vs")), await text(".recs .fit-context .vs"));
+const rowNames = await page.locator(".recs .fit-head .name").allTextContents();
+check("each champion appears once in the recommendation list", rowNames.length > 0 && new Set(rowNames).size === rowNames.length, rowNames.join(", "));
+const recBox = await page.locator("section.recs").boundingBox();
+const ccBox = await page.locator("aside.comp-check").boundingBox();
+check("desktop: Comp Check is a right rail beside the recommendations", !!recBox && !!ccBox && ccBox.x > recBox.x + recBox.width - 1 && ccBox.width < recBox.width, JSON.stringify({ recBox, ccBox }));
+await page.evaluate(() => window.scrollTo(0, 900));
+await page.waitForTimeout(400);
+check("scrolled: condensed draft bar stays visible", await page.locator(".draft-mini.show").isVisible(), "");
+check("no repeated layer-explainer line", !/stay separate on every page/.test(await text("body")), "");
 // Locking through the UI keeps the base path in the URL and survives a refresh
 await open("/");
 await page.locator('input[aria-label="BOT champion"]').fill("Sivi");
@@ -227,6 +245,9 @@ await open("/pool/");
 await page.locator("tr.pool-row").first().click();
 const poolOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
 check("pool at 390px with a row open: any scroll stays inside the table", poolOverflow <= 0, `${poolOverflow}px`);
+await open("/?top=ambessa&bot=ziggs&vs=renekton,,,sivir,lulu");
+const draftOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+check("draft room at 390px: slots scroll inside their rows, no page overflow", draftOverflow <= 0, `${draftOverflow}px`);
 await open("/comps/");
 await page.locator(".comp-slot").first().click();
 await page.waitForTimeout(400); // let the slide-up finish
