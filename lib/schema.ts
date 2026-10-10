@@ -15,7 +15,8 @@ export const SourceId = id;
 export type ChampionId = string;
 
 export const Confidence = z.enum(["high", "medium-high", "medium", "low"]);
-export const Era = z.enum(["current-playoffs", "earlier-2026"]);
+// current-meta: a later, still-running event (Demacia Cup 2026, patch 16.18). Kept apart from the LCK playoff sample.
+export const Era = z.enum(["current-playoffs", "current-meta", "earlier-2026"]);
 export const Status = z.enum(["current", "confirmed", "updated", "added", "downgraded", "keep"]);
 
 // ---------- sources.json ----------
@@ -28,6 +29,7 @@ export const Source = z.object({
   opponent: z.string().optional(),
   seriesGame: z.string().optional(),
   patch: z.string().optional(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(), // game date, when known
   lastChecked: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
   refreshStatus: z.enum(["verified", "not-refreshed"]), // "verified" only when Claude itself re-read the page
   origin: z.enum(["workbook", "golgg-refresh", "externally-provided"]),
@@ -36,6 +38,7 @@ export const Source = z.object({
   pendingClaim: z.object({
     claim: z.string(),
     providedOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    providedBy: z.string().optional(),
   }).optional(),
 });
 export type Source = z.infer<typeof Source>;
@@ -65,6 +68,7 @@ export const ObservedPairing = z.object({
   champion: ChampionId,
   context: z.string(),
   era: Era,
+  event: z.string().optional(), // id in meta.json events: gives the patch and dates shown beside the evidence
   proDraftIds: z.array(z.string()),
   backedByGame: z.boolean(), // true only when a recorded pro draft shows the pairing
   sources: z.array(SourceId),
@@ -203,6 +207,27 @@ export const MetaStat = z.object({
   sources: z.array(SourceId),
 });
 export type MetaStat = z.infer<typeof MetaStat>;
+// A tournament evidence set. The LCK playoffs are the main sample (meta.tournament + meta.stats); a current-meta event
+// such as the Demacia Cup is a separate, newer sample with its own stats and notes. Neither ever edits saved pairings.
+const Day = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+export const MetaEvent = z.object({
+  id: id,
+  name: z.string(),
+  short: z.string(),
+  kind: z.enum(["playoffs", "current-meta"]),
+  patch: z.string(),
+  draftMode: z.string(),
+  status: z.enum(["complete", "ongoing"]),
+  startDate: Day.optional(),
+  endDate: Day.optional(),
+  scope: z.string(),
+  // Facts about the event itself (dates, who plays) supplied during review from a non-Gol.gg page.
+  provided: z.object({ url: z.string().url(), claim: z.string(), providedOn: Day, providedBy: z.string() }).optional(),
+  stats: z.array(MetaStat).default([]),
+  notes: z.array(z.object({ topic: z.string(), note: z.string(), sources: z.array(SourceId) })).default([]),
+  sources: z.array(SourceId),
+});
+export type MetaEvent = z.infer<typeof MetaEvent>;
 export const Meta = z.object({
   tournament: z.object({
     name: z.string(), games: z.number().int(), draftMode: z.string(), patch: z.string(),
@@ -210,6 +235,7 @@ export const Meta = z.object({
   }),
   stats: z.array(MetaStat),
   changes: z.array(z.object({ topic: z.string(), note: z.string() })),
+  events: z.array(MetaEvent).min(1),
 });
 export type Meta = z.infer<typeof Meta>;
 

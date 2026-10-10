@@ -4,7 +4,7 @@ import { PageLoading } from "@/components/ui";
 import { FirstPickView } from "@/components/views/FirstPickView";
 import { TABS, type Tab } from "@/components/views/first-pick-tabs";
 import { getBotPairings, getMeta, getMidJungle, getProDrafts, getTopPicks } from "@/lib/data";
-import { nameMap, sourceMap } from "@/lib/lookup";
+import { eventMap, nameMap, sourceMap } from "@/lib/lookup";
 
 export const dynamicParams = false;
 export function generateStaticParams() {
@@ -18,7 +18,7 @@ export default async function FirstPick({ params }: { params: Promise<{ tab: str
   const draftLabels = Object.fromEntries(getProDrafts().map((d) => [d.id, `${d.team} ${d.seriesGame}`]));
   return (
     <Suspense fallback={<PageLoading title="First Pick" />}>
-      <FirstPickView tab={tab as Tab} names={nameMap()} sources={sourceMap()} stats={stats} draftLabels={draftLabels}
+      <FirstPickView tab={tab as Tab} names={nameMap()} sources={sourceMap()} events={eventMap()} stats={stats} draftLabels={draftLabels}
         bot={getBotPairings()} midJungle={getMidJungle()} top={getTopPicks()} />
     </Suspense>
   );

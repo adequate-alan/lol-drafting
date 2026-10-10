@@ -4,7 +4,8 @@ import { useMemo, useState } from "react";
 import { picksOf, profile, RULES, warnings, type Draft, type DraftWarning } from "@/lib/evaluate";
 import { recommend, teamNeeds, winConditions, type FitKind, type Recommendation } from "@/lib/recommend";
 import { ROLES, type Attr, type Role, type Source } from "@/lib/schema";
-import { proSuggestions, similarProDrafts, similarShells, type ByRole, type SuggestData } from "@/lib/suggest";
+import { describeLine } from "@/lib/evidence";
+import { proSuggestions, similarProDrafts, similarShells, type ProByRole, type SuggestData } from "@/lib/suggest";
 import { PairingCard, type CardRecord } from "./PairingCard";
 import { ChampIcon, ChampionRow, SourceBadge, WarningBadge, type Layer, type Severity } from "./ui";
 
@@ -37,6 +38,7 @@ export function DraftRoom({ data, sources, initial, initialEnemy, metaPicks }: {
     for (const c of data.champions) { m.set(c.name.toLowerCase(), c.id); c.aliases.forEach((a) => m.set(a.toLowerCase(), c.id)); }
     return m;
   }, [data.champions]);
+  const eventMap = useMemo(() => Object.fromEntries((data.events ?? []).map((e) => [e.id, e])), [data.events]);
   const draftLabels = useMemo(() => Object.fromEntries(data.proDrafts.map((d) => [d.id, `${d.team} ${d.seriesGame}`])), [data.proDrafts]);
 
   const update = (next: Draft, nextEnemy = enemy) => {
@@ -62,7 +64,9 @@ export function DraftRoom({ data, sources, initial, initialEnemy, metaPicks }: {
   const plans = winConditions(picks);
   const enemyPlans = winConditions(enemyPicks);
   const recs = recommend(draft, enemyIds, data);
-  const pro = proSuggestions(draft, data.proDrafts);
+  const proAll = proSuggestions(draft, data.proDrafts, { botPairings: data.botPairings, events: data.events, sources }, Infinity);
+  const pro: ProByRole = Object.fromEntries(Object.entries(proAll).map(([r, list]) => [r, list!.slice(0, 6)]));
+  const proCount = (role: Role, id: string) => proAll[role]?.find((p) => p.champion === id)?.score ?? 0;
   const similar = similarProDrafts(draft, data.proDrafts);
   const shells = similarShells(draft, data.shells);
   const open = ROLES.filter((r) => !draft[r]);
@@ -178,7 +182,7 @@ export function DraftRoom({ data, sources, initial, initialEnemy, metaPicks }: {
                   <div key={role} className={`fit-role role-${role}`}>
                     <div className="fit-role-head"><span className="role-tag">{role}</span></div>
                     {recs[role]?.length
-                      ? recs[role]!.map((r, i) => <FitRow key={r.champion} rec={r} rank={i} names={names} onPick={() => lock(role, r.champion)} />)
+                      ? recs[role]!.map((r, i) => <FitRow key={r.champion} rec={r} rank={i} proGames={proCount(role, r.champion)} names={names} onPick={() => lock(role, r.champion)} />)
                       : <p className="rec-note">Nothing stands out yet.</p>}
                   </div>
                 ))}
@@ -194,7 +198,7 @@ export function DraftRoom({ data, sources, initial, initialEnemy, metaPicks }: {
           </section>
 
           {cards.length > 0 && <div className="grid cols-auto">{cards.map((c) => (
-            <PairingCard key={c.kind + ("champion" in c.record ? c.record.champion : c.record.anchor)} item={c} names={names} sources={sources} compact draftLabels={draftLabels} />
+            <PairingCard key={c.kind + ("champion" in c.record ? c.record.champion : c.record.anchor)} item={c} names={names} sources={sources} events={eventMap} compact draftLabels={draftLabels} />
           ))}</div>}
 
           <div className="stack">
@@ -238,7 +242,7 @@ export function DraftRoom({ data, sources, initial, initialEnemy, metaPicks }: {
 
 const STATUS = { default: "Default", alt: "Alt", fits: "Fits" } as const;
 
-function FitRow({ rec, rank, names, onPick }: { rec: Recommendation; rank: number; names: Record<string, string>; onPick: () => void }) {
+function FitRow({ rec, rank, proGames, names, onPick }: { rec: Recommendation; rank: number; proGames: number; names: Record<string, string>; onPick: () => void }) {
   const [open, setOpen] = useState(false);
   const name = names[rec.champion] ?? rec.champion;
   const lead = rec.parts.find((p) => p.points > 0) ?? rec.parts[0];
@@ -250,7 +254,7 @@ function FitRow({ rec, rank, names, onPick }: { rec: Recommendation; rank: numbe
         <span className="fit-line">
           <span className="name">{name}</span>
           {rec.saved && <span className={`status-tag ${rec.saved}`} title="Saved pairing">{STATUS[rec.saved]}</span>}
-          {rec.proGames > 0 && <span className="badge pro" title="Recorded pro drafts with this champion next to one of your picks. Evidence only, not part of the score.">Pro {rec.proGames}</span>}
+          {proGames > 0 && <span className="badge pro" title="Pro games with this champion next to one of your picks. Evidence only, not part of the score.">Pro {proGames}</span>}
           {risk && <span className="status-tag risk">Risk</span>}
         </span>
         <span className="fit-reason truncate">{lead?.text}</span>
@@ -342,7 +346,7 @@ function Meter({ label, best, total, by, empty }: { label: string; best: number;
 }
 
 function RecommendationGroup({ layer, title, data, open, names, onPick, empty, note }: {
-  layer: Layer; title: string; data: ByRole; open: Role[]; names: Record<string, string>;
+  layer: Layer; title: string; data: ProByRole; open: Role[]; names: Record<string, string>;
   onPick: (role: Role, id: string) => void; empty: string; note?: string;
 }) {
   const roles = open.filter((r) => data[r]?.length);
@@ -355,14 +359,19 @@ function RecommendationGroup({ layer, title, data, open, names, onPick, empty, n
         {roles.map((role) => (
           <div key={role} className={`rec-role role-${role}`}>
             <span className="role-tag">{role}</span>
-            {data[role]!.map((s) => (
-              <button key={s.champion} className="rec-row" title={s.reasons.join("\n")} onClick={() => onPick(role, s.champion)}>
-                <ChampIcon id={s.champion} name={names[s.champion] ?? s.champion} role={role} size="sm" />
-                <span className="name">{names[s.champion] ?? s.champion}</span>
-                <span className="count">{s.score}×</span>
-                <span className="why truncate">{s.reasons.slice(0, 2).join(", ") + (s.reasons.length > 2 ? ` +${s.reasons.length - 2}` : "")}</span>
-              </button>
-            ))}
+            {data[role]!.map((s) => {
+              const [latest, ...older] = s.lines;
+              return (
+                <button key={s.champion} className="rec-row ev" title={s.reasons.join("\n")} onClick={() => onPick(role, s.champion)}>
+                  <ChampIcon id={s.champion} name={names[s.champion] ?? s.champion} role={role} size="sm" />
+                  <span className="name">{names[s.champion] ?? s.champion}</span>
+                  <span className="ev-lines">
+                    <span className="latest">{describeLine({ ...latest, label: latest.event })}{latest.ongoing ? " · ongoing" : ""}</span>
+                    {older.length > 0 && <span className="older truncate">+ older: {older.map((l) => describeLine({ ...l, label: l.event })).join("; ")}</span>}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         ))}
       </div>

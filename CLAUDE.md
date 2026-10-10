@@ -25,6 +25,9 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 - Pro usage informs alan's defaults but never silently overwrites them. Ask before changing a saved-pairing field.
 - Never delete valid pro evidence because it is not one of alan's saved picks. Pairings the workbook cites without a
   recorded draft stay, flagged `backedByGame: false`.
+- Evidence sets are events in `meta.json` `events` (LCK 2026 playoffs on 16.16; Demacia Cup 2026 on 16.18, `ongoing`).
+  Pro evidence shows event, patch and date, newest patch first (`lib/evidence.ts`). A current-meta event never edits saved
+  pairings and stays off the Gen.G page (`tests/demacia-cup.test.ts`).
 - Keep priority (pick/ban presence) separate from win rate, and mark small samples (`lowSample`, fewer than 5 picks).
 - A low-sample champion can only be in a pool's `core` tier with a written `coreReasons` entry.
 - Draft Room recommendations are ranked by overall draft fit (alan, 2026-10-10), in `lib/recommend.ts` and

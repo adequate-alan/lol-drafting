@@ -17,6 +17,7 @@
         "champion": "bard",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g1-hle"
         ],
@@ -29,6 +30,7 @@
         "champion": "karma",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g2-hle"
         ],
@@ -85,6 +87,7 @@
         "champion": "alistar",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g4-geng"
         ],
@@ -140,8 +143,20 @@
     "observedProPairings": [
       {
         "champion": "karma",
+        "context": "Demacia Cup Global Invitational 2026",
+        "era": "current-meta",
+        "event": "demacia-cup-2026",
+        "proDraftIds": [],
+        "backedByGame": false,
+        "sources": [
+          "golgg-game-83459"
+        ]
+      },
+      {
+        "champion": "karma",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g3-t1",
           "lck26po-round-2-g3-geng"
@@ -178,7 +193,8 @@
     "status": "updated",
     "sources": [
       "golgg-game-82694",
-      "golgg-game-82416"
+      "golgg-game-82416",
+      "golgg-game-83459"
     ]
   },
   {
@@ -197,9 +213,21 @@
     "alternativeNotes": {},
     "observedProPairings": [
       {
+        "champion": "karma",
+        "context": "Demacia Cup Global Invitational 2026",
+        "era": "current-meta",
+        "event": "demacia-cup-2026",
+        "proDraftIds": [],
+        "backedByGame": false,
+        "sources": [
+          "golgg-game-83452"
+        ]
+      },
+      {
         "champion": "seraphine",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g4-dk"
         ],
@@ -212,6 +240,7 @@
         "champion": "karma",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-round-4-g1-geng"
         ],
@@ -224,6 +253,7 @@
         "champion": "nautilus",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [],
         "backedByGame": false,
         "sources": [
@@ -259,7 +289,8 @@
       "golgg-game-82625",
       "golgg-game-82695",
       "golgg-game-82416",
-      "golgg-game-82383"
+      "golgg-game-82383",
+      "golgg-game-83452"
     ]
   },
   {
@@ -279,8 +310,20 @@
     "observedProPairings": [
       {
         "champion": "lulu",
+        "context": "Demacia Cup Global Invitational 2026",
+        "era": "current-meta",
+        "event": "demacia-cup-2026",
+        "proDraftIds": [],
+        "backedByGame": false,
+        "sources": [
+          "golgg-game-83460"
+        ]
+      },
+      {
+        "champion": "lulu",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g2-hle",
           "lck26po-hle-t1-g2-t1",
@@ -319,7 +362,8 @@
     "sources": [
       "golgg-game-82963",
       "golgg-game-82746",
-      "golgg-game-82414"
+      "golgg-game-82414",
+      "golgg-game-83460"
     ]
   },
   {
@@ -337,9 +381,21 @@
     "alternativeNotes": {},
     "observedProPairings": [
       {
+        "champion": "bard",
+        "context": "Demacia Cup Global Invitational 2026",
+        "era": "current-meta",
+        "event": "demacia-cup-2026",
+        "proDraftIds": [],
+        "backedByGame": false,
+        "sources": [
+          "golgg-game-83462"
+        ]
+      },
+      {
         "champion": "karma",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g4-hle"
         ],
@@ -352,6 +408,7 @@
         "champion": "alistar",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g1-hle"
         ],
@@ -364,6 +421,7 @@
         "champion": "rell",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g3-dk"
         ],
@@ -376,6 +434,7 @@
         "champion": "shen",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-round-4-g2-geng"
         ],
@@ -413,7 +472,8 @@
       "golgg-game-82745",
       "golgg-game-82965",
       "golgg-game-82626",
-      "golgg-game-82694"
+      "golgg-game-82694",
+      "golgg-game-83462"
     ]
   },
   {
@@ -434,6 +494,7 @@
         "champion": "seraphine",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g3-hle",
           "lck26po-hle-t1-g3-hle",
@@ -450,6 +511,7 @@
         "champion": "lulu",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g2-dk"
         ],
@@ -505,6 +567,7 @@
         "champion": "milio",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g1-geng",
           "lck26po-hle-t1-g1-t1",
@@ -564,6 +627,7 @@
         "champion": "neeko",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-round-4-g4-geng"
         ],
@@ -614,6 +678,7 @@
         "champion": "pyke",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [],
         "backedByGame": false,
         "sources": [
@@ -624,6 +689,7 @@
         "champion": "camille",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [],
         "backedByGame": false,
         "sources": [
@@ -677,6 +743,7 @@
         "champion": "renata-glasc",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g2-geng",
           "lck26po-t1-dk-g4-t1"
@@ -734,6 +801,7 @@
         "champion": "rakan",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g4-hle",
           "lck26po-t1-dk-g1-t1"
@@ -790,6 +858,7 @@
         "champion": "yuumi",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g3-geng",
           "lck26po-hle-t1-g3-t1"
@@ -847,6 +916,7 @@
         "champion": "tahm-kench",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g4-t1"
         ],
@@ -900,6 +970,7 @@
         "champion": "alistar",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g2-t1"
         ],

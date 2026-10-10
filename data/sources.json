@@ -455,5 +455,94 @@
       "claim": "KT drafted Ezreal bot + Nautilus support.",
       "providedOn": "2026-10-10"
     }
+  },
+  {
+    "id": "golgg-game-83452",
+    "url": "https://gol.gg/game/stats/83452/page-fullstats/",
+    "type": "golgg-game",
+    "tournament": "Demacia Cup Global Invitational 2026",
+    "seriesGame": "JDG vs BRO",
+    "patch": "16.18",
+    "date": "2026-10-03",
+    "lastChecked": null,
+    "refreshStatus": "not-refreshed",
+    "origin": "externally-provided",
+    "pendingClaim": {
+      "claim": "Ezreal and Karma were played together as bot/support.",
+      "providedOn": "2026-10-10",
+      "providedBy": "alan"
+    }
+  },
+  {
+    "id": "golgg-game-83460",
+    "url": "https://gol.gg/game/stats/83460/page-fullstats/",
+    "type": "golgg-game",
+    "tournament": "Demacia Cup Global Invitational 2026",
+    "team": "Team WE",
+    "opponent": "BRO",
+    "seriesGame": "Team WE vs BRO",
+    "patch": "16.18",
+    "date": "2026-10-04",
+    "lastChecked": null,
+    "refreshStatus": "not-refreshed",
+    "origin": "externally-provided",
+    "pendingClaim": {
+      "claim": "Team WE played Yunara bot + Lulu support.",
+      "providedOn": "2026-10-10",
+      "providedBy": "alan"
+    }
+  },
+  {
+    "id": "golgg-game-83459",
+    "url": "https://gol.gg/game/stats/83459/page-fullstats/",
+    "type": "golgg-game",
+    "tournament": "Demacia Cup Global Invitational 2026",
+    "team": "BRO",
+    "opponent": "Team WE",
+    "seriesGame": "BRO vs Team WE",
+    "patch": "16.18",
+    "date": "2026-10-04",
+    "lastChecked": null,
+    "refreshStatus": "not-refreshed",
+    "origin": "externally-provided",
+    "pendingClaim": {
+      "claim": "BRO played Sivir bot + Karma support.",
+      "providedOn": "2026-10-10",
+      "providedBy": "alan"
+    }
+  },
+  {
+    "id": "golgg-game-83462",
+    "url": "https://gol.gg/game/stats/83462/page-fullstats/",
+    "type": "golgg-game",
+    "tournament": "Demacia Cup Global Invitational 2026",
+    "team": "GAM",
+    "opponent": "Vitality",
+    "seriesGame": "GAM vs Vitality",
+    "patch": "16.18",
+    "date": "2026-10-05",
+    "lastChecked": null,
+    "refreshStatus": "not-refreshed",
+    "origin": "externally-provided",
+    "pendingClaim": {
+      "claim": "GAM played Jhin bot + Bard support.",
+      "providedOn": "2026-10-10",
+      "providedBy": "alan"
+    }
+  },
+  {
+    "id": "golgg-champion-13",
+    "url": "https://gol.gg/champion/champion-stats/13/season-ALL/split-Summer/tournament-LCK%202026%20Season%20Playoffs/",
+    "type": "golgg-champion",
+    "tournament": "LCK 2026 Season Playoffs",
+    "patch": "16.16",
+    "lastChecked": null,
+    "refreshStatus": "not-refreshed",
+    "origin": "externally-provided",
+    "pendingClaim": {
+      "claim": "Cho'Gath had 9 jungle picks in the LCK 2026 Season Playoffs.",
+      "providedOn": "2026-10-10",
+      "providedBy": "alan"
+    }
   }
 ]
