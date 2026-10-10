@@ -14,7 +14,8 @@ describe("first pick order", () => {
     const ranks = rows.map((r) => poolTierRank(pool, "BOT", r.champion));
     expect(ranks).toEqual([...ranks].sort((a, b) => a - b));
     expect(poolTierRank(pool, "BOT", rows[0].champion)).toBe(0);
-    expect(rows.slice(-3).map((r) => r.champion)).toContain("corki");
+    const flex = pool.find((p) => p.role === "BOT")!.flex;
+    expect(rows.slice(-flex.length).map((r) => r.champion).sort()).toEqual([...flex].sort());
   });
   it("keeps mids above junglers, each by pool tier", () => {
     const rows = sortMidJunglePicks(getMidJungle(), pool, names);

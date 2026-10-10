@@ -1007,5 +1007,53 @@
     "sources": [
       "golgg-game-82693"
     ]
+  },
+  {
+    "champion": "kaisa",
+    "role": "BOT",
+    "clashDefault": [
+      "nautilus",
+      "rakan"
+    ],
+    "alternatives": [],
+    "alternativeNotes": {},
+    "observedProPairings": [],
+    "surrounding": {
+      "jungle": [],
+      "mid": []
+    },
+    "logic": {},
+    "confidence": "medium",
+    "identities": [
+      "dive",
+      "engage-follow-up"
+    ],
+    "notes": "Synergy record set by alan (2026-10-10): Nautilus and Rakan are joint preferred supports. No recorded pro game backs it; Kai'Sa + Rell is not saved.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "aphelios",
+    "role": "BOT",
+    "clashDefault": [
+      "thresh",
+      "lulu"
+    ],
+    "alternatives": [],
+    "alternativeNotes": {},
+    "observedProPairings": [],
+    "surrounding": {
+      "jungle": [],
+      "mid": []
+    },
+    "logic": {},
+    "confidence": "medium",
+    "identities": [
+      "scaling",
+      "front-to-back"
+    ],
+    "notes": "Synergy record set by alan (2026-10-10): Thresh and Lulu are joint preferred supports. No recorded pro game backs it.",
+    "status": "added",
+    "sources": []
   }
 ]

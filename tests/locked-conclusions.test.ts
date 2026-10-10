@@ -1,7 +1,7 @@
 // alan's locked Clash conclusions. A failure here means the data changed a decision
 // that only alan can change; update the data only after he says so.
 import { describe, expect, it } from "vitest";
-import { getBotPairings, getGenG, getMidJungle } from "@/lib/data";
+import { getBotPairings, getGenG, getMidJungle, getPool } from "@/lib/data";
 
 const bot = (id: string) => {
   const r = getBotPairings().find((b) => b.champion === id);
@@ -62,6 +62,19 @@ describe("bot lane Clash defaults", () => {
     expect(bot("xayah").clashDefault).toEqual(["rakan"]);
     expect(bot("kalista").clashDefault).toEqual(["renata-glasc"]);
     expect(bot("zeri").clashDefault).toEqual(["yuumi"]);
+  });
+
+  it("Kai'Sa → Nautilus + Rakan and Aphelios → Thresh + Lulu, joint preferred (alan, 2026-10-10)", () => {
+    expect(bot("kaisa").clashDefault).toEqual(["nautilus", "rakan"]);
+    expect(bot("kaisa").alternatives).toEqual([]);
+    expect(bot("kaisa").clashDefault).not.toContain("rell");
+    expect(bot("aphelios").clashDefault).toEqual(["thresh", "lulu"]);
+    expect(bot("aphelios").alternatives).toEqual([]);
+  });
+
+  it("every BOT pool champion has a Synergy record", () => {
+    const pool = getPool().find((p) => p.role === "BOT")!;
+    for (const id of [...pool.core, ...pool.depth, ...pool.flex]) expect(bot(id).clashDefault.length, id).toBeGreaterThan(0);
   });
 });
 
