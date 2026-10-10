@@ -192,7 +192,6 @@ export function ScoutingReport({ item, names, sources, events, draftLabels, prop
         <Section layer="pro" title="Pro Pairings">
           <GameList games={games} role={item.role} names={names} />
         </Section>
-        {item.why && <Section layer="logic" title="Logic"><p className="small"><b>Kit</b> {item.why}</p></Section>}
       </article>
     );
   }

@@ -113,17 +113,16 @@ export interface ProposedCard {
   id: string;
   role: Role;
   identity?: string; // the proposed record's draft identity (Claude's read)
-  why?: string; // the champion's kit summary (lib/model-v2/kits.ts), General Draft Logic
   links: ProposedLink[];
   confirmed: { label: string; ids: string[]; role: Role }[];
 }
 
 /** A First Pick / Draft Room profile for a champion and role, built from the proposed layer plus any confirmed links. */
-export function proposedCard(id: string, role: Role, records: ProposedRecord[], data: LinkData, why?: string): ProposedCard {
+export function proposedCard(id: string, role: Role, records: ProposedRecord[], data: LinkData): ProposedCard {
   const order = PARTNER_ROLES[role];
   const at = (r: Role) => (order.includes(r) ? order.indexOf(r) : order.length);
   const links = proposedPartners(records, id, role).sort((a, b) => at(a.role) - at(b.role));
-  return { kind: "proposed", id, role, identity: recordOf(records, id, role)?.identity, why, links, confirmed: confirmedReverse(id, role, data) };
+  return { kind: "proposed", id, role, identity: recordOf(records, id, role)?.identity, links, confirmed: confirmedReverse(id, role, data) };
 }
 
 /** Proposed partners to show on a champion's profile. A bot's saved record alone decides its supports (alan's hard
