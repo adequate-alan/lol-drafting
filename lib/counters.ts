@@ -5,10 +5,12 @@
 //   Logic        fixes composition needs            lib/recommend.ts, lib/evaluate.ts
 //   Counters     favourable into an enemy pick      here
 //
-// Source priority: recorded pro games first, DPM.LOL only when the pro sample for that pair is too thin. A pro game
-// counts only when both champions played the same lane role on opposite sides AND the game's winner is recorded;
-// appearing on opposite teams proves nothing. Newer patches weigh more. Nothing here changes the draft-fit score: a
-// counter is shown beside the overall ranking, never above it, and a counter that hurts the comp says so.
+// Source priority (alan, 2026-10-10): DPM.LOL role matchup data is the counter signal. Recorded pro games are
+// corroboration only: a pro win/loss record never makes a counter on its own, because a team can win a game for reasons
+// that have nothing to do with the lane. A pro sample counts only when the same lane roles met on opposite sides, at
+// least three times, with a recorded winner, and a consistent result; newer patches weigh more. When DPM and pro agree
+// the counter is marked stronger; when they disagree DPM stays the signal and the pro sample is shown beside it, never
+// averaged in. Nothing here changes the draft-fit score: a counter is shown beside the overall ranking, never above it.
 import type { Draft } from "./evaluate";
 import { comparePatchDesc } from "./evidence";
 import { TIERS, type Tier } from "./pool-stats";
@@ -16,19 +18,20 @@ import type { Recommendation, Recommendations } from "./recommend";
 import { ROLES, type Champion, type Counters, type PoolEntry, type ProDraft, type Role } from "./schema";
 
 export type EnemyDraft = Partial<Record<Role, string>>;
-export type CounterSource = "pro" | "dpm";
-export type Strength = "strong" | "favorable";
+/** favorable < strong < confirmed (strong DPM matchup that pro games also support). */
+export type Strength = "favorable" | "strong" | "confirmed";
+export type ProVerdict = "agrees" | "disagrees" | "mixed";
 
 // ---------- thresholds ----------
 
-export const PRO_MIN_GAMES = 3; // one or two games is an anecdote
-export const PRO_MIN_WIN_SHARE = 0.6; // patch-weighted share of those games the counter side won
-export const PRO_STRONG_SHARE = 0.75;
-export const PATCH_DECAY = 0.7; // weight of a game one patch older than the newest recorded patch
 export const DPM_MIN_GAMES = 300;
 export const DPM_MIN_DUO_GAMES = 150;
 export const DPM_MIN_WIN_RATE = 0.52;
 export const DPM_STRONG_WIN_RATE = 0.54;
+export const PRO_MIN_GAMES = 3; // the matchup has to repeat; one or two games is an anecdote
+export const PRO_AGREE_SHARE = 0.6; // patch-weighted share of those games the counter side won
+export const PRO_DISAGREE_SHARE = 0.4;
+export const PATCH_DECAY = 0.7; // weight of a game one patch older than the newest recorded patch
 
 // ---------- enemy roles ----------
 
@@ -88,22 +91,34 @@ export function detectEnemyRoles(ids: string[], champions: Champion[], fixed: En
 
 // ---------- evidence ----------
 
+/** The counter signal: one DPM.LOL matchup row (lane) or duo-vs-duo row. */
 export interface CounterEvidence {
-  source: CounterSource;
+  source: "dpm";
   scope: "lane" | "duo";
   vs: string[]; // the enemy champion, or the enemy bot + support
-  with?: string; // the counter duo's other half, for duo evidence
-  strength: Strength;
+  with?: string; // the counter duo's other half, for duo rows
+  strength: "favorable" | "strong"; // from DPM alone, after holding jungle / half-known bot lanes to favorable
   games: number;
-  wins?: number; // pro: games the counter side won
-  winRate: number; // pro: patch-weighted win share; DPM: matchup win rate
+  winRate: number; // the counter side's matchup win rate
   delta?: number;
-  patch?: string; // latest patch in the sample
-  updated?: string;
+  patch: string;
+  updated: string;
   rank?: string;
-  url?: string;
-  gameIds?: string[]; // pro: Gol.gg game source ids
-  note?: string; // why the claim is held back (jungle head-to-head, one bot-lane champion)
+  url: string;
+  note?: string; // why the claim is held back (jungle head-to-head, one bot-lane champion, role instead of duo)
+}
+
+/** Recorded pro games of the same matchup. Context beside the DPM signal; never a counter by itself, never averaged. */
+export interface ProSample {
+  scope: "lane" | "duo";
+  vs: string[];
+  with?: string;
+  games: number;
+  wins: number; // games the counter side won
+  winShare: number; // patch-weighted
+  patch?: string; // newest patch in the sample
+  gameIds: string[]; // Gol.gg game source ids
+  verdict: ProVerdict;
 }
 
 interface Side { team: string; picks: ProDraft["picks"]; patch?: string; game: string }
@@ -132,7 +147,7 @@ const patchWeights = (games: Game[]) => {
   return (p?: string) => (p ? PATCH_DECAY ** Math.max(0, patches.indexOf(p)) : PATCH_DECAY ** patches.length);
 };
 
-interface Tally { games: number; wins: number; wGames: number; wWins: number; patch?: string; gameIds: string[]; with?: string }
+interface Tally { games: number; wins: number; wGames: number; wWins: number; patch?: string; gameIds: string[] }
 
 function proTallies(games: Game[], match: (enemy: Side) => boolean, key: (mine: Side) => string | undefined): Map<string, Tally> {
   const weight = patchWeights(games);
@@ -144,9 +159,8 @@ function proTallies(games: Game[], match: (enemy: Side) => boolean, key: (mine: 
       if (!k) continue;
       const t = out.get(k) ?? { games: 0, wins: 0, wGames: 0, wWins: 0, gameIds: [] };
       const w = weight(g.patch);
-      const won = g.winner === mine.team;
       t.games++; t.wGames += w;
-      if (won) { t.wins++; t.wWins += w; }
+      if (g.winner === mine.team) { t.wins++; t.wWins += w; }
       if (g.patch && (!t.patch || comparePatchDesc(g.patch, t.patch) < 0)) t.patch = g.patch;
       t.gameIds.push(mine.game);
       out.set(k, t);
@@ -155,11 +169,11 @@ function proTallies(games: Game[], match: (enemy: Side) => boolean, key: (mine: 
   return out;
 }
 
-function proEvidence(t: Tally, base: Pick<CounterEvidence, "scope" | "vs" | "with">): CounterEvidence | null {
+function proSample(t: Tally | undefined, base: Pick<ProSample, "scope" | "vs" | "with">): ProSample | null {
+  if (!t || t.games < PRO_MIN_GAMES) return null;
   const share = t.wWins / t.wGames;
-  if (t.games < PRO_MIN_GAMES || share < PRO_MIN_WIN_SHARE) return null;
-  return { ...base, source: "pro", strength: share >= PRO_STRONG_SHARE ? "strong" : "favorable", games: t.games, wins: t.wins,
-    winRate: Math.round(share * 1000) / 1000, patch: t.patch, gameIds: t.gameIds };
+  const verdict: ProVerdict = share >= PRO_AGREE_SHARE ? "agrees" : share <= PRO_DISAGREE_SHARE ? "disagrees" : "mixed";
+  return { ...base, games: t.games, wins: t.wins, winShare: Math.round(share * 1000) / 1000, patch: t.patch, gameIds: t.gameIds, verdict };
 }
 
 function dpmEvidence(row: { winRate: number; delta?: number; games: number; patch: string; updated: string; rank?: string; url: string },
@@ -169,16 +183,24 @@ function dpmEvidence(row: { winRate: number; delta?: number; games: number; patc
     winRate: row.winRate, delta: row.delta, patch: row.patch, updated: row.updated, rank: row.rank, url: row.url };
 }
 
+/** Pro agreement lifts a counter one step; disagreement or a mixed record leaves the DPM strength as it is. */
+function combined(e: CounterEvidence, pro: ProSample | null): Strength {
+  if (pro?.verdict !== "agrees") return e.strength;
+  return e.strength === "strong" ? "confirmed" : "strong";
+}
+
 // ---------- counter picks ----------
 
 export interface Counter {
   champion: string;
   role: Role;
-  evidence: CounterEvidence;
+  strength: Strength; // the DPM signal, lifted one step when pro games agree
+  evidence: CounterEvidence; // the DPM matchup (always present: no DPM row, no counter)
+  pro: ProSample | null; // the same matchup in recorded pro games, when it repeats; shown separately
   tier: Tier | null; // my pool tier in this role; null = out of pool, reference only
   fit: Recommendation | null; // the same champion on the overall draft-fit list
   fitRank: number | null; // 1 = best overall pick for the role
-  cautions: string[]; // why it is not simply the pick: out of pool, triggers a warning, ranks lower on fit
+  cautions: string[]; // why it is not simply the pick: out of pool, triggers a warning, ranks lower on fit, pro disagrees
 }
 
 export interface RoleCounters {
@@ -197,6 +219,7 @@ export interface CounterInput {
 }
 
 const TIER_RANK: Record<Tier, number> = { core: 0, depth: 1, flex: 2 };
+const STRENGTH_RANK: Record<Strength, number> = { confirmed: 0, strong: 1, favorable: 2 };
 const TIER_LABEL = Object.fromEntries(TIERS) as Record<Tier, string>;
 export const tierLabel = (t: Tier | null) => (t ? TIER_LABEL[t] : "Not in pool");
 
@@ -208,10 +231,11 @@ export function poolTier(pool: PoolEntry[], champion: string, role: Role): Tier 
 /**
  * Counters for every open role whose lane opponent is known. `fits` is the full (unlimited) draft-fit list from
  * recommend(); it is read, never changed. Order: in-pool first by tier (Core, Depth, Prepared / flex), then strength,
- * pro before DPM, then sample. Out-of-pool counters come last as reference only.
+ * then DPM sample. Out-of-pool counters come last as reference only.
  */
 export function counterPicks(draft: Draft, enemy: EnemyDraft, input: CounterInput, fits: Recommendations): Partial<Record<Role, RoleCounters>> {
   const byId = new Map(input.champions.map((c) => [c.id, c]));
+  const name = (id: string) => byId.get(id)?.name ?? id;
   const taken = new Set([...Object.values(draft), ...Object.values(enemy)].filter(Boolean) as string[]);
   const games = resultGames(input.proDrafts, input.counters.proResults);
   const out: Partial<Record<Role, RoleCounters>> = {};
@@ -219,8 +243,8 @@ export function counterPicks(draft: Draft, enemy: EnemyDraft, input: CounterInpu
   for (const role of ROLES.filter((r) => !draft[r])) {
     const bot = role === "BOT" || role === "SUPPORT";
     const partner: Role | undefined = role === "BOT" ? "SUPPORT" : role === "SUPPORT" ? "BOT" : undefined;
-    const fullEnemyDuo = bot && enemy.BOT && enemy.SUPPORT;
-    const found = new Map<string, CounterEvidence>();
+    const fullEnemyDuo = bot && !!enemy.BOT && !!enemy.SUPPORT;
+    const found = new Map<string, { evidence: CounterEvidence; pro: ProSample | null }>();
     const valid = (id: string) => !taken.has(id) && !!byId.get(id)?.roles.includes(role);
     let scope: RoleCounters["scope"] = "lane";
     let note: string | undefined;
@@ -231,59 +255,51 @@ export function counterPicks(draft: Draft, enemy: EnemyDraft, input: CounterInpu
       const mineOk = (d: { bot: string; support: string }) => !partner || !draft[partner] || d[partner === "BOT" ? "bot" : "support"] === draft[partner];
       const self = role === "BOT" ? "bot" : "support";
       const other = role === "BOT" ? "support" : "bot";
-      const pro = proTallies(games, (e) => e.picks.BOT === vs[0] && e.picks.SUPPORT === vs[1],
-        (m) => (mineOk({ bot: m.picks.BOT, support: m.picks.SUPPORT }) ? `${m.picks[role]}|${m.picks[partner!]}` : undefined));
-      for (const [k, t] of pro) {
-        const [id, mate] = k.split("|");
-        const ev = valid(id) && proEvidence(t, { scope: "duo", vs, with: mate });
-        if (ev && !found.has(id)) found.set(id, ev);
-      }
+      const pro = proTallies(games, (e) => e.picks.BOT === vs[0] && e.picks.SUPPORT === vs[1], (m) => `${m.picks.BOT}|${m.picks.SUPPORT}`);
       for (const row of input.counters.dpmDuos) {
         if (row.enemy.bot !== vs[0] || row.enemy.support !== vs[1] || !mineOk(row.duo)) continue;
         const id = row.duo[self];
-        const ev = valid(id) && !found.has(id) && dpmEvidence(row, { scope: "duo", vs, with: row.duo[other] }, DPM_MIN_DUO_GAMES);
-        if (ev) found.set(id, ev);
+        const evidence = valid(id) && !found.has(id) && dpmEvidence(row, { scope: "duo", vs, with: row.duo[other] }, DPM_MIN_DUO_GAMES);
+        if (evidence) found.set(id, { evidence, pro: proSample(pro.get(`${row.duo.bot}|${row.duo.support}`), { scope: "duo", vs, with: row.duo[other] }) });
       }
       if (found.size) scope = "duo";
-      else note = `No duo-vs-duo data for ${vs.map((v) => byId.get(v)?.name ?? v).join(" + ")}; role matchup against ${byId.get(enemy[role]!)?.name} only.`;
+      else note = `No duo-vs-duo data for ${vs.map(name).join(" + ")}; role matchup against ${name(enemy[role]!)} only.`;
     }
 
     const opponent = enemy[role];
     if (!found.size && opponent) {
-      // Bot lane read one champion at a time is cautious from either source; a SoloQ jungle head-to-head is matchup data.
+      // Bot lane read one champion at a time is cautious; a SoloQ jungle head-to-head is matchup data, not a strong claim.
       const botNote = !bot ? undefined : fullEnemyDuo ? "Role matchup only, not duo vs duo." : "Only one enemy bot-lane champion is known; read with caution.";
       const jungleNote = role === "JUNGLE" ? "SoloQ head-to-head only; tempo, invades and objective control are not measured." : undefined;
-      const hold = (ev: CounterEvidence, why?: string) => { if (why) { ev.strength = "favorable"; ev.note = why; } return ev; };
+      const why = botNote ?? jungleNote;
       const pro = proTallies(games, (e) => e.picks[role] === opponent, (m) => m.picks[role]);
-      for (const [id, t] of pro) {
-        const ev = valid(id) && proEvidence(t, { scope: "lane", vs: [opponent] });
-        if (ev) found.set(id, hold(ev, botNote));
-      }
       for (const row of input.counters.dpm) {
         if (row.role !== role || row.enemy !== opponent || found.has(row.champion)) continue;
-        const ev = valid(row.champion) && dpmEvidence(row, { scope: "lane", vs: [opponent] }, DPM_MIN_GAMES);
-        if (ev) found.set(row.champion, hold(ev, botNote ?? jungleNote));
+        const evidence = valid(row.champion) && dpmEvidence(row, { scope: "lane", vs: [opponent] }, DPM_MIN_GAMES);
+        if (!evidence) continue;
+        if (why) { evidence.strength = "favorable"; evidence.note = why; }
+        found.set(row.champion, { evidence, pro: proSample(pro.get(row.champion), { scope: "lane", vs: [opponent] }) });
       }
-      if (!note) note = botNote ?? ([...found.values()].some((e) => e.source === "dpm") ? jungleNote : undefined);
+      if (!note) note = botNote ?? (found.size ? jungleNote : undefined);
     }
 
     const vs = scope === "duo" ? [enemy.BOT!, enemy.SUPPORT!] : opponent ? [opponent] : [];
     if (!vs.length) continue;
     const fitList = fits[role] ?? [];
-    const counters: Counter[] = [...found].map(([champion, evidence]) => {
+    const counters: Counter[] = [...found].map(([champion, { evidence, pro }]) => {
       const tier = poolTier(input.pool, champion, role);
       const idx = fitList.findIndex((r) => r.champion === champion);
       const fit = idx >= 0 ? fitList[idx] : null;
       const cautions: string[] = [];
       if (!tier) cautions.push("Not in your pool: reference only");
+      if (pro?.verdict === "disagrees") cautions.push(`Pro games disagree: ${pro.wins}–${pro.games - pro.wins} in this matchup`);
       for (const p of fit?.parts ?? []) if (p.kind === "risk") cautions.push(p.text);
-      if (idx > 0) cautions.push(`#${idx + 1} on overall draft fit; ${byId.get(fitList[0].champion)?.name ?? fitList[0].champion} fits the draft better`);
-      return { champion, role, evidence, tier, fit, fitRank: idx >= 0 ? idx + 1 : null, cautions };
+      if (idx > 0) cautions.push(`#${idx + 1} on overall draft fit; ${name(fitList[0].champion)} fits the draft better`);
+      return { champion, role, strength: combined(evidence, pro), evidence, pro, tier, fit, fitRank: idx >= 0 ? idx + 1 : null, cautions };
     });
     counters.sort((a, b) =>
       (a.tier ? TIER_RANK[a.tier] : 9) - (b.tier ? TIER_RANK[b.tier] : 9)
-      || Number(b.evidence.strength === "strong") - Number(a.evidence.strength === "strong")
-      || Number(b.evidence.source === "pro") - Number(a.evidence.source === "pro")
+      || STRENGTH_RANK[a.strength] - STRENGTH_RANK[b.strength]
       || b.evidence.games - a.evidence.games
       || a.champion.localeCompare(b.champion));
     out[role] = { role, vs, scope, counters, note };
@@ -291,9 +307,13 @@ export function counterPicks(draft: Draft, enemy: EnemyDraft, input: CounterInpu
   return out;
 }
 
-/** "Pro · 3 games · 2–1 · 16.18" or "DPM · 55.2% · +2.1 · 4,120 games · 16.18" */
+/** "DPM · 55.2% matchup · +2.1 · 4,120 games · 16.18" */
 export function describeEvidence(e: CounterEvidence): string {
-  if (e.source === "pro") return ["Pro", `${e.games} game${e.games > 1 ? "s" : ""}`, `${e.wins}–${e.games - (e.wins ?? 0)}`, e.patch].filter(Boolean).join(" · ");
   return ["DPM", `${(e.winRate * 100).toFixed(1)}% matchup`, e.delta !== undefined ? `${e.delta > 0 ? "+" : ""}${e.delta.toFixed(1)}` : undefined,
     `${e.games.toLocaleString("en-US")} games`, e.patch].filter(Boolean).join(" · ");
+}
+
+/** "Pro · 3 games · 3–0 · 16.18 · agrees" */
+export function describePro(p: ProSample): string {
+  return ["Pro", `${p.games} games`, `${p.wins}–${p.games - p.wins}`, p.patch, p.verdict].filter(Boolean).join(" · ");
 }

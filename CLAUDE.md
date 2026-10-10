@@ -39,11 +39,14 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   locked). **Pro evidence never adds to the score**; it is shown beside a recommendation and in the separate Pro
   Pairings panel. A saved `botShapes` entry needs a bot whose record lists the support.
 - **Counters** are a fourth, separate signal (`lib/counters.ts`, `data/counters.json`, `tests/counters.test.ts`): favourable
-  into the enemy lane opponent (enemy roles detected from `?vs=`, or `?vs=top:aatrox`). Pro evidence first (same role,
-  opposite sides, recorded winner in `proResults`, at least 3 games, newer patches weigh more), DPM.LOL rows only as the
-  fallback and always labelled DPM. Never scored, never merged into the other layers; pool tier first; each counter shows
-  its overall draft-fit rank. dpm.lol is blocked from Claude's environments (2026-10-10): DPM rows come from alan as
-  structured facts (`origin: "externally-provided"`). Never invent a counter or a game result.
+  into the enemy lane opponent (enemy roles detected from `?vs=`, or `?vs=top:aatrox`). DPM.LOL matchup rows are the
+  counter signal (alan, 2026-10-10); no DPM row, no counter. Recorded pro games only corroborate: same role on opposite
+  sides, a recorded winner in `proResults`, at least 3 games, patch-weighted. Agreement lifts the strength one step
+  (favorable → strong → confirmed); disagreement keeps DPM as the signal and shows the pro sample separately, never
+  averaged. Never infer a counter from pro win/loss alone. Never scored, never merged into the other layers; pool tier
+  first; each counter shows its overall draft-fit rank. DPM rows come from alan as structured facts
+  (`origin: "externally-provided"`); dpm.lol answers Claude's environments with a Cloudflare challenge. Never invent a
+  counter or a game result.
 
 ## Gol.gg research rules
 

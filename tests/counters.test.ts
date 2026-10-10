@@ -1,8 +1,9 @@
-// Counters (lib/counters.ts): a fourth signal, separate from Synergy, Pro Pairings and Logic. Pro evidence first (same
-// role, opposite sides, recorded winner, enough games, newer patches weigh more), DPM.LOL only as the fallback, pool
-// first, and a counter never moves the draft-fit ranking. The fixtures below are test data, not claims about real games.
+// Counters (lib/counters.ts): a fourth signal, separate from Synergy, Pro Pairings and Logic. DPM.LOL matchup data is the
+// counter signal; recorded pro games (same role, opposite sides, recorded winner, repeated, newer patches weigh more) only
+// corroborate it and never make a counter alone. Pool first, and a counter never moves the draft-fit ranking. The
+// fixtures below are test data, not claims about real games.
 import { describe, expect, it } from "vitest";
-import { counterPicks, describeEvidence, detectEnemyRoles, enemyParam, parseEnemy, resultGames, type CounterInput, type EnemyDraft } from "@/lib/counters";
+import { counterPicks, describeEvidence, describePro, detectEnemyRoles, enemyParam, parseEnemy, resultGames, type CounterInput, type EnemyDraft } from "@/lib/counters";
 import { getCounters, getDraftData } from "@/lib/data";
 import type { Draft } from "@/lib/evaluate";
 import { recommend } from "@/lib/recommend";
@@ -57,36 +58,54 @@ describe("enemy role detection", () => {
   });
 });
 
-describe("pro counter evidence", () => {
-  it("needs the same role on opposite sides, a recorded winner, and at least three games", () => {
-    const three = run({}, { TOP: "aatrox" }, input(wins("TOP", "jayce", "aatrox")));
-    expect(ids(three.TOP?.counters)).toEqual(["jayce"]);
-    expect(three.TOP!.counters[0].evidence).toMatchObject({ source: "pro", games: 3, wins: 3, strength: "strong" });
-    expect(describeEvidence(three.TOP!.counters[0].evidence)).toBe("Pro · 3 games · 3–0 · 16.18");
+describe("pro games corroborate, never decide", () => {
+  const jayce = () => dpm("TOP", "aatrox", "jayce", 0.55);
+  it("a pro win/loss record alone is never a counter", () => {
+    const res = run({}, { TOP: "aatrox" }, input(wins("TOP", "jayce", "aatrox", 5)));
+    expect(res.TOP!.counters).toEqual([]);
+  });
 
-    expect(run({}, { TOP: "aatrox" }, input(wins("TOP", "jayce", "aatrox", 2))).TOP!.counters).toEqual([]);
-    // Opposite teams but not the same lane: Jayce top against Aatrox jungle is not a matchup.
-    // (Side A's own jungler, Vi, did face Aatrox in the jungle, so Vi is the only reading.)
-    const cross = run({}, { JUNGLE: "aatrox" }, input(Array.from({ length: 3 }, () => game({ TOP: "jayce" }, { JUNGLE: "aatrox" }, "Blue"))));
-    expect(ids(cross.JUNGLE?.counters)).toEqual(["vi"]);
-    expect(ids(cross.TOP?.counters)).toEqual([]);
+  it("agreement lifts the DPM signal one step; the pro sample stays separate", () => {
+    const res = run({}, { TOP: "aatrox" }, input(wins("TOP", "jayce", "aatrox"), { dpm: [jayce()] }));
+    const c = res.TOP!.counters[0];
+    expect(c.evidence).toMatchObject({ source: "dpm", strength: "strong", winRate: 0.55 });
+    expect(c.pro).toMatchObject({ games: 3, wins: 3, verdict: "agrees" });
+    expect(c.strength).toBe("confirmed");
+    expect(describePro(c.pro!)).toBe("Pro · 3 games · 3–0 · 16.18 · agrees");
+    // A favorable DPM matchup with pro agreement becomes strong.
+    const fav = run({}, { TOP: "aatrox" }, input(wins("TOP", "jayce", "aatrox"), { dpm: [dpm("TOP", "aatrox", "jayce", 0.525)] }));
+    expect(fav.TOP!.counters[0].strength).toBe("strong");
+  });
+
+  it("disagreement keeps DPM as the signal, unaveraged, and says so", () => {
+    const lost = Array.from({ length: 4 }, () => game({ TOP: "jayce" }, { TOP: "aatrox" }, "Red"));
+    const c = run({}, { TOP: "aatrox" }, input(lost, { dpm: [jayce()] })).TOP!.counters[0];
+    expect(c.strength).toBe("strong");
+    expect(c.evidence.winRate).toBe(0.55);
+    expect(c.pro).toMatchObject({ games: 4, wins: 0, verdict: "disagrees" });
+    expect(c.cautions.join()).toMatch(/Pro games disagree: 0–4/);
+  });
+
+  it("the pro sample needs the same role on opposite sides, a recorded winner, and at least three games", () => {
+    const two = run({}, { TOP: "aatrox" }, input(wins("TOP", "jayce", "aatrox", 2), { dpm: [jayce()] })).TOP!.counters[0];
+    expect(two.pro).toBeNull();
+    expect(two.strength).toBe("strong");
+    // Opposite teams but not the same lane: Jayce top against Aatrox jungle says nothing about Jayce into Aatrox top.
+    const cross = run({}, { TOP: "aatrox" }, input(Array.from({ length: 3 }, () => game({ TOP: "jayce" }, { JUNGLE: "aatrox" }, "Blue")), { dpm: [jayce()] }));
+    expect(cross.TOP!.counters[0].pro).toBeNull();
     // Without results the games say nothing about who was favoured.
-    const noResults = input(wins("TOP", "jayce", "aatrox"));
+    const noResults = input(wins("TOP", "jayce", "aatrox"), { dpm: [jayce()] });
     noResults.counters.proResults = [];
     expect(resultGames(noResults.proDrafts, [])).toEqual([]);
-    expect(run({}, { TOP: "aatrox" }, noResults).TOP!.counters).toEqual([]);
+    expect(run({}, { TOP: "aatrox" }, noResults).TOP!.counters[0].pro).toBeNull();
   });
 
   it("weights newer patches more", () => {
-    const newerWins = [...wins("TOP", "jayce", "aatrox", 3, "16.18"), game({ TOP: "jayce" }, { TOP: "aatrox" }, "Red", "16.16")];
-    const olderWins = [...wins("TOP", "jayce", "aatrox", 3, "16.16"), game({ TOP: "jayce" }, { TOP: "aatrox" }, "Red", "16.18")];
-    expect(run({}, { TOP: "aatrox" }, input(newerWins)).TOP!.counters[0].evidence.strength).toBe("strong");
-    expect(run({}, { TOP: "aatrox" }, input(olderWins)).TOP!.counters[0].evidence.strength).toBe("favorable");
-  });
-
-  it("a losing record is not a counter", () => {
-    const lost = Array.from({ length: 4 }, () => game({ TOP: "jayce" }, { TOP: "aatrox" }, "Red"));
-    expect(run({}, { TOP: "aatrox" }, input(lost)).TOP!.counters).toEqual([]);
+    const newerWins = [...wins("TOP", "jayce", "aatrox", 2, "16.18"), game({ TOP: "jayce" }, { TOP: "aatrox" }, "Red", "16.16")];
+    const olderWins = [...wins("TOP", "jayce", "aatrox", 2, "16.16"), game({ TOP: "jayce" }, { TOP: "aatrox" }, "Red", "16.18")];
+    // 2–1 either way: 2 / 2.7 = 0.74 agrees when the wins are newer; 1.4 / 2.4 = 0.58 is mixed when they are older.
+    expect(run({}, { TOP: "aatrox" }, input(newerWins, { dpm: [jayce()] })).TOP!.counters[0].pro?.verdict).toBe("agrees");
+    expect(run({}, { TOP: "aatrox" }, input(olderWins, { dpm: [jayce()] })).TOP!.counters[0].pro?.verdict).toBe("mixed");
   });
 });
 
@@ -122,13 +141,13 @@ describe("pool prioritisation", () => {
 });
 
 describe("source separation", () => {
-  it("pro evidence wins over DPM for the same champion; DPM fills in where pro is thin", () => {
+  it("every counter is a DPM matchup, labelled DPM; pro context lives in its own field", () => {
     const res = run({}, { TOP: "aatrox" }, input(wins("TOP", "jayce", "aatrox"), { dpm: [dpm("TOP", "aatrox", "jayce", 0.6), dpm("TOP", "aatrox", "gnar", 0.553, 4120)] }));
-    const byId = Object.fromEntries(res.TOP!.counters.map((c) => [c.champion, c.evidence]));
-    expect(byId.jayce.source).toBe("pro");
-    expect(byId.gnar.source).toBe("dpm");
-    expect(describeEvidence(byId.gnar)).toBe("DPM · 55.3% matchup · 4,120 games · 16.18");
-    expect(byId.gnar.wins).toBeUndefined();
+    const byId = Object.fromEntries(res.TOP!.counters.map((c) => [c.champion, c]));
+    for (const c of res.TOP!.counters) expect(c.evidence.source).toBe("dpm");
+    expect(describeEvidence(byId.gnar.evidence)).toBe("DPM · 55.3% matchup · 4,120 games · 16.18");
+    expect(byId.gnar.pro).toBeNull();
+    expect(byId.jayce.pro?.verdict).toBe("agrees");
   });
   it("counters never change the draft-fit ranking", () => {
     const d: Draft = { JUNGLE: "vi", MID: "ahri", BOT: "sivir", SUPPORT: "lulu" };
@@ -182,13 +201,16 @@ describe("bot lane", () => {
     expect(res.BOT!.counters.map((c) => [c.champion, c.evidence.with])).toEqual([["ezreal", "karma"]]);
     expect(ids(res.SUPPORT?.counters)).toEqual(["karma"]);
   });
-  it("pro duo games count only when the whole enemy duo matches", () => {
+  it("pro duo games corroborate a duo row only when both whole duos match", () => {
+    const row = duo(["sivir", "lulu"], ["ezreal", "karma"], 0.55);
     const g = Array.from({ length: 3 }, () => game({ BOT: "ezreal", SUPPORT: "karma" }, { BOT: "sivir", SUPPORT: "lulu" }, "Blue"));
     const half = Array.from({ length: 3 }, () => game({ BOT: "ezreal", SUPPORT: "karma" }, { BOT: "sivir", SUPPORT: "nami" }, "Blue"));
-    expect(run({}, { BOT: "sivir", SUPPORT: "lulu" }, input(g)).BOT!.counters[0].evidence).toMatchObject({ source: "pro", scope: "duo", with: "karma" });
-    const res = run({}, { BOT: "sivir", SUPPORT: "lulu" }, input(half));
-    expect(res.BOT!.scope).toBe("lane");
-    expect(res.BOT!.counters[0].evidence).toMatchObject({ source: "pro", scope: "lane", strength: "favorable" });
+    const full = run({}, { BOT: "sivir", SUPPORT: "lulu" }, input(g, { dpmDuos: [row] })).BOT!.counters[0];
+    expect(full.pro).toMatchObject({ scope: "duo", with: "karma", verdict: "agrees" });
+    expect(full.strength).toBe("confirmed");
+    expect(run({}, { BOT: "sivir", SUPPORT: "lulu" }, input(half, { dpmDuos: [row] })).BOT!.counters[0].pro).toBeNull();
+    // Pro duo games without a DPM duo row make no counter.
+    expect(run({}, { BOT: "sivir", SUPPORT: "lulu" }, input(g)).BOT!.counters).toEqual([]);
   });
   it("my locked support must match the duo; otherwise fall back to the role matchup, labelled", () => {
     const res = run({ SUPPORT: "nami" }, { BOT: "sivir", SUPPORT: "lulu" }, input([], {
