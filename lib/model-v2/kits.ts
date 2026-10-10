@@ -56,7 +56,7 @@ export const KITS: Record<string, KitEntry> = {
     why: "Point-click root plus a wide ultimate zone that both starts and stops fights." },
   "xin-zhao": { fightStart: "catch", damageByRole: { JUNGLE: D(2, S(1, 0)) }, kit: K(1, 0, 1, 2, 1, 1, 2, 1, 1, 1, 0, [3, 2, 1]),
     why: "Dash-knockup on one target; ultimate can shove divers off a carry." },
-  wukong: { fightStart: "primary", damageByRole: { JUNGLE: D(2, S(1, 0)) }, kit: K(1, 0, 1, 2, 0, 0, 3, 3, 1, 2, 0, [2, 3, 2]),
+  wukong: { fightStart: "primary", damageByRole: { JUNGLE: D(2, S(1, 0)), TOP: D(2, S(1, 0)) }, kit: K(1, 0, 1, 2, 0, 0, 3, 3, 1, 2, 0, [2, 3, 2]),
     why: "AoE knockup ultimate starts and layers onto engages." },
 
   // ---------- mid ----------
