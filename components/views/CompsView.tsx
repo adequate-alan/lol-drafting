@@ -98,7 +98,7 @@ export function CompsView({ names, sources, drafts, allShells, data }: {
       </div>
       {open && openShell && (
         <ChampionDrawer target={{ id: openShell.slots[open.role].champion, role: open.role }} comp={compOf(openShell)} data={data} index={index}
-          onClose={close} onSelect={(t: DrawerTarget) => setOpen({ shell: open.shell, role: t.role })} />
+          onClose={close} onSelect={(t: DrawerTarget) => t.role && setOpen({ shell: open.shell, role: t.role })} />
       )}
     </>
   );

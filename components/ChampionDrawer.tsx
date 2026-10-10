@@ -1,5 +1,5 @@
 "use client";
-// Champion drawer: one champion in one role, opened from the Comp Library (and the Meta page) without leaving it.
+// Champion drawer: one champion in one role, opened from the Comp Library and the Meta page without leaving it.
 // Right-side panel on desktop, bottom sheet on mobile. The three layers keep separate blocks:
 //   Synergy (alan's pool tier and saved pairings) · Pro evidence (stats, games, observed pairings) · Logic (attributes).
 // Pass `comp` to read the champion inside a five-man shell: saved and pro links to each comp-mate, the slot's job,
@@ -10,12 +10,12 @@ import { useEffect, useId, useMemo, useRef } from "react";
 import { ChampIcon, LayerBlock, SourceLinks, pct } from "@/components/ui";
 import { observedFor, proLinks, recordFor, savedLinks, type Slots } from "@/lib/comp-links";
 import type { DrawerData } from "@/lib/data";
-import { describeLine, fresher, groupObserved, shortDate, type EventMap } from "@/lib/evidence";
+import { comparePatchDesc, describeLine, fresher, groupObserved, shortDate, type EventMap } from "@/lib/evidence";
 import { PARTNER_ROLE, TIERS, eventStats, proGames, type ProGame, type Tier } from "@/lib/pool-stats";
 import { synergyParts, teamNeeds } from "@/lib/recommend";
 import { ROLES, type Champion, type Role } from "@/lib/schema";
 
-export interface DrawerTarget { id: string; role: Role }
+export interface DrawerTarget { id: string; role?: Role } // no role: the role the champion was played in most
 export interface CompContext {
   name: string;
   slots: Slots;
@@ -45,7 +45,7 @@ export function useDrawerIndex(data: DrawerData) {
 export type DrawerIndex = ReturnType<typeof useDrawerIndex>;
 
 /** Saved and pro links from one slot to its comp-mates, for highlights outside the drawer. */
-export function compLinks(target: DrawerTarget, comp: CompContext, data: DrawerData, index: DrawerIndex) {
+export function compLinks(target: { id: string; role: Role }, comp: CompContext, data: DrawerData, index: DrawerIndex) {
   const name = (id: string) => index.names[id] ?? id;
   const saved = savedLinks(target.role, comp.slots, data, name);
   const pro = proLinks(target.role, comp.slots, index.games, data, comp.proDraftId);
@@ -63,8 +63,10 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
   target: DrawerTarget; comp?: CompContext; data: DrawerData; index: DrawerIndex;
   onClose: () => void; onSelect?: (t: DrawerTarget) => void;
 }) {
-  const { id, role } = target;
+  const { id } = target;
   const { names, champs } = index;
+  const roles = rolesOf(id, index);
+  const role = target.role ?? roles[0] ?? champs[id]?.roles[0] ?? "MID";
   const name = (x: string) => names[x] ?? x;
   const champ = champs[id];
   const ref = useRef<HTMLElement>(null);
@@ -122,11 +124,13 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
     .sort((a, b) => fresher(a.event, b.event));
   const games = index.games.filter((g) => g.picks[role] === id);
   const observed = groupObserved(observedFor(id, role, data), index.events, data.sources);
-  const links = comp ? compLinks(target, comp, data, index) : undefined;
+  const links = comp ? compLinks({ id, role }, comp, data, index) : undefined;
   const mates = comp ? ROLES.filter((r) => r !== role) : [];
   const ownGame = comp?.proDraftId ? data.proDrafts.find((d) => d.id === comp.proDraftId) : undefined;
   const record = recordFor(id, role, data);
   const saved = savedPartners(id, role, data);
+  const patches = new Map<string, number>();
+  for (const g of games) if (g.patch) patches.set(g.patch, (patches.get(g.patch) ?? 0) + 1);
   const step = (d: 1 | -1) => comp && onSelect?.({ id: comp.slots[ROLES[(ROLES.indexOf(role) + d + 5) % 5]], role: ROLES[(ROLES.indexOf(role) + d + 5) % 5] });
 
   // Logic: what the attributes say about this pick next to the other four.
@@ -140,7 +144,12 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
         <ChampIcon id={id} name={name(id)} role={role} size="lg" />
         <div className="drawer-title">
           <h2 id={titleId}>{name(id)}</h2>
-          <span className="xs muted"><span className={`role-tag role-${role}`}>{role}</span>{comp && <> · {comp.name}</>}</span>
+          <span className="xs muted drawer-roles">
+            <span className={`role-tag role-${role}`}>{role}</span>{comp && <> · {comp.name}</>}
+            {!comp && onSelect && roles.filter((r) => r !== role).map((r) => (
+              <button key={r} type="button" className="role-switch" onClick={() => onSelect({ id, role: r })} title={`${name(id)} ${r.toLowerCase()}`}>{r}</button>
+            ))}
+          </span>
         </div>
         <div className="drawer-nav">
           {comp && onSelect && <>
@@ -173,9 +182,14 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
           </dl>
           {comp && (
             <ul className="drawer-links" aria-label="Saved links in this comp">
-              {links!.saved.length ? links!.saved.map((l, i) => (
-                <li key={i}><Mate id={comp.slots[l.role]} role={l.role} names={names} /><span className="small">{l.text.replace(/^Saved (pairing|comp): /, "")}</span></li>
-              )) : <li className="xs muted empty">No saved pairing with the rest of this comp.</li>}
+              {links!.saved.length ? [...new Set(links!.saved.map((l) => l.role))].map((r) => {
+                // One row per comp-mate: its strongest link, the rest in the tooltip.
+                const all = links!.saved.filter((l) => l.role === r).map((l) => l.text.replace(/^Saved (pairing|comp): /, ""));
+                return (
+                  <li key={r} title={all.join("\n")}><Mate id={comp.slots[r]} role={r} names={names} />
+                    <span className="small">{all[0]}{all.length > 1 && <span className="xs faint"> +{all.length - 1}</span>}</span></li>
+                );
+              }) : <li className="xs muted empty">No saved pairing with the rest of this comp.</li>}
             </ul>
           )}
         </LayerBlock>
@@ -222,6 +236,7 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
           {games.length ? games.slice(0, 5).map((g) => <GameRow key={g.key} g={g} role={role} names={names} data={data} comp={comp} />)
             : <p className="xs muted">No recorded games in this role.</p>}
           {games.length > 5 && <p className="xs faint">+{games.length - 5} older</p>}
+          {patches.size > 1 && <p className="xs muted tnum">Patches: {[...patches.entries()].sort((a, b) => comparePatchDesc(a[0], b[0])).map(([p, n]) => `${p} ×${n}`).join(" · ")}</p>}
 
           {observed.length > 0 && (
             <>
@@ -304,4 +319,12 @@ function savedPartners(id: string, role: Role, data: DrawerData): { label: strin
   }
   const m = data.midJungle.find((x) => x.anchor === id && x.role === role);
   return m ? [{ label: "Primary", ids: m.clashDefault, role: partner }, { label: "Secondary", ids: m.alternatives, role: partner }] : [];
+}
+
+/** Roles the champion has pro evidence in, most games first; stats-only roles after. */
+function rolesOf(id: string, index: DrawerIndex): Role[] {
+  const n = new Map<Role, number>();
+  for (const g of index.games) for (const r of ROLES) if (g.picks[r] === id) n.set(r, (n.get(r) ?? 0) + 1);
+  for (const s of index.stats) if (s.stat.champion === id && !n.has(s.stat.role)) n.set(s.stat.role, 0);
+  return [...n.entries()].sort((a, b) => b[1] - a[1] || ROLES.indexOf(a[0]) - ROLES.indexOf(b[0])).map(([r]) => r);
 }
