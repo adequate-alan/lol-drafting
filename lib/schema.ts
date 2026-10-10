@@ -256,6 +256,38 @@ export type GenGPattern = z.infer<typeof GenGPattern>;
 export const Rule = z.object({ id: id, layer: z.enum(["clash", "logic"]), text: z.string() });
 export type Rule = z.infer<typeof Rule>;
 
+// ---------- counters.json (Counters: a fourth, separate signal) ----------
+// Lane counters for an enemy pick. Never scored into the draft-fit ranking, never merged into Synergy, Pro Pairings or
+// General Draft Logic. Pro counter evidence is derived from recorded drafts plus per-game results listed here; DPM.LOL
+// rows are SoloQ matchup data ingested into the repo (never fetched by the browser) and always labelled DPM.
+const DuoPair = z.object({ bot: ChampionId, support: ChampionId });
+const DpmFields = {
+  winRate: z.number().min(0).max(1), // the counter side's win rate in this matchup
+  delta: z.number().optional(), // win-rate points above the counter's own average, when DPM shows it
+  games: z.number().int().positive(),
+  patch: z.string(),
+  rank: z.string().optional(), // DPM's rank filter, e.g. "Emerald+"
+  url: z.string().url(),
+  updated: Day,
+  origin: z.enum(["dpm-ingest", "externally-provided"]), // ingested by Claude, or supplied as structured facts
+  providedBy: z.string().optional(),
+};
+export const DpmMatchup = z.object({ role: Role, enemy: ChampionId, champion: ChampionId, ...DpmFields });
+export type DpmMatchup = z.infer<typeof DpmMatchup>;
+export const DpmDuoMatchup = z.object({ enemy: DuoPair, duo: DuoPair, ...DpmFields });
+export type DpmDuoMatchup = z.infer<typeof DpmDuoMatchup>;
+// Which team won a recorded game, so a lane result can count. Only from a source that shows the result.
+export const ProResult = z.object({ game: SourceId, winner: z.string(), sources: z.array(SourceId).min(1) });
+export type ProResult = z.infer<typeof ProResult>;
+export const Counters = z.object({
+  updated: Day,
+  dpmStatus: z.object({ reachable: z.boolean(), checkedOn: Day, note: z.string() }),
+  proResults: z.array(ProResult),
+  dpm: z.array(DpmMatchup),
+  dpmDuos: z.array(DpmDuoMatchup),
+});
+export type Counters = z.infer<typeof Counters>;
+
 export const Files = {
   "champions.json": z.array(Champion),
   "sources.json": z.array(Source),
@@ -268,4 +300,5 @@ export const Files = {
   "meta.json": Meta,
   "geng.json": z.array(GenGPattern),
   "rules.json": z.array(Rule),
+  "counters.json": Counters,
 } as const;
