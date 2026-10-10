@@ -6,13 +6,15 @@ import { ChampionRow, ChipList, LayerBlock, PageHeader, SourceLinks, pct } from 
 import { describeLine, groupObserved, shortDate, type EventMap } from "@/lib/evidence";
 import { PARTNER_ROLE, SORTS, TIERS, allRoles, poolRows, presenceOf, roleShare, roleUnconfirmed, sortRows, type PoolInput, type PoolRow, type SortKey, type Tier } from "@/lib/pool-stats";
 import { handAlts } from "@/lib/pro-alternatives";
-import { ROLES, type BotPairing, type MidJunglePairing, type ObservedPairing, type Role, type TopPick } from "@/lib/schema";
+import { shownPartners } from "@/lib/proposed";
+import { ProposedGroups, ProposedTag } from "@/components/ProposedSynergy";
+import { ROLES, type BotPairing, type MidJunglePairing, type ObservedPairing, type ProposedRecord, type Role, type TopPick } from "@/lib/schema";
 
 const TIER_LABEL = Object.fromEntries(TIERS) as Record<Tier, string>;
 const DASH = <span className="faint">—</span>;
 
-export function PoolView({ names, data, bot, midJungle, top }: {
-  names: Record<string, string>; data: PoolInput; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[];
+export function PoolView({ names, data, bot, midJungle, top, proposed }: {
+  names: Record<string, string>; data: PoolInput; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; proposed: ProposedRecord[];
 }) {
   // Filters live in the URL so a view can be shared; window.location keeps the GitHub Pages base path.
   const initial = useSearchParams();
@@ -101,7 +103,7 @@ export function PoolView({ names, data, bot, midJungle, top }: {
                   </tr>
                   {isOpen && (
                     <tr className="pool-detail"><td colSpan={12}>
-                      <Detail row={r} names={names} data={data} eventMap={eventMap} bot={bot} midJungle={midJungle} top={top} />
+                      <Detail row={r} names={names} data={data} eventMap={eventMap} bot={bot} midJungle={midJungle} top={top} proposed={proposed} />
                     </td></tr>
                   )}
                 </Fragment>
@@ -133,9 +135,10 @@ export function PoolView({ names, data, bot, midJungle, top }: {
   );
 }
 
-function Detail({ row: r, names, data, eventMap, bot, midJungle, top }: {
-  row: PoolRow; names: Record<string, string>; data: PoolInput; eventMap: EventMap; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[];
+function Detail({ row: r, names, data, eventMap, bot, midJungle, top, proposed }: {
+  row: PoolRow; names: Record<string, string>; data: PoolInput; eventMap: EventMap; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; proposed: ProposedRecord[];
 }) {
+  const props = shownPartners(proposed, r.id, r.role, bot);
   const partnerRole = PARTNER_ROLE[r.role];
   // alan's saved pairings for this champion in this role (Synergy layer).
   let saved: { label: string; ids: string[]; role: Role }[] = [];
@@ -164,6 +167,12 @@ function Detail({ row: r, names, data, eventMap, bot, midJungle, top }: {
           {saved.filter((s) => s.ids.length || s.label !== "From pro games").map((s) => <Fragment key={s.label}><dt>{s.label}</dt><dd><ChipList ids={s.ids} names={names} role={s.role} empty="none saved" /></dd></Fragment>)}
           {!saved.length && <><dt>Synergy</dt><dd className="small muted">No saved pairing record for this role.</dd></>}
         </dl>
+        {props.length > 0 && (
+          <div className="pool-proposed">
+            <div className="xs muted detail-label">Synergy · Proposed <ProposedTag /></div>
+            <ProposedGroups links={props} names={names} compact proCount={(p, pr) => r.games.filter((g) => g.picks[pr] === p).length} />
+          </div>
+        )}
       </LayerBlock>
       <LayerBlock layer="pro" title="Pro evidence">
         <div className="xs muted detail-label" title="Gol.gg tournament totals, not counted from the games stored here">Tournament stats</div>

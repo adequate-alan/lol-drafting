@@ -13,6 +13,8 @@ import type { DrawerData } from "@/lib/data";
 import { comparePatchDesc, describeLine, fresher, groupObserved, shortDate, type EventMap } from "@/lib/evidence";
 import { PARTNER_ROLE, TIERS, eventStats, listsRole, presenceOf, proGames, roleShare, type ProGame, type Tier } from "@/lib/pool-stats";
 import { handAlts } from "@/lib/pro-alternatives";
+import { shownPartners } from "@/lib/proposed";
+import { ProposedGroups, ProposedTag } from "@/components/ProposedSynergy";
 import { synergyParts, teamNeeds } from "@/lib/recommend";
 import { ROLES, type Champion, type Role } from "@/lib/schema";
 
@@ -132,6 +134,7 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
   const ownGame = comp?.proDraftId ? data.proDrafts.find((d) => d.id === comp.proDraftId) : undefined;
   const record = recordFor(id, role, data);
   const saved = savedPartners(id, role, data);
+  const proposed = shownPartners(data.proposed, id, role, data.botPairings).filter((l) => !comp || l.tier === "preferred" || Object.values(comp.slots).includes(l.id));
   const patches = new Map<string, number>();
   for (const g of games) if (g.patch) patches.set(g.patch, (patches.get(g.patch) ?? 0) + 1);
   const step = (d: 1 | -1) => comp && onSelect?.({ id: comp.slots[ROLES[(ROLES.indexOf(role) + d + 5) % 5]], role: ROLES[(ROLES.indexOf(role) + d + 5) % 5] });
@@ -181,7 +184,7 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
                 {s.ids.length ? <span className="drawer-chips">{s.ids.map((x) => <Mate key={x} id={x} role={s.role} names={names} inComp={comp?.slots[s.role] === x} />)}</span> : <span className="muted small">none saved</span>}
               </FragmentRow>
             ))}
-            {!saved.length && !record && <FragmentRow label="Saved"><span className="muted small">No saved pairing record for {role.toLowerCase()}.</span></FragmentRow>}
+            {!saved.length && !record && <FragmentRow label="Saved"><span className="muted small">No saved pairing record for {role.toLowerCase()}{proposed.length ? "; see Proposed below" : ""}.</span></FragmentRow>}
           </dl>
           {comp && (
             <ul className="drawer-links" aria-label="Saved links in this comp">
@@ -196,6 +199,14 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
             </ul>
           )}
         </LayerBlock>
+
+        {proposed.length > 0 && (
+          <section className="layer clash proposed">
+            <div className="layer-label"><span className="ldot" />Synergy · Proposed<span style={{ marginLeft: "auto" }}><ProposedTag /></span></div>
+            <ProposedGroups links={proposed} names={names} compact
+              proCount={(p, pr) => games.filter((g) => g.picks[pr] === p).length} />
+          </section>
+        )}
 
         <LayerBlock layer="pro" title="Pro evidence">
           {comp && (

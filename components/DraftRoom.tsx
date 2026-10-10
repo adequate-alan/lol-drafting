@@ -13,6 +13,7 @@ import { CompCheck, type SiegeCell } from "./CompCheck";
 import { ChampionHoverCard, useHoverIntent } from "./ChampionInteraction";
 import { GenRang } from "./GenRang";
 import { PairingCard, type CardRecord } from "./PairingCard";
+import { proposedCard } from "@/lib/proposed";
 import { ChampIcon, ChampionRow, WarningBadge, type Severity } from "./ui";
 
 const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
@@ -26,7 +27,7 @@ const LANE: Record<Role, Role[]> = { TOP: ["TOP"], JUNGLE: ["JUNGLE"], MID: ["MI
 const CRITICAL = new Set(["no-engage", "needs-fight-starter", "no-frontline", "insufficient-peel", "vulnerable-hard-engage"]);
 const severityOf = (w: DraftWarning): Severity => (CRITICAL.has(w.id) ? "critical" : "caution");
 
-const KIND_LABEL: Record<string, string> = { saved: "Saved", synergy: "Synergy", need: "Need", matchup: "Matchup", counter: "Counter", risk: "Risk" };
+const KIND_LABEL: Record<string, string> = { saved: "Saved", proposed: "Proposed", synergy: "Synergy", need: "Need", matchup: "Matchup", counter: "Counter", risk: "Risk" };
 const STATUS = { default: "Default", alt: "Alt", fits: "Fits" } as const;
 const REC_LIMIT = 8;
 
@@ -117,10 +118,12 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
   const cards: CardRecord[] = ROLES.flatMap((role): CardRecord[] => {
     const id = draft[role];
     if (!id) return [];
-    if (role === "BOT") { const r = data.botPairings.find((b) => b.champion === id); return r ? [{ kind: "bot", record: r }] : []; }
-    if (role === "MID" || role === "JUNGLE") { const r = data.midJungle.find((m) => m.anchor === id && m.role === role); return r ? [{ kind: "mid-jungle", record: r }] : []; }
-    if (role === "TOP") { const r = data.topPicks.find((t) => t.champion === id); return r ? [{ kind: "top", record: r, stats: metaPicks[id] }] : []; }
-    return [];
+    if (role === "BOT") { const r = data.botPairings.find((b) => b.champion === id); if (r) return [{ kind: "bot", record: r }]; }
+    if (role === "MID" || role === "JUNGLE") { const r = data.midJungle.find((m) => m.anchor === id && m.role === role); if (r) return [{ kind: "mid-jungle", record: r }]; }
+    if (role === "TOP") { const r = data.topPicks.find((t) => t.champion === id); if (r) return [{ kind: "top", record: r, stats: metaPicks[id] }]; }
+    // No saved record in this role: Claude's proposed partners (labelled Proposed), when there are any.
+    const card = proposedCard(id, role, data.proposed, data);
+    return card.links.length ? [card] : [];
   });
   const pickNotes = cards.flatMap((c) => c.kind === "bot" && c.record.logic.warning
     ? [{ id: c.record.champion, text: c.record.logic.warning }]
@@ -229,7 +232,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
             <section className="draft-section">
               <div className="section-header"><h2>Locked picks</h2></div>
               <div className="grid cols-auto">{cards.map((c) => (
-                <PairingCard key={c.kind + ("champion" in c.record ? c.record.champion : c.record.anchor)} item={c} names={names} sources={sources} events={eventMap} compact draftLabels={draftLabels} />
+                <PairingCard key={c.kind + (c.kind === "proposed" ? c.id + c.role : "champion" in c.record ? c.record.champion : c.record.anchor)} item={c} names={names} sources={sources} events={eventMap} compact draftLabels={draftLabels} />
               ))}</div>
             </section>
           )}
@@ -335,6 +338,7 @@ function FitRow({ rec, pro, counter, names, hovered, onHover, onPick, onOpen }: 
         <span className="fit-line">
           <span className="name">{name}</span>
           {rec.saved && <span className={`status-tag ${rec.saved}`}>{STATUS[rec.saved]}</span>}
+          {!rec.saved && rec.proposed && <span className="status-tag proposed" title="Claude's kit-based proposal with a locked pick, not one of your saved pairings">Proposed</span>}
           {rec.bestFix && <span className="status-tag fix" title="Covers the most of this role's needs">Best fix</span>}
           {sigs.length > 0 && <span className="sig-line">{sigs.map((s) => <span key={s.key} className={`sig ${s.key}`} title={s.title}>{s.label}</span>)}</span>}
         </span>

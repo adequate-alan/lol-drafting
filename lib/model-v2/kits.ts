@@ -337,7 +337,7 @@ export const KITS: Record<string, KitEntry> = {
     why: "Healer; silence zone stops an engage; global heal." },
   swain: { fightStart: "catch", damageByRole: { BOT: D(3, S(0, 1)), MID: D(3, S(0, 1)), SUPPORT: D(2, S(0, 1)) }, kit: K(2, 1, 2, 0, 1, 2, 2, 2, 1, 2, 0, [2, 3, 2]),
     why: "Drain tank mage; pull catches one target." },
-  talon: { fightStart: "none", damageByRole: { JUNGLE: D(3, S(1, 0)) }, kit: K(2, 0, 0, 3, 0, 0, 1, 0, 2, 1, 0, [3, 3, 1]),
+  talon: { fightStart: "none", damageByRole: { MID: D(3, S(1, 0)), JUNGLE: D(3, S(1, 0)) }, kit: K(2, 0, 0, 3, 0, 0, 1, 0, 2, 1, 0, [3, 3, 1]),
     why: "Roaming assassin; no CC." },
   taric: { fightStart: "follow-up", damageByRole: { MID: D(1, S(0, 1)), SUPPORT: D(0, S(0, 1)) }, kit: K(0, 0, 0, 0, 2, 3, 2, 1, 0, 3, 0, [2, 3, 2]),
     why: "Invulnerability ultimate turns a dive; stun follows up." },

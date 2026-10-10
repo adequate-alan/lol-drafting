@@ -11,7 +11,7 @@ const D = (damageThreat: RoleDamage["damageThreat"], damageSplit: RoleDamage["da
 export const REPRESENTATIVE: Record<string, Conversion> = {
   camille: { fightStart: "catch", damageByRole: { TOP: D(3, S(0.7, 0, 0.3)), SUPPORT: D(1, S(0.7, 0, 0.3)) },
     why: "Role-aware: a top-lane carry threat, utility damage at support. Ultimate locks one target down (catch). True damage from Q." },
-  jayce: { fightStart: "none", damageByRole: { TOP: D(3, S(1, 0)) }, why: "Poke carry with no way to start a fight." },
+  jayce: { fightStart: "none", damageByRole: { TOP: D(3, S(1, 0)), MID: D(3, S(1, 0)) }, why: "Poke carry with no way to start a fight." },
   ornn: { fightStart: "primary", damageByRole: { TOP: D(1, S(0.4, 0.6)) }, why: "Tank: low threat, mostly magic. Ultimate starts fights on demand." },
   vi: { fightStart: "primary", damageByRole: { JUNGLE: D(2, S(1, 0)) }, why: "Point-click ultimate: reliable start." },
   "lee-sin": { fightStart: "catch", damageByRole: { JUNGLE: D(2, S(1, 0)) }, why: "Needs Q to land before the kick: catch, not primary." },
@@ -30,7 +30,7 @@ export const EXAMPLE_ONLY: Record<string, Conversion> = {
   thresh: { fightStart: "catch", damageByRole: { SUPPORT: D(1, S(0, 1)) }, why: "Hook picks one target." },
   lulu: { fightStart: "follow-up", damageByRole: { SUPPORT: D(1, S(0, 1)) }, why: "Polymorph and ult protect; she doesn't start fights." },
   olaf: { fightStart: "follow-up", damageByRole: { TOP: D(2, S(0.7, 0, 0.3)), JUNGLE: D(2, S(0.7, 0, 0.3)) }, why: "Runs at targets but needs someone else to lock them down. True damage from E." },
-  ziggs: { fightStart: "none", damageByRole: { BOT: D(3, S(0, 1)) }, why: "Siege mage; needs a starter." },
+  ziggs: { fightStart: "none", damageByRole: { BOT: D(3, S(0, 1)), MID: D(3, S(0, 1)) }, why: "Siege mage; needs a starter." },
   nautilus: { fightStart: "primary", damageByRole: { SUPPORT: D(1, S(0, 1)) }, why: "Point-click ultimate: reliable start." },
 };
 

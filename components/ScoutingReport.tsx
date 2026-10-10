@@ -1,4 +1,7 @@
-import type { ObservedBotShape, ObservedPairing, Role, Source } from "@/lib/schema";
+import type { BotPairing, ObservedBotShape, ObservedPairing, Role, Source } from "@/lib/schema";
+import { PARTNER_ROLE, type ProGame } from "@/lib/pool-stats";
+import type { ProposedLink } from "@/lib/proposed";
+import { ProposedGroups, ProposedTag, type ProCount } from "./ProposedSynergy";
 import { groupObserved, shortDate, type EventMap } from "@/lib/evidence";
 import type { CardRecord } from "./PairingCard";
 import { ChampIcon, Chip, ChipList, Duo, SourceLinks } from "./ui";
@@ -11,9 +14,9 @@ type Sources = Record<string, Source>;
 
 const label = (s: string) => s.replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase());
 
-function Section({ layer, title, end, children }: { layer?: "clash" | "pro" | "logic"; title: string; end?: React.ReactNode; children: React.ReactNode }) {
+function Section({ layer, title, end, proposed, children }: { layer?: "clash" | "pro" | "logic"; title: string; end?: React.ReactNode; proposed?: boolean; children: React.ReactNode }) {
   return (
-    <section className={`scout-sec ${layer ? `layer ${layer}` : ""}`}>
+    <section className={`scout-sec ${layer ? `layer ${layer}` : ""}${proposed ? " proposed" : ""}`}>
       <h3 className="scout-title">{layer && <span className="ldot" />}{title}{end && <span className="end">{end}</span>}</h3>
       {children}
     </section>
@@ -128,9 +131,71 @@ const Shapes = ({ list, names }: { list: { bot: string; support: string }[]; nam
 const allSources = (own: string[], pairings: ObservedPairing[], shapes: ObservedBotShape[] = []) =>
   [...own, ...pairings.flatMap((o) => o.sources), ...shapes.flatMap((s) => s.sources)];
 
-export function ScoutingReport({ item, names, sources, events, draftLabels }: {
+/** Claude's proposed partners, in their own section under alan's Synergy (never inside it). */
+function ProposedSection({ links, names, proCount, noteFor }: { links: ProposedLink[]; names: Names; proCount?: ProCount; noteFor?: (l: ProposedLink) => string | undefined }) {
+  if (!links.length) return null;
+  return (
+    <Section layer="clash" proposed title="Synergy · Proposed" end={<ProposedTag />}>
+      <ProposedGroups links={links} names={names} proCount={proCount} noteFor={noteFor} />
+    </Section>
+  );
+}
+
+/** Recorded pro games with this champion in this role (evidence only; a proposal never depends on them). */
+function GameList({ games, role, names }: { games: ProGame[]; role: Role; names: Names }) {
+  if (!games.length) return <p className="muted xs">No recorded pro game has this pick in this role. That says nothing about its synergy, only about pro evidence.</p>;
+  const partner = PARTNER_ROLE[role];
+  return (
+    <div className="scout-table">
+      <table className="pro-table">
+        <thead><tr><th>Game</th><th>{partner === "MID" ? "Mid" : partner === "JUNGLE" ? "Jungle" : partner === "BOT" ? "Bot" : "Support"}</th><th>Event</th><th>Patch</th><th>Date</th></tr></thead>
+        <tbody>
+          {games.slice(0, 8).map((g) => (
+            <tr key={g.key}>
+              <td>{g.label}{g.pending && <span className="faint"> · pending refresh</span>}</td>
+              <td>{g.picks[partner] ? <Chip id={g.picks[partner]} name={names[g.picks[partner]!] ?? g.picks[partner]!} role={partner} /> : "–"}</td>
+              <td>{g.eventName}</td>
+              <td className="tnum">{g.patch ?? "–"}</td>
+              <td className="tnum">{shortDate(g.date) ?? "–"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {games.length > 8 && <p className="xs faint">+{games.length - 8} older</p>}
+    </div>
+  );
+}
+
+export function ScoutingReport({ item, names, sources, events, draftLabels, proposed = [], proCount, games = [], bot = [] }: {
   item: CardRecord; names: Names; sources: Sources; events: EventMap; draftLabels?: Record<string, string>;
+  proposed?: ProposedLink[]; proCount?: ProCount; games?: ProGame[]; bot?: BotPairing[];
 }) {
+  // A proposed bot for a support that the bot's own saved record does not list says so: the bot's record decides.
+  const noteFor = (l: ProposedLink) => {
+    if (l.role !== "BOT") return undefined;
+    const rec = bot.find((b) => b.champion === l.id);
+    return rec ? `not in ${names[l.id]}'s saved supports` : undefined;
+  };
+  if (item.kind === "proposed") {
+    return (
+      <article className="panel pick-card scout">
+        <Header role={item.role} id={item.id} name={names[item.id]} identities={[]}><ProposedTag /></Header>
+        {item.confirmed.length > 0 && (
+          <Section layer="clash" title="Synergy · Confirmed" end={<span className="faint">from your saved records</span>}>
+            <SBox>{item.confirmed.map((g) => <Group key={g.label} title={g.label}><ChipList ids={g.ids} names={names} role={g.role} strong /></Group>)}</SBox>
+          </Section>
+        )}
+        <Section layer="clash" proposed title="Synergy · Proposed" end={<ProposedTag />}>
+          {item.identity && <p className="prop-identity">{item.identity}</p>}
+          <ProposedGroups links={item.links} names={names} proCount={proCount} noteFor={noteFor} />
+        </Section>
+        <Section layer="pro" title="Pro Pairings">
+          <GameList games={games} role={item.role} names={names} />
+        </Section>
+        {item.why && <Section layer="logic" title="Logic"><p className="small"><b>Kit</b> {item.why}</p></Section>}
+      </article>
+    );
+  }
   if (item.kind === "bot") {
     const r = item.record;
     return (
@@ -144,6 +209,7 @@ export function ScoutingReport({ item, names, sources, events, draftLabels }: {
             <Group title="Best mids"><ChipList ids={r.surrounding.mid} names={names} role="MID" /></Group>
           </SBox>
         </Section>
+        <ProposedSection links={proposed} names={names} proCount={proCount} />
         <Section layer="pro" title="Pro Pairings">
           <ProTable list={r.observedProPairings} names={names} sources={sources} events={events} role="SUPPORT" partnerLabel="Support" draftLabels={draftLabels} />
           <Read text={r.playoffRead} />
@@ -169,6 +235,7 @@ export function ScoutingReport({ item, names, sources, events, draftLabels }: {
             <Group title="Bot shape"><Shapes list={r.botShapes} names={names} /></Group>
           </SBox>
         </Section>
+        <ProposedSection links={proposed} names={names} proCount={proCount} />
         <Section layer="pro" title="Pro Pairings">
           <ProTable list={r.observedProPairings} names={names} sources={sources} events={events} role={other} partnerLabel={other === "MID" ? "Mid" : "Jungle"} draftLabels={draftLabels} />
           <ProShapes list={r.observedBotShapes} names={names} anchor={r.anchor} draftLabels={draftLabels} />
@@ -198,6 +265,7 @@ export function ScoutingReport({ item, names, sources, events, draftLabels }: {
           <Group title="Bot shape"><Shapes list={r.surrounding.botShapes} names={names} /></Group>
         </SBox>
       </Section>
+      <ProposedSection links={proposed} names={names} proCount={proCount} />
       <Section layer="pro" title="Pro Pairings"
         end={s && <span className="tnum">{s.picks} playoff picks · {Math.round(s.winRate * 100)}% WR{s.lowSample ? " · low sample" : ""}</span>}>
         <ProTable list={r.observedProPairings} names={names} sources={sources} events={events} role="JUNGLE" partnerLabel="Jungle" draftLabels={draftLabels} />

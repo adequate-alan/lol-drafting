@@ -3,6 +3,8 @@
 //   saved     - alan's saved pairings (clashDefault / alternatives / surrounding on the pairing records). A strong
 //               synergy bonus, not a filter, with one exception: with a bot locked, only that bot's saved supports
 //               (default or alternative) are recommended for SUPPORT (savedSupports). Others are theoretical only.
+//   proposed  - Claude's kit-based partners (data/proposed-synergy.json, lib/proposed.ts): a small bonus, always below
+//               the matching saved link, never a filter and never part of savedSupports. Labelled "Proposed".
 //   synergy   - pairwise interactions with the locked allies (lane duos, engage + follow-up, poke stacking).
 //   need      - what the composition lacks, from the comp-analysis engine (lib/model-v2/analyze.ts): the open role's
 //               needs, each "Fixes …" part weighted by the need's priority and by how late in the draft it is. A
@@ -15,7 +17,8 @@ import { RULES, warnings, type Draft } from "./evaluate";
 import { analyze, readCandidate, type RoleNeed } from "./model-v2/analyze";
 import { convertKits } from "./model-v2/kits";
 import type { ChampionKit } from "./model-v2/schema";
-import { ROLES, type BotPairing, type Champion, type MidJunglePairing, type ProDraft, type Role, type TopPick } from "./schema";
+import { proposedLink } from "./proposed";
+import { ROLES, type BotPairing, type Champion, type MidJunglePairing, type ProDraft, type ProposedRecord, type Role, type TopPick } from "./schema";
 
 export interface RecommendData {
   champions: Champion[];
@@ -23,9 +26,10 @@ export interface RecommendData {
   midJungle: MidJunglePairing[];
   topPicks: TopPick[];
   proDrafts: ProDraft[];
+  proposed?: ProposedRecord[];
 }
 
-export type FitKind = "saved" | "synergy" | "need" | "matchup" | "risk";
+export type FitKind = "saved" | "proposed" | "synergy" | "need" | "matchup" | "risk";
 export interface FitPart { kind: FitKind; points: number; text: string }
 export interface Recommendation {
   champion: string;
@@ -33,6 +37,7 @@ export interface Recommendation {
   score: number;
   parts: FitPart[];
   saved: "default" | "alt" | "fits" | null;
+  proposed: "preferred" | "alt" | null; // Claude's kit-based proposal with a locked ally, when nothing is saved for that pair
   proGames: number; // recorded pro drafts that pair this champion with a locked ally in the same roles (not scored)
   fixes: string[]; // the open role's needs this pick covers (comp-analysis engine)
   also: string[]; // lower-priority team needs it covers as well
@@ -155,6 +160,28 @@ function savedParts(c: Champion, role: Role, draft: Draft, data: RecommendData, 
   return { parts, tier };
 }
 
+// ---------- proposed synergy (Claude's kit-based partners, not saved by alan) ----------
+
+// Always below the matching saved link (saved preferred 4–5, saved alternative 1.5–2.5).
+const PROPOSED_POINTS = { preferred: 1.25, alt: 0.5 } as const;
+const PROVISIONAL = 0.6;
+
+export function proposedParts(c: Champion, role: Role, draft: Draft, records: ProposedRecord[] | undefined, name: (id: string) => string): { parts: FitPart[]; tier: Recommendation["proposed"] } {
+  const parts: FitPart[] = [];
+  let tier: Recommendation["proposed"] = null;
+  if (!records?.length) return { parts, tier };
+  for (const r of ROLES) {
+    const ally = draft[r];
+    if (!ally || r === role) continue;
+    const l = proposedLink(records, c.id, role, ally, r);
+    if (!l) continue;
+    const points = round(PROPOSED_POINTS[l.tier] * (l.confidence === "provisional" ? PROVISIONAL : 1));
+    parts.push({ kind: "proposed", points, text: `Proposed ${l.tier === "preferred" ? "partner" : "alternative"} for ${name(ally)} (kit-based, not saved): ${l.reason}` });
+    if (!tier || l.tier === "preferred") tier = l.tier;
+  }
+  return { parts, tier };
+}
+
 // ---------- pairwise synergy with allies ----------
 
 const DUOS: [Role, Role, string][] = [
@@ -254,6 +281,8 @@ export function recommend(draft: Draft, enemyIds: string[], data: RecommendData,
       if (c.rosterOnly || !c.roles.includes(role) || taken.has(c.id)) continue;
       if (role === "SUPPORT" && eligibleSupports && !eligibleSupports.includes(c.id)) continue;
       const { parts, tier } = savedParts(c, role, draft, data, name);
+      const prop = proposedParts(c, role, draft, data.proposed, name);
+      parts.push(...prop.parts);
       parts.push(...synergyParts(c, role, allies));
       const kit = kitById.get(c.id);
       let read = { fixes: [] as string[], also: [] as string[], tradeoffs: [] as string[], fixScore: 0 };
@@ -289,7 +318,7 @@ export function recommend(draft: Draft, enemyIds: string[], data: RecommendData,
       }
       const score = round(parts.reduce((s, p) => s + p.points, 0));
       if (!parts.length) continue;
-      recs.push({ champion: c.id, role, score, parts: parts.sort((a, b) => b.points - a.points), saved: tier, proGames: proGames(c.id, role, draft, data.proDrafts),
+      recs.push({ champion: c.id, role, score, parts: parts.sort((a, b) => b.points - a.points), saved: tier, proposed: prop.tier, proGames: proGames(c.id, role, draft, data.proDrafts),
         fixes: read.fixes, also: read.also, tradeoffs: read.tradeoffs, bestFix: false });
       fixScore.set(c.id, read.fixScore);
     }
@@ -297,8 +326,9 @@ export function recommend(draft: Draft, enemyIds: string[], data: RecommendData,
     const fs = (r: Recommendation) => fixScore.get(r.champion) ?? 0;
     const fix = recs.filter((r) => fs(r) > 0).sort((a, b) => fs(b) - fs(a) || a.tradeoffs.length - b.tradeoffs.length || b.score - a.score)[0];
     if (fix) fix.bestFix = true;
-    // On a tied score, alan's saved tier decides (preferred before alternative before fits), then the name.
-    const tierRank = (r: Recommendation) => (r.saved ? { default: 0, alt: 1, fits: 2 }[r.saved] : 3);
+    // On a tied score, alan's saved tier decides (preferred before alternative before fits), then a proposed partner,
+    // then the name.
+    const tierRank = (r: Recommendation) => (r.saved ? { default: 0, alt: 1, fits: 2 }[r.saved] : r.proposed ? { preferred: 3, alt: 4 }[r.proposed] : 5);
     out[role] = recs.sort((a, b) => b.score - a.score || tierRank(a) - tierRank(b) || a.champion.localeCompare(b.champion)).slice(0, limit);
   }
   return out;
