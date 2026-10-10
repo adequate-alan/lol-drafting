@@ -325,10 +325,6 @@
       ],
       "botShapes": [
         {
-          "bot": "kaisa",
-          "support": "rell"
-        },
-        {
           "bot": "jhin",
           "support": "alistar"
         },

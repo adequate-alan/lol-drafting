@@ -27,7 +27,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 - Clash bot/support eligibility is a hard rule (`lib/suggest.ts`, `tests/clash-eligibility.test.ts`): with BOT locked,
   only that bot's `clashDefault` + `alternatives` can be Clash supports (and the reverse with SUPPORT locked). Pro
   pairings and bot-lane shapes on other records can only boost an eligible pick, never add one, and a Clash default
-  always ranks above an alternative.
+  always ranks above an alternative. A Clash `botShapes` entry needs a bot with a Clash record that lists the support.
 
 ## Gol.gg research rules
 

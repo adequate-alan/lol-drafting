@@ -172,10 +172,18 @@ describe("bot-lane shapes", () => {
     ...getTopPicks().map((t) => ({ name: t.champion, role: "TOP" as const, clash: t.surrounding.botShapes, observed: t.observedBotShapes })),
   ];
 
-  it("a Clash bot shape is always in that bot's Clash record", () => {
+  it("a Clash bot shape needs a Clash record for that bot that permits the support", () => {
     for (const r of records()) for (const d of r.clash) {
       const b = bots.get(d.bot);
-      if (b) expect([...b.clashDefault, ...b.alternatives], `${r.name}: ${d.bot}+${d.support}`).toContain(d.support);
+      expect(b, `${r.name}: ${d.bot} has no Clash record`).toBeDefined();
+      expect([...b!.clashDefault, ...b!.alternatives], `${r.name}: ${d.bot}+${d.support}`).toContain(d.support);
+    }
+  });
+
+  it("Kai'Sa + Rell is not a Clash shape anywhere (no Kai'Sa Clash record)", () => {
+    expect(bots.has("kaisa")).toBe(false);
+    for (const r of records()) {
+      expect(r.clash.some((d) => d.bot === "kaisa" && d.support === "rell"), r.name).toBe(false);
     }
   });
 

@@ -19,3 +19,12 @@ Ziggs and Ezreal record-level `sources` also gained 82413 and 82383. No Clash fi
 | --- | --- | --- | --- |
 | Ezreal + Nautilus (observed) | cites 82383, 82416 | cites 82383 only | 82416 was kept on "may show it"; a pro claim cites only games that directly show it. Re-add after the page is read. |
 | golgg-game-82627, 82413, 82383 | `userVerified` (labelled "checked by alan") | `pendingClaim` {claim, providedOn}; 82413 and 82383 `origin: "externally-provided"` | The links were supplied during review, not personally re-checked. All stay `not-refreshed` until Claude can read Gol.gg. |
+
+## 2026-10-10: Kai'Sa + Rell removed from Clash blocks
+
+| Record | Before | After | Why |
+| --- | --- | --- | --- |
+| Lissandra (MID) `botShapes` | included Kai'Sa + Rell | removed | Kai'Sa has no Clash record, so no Clash record permits Rell with her. alan asked not to create one. |
+| Ambessa (TOP) `surrounding.botShapes` | included Kai'Sa + Rell | removed | Same. |
+
+The importer now drops (with a warning) any Clash bot shape whose bot has no Clash record, and `tests/data-integrity.test.ts` requires every Clash shape's bot to have a record that lists the support.

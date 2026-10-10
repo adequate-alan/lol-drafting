@@ -110,7 +110,7 @@ export const MidJunglePairing = z.object({
   role: z.enum(["MID", "JUNGLE"]),
   clashDefault: z.array(ChampionId).min(1),
   alternatives: z.array(ChampionId),
-  botShapes: z.array(Duo), // Clash: only duos in the bot's Clash record (or bots with no Clash record yet)
+  botShapes: z.array(Duo), // Clash: only duos whose bot has a Clash record that lists the support
   observedBotShapes: z.array(ObservedBotShape),
   observedProPairings: z.array(ObservedPairing),
   history: z.array(z.object({ partner: ChampionId, era: Era, note: z.string() })),

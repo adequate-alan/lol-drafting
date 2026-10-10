@@ -494,10 +494,6 @@
       {
         "bot": "jhin",
         "support": "alistar"
-      },
-      {
-        "bot": "kaisa",
-        "support": "rell"
       }
     ],
     "observedBotShapes": [],
