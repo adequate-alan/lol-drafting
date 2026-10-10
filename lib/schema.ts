@@ -29,8 +29,14 @@ export const Source = z.object({
   seriesGame: z.string().optional(),
   patch: z.string().optional(),
   lastChecked: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
-  refreshStatus: z.enum(["verified", "not-refreshed"]),
-  origin: z.enum(["workbook", "golgg-refresh"]),
+  refreshStatus: z.enum(["verified", "not-refreshed"]), // "verified" only when Claude itself re-read the page
+  origin: z.enum(["workbook", "golgg-refresh", "user-verified"]),
+  // alan checked this page himself. Kept apart from refreshStatus, which records Claude's own checks.
+  userVerified: z.object({
+    by: z.string(),
+    on: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    claim: z.string(),
+  }).optional(),
 });
 export type Source = z.infer<typeof Source>;
 

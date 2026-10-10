@@ -32,18 +32,33 @@ function collector(draft: Draft) {
     if (!s.reasons.includes(reason)) s.reasons.push(reason);
     m.set(champion, s);
   };
-  const result = (limit = 6): ByRole => Object.fromEntries(openRoles(draft).map((r) => [
-    r, [...(out[r]?.values() ?? [])].sort((a, b) => b.score - a.score || a.champion.localeCompare(b.champion)).slice(0, limit),
+  const raw = (): ByRole => Object.fromEntries(openRoles(draft).map((r) => [r, [...(out[r]?.values() ?? [])]]));
+  const result = (limit = 6): ByRole => Object.fromEntries(Object.entries(raw()).map(([r, list]) => [
+    r, list!.sort((a, b) => b.score - a.score || a.champion.localeCompare(b.champion)).slice(0, limit),
   ]));
-  return { add, result };
+  return { add, raw, result };
+}
+
+// Clash bot/support eligibility is a hard rule, applied after scoring:
+//   - BOT locked, SUPPORT open: only supports in that bot's clashDefault or alternatives are eligible.
+//   - SUPPORT locked, BOT open: only bots whose Clash record lists that support are eligible.
+//   - A bot-lane shape on a mid/jungle/top record only counts when the pair is in the bot's Clash record,
+//     so a pro-only pairing never gets a Clash bonus.
+// Ranking inside BOT/SUPPORT is by tier first (Clash default, then alternative, then shape-only when the
+// other half of the lane is open), so no boost can lift an alternative above a default.
+export function clashPairTier(bot: BotPairing | undefined, support: string): 0 | 1 | null {
+  if (!bot) return null;
+  if (bot.clashDefault.includes(support)) return 0;
+  if (bot.alternatives.includes(support)) return 1;
+  return null;
 }
 
 export function clashSuggestions(draft: Draft, data: SuggestData): ByRole {
-  const { add, result } = collector(draft);
+  const { add, raw } = collector(draft);
   const name = (id: string) => data.champions.find((c) => c.id === id)?.name ?? id;
-  // A bot-lane shape only counts when it fits what is already locked in the bot lane, so a shape
-  // like "Ezreal + Karma" never suggests Karma next to a locked Ziggs.
+  const botRecord = (id: string) => data.botPairings.find((b) => b.champion === id);
   const addShape = (d: { bot: string; support: string }, from: string) => {
+    if (clashPairTier(botRecord(d.bot), d.support) === null) return; // pro-only or unknown pair: no Clash bonus
     if (draft.BOT && draft.BOT !== d.bot) return;
     if (draft.SUPPORT && draft.SUPPORT !== d.support) return;
     add("BOT", d.bot, 2, `Bot shape for ${name(from)}`);
@@ -53,7 +68,7 @@ export function clashSuggestions(draft: Draft, data: SuggestData): ByRole {
     const id = draft[role];
     if (!id) continue;
     if (role === "BOT") {
-      const r = data.botPairings.find((b) => b.champion === id);
+      const r = botRecord(id);
       r?.clashDefault.forEach((s) => add("SUPPORT", s, 3, `Clash default with ${name(id)}`));
       r?.alternatives.forEach((s) => add("SUPPORT", s, 1, `Clash alternative with ${name(id)}`));
       r?.surrounding.jungle.forEach((j) => add("JUNGLE", j, 2, `Fits ${name(id)}`));
@@ -79,7 +94,26 @@ export function clashSuggestions(draft: Draft, data: SuggestData): ByRole {
       r?.surrounding.botShapes.forEach((d) => addShape(d, id));
     }
   }
-  return result();
+
+  const out = raw();
+  const tierOf = (role: Role, champion: string): number | null => {
+    if (role === "SUPPORT" && draft.BOT) return clashPairTier(botRecord(draft.BOT), champion);
+    if (role === "BOT" && draft.SUPPORT) return clashPairTier(botRecord(champion), draft.SUPPORT);
+    return 2; // the other half of the lane is open: shapes were already filtered to Clash pairs
+  };
+  const order = (role: Role, champion: string) => {
+    if (role === "SUPPORT" && draft.BOT) { const r = botRecord(draft.BOT)!; const i = [...r.clashDefault, ...r.alternatives].indexOf(champion); return i; }
+    return 0;
+  };
+  const result: ByRole = {};
+  for (const [role, list] of Object.entries(out) as [Role, Suggestion[]][]) {
+    const tiered = list
+      .map((s) => ({ s, tier: role === "BOT" || role === "SUPPORT" ? tierOf(role, s.champion) : 2 }))
+      .filter((x) => x.tier !== null)
+      .sort((a, b) => a.tier! - b.tier! || b.s.score - a.s.score || order(role, a.s.champion) - order(role, b.s.champion) || a.s.champion.localeCompare(b.s.champion));
+    result[role] = tiered.map((x) => x.s).slice(0, 6);
+  }
+  return result;
 }
 
 export function proSuggestions(draft: Draft, proDrafts: ProDraft[]): ByRole {

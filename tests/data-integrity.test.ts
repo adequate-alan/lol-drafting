@@ -124,3 +124,37 @@ describe("champion pool", () => {
     }
   });
 });
+
+describe("citations match the claims they back", () => {
+  const drafts = getProDrafts();
+  const byId = new Map(getSources().map((s) => [s.id, s]));
+  const gameOf = (d: { sources: string[] }) => d.sources.find((s) => byId.get(s)?.type === "golgg-game");
+
+  it("a bot/support pairing never cites a game where that bot played with a different support", () => {
+    for (const b of getBotPairings()) {
+      for (const o of b.observedProPairings) {
+        for (const sid of o.sources) {
+          for (const d of drafts.filter((d) => gameOf(d) === sid)) {
+            if (d.picks.BOT === b.champion) expect(d.picks.SUPPORT, `${b.champion}+${o.champion} cites ${sid}`).toBe(o.champion);
+          }
+        }
+      }
+    }
+  });
+
+  it("alan's verified corrections are in place", () => {
+    const ziggs = getBotPairings().find((b) => b.champion === "ziggs")!;
+    const ezreal = getBotPairings().find((b) => b.champion === "ezreal")!;
+    const obs = (r: typeof ziggs, c: string) => r.observedProPairings.find((o) => o.champion === c)!;
+    expect(obs(ziggs, "pyke").sources).toEqual(["golgg-game-82627"]);
+    expect(obs(ziggs, "camille").sources).toEqual(["golgg-game-82413"]);
+    expect(obs(ezreal, "nautilus").sources).toContain("golgg-game-82383");
+    expect(obs(ezreal, "nautilus").sources).not.toContain("golgg-game-82625");
+    expect(obs(ezreal, "nautilus").sources).not.toContain("golgg-game-82695");
+    for (const id of ["golgg-game-82413", "golgg-game-82383", "golgg-game-82627"]) expect(byId.get(id)?.userVerified?.by).toBe("alan");
+  });
+
+  it("a hand-checked source is never marked as refreshed by Claude", () => {
+    for (const s of getSources()) if (s.origin === "user-verified") expect(s.refreshStatus).toBe("not-refreshed");
+  });
+});
