@@ -1051,8 +1051,12 @@
       "thresh",
       "lulu"
     ],
-    "alternatives": [],
-    "alternativeNotes": {},
+    "alternatives": [
+      "milio"
+    ],
+    "alternativeNotes": {
+      "milio": "alan (2026-10-10): saved alternative."
+    },
     "observedProPairings": [],
     "surrounding": {
       "jungle": [],
@@ -1075,8 +1079,12 @@
       "nautilus",
       "rell"
     ],
-    "alternatives": [],
-    "alternativeNotes": {},
+    "alternatives": [
+      "alistar"
+    ],
+    "alternativeNotes": {
+      "alistar": "alan (2026-10-10): saved alternative."
+    },
     "observedProPairings": [],
     "surrounding": {
       "jungle": [],
@@ -1097,8 +1105,12 @@
       "milio",
       "braum"
     ],
-    "alternatives": [],
-    "alternativeNotes": {},
+    "alternatives": [
+      "tahm-kench"
+    ],
+    "alternativeNotes": {
+      "tahm-kench": "alan (2026-10-10): saved alternative."
+    },
     "observedProPairings": [],
     "surrounding": {
       "jungle": [],
@@ -1118,8 +1130,12 @@
       "rakan",
       "seraphine"
     ],
-    "alternatives": [],
-    "alternativeNotes": {},
+    "alternatives": [
+      "rell"
+    ],
+    "alternativeNotes": {
+      "rell": "alan (2026-10-10): saved alternative."
+    },
     "observedProPairings": [],
     "surrounding": {
       "jungle": [],
@@ -1139,8 +1155,12 @@
       "nautilus",
       "rell"
     ],
-    "alternatives": [],
-    "alternativeNotes": {},
+    "alternatives": [
+      "alistar"
+    ],
+    "alternativeNotes": {
+      "alistar": "alan (2026-10-10): saved alternative."
+    },
     "observedProPairings": [],
     "surrounding": {
       "jungle": [],
@@ -1160,8 +1180,12 @@
       "tahm-kench",
       "seraphine"
     ],
-    "alternatives": [],
-    "alternativeNotes": {},
+    "alternatives": [
+      "karma"
+    ],
+    "alternativeNotes": {
+      "karma": "alan (2026-10-10): saved alternative."
+    },
     "observedProPairings": [],
     "surrounding": {
       "jungle": [],
@@ -1181,8 +1205,12 @@
       "lulu",
       "milio"
     ],
-    "alternatives": [],
-    "alternativeNotes": {},
+    "alternatives": [
+      "karma"
+    ],
+    "alternativeNotes": {
+      "karma": "alan (2026-10-10): saved alternative."
+    },
     "observedProPairings": [],
     "surrounding": {
       "jungle": [],
@@ -1227,8 +1255,12 @@
       "nautilus",
       "rell"
     ],
-    "alternatives": [],
-    "alternativeNotes": {},
+    "alternatives": [
+      "lulu"
+    ],
+    "alternativeNotes": {
+      "lulu": "alan (2026-10-10): saved alternative."
+    },
     "observedProPairings": [],
     "surrounding": {
       "jungle": [],
@@ -1248,8 +1280,12 @@
       "lulu",
       "yuumi"
     ],
-    "alternatives": [],
-    "alternativeNotes": {},
+    "alternatives": [
+      "milio"
+    ],
+    "alternativeNotes": {
+      "milio": "alan (2026-10-10): saved alternative."
+    },
     "observedProPairings": [],
     "surrounding": {
       "jungle": [],
@@ -1269,8 +1305,12 @@
       "karma",
       "nautilus"
     ],
-    "alternatives": [],
-    "alternativeNotes": {},
+    "alternatives": [
+      "bard"
+    ],
+    "alternativeNotes": {
+      "bard": "alan (2026-10-10): saved alternative."
+    },
     "observedProPairings": [],
     "surrounding": {
       "jungle": [],
@@ -1290,8 +1330,12 @@
       "lulu",
       "milio"
     ],
-    "alternatives": [],
-    "alternativeNotes": {},
+    "alternatives": [
+      "braum"
+    ],
+    "alternativeNotes": {
+      "braum": "alan (2026-10-10): saved alternative."
+    },
     "observedProPairings": [],
     "surrounding": {
       "jungle": [],
@@ -1311,8 +1355,12 @@
       "rell",
       "alistar"
     ],
-    "alternatives": [],
-    "alternativeNotes": {},
+    "alternatives": [
+      "nautilus"
+    ],
+    "alternativeNotes": {
+      "nautilus": "alan (2026-10-10): saved alternative."
+    },
     "observedProPairings": [],
     "surrounding": {
       "jungle": [],

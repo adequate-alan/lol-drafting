@@ -182,13 +182,13 @@ describe("Kai'Sa and Aphelios Synergy records (alan, 2026-10-10)", () => {
     expect(top({ BOT: "kaisa" }, "SUPPORT", [], Infinity)).not.toContain("rell");
   });
 
-  it("Aphelios with SUPPORT open recommends only Thresh and Lulu", () => {
+  it("Aphelios with SUPPORT open recommends only Thresh, Lulu and his saved alternative Milio", () => {
     for (const o of others) {
       const list = top({ ...o, BOT: "aphelios" }, "SUPPORT", [], Infinity);
       expect(list.length, JSON.stringify(o)).toBeGreaterThan(0);
-      expect(list.every((id) => id === "thresh" || id === "lulu"), `${JSON.stringify(o)}: ${list}`).toBe(true);
+      expect(list.every((id) => ["thresh", "lulu", "milio"].includes(id)), `${JSON.stringify(o)}: ${list}`).toBe(true);
     }
-    expect(top({ BOT: "aphelios" }, "SUPPORT", [], Infinity).sort()).toEqual(["lulu", "thresh"]);
+    expect(top({ BOT: "aphelios" }, "SUPPORT", [], Infinity).sort()).toEqual(["lulu", "milio", "thresh"]);
   });
 
   it("both supports are joint preferred: each gets the full saved-default bonus", () => {
@@ -218,7 +218,7 @@ describe("Kai'Sa and Aphelios Synergy records (alan, 2026-10-10)", () => {
 
   it("logic suggestions respect the bot/support eligibility rule", () => {
     const kits = convertKits(data.champions);
-    for (const [bot, sups] of [["kaisa", ["nautilus", "rakan", "alistar"]], ["aphelios", ["thresh", "lulu"]]] as const) {
+    for (const [bot, sups] of [["kaisa", ["nautilus", "rakan", "alistar"]], ["aphelios", ["thresh", "lulu", "milio"]]] as const) {
       for (const d of [{ BOT: bot }, { TOP: "jayce", JUNGLE: "lee-sin", MID: "viktor", BOT: bot }] as Draft[]) {
         const r = bestFix("SUPPORT", d, kits, data.botPairings);
         expect(r.restricted).toBe(true);
