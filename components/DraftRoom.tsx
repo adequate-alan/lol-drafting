@@ -268,7 +268,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
         </div>
 
         <CompCheck draft={draft} enemyIds={enemyIds} champions={data.champions} botPairings={data.botPairings} active={active}
-          bestOverall={activeRecs[0]?.champion} names={names} grid={(siege) => <Indicators prof={prof} needs={needs} picks={picks.length} siege={siege} />}>
+          bestOverall={activeRecs[0]?.champion} bestFixId={active ? fits[active]?.find((r) => r.bestFix)?.champion : undefined} names={names} grid={(siege) => <Indicators prof={prof} needs={needs} picks={picks.length} siege={siege} />}>
           <div className="cc-section">
             <div className="cc-label">Rule checks</div>
             {!warns.length && (lockedCount < 2 ? <p className="xs muted">Needs two picks.</p> : <p className="cc-ok">No warnings.</p>)}
@@ -335,15 +335,23 @@ function FitRow({ rec, pro, counter, names, hovered, onHover, onPick, onOpen }: 
         <span className="fit-line">
           <span className="name">{name}</span>
           {rec.saved && <span className={`status-tag ${rec.saved}`}>{STATUS[rec.saved]}</span>}
+          {rec.bestFix && <span className="status-tag fix" title="Covers the most of this role's needs">Best fix</span>}
           {sigs.length > 0 && <span className="sig-line">{sigs.map((s) => <span key={s.key} className={`sig ${s.key}`} title={s.title}>{s.label}</span>)}</span>}
         </span>
-        <span className="fit-reason truncate">{lead?.text}</span>
+        <span className="fit-reason truncate">{rec.fixes.length ? `Fixes ${rec.fixes.join(", ").toLowerCase()}${rec.tradeoffs.length ? ` · ${rec.tradeoffs[0]}` : ""}` : lead?.text}</span>
       </button>
       <span className={`fit-score ${rec.score < 0 ? "neg" : ""}`} title="Draft-fit score">{rec.score > 0 ? "+" : ""}{rec.score}</span>
       <button className="fit-toggle" aria-expanded={open} aria-label={`Why ${name}`} title={`${rec.parts.length} reasons`} onClick={() => setOpen((o) => !o)}>
         <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
       </button>
       <div className="fit-detail">
+        {(rec.fixes.length > 0 || rec.also.length > 0 || rec.tradeoffs.length > 0) && (
+          <dl className="fit-read">
+            {rec.fixes.length > 0 && <><dt>Fixes</dt><dd>{rec.fixes.join(", ")}</dd></>}
+            {rec.also.length > 0 && <><dt>Also</dt><dd>{rec.also.join(", ")}</dd></>}
+            {rec.tradeoffs.length > 0 && <><dt>Tradeoff</dt><dd>{rec.tradeoffs.join("; ")}</dd></>}
+          </dl>
+        )}
         <ul className="fit-why">{rec.parts.map((p, i) => (
           <li key={i} className={`k-${p.kind}`}><span className="k">{KIND_LABEL[p.kind] ?? p.kind}</span><span className="t">{p.text}</span><span className="pts">{p.points > 0 ? "+" : ""}{p.points}</span></li>
         ))}</ul>

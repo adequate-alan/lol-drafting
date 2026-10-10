@@ -4,13 +4,17 @@
 //               synergy bonus, not a filter, with one exception: with a bot locked, only that bot's saved supports
 //               (default or alternative) are recommended for SUPPORT (savedSupports). Others are theoretical only.
 //   synergy   - pairwise interactions with the locked allies (lane duos, engage + follow-up, poke stacking).
-//   need      - what the composition lacks (engage, frontline, peel, sustained damage, damage mix, a fight starter),
-//               weighted by how late in the draft it is.
+//   need      - what the composition lacks, from the comp-analysis engine (lib/model-v2/analyze.ts): the open role's
+//               needs, each "Fixes …" part weighted by the need's priority and by how late in the draft it is. A
+//               champion without a kit (Locke) falls back to the v1 team needs below.
 //   matchup   - how the champion plays into the enemy picks, from champion attributes (no lane-matchup data).
 //   risk      - penalties: triggering a new warning, or leaving more holes than there are picks left.
 //
 // Observed pro evidence is never scored here. It is shown next to a recommendation, never as a reason to rank it.
 import { RULES, warnings, type Draft } from "./evaluate";
+import { analyze, readCandidate, type RoleNeed } from "./model-v2/analyze";
+import { convertKits } from "./model-v2/kits";
+import type { ChampionKit } from "./model-v2/schema";
 import { ROLES, type BotPairing, type Champion, type MidJunglePairing, type ProDraft, type Role, type TopPick } from "./schema";
 
 export interface RecommendData {
@@ -30,6 +34,10 @@ export interface Recommendation {
   parts: FitPart[];
   saved: "default" | "alt" | "fits" | null;
   proGames: number; // recorded pro drafts that pair this champion with a locked ally in the same roles (not scored)
+  fixes: string[]; // the open role's needs this pick covers (comp-analysis engine)
+  also: string[]; // lower-priority team needs it covers as well
+  tradeoffs: string[]; // what it costs the comp
+  bestFix: boolean; // covers the most of the role's needs among the eligible candidates (shown apart from best overall)
 }
 export type Recommendations = Partial<Record<Role, Recommendation[]>>;
 
@@ -204,6 +212,16 @@ function matchupParts(c: Champion, enemy: Champion[]): FitPart[] {
 
 // ---------- scoring ----------
 
+// Kits are rebuilt only when the champion list changes (once per page in practice).
+const kitCache = new WeakMap<Champion[], ChampionKit[]>();
+const kitsFor = (champions: Champion[]) => {
+  let k = kitCache.get(champions);
+  if (!k) kitCache.set(champions, (k = convertKits(champions)));
+  return k;
+};
+// Engine need priority (about 3 for a baseline job, 6–7 for a major weakness) to points on the v1 scale.
+const NEED_POINTS = 0.5;
+
 export function recommend(draft: Draft, enemyIds: string[], data: RecommendData, limit = 5): Recommendations {
   const byId = new Map(data.champions.map((c) => [c.id, c]));
   const name = (id: string) => byId.get(id)?.name ?? id;
@@ -219,17 +237,44 @@ export function recommend(draft: Draft, enemyIds: string[], data: RecommendData,
   const urgency = (n: Need) => Math.max(0.5 * (picks.length - 1), n.personal ? 1 : 0);
   const before = new Set(warnings(draft, data.champions).map((w) => w.id));
   const eligibleSupports = savedSupports(draft, data.botPairings);
+  const kits = kitsFor(data.champions);
+  const kitById = new Map(kits.map((k) => [k.id, k]));
+  const analysis = analyze(draft, kits, enemyIds);
+  // Engine needs tied to a locked champion count from the first pick, like v1's personal needs: protecting a carry, or a
+  // fight starter for a champion who cannot start fights.
+  const setupLocked = allies.some((a) => (kitById.get(a.champ.id)?.kit.setupDependency ?? 0) >= 2);
+  const engineUrgency = (n: RoleNeed) => Math.max(0.5 * (picks.length - 1), n.id === "peel" || (setupLocked && (n.id === "engage" || n.id === "fight-start")) ? 1 : 0);
 
   const out: Recommendations = {};
   for (const role of open) {
     const recs: Recommendation[] = [];
+    const fixScore = new Map<string, number>();
     for (const c of data.champions) {
       // Roster-only champions have no attributes to score, so they are never suggested (they can still be locked).
       if (c.rosterOnly || !c.roles.includes(role) || taken.has(c.id)) continue;
       if (role === "SUPPORT" && eligibleSupports && !eligibleSupports.includes(c.id)) continue;
       const { parts, tier } = savedParts(c, role, draft, data, name);
       parts.push(...synergyParts(c, role, allies));
-      for (const n of needs) if (n.fills(c) && urgency(n) > 0) parts.push({ kind: "need", points: round(n.weight * urgency(n)), text: `Adds ${n.label}: ${n.text}` });
+      const kit = kitById.get(c.id);
+      let read = { fixes: [] as string[], also: [] as string[], tradeoffs: [] as string[], fixScore: 0 };
+      if (kit) {
+        const roleNeeds = analysis.roleNeeds[role] ?? [];
+        const r = readCandidate(kit, role, draft, kits, roleNeeds, enemyIds);
+        const shown = new Set(roleNeeds.map((n) => n.id));
+        const extra = readCandidate(kit, role, draft, kits, analysis.needs.filter((n) => !shown.has(n.id)), enemyIds).fixes;
+        // One weakness scores once, even when the pick covers two of the jobs it asks for (frontline and engage for
+        // "No frontline" count separately; "follow-up" and "backline access" for one tension do not).
+        const byCause = new Map<string, RoleNeed[]>();
+        for (const n of r.fixes) if (engineUrgency(n) > 0) byCause.set(n.because, [...(byCause.get(n.because) ?? []), n]);
+        for (const [because, ns] of byCause) {
+          const top = ns.reduce((a, b) => (b.priority > a.priority ? b : a));
+          parts.push({ kind: "need", points: round(top.priority * NEED_POINTS * engineUrgency(top)), text: `Fixes ${ns.map((n) => n.label.toLowerCase()).join(" and ")}: ${because}` });
+        }
+        for (const t of r.tradeoffs) if (picks.length >= 2) parts.push({ kind: "risk", points: -1, text: `Tradeoff: ${t}` });
+        read = { fixes: r.fixes.map((n) => n.label), also: extra.map((n) => n.label), tradeoffs: r.tradeoffs, fixScore: r.fixScore };
+      } else {
+        for (const n of needs) if (n.fills(c) && urgency(n) > 0) parts.push({ kind: "need", points: round(n.weight * urgency(n)), text: `Adds ${n.label}: ${n.text}` });
+      }
       parts.push(...matchupParts(c, enemy));
 
       const next = { ...draft, [role]: c.id };
@@ -244,8 +289,14 @@ export function recommend(draft: Draft, enemyIds: string[], data: RecommendData,
       }
       const score = round(parts.reduce((s, p) => s + p.points, 0));
       if (!parts.length) continue;
-      recs.push({ champion: c.id, role, score, parts: parts.sort((a, b) => b.points - a.points), saved: tier, proGames: proGames(c.id, role, draft, data.proDrafts) });
+      recs.push({ champion: c.id, role, score, parts: parts.sort((a, b) => b.points - a.points), saved: tier, proGames: proGames(c.id, role, draft, data.proDrafts),
+        fixes: read.fixes, also: read.also, tradeoffs: read.tradeoffs, bestFix: false });
+      fixScore.set(c.id, read.fixScore);
     }
+    // Best fix: most of the role's needs covered (fewest tradeoffs on a tie), among the same eligible candidates.
+    const fs = (r: Recommendation) => fixScore.get(r.champion) ?? 0;
+    const fix = recs.filter((r) => fs(r) > 0).sort((a, b) => fs(b) - fs(a) || a.tradeoffs.length - b.tradeoffs.length || b.score - a.score)[0];
+    if (fix) fix.bestFix = true;
     out[role] = recs.sort((a, b) => b.score - a.score || a.champion.localeCompare(b.champion)).slice(0, limit);
   }
   return out;

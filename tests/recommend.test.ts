@@ -155,6 +155,38 @@ describe("with a bot locked, only its saved supports are actionable (alan, 2026-
   });
 });
 
+describe("comp-analysis needs feed the ranking (alan's brief, items 8 and 10)", () => {
+  it("Ziggs support: Nautilus is the best fix for frontline and engage, and only saved supports appear", () => {
+    const list = recommend({ TOP: "jayce", JUNGLE: "lee-sin", MID: "viktor", BOT: "ziggs" }, [], data, Infinity).SUPPORT!;
+    expect(list.map((r) => r.champion).sort()).toEqual(["leona", "nautilus"]);
+    const naut = list.find((r) => r.champion === "nautilus")!;
+    expect(naut.bestFix).toBe(true);
+    expect(naut.fixes).toEqual(expect.arrayContaining(["Frontline", "Primary engage"]));
+    expect(naut.parts.some((p) => p.kind === "need" && /^Fixes frontline/.test(p.text))).toBe(true);
+  });
+
+  it("a late top pick into a comp with no frontline ranks frontliners that also fix the engage's follow-up first", () => {
+    const list = recommend({ JUNGLE: "vi", MID: "ahri", BOT: "sivir", SUPPORT: "lulu" }, [], data, 10).TOP!;
+    for (const r of list.slice(0, 3)) expect(byId.get(r.champion)!.attrs.frontline, r.champion).toBeGreaterThanOrEqual(2);
+    expect(list[0].fixes).toEqual(expect.arrayContaining(["Frontline"]));
+  });
+
+  it("each role has at most one best fix; every row carries fixes, also and tradeoff lists", () => {
+    for (const o of others.slice(0, 15)) for (const [, list] of Object.entries(recommend({ ...o, BOT: "sivir" }, [], data, Infinity))) {
+      expect(list!.filter((r) => r.bestFix).length).toBeLessThanOrEqual(1);
+      for (const r of list!) for (const k of ["fixes", "also", "tradeoffs"] as const) expect(Array.isArray(r[k])).toBe(true);
+    }
+  });
+
+  it("one weakness scores once, even when a pick covers two jobs it asks for", () => {
+    const list = recommend({ JUNGLE: "vi", MID: "ahri", BOT: "sivir", SUPPORT: "lulu" }, [], data, Infinity).TOP!;
+    for (const r of list) {
+      const causes = r.parts.filter((p) => p.kind === "need" && p.text.startsWith("Fixes")).map((p) => p.text.split(": ")[1]);
+      expect(new Set(causes).size, r.champion).toBe(causes.length);
+    }
+  });
+});
+
 describe("team needs and win conditions", () => {
   const champs = (...ids: string[]) => ids.map((id) => byId.get(id)!);
   it("Ziggs asks for a fight starter, Jinx for peel", () => {

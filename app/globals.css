@@ -1289,3 +1289,7 @@ th { letter-spacing: .06em; font-weight: 600; }
 .cc-scores { margin: 0; padding: 0; list-style: none; display: grid; gap: 1px; }
 .cc-scores li { display: flex; justify-content: space-between; font-size: var(--fs-xs); color: var(--text-muted); }
 .cc-cell:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.status-tag.fix { color: var(--logic); }
+.fit-read { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1px var(--s4); margin: 0 0 var(--s3); font-size: var(--fs-xs); }
+.fit-read dt { font-size: var(--fs-2xs); font-weight: 650; text-transform: uppercase; letter-spacing: .06em; color: var(--text-faint); padding-top: 1px; }
+.fit-read dd { margin: 0; color: var(--text-muted); }

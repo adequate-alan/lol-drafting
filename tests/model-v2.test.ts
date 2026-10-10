@@ -79,8 +79,8 @@ describe("v2 reaches the site only through Comp Check", () => {
     const p = join(dir, f);
     return statSync(p).isDirectory() ? files(p) : p.endsWith(".tsx") || p.endsWith(".ts") ? [p] : [];
   });
-  it("no page, component or active engine imports lib/model-v2 except components/CompCheck.tsx", () => {
-    for (const f of [...files("app"), ...files("components"), "lib/suggest.ts", "lib/evaluate.ts", "lib/data.ts", "lib/recommend.ts"].filter((f) => !f.endsWith("CompCheck.tsx")))
+  it("no page, component or active engine imports lib/model-v2 except Comp Check and the recommendation ranking", () => {
+    for (const f of [...files("app"), ...files("components"), "lib/suggest.ts", "lib/evaluate.ts", "lib/data.ts"].filter((f) => !f.endsWith("CompCheck.tsx")))
       expect(readFileSync(f, "utf8"), f).not.toMatch(/model-v2/);
   });
 });
