@@ -221,6 +221,8 @@ export const MetaEvent = z.object({
   startDate: Day.optional(),
   endDate: Day.optional(),
   scope: z.string(),
+  games: z.number().int().optional(), // total games played in the event, when known (needed for pick rates)
+  statsComplete: z.boolean().default(false), // true only when stats list every champion picked or banned
   // Facts about the event itself (dates, who plays) supplied during review from a non-Gol.gg page.
   provided: z.object({ url: z.string().url(), claim: z.string(), providedOn: Day, providedBy: z.string() }).optional(),
   stats: z.array(MetaStat).default([]),
