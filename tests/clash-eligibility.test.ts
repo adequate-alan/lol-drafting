@@ -3,7 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { getDraftData } from "@/lib/data";
 import type { Draft } from "@/lib/evaluate";
-import { clashSuggestions } from "@/lib/suggest";
+import { clashSuggestions, logicBlockedRoles, logicSuggestions } from "@/lib/suggest";
 
 const data = getDraftData();
 const bot = (id: string) => data.botPairings.find((b) => b.champion === id)!;
@@ -110,5 +110,58 @@ describe("reverse direction: support locked, bot open", () => {
     const v = { MID: "viktor" };
     expect(supports(v)).not.toContain("alistar");
     expect(supports(v)).not.toContain("rell");
+  });
+});
+
+describe("General Logic list respects Clash bot/support eligibility", () => {
+  const logicSupports = (d: Draft) => (logicSuggestions(d, data).SUPPORT ?? []).map((s) => s.champion);
+  const logicBots = (d: Draft) => (logicSuggestions(d, data).BOT ?? []).map((s) => s.champion);
+  const of = (role: string) => data.champions.filter((c) => c.roles.includes(role as never)).map((c) => c.id);
+  // Three-pick contexts that fire a range of warnings once the bot is added.
+  const contexts: Draft[] = [];
+  for (const t of of("TOP").slice(0, 8)) for (const j of of("JUNGLE").slice(0, 6)) for (const m of of("MID").slice(0, 6)) contexts.push({ TOP: t, JUNGLE: j, MID: m });
+
+  it("with BOT locked, Logic supports come only from that bot's Clash record", () => {
+    let fired = 0;
+    for (const b of data.botPairings) for (const c of contexts) {
+      const d = { ...c, BOT: b.champion };
+      if (Object.values(d).filter((x, i, a) => a.indexOf(x) === i).length < 4) continue;
+      const list = logicSupports(d);
+      fired += list.length;
+      for (const s of list) expect([...b.clashDefault, ...b.alternatives], `${JSON.stringify(d)}: ${s}`).toContain(s);
+    }
+    expect(fired).toBeGreaterThan(0);
+  });
+
+  it("Ziggs: Logic support suggestions are only Nautilus / Leona", () => {
+    for (const c of contexts) {
+      const list = logicSupports({ ...c, BOT: "ziggs" });
+      for (const s of list) expect(["nautilus", "leona"]).toContain(s);
+      for (const s of ["bard", "karma", "seraphine", "pyke", "camille"]) expect(list).not.toContain(s);
+    }
+    // Ahri + Ziggs previously offered Bard and Seraphine as fight starters.
+    const fightStart = logicSuggestions({ TOP: "jayce", JUNGLE: "lee-sin", MID: "ahri", BOT: "ziggs" }, data).SUPPORT ?? [];
+    for (const s of fightStart) expect(["nautilus", "leona"]).toContain(s.champion);
+  });
+
+  it("says no Clash-approved support fixes the warning instead of reaching outside the record", () => {
+    const d = { TOP: "aatrox", JUNGLE: "chogath", MID: "ahri", BOT: "ziggs" };
+    expect(logicSupports(d)).toEqual([]);
+    expect(logicBlockedRoles(d, data)).toContain("SUPPORT");
+  });
+
+  it("with SUPPORT locked, Logic bots come only from bots whose Clash record allows that support", () => {
+    const supports = [...new Set(data.botPairings.flatMap((b) => [...b.clashDefault, ...b.alternatives, ...b.observedProPairings.map((o) => o.champion)]))];
+    for (const s of supports) for (const c of contexts.slice(0, 40)) {
+      for (const b of logicBots({ ...c, SUPPORT: s })) {
+        const r = data.botPairings.find((x) => x.champion === b)!;
+        expect([...r.clashDefault, ...r.alternatives], `${s}: ${b}`).toContain(s);
+      }
+    }
+    expect(logicBots({ TOP: "jayce", JUNGLE: "lee-sin", MID: "qiyana", SUPPORT: "pyke" })).not.toContain("ziggs");
+  });
+
+  it("with both bot-lane slots open, Logic still uses the role pools", () => {
+    expect(logicBlockedRoles({ TOP: "aatrox", JUNGLE: "chogath", MID: "ahri" }, data)).toEqual([]);
   });
 });

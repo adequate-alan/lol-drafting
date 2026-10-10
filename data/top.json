@@ -30,6 +30,7 @@
         }
       ]
     },
+    "observedBotShapes": [],
     "observedProPairings": [
       {
         "champion": "qiyana",
@@ -92,6 +93,7 @@
         }
       ]
     },
+    "observedBotShapes": [],
     "observedProPairings": [
       {
         "champion": "chogath",
@@ -165,6 +167,7 @@
         }
       ]
     },
+    "observedBotShapes": [],
     "observedProPairings": [
       {
         "champion": "vi",
@@ -239,6 +242,7 @@
         }
       ]
     },
+    "observedBotShapes": [],
     "observedProPairings": [
       {
         "champion": "vi",
@@ -334,6 +338,7 @@
         }
       ]
     },
+    "observedBotShapes": [],
     "observedProPairings": [],
     "logic": {
       "gives": "carry/dive top, backline access, side pressure",
@@ -368,10 +373,6 @@
       ],
       "botShapes": [
         {
-          "bot": "corki",
-          "support": "alistar"
-        },
-        {
           "bot": "ezreal",
           "support": "karma"
         },
@@ -381,6 +382,19 @@
         }
       ]
     },
+    "observedBotShapes": [
+      {
+        "bot": "corki",
+        "support": "alistar",
+        "withAnchor": true,
+        "proDraftIds": [
+          "lck26po-finals-g4-geng"
+        ],
+        "sources": [
+          "golgg-game-82965"
+        ]
+      }
+    ],
     "observedProPairings": [
       {
         "champion": "trundle",
@@ -452,6 +466,7 @@
         }
       ]
     },
+    "observedBotShapes": [],
     "observedProPairings": [
       {
         "champion": "naafiri",
@@ -524,6 +539,7 @@
         }
       ]
     },
+    "observedBotShapes": [],
     "observedProPairings": [
       {
         "champion": "lee-sin",
@@ -592,6 +608,7 @@
         }
       ]
     },
+    "observedBotShapes": [],
     "observedProPairings": [
       {
         "champion": "lee-sin",
@@ -649,6 +666,7 @@
         }
       ]
     },
+    "observedBotShapes": [],
     "observedProPairings": [],
     "logic": {
       "gives": "tank, long-range engage, item scaling",
@@ -688,6 +706,7 @@
         }
       ]
     },
+    "observedBotShapes": [],
     "observedProPairings": [],
     "logic": {
       "gives": "early lane pressure, dive setup",

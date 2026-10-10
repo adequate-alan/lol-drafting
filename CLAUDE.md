@@ -34,9 +34,11 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 - Gol.gg is the primary external source for pro drafts, picks, bans and team stats.
 - Every source records: URL, type, tournament, team, opponent, series/game, patch, `lastChecked`, `refreshStatus`.
 - When a page is re-checked, set `lastChecked` to the date and `refreshStatus: "verified"`, `origin: "golgg-refresh"`.
-- A source alan checked himself gets `origin: "user-verified"` and a `userVerified` {by, on, claim} entry. It stays
-  `refreshStatus: "not-refreshed"` until Claude reads the page too.
-- A claim cites only games that actually show it. Remove a citation whose game shows something else; don't drop the claim.
+- A link and claim supplied during review gets `origin: "externally-provided"` (new sources) and a `pendingClaim`
+  {claim, providedOn}. It stays `refreshStatus: "not-refreshed"`, `lastChecked: null`, and is never labelled as checked
+  by a person, until Claude reads the page itself.
+- A pro claim cites only games that directly show that exact claim. "May show it" is not enough: leave the game off
+  until it is read. Remove a citation whose game shows something else; don't drop the claim.
 - If Gol.gg or the web is unavailable: say the research could not be refreshed, keep the last verified data, leave
   `refreshStatus: "not-refreshed"`, and **never invent tournament data or pretend a refresh happened**.
 

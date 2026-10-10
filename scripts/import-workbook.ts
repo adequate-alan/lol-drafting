@@ -10,7 +10,7 @@ import { z } from "zod";
 import {
   ATTRS, Files, ROLES, type BotPairing, type Champion, type CompShell, type GenGPattern,
   type MetaStat, type MidJunglePairing, type ObservedPairing, type PoolEntry, type ProDraft,
-  type Role, type Rule, type Source, type TopPick,
+  type Duo, type ObservedBotShape, type Role, type Rule, type Source, type TopPick,
 } from "../lib/schema";
 import { ALIASES, ATTRIBUTES, NOTES } from "./migration/champion-attributes";
 import { BOT_DECISIONS, MID_JUNGLE_DECISIONS } from "./migration/clash-decisions";
@@ -258,6 +258,26 @@ async function main() {
   });
 
   // ---------- mid / jungle ----------
+  // Bot-lane shapes on mid/jungle/top rows stay Clash only when the duo is in that bot's Clash record (or the bot
+  // has no Clash record yet). Pro-only duos move to observedBotShapes, citing only drafts that show the duo.
+  const splitShapes = (role: Role, anchor: string, list: Duo[]) => {
+    const clash: Duo[] = [], observedShapes: ObservedBotShape[] = [];
+    for (const sh of list) {
+      const b = botPairings.find((x) => x.champion === sh.bot);
+      if (!b || [...b.clashDefault, ...b.alternatives].includes(sh.support)) { clash.push(sh); continue; }
+      const duoDrafts = proDrafts.filter((x) => x.picks.BOT === sh.bot && x.picks.SUPPORT === sh.support);
+      const withAnchor = duoDrafts.filter((x) => x.picks[role] === anchor);
+      const used = withAnchor.length ? withAnchor : duoDrafts;
+      const sources = used.length
+        ? [...new Set(used.flatMap((x) => x.sources))]
+        : b.observedProPairings.find((o) => o.champion === sh.support)?.sources ?? [];
+      if (!sources.length) { report.warnings.push(`Pro-only bot shape ${sh.bot}+${sh.support} on ${anchor} has no source; dropped from Clash`); continue; }
+      observedShapes.push({ bot: sh.bot, support: sh.support, withAnchor: withAnchor.length > 0, proDraftIds: used.map((x) => x.id), sources });
+      report.decisions.push(`${anchor}: bot shape ${sh.bot}+${sh.support} is pro-only; stored as observed evidence`);
+    }
+    return { clash, observedShapes };
+  };
+
   const midJungle: MidJunglePairing[] = table(use("MID-JGL")).map((r) => {
     const name = r.anchor!;
     const role = r.role as "MID" | "JUNGLE";
@@ -269,9 +289,11 @@ async function main() {
     const alternatives = d?.alternatives ? d.alternatives.map((n) => champ(n, where)) : champList(r.secondary_pairings, where);
     if (d) report.decisions.push(`${name}: ${d.why}`);
     const status = slug(r.status ?? "current");
+    const shapes = splitShapes(role, id, duos(r.best_bot_shape, where));
     return {
       anchor: id, role, clashDefault, alternatives,
-      botShapes: duos(r.best_bot_shape, where),
+      botShapes: shapes.clash,
+      observedBotShapes: shapes.observedShapes,
       observedProPairings: observed(role, id, role === "MID" ? "JUNGLE" : "MID", [], src),
       history: (d?.history ?? []).map((h) => ({ partner: champ(h.partner, where), era: h.era, note: h.note })),
       logic: {},
@@ -291,9 +313,11 @@ async function main() {
     const where = `TOP ${name}`;
     const src = urls(r.source_urls).map((u) => source(u));
     const jungleFromDrafts = observed("TOP", id, "JUNGLE", [], []);
+    const shapes = splitShapes("TOP", id, duos(r.bot_support_shape, where));
     return {
       champion: id, blindGrade: r.blind_grade as TopPick["blindGrade"],
-      surrounding: { jungle: champList(r.jungle_fits, where), mid: champList(r.mid_fits, where), botShapes: duos(r.bot_support_shape, where) },
+      surrounding: { jungle: champList(r.jungle_fits, where), mid: champList(r.mid_fits, where), botShapes: shapes.clash },
+      observedBotShapes: shapes.observedShapes,
       observedProPairings: jungleFromDrafts,
       logic: { gives: r.what_it_gives_you ?? "", avoid: r.do_not_draft_with ?? "" },
       identities: identities(r.comp_identity),

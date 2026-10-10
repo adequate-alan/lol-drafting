@@ -142,19 +142,60 @@ describe("citations match the claims they back", () => {
     }
   });
 
-  it("alan's verified corrections are in place", () => {
+  it("the 2026-10-10 citation corrections are in place", () => {
     const ziggs = getBotPairings().find((b) => b.champion === "ziggs")!;
     const ezreal = getBotPairings().find((b) => b.champion === "ezreal")!;
     const obs = (r: typeof ziggs, c: string) => r.observedProPairings.find((o) => o.champion === c)!;
     expect(obs(ziggs, "pyke").sources).toEqual(["golgg-game-82627"]);
     expect(obs(ziggs, "camille").sources).toEqual(["golgg-game-82413"]);
-    expect(obs(ezreal, "nautilus").sources).toContain("golgg-game-82383");
-    expect(obs(ezreal, "nautilus").sources).not.toContain("golgg-game-82625");
-    expect(obs(ezreal, "nautilus").sources).not.toContain("golgg-game-82695");
-    for (const id of ["golgg-game-82413", "golgg-game-82383", "golgg-game-82627"]) expect(byId.get(id)?.userVerified?.by).toBe("alan");
+    // Only games that directly show Ezreal + Nautilus; 82416 stays off until someone reads that page.
+    expect(obs(ezreal, "nautilus").sources).toEqual(["golgg-game-82383"]);
+    for (const id of ["golgg-game-82413", "golgg-game-82383", "golgg-game-82627"]) {
+      expect(byId.get(id)?.pendingClaim, id).toBeDefined();
+      expect(byId.get(id)?.refreshStatus, id).toBe("not-refreshed");
+    }
   });
 
-  it("a hand-checked source is never marked as refreshed by Claude", () => {
-    for (const s of getSources()) if (s.origin === "user-verified") expect(s.refreshStatus).toBe("not-refreshed");
+  it("an externally provided source is never marked refreshed and never attributed to a checker", () => {
+    for (const s of getSources()) {
+      if (s.origin === "externally-provided") expect(s.pendingClaim, s.id).toBeDefined();
+      if (s.pendingClaim) { expect(s.refreshStatus).toBe("not-refreshed"); expect(s.lastChecked).toBeNull(); }
+      expect(JSON.stringify(s)).not.toMatch(/checked by|verifiedBy|userVerified/i);
+    }
+  });
+});
+
+describe("bot-lane shapes", () => {
+  const bots = new Map(getBotPairings().map((b) => [b.champion, b]));
+  const records = () => [
+    ...getMidJungle().map((m) => ({ name: m.anchor, role: m.role, clash: m.botShapes, observed: m.observedBotShapes })),
+    ...getTopPicks().map((t) => ({ name: t.champion, role: "TOP" as const, clash: t.surrounding.botShapes, observed: t.observedBotShapes })),
+  ];
+
+  it("a Clash bot shape is always in that bot's Clash record", () => {
+    for (const r of records()) for (const d of r.clash) {
+      const b = bots.get(d.bot);
+      if (b) expect([...b.clashDefault, ...b.alternatives], `${r.name}: ${d.bot}+${d.support}`).toContain(d.support);
+    }
+  });
+
+  it("pro-only shapes are kept as observed evidence", () => {
+    const has = (anchor: string, bot: string, support: string) =>
+      records().some((r) => r.name === anchor && r.observed.some((o) => o.bot === bot && o.support === support));
+    expect(has("ahri", "ziggs", "pyke")).toBe(true);
+    for (const a of ["viktor", "locke", "skarner", "gwen"]) expect(has(a, "corki", "alistar"), a).toBe(true);
+    for (const a of ["viktor", "annie", "locke"]) expect(has(a, "jhin", "rell"), a).toBe(true);
+  });
+
+  it("observed shapes cite only drafts that show the duo, and withAnchor is true only when the draft has the anchor", () => {
+    const drafts = new Map(getProDrafts().map((d) => [d.id, d]));
+    for (const r of records()) for (const o of r.observed) {
+      for (const id of o.proDraftIds) {
+        const d = drafts.get(id)!;
+        expect([d.picks.BOT, d.picks.SUPPORT], `${r.name} ${id}`).toEqual([o.bot, o.support]);
+        if (o.withAnchor) expect(d.picks[r.role], `${r.name} ${id}`).toBe(r.name);
+      }
+      if (!o.withAnchor) expect(o.proDraftIds.every((id) => drafts.get(id)!.picks[r.role] !== r.name)).toBe(true);
+    }
   });
 });

@@ -49,10 +49,10 @@ export function SourceLinks({ ids, sources }: { ids: string[]; sources: Record<s
     <span className="row small">
       {list.map((s) => (
         <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer"
-          title={`${s.tournament ?? ""} ${s.seriesGame ?? ""} ${s.team ? `${s.team} vs ${s.opponent}` : ""}\n${s.lastChecked ? `Last checked ${s.lastChecked}` : "Not refreshed by Claude since the workbook import"}${s.userVerified ? `\nChecked by ${s.userVerified.by} on ${s.userVerified.on}: ${s.userVerified.claim}` : ""}`}>
+          title={`${s.tournament ?? ""} ${s.seriesGame ?? ""} ${s.team ? `${s.team} vs ${s.opponent}` : ""}\n${s.lastChecked ? `Last checked ${s.lastChecked}` : "Not refreshed by Claude since the workbook import"}${s.pendingClaim ? `\nExternally provided ${s.pendingClaim.providedOn}, pending refresh: ${s.pendingClaim.claim}` : ""}`}>
           Gol.gg {TYPE_LABEL[s.type]}{s.seriesGame ? ` ${s.seriesGame}` : s.team ? ` ${s.team} vs ${s.opponent}` : ""}
-          {s.userVerified
-            ? <span className="muted"> · checked by {s.userVerified.by} {s.userVerified.on}</span>
+          {s.pendingClaim
+            ? <span className="muted"> · externally provided, pending refresh</span>
             : s.refreshStatus === "not-refreshed" && <span className="muted"> · not refreshed</span>}
         </a>
       ))}
