@@ -166,6 +166,7 @@ export function CompsView({ names, sources, drafts, allShells, data }: {
       {intent.card && !open && cardShell && intent.card.t.role && (
         <ChampionHoverCard key={`${cardShell.id}-${intent.card.t.role}-${intent.card.t.id}`} target={intent.card.t} anchor={intent.card.el} data={data} index={index}
           comp={compOf(cardShell, { ...swapsOf(cardShell.id), [intent.card.t.role]: intent.card.t.id })}
+          side={intent.card.el.classList.contains("lu-slot") ? "below" : "beside"}
           onEnter={intent.keep} onLeave={intent.unhover} />
       )}
       {open && openShell && (
@@ -207,9 +208,10 @@ function Lineup({ shell: s, swaps, names, data, index, active, selected, menu, o
               aria-label={`${names[id]}, ${r.toLowerCase()}${isSwap ? ` (preview swap for ${names[slot.champion]})` : ""}: open details`}
               title={mark}
               onClick={(e) => onOpen(r, e.currentTarget)}
-              onPointerEnter={(e) => { if (e.pointerType === "mouse") onHover(r, e.currentTarget); }}
+              // The quick card anchors to the whole slot and opens below the lineup, so it never covers a comp-mate.
+              onPointerEnter={(e) => { if (e.pointerType === "mouse") onHover(r, e.currentTarget.parentElement!); }}
               onPointerLeave={(e) => { if (e.pointerType === "mouse") onHover(undefined); }}
-              onFocus={(e) => { if (e.currentTarget.matches(":focus-visible")) onHover(r, e.currentTarget); }} onBlur={() => onHover(undefined)}>
+              onFocus={(e) => { if (e.currentTarget.matches(":focus-visible")) onHover(r, e.currentTarget.parentElement!); }} onBlur={() => onHover(undefined)}>
               <span className={`role-tag role-${r}`}>{ROLE_LABEL[r]}</span>
               <ChampIcon id={id} name={names[id]} role={r} size="lg" />
               <b className="lu-name">{names[id]}</b>
