@@ -15,7 +15,11 @@ describe("first pick order", () => {
     expect(ranks).toEqual([...ranks].sort((a, b) => a - b));
     expect(poolTierRank(pool, "BOT", rows[0].champion)).toBe(0);
     const flex = pool.find((p) => p.role === "BOT")!.flex;
-    expect(rows.slice(-flex.length).map((r) => r.champion).sort()).toEqual([...flex].sort());
+    // Flex closes the pool; bots outside the pool (Synergy records with no tier) come after it.
+    const bp = pool.find((p) => p.role === "BOT")!, inPool = new Set([...bp.core, ...bp.depth, ...bp.flex]);
+    const pooled = rows.filter((r) => inPool.has(r.champion));
+    expect(rows.slice(0, pooled.length)).toEqual(pooled);
+    expect(pooled.slice(-flex.length).map((r) => r.champion).sort()).toEqual([...flex].sort());
   });
   it("keeps mids above junglers, each by pool tier", () => {
     const rows = sortMidJunglePicks(getMidJungle(), pool, names);
