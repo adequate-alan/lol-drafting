@@ -4,12 +4,15 @@
 
 ## 2026-10-10: DPM.LOL lane matchups (counters)
 
-`data/counters.json` now holds 2,066 DPM.LOL lane-matchup rows for the 87 pool champions (patch 16.20, ranked solo
-queue, Emerald+, all regions), browser-collected from dpm.lol in alan's own browser on his Mac (dpm.lol answers Claude's
-cloud environments with a Cloudflare challenge). Each row is the pool champion's win rate against that lane opponent,
-`origin: "dpm-ingest"`; `dpmStatus.note` records the browser collection. Opponents outside the current 88 champions were
-dropped; a later re-ingest can add them once the full roster lands. 246 rows clear the display thresholds (300+ games,
-52%+). No duo-vs-duo rows and no pro results were added.
+`data/counters.json` holds 4,212 DPM.LOL lane-matchup rows for the 87 pool champions (patch 16.20, ranked solo queue,
+Emerald+, all regions), browser-collected from dpm.lol in alan's own browser on his Mac (dpm.lol answers Claude's cloud
+environments with a Cloudflare challenge). Each row is the pool champion's win rate against that lane opponent,
+`origin: "dpm-ingest"`; `dpmStatus.note` records the browser collection. By role: MID 992, TOP 910, SUPPORT 869,
+JUNGLE 742, BOT 699. 408 rows clear the display thresholds (300+ games, 52%+). No duo-vs-duo rows and no pro results.
+
+This second pass replaced the first one (2,066 rows, 246 above the thresholds) whole: it was re-fetched after the roster
+grew to 173 champions, so every lane opponent DPM lists now maps to a champion, and numbers moved slightly with the
+fresh fetch.
 
 `delta` is omitted: DPM returns none for lane matchups. When DPM does give one it is a fraction (0.03), while
 `describeEvidence` expects win-rate points (3); convert before storing.
