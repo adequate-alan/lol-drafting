@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ChampionDrawer, compLinks, useDrawerIndex, type CompContext, type DrawerTarget } from "@/components/ChampionDrawer";
+import { ChampionHoverCard, useHoverIntent } from "@/components/ChampionInteraction";
 import { ChampIcon, PageHeader, SourceBadge, SourceLinks } from "@/components/ui";
 import type { DrawerData } from "@/lib/data";
 import { ROLES, type CompShell, type ProDraft, type Role, type Source } from "@/lib/schema";
@@ -34,8 +35,17 @@ export function CompsView({ names, sources, drafts, allShells, data }: {
   };
   const select = (slot: Slot, el?: HTMLElement | null) => {
     if (!open && el) opener.current = el;
+    intent.hide();
     setOpen(slot);
   };
+  // Hover: comp-mate highlights at once, the quick card after a short pause (out of the page flow, in a portal).
+  const intent = useHoverIntent();
+  const onHover = (s: CompShell, role?: Role, el?: HTMLElement) => {
+    setHover(role ? { shell: s.id, role } : undefined);
+    if (role && el) intent.hover({ id: s.slots[role].champion, role }, el); else intent.unhover();
+  };
+  const cardShellId = intent.card?.el.closest("article.shell")?.id;
+  const cardShell = cardShellId ? allShells.find((x) => x.id === cardShellId) : undefined;
   // Highlights follow the hovered or focused slot, else the open one.
   const active = hover ?? open;
   const params = useSearchParams();
@@ -83,7 +93,7 @@ export function CompsView({ names, sources, drafts, allShells, data }: {
               </div>
               <ShellSlots shell={s} names={names} data={data} index={index} active={active?.shell === s.id ? active.role : undefined}
                 selected={open?.shell === s.id ? open.role : undefined}
-                onOpen={(role, el) => select({ shell: s.id, role }, el)} onHover={(role) => setHover(role ? { shell: s.id, role } : undefined)} />
+                onOpen={(role, el) => select({ shell: s.id, role }, el)} onHover={(role, el) => onHover(s, role, el)} />
               <div className="shell-foot">
                 <p className="wc"><b>Win condition:</b> {s.winCondition}</p>
                 <p className="xs muted"><b>Why it works:</b> {s.why}</p>
@@ -96,6 +106,10 @@ export function CompsView({ names, sources, drafts, allShells, data }: {
           );
         })}
       </div>
+      {intent.card && !open && cardShell && (
+        <ChampionHoverCard key={`${cardShell.id}-${intent.card.t.role}`} target={intent.card.t} anchor={intent.card.el} data={data} index={index} comp={compOf(cardShell)}
+          onEnter={intent.keep} onLeave={intent.unhover} />
+      )}
       {open && openShell && (
         <ChampionDrawer target={{ id: openShell.slots[open.role].champion, role: open.role }} comp={compOf(openShell)} data={data} index={index}
           onClose={close} onSelect={(t: DrawerTarget) => t.role && setOpen({ shell: open.shell, role: t.role })} />
@@ -106,7 +120,7 @@ export function CompsView({ names, sources, drafts, allShells, data }: {
 
 function ShellSlots({ shell: s, names, data, index, active, selected, onOpen, onHover }: {
   shell: CompShell; names: Record<string, string>; data: DrawerData; index: ReturnType<typeof useDrawerIndex>;
-  active?: Role; selected?: Role; onOpen: (role: Role, el: HTMLElement) => void; onHover: (role?: Role) => void;
+  active?: Role; selected?: Role; onOpen: (role: Role, el: HTMLElement) => void; onHover: (role?: Role, el?: HTMLElement) => void;
 }) {
   const links = active ? compLinks({ id: s.slots[active].champion, role: active }, compOf(s), data, index) : undefined;
   return (
@@ -118,24 +132,26 @@ function ShellSlots({ shell: s, names, data, index, active, selected, onOpen, on
           const pro = links?.proRoles.get(r);
           const cls = [`role-${r}`, "comp-slot-row", r === active && "is-active", r === selected && "is-open", saved && "has-saved", pro && "has-pro"].filter(Boolean).join(" ");
           return (
-            <tr key={r} className={cls} data-drawer-trigger onMouseEnter={() => onHover(r)} onMouseLeave={() => onHover(undefined)}
+            <tr key={r} className={cls} data-drawer-trigger
+              onPointerEnter={(e) => { if (e.pointerType === "mouse") onHover(r, e.currentTarget.querySelector<HTMLElement>(".comp-slot")!); }}
+              onPointerLeave={(e) => { if (e.pointerType === "mouse") onHover(undefined); }}
               onClick={(e) => { if (!(e.target as Element).closest("button")) onOpen(r, e.currentTarget.querySelector("button")!); }}>
-              <td style={{ width: 160 }}>
+              <td className="slot-cell">
                 <button type="button" className="comp-slot" aria-haspopup="dialog" aria-expanded={r === selected}
                   aria-label={`${names[id]}, ${r.toLowerCase()}: open details`}
-                  onClick={(e) => onOpen(r, e.currentTarget)} onFocus={() => onHover(r)} onBlur={() => onHover(undefined)}>
+                  onClick={(e) => onOpen(r, e.currentTarget)}
+                  onFocus={(e) => { if (e.currentTarget.matches(":focus-visible")) onHover(r, e.currentTarget); }} onBlur={() => onHover(undefined)}>
                   <ChampIcon id={id} name={names[id]} role={r} size="md" />
                   <span className="comp-slot-name"><span className="role-tag">{r}</span><b>{names[id]}</b></span>
+                  {/* Space is always reserved, so a highlight only changes colors, never the row's size. */}
+                  <span className="link-pips">
+                    <span className={`pip clash ${saved ? "on" : ""}`} title={saved ? "Saved pairing with the highlighted pick" : undefined}>Synergy</span>
+                    <span className={`pip pro ${pro ? "on" : ""}`} title={pro ? "Pro evidence with the highlighted pick" : undefined}>{pro?.games.length ? `Pro ${pro.games.length}` : "Pro"}</span>
+                  </span>
                   <span className="chev" aria-hidden="true">›</span>
                 </button>
               </td>
               <td className="job">
-                {(saved || pro) && (
-                  <span className="link-marks">
-                    {saved && <span className="link-mark clash" title="Saved pairing with the highlighted pick"><span className="ldot" />Synergy</span>}
-                    {pro && <span className="link-mark pro" title="Pro evidence with the highlighted pick"><span className="ldot" />{pro.games.length ? `Pro ${pro.games.length}` : "Pro cited"}</span>}
-                  </span>
-                )}
                 {s.slots[r].job}
                 {s.slots[r].swaps.length > 0 && <span className="swaps" title="Same-role swaps with similar attributes (general draft logic)">
                   <span className="faint">swap</span>{s.slots[r].swaps.map((x) => <span key={x} className="swap">{names[x]}</span>)}

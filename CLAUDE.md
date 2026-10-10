@@ -92,7 +92,9 @@ Change these only when alan explicitly says so, then update the test in the same
   Pro = teal evidence styling, Logic = neutral gray. Don't restyle one layer to look like another.
 - Shared pieces live in `components/ui.tsx` (PageHeader, Panel, SourceBadge, ChampIcon, ChampionRow, DataTable,
   WarningBadge, Metric), `components/ChampionDrawer.tsx` (champion + role drawer, optional comp context; links in
-  `lib/comp-links.ts`; data from `getDrawerData()`), `components/Sidebar.tsx` and `components/ThemeToggle.tsx`. UI font is alan's Adobe Fonts kit (Neue Haas Grotesk Text, Display for headings; `TYPEKIT_CSS` in `lib/site.ts`, Inter as fallback), JetBrains Mono (`--font-mono`) only for numbers. Champion icons are Data Dragon squares
+  `lib/comp-links.ts`; data from `getDrawerData()`), `components/ChampionInteraction.tsx` (ChampionProvider + ChampionHoverCard; `InteractiveChampion`
+  in `components/InteractiveChampion.tsx` makes Chip/Duo hover-for-card, click-for-drawer inside a provider; zero layout
+  shift: no scale, no border-width or padding change on hover), `components/Sidebar.tsx` and `components/ThemeToggle.tsx`. UI font is alan's Adobe Fonts kit (Neue Haas Grotesk Text, Display for headings; `TYPEKIT_CSS` in `lib/site.ts`, Inter as fallback), JetBrains Mono (`--font-mono`) only for numbers. Champion icons are Data Dragon squares
   (`lib/champion-icons.ts`; patch resolved at build time in `next.config.ts`), loaded by the browser, with initials as
   the fallback. No champion images are stored in the repo.
 - Each build writes `out/version.json` (commit SHA, `lib/build-id.mjs`); `components/UpdateNotice.tsx` polls it and offers a refresh after a new deploy.

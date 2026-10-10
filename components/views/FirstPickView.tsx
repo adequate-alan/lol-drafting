@@ -1,7 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { ChampionProvider } from "@/components/ChampionInteraction";
 import { PairingCard, type CardRecord } from "@/components/PairingCard";
+import type { DrawerData } from "@/lib/data";
 import { ChampionRow, EvidenceBadge, PageHeader } from "@/components/ui";
 import type { EventMap } from "@/lib/evidence";
 import { TABS, type Tab } from "./first-pick-tabs";
@@ -9,8 +11,8 @@ import type { BotPairing, MetaStat, MidJunglePairing, Role, Source, TopPick } fr
 
 const GRADE_ORDER = ["A", "A-", "B+", "B", "B-", "C+", "C"];
 
-export function FirstPickView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top }: {
-  tab: Tab; names: Record<string, string>; sources: Record<string, Source>; events: EventMap; stats: Record<string, MetaStat>;
+export function FirstPickView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top, drawerData }: {
+  drawerData: DrawerData; tab: Tab; names: Record<string, string>; sources: Record<string, Source>; events: EventMap; stats: Record<string, MetaStat>;
   draftLabels: Record<string, string>; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[];
 }) {
   const params = useSearchParams();
@@ -36,6 +38,7 @@ export function FirstPickView({ tab, names, sources, events, stats, draftLabels,
   }
   const selectedId = selected ? ("champion" in selected.record ? selected.record.champion : selected.record.anchor) : undefined;
 
+  const selectedRole: Role | undefined = selected && (selected.kind === "bot" ? "BOT" : selected.kind === "top" ? "TOP" : selected.record.role);
   const listRole = (x: { role?: string }): Role => (tab === "bot" ? "BOT" : tab === "top" ? "TOP" : (x.role as Role));
   const draftHref = selected && selectedId
     ? `/?${selected.kind === "bot" ? "bot" : selected.kind === "top" ? "top" : (selected.record as { role: string }).role.toLowerCase()}=${selectedId}` : undefined;
@@ -62,7 +65,12 @@ export function FirstPickView({ tab, names, sources, events, stats, draftLabels,
           </table>
         </div>
         <div>
-          {selected && <PairingCard item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels} />}
+          {selected && selectedId && (
+            // Champions in the synergy boxes: hover for the quick card (relation to the selected pick), click for the drawer.
+            <ChampionProvider data={drawerData} focus={{ id: selectedId, role: selectedRole! }}>
+              <PairingCard item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels} />
+            </ChampionProvider>
+          )}
         </div>
       </div>
     </>

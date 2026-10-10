@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { PageLoading } from "@/components/ui";
 import { FirstPickView } from "@/components/views/FirstPickView";
 import { TABS, type Tab } from "@/components/views/first-pick-tabs";
-import { getBotPairings, getMeta, getMidJungle, getProDrafts, getTopPicks } from "@/lib/data";
+import { getBotPairings, getDrawerData, getMeta, getMidJungle, getProDrafts, getTopPicks } from "@/lib/data";
 import { eventMap, nameMap, sourceMap } from "@/lib/lookup";
 
 export const dynamicParams = false;
@@ -19,7 +19,7 @@ export default async function FirstPick({ params }: { params: Promise<{ tab: str
   return (
     <Suspense fallback={<PageLoading title="First Pick" />}>
       <FirstPickView tab={tab as Tab} names={nameMap()} sources={sourceMap()} events={eventMap()} stats={stats} draftLabels={draftLabels}
-        bot={getBotPairings()} midJungle={getMidJungle()} top={getTopPicks()} />
+        bot={getBotPairings()} midJungle={getMidJungle()} top={getTopPicks()} drawerData={getDrawerData()} />
     </Suspense>
   );
 }

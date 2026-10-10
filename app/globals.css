@@ -816,12 +816,14 @@ table.mini th, table.mini td { height: auto; padding: 3px var(--s3); }
 .comp-slot .chev { margin-left: auto; color: var(--text-faint); font-size: var(--fs-md); opacity: 0; transition: opacity var(--t-fast); }
 .comp-slot-row:hover .chev, .comp-slot-row.is-active .chev, .comp-slot-row.is-open .chev { opacity: 1; color: var(--accent-text); }
 @media (hover: none) { .comp-slot .chev { opacity: .7; } }
-/* Pairing highlights: comp-mates of the hovered or open pick that share a saved link (gold) or pro evidence (teal). */
-.link-marks { display: flex; gap: var(--s3); margin-bottom: 2px; }
-.link-mark { display: inline-flex; align-items: center; gap: 4px; font-size: var(--fs-2xs); font-weight: 650; text-transform: uppercase; letter-spacing: .04em; }
-.link-mark .ldot { width: 6px; height: 6px; border-radius: 1px; background: currentColor; }
-.link-mark.clash { color: var(--clash); }
-.link-mark.pro { color: var(--pro); font-family: var(--font-mono); text-transform: none; letter-spacing: -.01em; }
+/* Pairing highlights: comp-mates of the hovered or open pick that share a saved link (gold) or pro evidence (teal).
+   The pips' space is always reserved and only their color changes, so hovering never moves the layout. */
+.shell td.slot-cell { width: 208px; }
+.link-pips { display: grid; gap: 1px; width: 44px; flex: none; margin-left: auto; text-align: right; line-height: 1.15; }
+.pip { font-size: var(--fs-2xs); font-weight: 650; letter-spacing: .02em; color: transparent; white-space: nowrap; }
+.pip.clash.on { color: var(--clash); }
+.pip.pro.on { color: var(--pro); font-family: var(--font-mono); letter-spacing: -.01em; }
+.comp-slot .chev { margin-left: 0; }
 .comp-slots.linking .comp-slot-row.has-saved { box-shadow: inset 2px 0 0 var(--clash-line); }
 .comp-slots.linking .comp-slot-row.has-pro:not(.has-saved) { box-shadow: inset 2px 0 0 var(--pro-line); }
 .comp-slots.selecting .comp-slot-row:not(.is-open):not(.has-saved):not(.has-pro) { opacity: .55; }
@@ -918,3 +920,34 @@ table.mini th, table.mini td { height: auto; padding: 3px var(--s3); }
   .rec-row.counter-row { grid-template-columns: 24px auto auto auto minmax(0, 1fr); }
   .counter-row .tier, .counter-row .fit-rank { display: none; }
 }
+
+/* ==========================================================================
+   Interactive champions + quick card (components/ChampionInteraction.tsx)
+   ========================================================================== */
+.champ-btn { all: unset; display: inline-flex; cursor: pointer; border-radius: var(--r); }
+.champ-btn > .chip { cursor: pointer; transition: border-color var(--t-fast), background var(--t-fast); }
+.champ-btn:hover > .chip { border-color: var(--accent); background: var(--surface-hover); }
+.champ-btn:hover > .chip.strong { background: var(--clash-subtle); }
+.champ-btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.duo-half { display: inline-flex; align-items: center; gap: 3px; border-radius: var(--r-sm); padding: 0 2px; transition: background var(--t-fast); }
+.champ-btn:hover > .duo-half { background: var(--surface-hover); box-shadow: inset 0 -1px 0 var(--accent); }
+.hovercard {
+  position: fixed; z-index: 55; width: 288px; padding: var(--s4) var(--s5); display: grid; gap: var(--s4);
+  background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--r-lg); box-shadow: var(--shadow-pop);
+  font-size: var(--fs-sm); pointer-events: auto; animation: hc-in 90ms ease-out;
+}
+@keyframes hc-in { from { opacity: 0; transform: translateY(2px); } }
+@media (prefers-reduced-motion: reduce) { .hovercard { animation: none; } }
+.hc-head { display: flex; gap: var(--s4); align-items: center; }
+.hc-head b { font-size: var(--fs); }
+.hc-traits { font-family: var(--font-mono); letter-spacing: -.02em; }
+.hc-rel { display: grid; gap: var(--s2); padding-top: var(--s4); border-top: 1px solid var(--border); }
+.hc-line { margin: 0; line-height: 1.35; display: block; padding-left: 10px; position: relative; }
+.hc-line .ldot { position: absolute; left: 0; top: 5px; width: 5px; height: 5px; border-radius: 1px; background: currentColor; }
+.hc-line b { font-weight: 650; margin-right: 4px; }
+.hc-line.clash b, .hc-line.clash .ldot { color: var(--clash); }
+.hc-line.pro b, .hc-line.pro .ldot { color: var(--pro); }
+.hc-line.logic b, .hc-line.logic .ldot { color: var(--logic); }
+.hc-foot { padding-top: var(--s3); border-top: 1px solid var(--border); }
+.hc-title { display: grid; gap: 1px; min-width: 0; }
+@media (max-width: 560px) { .shell td.slot-cell { width: 160px; } .link-pips { display: none; } }

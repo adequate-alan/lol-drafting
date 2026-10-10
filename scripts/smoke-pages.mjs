@@ -185,6 +185,14 @@ await page.locator(".theme-toggle").click();
   const naut = page.locator("#mage-bot-siege .comp-slot", { hasText: "Nautilus" });
   await naut.scrollIntoViewIfNeeded();
   const y = await page.evaluate(() => scrollY);
+  const rowBoxes = () => page.$$eval(".comp-slot-row", (rs) => rs.map((r) => { const b = r.getBoundingClientRect(); return `${Math.round(b.top + scrollY)},${Math.round(b.height)}`; }).join("|"));
+  const rows0 = await rowBoxes();
+  for (const b of await page.locator("#mage-bot-siege .comp-slot, #classic-front-to-back .comp-slot").all()) { await b.hover(); await page.waitForTimeout(30); }
+  await naut.hover();
+  await page.waitForTimeout(350);
+  const nb = await naut.boundingBox(), cb = await page.locator(".hovercard").boundingBox().catch(() => null);
+  check("comps: hover card floats beside the champion, inside the viewport", !!cb && (cb.x >= nb.x + nb.width || cb.x + cb.width <= nb.x) && cb.y >= 0 && cb.y + cb.height <= 900, JSON.stringify(cb));
+  check("comps: hovering champions never moves the rows", (await rowBoxes()) === rows0, "");
   await naut.click();
   const drawer = page.locator(".drawer");
   await drawer.waitFor({ timeout: 5000 }).catch(() => {});
@@ -212,6 +220,18 @@ await page.locator(".theme-toggle").click();
   await page.waitForTimeout(500);
   check("comps: View in Champion Pool opens that row", (await page.locator("tr.pool-row.open").textContent())?.includes("Nautilus") ?? false, page.url());
 }
+// First Pick: hover card on desktop, drawer on click
+{
+  await open("/first-pick/bot/?champ=sivir");
+  const lulu = page.locator(".pick-card .champ-btn", { hasText: "Lulu" }).first();
+  await lulu.hover();
+  const card = await page.locator(".hovercard").waitFor({ timeout: 3000 }).then(() => page.locator(".hovercard").textContent()).catch(() => "");
+  check("first pick: hovering Lulu shows Synergy · Default with Sivir", /Lulu/.test(card) && /Synergy · Default/.test(card) && /Peel 3/.test(card), card.slice(0, 120));
+  await lulu.click();
+  await page.locator(".drawer").waitFor({ timeout: 3000 }).catch(() => {});
+  check("first pick: clicking a champion opens the drawer", (await page.locator(".drawer h2").textContent().catch(() => "")) === "Lulu" && (await page.locator(".hovercard").count()) === 0, "");
+  await page.keyboard.press("Escape");
+}
 // Mobile navigation
 await page.setViewportSize({ width: 390, height: 844 });
 await open("/pool/");
@@ -227,6 +247,14 @@ await open("/pool/");
 await page.locator("tr.pool-row").first().click();
 const poolOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
 check("pool at 390px with a row open: any scroll stays inside the table", poolOverflow <= 0, `${poolOverflow}px`);
+{
+  const m = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  await m.goto(base + "/first-pick/bot/?champ=sivir", { waitUntil: "networkidle" });
+  await m.locator(".pick-card .champ-btn", { hasText: "Lulu" }).first().tap();
+  await m.waitForTimeout(400);
+  check("first pick at 390px: a tap opens the drawer directly", (await m.locator(".drawer").count()) === 1 && (await m.locator(".hovercard").count()) === 0, "");
+  await m.close();
+}
 await open("/comps/");
 await page.locator(".comp-slot").first().click();
 await page.waitForTimeout(400); // let the slide-up finish
