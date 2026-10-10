@@ -225,7 +225,8 @@ await page.locator(".theme-toggle").click();
   check("meta: champion drawer keeps my pool apart from pro evidence", /Synergy/.test(drawer) && /Pool/.test(drawer) && /Pro evidence/i.test(drawer) && /View in Champion Pool/.test(drawer), drawer.slice(0, 80));
   await page.keyboard.press("Escape");
   await open("/first-pick/bot/?champ=ezreal");
-  check("pro pairings show event · patch · date (Ezreal + Karma)", /1 game · Demacia Cup · 16\.18 · Oct 3/.test(await page.locator("main").textContent()), "");
+  const karmaRow = await page.locator(".pro-table tr", { hasText: "Karma" }).first().innerText().catch(() => "");
+  check("pro pairings show games, event, patch and date (Ezreal + Karma)", /1\s+Demacia Cup.*\s+16\.18\s+Oct 3/.test(karmaRow), karmaRow.replace(/\s+/g, " "));
 }
 // Comp Library champion drawer
 {
@@ -291,6 +292,13 @@ await page.locator(".theme-toggle").click();
 }
 // First Pick: hover card on desktop, drawer on click
 {
+  await open("/first-pick/bot/?champ=caitlyn");
+  check("first pick: rail marks the selected pick", (await page.locator(".pick-rail a.active .rail-name").textContent().catch(() => "")) === "Caitlyn", "");
+  check("first pick: sources start collapsed", (await page.locator(".scout-sources").count()) === 1 && !(await page.locator(".scout-sources").evaluate((d) => d.open)), "");
+  await page.locator(".pick-rail input[type=search]").fill("nami");
+  const railNames = await page.locator(".pick-rail .rail-name").allTextContents();
+  check("first pick: rail search matches partners (nami -> Corki)", railNames.includes("Corki") && !railNames.includes("Caitlyn"), railNames.join(","));
+
   await open("/first-pick/bot/?champ=sivir");
   const lulu = page.locator(".pick-card .champ-btn", { hasText: "Lulu" }).first();
   await lulu.hover();

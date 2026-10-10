@@ -1,10 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { ChampIcon } from "@/components/ChampIcon";
 import { ChampionProvider } from "@/components/ChampionInteraction";
-import { PairingCard, type CardRecord } from "@/components/PairingCard";
+import type { CardRecord } from "@/components/PairingCard";
+import { ScoutingReport } from "@/components/ScoutingReport";
 import type { DrawerData } from "@/lib/data";
-import { ChampionRow, EvidenceBadge, PageHeader } from "@/components/ui";
+import { PageHeader } from "@/components/ui";
 import type { EventMap } from "@/lib/evidence";
 import { TABS, type Tab } from "./first-pick-tabs";
 import type { BotPairing, MetaStat, MidJunglePairing, Role, Source, TopPick } from "@/lib/schema";
@@ -18,6 +21,8 @@ export function FirstPickView({ tab, names, sources, events, stats, draftLabels,
   const params = useSearchParams();
   const champ = params.get("champ") || undefined;
   const role = params.get("role") || undefined;
+  const [query, setQuery] = useState("");
+  const rail = useRef<HTMLUListElement>(null);
   let list: { id: string; label: string; sub: string; role?: string }[] = [];
   let selected: CardRecord | undefined;
   if (tab === "bot") {
@@ -40,6 +45,15 @@ export function FirstPickView({ tab, names, sources, events, stats, draftLabels,
 
   const selectedRole: Role | undefined = selected && (selected.kind === "bot" ? "BOT" : selected.kind === "top" ? "TOP" : selected.record.role);
   const listRole = (x: { role?: string }): Role => (tab === "bot" ? "BOT" : tab === "top" ? "TOP" : (x.role as Role));
+  const isSelected = (x: { id: string; role?: string }) =>
+    x.id === selectedId && (!x.role || selected?.kind !== "mid-jungle" || selected.record.role === x.role);
+  const q = query.trim().toLowerCase();
+  const shown = q ? list.filter((x) => `${x.label} ${x.sub}`.toLowerCase().includes(q)) : list;
+  // Keep the selected pick in view inside the rail (without scrolling the page) when arriving from a link.
+  useEffect(() => {
+    const ul = rail.current, el = ul?.querySelector<HTMLElement>("a.active");
+    if (ul && el && (el.offsetTop < ul.scrollTop || el.offsetTop + el.offsetHeight > ul.scrollTop + ul.clientHeight)) ul.scrollTop = el.offsetTop - ul.clientHeight / 3;
+  }, [selectedId, tab]);
   const draftHref = selected && selectedId
     ? `/?${selected.kind === "bot" ? "bot" : selected.kind === "top" ? "top" : (selected.record as { role: string }).role.toLowerCase()}=${selectedId}` : undefined;
 
@@ -50,25 +64,29 @@ export function FirstPickView({ tab, names, sources, events, stats, draftLabels,
       <nav className="tabs">
         {(Object.keys(TABS) as Tab[]).map((t) => <Link key={t} href={`/first-pick/${t}`} className={t === tab ? "active" : undefined}>{TABS[t]}</Link>)}
       </nav>
-      <div className="split">
-        <div className="table-wrap">
-          <table>
-            <thead><tr><th>Pick</th><th>{tab === "top" ? "Grade" : "Preferred pairing"}</th></tr></thead>
-            <tbody>
-              {list.map((x) => (
-                <tr key={x.id + (x.role ?? "")} className={`clickable ${x.id === selectedId && (!x.role || selected?.kind !== "mid-jungle" || selected.record.role === x.role) ? "selected" : ""}`}>
-                  <td><Link className="cell-link" href={`/first-pick/${tab}?champ=${x.id}${x.role ? `&role=${x.role}` : ""}`}><ChampionRow id={x.id} name={x.label} role={listRole(x)} size="sm" /></Link></td>
-                  <td className="xs muted">{x.sub}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="split scout-split">
+        <nav className="pick-rail" aria-label={`${TABS[tab]} first picks`}>
+          <input type="search" placeholder="Search picks or partners" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search picks" />
+          <ul ref={rail}>
+            {shown.map((x) => {
+              const active = isSelected(x);
+              return (
+                <li key={x.id + (x.role ?? "")}>
+                  <Link href={`/first-pick/${tab}?champ=${x.id}${x.role ? `&role=${x.role}` : ""}`} className={active ? "active" : undefined} aria-current={active ? "page" : undefined}>
+                    <ChampIcon id={x.id} name={x.label} role={listRole(x)} size="md" />
+                    <span className="rail-text"><span className="rail-name">{x.label}</span><span className="rail-sub">{x.sub}</span></span>
+                  </Link>
+                </li>
+              );
+            })}
+            {!shown.length && <li className="rail-empty">No picks match “{query}”.</li>}
+          </ul>
+        </nav>
         <div>
           {selected && selectedId && (
-            // Champions in the synergy boxes: hover for the quick card (relation to the selected pick), click for the drawer.
+            // Champions in the report: hover for the quick card (relation to the selected pick), click for the drawer.
             <ChampionProvider data={drawerData} focus={{ id: selectedId, role: selectedRole! }}>
-              <PairingCard item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels} />
+              <ScoutingReport item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels} />
             </ChampionProvider>
           )}
         </div>
