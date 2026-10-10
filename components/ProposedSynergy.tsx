@@ -1,4 +1,4 @@
-// Synergy · Proposed: Claude's kit-based partners (lib/proposed.ts). Shown under alan's Confirmed synergy, never inside
+// Proposed synergy: kit-based partners (written by Claude; never named in the UI) (lib/proposed.ts). Shown under alan's Confirmed synergy, never inside
 // it: a dashed chip, a "Proposed · kit-based" label, the written reason and the kit-fit confidence. Pro games are a
 // separate muted badge beside the partner, never a reason for the proposal.
 import { CONFIDENCE_LABEL, PROPOSED_LABEL, type ProposedLink } from "@/lib/proposed";
@@ -50,4 +50,4 @@ export function ProposedGroups({ links, names, proCount, noteFor, roles, compact
   );
 }
 
-export const ProposedTag = () => <span className="prop-tag" title="Claude's kit-based recommendation, not one of your saved pairings">{PROPOSED_LABEL}</span>;
+export const ProposedTag = () => <span className="prop-tag" title="Kit-based synergy that hasn't been added to your saved pairings.">{PROPOSED_LABEL}</span>;

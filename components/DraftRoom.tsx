@@ -338,7 +338,7 @@ function FitRow({ rec, pro, counter, names, hovered, onHover, onPick, onOpen }: 
         <span className="fit-line">
           <span className="name">{name}</span>
           {rec.saved && <span className={`status-tag ${rec.saved}`}>{STATUS[rec.saved]}</span>}
-          {!rec.saved && rec.proposed && <span className="status-tag proposed" title="Claude's kit-based proposal with a locked pick, not one of your saved pairings">Proposed</span>}
+          {!rec.saved && rec.proposed && <span className="status-tag proposed" title="Proposed synergy with a locked pick: kit-based synergy that hasn't been added to your saved pairings.">Proposed</span>}
           {rec.bestFix && <span className="status-tag fix" title="Covers the most of this role's needs">Best fix</span>}
           {sigs.length > 0 && <span className="sig-line">{sigs.map((s) => <span key={s.key} className={`sig ${s.key}`} title={s.title}>{s.label}</span>)}</span>}
         </span>

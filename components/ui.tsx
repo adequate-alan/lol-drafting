@@ -136,7 +136,7 @@ export function SourceLinks({ ids, sources }: { ids: string[]; sources: Record<s
     <span className="source-links">
       {list.map((s) => (
         <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer"
-          title={`${s.tournament ?? ""} ${s.seriesGame ?? ""} ${s.team ? `${s.team} vs ${s.opponent}` : ""}\n${s.lastChecked ? `Last checked ${s.lastChecked}` : "Not refreshed by Claude since the workbook import"}${s.pendingClaim ? `\nExternally provided${s.pendingClaim.providedBy ? ` by ${s.pendingClaim.providedBy}` : ""} ${s.pendingClaim.providedOn}, pending refresh: ${s.pendingClaim.claim}` : ""}`}>
+          title={`${s.tournament ?? ""} ${s.seriesGame ?? ""} ${s.team ? `${s.team} vs ${s.opponent}` : ""}\n${s.lastChecked ? `Last checked ${s.lastChecked}` : "Not refreshed since the workbook import"}${s.pendingClaim ? `\nExternally provided${s.pendingClaim.providedBy ? ` by ${s.pendingClaim.providedBy}` : ""} ${s.pendingClaim.providedOn}, pending refresh: ${s.pendingClaim.claim}` : ""}`}>
           Gol.gg {TYPE_LABEL[s.type]}{s.seriesGame ? ` ${s.seriesGame}` : s.team ? ` ${s.team} vs ${s.opponent}` : ""}
           {s.pendingClaim
             ? <span className="state"> · externally provided, pending refresh</span>

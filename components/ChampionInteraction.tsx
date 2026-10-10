@@ -110,7 +110,7 @@ function relationLines(t: { id: string; role: Role }, data: DrawerData, index: D
       const bot = t.role === "BOT" ? t.id : m.role === "BOT" ? m.id : undefined;
       if (bot && (t.role === "SUPPORT" || m.role === "SUPPORT") && data.botPairings.some((b) => b.champion === bot)) continue;
       const p = proposedLink(data.proposed, t.id, t.role, m.id, m.role);
-      if (p) { lines.push({ layer: "clash", label: "Synergy · Proposed", text: `${name(m.id)}: ${p.reason}` }); break; }
+      if (p) { lines.push({ layer: "clash", label: "Proposed synergy", text: `${name(m.id)}: ${p.reason}` }); break; }
     }
   }
   const best = [...pro].sort((a, b) => b.games.length - a.games.length)[0];

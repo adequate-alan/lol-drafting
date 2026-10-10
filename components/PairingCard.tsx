@@ -121,7 +121,7 @@ export function PairingCard({ item, names, sources, events, compact = false, dra
           </LayerBlock>
         )}
         <section className="layer clash proposed">
-          <div className="layer-label"><span className="ldot" />Synergy · Proposed</div>
+          <div className="layer-label"><span className="ldot" />Proposed synergy</div>
           <ProposedGroups links={compact ? item.links.filter((l) => l.tier === "preferred") : item.links} names={names} compact />
         </section>
       </article>

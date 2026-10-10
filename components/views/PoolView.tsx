@@ -169,7 +169,7 @@ function Detail({ row: r, names, data, eventMap, bot, midJungle, top, proposed }
         </dl>
         {props.length > 0 && (
           <div className="pool-proposed">
-            <div className="xs muted detail-label">Synergy · Proposed <ProposedTag /></div>
+            <div className="xs muted detail-label">Proposed synergy <ProposedTag /></div>
             <ProposedGroups links={props} names={names} compact proCount={(p, pr) => r.games.filter((g) => g.picks[pr] === p).length} />
           </div>
         )}
