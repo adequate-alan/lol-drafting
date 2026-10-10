@@ -9,6 +9,7 @@ import { counterPicks, describeEvidence, enemyParam, tierLabel, type Counter, ty
 import { proSuggestions, similarProDrafts, similarShells, type ProSuggestion, type SuggestData } from "@/lib/suggest";
 import type { DraftData, DrawerData } from "@/lib/data";
 import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
+import { ChampionHoverCard, useHoverIntent } from "./ChampionInteraction";
 import { PairingCard, type CardRecord } from "./PairingCard";
 import { ChampIcon, ChampionRow, SourceBadge, WarningBadge, type Severity } from "./ui";
 
@@ -44,6 +45,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
   const [pinned, setPinned] = useState(false);
   const board = useRef<HTMLDivElement>(null);
   const drawerIndex = useDrawerIndex(drawerData);
+  const hoverCard = useHoverIntent();
   const names = useMemo(() => Object.fromEntries(data.champions.map((c) => [c.id, c.name])), [data.champions]);
   const byName = useMemo(() => {
     const m = new Map<string, string>();
@@ -125,7 +127,8 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
     ? [{ id: c.record.champion, text: c.record.logic.warning }]
     : c.kind === "top" ? [{ id: c.record.champion, text: `avoid ${c.record.logic.avoid}` }] : []);
 
-  const slotProps = { names, byName, champions: data.champions, taken, onOpen: (id: string, role?: Role) => setDrawer({ id, role }) };
+  const slotProps = { names, byName, champions: data.champions, taken, onOpen: (id: string, role?: Role) => { hoverCard.hide(); setDrawer({ id, role }); },
+    onHover: hoverCard.hover, onUnhover: hoverCard.unhover };
 
   return (
     <div className="draft-room">
@@ -299,6 +302,10 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
         </aside>
       </div>
 
+      {hoverCard.card && !drawer && (
+        <ChampionHoverCard key={`${hoverCard.card.t.id}-${hoverCard.card.t.role}`} target={hoverCard.card.t} anchor={hoverCard.card.el} data={drawerData} index={drawerIndex}
+          onEnter={hoverCard.keep} onLeave={hoverCard.unhover} />
+      )}
       {drawer && <ChampionDrawer target={drawer} data={drawerData} index={drawerIndex} onClose={() => setDrawer(undefined)} onSelect={setDrawer} />}
     </div>
   );
@@ -410,9 +417,10 @@ function ProRow({ s, role, names, onPick }: { s: ProSuggestion; role: Role; name
 type SlotShared = {
   names: Record<string, string>; byName: Map<string, string>; champions: SuggestData["champions"]; taken: string[];
   onOpen: (id: string, role?: Role) => void;
+  onHover: (t: DrawerTarget, el: HTMLElement) => void; onUnhover: () => void;
 };
 
-function DraftSlot({ side, role, value, active = false, preview, onActivate, onLock, suggested = [], names, byName, champions, taken, onOpen }: SlotShared & {
+function DraftSlot({ side, role, value, active = false, preview, onActivate, onLock, suggested = [], names, byName, champions, taken, onOpen, onHover, onUnhover }: SlotShared & {
   side: "ally" | "enemy"; role: Role; value?: string; active?: boolean; preview?: string;
   onActivate?: () => void; onLock: (id: string | undefined) => void; suggested?: Recommendation[];
 }) {
@@ -424,7 +432,8 @@ function DraftSlot({ side, role, value, active = false, preview, onActivate, onL
   const keyed = useRef(false);
   const input = useRef<HTMLInputElement>(null);
   const slot = useRef<HTMLDivElement>(null);
-  const refocus = useRef(false);
+  // Changing a locked pick keeps it until a replacement is chosen; Escape or clicking away keeps it.
+  const [editing, setEditing] = useState(false);
   // On phones each team row scrolls sideways: keep the role being picked in view.
   useEffect(() => {
     const el = slot.current, row = el?.parentElement;
@@ -436,7 +445,7 @@ function DraftSlot({ side, role, value, active = false, preview, onActivate, onL
   const listId = ally ? `champs-${role}` : `champs-enemy-${role}`;
   const label = ally ? role : `Enemy ${role}`;
   // "Change" clears the slot; focus the picker once it is back.
-  useEffect(() => { if (!value && refocus.current) { refocus.current = false; input.current?.focus(); } }, [value]);
+  useEffect(() => { if (editing) input.current?.focus(); }, [editing]);
   const q = text.trim().toLowerCase();
   // With no query: the best draft fits first, then the role alphabetically. With a query: names that contain it, champions
   // who play the role, then everyone else. Locked picks (both teams) are left out.
@@ -457,60 +466,66 @@ function DraftSlot({ side, role, value, active = false, preview, onActivate, onL
   useEffect(() => {
     if (!keyed.current || !list.current) return;
     keyed.current = false;
-    (list.current.children[hi] as HTMLElement | undefined)?.scrollIntoView({ block: "nearest" });
-  }, [hi]);
+    (list.current.children[hi + (editing && value ? 1 : 0)] as HTMLElement | undefined)?.scrollIntoView({ block: "nearest" });
+  }, [hi, editing, value]);
   // Open below the input, or above it when there is clearly more room there.
   const place = () => {
     const r = input.current?.getBoundingClientRect();
     if (r) { const below = window.innerHeight - r.bottom, above = r.top; setUp(below < 260 && above > below); }
   };
-  const pick = (id: string | undefined) => { if (id) { onLock(id); setText(""); setOpen(false); setHi(0); } };
+  const pick = (id: string | undefined) => { if (id) { onLock(id); setText(""); setOpen(false); setHi(0); setEditing(false); } };
+  const remove = () => { onLock(undefined); setText(""); setOpen(false); setEditing(false); };
   const onKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "ArrowDown") { e.preventDefault(); keyed.current = true; setOpen(true); setHi((i) => Math.min(i + 1, matches.length - 1)); }
     else if (e.key === "ArrowUp") { e.preventDefault(); keyed.current = true; setHi((i) => Math.max(i - 1, 0)); }
     else if (e.key === "PageDown" || e.key === "PageUp") { e.preventDefault(); keyed.current = true; setHi((i) => Math.max(0, Math.min(matches.length - 1, i + (e.key === "PageDown" ? 7 : -7)))); }
     else if (e.key === "Enter") { e.preventDefault(); pick(byName.get(q) ?? matches[hi]?.id); }
     else if (e.key === "Escape") { setOpen(false); input.current?.blur(); }
+    else if (editing && !text && (e.key === "Delete" || e.key === "Backspace")) { e.preventDefault(); remove(); }
   };
   const cls = `draft-slot ${ally ? `role-${role}` : "enemy"} ${value ? "locked" : "open"} ${active ? "active" : ""}`;
   const roleTag = <span className="role-tag">{role}</span>;
 
-  if (value) {
+  if (value && !editing) {
     const name = names[value] ?? value;
     const c = champions.find((x) => x.id === value);
     return (
       <div className={cls} data-role={role} ref={slot}>
-        <button className="slot-body" onClick={() => onOpen(value, role)} title={`${name}${c ? ` · ${c.roles.join(" · ")}` : ""}\nOpen details`}>
+        <button className="slot-body" onClick={() => onOpen(value, role)} data-drawer-trigger aria-haspopup="dialog"
+          onPointerEnter={(e) => { if (e.pointerType === "mouse") onHover({ id: value, role }, e.currentTarget); }}
+          onPointerLeave={(e) => { if (e.pointerType === "mouse") onUnhover(); }}>
           <span className="slot-icon" key={value}><ChampIcon id={value} name={name} role={ally ? role : undefined} size={ally ? "xl" : "lg"} /></span>
           <span className="slot-text">{roleTag}<span className="slot-name truncate">{name}</span></span>
         </button>
-        <span className="slot-actions">
-          <button className="slot-act" onClick={() => { refocus.current = true; onLock(undefined); }} aria-label={`Change ${label}`} title="Change">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true"><path d="M2 6a4 4 0 0 1 7-2.6M10 6a4 4 0 0 1-7 2.6M9 1v2.4H6.6M3 11V8.6h2.4" /></svg>
-          </button>
-          <button className="slot-act clear" onClick={() => onLock(undefined)} aria-label={`Clear ${label}`} title="Remove">×</button>
-        </span>
+        <button className="slot-change" onClick={() => setEditing(true)} aria-label={`Change ${label} (${name})`} title={`Pick a different ${ROLE_LABEL[role]}, or remove ${name}`}>Change</button>
       </div>
     );
   }
+  const current = editing && value ? names[value] ?? value : undefined;
+  const shown = preview ?? (editing ? value : undefined);
   return (
-    <div className={cls} data-role={role} ref={slot} onMouseDown={(e) => { if (e.target !== input.current) { e.preventDefault(); input.current?.focus(); } }}>
+    <div className={`${cls} ${editing ? "editing" : ""}`} data-role={role} ref={slot} onMouseDown={(e) => { if (e.target !== input.current) { e.preventDefault(); input.current?.focus(); } }}>
       <div className="slot-body">
         <span className="slot-icon">
-          {preview
-            ? <span className="ghost"><ChampIcon id={preview} name={names[preview] ?? preview} role={role} size={ally ? "xl" : "lg"} /></span>
+          {shown
+            ? <span className="ghost"><ChampIcon id={shown} name={names[shown] ?? shown} role={role} size={ally ? "xl" : "lg"} /></span>
             : <span className={`champ ${ally ? "xl" : "lg"} empty`}><span className="mono">{role.slice(0, 1)}</span></span>}
         </span>
         <span className="slot-text">
           {roleTag}
           <span className="picker">
-            <input ref={input} value={text} placeholder={preview ? names[preview] : ally ? "Pick champion" : "Enemy pick"} aria-label={ally ? `${role} champion` : `Enemy ${role} champion`}
+            <input ref={input} value={text} placeholder={preview ? names[preview] : current ? `Replace ${current}` : ally ? "Pick champion" : "Enemy pick"} aria-label={ally ? `${role} champion` : `Enemy ${role} champion`}
               role="combobox" aria-autocomplete="list" aria-expanded={open && matches.length > 0} aria-controls={listId}
               aria-activedescendant={open && matches[hi] ? `${listId}-${matches[hi].id}` : undefined}
               onChange={(e) => { setText(e.target.value); setOpen(true); setHi(0); if (list.current) list.current.scrollTop = 0; }}
-              onFocus={() => { place(); setOpen(true); onActivate?.(); }} onBlur={() => setOpen(false)} onKeyDown={onKey} />
-            {open && matches.length > 0 && (
+              onFocus={() => { place(); setOpen(true); onActivate?.(); }} onBlur={() => { setOpen(false); setEditing(false); setText(""); }} onKeyDown={onKey} />
+            {open && (matches.length > 0 || current) && (
               <ul id={listId} ref={list} role="listbox" className={`picker-list ${up ? "up" : ""}`}>
+                {current && (
+                  <li className="remove" role="presentation" onMouseDown={(e) => { e.preventDefault(); remove(); }}>
+                    <span className="x" aria-hidden="true">×</span><span className="name">Remove {current}</span><span className="roles">Delete</span>
+                  </li>
+                )}
                 {matches.map((c, i) => (
                   <li key={c.id} id={`${listId}-${c.id}`} role="option" aria-selected={i === hi} className={i === hi ? "active" : undefined}
                     onMouseDown={(e) => { e.preventDefault(); pick(c.id); }} onMouseEnter={() => setHi(i)}>

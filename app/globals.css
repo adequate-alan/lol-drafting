@@ -727,15 +727,6 @@ button.slot-body:hover .slot-name { text-decoration: underline; text-decoration-
 .slot-icon { display: inline-flex; flex: none; }
 .slot-name { display: block; font-size: var(--fs-lg); font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
 .draft-slot .role-tag { font-size: var(--fs-2xs); letter-spacing: .07em; }
-.slot-actions { display: flex; flex-direction: column; gap: 2px; align-self: flex-start; opacity: 0; transition: opacity var(--t-fast); }
-.draft-slot:hover .slot-actions, .draft-slot:focus-within .slot-actions { opacity: 1; }
-@media (hover: none) { .slot-actions { opacity: .75; } }
-.slot-act {
-  display: grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 0; border-radius: var(--r-sm);
-  background: transparent; color: var(--text-faint); cursor: pointer; font: inherit; font-size: 14px; line-height: 1;
-}
-.slot-act:hover { color: var(--text); background: var(--surface-sunken); }
-.slot-act.clear:hover { color: var(--danger); background: var(--danger-subtle); }
 .champ.empty { background: transparent; box-shadow: none; border: 1px dashed var(--border-strong); color: var(--text-faint); font-weight: 600; }
 .champ.empty::after { display: none; }
 .ghost .champ { opacity: .5; box-shadow: 0 0 0 1px var(--accent); }
@@ -934,7 +925,6 @@ button.mini-slot:hover { border-color: var(--text-faint); }
   .draft-slot .slot-body { gap: var(--s3); }
   .draft-slot .champ.xl { --size: 36px; }
   .draft-slot .champ.lg { --size: 30px; }
-  .draft-slot.locked .slot-act:not(.clear) { display: none; }
   .draft-slot .slot-name { font-size: var(--fs-md); }
   .draft-slot.open.active::after { display: none; }
   .picker { position: static; }
@@ -1019,3 +1009,19 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .picker-list::-webkit-scrollbar-track { background: transparent; }
 .picker-list::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; border: 2px solid var(--surface-raised); }
 .picker-list::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+
+/* Locked slot: one quiet "Change" on hover; the picker it opens offers the replacement or "Remove" */
+.slot-change {
+  align-self: flex-start; padding: 1px var(--s3); border: 1px solid transparent; border-radius: var(--r-sm); background: transparent;
+  font: inherit; font-size: var(--fs-2xs); font-weight: 600; color: var(--text-faint); cursor: pointer;
+  opacity: 0; transition: opacity var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+}
+.draft-slot:hover .slot-change, .slot-change:focus-visible { opacity: 1; }
+.slot-change:hover { color: var(--text); border-color: var(--border-strong); }
+@media (hover: none) { .slot-change { opacity: .8; } }
+.draft-slot.editing { border-style: solid; border-color: var(--accent); background: var(--accent-subtle); box-shadow: 0 0 0 1px var(--accent); }
+.picker-list li.remove { grid-template-columns: 24px minmax(0, 1fr) auto; color: var(--text-muted); border-bottom: 1px solid var(--border); border-radius: var(--r-sm) var(--r-sm) 0 0; margin-bottom: var(--s1); }
+.picker-list li.remove .x { display: grid; place-items: center; width: 24px; height: 24px; font-size: 15px; color: var(--text-faint); }
+.picker-list li.remove .name { font-weight: 550; }
+.picker-list li.remove:hover { background: var(--danger-subtle); color: var(--danger); }
+.picker-list li.remove:hover .x { color: var(--danger); }
