@@ -48,6 +48,12 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   (`origin: "externally-provided"`); dpm.lol answers Claude's environments with a Cloudflare challenge. Never invent a
   counter or a game result.
 
+- **Roster**: `data/champions.json` holds every champion in Riot's Data Dragon. Champions added by
+  `scripts/sync-champions.mjs` (run by `.github/workflows/sync-champions.yml`; Data Dragon is unreachable from Claude's
+  environments) are `rosterOnly: true` with every attribute 0: lockable, searchable and usable as enemies, never
+  recommended, never in the pool. Reviewing one means setting its attributes and removing `rosterOnly`. Never type a
+  roster from memory.
+
 ## Gol.gg research rules
 
 - Gol.gg is the primary external source for pro drafts, picks, bans and team stats.

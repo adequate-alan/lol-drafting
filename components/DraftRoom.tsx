@@ -268,6 +268,12 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
         <aside className="comp-check" aria-label="Comp Check">
           <div className="cc-head"><h2>Comp Check</h2><SourceBadge layer="logic" /></div>
           <Indicators prof={prof} needs={needs} picks={picks.length} />
+          {picks.some((c) => c.rosterOnly) && (
+            <p className="xs muted">
+              {picks.filter((c) => c.rosterOnly).map((c) => c.name).join(", ")}: attributes not reviewed yet, so Comp Check counts
+              nothing from {picks.filter((c) => c.rosterOnly).length === 1 ? "this pick" : "these picks"}.
+            </p>
+          )}
 
           <div className="cc-section">
             <div className="cc-label">Warnings</div>

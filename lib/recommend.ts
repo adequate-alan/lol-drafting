@@ -211,7 +211,8 @@ export function recommend(draft: Draft, enemyIds: string[], data: RecommendData,
   for (const role of open) {
     const recs: Recommendation[] = [];
     for (const c of data.champions) {
-      if (!c.roles.includes(role) || taken.has(c.id)) continue;
+      // Roster-only champions have no attributes to score, so they are never suggested (they can still be locked).
+      if (c.rosterOnly || !c.roles.includes(role) || taken.has(c.id)) continue;
       const { parts, tier } = savedParts(c, role, draft, data, name);
       parts.push(...synergyParts(c, role, allies));
       for (const n of needs) if (n.fills(c) && urgency(n) > 0) parts.push({ kind: "need", points: round(n.weight * urgency(n)), text: `Adds ${n.label}: ${n.text}` });
