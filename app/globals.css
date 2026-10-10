@@ -265,18 +265,26 @@ b, strong { font-weight: 620; }
 .role-tag::before { content: ""; width: 6px; height: 6px; border-radius: 1px; background: var(--role, var(--text-faint)); }
 
 .champ {
-  --size: 22px; width: var(--size); height: var(--size); flex: none; display: inline-grid; place-items: center;
-  border-radius: var(--r-sm); background: var(--surface-sunken); color: var(--text);
-  font-size: calc(var(--size) * .42); font-weight: 700; letter-spacing: -.02em; line-height: 1;
-  box-shadow: inset 0 -2px 0 var(--role, var(--border-strong)); user-select: none;
+  --size: 24px; position: relative; overflow: hidden; width: var(--size); height: var(--size); flex: none;
+  display: inline-grid; place-items: center; border-radius: var(--r-sm); background: var(--surface-sunken); color: var(--text);
+  font-size: calc(var(--size) * .4); font-weight: 700; letter-spacing: -.02em; line-height: 1; user-select: none;
+  box-shadow: inset 0 0 0 1px var(--border);
 }
-.champ.xs { --size: 16px; font-size: 7.5px; box-shadow: inset 0 -1.5px 0 var(--role, var(--border-strong)); }
-.champ.sm { --size: 20px; }
-.champ.lg { --size: 40px; border-radius: var(--r); }
-.champ.xl { --size: 48px; border-radius: var(--r); box-shadow: inset 0 -3px 0 var(--role, var(--border-strong)); }
+.champ .mono { position: relative; }
+/* Data Dragon squares carry a thin baked-in frame; a slight zoom crops it. */
+.champ img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.1); }
+.champ::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--role, transparent); z-index: 1; }
+.champ.xs { --size: 20px; font-size: 8px; }
+.champ.xs::after { height: 1.5px; }
+.champ.sm { --size: 24px; }
+.champ.md { --size: 32px; }
+.champ.ml { --size: 36px; border-radius: var(--r); }
+.champ.lg { --size: 44px; border-radius: var(--r); }
+.champ.xl { --size: 52px; border-radius: var(--r); }
+.champ.xl::after, .champ.lg::after { height: 3px; }
 
 .chip {
-  display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 7px 0 3px; border-radius: var(--r-sm);
+  display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 7px 0 2px; border-radius: var(--r-sm);
   background: var(--surface-subtle); border: 1px solid var(--border); font-size: var(--fs-sm); white-space: nowrap;
   color: var(--text); font-weight: 500;
 }
@@ -402,7 +410,8 @@ td.wrap { white-space: normal; min-width: 220px; line-height: 1.35; }
 .draft-slot .slot-name { display: block; font-size: var(--fs-lg); font-weight: 700; letter-spacing: -.01em; }
 .draft-slot.locked { border-color: color-mix(in srgb, var(--accent) 60%, var(--border)); background: linear-gradient(180deg, var(--accent-subtle), var(--surface) 80%); }
 .draft-slot.open { background: var(--surface-subtle); border-style: dashed; border-color: var(--border-strong); box-shadow: none; }
-.draft-slot.open .champ { background: transparent; border: 1px dashed var(--border-strong); box-shadow: none; color: var(--text-faint); font-weight: 600; }
+.draft-slot.open > .slot-icon .champ { background: transparent; border: 1px dashed var(--border-strong); box-shadow: none; color: var(--text-faint); font-weight: 600; }
+.draft-slot.locked > .slot-icon .champ { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 70%, transparent); }
 .draft-slot input { width: 100%; height: 28px; }
 .draft-slot .status { font-size: var(--fs-2xs); font-weight: 600; color: var(--text-faint); }
 .draft-slot.locked .status { color: var(--accent-text); }
@@ -444,8 +453,8 @@ td.wrap { white-space: normal; min-width: 220px; line-height: 1.35; }
 .rec-role + .rec-role { border-top: 1px dashed var(--border); }
 .rec-role > .role-tag { margin-bottom: 2px; }
 .rec-row {
-  display: grid; grid-template-columns: 20px auto auto minmax(0, 1fr); align-items: center; gap: var(--s3);
-  height: 26px; padding: 0 var(--s3); margin: 0 calc(-1 * var(--s3)); width: calc(100% + 2 * var(--s3));
+  display: grid; grid-template-columns: 32px auto auto minmax(0, 1fr); align-items: center; gap: var(--s4);
+  height: 36px; padding: 0 var(--s3); margin: 0 calc(-1 * var(--s3)); width: calc(100% + 2 * var(--s3));
   background: transparent; border: 0; border-radius: var(--r-sm); color: var(--text); font: inherit; text-align: left; cursor: pointer;
   transition: background var(--t-fast);
 }
@@ -457,7 +466,8 @@ td.wrap { white-space: normal; min-width: 220px; line-height: 1.35; }
 .rec-row .count { font-size: var(--fs-xs); color: var(--pro); font-weight: 650; font-variant-numeric: tabular-nums; }
 .rec-row.default .name { font-weight: 700; }
 .rec-row.default .tier { color: var(--clash); }
-.rec-row.default .champ { box-shadow: inset 0 0 0 1.5px var(--clash-line), inset 0 -2px 0 var(--role); }
+.rec-row.default .champ { box-shadow: 0 0 0 1.5px var(--clash-line); }
+.rec-row.alt .champ { opacity: .85; }
 .rec-row.alt .name { color: var(--text-muted); font-weight: 500; }
 .rec-note { font-size: var(--fs-xs); color: var(--text-muted); padding: 2px 0 4px; }
 
@@ -578,10 +588,25 @@ a.badge:hover { text-decoration: none; border-color: var(--accent); color: var(-
 @media (max-width: 1180px) { .draft-layout > .analysis { order: 2; } }
 @media (max-width: 620px) {
   .draft-slot { padding-left: var(--s4); column-gap: var(--s3); }
-  .draft-slot .champ.xl { --size: 32px; font-size: 13px; }
+  .draft-slot > .slot-icon .champ.xl { --size: 40px; font-size: 14px; }
   .draft-slot .status { display: none; }
   .draft-slot .slot-name { font-size: var(--fs-md); }
 }
 .shell-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--s3) var(--s6); }
 .shell .swaps { display: flex; gap: 2px 6px; flex-wrap: wrap; justify-content: flex-start; margin-top: 2px; font-size: var(--fs-2xs); }
 .shell .swap { color: var(--text-muted); border-bottom: 1px dashed var(--border-strong); line-height: 1.3; }
+
+/* Champion picker in open draft slots */
+.picker { position: relative; }
+.picker-list {
+  position: absolute; z-index: 20; top: calc(100% + 4px); left: 0; width: max(100%, 240px); margin: 0; padding: var(--s2);
+  list-style: none; background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--r-lg); box-shadow: var(--shadow-pop);
+}
+.picker-list li { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; align-items: center; gap: var(--s4); height: 32px; padding: 0 var(--s3); border-radius: var(--r-sm); cursor: pointer; }
+.picker-list li.active { background: var(--accent-subtle); box-shadow: inset 2px 0 0 var(--accent); }
+.picker-list .name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.picker-list .roles { font-size: var(--fs-2xs); color: var(--text-faint); white-space: nowrap; }
+.draft-slots { position: relative; z-index: 5; }
+.draft-slot:nth-child(n+4) .picker-list { left: auto; right: 0; }
+@media (max-width: 1100px) { .draft-slot:nth-child(n+4) .picker-list { left: 0; right: auto; } .draft-slot:nth-child(3n) .picker-list { left: auto; right: 0; } }
+@media (max-width: 620px) { .draft-slot .picker-list { left: 0; right: auto; } .draft-slot:nth-child(2n) .picker-list { left: auto; right: 0; } }

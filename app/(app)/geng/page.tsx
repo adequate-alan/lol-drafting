@@ -65,7 +65,7 @@ export default function GenG() {
               <tr key={d.id}>
                 <td><Link className="cell-link" style={{ whiteSpace: "nowrap" }} href={`/pro-drafts?team=Gen.G&id=${d.id}`}>{d.seriesGame}</Link></td>
                 <td className="muted" style={{ whiteSpace: "nowrap" }}>{d.opponent}</td>
-                {ROLES.map((r) => <td key={r}><ChampionRow name={names[d.picks[r]] ?? d.picks[r]} role={r} /></td>)}
+                {ROLES.map((r) => <td key={r}><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} /></td>)}
                 <td className="xs wrap">{d.read}{d.note ? <div className="muted">{d.note}</div> : null}</td>
                 <td><SourceLinks ids={d.sources} sources={sources} /></td>
               </tr>

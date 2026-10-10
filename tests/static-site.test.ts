@@ -4,7 +4,9 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import nextConfig from "@/next.config";
+import loadConfig from "@/next.config";
+import { championIconUrl, ddragonKey } from "@/lib/champion-icons";
+import { getChampions } from "@/lib/data";
 import { BASE_PATH } from "@/lib/site";
 
 const root = join(import.meta.dirname, "..");
@@ -18,7 +20,8 @@ const source = ["app", "components", "lib"].flatMap(files).filter((f) => /\.(ts|
 const read = (f: string) => readFileSync(join(root, f), "utf8");
 
 describe("static GitHub Pages export", () => {
-  it("exports statically under the repository base path", () => {
+  it("exports statically under the repository base path", async () => {
+    const nextConfig = await loadConfig();
     expect(nextConfig.output).toBe("export");
     expect(BASE_PATH).toBe("/lol-drafting");
     expect(nextConfig.basePath).toBe(BASE_PATH);
@@ -49,6 +52,17 @@ describe("static GitHub Pages export", () => {
   it("tracks no .env files", () => {
     const tracked = execFileSync("git", ["ls-files"], { cwd: root, encoding: "utf8" }).split("\n");
     expect(tracked.filter((f) => /(^|\/)\.env/.test(f))).toEqual([]);
+  });
+
+  it("maps every champion to a Data Dragon square icon", () => {
+    for (const c of getChampions()) {
+      expect(ddragonKey(c.id, c.name), c.id).toMatch(/^[A-Z][A-Za-z]+$/);
+      expect(championIconUrl(c.id, c.name)).toMatch(/^https:\/\/ddragon\.leagueoflegends\.com\/cdn\/[\d.]+\/img\/champion\/[A-Za-z]+\.png$/);
+    }
+    expect(ddragonKey("kaisa", "Kai'Sa")).toBe("Kaisa");
+    expect(ddragonKey("wukong", "Wukong")).toBe("MonkeyKing");
+    expect(ddragonKey("renata-glasc", "Renata Glasc")).toBe("Renata");
+    expect(ddragonKey("jarvan-iv", "Jarvan IV")).toBe("JarvanIV");
   });
 
   it("keeps the unfinished v2 model out of the site", () => {
