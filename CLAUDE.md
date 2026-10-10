@@ -109,8 +109,8 @@ Change these only when alan explicitly says so, then update the test in the same
 - Xayah → Rakan. Kalista → Renata. Zeri → Yuumi.
 - Viktor also plays BOT (alan, 2026-10-10): Leona + Nautilus joint preferred, Camille an alternative; his MID record is separate.
 - Mel → Alistar / Pyke / Leona (preferred), alternatives Karma, Bard, Neeko, Nautilus (alan, 2026-10-10).
-- Kai'Sa → Nautilus + Rakan, Aphelios → Thresh + Lulu: joint preferred, no alternatives (alan, 2026-10-10). Kai'Sa + Rell
-  is not saved. Every BOT pool champion has a record (`tests/locked-conclusions.test.ts`).
+- Kai'Sa → Nautilus + Rakan joint preferred, Alistar an alternative; Aphelios → Thresh + Lulu joint preferred, no
+  alternatives (alan, 2026-10-10). Kai'Sa + Rell is not saved. Every BOT pool champion has a record (`tests/locked-conclusions.test.ts`).
 - Joint preferred supports for bots outside the pool (alan, 2026-10-10; Synergy preferences, not Pro Evidence): Draven,
   Samira, Tristana → Nautilus + Rell; Kog'Maw → Lulu + Milio + Braum; Smolder, Vayne → Lulu + Milio; Nilah → Rakan + Seraphine; Senna → Tahm
   Kench + Seraphine; Swain → Nautilus + Leona (Seraphine a plain alternative); Twitch → Lulu + Yuumi; Varus → Karma +
