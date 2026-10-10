@@ -2,12 +2,12 @@
 import { useSearchParams } from "next/navigation";
 import { DraftRoom } from "@/components/DraftRoom";
 import { PageHeader } from "@/components/ui";
-import type { DraftData } from "@/lib/data";
-import { ROLES, type Meta, type Role, type Source } from "@/lib/schema";
+import type { DraftData, DrawerData } from "@/lib/data";
+import { ROLES, type Role, type Source } from "@/lib/schema";
 import { parseEnemy } from "@/lib/counters";
 
-export function DraftRoomView({ data, sources, meta, metaPicks, unreviewed }: {
-  data: DraftData; sources: Record<string, Source>; meta: Meta; unreviewed: number;
+export function DraftRoomView({ data, sources, drawerData, metaPicks, unreviewed }: {
+  data: DraftData; sources: Record<string, Source>; drawerData: DrawerData; unreviewed: number;
   metaPicks: Record<string, { picks: number; winRate: number; lowSample: boolean }>;
 }) {
   const q = useSearchParams();
@@ -23,7 +23,7 @@ export function DraftRoomView({ data, sources, meta, metaPicks, unreviewed }: {
   return (
     <>
       <PageHeader title="Draft Room" />
-      <DraftRoom key={JSON.stringify(initial) + JSON.stringify(initialEnemy)} data={data} sources={sources} meta={meta} initial={initial} initialEnemy={initialEnemy} metaPicks={metaPicks} />
+      <DraftRoom key={JSON.stringify(initial) + JSON.stringify(initialEnemy)} data={data} sources={sources} drawerData={drawerData} initial={initial} initialEnemy={initialEnemy} metaPicks={metaPicks} />
     </>
   );
 }
