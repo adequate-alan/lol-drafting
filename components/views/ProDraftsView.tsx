@@ -81,7 +81,7 @@ export function ProDraftsView({ names, sources, all }: {
         </section>
       )}
 
-      <form key={params.toString()} className="toolbar" method="get">
+      <form className="toolbar" method="get">
         {sel("team", "Team", "All teams", uniq(all.map((d) => d.team)).map((t) => [t, t]))}
         {sel("champion", "Champion", "All champions", champions.map((c) => [c, names[c] ?? c]))}
         {sel("role", "Role", "Any role", ROLES.map((r) => [r, r]))}
