@@ -1,16 +1,22 @@
 "use client";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { profile, RULES, warnings, type Draft } from "@/lib/evaluate";
-import { ATTRS, ROLES, type Attr, type Role, type Source } from "@/lib/schema";
-import { clashSuggestions, logicBlockedRoles, logicSuggestions, proSuggestions, similarProDrafts, similarShells, type ByRole, type SuggestData } from "@/lib/suggest";
+import { profile, RULES, warnings, type Draft, type DraftWarning } from "@/lib/evaluate";
+import { ROLES, type Attr, type Role, type Source } from "@/lib/schema";
+import { clashSuggestions, logicBlockedRoles, logicSuggestions, proSuggestions, similarProDrafts, similarShells, type ByRole, type Suggestion, type SuggestData } from "@/lib/suggest";
 import { PairingCard, type CardRecord } from "./PairingCard";
-import { EvidenceBadge, type Layer } from "./ui";
+import { ChampIcon, ChampionRow, SourceBadge, WarningBadge, type Layer, type Severity } from "./ui";
 
 const ATTR_LABEL: Record<Attr, string> = {
   engage: "Engage", frontline: "Frontline", peel: "Peel", sustainedDps: "Sustained DPS", burst: "Burst", poke: "Poke",
   scaling: "Scaling", lanePressure: "Lane pressure", sidePressure: "Side-lane pressure", objectiveControl: "Objective control",
 };
+const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
+
+// Display grouping only: which rule warnings read as a structural hole versus something to keep an eye on.
+// The rules themselves (lib/evaluate.ts) are unchanged.
+const CRITICAL = new Set(["no-engage", "needs-fight-starter", "no-frontline", "insufficient-peel", "vulnerable-hard-engage"]);
+const severityOf = (w: DraftWarning): Severity => (CRITICAL.has(w.id) ? "critical" : "caution");
 
 export function DraftRoom({ data, sources, initial, metaPicks }: {
   data: SuggestData;
@@ -46,6 +52,7 @@ export function DraftRoom({ data, sources, initial, metaPicks }: {
   const shells = similarShells(draft, data.shells);
   const open = ROLES.filter((r) => !draft[r]);
   const lockedCount = ROLES.length - open.length;
+  const critical = warns.filter((w) => severityOf(w) === "critical").length;
 
   const cards: CardRecord[] = ROLES.flatMap((role): CardRecord[] => {
     const id = draft[role];
@@ -55,109 +62,119 @@ export function DraftRoom({ data, sources, initial, metaPicks }: {
     if (role === "TOP") { const r = data.topPicks.find((t) => t.champion === id); return r ? [{ kind: "top", record: r, stats: metaPicks[id] }] : []; }
     return [];
   });
+  const pickNotes = cards.flatMap((c) => c.kind === "bot" && c.record.logic.warning
+    ? [{ id: c.record.champion, text: c.record.logic.warning }]
+    : c.kind === "top" ? [{ id: c.record.champion, text: `avoid ${c.record.logic.avoid}` }] : []);
 
   return (
     <>
-      <div className="slots">
+      <div className="draft-slots">
         {ROLES.map((role) => (
-          <Slot key={role} role={role} value={draft[role]} names={names} byName={byName}
+          <DraftSlot key={role} role={role} value={draft[role]} names={names} byName={byName}
             options={data.champions.filter((c) => c.roles.includes(role)).map((c) => c.name)}
             allNames={data.champions.map((c) => c.name)}
             onLock={(id) => lock(role, id)} />
         ))}
       </div>
-      <div className="row" style={{ marginBottom: 10 }}>
-        <button className="btn" onClick={() => update({})}>Clear draft</button>
-        <span className="small muted">{lockedCount}/5 locked. Click any suggestion to lock it. Draft is saved in the URL.</span>
+      <div className="draft-bar">
+        <button className="btn sm" onClick={() => update({})} disabled={!lockedCount}>Clear draft</button>
+        <span className="xs muted tnum">{lockedCount}/5 locked{open.length ? ` · open: ${open.map((r) => ROLE_LABEL[r]).join(", ")}` : ""}</span>
+        <span className="xs faint">Click a suggestion to lock it. The draft is saved in the URL.</span>
+        <span style={{ marginLeft: "auto" }} className="row tight">
+          {lockedCount >= 2 && (warns.length
+            ? <>{critical > 0 && <span className="badge danger">{critical} critical</span>}{warns.length - critical > 0 && <span className="badge caution">{warns.length - critical} caution</span>}</>
+            : <span className="badge success">No rule firing</span>)}
+        </span>
       </div>
 
-      <div className="grid" style={{ gridTemplateColumns: "minmax(280px, 340px) minmax(0, 1fr)", alignItems: "start" }}>
-        <div className="grid">
-          <div className="card">
-            <div className="row" style={{ justifyContent: "space-between" }}>
-              <h2 style={{ margin: 0 }}>Comp profile</h2><EvidenceBadge layer="logic" />
+      <div className="draft-layout">
+        <section className="panel analysis" aria-label="Composition analysis">
+          <div className="panel-body">
+            <div className="section-label">Comp profile <SourceBadge layer="logic" /><span className="faint" style={{ marginLeft: "auto", fontWeight: 500 }}>best · total</span></div>
+            <div className="meter-list">
+              {prof.meters.map((m) => <Meter key={m.attr} label={ATTR_LABEL[m.attr]} best={m.best} total={m.total} by={m.bestBy} empty={!lockedCount} />)}
             </div>
-            <p className="small muted">Best value on the team (0-3); total in grey. Rule-of-thumb attributes, not predictions.</p>
-            <div className="meters">
-              {prof.meters.map((m) => (
-                <MeterRow key={m.attr} label={ATTR_LABEL[m.attr]} best={m.best} total={m.total} by={m.bestBy} empty={!lockedCount} />
-              ))}
-            </div>
-            <div className="section-label">Damage profile</div>
-            {prof.damage.physicalShare === null ? <p className="small muted">No damage yet.</p> : (
+            <div className="legend"><span><i className="ok" />2+ covered</span><span><i className="low" />under 2</span><span>0–3 rule-of-thumb attributes</span></div>
+            <div className="section-label" style={{ marginTop: 12 }}>Damage profile</div>
+            {prof.damage.physicalShare === null ? <p className="xs muted">No damage yet.</p> : (
               <>
                 <div className="dmg"><div className="ad" style={{ width: `${prof.damage.physicalShare * 100}%` }} /><div className="ap" style={{ flex: 1 }} /></div>
-                <p className="small muted" style={{ marginTop: 3 }}>Physical {Math.round(prof.damage.physicalShare * 100)}% · Magic {Math.round((1 - prof.damage.physicalShare) * 100)}%</p>
+                <div className="dmg-legend"><span className="ad">Physical {Math.round(prof.damage.physicalShare * 100)}%</span><span className="ap">Magic {Math.round((1 - prof.damage.physicalShare) * 100)}%</span></div>
               </>
             )}
           </div>
-          <div className="card">
-            <div className="row" style={{ justifyContent: "space-between" }}>
-              <h2 style={{ margin: 0 }}>Warnings</h2><EvidenceBadge layer="logic" />
-            </div>
-            {!warns.length && <p className="small muted">{lockedCount < 2 ? "Lock picks to start the checks." : "No profile rule is firing."}</p>}
-            {warns.map((w) => (
-              <details key={w.id} className="warning" open>
-                <summary>{w.label}</summary>
-                <p className="small">{w.why}</p>
-                <p className="small muted">Rule: {w.rule}.</p>
+          <div className="panel-body">
+            <div className="section-label">Warnings <SourceBadge layer="logic" /></div>
+            {!warns.length && (lockedCount < 2
+              ? <p className="xs muted">Lock two or more picks to start the checks.</p>
+              : <div className="healthy"><WarningBadge severity="healthy" /> No profile rule is firing.</div>)}
+            {[...warns].sort((a, b) => Number(severityOf(b) === "critical") - Number(severityOf(a) === "critical")).map((w) => (
+              <details key={w.id} className={`warning-item ${severityOf(w)}`} open>
+                <summary><WarningBadge severity={severityOf(w)} />{w.label}</summary>
+                <p>{w.why}</p>
+                <p className="xs muted">Rule: {w.rule}.</p>
               </details>
             ))}
-            {cards.some((c) => (c.kind === "bot" && c.record.logic.warning) || c.kind === "top") && <div className="section-label">Pick notes</div>}
-            {cards.flatMap((c) => c.kind === "bot" && c.record.logic.warning ? [
-              <p key={c.record.champion} className="small"><b>{names[c.record.champion]}:</b> {c.record.logic.warning}</p>] : c.kind === "top" ? [
-              <p key={c.record.champion} className="small"><b>{names[c.record.champion]}:</b> avoid {c.record.logic.avoid}</p>] : [])}
-            <details className="small muted" style={{ marginTop: 6 }}>
+            {pickNotes.length > 0 && (
+              <div className="notes" style={{ marginTop: 10 }}>
+                <div className="section-label">Pick notes</div>
+                {pickNotes.map((n) => <p key={n.id}><b>{names[n.id]}:</b> {n.text}</p>)}
+              </div>
+            )}
+            <details className="rules" style={{ marginTop: 8 }}>
               <summary>All {RULES.length} rules</summary>
-              <ul style={{ margin: "4px 0 0", paddingLeft: 16 }}>{RULES.map((r) => <li key={r.id}><b>{r.label}:</b> {r.rule}</li>)}</ul>
+              <ul>{RULES.map((r) => <li key={r.id}><b>{r.label}:</b> {r.rule}</li>)}</ul>
             </details>
           </div>
-        </div>
+        </section>
 
-        <div className="grid">
-          <div className="grid cols-3">
-            <SuggestColumn layer="clash" title="My Clash picks" data={clash} open={open} names={names} onPick={lock}
+        <div className="stack">
+          <section className="panel rec-columns" aria-label="Suggestions">
+            <RecommendationGroup layer="clash" title="My Clash picks" data={clash} open={open} names={names} onPick={lock}
               empty={lockedCount ? "No Clash record covers these picks yet." : "Lock a pick to see your pairings."} />
-            <SuggestColumn layer="pro" title="Played alongside (pro)" data={pro} open={open} names={names} onPick={lock} showCount
+            <RecommendationGroup layer="pro" title="Played alongside (pro)" data={pro} open={open} names={names} onPick={lock}
               empty={lockedCount ? "No recorded pro game uses these picks." : "Lock a pick to see pro drafts."} />
-            <SuggestColumn layer="logic" title="Fixes a warning" data={logic} open={open} names={names} onPick={lock}
+            <RecommendationGroup layer="logic" title="Fixes a warning" data={logic} open={open} names={names} onPick={lock}
               empty={warns.length ? "No pool champion fixes the open warnings." : "Shows up when a warning fires."}
               notes={Object.fromEntries(logicBlocked.map((r) => [r, r === "SUPPORT" ? "No Clash-approved support fixes this warning." : "No Clash-approved bot fixes this warning."]))} />
-          </div>
+          </section>
 
           {cards.length > 0 && <div className="grid cols-auto">{cards.map((c) => (
             <PairingCard key={c.kind + ("champion" in c.record ? c.record.champion : c.record.anchor)} item={c} names={names} sources={sources} compact draftLabels={draftLabels} />
           ))}</div>}
 
-          <div className="grid cols-2">
-            <div className="card">
-              <div className="row" style={{ justifyContent: "space-between" }}><h2 style={{ margin: 0 }}>Closest pro drafts</h2><EvidenceBadge layer="pro" /></div>
-              {!similar.length && <p className="small muted">Nothing recorded shares a champion with this draft.</p>}
-              {similar.length > 0 && (
-                <table>
-                  <thead><tr><th>Game</th><th>Team</th>{ROLES.map((r) => <th key={r}>{r.slice(0, 3)}</th>)}</tr></thead>
-                  <tbody>{similar.map(({ draft: d }) => (
-                    <tr key={d.id}>
-                      <td><Link href={`/pro-drafts?id=${d.id}`}>{d.seriesGame}</Link></td><td>{d.team}</td>
-                      {ROLES.map((r) => <td key={r} style={{ fontWeight: draft[r] === d.picks[r] ? 700 : 400 }}>{names[d.picks[r]]}</td>)}
-                    </tr>))}</tbody>
-                </table>
-              )}
-            </div>
-            <div className="card">
-              <div className="row" style={{ justifyContent: "space-between" }}><h2 style={{ margin: 0 }}>Closest comp shells</h2><span className="small muted">exact pick or same-job swap</span></div>
-              {!shells.length && <p className="small muted">No shell shares a pick or swap with this draft.</p>}
-              {shells.map(({ shell, exact, swap }) => (
-                <div key={shell.id} style={{ marginBottom: 6 }}>
-                  <div className="row">
-                    <Link href={`/comps#${shell.id}`}><b>{shell.name}</b></Link>
-                    <EvidenceBadge layer={shell.kind === "observed" ? "pro" : "clash"} />
-                    <span className="small muted">{exact} exact, {swap} swap</span>
-                  </div>
-                  <p className="small muted">{ROLES.map((r) => names[shell.slots[r].champion]).join(" · ")} · {shell.winCondition}</p>
+          <div className="stack">
+            <section className="panel">
+              <div className="panel-head"><h2>Closest pro drafts</h2><div className="end"><SourceBadge layer="pro" /></div></div>
+              {!similar.length ? <div className="panel-body"><p className="xs muted">Nothing recorded shares a champion with this draft.</p></div> : (
+                <div className="table-wrap">
+                  <table>
+                    <thead><tr><th>Game</th><th>Team</th>{ROLES.map((r) => <th key={r}>{ROLE_LABEL[r]}</th>)}</tr></thead>
+                    <tbody>{similar.map(({ draft: d }) => (
+                      <tr key={d.id}>
+                        <td><Link className="cell-link" style={{ whiteSpace: "nowrap" }} href={`/pro-drafts?id=${d.id}`}>{d.seriesGame}</Link></td><td className="muted" style={{ whiteSpace: "nowrap" }}>{d.team}</td>
+                        {ROLES.map((r) => <td key={r}><ChampionRow name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={draft[r] === d.picks[r]} /></td>)}
+                      </tr>))}</tbody>
+                  </table>
                 </div>
-              ))}
-            </div>
+              )}
+            </section>
+            <section className="panel">
+              <div className="panel-head"><h2>Closest comp shells</h2><span className="xs muted">exact pick or same-job swap</span></div>
+              <div className="panel-body shell-list">
+                {!shells.length && <p className="xs muted">No shell shares a pick or swap with this draft.</p>}
+                {shells.map(({ shell, exact, swap }) => (
+                  <div key={shell.id} style={{ padding: "4px 0" }}>
+                    <div className="row">
+                      <Link href={`/comps#${shell.id}`}><b>{shell.name}</b></Link>
+                      {shell.kind === "observed" ? <SourceBadge layer="pro" label="Observed" /> : <span className="badge outline">Template</span>}
+                      <span className="xs muted tnum">{exact} exact · {swap} swap</span>
+                    </div>
+                    <p className="xs muted">{ROLES.map((r) => names[shell.slots[r].champion]).join(" · ")} · {shell.winCondition}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
           </div>
         </div>
       </div>
@@ -165,7 +182,7 @@ export function DraftRoom({ data, sources, initial, metaPicks }: {
   );
 }
 
-function Slot({ role, value, names, byName, options, allNames, onLock }: {
+function DraftSlot({ role, value, names, byName, options, allNames, onLock }: {
   role: Role; value?: string; names: Record<string, string>; byName: Map<string, string>;
   options: string[]; allNames: string[]; onLock: (id: string | undefined) => void;
 }) {
@@ -177,55 +194,71 @@ function Slot({ role, value, names, byName, options, allNames, onLock }: {
   };
   const others = allNames.filter((n) => !options.includes(n));
   return (
-    <div className={`slot role-${role}`}>
-      <div className="slot-head"><span className="role-tag">{role}</span>
-        {value && <button className="btn small" style={{ padding: "0 6px" }} onClick={() => onLock(undefined)} aria-label={`Clear ${role}`}>×</button>}
+    <div className={`draft-slot role-${role} ${value ? "locked" : "open"}`}>
+      <span className="slot-icon">{value ? <ChampIcon name={names[value]} role={role} size="xl" /> : <span className="champ xl">{role.slice(0, 1)}</span>}</span>
+      <div className="slot-top"><span className="role-tag">{role}</span><span className="status">{value ? "Locked" : "Open"}</span></div>
+      <div className="slot-main">
+        {value ? <span className="slot-name truncate">{names[value]}</span> : (
+          <>
+            <input list={listId} value={text} placeholder="Search champion" aria-label={`${role} champion`}
+              onChange={(e) => { setText(e.target.value); if (byName.has(e.target.value.trim().toLowerCase())) { onLock(byName.get(e.target.value.trim().toLowerCase())); setText(""); } }}
+              onKeyDown={(e) => e.key === "Enter" && commit()} />
+            <datalist id={listId}>{[...options, ...others].map((n) => <option key={n} value={n} />)}</datalist>
+          </>
+        )}
       </div>
-      {value ? <div className="locked">{names[value]}</div> : (
-        <>
-          <input list={listId} value={text} placeholder="Search champion" aria-label={`${role} champion`}
-            onChange={(e) => { setText(e.target.value); if (byName.has(e.target.value.trim().toLowerCase())) { onLock(byName.get(e.target.value.trim().toLowerCase())); setText(""); } }}
-            onKeyDown={(e) => e.key === "Enter" && commit()} />
-          <datalist id={listId}>{[...options, ...others].map((n) => <option key={n} value={n} />)}</datalist>
-        </>
-      )}
+      <div className="slot-end">{value && <button className="icon-btn" onClick={() => onLock(undefined)} aria-label={`Clear ${role}`} title={`Clear ${role}`}>×</button>}</div>
     </div>
   );
 }
 
-function MeterRow({ label, best, total, by, empty }: { label: string; best: number; total: number; by: string | null; empty: boolean }) {
+function Meter({ label, best, total, by, empty }: { label: string; best: number; total: number; by: string | null; empty: boolean }) {
+  const state = empty ? "" : best >= 2 ? "ok" : "low";
   return (
-    <>
-      <span title={by ? `Best: ${by}` : undefined}>{label}</span>
-      <div className={`bar ${!empty && best < 2 ? "low" : ""}`}><span style={{ width: `${(best / 3) * 100}%` }} /></div>
-      <span className="small muted">{best}<span style={{ opacity: .6 }}>/{total}</span></span>
-    </>
+    <div className={`meter ${state}`} title={by ? `Best: ${by}` : undefined}>
+      <span className="label">{label}</span>
+      <span className="segs" aria-hidden="true">{[1, 2, 3].map((n) => <i key={n} className={best >= n ? "on" : ""} />)}</span>
+      <span className="val"><b>{best}</b>/{total}</span>
+    </div>
   );
 }
 
-function SuggestColumn({ layer, title, data, open, names, onPick, empty, showCount, notes = {} }: {
+// Clash reasons carry the record tier; read it for display so defaults look stronger than alternatives.
+function clashTier(s: Suggestion): "default" | "alt" | "fit" {
+  if (s.reasons.some((r) => /Clash default|is its Clash default|Primary pair/.test(r))) return "default";
+  if (s.reasons.some((r) => /Clash alternative|Secondary pair/.test(r))) return "alt";
+  return "fit";
+}
+const TIER_LABEL = { default: "Default", alt: "Alt", fit: "Fits" } as const;
+
+function RecommendationGroup({ layer, title, data, open, names, onPick, empty, notes = {} }: {
   layer: Layer; title: string; data: ByRole; open: Role[]; names: Record<string, string>;
-  onPick: (role: Role, id: string) => void; empty: string; showCount?: boolean; notes?: Partial<Record<Role, string>>;
+  onPick: (role: Role, id: string) => void; empty: string; notes?: Partial<Record<Role, string>>;
 }) {
-  const any = open.some((r) => data[r]?.length || notes[r]);
+  const roles = open.filter((r) => data[r]?.length || notes[r]);
   return (
-    <div className={`card layer ${layer}`} style={{ marginTop: 0 }}>
-      <div className="row" style={{ justifyContent: "space-between", marginBottom: 6 }}><h3 style={{ margin: 0 }}>{title}</h3><EvidenceBadge layer={layer} /></div>
-      {!any && <p className="small muted">{empty}</p>}
-      {open.map((role) => data[role]?.length ? (
-        <div key={role} className={`sugg-role role-${role}`}>
-          <span className="role-tag">{role}</span>
-          <span className="row">{data[role]!.map((s) => (
-            <button key={s.champion} className={`chip role-${role}`} title={s.reasons.join("\n")} onClick={() => onPick(role, s.champion)}>
-              <span className="dot" />{names[s.champion] ?? s.champion}{showCount && <small>{s.score}×</small>}
-            </button>))}</span>
-        </div>
-      ) : notes[role] ? (
-        <div key={role} className={`sugg-role role-${role}`}>
-          <span className="role-tag">{role}</span>
-          <span className="small muted">{notes[role]}</span>
-        </div>
-      ) : null)}
+    <div className={`rec-group ${layer}`}>
+      <header><h3>{title}</h3><span className="end"><SourceBadge layer={layer} /></span></header>
+      <div className="rec-body">
+        {!roles.length && <p className="empty">{empty}</p>}
+        {roles.map((role) => (
+          <div key={role} className={`rec-role role-${role}`}>
+            <span className="role-tag">{role}</span>
+            {data[role]?.length ? data[role]!.map((s) => {
+              const tier = layer === "clash" ? clashTier(s) : undefined;
+              const why = layer === "pro" ? s.reasons.slice(0, 2).join(", ") + (s.reasons.length > 2 ? ` +${s.reasons.length - 2}` : "") : s.reasons.join(" · ");
+              return (
+                <button key={s.champion} className={`rec-row ${tier ?? ""}`} title={s.reasons.join("\n")} onClick={() => onPick(role, s.champion)}>
+                  <ChampIcon name={names[s.champion] ?? s.champion} role={role} size="sm" />
+                  <span className="name">{names[s.champion] ?? s.champion}</span>
+                  {tier ? <span className="tier">{TIER_LABEL[tier]}</span> : layer === "pro" ? <span className="count">{s.score}×</span> : <span />}
+                  <span className="why truncate">{why}</span>
+                </button>
+              );
+            }) : <p className="rec-note">{notes[role]}</p>}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

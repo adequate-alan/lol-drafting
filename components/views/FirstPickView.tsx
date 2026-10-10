@@ -2,9 +2,9 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { PairingCard, type CardRecord } from "@/components/PairingCard";
-import { EvidenceBadge } from "@/components/ui";
+import { ChampionRow, EvidenceBadge, PageHeader } from "@/components/ui";
 import { TABS, type Tab } from "./first-pick-tabs";
-import type { BotPairing, MetaStat, MidJunglePairing, Source, TopPick } from "@/lib/schema";
+import type { BotPairing, MetaStat, MidJunglePairing, Role, Source, TopPick } from "@/lib/schema";
 
 const GRADE_ORDER = ["A", "A-", "B+", "B", "B-", "C+", "C"];
 
@@ -35,24 +35,26 @@ export function FirstPickView({ tab, names, sources, stats, draftLabels, bot, mi
   }
   const selectedId = selected ? ("champion" in selected.record ? selected.record.champion : selected.record.anchor) : undefined;
 
+  const listRole = (x: { role?: string }): Role => (tab === "bot" ? "BOT" : tab === "top" ? "TOP" : (x.role as Role));
+  const draftHref = selected && selectedId
+    ? `/?${selected.kind === "bot" ? "bot" : selected.kind === "top" ? "top" : (selected.record as { role: string }).role.toLowerCase()}=${selectedId}` : undefined;
+
   return (
     <>
-      <div className="page-head">
-        <h1>First Pick</h1>
-        <span className="small muted">Your Clash default always leads; pro pairings are evidence, never the default.</span>
-      </div>
+      <PageHeader title="First Pick" desc="Your Clash default always leads; pro pairings are evidence, never the default."
+        actions={draftHref && <Link className="btn primary sm" href={draftHref}>Open in Draft Room →</Link>} />
       <nav className="tabs">
         {(Object.keys(TABS) as Tab[]).map((t) => <Link key={t} href={`/first-pick/${t}`} className={t === tab ? "active" : undefined}>{TABS[t]}</Link>)}
       </nav>
-      <div className="grid" style={{ gridTemplateColumns: "240px minmax(0, 1fr)", alignItems: "start" }}>
+      <div className="split">
         <div className="table-wrap">
           <table>
-            <thead><tr><th>Pick</th><th>{tab === "top" ? "Grade" : <>Clash default <EvidenceBadge layer="clash" /></>}</th></tr></thead>
+            <thead><tr><th>Pick</th><th>{tab === "top" ? "Grade" : <span className="row tight">Clash default <EvidenceBadge layer="clash" /></span>}</th></tr></thead>
             <tbody>
               {list.map((x) => (
                 <tr key={x.id + (x.role ?? "")} className={`clickable ${x.id === selectedId && (!x.role || selected?.kind !== "mid-jungle" || selected.record.role === x.role) ? "selected" : ""}`}>
-                  <td><Link href={`/first-pick/${tab}?champ=${x.id}${x.role ? `&role=${x.role}` : ""}`}>{x.label}</Link></td>
-                  <td className="small muted">{x.sub}</td>
+                  <td><Link className="cell-link" href={`/first-pick/${tab}?champ=${x.id}${x.role ? `&role=${x.role}` : ""}`}><ChampionRow name={x.label} role={listRole(x)} size="sm" /></Link></td>
+                  <td className="xs muted">{x.sub}</td>
                 </tr>
               ))}
             </tbody>
@@ -60,11 +62,6 @@ export function FirstPickView({ tab, names, sources, stats, draftLabels, bot, mi
         </div>
         <div>
           {selected && <PairingCard item={selected} names={names} sources={sources} draftLabels={draftLabels} />}
-          {selectedId && (
-            <p className="small" style={{ marginTop: 8 }}>
-              <Link href={`/?${selected?.kind === "bot" ? "bot" : selected?.kind === "top" ? "top" : (selected?.record as { role: string }).role.toLowerCase()}=${selectedId}`}>Open in Draft Room →</Link>
-            </p>
-          )}
         </div>
       </div>
     </>

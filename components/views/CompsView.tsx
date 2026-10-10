@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import { EvidenceBadge, SourceLinks } from "@/components/ui";
+import { ChampIcon, PageHeader, SourceBadge, SourceLinks } from "@/components/ui";
 import { ROLES, type CompShell, type ProDraft, type Source } from "@/lib/schema";
 
 const DIFF_ORDER = ["easy", "easy-medium", "medium", "hard"];
@@ -22,48 +22,62 @@ export function CompsView({ names, sources, drafts, allShells }: {
     .filter((s) => !kind || s.kind === kind)
     .filter((s) => !difficulty || s.difficulty === difficulty)
     .sort((a, b) => DIFF_ORDER.indexOf(a.difficulty) - DIFF_ORDER.indexOf(b.difficulty));
+  const href = (o: Record<string, string | undefined>) => {
+    const q = new URLSearchParams(Object.entries({ kind, difficulty, ...o }).filter(([, v]) => v) as [string, string][]);
+    return `/comps${q.size ? `?${q}` : ""}`;
+  };
+  const KINDS: [string | undefined, string][] = [[undefined, "All"], ["observed", "Observed pro"], ["generalized", "Template"]];
   return (
     <>
-      <div className="page-head">
-        <h1>Comp Library</h1>
-        <span className="small muted">Copy the jobs, not necessarily the champions. Swaps are same-role champions with similar attributes.</span>
+      <PageHeader title="Comp Library" desc="Copy the jobs, not necessarily the champions. Swaps are same-role champions with similar attributes (general logic, not pro evidence)."
+        actions={<span className="row tight"><SourceBadge layer="pro" label="Observed pro comp" /><span className="badge outline">Template: generalized for Clash</span><SourceBadge layer="logic" label="Swaps: general logic" /></span>} />
+      <div className="row" style={{ marginBottom: 12, gap: 10 }}>
+        <nav className="seg" aria-label="Type">{KINDS.map(([k, l]) => <Link key={l} href={href({ kind: k })} className={kind === k ? "active" : undefined}>{l}</Link>)}</nav>
+        <nav className="seg" aria-label="Difficulty">
+          <Link href={href({ difficulty: undefined })} className={!difficulty ? "active" : undefined}>Any difficulty</Link>
+          {DIFF_ORDER.map((d) => <Link key={d} href={href({ difficulty: d })} className={difficulty === d ? "active" : undefined}>{d}</Link>)}
+        </nav>
+        <span className="xs muted tnum" style={{ marginLeft: "auto" }}>{shells.length} of {allShells.length} shells</span>
       </div>
-      <form key={params.toString()} className="filters">
-        <label>Type<select name="kind" defaultValue={kind ?? ""}><option value="">All</option><option value="observed">Observed (pro)</option><option value="generalized">Generalized for Clash</option></select></label>
-        <label>Difficulty<select name="difficulty" defaultValue={difficulty ?? ""}><option value="">All</option>{DIFF_ORDER.map((d) => <option key={d} value={d}>{d}</option>)}</select></label>
-        <button className="btn" type="submit">Filter</button>
-      </form>
-      <div className="grid cols-auto">
+      <div className="shell-grid">
         {shells.map((s) => {
           const d = s.proDraftId ? drafts[s.proDraftId] : undefined;
           return (
-            <div key={s.id} id={s.id} className="card">
-              <div className="row" style={{ justifyContent: "space-between" }}>
-                <h2 style={{ margin: 0 }}>{s.name}</h2>
-                <span className="row">
-                  <EvidenceBadge layer={s.kind === "observed" ? "pro" : "clash"} />
-                  <span className="badge plain">{s.difficulty}</span>
-                </span>
+            <article key={s.id} id={s.id} className={`panel shell ${s.kind}`}>
+              <div className="shell-head">
+                <div className="row between">
+                  <h2>{s.name}</h2>
+                  <span className="row tight">
+                    {s.kind === "observed" ? <SourceBadge layer="pro" label="Observed pro" /> : <span className="badge outline">Template</span>}
+                    <span className="badge plain">{s.difficulty}</span>
+                  </span>
+                </div>
+                <span className="xs muted">{s.kind === "observed" ? `${s.observedBy}${d ? `, ${d.seriesGame} vs ${d.opponent}` : ""}` : "Generalized for Clash"} · {s.identities.join(" · ")}</span>
               </div>
-              <p className="small muted">{s.kind === "observed" ? `Observed: ${s.observedBy}${d ? `, ${d.seriesGame} vs ${d.opponent}` : ""}` : "Generalized for Clash"} · {s.identities.join(" · ")}</p>
-              <table style={{ marginTop: 4 }}>
+              <table>
                 <tbody>
                   {ROLES.map((r) => (
                     <tr key={r} className={`role-${r}`}>
-                      <td style={{ width: 56 }}><span className="role-tag">{r.slice(0, 3)}</span></td>
-                      <td style={{ width: 96, fontWeight: 600 }}>{names[s.slots[r].champion]}</td>
-                      <td>{s.slots[r].job}<div className="small muted">Swap: {s.slots[r].swaps.map((x) => names[x]).join(", ")} <EvidenceBadge layer="logic" /></div></td>
+                      <td style={{ width: 150 }}><span className="row tight" style={{ flexWrap: "nowrap" }}><ChampIcon name={names[s.slots[r].champion]} role={r} size="sm" /><span><span className="role-tag" style={{ display: "flex" }}>{r}</span><b>{names[s.slots[r].champion]}</b></span></span></td>
+                      <td className="job">
+                        {s.slots[r].job}
+                        {s.slots[r].swaps.length > 0 && <span className="swaps" title="Same-role swaps with similar attributes (general draft logic)">
+                          <span className="faint">swap</span>{s.slots[r].swaps.map((x) => <span key={x} className="swap">{names[x]}</span>)}
+                        </span>}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              <p style={{ marginTop: 6 }}><b>Win condition:</b> {s.winCondition}</p>
-              <p className="small"><b>Why it works:</b> {s.why}</p>
-              <div className="row" style={{ justifyContent: "space-between" }}>
-                <SourceLinks ids={s.sources} sources={sources} />
-                <Link href={`/?shell=${s.id}`}>Use as template →</Link>
+              <div className="shell-foot">
+                <p className="wc"><b>Win condition:</b> {s.winCondition}</p>
+                <p className="xs muted"><b>Why it works:</b> {s.why}</p>
+                <div className="row between">
+                  <SourceLinks ids={s.sources} sources={sources} />
+                  <Link className="btn sm" href={`/?shell=${s.id}`}>Use as template →</Link>
+                </div>
               </div>
-            </div>
+            </article>
           );
         })}
       </div>
