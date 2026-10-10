@@ -87,6 +87,14 @@ describe("mid / jungle", () => {
     expect(mj("skarner").clashDefault).not.toContain("azir");
   });
 
+  it("Ahri ↔ Vi is each other's saved default (alan, 2026-10-10)", () => {
+    expect(mj("ahri").clashDefault[0]).toBe("vi");
+    expect(mj("vi").clashDefault[0]).toBe("ahri");
+    expect(mj("ahri").alternatives).not.toContain("vi");
+    expect(mj("ahri").clashDefault).toEqual(expect.arrayContaining(["pantheon", "wukong"]));
+    expect(mj("vi").clashDefault).toEqual(expect.arrayContaining(["akali", "syndra"]));
+  });
+
   it("no current Gen.G pattern presents Azir + Skarner", () => {
     const current = getGenG().filter((p) => p.era === "current-playoffs");
     for (const p of current) expect(/azir/i.test(p.title) && /skarner/i.test(p.title)).toBe(false);
