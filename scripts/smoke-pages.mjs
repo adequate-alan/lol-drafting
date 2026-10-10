@@ -90,6 +90,11 @@ check("open role is linked to its lane opponent (Top vs Ornn)", /vs Ornn/.test(v
 const counterText = await text('section.counters');
 check("Counters panel is separate and never invents a counter", /Counters/.test(counterText) && /vs Ornn/.test(counterText)
   && ((await page.locator("section.counters .counter-row").count()) > 0 || /No reliable counter data for Ornn/.test(counterText)), counterText.slice(0, 160));
+// Real DPM rows: Top into Aatrox has stored matchups that clear the thresholds (Fiora, Gwen, Gragas, Ornn).
+await open("/?vs=top:aatrox");
+await page.locator(".role-tab.role-TOP").click();
+const dpmCounters = (await page.locator("section.counters .counter-row").count()) + (await page.locator(".recs .fit-counter").count());
+check("Counters show stored DPM matchups (Top vs Aatrox)", dpmCounters > 0 && !/No reliable counter data/.test(await text("section.counters")), `${dpmCounters} counters`);
 check("no Clash wording on the Draft Room", !/Clash/.test(await text("body")), "");
 // Draft Room workspace: the open role drives the list, one row per champion, Comp Check rail, pinned draft bar
 await open("/?bot=sivir&vs=renekton,,,ezreal,karma");
