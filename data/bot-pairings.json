@@ -957,12 +957,15 @@
     "champion": "mel",
     "role": "BOT",
     "clashDefault": [
-      "alistar"
+      "alistar",
+      "pyke",
+      "leona"
     ],
     "alternatives": [
       "karma",
       "bard",
-      "neeko"
+      "neeko",
+      "nautilus"
     ],
     "alternativeNotes": {},
     "observedProPairings": [
@@ -1006,7 +1009,8 @@
     "status": "added",
     "sources": [
       "golgg-game-82693"
-    ]
+    ],
+    "notes": "alan (2026-10-10): Pyke and Leona are also preferred supports beside Alistar; Nautilus an alternative. Synergy preference, not Pro Evidence (only Mel + Alistar has a recorded game)."
   },
   {
     "champion": "kaisa",

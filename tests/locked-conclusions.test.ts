@@ -89,6 +89,13 @@ describe("bot lane Clash defaults", () => {
     expect(bot("swain").clashDefault).not.toContain("seraphine");
   });
 
+  it("Mel → Alistar / Pyke / Leona preferred, Nautilus an alternative (alan, 2026-10-10)", () => {
+    expect(bot("mel").clashDefault).toEqual(["alistar", "pyke", "leona"]);
+    expect(bot("mel").alternatives).toEqual(["karma", "bard", "neeko", "nautilus"]);
+    // Synergy only: the one recorded pro game is still Mel + Alistar.
+    expect(bot("mel").observedProPairings.map((o) => o.champion)).toEqual(["alistar"]);
+  });
+
   it("every BOT pool champion has a Synergy record", () => {
     const pool = getPool().find((p) => p.role === "BOT")!;
     for (const id of [...pool.core, ...pool.depth, ...pool.flex]) expect(bot(id).clashDefault.length, id).toBeGreaterThan(0);
