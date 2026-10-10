@@ -241,7 +241,9 @@ await page.locator(".theme-toggle").click();
   await naut.hover();
   await page.waitForTimeout(350);
   const nb = await naut.boundingBox(), cb = await page.locator(".hovercard").boundingBox().catch(() => null);
-  check("comps: hover card floats beside the champion, inside the viewport", !!cb && (cb.x >= nb.x + nb.width || cb.x + cb.width <= nb.x) && cb.y >= 0 && cb.y + cb.height <= 900, JSON.stringify(cb));
+  // The card opens below (or above) the lineup: it must not cover the hovered champion or any comp-mate's portrait.
+  const lineupBox = await page.locator("#mage-bot-siege .lineup").boundingBox();
+  check("comps: hover card opens clear of the lineup, inside the viewport", !!cb && !!nb && (cb.y >= nb.y + nb.height || cb.y + cb.height <= lineupBox.y) && cb.y >= 0 && cb.y + cb.height <= 900, JSON.stringify(cb));
   check("comps: hovering champions never moves the lineup", (await rowBoxes()) === rows0, "");
   // Regression: the cursor resting exactly on the boundary between two champions must not open and close the card in a loop.
   const slots = page.locator("#mage-bot-siege .lu-slot");
@@ -273,7 +275,8 @@ await page.locator(".theme-toggle").click();
   await drawer.locator("[aria-label='Next champion']").click();
   check("comps: next moves through the comp in place", (await drawer.locator("h2").textContent()) === "Gnar" && page.url().endsWith("/comps/"), page.url());
   await page.keyboard.press("Escape");
-  check("comps: Escape closes and keeps the scroll position", (await drawer.count()) === 0 && (await page.evaluate(() => scrollY)) === y, "");
+  const escDrawers = await drawer.count(), escY = await page.evaluate(() => scrollY);
+  check("comps: Escape closes and keeps the scroll position", escDrawers === 0 && escY === y, `${escDrawers} drawer, scrollY ${escY} vs ${y}`);
   await naut.click();
   await page.goBack();
   await page.waitForTimeout(400);

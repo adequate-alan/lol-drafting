@@ -109,20 +109,26 @@ function relationLines(t: { id: string; role: Role }, data: DrawerData, index: D
   return lines;
 }
 
-/** Beside the champion (right, else left), else below or above; always inside the viewport, never over the champion. */
-function place(a: DOMRect, w: number, h: number) {
+/** Beside the champion (right, else left), else below or above; always inside the viewport, never over the champion.
+ *  `below` (a horizontal lineup) tries under the anchor first, then above, so the card never covers its comp-mates. */
+function place(a: DOMRect, w: number, h: number, side: "beside" | "below" = "beside") {
   const m = 8, gap = 8, vw = window.innerWidth, vh = window.innerHeight;
   const clampY = (y: number) => Math.min(Math.max(m, y), vh - h - m);
   const clampX = (x: number) => Math.min(Math.max(m, x), vw - w - m);
+  if (side === "below") {
+    const left = clampX(a.left + a.width / 2 - w / 2);
+    if (a.bottom + gap + h + m <= vh) return { left, top: a.bottom + gap };
+    if (a.top - gap - h >= m) return { left, top: a.top - gap - h };
+  }
   if (a.right + gap + w + m <= vw) return { left: a.right + gap, top: clampY(a.top - 4) };
   if (a.left - gap - w >= m) return { left: a.left - gap - w, top: clampY(a.top - 4) };
   if (a.bottom + gap + h + m <= vh) return { left: clampX(a.left), top: a.bottom + gap };
   return { left: clampX(a.left), top: Math.max(m, a.top - gap - h) };
 }
 
-export function ChampionHoverCard({ target, anchor, data, index, focus, comp, onEnter, onLeave }: {
+export function ChampionHoverCard({ target, anchor, data, index, focus, comp, side, onEnter, onLeave }: {
   target: DrawerTarget; anchor: HTMLElement; data: DrawerData; index: DrawerIndex; focus?: Focus; comp?: CompContext;
-  onEnter: () => void; onLeave: () => void;
+  side?: "beside" | "below"; onEnter: () => void; onLeave: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ top: number; left: number } | undefined>(undefined);
@@ -133,8 +139,8 @@ export function ChampionHoverCard({ target, anchor, data, index, focus, comp, on
   // Measured before paint, so the card never shows in the wrong place.
   useLayoutEffect(() => {
     const c = ref.current!.getBoundingClientRect();
-    setPos(place(anchor.getBoundingClientRect(), c.width, c.height));
-  }, [anchor, target.id, target.role]);
+    setPos(place(anchor.getBoundingClientRect(), c.width, c.height, side));
+  }, [anchor, target.id, target.role, side]);
 
   const tier = poolTier(target.id, role, data);
   const games = index.games.filter((g) => g.picks[role] === target.id);
