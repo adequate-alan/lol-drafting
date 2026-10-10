@@ -3,7 +3,10 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { picksOf, profile, RULES, warnings, type Draft, type DraftWarning } from "@/lib/evaluate";
 import { recommend, teamNeeds, winConditions, type FitKind, type Recommendation } from "@/lib/recommend";
-import { ROLES, type Attr, type Role, type Source } from "@/lib/schema";
+import { ROLES, type Attr, type Counters, type Role, type Source } from "@/lib/schema";
+import type { DrawerData } from "@/lib/data";
+import { counterPicks, describeEvidence, detectEnemyRoles, enemyParam, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
+import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
 import { describeLine } from "@/lib/evidence";
 import { proSuggestions, similarProDrafts, similarShells, type ProByRole, type SuggestData } from "@/lib/suggest";
 import { PairingCard, type CardRecord } from "./PairingCard";
@@ -23,15 +26,23 @@ const severityOf = (w: DraftWarning): Severity => (CRITICAL.has(w.id) ? "critica
 const KIND_LABEL: Record<FitKind, string> = { saved: "Saved", synergy: "Synergy", need: "Need", matchup: "Matchup", risk: "Risk" };
 const ENEMY_SLOTS = 5;
 
-export function DraftRoom({ data, sources, initial, initialEnemy, metaPicks }: {
-  data: SuggestData;
+export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, metaPicks }: {
+  data: SuggestData & { counters: Counters };
+  drawerData: DrawerData;
   sources: Record<string, Source>;
   initial: Draft;
-  initialEnemy: string[];
+  initialEnemy: EnemyDraft; // roles from ?vs=top:aatrox, or detected for bare ids
   metaPicks: Record<string, { picks: number; winRate: number; lowSample: boolean }>;
 }) {
   const [draft, setDraft] = useState<Draft>(initial);
-  const [enemy, setEnemy] = useState<(string | undefined)[]>(() => Array.from({ length: ENEMY_SLOTS }, (_, i) => initialEnemy[i]));
+  const [enemy, setEnemy] = useState<(string | undefined)[]>(() => {
+    const ids = ROLES.map((r) => initialEnemy[r]).filter(Boolean);
+    return Array.from({ length: ENEMY_SLOTS }, (_, i) => ids[i]);
+  });
+  // Roles given in the URL stick to their champion; everything else is placed by detectEnemyRoles.
+  const [enemyHints] = useState(() => new Map(ROLES.flatMap((r) => (initialEnemy[r] ? [[initialEnemy[r]!, r] as const] : []))));
+  const [drawer, setDrawer] = useState<DrawerTarget>();
+  const drawerIndex = useDrawerIndex(drawerData);
   const names = useMemo(() => Object.fromEntries(data.champions.map((c) => [c.id, c.name])), [data.champions]);
   const byName = useMemo(() => {
     const m = new Map<string, string>();
@@ -46,11 +57,18 @@ export function DraftRoom({ data, sources, initial, initialEnemy, metaPicks }: {
     setEnemy(nextEnemy);
     const q = new URLSearchParams();
     ROLES.forEach((r) => next[r] && q.set(r.toLowerCase(), next[r]!));
-    const vs = nextEnemy.filter(Boolean);
+    const placed = enemyRolesOf(nextEnemy);
+    const vs = [enemyParam(placed), ...nextEnemy.filter((id) => id && !Object.values(placed).includes(id))].filter(Boolean);
     if (vs.length) q.set("vs", vs.join(","));
     // window.location keeps the GitHub Pages base path; usePathname() would drop it.
     window.history.replaceState(null, "", `${window.location.pathname}${q.size ? `?${q.toString().replace(/%2C/g, ",")}` : ""}`);
   };
+  function enemyRolesOf(list: (string | undefined)[]): EnemyDraft {
+    const ids = list.filter((e): e is string => !!e);
+    const fixed: EnemyDraft = {};
+    for (const id of ids) { const r = enemyHints.get(id); if (r && !fixed[r]) fixed[r] = id; }
+    return detectEnemyRoles(ids, data.champions, fixed);
+  }
   const lock = (role: Role, id: string | undefined) => update({ ...draft, [role]: id });
   const lockEnemy = (i: number, id: string | undefined) => update(draft, enemy.map((e, j) => (j === i ? id : e)));
 
@@ -63,7 +81,13 @@ export function DraftRoom({ data, sources, initial, initialEnemy, metaPicks }: {
   const needs = picks.length ? teamNeeds(picks) : [];
   const plans = winConditions(picks);
   const enemyPlans = winConditions(enemyPicks);
-  const recs = recommend(draft, enemyIds, data);
+  const enemyDraft = enemyRolesOf(enemy);
+  const enemyRoleOf = new Map(ROLES.flatMap((r) => (enemyDraft[r] ? [[enemyDraft[r]!, r] as const] : [])));
+  // The full draft-fit list, so a counter can say where it ranks overall. The visible list is its top five.
+  const fits = recommend(draft, enemyIds, data, Infinity);
+  const recs = Object.fromEntries(Object.entries(fits).map(([r, list]) => [r, list!.slice(0, 5)])) as typeof fits;
+  const counters = counterPicks(draft, enemyDraft, data, fits);
+  const counterOf = (role: Role, id: string) => counters[role]?.counters.find((c) => c.champion === id);
   const proAll = proSuggestions(draft, data.proDrafts, { botPairings: data.botPairings, events: data.events, sources }, Infinity);
   const pro: ProByRole = Object.fromEntries(Object.entries(proAll).map(([r, list]) => [r, list!.slice(0, 6)]));
   const proCount = (role: Role, id: string) => proAll[role]?.find((p) => p.champion === id)?.score ?? 0;
@@ -97,7 +121,7 @@ export function DraftRoom({ data, sources, initial, initialEnemy, metaPicks }: {
       <div className="team-label enemy">Enemy</div>
       <div className="draft-slots enemy-slots">
         {enemy.map((id, i) => (
-          <DraftSlot key={i} label={`Enemy ${i + 1}`} ariaLabel={`Enemy ${i + 1} champion`} listKey={`enemy-${i}`} value={id} names={names} byName={byName}
+          <DraftSlot key={i} label={id && enemyRoleOf.has(id) ? `Enemy ${enemyRoleOf.get(id)}` : `Enemy ${i + 1}`} ariaLabel={`Enemy ${i + 1} champion`} listKey={`enemy-${i}`} value={id} names={names} byName={byName}
             champions={data.champions} taken={taken} onLock={(v) => lockEnemy(i, v)} compact />
         ))}
       </div>
@@ -182,7 +206,7 @@ export function DraftRoom({ data, sources, initial, initialEnemy, metaPicks }: {
                   <div key={role} className={`fit-role role-${role}`}>
                     <div className="fit-role-head"><span className="role-tag">{role}</span></div>
                     {recs[role]?.length
-                      ? recs[role]!.map((r, i) => <FitRow key={r.champion} rec={r} rank={i} proGames={proCount(role, r.champion)} names={names} onPick={() => lock(role, r.champion)} />)
+                      ? recs[role]!.map((r, i) => <FitRow key={r.champion} rec={r} rank={i} proGames={proCount(role, r.champion)} counter={counterOf(role, r.champion)} names={names} onPick={() => lock(role, r.champion)} />)
                       : <p className="rec-note">Nothing stands out yet.</p>}
                   </div>
                 ))}
@@ -191,6 +215,9 @@ export function DraftRoom({ data, sources, initial, initialEnemy, metaPicks }: {
             )}
             <div className="panel-foot xs faint">Matchups use champion attributes, not lane stats. Pro games never add to the score.</div>
           </section>
+
+          {enemyIds.length > 0 && <CountersPanel counters={counters} open={open} enemy={enemyDraft} names={names} dpm={data.counters.dpm.length + data.counters.dpmDuos.length > 0}
+            onOpen={(id, role) => setDrawer({ id, role })} />}
 
           <section className="panel rec-columns single" aria-label="Pro Pairings">
             <RecommendationGroup layer="pro" title="Pro Pairings" data={pro} open={open} names={names} onPick={lock}
@@ -236,13 +263,14 @@ export function DraftRoom({ data, sources, initial, initialEnemy, metaPicks }: {
           </div>
         </div>
       </div>
+      {drawer && <ChampionDrawer target={drawer} data={drawerData} index={drawerIndex} onClose={() => setDrawer(undefined)} onSelect={setDrawer} />}
     </>
   );
 }
 
 const STATUS = { default: "Default", alt: "Alt", fits: "Fits" } as const;
 
-function FitRow({ rec, rank, proGames, names, onPick }: { rec: Recommendation; rank: number; proGames: number; names: Record<string, string>; onPick: () => void }) {
+function FitRow({ rec, rank, proGames, counter, names, onPick }: { rec: Recommendation; rank: number; proGames: number; counter?: Counter; names: Record<string, string>; onPick: () => void }) {
   const [open, setOpen] = useState(false);
   const name = names[rec.champion] ?? rec.champion;
   const lead = rec.parts.find((p) => p.points > 0) ?? rec.parts[0];
@@ -255,6 +283,7 @@ function FitRow({ rec, rank, proGames, names, onPick }: { rec: Recommendation; r
           <span className="name">{name}</span>
           {rec.saved && <span className={`status-tag ${rec.saved}`} title="Saved pairing">{STATUS[rec.saved]}</span>}
           {proGames > 0 && <span className="badge pro" title="Pro games with this champion next to one of your picks. Evidence only, not part of the score.">Pro {proGames}</span>}
+          {counter && <span className="status-tag counter" title={`${counterLine(counter, names)}. Counter signal only, not part of the score.`}>Counter</span>}
           {risk && <span className="status-tag risk">Risk</span>}
         </span>
         <span className="fit-reason truncate">{lead?.text}</span>
@@ -376,5 +405,55 @@ function RecommendationGroup({ layer, title, data, open, names, onPick, empty, n
         ))}
       </div>
     </div>
+  );
+}
+
+const STRENGTH = { strong: "Strong", favorable: "Favorable" } as const;
+const vsNames = (ids: string[], names: Record<string, string>) => ids.map((v) => names[v] ?? v).join(" + ");
+const counterLine = (c: Counter, names: Record<string, string>) =>
+  `${STRENGTH[c.evidence.strength]} vs ${vsNames(c.evidence.vs, names)}${c.evidence.with ? ` with ${names[c.evidence.with] ?? c.evidence.with}` : ""} · ${describeEvidence(c.evidence)}`;
+
+// Counters: favourable into an enemy pick. A separate signal: never scored, never merged into Synergy, Pro Pairings or
+// Logic. Each row says where the champion ranks on overall draft fit, so a counter never reads as the best pick by itself.
+function CountersPanel({ counters, open, enemy, names, dpm, onOpen }: {
+  counters: Partial<Record<Role, RoleCounters>>; open: Role[]; enemy: EnemyDraft; names: Record<string, string>; dpm: boolean;
+  onOpen: (id: string, role: Role) => void;
+}) {
+  const roles = open.filter((r) => counters[r]);
+  return (
+    <section className="panel counters" aria-label="Counters">
+      <div className="panel-head"><h2>Counters</h2><span className="xs faint">into the enemy lane · pool first</span></div>
+      <div className="rec-body">
+        {!roles.length && <p className="empty">No enemy lane opponent for an open role yet.</p>}
+        {roles.map((role) => {
+          const rc = counters[role]!;
+          return (
+            <div key={role} className={`rec-role role-${role}`}>
+              <div className="counter-head"><span className="role-tag">{role}</span><span className="xs muted">vs {vsNames(rc.vs, names)}{rc.scope === "duo" ? " (duo)" : ""}</span></div>
+              {!rc.counters.length && <p className="empty">No reliable counter data for {vsNames(rc.vs, names)}.</p>}
+              {rc.counters.map((c) => {
+                const e = c.evidence;
+                const why = [counterLine(c, names), e.note, `Pool: ${tierLabel(c.tier)}`,
+                  c.fitRank === 1 ? "Also the best overall draft fit" : c.fitRank ? `Overall draft fit: #${c.fitRank} (${c.fit!.score > 0 ? "+" : ""}${c.fit!.score})` : "No draft-fit reasons yet",
+                  ...c.cautions].filter(Boolean).join("\n");
+                return (
+                  <button key={c.champion} className={`rec-row counter-row ${c.tier ? "" : "ref"}`} title={why} onClick={() => onOpen(c.champion, role)}>
+                    <ChampIcon id={c.champion} name={names[c.champion] ?? c.champion} role={role} size="sm" />
+                    <span className="name">{names[c.champion] ?? c.champion}</span>
+                    <span className="strength">{STRENGTH[e.strength]}</span>
+                    <span className={`badge ${e.source === "pro" ? "pro" : "outline"}`}>{e.source === "pro" ? "Pro" : "DPM"}</span>
+                    <span className="ev truncate">{describeEvidence(e).replace(/^(Pro|DPM) · /, "")}{e.with ? ` · with ${names[e.with] ?? e.with}` : ""}</span>
+                    <span className={`tier ${c.tier ?? "none"}`}>{tierLabel(c.tier)}</span>
+                    <span className={`fit-rank ${c.fitRank === 1 ? "best" : ""}`}>{c.fitRank === 1 ? "Best fit" : c.fitRank ? `Fit #${c.fitRank}` : "Unranked"}</span>
+                  </button>
+                );
+              })}
+              {rc.note && <p className="rec-note">{rc.note}</p>}
+            </div>
+          );
+        })}
+      </div>
+      <div className="panel-foot xs faint">Counters never change the draft-fit ranking. Pro needs {"\u2265"}3 recorded games with results; {dpm ? "DPM is SoloQ data." : "DPM.LOL data is not loaded yet."}</div>
+    </section>
   );
 }

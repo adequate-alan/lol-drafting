@@ -467,7 +467,8 @@ async function main() {
   };
 
   // ---------- write + validate ----------
-  const out: Record<keyof typeof Files, unknown> = {
+  // counters.json is not in the workbook; the importer leaves it alone.
+  const out: Record<Exclude<keyof typeof Files, "counters.json">, unknown> = {
     "champions.json": champions,
     "sources.json": [...sources.values()],
     "bot-pairings.json": botPairings,
