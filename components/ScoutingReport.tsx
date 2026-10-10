@@ -6,7 +6,7 @@ import { groupObserved, shortDate, type EventMap } from "@/lib/evidence";
 import type { CardRecord } from "./PairingCard";
 import { ChampIcon, Chip, ChipList, Duo, SourceLinks } from "./ui";
 
-// First Pick scouting report: one selected champion, read top to bottom as header, Synergy, Pro Pairings, Warning,
+// Champion Synergies scouting report: one selected champion, read top to bottom as header, Synergy, Pro Pairings, Warning,
 // Sources. Presentation only; the three layers keep their own sections and colors. The Draft Room keeps PairingCard.
 
 type Names = Record<string, string>;

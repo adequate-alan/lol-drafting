@@ -3,7 +3,7 @@
 // full ChampionDrawer. A page opts in by wrapping its content in <ChampionProvider>; without one, every
 // InteractiveChampion renders its children unchanged, so shared pieces (Chip, Duo) stay static elsewhere.
 //
-// `focus` is the champion the page is about (the selected First Pick champion): the card then says how the hovered
+// `focus` is the champion the page is about (the selected Champion Synergies champion): the card then says how the hovered
 // champion relates to it, one line per layer (Synergy / Pro / Logic), never merged.
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";

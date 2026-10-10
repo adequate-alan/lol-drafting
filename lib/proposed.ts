@@ -117,7 +117,7 @@ export interface ProposedCard {
   confirmed: { label: string; ids: string[]; role: Role }[];
 }
 
-/** A First Pick / Draft Room profile for a champion and role, built from the proposed layer plus any confirmed links. */
+/** A Champion Synergies / Draft Room profile for a champion and role, built from the proposed layer plus any confirmed links. */
 export function proposedCard(id: string, role: Role, records: ProposedRecord[], data: LinkData): ProposedCard {
   const order = PARTNER_ROLES[role];
   const at = (r: Role) => (order.includes(r) ? order.indexOf(r) : order.length);

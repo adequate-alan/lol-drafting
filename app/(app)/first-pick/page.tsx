@@ -1,12 +1,7 @@
-import Link from "next/link";
-import { BASE_PATH } from "@/lib/site";
+import { Forward } from "@/components/Forward";
 
-// A static host can't send a server redirect, so the page forwards itself to the Bot tab.
+// The section was First Pick until 2026-10-10 (alan renamed it Champion Synergies); old links keep working.
+// "First Pick" is reserved for a future blind-pick feature, so nothing new should live here.
 export default function FirstPickIndex() {
-  return (
-    <>
-      <meta httpEquiv="refresh" content={`0;url=${BASE_PATH}/first-pick/bot/`} />
-      <p className="small muted">Opening <Link href="/first-pick/bot">First Pick: Bot</Link>…</p>
-    </>
-  );
+  return <Forward to="/synergies/bot/" label="Champion Synergies: Bot" />;
 }

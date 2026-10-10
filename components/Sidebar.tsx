@@ -7,7 +7,7 @@ import { ThemeToggle } from "./ThemeToggle";
 
 const I = {
   draft: <path d="M2.5 3.5h11v9h-11zM5.5 3.5v9M8 3.5v9M10.5 3.5v9" />,
-  first: <path d="M3 13V3l9 3.5L3 10" />,
+  synergy: <path d="M6 4.25a3.75 3.75 0 1 0 0 7.5a3.75 3.75 0 1 0 0-7.5M10 4.25a3.75 3.75 0 1 0 0 7.5a3.75 3.75 0 1 0 0-7.5" />,
   comps: <path d="M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z" />,
   pool: <path d="M8 2.5 13.5 5.5 8 8.5 2.5 5.5zM2.5 8.25 8 11.25l5.5-3M2.5 10.75 8 13.75l5.5-3" />,
   pro: <path d="M2.5 3.5h11M2.5 6.5h11M2.5 9.5h11M2.5 12.5h7" />,
@@ -17,7 +17,7 @@ const I = {
 const GROUPS = [
   ["Draft", [
     ["/", "Draft Room", I.draft],
-    ["/first-pick/bot", "First Pick", I.first],
+    ["/synergies/bot", "Synergies", I.synergy],
     ["/comps", "Comp Library", I.comps],
     ["/pool", "Champion Pool", I.pool],
   ]],

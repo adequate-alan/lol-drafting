@@ -1,13 +1,13 @@
-// First Pick rail: pool tier first (alan, 2026-10-10), then confidence, then name.
+// Champion Synergies rail: pool tier first (alan, 2026-10-10), then confidence, then name.
 import { describe, expect, it } from "vitest";
 import { getBotPairings, getMidJungle, getPool } from "@/lib/data";
 import { nameMap } from "@/lib/lookup";
-import { poolTierRank, sortBotPicks, sortMidJunglePicks } from "@/lib/first-pick-order";
+import { poolTierRank, sortBotPicks, sortMidJunglePicks } from "@/lib/synergy-order";
 
 const pool = getPool();
 const names = nameMap();
 
-describe("first pick order", () => {
+describe("synergy rail order", () => {
   it("lists bot picks core first, flex last, and keeps every pick", () => {
     const rows = sortBotPicks(getBotPairings(), pool, names);
     expect(rows).toHaveLength(getBotPairings().length);
