@@ -1,4 +1,5 @@
 import type { Role, Source } from "@/lib/schema";
+import { ChampIcon } from "./ChampIcon";
 
 // Shared building blocks. Every page composes these instead of styling its own markup.
 
@@ -86,19 +87,12 @@ export function WarningBadge({ severity }: { severity: Severity }) {
   return <span className={`badge ${cls}`}>{label}</span>;
 }
 
-/** Two-letter champion monogram. Portraits aren't bundled, so the tile carries the role colour instead. */
-export function champInitials(name: string) {
-  const words = name.replace(/[^A-Za-z ]/g, " ").trim().split(/\s+/);
-  return words.length > 1 ? (words[0][0] + words[1][0]).toUpperCase() : name.slice(0, 2).replace(/^./, (c) => c.toUpperCase());
-}
-export function ChampIcon({ name, role, size = "sm" }: { name: string; role?: Role; size?: "xs" | "sm" | "md" | "lg" | "xl" }) {
-  return <span className={`champ ${size === "md" ? "" : size} ${role ? `role-${role}` : ""}`} aria-hidden="true">{champInitials(name)}</span>;
-}
+export { ChampIcon, champInitials } from "./ChampIcon";
 
-export function Chip({ name, role, note, strong, dim }: { name: string; role?: Role; note?: string; strong?: boolean; dim?: boolean }) {
+export function Chip({ id, name, role, note, strong, dim }: { id?: string; name: string; role?: Role; note?: string; strong?: boolean; dim?: boolean }) {
   return (
     <span className={`chip ${strong ? "strong" : ""} ${dim ? "dim" : ""} ${role ? `role-${role}` : ""}`} title={note}>
-      <ChampIcon name={name} role={role} size="xs" />
+      <ChampIcon id={id} name={name} role={role} size="xs" />
       {name}
       {note && <small>{note}</small>}
     </span>
@@ -109,19 +103,19 @@ export function ChipList({ ids, names, role, empty = "none", notes, strong, dim 
   ids: string[]; names: Record<string, string>; role?: Role; empty?: string; notes?: Record<string, string>; strong?: boolean; dim?: boolean;
 }) {
   if (!ids.length) return <span className="muted small">{empty}</span>;
-  return <span className="chip-list">{ids.map((id) => <Chip key={id} name={names[id] ?? id} role={role} note={notes?.[id]} strong={strong} dim={dim} />)}</span>;
+  return <span className="chip-list">{ids.map((id) => <Chip key={id} id={id} name={names[id] ?? id} role={role} note={notes?.[id]} strong={strong} dim={dim} />)}</span>;
 }
 
 /** A champion name with its monogram, for table cells and lists. */
-export function ChampionRow({ name, role, hit = false, size = "xs" }: { name: string; role?: Role; hit?: boolean; size?: "xs" | "sm" }) {
-  return <span className={`cell-champ ${hit ? "hit" : ""} ${role ? `role-${role}` : ""}`}><ChampIcon name={name} role={role} size={size} />{name}</span>;
+export function ChampionRow({ id, name, role, hit = false, size = "sm" }: { id?: string; name: string; role?: Role; hit?: boolean; size?: "xs" | "sm" | "md" }) {
+  return <span className={`cell-champ ${hit ? "hit" : ""} ${role ? `role-${role}` : ""}`}><ChampIcon id={id} name={name} role={role} size={size} />{name}</span>;
 }
 
 export function Duo({ bot, support, names }: { bot: string; support: string; names: Record<string, string> }) {
   return (
     <span className="chip plain duo">
-      <ChampIcon name={names[bot] ?? bot} role="BOT" size="xs" />{names[bot] ?? bot}<span className="plus">+</span>
-      <ChampIcon name={names[support] ?? support} role="SUPPORT" size="xs" />{names[support] ?? support}
+      <ChampIcon id={bot} name={names[bot] ?? bot} role="BOT" size="xs" />{names[bot] ?? bot}<span className="plus">+</span>
+      <ChampIcon id={support} name={names[support] ?? support} role="SUPPORT" size="xs" />{names[support] ?? support}
     </span>
   );
 }

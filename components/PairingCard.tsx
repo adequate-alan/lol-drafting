@@ -38,7 +38,7 @@ function Observed({ list, names, sources, role, draftLabels }: {
     <div>
       {list.map((o) => (
         <div key={o.champion} className="obs-row">
-          <Chip name={names[o.champion] ?? o.champion} role={role} />
+          <Chip id={o.champion} name={names[o.champion] ?? o.champion} role={role} />
           {o.backedByGame
             ? <span className="badge pro tnum">{o.proDraftIds.length} game{o.proDraftIds.length > 1 ? "s" : ""}</span>
             : o.sources.length > 0 && o.sources.every((id) => sources[id]?.pendingClaim)
@@ -57,10 +57,10 @@ function Observed({ list, names, sources, role, draftLabels }: {
 
 const confidenceLabel = (c: string) => c.replace("-", " ");
 
-function Head({ role, name, children }: { role: Role; name: string; children: React.ReactNode }) {
+function Head({ role, id, name, children }: { role: Role; id: string; name: string; children: React.ReactNode }) {
   return (
     <div className={`pick-head role-${role}`}>
-      <ChampIcon name={name} role={role} size="lg" />
+      <ChampIcon id={id} name={name} role={role} size="lg" />
       <div><span className="role-tag">{role}</span><h2>{name}</h2></div>
       <span className="end">{children}</span>
     </div>
@@ -74,7 +74,7 @@ export function PairingCard({ item, names, sources, compact = false, draftLabels
     const r = item.record;
     return (
       <article className="panel pick-card">
-        <Head role="BOT" name={names[r.champion]}>
+        <Head role="BOT" id={r.champion} name={names[r.champion]}>
           <span className="badge plain">{confidenceLabel(r.confidence)} confidence</span><span className="badge plain">{r.status}</span>
         </Head>
         <div className="identities">{r.identities.join(" · ")}</div>
@@ -102,7 +102,7 @@ export function PairingCard({ item, names, sources, compact = false, draftLabels
     const other: Role = r.role === "MID" ? "JUNGLE" : "MID";
     return (
       <article className="panel pick-card">
-        <Head role={r.role} name={names[r.anchor]}>
+        <Head role={r.role} id={r.anchor} name={names[r.anchor]}>
           <span className="badge plain">{confidenceLabel(r.confidence)} confidence</span>
           <span className={`badge ${r.status === "downgraded" ? "caution" : "plain"}`}>{r.status}</span>
         </Head>
@@ -132,7 +132,7 @@ export function PairingCard({ item, names, sources, compact = false, draftLabels
   const r = item.record;
   return (
     <article className="panel pick-card">
-      <Head role="TOP" name={names[r.champion]}>
+      <Head role="TOP" id={r.champion} name={names[r.champion]}>
         <span className="badge clash" title="Clash blind grade">Blind {r.blindGrade}</span>
         <span className={`badge ${r.status === "downgraded" ? "caution" : "plain"}`}>{r.status}</span>
       </Head>

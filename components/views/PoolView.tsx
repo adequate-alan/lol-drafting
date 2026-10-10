@@ -33,7 +33,7 @@ export function PoolView({ names, sources, stats, entries }: {
                 return (
                   <tr key={r.role + r.id} className={`role-${r.role}`}>
                     <td><span className="role-tag">{r.role}</span></td>
-                    <td><ChampionRow name={names[r.id] ?? r.id} role={r.role} size="sm" /></td>
+                    <td><ChampionRow id={r.id} name={names[r.id] ?? r.id} role={r.role} size="sm" /></td>
                     <td><span className={`badge ${r.tier === "core" ? "clash" : r.tier === "depth" ? "plain" : "outline"}`}>{r.label}</span></td>
                     <td className="num">{st ? st.picks : <span className="faint">–</span>}</td>
                     <td className="num">{st?.bans ?? <span className="faint">–</span>}</td>

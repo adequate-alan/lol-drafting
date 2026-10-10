@@ -75,8 +75,10 @@ Change these only when alan explicitly says so, then update the test in the same
 - Gold (`--accent`) marks selection and importance. Each layer keeps its own treatment: Clash = strongest (gold rule),
   Pro = teal evidence styling, Logic = neutral gray. Don't restyle one layer to look like another.
 - Shared pieces live in `components/ui.tsx` (PageHeader, Panel, SourceBadge, ChampIcon, ChampionRow, DataTable,
-  WarningBadge, Metric), `components/Sidebar.tsx` and `components/ThemeToggle.tsx`. Champion tiles are monograms;
-  no champion images are bundled.
+  WarningBadge, Metric), `components/Sidebar.tsx` and `components/ThemeToggle.tsx`. Champion icons are Data Dragon squares
+  (`lib/champion-icons.ts`; patch resolved at build time in `next.config.ts`), loaded by the browser, with initials as
+  the fallback. No champion images are stored in the repo.
+- `scripts/smoke-pages.mjs` runs against the live Pages URL after every deploy (the `smoke` job in pages.yml).
 - Warning severity (critical / caution) in the Draft Room is a display grouping only; the rules are in `lib/evaluate.ts`.
 
 ## Commands

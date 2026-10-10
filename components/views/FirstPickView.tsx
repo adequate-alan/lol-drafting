@@ -53,7 +53,7 @@ export function FirstPickView({ tab, names, sources, stats, draftLabels, bot, mi
             <tbody>
               {list.map((x) => (
                 <tr key={x.id + (x.role ?? "")} className={`clickable ${x.id === selectedId && (!x.role || selected?.kind !== "mid-jungle" || selected.record.role === x.role) ? "selected" : ""}`}>
-                  <td><Link className="cell-link" href={`/first-pick/${tab}?champ=${x.id}${x.role ? `&role=${x.role}` : ""}`}><ChampionRow name={x.label} role={listRole(x)} size="sm" /></Link></td>
+                  <td><Link className="cell-link" href={`/first-pick/${tab}?champ=${x.id}${x.role ? `&role=${x.role}` : ""}`}><ChampionRow id={x.id} name={x.label} role={listRole(x)} size="sm" /></Link></td>
                   <td className="xs muted">{x.sub}</td>
                 </tr>
               ))}

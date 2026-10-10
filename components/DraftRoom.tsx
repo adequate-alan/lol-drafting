@@ -71,8 +71,7 @@ export function DraftRoom({ data, sources, initial, metaPicks }: {
       <div className="draft-slots">
         {ROLES.map((role) => (
           <DraftSlot key={role} role={role} value={draft[role]} names={names} byName={byName}
-            options={data.champions.filter((c) => c.roles.includes(role)).map((c) => c.name)}
-            allNames={data.champions.map((c) => c.name)}
+            champions={data.champions} taken={Object.values(draft).filter(Boolean) as string[]}
             onLock={(id) => lock(role, id)} />
         ))}
       </div>
@@ -153,7 +152,7 @@ export function DraftRoom({ data, sources, initial, metaPicks }: {
                     <tbody>{similar.map(({ draft: d }) => (
                       <tr key={d.id}>
                         <td><Link className="cell-link" style={{ whiteSpace: "nowrap" }} href={`/pro-drafts?id=${d.id}`}>{d.seriesGame}</Link></td><td className="muted" style={{ whiteSpace: "nowrap" }}>{d.team}</td>
-                        {ROLES.map((r) => <td key={r}><ChampionRow name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={draft[r] === d.picks[r]} /></td>)}
+                        {ROLES.map((r) => <td key={r}><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={draft[r] === d.picks[r]} /></td>)}
                       </tr>))}</tbody>
                   </table>
                 </div>
@@ -182,29 +181,53 @@ export function DraftRoom({ data, sources, initial, metaPicks }: {
   );
 }
 
-function DraftSlot({ role, value, names, byName, options, allNames, onLock }: {
+function DraftSlot({ role, value, names, byName, champions, taken, onLock }: {
   role: Role; value?: string; names: Record<string, string>; byName: Map<string, string>;
-  options: string[]; allNames: string[]; onLock: (id: string | undefined) => void;
+  champions: SuggestData["champions"]; taken: string[]; onLock: (id: string | undefined) => void;
 }) {
   const [text, setText] = useState("");
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(0);
   const listId = `champs-${role}`;
-  const commit = () => {
-    const id = byName.get(text.trim().toLowerCase());
-    if (id) { onLock(id); setText(""); }
+  const q = text.trim().toLowerCase();
+  // Champions who play this role first, then everyone else; already-locked picks are left out.
+  const matches = useMemo(() => {
+    const hit = (c: (typeof champions)[number]) => !q || c.name.toLowerCase().includes(q) || c.aliases.some((a) => a.toLowerCase().includes(q));
+    const pool = champions.filter((c) => !taken.includes(c.id) && hit(c));
+    const starts = (c: (typeof champions)[number]) => (q && c.name.toLowerCase().startsWith(q) ? 0 : 1);
+    return [...pool].sort((a, b) => Number(!a.roles.includes(role)) - Number(!b.roles.includes(role)) || starts(a) - starts(b) || a.name.localeCompare(b.name)).slice(0, 8);
+  }, [champions, taken, q, role]);
+  const pick = (id: string | undefined) => { if (id) { onLock(id); setText(""); setOpen(false); setActive(0); } };
+  const onKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowDown") { e.preventDefault(); setOpen(true); setActive((i) => Math.min(i + 1, matches.length - 1)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setActive((i) => Math.max(i - 1, 0)); }
+    else if (e.key === "Enter") { e.preventDefault(); pick(byName.get(q) ?? matches[active]?.id); }
+    else if (e.key === "Escape") setOpen(false);
   };
-  const others = allNames.filter((n) => !options.includes(n));
   return (
     <div className={`draft-slot role-${role} ${value ? "locked" : "open"}`}>
-      <span className="slot-icon">{value ? <ChampIcon name={names[value]} role={role} size="xl" /> : <span className="champ xl">{role.slice(0, 1)}</span>}</span>
+      <span className="slot-icon">{value ? <ChampIcon id={value} name={names[value]} role={role} size="xl" /> : <span className="champ xl"><span className="mono">{role.slice(0, 1)}</span></span>}</span>
       <div className="slot-top"><span className="role-tag">{role}</span><span className="status">{value ? "Locked" : "Open"}</span></div>
       <div className="slot-main">
         {value ? <span className="slot-name truncate">{names[value]}</span> : (
-          <>
-            <input list={listId} value={text} placeholder="Search champion" aria-label={`${role} champion`}
-              onChange={(e) => { setText(e.target.value); if (byName.has(e.target.value.trim().toLowerCase())) { onLock(byName.get(e.target.value.trim().toLowerCase())); setText(""); } }}
-              onKeyDown={(e) => e.key === "Enter" && commit()} />
-            <datalist id={listId}>{[...options, ...others].map((n) => <option key={n} value={n} />)}</datalist>
-          </>
+          <div className="picker">
+            <input value={text} placeholder="Search champion" aria-label={`${role} champion`} role="combobox" aria-autocomplete="list"
+              aria-expanded={open && matches.length > 0} aria-controls={listId} aria-activedescendant={open && matches[active] ? `${listId}-${matches[active].id}` : undefined}
+              onChange={(e) => { setText(e.target.value); setOpen(true); setActive(0); }}
+              onFocus={() => setOpen(true)} onBlur={() => setOpen(false)} onKeyDown={onKey} />
+            {open && matches.length > 0 && (
+              <ul id={listId} role="listbox" className="picker-list">
+                {matches.map((c, i) => (
+                  <li key={c.id} id={`${listId}-${c.id}`} role="option" aria-selected={i === active} className={i === active ? "active" : undefined}
+                    onMouseDown={(e) => { e.preventDefault(); pick(c.id); }} onMouseEnter={() => setActive(i)}>
+                    <ChampIcon id={c.id} name={c.name} role={c.roles.includes(role) ? role : undefined} size="sm" />
+                    <span className="name">{c.name}</span>
+                    <span className="roles">{c.roles.includes(role) ? c.roles.join(" · ") : `off-role · ${c.roles.join(" · ")}`}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         )}
       </div>
       <div className="slot-end">{value && <button className="icon-btn" onClick={() => onLock(undefined)} aria-label={`Clear ${role}`} title={`Clear ${role}`}>×</button>}</div>
@@ -249,7 +272,7 @@ function RecommendationGroup({ layer, title, data, open, names, onPick, empty, n
               const why = layer === "pro" ? s.reasons.slice(0, 2).join(", ") + (s.reasons.length > 2 ? ` +${s.reasons.length - 2}` : "") : s.reasons.join(" · ");
               return (
                 <button key={s.champion} className={`rec-row ${tier ?? ""}`} title={s.reasons.join("\n")} onClick={() => onPick(role, s.champion)}>
-                  <ChampIcon name={names[s.champion] ?? s.champion} role={role} size="sm" />
+                  <ChampIcon id={s.champion} name={names[s.champion] ?? s.champion} role={role} size="md" />
                   <span className="name">{names[s.champion] ?? s.champion}</span>
                   {tier ? <span className="tier">{TIER_LABEL[tier]}</span> : layer === "pro" ? <span className="count">{s.score}×</span> : <span />}
                   <span className="why truncate">{why}</span>

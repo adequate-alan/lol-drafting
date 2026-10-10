@@ -54,7 +54,7 @@ export function MetaView({ names, sources, meta, rules, checked, notRefreshed, s
           <tbody>
             {stats.map((s) => (
               <tr key={`${s.champion}-${s.role}`} className={`role-${s.role}`}>
-                <td><ChampionRow name={names[s.champion] ?? s.champion} role={s.role} size="sm" /></td>
+                <td><ChampionRow id={s.champion} name={names[s.champion] ?? s.champion} role={s.role} size="sm" /></td>
                 <td style={{ whiteSpace: "nowrap" }}><span className="role-tag">{s.role}</span>{s.flexRole && <span className="xs muted"> / {s.flexRole}</span>}</td>
                 <td className="num">{s.picks}</td>
                 <td className="num">{s.bans ?? <span className="faint">–</span>}</td>

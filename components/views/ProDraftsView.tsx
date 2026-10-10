@@ -70,7 +70,7 @@ export function ProDraftsView({ names, sources, all }: {
             <div className="draft-slots" style={{ marginBottom: 8 }}>
               {ROLES.map((r) => (
                 <div key={r} className={`draft-slot locked role-${r}`} style={{ minHeight: 58 }}>
-                  <span className="slot-icon"><ChampIcon name={names[selected.picks[r]] ?? selected.picks[r]} role={r} size="lg" /></span>
+                  <span className="slot-icon"><ChampIcon id={selected.picks[r]} name={names[selected.picks[r]] ?? selected.picks[r]} role={r} size="lg" /></span>
                   <div className="slot-top"><span className="role-tag">{r}</span></div>
                   <div className="slot-main"><span className="slot-name truncate" style={{ fontSize: 14 }}>{names[selected.picks[r]] ?? selected.picks[r]}</span></div>
                 </div>
@@ -102,7 +102,7 @@ export function ProDraftsView({ names, sources, all }: {
                 <td><Link className="cell-link" href={link(d.id)} style={{ whiteSpace: "nowrap" }}>{d.seriesGame}</Link></td>
                 <td style={{ whiteSpace: "nowrap" }}>{d.team}</td>
                 <td className="muted" style={{ whiteSpace: "nowrap" }}>{d.opponent}</td>
-                {ROLES.map((r) => <td key={r}><ChampionRow name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={d.picks[r] === f.champion} /></td>)}
+                {ROLES.map((r) => <td key={r}><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={d.picks[r] === f.champion} /></td>)}
                 <td className="xs wrap">{d.read}</td>
                 <td><SourceLinks ids={d.sources} sources={sources} /></td>
               </tr>

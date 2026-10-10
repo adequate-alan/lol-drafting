@@ -58,7 +58,7 @@ export function CompsView({ names, sources, drafts, allShells }: {
                 <tbody>
                   {ROLES.map((r) => (
                     <tr key={r} className={`role-${r}`}>
-                      <td style={{ width: 150 }}><span className="row tight" style={{ flexWrap: "nowrap" }}><ChampIcon name={names[s.slots[r].champion]} role={r} size="sm" /><span><span className="role-tag" style={{ display: "flex" }}>{r}</span><b>{names[s.slots[r].champion]}</b></span></span></td>
+                      <td style={{ width: 150 }}><span className="row tight" style={{ flexWrap: "nowrap" }}><ChampIcon id={s.slots[r].champion} name={names[s.slots[r].champion]} role={r} size="ml" /><span><span className="role-tag" style={{ display: "flex" }}>{r}</span><b>{names[s.slots[r].champion]}</b></span></span></td>
                       <td className="job">
                         {s.slots[r].job}
                         {s.slots[r].swaps.length > 0 && <span className="swaps" title="Same-role swaps with similar attributes (general draft logic)">
