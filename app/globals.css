@@ -60,7 +60,7 @@
   --clash: #806800;  --clash-line: var(--gold); --clash-subtle: #F7F1DA;
   --pro: #23697a;    --pro-line: #3b8698;   --pro-subtle: #e6f0f2;
   --logic: #55585f;  --logic-line: #92949a; --logic-subtle: #F0EFEB;
-  --counter: #9b3462; --counter-line: #c25786; --counter-subtle: #f8e9ef;
+  --counter: #8F4545; --counter-line: #B85B5B; --counter-subtle: #f6eaea;
   --danger: #b42318; --danger-subtle: #fcebe9; --danger-line: #e0877f;
   --caution: #9a4d0a; --caution-subtle: #fbf0e1; --caution-line: #e3a35c;
   --success: #2c7a4b; --success-subtle: #e5f3ea;
@@ -103,7 +103,7 @@
   --clash: #D9B744;  --clash-line: var(--gold-bright); --clash-subtle: rgba(201, 162, 39, .1);
   --pro: #79c0cc;    --pro-line: #4f9bab;   --pro-subtle: rgba(79, 155, 171, .12);
   --logic: #a9abb2;  --logic-line: #6a6d76; --logic-subtle: rgba(160, 162, 170, .08);
-  --counter: #e88bb2; --counter-line: #b5537d; --counter-subtle: rgba(232, 139, 178, .1);
+  --counter: #d48a84; --counter-line: #9a4b4b; --counter-subtle: rgba(184, 91, 91, .1);
   --danger: #f1857a; --danger-subtle: rgba(241, 133, 122, .12); --danger-line: #b8564c;
   --caution: #efab62; --caution-subtle: rgba(239, 171, 98, .11); --caution-line: #a8702f;
   --success: #6cc895; --success-subtle: rgba(108, 200, 149, .11);
@@ -902,7 +902,7 @@ table.mini th, table.mini td { height: auto; padding: 3px var(--s3); }
 .role-switch:hover { color: var(--accent-text); }
 .role-switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-radius: var(--r-sm); }
 
-/* Counters: the fourth signal (favourable into an enemy pick). Its own rose rule, never gold, teal or gray. */
+/* Counters: the fourth signal (favourable into an enemy pick). Muted burgundy: enemy / counter context, never gold, teal or gray. */
 .panel.counters > .panel-head { box-shadow: inset 0 2px 0 var(--counter-line); }
 .panel.counters > .panel-head h2 { color: var(--counter); }
 .counter-head { display: flex; align-items: center; gap: var(--s3); margin-bottom: 2px; }
