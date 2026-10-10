@@ -5,7 +5,7 @@ import { picksOf, profile, RULES, warnings, type Draft, type DraftWarning } from
 import { recommend, teamNeeds, winConditions, type Need, type Recommendation } from "@/lib/recommend";
 import { ROLES, type Attr, type Role, type Source } from "@/lib/schema";
 import { describeLine } from "@/lib/evidence";
-import { counterPicks, describeEvidence, enemyParam, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
+import { counterPicks, describeEvidence, describePro, enemyParam, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
 import { proSuggestions, similarProDrafts, similarShells, type ProSuggestion, type SuggestData } from "@/lib/suggest";
 import type { DraftData, DrawerData } from "@/lib/data";
 import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
@@ -373,10 +373,10 @@ function FitRow({ rec, pro, counter, names, hovered, onHover, onPick, onOpen }: 
   );
 }
 
-const STRENGTH = { strong: "Strong", favorable: "Favorable" } as const;
+const STRENGTH = { confirmed: "Strong · pro agrees", strong: "Strong", favorable: "Favorable" } as const;
 const vsNames = (ids: string[], names: Record<string, string>) => ids.map((v) => names[v] ?? v).join(" + ");
 const counterLine = (c: Counter, names: Record<string, string>) =>
-  `${STRENGTH[c.evidence.strength]} vs ${vsNames(c.evidence.vs, names)}${c.evidence.with ? ` with ${names[c.evidence.with] ?? c.evidence.with}` : ""} · ${describeEvidence(c.evidence)}`;
+  `${STRENGTH[c.strength]} vs ${vsNames(c.evidence.vs, names)}${c.evidence.with ? ` with ${names[c.evidence.with] ?? c.evidence.with}` : ""} · ${describeEvidence(c.evidence)}${c.pro ? ` · ${describePro(c.pro)}` : ""}`;
 
 // A counter outside the visible fit list: never scored, so it says where it ranks on overall draft fit.
 function CounterRow({ c, names, onOpen }: { c: Counter; names: Record<string, string>; onOpen: () => void }) {
@@ -388,9 +388,9 @@ function CounterRow({ c, names, onOpen }: { c: Counter; names: Record<string, st
     <button className={`rec-row counter-row ${c.tier ? "" : "ref"}`} title={why} onClick={onOpen}>
       <ChampIcon id={c.champion} name={name} role={c.role} size="sm" />
       <span className="name">{name}</span>
-      <span className="strength">{STRENGTH[e.strength]}</span>
-      <span className={`badge ${e.source === "pro" ? "pro" : "outline"}`}>{e.source === "pro" ? "Pro" : "DPM"}</span>
-      <span className="ev truncate">{describeEvidence(e).replace(/^(Pro|DPM) · /, "")}{e.with ? ` · with ${names[e.with] ?? e.with}` : ""}</span>
+      <span className="strength">{STRENGTH[c.strength]}</span>
+      <span className="badge outline">DPM</span>
+      <span className="ev truncate">{describeEvidence(e).replace(/^DPM · /, "")}{e.with ? ` · with ${names[e.with] ?? e.with}` : ""}{c.pro && <span className="pro-sample"> · {describePro(c.pro)}</span>}</span>
       <span className={`tier ${c.tier ?? "none"}`}>{tierLabel(c.tier)}</span>
       <span className="fit-rank">{c.fitRank ? `Fit #${c.fitRank}` : "Unranked"}</span>
     </button>

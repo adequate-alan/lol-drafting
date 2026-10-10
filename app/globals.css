@@ -1025,3 +1025,4 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .picker-list li.remove .name { font-weight: 550; }
 .picker-list li.remove:hover { background: var(--danger-subtle); color: var(--danger); }
 .picker-list li.remove:hover .x { color: var(--danger); }
+.counter-row .pro-sample { color: var(--pro); }
