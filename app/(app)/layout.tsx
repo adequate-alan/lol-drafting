@@ -9,7 +9,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <main className="main">{children}</main>
         <footer className="site-foot">
           Draft Assistant was created under Riot Games&apos; &quot;Legal Jibber Jabber&quot; policy using assets owned by Riot Games.
-          Riot Games does not endorse or sponsor this project.
+          Riot Games does not endorse or sponsor this project. Gen.G and GenRang are trademarks of Gen.G Esports; this
+          project is not affiliated with Gen.G.
         </footer>
       </div>
       <UpdateNotice />

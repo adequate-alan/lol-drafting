@@ -10,6 +10,7 @@ import { proSuggestions, similarProDrafts, similarShells, type ProSuggestion, ty
 import type { DraftData, DrawerData } from "@/lib/data";
 import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
 import { ChampionHoverCard, useHoverIntent } from "./ChampionInteraction";
+import { GenRang } from "./GenRang";
 import { PairingCard, type CardRecord } from "./PairingCard";
 import { ChampIcon, ChampionRow, SourceBadge, WarningBadge, type Severity } from "./ui";
 
@@ -191,7 +192,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
                         <span className="k-saved">Synergy</span><span className="k-counter">Counters</span><span className="k-pro">Pro</span><span className="k-need">Logic</span>
                       </span>
                     </div>
-                    {!started ? <p className="rec-empty">Lock a pick to start.</p>
+                    {!started ? <div className="rec-empty start"><GenRang size={44} /><span>Lock a pick to start. Recommendations for the open role appear here.</span></div>
                       : activeRecs.length
                         ? activeRecs.map((r) => (
                           <FitRow key={r.champion} rec={r} pro={proByChamp.get(r.champion)} counter={counterByChamp.get(r.champion)} names={names} hovered={hover === r.champion}

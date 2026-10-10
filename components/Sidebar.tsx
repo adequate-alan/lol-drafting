@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { GenRang } from "./GenRang";
 import { ThemeToggle } from "./ThemeToggle";
 
 const I = {
@@ -83,6 +84,9 @@ export function Sidebar() {
           ))}
         </nav>
         <div className="sidebar-foot">
+          <Link href="/geng" className="side-mascot" title="GenRang, Gen.G's mascot">
+            <GenRang size={30} /><span>Gen.G<small>GenRang</small></span>
+          </Link>
           <ThemeToggle />
         </div>
       </aside>

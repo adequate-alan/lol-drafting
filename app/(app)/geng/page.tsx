@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BrandMark } from "@/components/Sidebar";
+import { GenRang } from "@/components/GenRang";
 import { ChampionRow, SectionHeader, SourceLinks } from "@/components/ui";
 import { getGenG, getProDrafts } from "@/lib/data";
 import { nameMap, sourceMap } from "@/lib/lookup";
@@ -22,15 +22,16 @@ export default function GenG() {
   return (
     <>
       <div className="brand-band">
-        <BrandMark />
-        <div style={{ display: "grid", gap: 3 }}>
-          <div className="row"><h1>Gen.G</h1></div>
+        <div className="band-text">
+          <span className="band-eyebrow">Gen.G Esports · LCK</span>
+          <h1>Gen.G</h1>
           <span className="desc">Gen.G's recorded playoff drafts. Earlier-2026 tendencies are marked as such.</span>
+          <div className="band-stats">
+            <span><b className="tnum">{drafts.length}</b> exact drafts</span>
+            <span><b className="tnum">{current}</b> current patterns</span>
+          </div>
         </div>
-        <div className="row" style={{ marginLeft: "auto", gap: 18 }}>
-          <span className="xs" style={{ color: "var(--side-muted)" }}><b style={{ color: "var(--side-text-strong)", fontSize: 16 }} className="tnum">{drafts.length}</b> exact drafts</span>
-          <span className="xs" style={{ color: "var(--side-muted)" }}><b style={{ color: "var(--side-text-strong)", fontSize: 16 }} className="tnum">{current}</b> current patterns</span>
-        </div>
+        <GenRang variant="full" size={112} className="band-mascot" />
       </div>
       <div className="grid cols-2">
         {KINDS.map(({ kind, title }) => {
