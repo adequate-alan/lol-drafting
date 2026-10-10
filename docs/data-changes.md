@@ -2,6 +2,18 @@
 
 `data/` is canonical. Changes made by hand after the import are logged here; re-running the importer would undo them.
 
+## 2026-10-10: DPM.LOL lane matchups (counters)
+
+`data/counters.json` now holds 2,066 DPM.LOL lane-matchup rows for the 87 pool champions (patch 16.20, ranked solo
+queue, Emerald+, all regions), browser-collected from dpm.lol in alan's own browser on his Mac (dpm.lol answers Claude's
+cloud environments with a Cloudflare challenge). Each row is the pool champion's win rate against that lane opponent,
+`origin: "dpm-ingest"`; `dpmStatus.note` records the browser collection. Opponents outside the current 88 champions were
+dropped; a later re-ingest can add them once the full roster lands. 246 rows clear the display thresholds (300+ games,
+52%+). No duo-vs-duo rows and no pro results were added.
+
+`delta` is omitted: DPM returns none for lane matchups. When DPM does give one it is a fraction (0.03), while
+`describeEvidence` expects win-rate points (3); convert before storing.
+
 ## 2026-10-10: citation corrections supplied during review
 
 | Record | Before | After | Why |
