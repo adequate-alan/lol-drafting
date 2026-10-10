@@ -10,13 +10,14 @@ import type { DrawerData } from "@/lib/data";
 import { PageHeader } from "@/components/ui";
 import type { EventMap } from "@/lib/evidence";
 import { TABS, type Tab } from "./first-pick-tabs";
-import type { BotPairing, MetaStat, MidJunglePairing, Role, Source, TopPick } from "@/lib/schema";
+import { sortBotPicks, sortMidJunglePicks } from "@/lib/first-pick-order";
+import type { BotPairing, MetaStat, MidJunglePairing, PoolEntry, Role, Source, TopPick } from "@/lib/schema";
 
 const GRADE_ORDER = ["A", "A-", "B+", "B", "B-", "C+", "C"];
 
-export function FirstPickView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top, drawerData }: {
+export function FirstPickView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top, pool, drawerData }: {
   drawerData: DrawerData; tab: Tab; names: Record<string, string>; sources: Record<string, Source>; events: EventMap; stats: Record<string, MetaStat>;
-  draftLabels: Record<string, string>; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[];
+  draftLabels: Record<string, string>; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; pool: PoolEntry[];
 }) {
   const params = useSearchParams();
   const champ = params.get("champ") || undefined;
@@ -26,12 +27,12 @@ export function FirstPickView({ tab, names, sources, events, stats, draftLabels,
   let list: { id: string; label: string; sub: string; role?: string }[] = [];
   let selected: CardRecord | undefined;
   if (tab === "bot") {
-    const rows = bot;
+    const rows = sortBotPicks(bot, pool, names);
     list = rows.map((r) => ({ id: r.champion, label: names[r.champion], sub: r.clashDefault.map((s) => names[s]).join(" / ") }));
     const r = rows.find((x) => x.champion === (champ ?? rows[0].champion));
     if (r) selected = { kind: "bot", record: r };
   } else if (tab === "mid-jungle") {
-    const rows = midJungle;
+    const rows = sortMidJunglePicks(midJungle, pool, names);
     list = rows.map((r) => ({ id: r.anchor, role: r.role, label: names[r.anchor], sub: `${r.role === "MID" ? "Mid" : "Jungle"} · ${r.clashDefault.map((s) => names[s]).join(" / ")}${r.status === "downgraded" ? " · downgraded" : ""}` }));
     const r = rows.find((x) => x.anchor === (champ ?? rows[0].anchor) && (!role || x.role === role));
     if (r) selected = { kind: "mid-jungle", record: r };
