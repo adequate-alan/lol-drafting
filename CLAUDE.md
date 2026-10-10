@@ -87,7 +87,8 @@ Change these only when alan explicitly says so, then update the test in the same
 - Ziggs → Nautilus / Leona. No saved alternatives (no Bard, no Karma). Pyke and Camille are observed pro variants only.
   General Draft Logic: "Ziggs needs reliable engage or catch somewhere else in the composition if support is not providing it."
 - Xayah → Rakan. Kalista → Renata. Zeri → Yuumi.
-- Ahri ↔ Vi are each other's primary. Yone (mid) ↔ Maokai and Yone ↔ Sejuani are saved pairs, both ways.
+- Ahri ↔ Vi are each other's primary. Yone (mid) ↔ Maokai and Yone ↔ Sejuani are saved pairs, both ways. LeBlanc ↔ Lee Sin is saved (LeBlanc a
+  secondary mid for Lee Sin; Lee Sin LeBlanc's only partner).
 - Skarner + Locke is the current pairing. Azir + Skarner is an earlier-2026 tendency only, never the current Gen.G default.
 
 ## Hosting and security
