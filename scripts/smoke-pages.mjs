@@ -419,9 +419,13 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await page.keyboard.press("ArrowDown");
   const activeId = await team.getAttribute("aria-activedescendant");
   await page.keyboard.press("Enter");
-  await page.waitForTimeout(200);
+  // The filter lives in the URL; router.replace lands asynchronously.
+  await page.waitForURL(/[?&]team=/, { timeout: 4000 }).catch(() => {});
+  await page.waitForTimeout(300);
   const picked = new URL(page.url()).searchParams.get("team");
-  check("dropdowns: arrows + Enter choose an option, focus stays on the trigger", opened && !!activeId && !!picked && (await team.evaluate((e) => e === document.activeElement)) && (await page.locator(".select-menu").count()) === 0, `team=${picked}`);
+  const focused = await page.evaluate(() => document.activeElement?.getAttribute("role") === "combobox" && document.activeElement.closest(".select-field")?.textContent.startsWith("Team"));
+  const menuOpen = await page.locator(".select-menu").count();
+  check("dropdowns: arrows + Enter choose an option, focus stays on the trigger", opened && !!activeId && !!picked && focused && menuOpen === 0, JSON.stringify({ opened, activeId: !!activeId, picked, focused, menuOpen }));
   check("dropdowns: menu uses the display font, tinted selected row with a check, labelled for screen readers", /grotesk/i.test(look.font ?? "") && look.selBg && look.selBg !== "rgba(0, 0, 0, 0)" && look.check === "visible" && !!look.label, JSON.stringify(look));
   await page.keyboard.press("Space");
   await page.keyboard.press("Escape");
