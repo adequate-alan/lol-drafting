@@ -139,7 +139,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
           {lockedCount >= 2 && (warns.length
             ? <span className="row tight">{critical > 0 && <span className="badge danger">{critical} critical</span>}{warns.length - critical > 0 && <span className="badge caution">{warns.length - critical} caution</span>}</span>
             : <span className="badge success">No warnings</span>)}
-          <button className="btn sm" onClick={() => { setFocus(undefined); update({}, ROLES.map(() => undefined)); }} disabled={!started}>Clear draft</button>
+          <button className="btn sm" title="Unlock every pick on both teams" onClick={() => { setFocus(undefined); update({}, ROLES.map(() => undefined)); }} disabled={!started}>Clear draft</button>
         </div>
       </header>
 
@@ -216,7 +216,10 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
 
           {started && active && (
             <section className="rec-group pro" aria-label="Pro Pairings">
-              <header><h3>Pro Pairings</h3><span className="xs faint">{ROLE_LABEL[active]}</span></header>
+              <header><h3>Pro Pairings</h3><span className="xs faint">{ROLE_LABEL[active]}</span>
+                <span className="xs faint src-line" title="Recorded Gol.gg games. Evidence only, never part of the score.">
+                  Gol.gg · {(data.events ?? []).map((e) => `${e.short} ${e.patch}${e.status === "ongoing" ? " (ongoing)" : ""}`).join(" · ")}
+                </span></header>
               {!activePro.length && <p className="empty">{lockedCount ? "No recorded pro game uses these picks." : "Lock a pick to start."}</p>}
               {activePro.length > 0 && !proOnly.length && <p className="empty">Every pro pairing for this role is in the list above.</p>}
               {proOnly.map((s) => <ProRow key={s.champion} s={s} role={active} names={names} onPick={() => lock(active, s.champion)} />)}
@@ -237,7 +240,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
             {!similar.length ? <p className="xs muted">Nothing recorded shares a champion with this draft.</p> : (
               <div className="table-wrap">
                 <table>
-                  <thead><tr><th>Game</th><th>Team</th>{ROLES.map((r) => <th key={r}>{ROLE_LABEL[r]}</th>)}</tr></thead>
+                  <thead><tr><th>Game</th><th>Team</th>{ROLES.map((r) => <th key={r}><span className={`role-tag role-${r}`}>{r}</span></th>)}</tr></thead>
                   <tbody>{similar.map(({ draft: d }) => (
                     <tr key={d.id}>
                       <td><Link className="cell-link nowrap" href={`/pro-drafts?id=${d.id}`}>{d.seriesGame}</Link></td><td className="muted nowrap">{d.team}</td>
@@ -490,7 +493,7 @@ function DraftSlot({ side, role, value, active = false, preview, onActivate, onL
     else if (editing && !text && (e.key === "Delete" || e.key === "Backspace")) { e.preventDefault(); remove(); }
   };
   const cls = `draft-slot ${ally ? `role-${role}` : "enemy"} ${value ? "locked" : "open"} ${active ? "active" : ""}`;
-  const roleTag = <span className="role-tag">{role}</span>;
+  const roleTag = <span className={`role-tag role-${role}`}>{role}</span>;
 
   if (value && !editing) {
     const name = names[value] ?? value;
@@ -500,7 +503,7 @@ function DraftSlot({ side, role, value, active = false, preview, onActivate, onL
         <button className="slot-body" onClick={() => onOpen(value, role)} data-drawer-trigger aria-haspopup="dialog"
           onPointerEnter={(e) => { if (e.pointerType === "mouse") onHover({ id: value, role }, e.currentTarget); }}
           onPointerLeave={(e) => { if (e.pointerType === "mouse") onUnhover(); }}>
-          <span className="slot-icon" key={value}><ChampIcon id={value} name={name} role={ally ? role : undefined} size={ally ? "xl" : "lg"} /></span>
+          <span className="slot-icon" key={value}><ChampIcon id={value} name={name} role={ally ? role : undefined} size={ally ? "xxl" : "lg"} /></span>
           <span className="slot-text">{roleTag}<span className="slot-name truncate">{name}</span></span>
         </button>
         <button className="slot-change" onClick={() => setEditing(true)} aria-label={`Change ${label} (${name})`} title={`Pick a different ${ROLE_LABEL[role]}, or remove ${name}`}>Change</button>
@@ -514,8 +517,8 @@ function DraftSlot({ side, role, value, active = false, preview, onActivate, onL
       <div className="slot-body">
         <span className="slot-icon">
           {shown
-            ? <span className="ghost"><ChampIcon id={shown} name={names[shown] ?? shown} role={role} size={ally ? "xl" : "lg"} /></span>
-            : <span className={`champ ${ally ? "xl" : "lg"} empty`}><span className="mono">{role.slice(0, 1)}</span></span>}
+            ? <span className="ghost"><ChampIcon id={shown} name={names[shown] ?? shown} role={role} size={ally ? "xxl" : "lg"} /></span>
+            : <span className={`champ ${ally ? "xxl" : "lg"} empty`}><span className="mono">{role.slice(0, 1)}</span></span>}
         </span>
         <span className="slot-text">
           {roleTag}

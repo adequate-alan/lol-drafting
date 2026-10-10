@@ -67,8 +67,8 @@ const confidenceLabel = (c: string) => c.replace("-", " ");
 function Head({ role, id, name, children }: { role: Role; id: string; name: string; children: React.ReactNode }) {
   return (
     <div className={`pick-head role-${role}`}>
-      <ChampIcon id={id} name={name} role={role} size="lg" />
-      <div><span className="role-tag">{role}</span><h2>{name}</h2></div>
+      <ChampIcon id={id} name={name} role={role} size="xl" />
+      <div><span className={`role-tag role-${role}`}>{role}</span><h2>{name}</h2></div>
       <span className="end">{children}</span>
     </div>
   );

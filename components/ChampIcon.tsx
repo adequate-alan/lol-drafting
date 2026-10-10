@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { championIconUrl } from "@/lib/champion-icons";
 import type { Role } from "@/lib/schema";
 
-export type IconSize = "xs" | "sm" | "md" | "ml" | "lg" | "xl";
+export type IconSize = "xs" | "sm" | "md" | "ml" | "lg" | "xl" | "xxl";
 
 /** Two-letter fallback shown under the icon, and on its own if the icon fails to load. */
 export function champInitials(name: string) {

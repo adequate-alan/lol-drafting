@@ -27,21 +27,24 @@ const GROUPS = [
   ]],
 ] as const;
 
+// Draft Assistant mark: a stem and five draft slots whose ends trace a "D". The middle slot is the pick being made.
+// Custom artwork, not a Riot logo. The sidebar is dark in both themes, so the gold reads on either.
 export function BrandMark({ className = "brand-mark" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 26 26" aria-hidden="true">
-      <rect x="1" y="1" width="24" height="24" rx="5" fill="currentColor" opacity=".08" />
-      <rect x="1" y="1" width="24" height="24" rx="5" fill="none" stroke="var(--side-accent)" strokeWidth="1.5" />
-      <path d="M7 8h12M7 13h8M7 18h12" stroke="var(--side-accent)" strokeWidth="2" strokeLinecap="square" />
+    <svg className={className} viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="3" y="2.5" width="3" height="23" rx="1" fill="var(--side-accent)" />
+      {[[2.5, 11], [7.5, 15], [12.5, 17], [17.5, 15], [22.5, 11]].map(([y, w], i) => (
+        <rect key={y} x="8" y={y} width={w} height="3" rx="1" fill="var(--side-accent)" opacity={i === 2 ? 1 : 0.5} />
+      ))}
     </svg>
   );
 }
 
 function Brand() {
   return (
-    <Link href="/" className="brand">
+    <Link href="/" className="brand" aria-label="Draft Assistant, Draft Room">
       <BrandMark />
-      <span className="brand-name"><span className="brand-eyebrow">League of Legends </span>Draft Assistant</span>
+      <span className="brand-name">Draft Assistant<span className="brand-sub">League drafting tool</span></span>
     </Link>
   );
 }

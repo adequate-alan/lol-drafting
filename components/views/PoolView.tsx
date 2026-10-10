@@ -55,7 +55,7 @@ export function PoolView({ names, data, bot, midJungle, top }: {
       <div className="toolbar pool-tools">
         <nav className="seg" aria-label="Role">
           <button className={!role ? "active" : undefined} onClick={() => set("role", undefined)}>All</button>
-          {ROLES.map((r) => <button key={r} className={role === r ? "active" : undefined} onClick={() => set("role", r)}>{r}</button>)}
+          {ROLES.map((r) => <button key={r} className={role === r ? "active" : undefined} onClick={() => set("role", r)}><span className={`role-tag role-${r}`}>{r}</span></button>)}
         </nav>
         <select aria-label="Pool tier" value={tier ?? ""} onChange={(e) => set("tier", e.target.value || undefined)}>
           <option value="">All tiers</option>
@@ -89,7 +89,7 @@ export function PoolView({ names, data, bot, midJungle, top }: {
                   <tr id={`pool-${r.role}-${r.id}`} className={`role-${r.role} pool-row ${isOpen ? "open" : ""}`} onClick={() => setOpen(isOpen ? undefined : key)}
                     tabIndex={0} aria-expanded={isOpen} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setOpen(isOpen ? undefined : key); } }}>
                     <td><ChampionRow id={r.id} name={names[r.id] ?? r.id} role={r.role} size="md" /></td>
-                    <td className="hide-sm"><span className="role-tag">{r.role}</span></td>
+                    <td className="hide-sm"><span className={`role-tag role-${r.role}`}>{r.role}</span></td>
                     <td><span className={`tier ${r.tier}`}>{TIER_LABEL[r.tier]}</span></td>
                     <td className="num">{s ? <>{s.picks}{s.lowSample && <span className="low" title="Fewer than 5 picks">*</span>}</> : DASH}</td>
                     <td className="num hide-sm">{s?.bans ?? DASH}</td>
@@ -121,7 +121,7 @@ export function PoolView({ names, data, bot, midJungle, top }: {
         <div className="pool-changes">
           {data.pool.filter((p) => !role || p.role === role).map((p) => (
             <div key={p.role} className={`pattern role-${p.role}`}>
-              <span className="role-tag">{p.role}</span>
+              <span className={`role-tag role-${p.role}`}>{p.role}</span>
               <p className="small" style={{ marginTop: 2 }}>{p.changed}</p>
               <SourceLinks ids={p.sources} sources={data.sources} />
             </div>

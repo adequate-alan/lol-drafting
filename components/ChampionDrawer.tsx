@@ -141,7 +141,7 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
   return (
     <aside ref={ref} className="drawer" role="dialog" aria-modal="false" aria-labelledby={titleId} tabIndex={-1} data-champ={id} data-role={role}>
       <header className="drawer-head">
-        <ChampIcon id={id} name={name(id)} role={role} size="lg" />
+        <ChampIcon id={id} name={name(id)} role={role} size="xl" />
         <div className="drawer-title">
           <h2 id={titleId}>{name(id)}</h2>
           <span className="xs muted drawer-roles">

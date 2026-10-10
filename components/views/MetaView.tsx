@@ -102,7 +102,7 @@ export function MetaView({ names, sources, input, pool, rules, drawerData }: {
       <SectionHeader title="By role" meta={eventId ? selected[0].short : "All tournaments, newest stats first"} />
       <div className="toolbar">
         <nav className="seg scroll" aria-label="Role">
-          {ROLES.map((r) => <button key={r} className={role === r ? "active" : undefined} onClick={() => set("role", r)}>{r}</button>)}
+          {ROLES.map((r) => <button key={r} className={role === r ? "active" : undefined} onClick={() => set("role", r)}><span className={`role-tag role-${r}`}>{r}</span></button>)}
         </nav>
         <span className="count">{rows.length} champions</span>
       </div>
@@ -198,7 +198,7 @@ export function MetaView({ names, sources, input, pool, rules, drawerData }: {
                       {g.sides.map((s) => (
                         <div key={s.key} className="obs-row">
                           <span className="small nowrap"><b>{s.team ?? s.label}</b></span>
-                          {ROLES.filter((r) => s.picks[r]).map((r) => <span key={r} className="xs nowrap"><span className="role-tag">{r}</span> <Champ id={s.picks[r]!} r={r} size="xs" /></span>)}
+                          {ROLES.filter((r) => s.picks[r]).map((r) => <span key={r} className="xs nowrap"><span className={`role-tag role-${r}`}>{r}</span> <Champ id={s.picks[r]!} r={r} size="xs" /></span>)}
                           {s.pending && <span className="badge plain">pending refresh</span>}
                         </div>
                       ))}
