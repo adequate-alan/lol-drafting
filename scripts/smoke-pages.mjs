@@ -129,6 +129,17 @@ check("mobile menu opens and navigates", hiddenBefore === "hidden" && (await h1(
 const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
 check("no horizontal page scroll at 390px", overflow <= 0, `${overflow}px`);
 await page.setViewportSize({ width: 1440, height: 900 });
+// Adobe Fonts kit: read its families from the kit CSS, then confirm the browser can load them on this domain
+const kitCss = await fetch("https://use.typekit.net/lvt6ebv.css").then((r) => r.text()).catch(() => "");
+const kitFamilies = [...new Set([...kitCss.matchAll(/font-family:\s*"?([^";]+)"?;/g)].map((m) => m[1].trim()))];
+await open("/");
+const kitLoaded = await page.evaluate(async (fams) => {
+  const out = [];
+  for (const f of fams) { try { const faces = await document.fonts.load(`16px "${f}"`); out.push(`${f}: ${faces.length ? "loaded" : "not loaded"}`); } catch (e) { out.push(`${f}: error`); } }
+  return out;
+}, kitFamilies);
+const bodyFont = await page.evaluate(() => getComputedStyle(document.body).fontFamily);
+check("Adobe Fonts kit loads on this domain", kitFamilies.length > 0 && kitLoaded.every((x) => x.endsWith("loaded") && !x.endsWith("not loaded")), `families: ${kitLoaded.join(", ") || "none found"} · body: ${bodyFont}`);
 check("no failed requests / console errors", problems.length === 0, problems.slice(0, 10).join(" | "));
 await browser.close();
 const failed = results.filter((r) => !r.ok);
