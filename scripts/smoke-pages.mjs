@@ -237,6 +237,26 @@ await page.locator(".theme-toggle").click();
   const nb = await naut.boundingBox(), cb = await page.locator(".hovercard").boundingBox().catch(() => null);
   check("comps: hover card floats beside the champion, inside the viewport", !!cb && (cb.x >= nb.x + nb.width || cb.x + cb.width <= nb.x) && cb.y >= 0 && cb.y + cb.height <= 900, JSON.stringify(cb));
   check("comps: hovering champions never moves the rows", (await rowBoxes()) === rows0, "");
+  // Regression: the cursor resting exactly on the boundary between two rows must not open and close the card in a loop.
+  const rows = page.locator("#mage-bot-siege .comp-slot-row");
+  const r2 = await rows.nth(2).boundingBox();
+  await page.evaluate(() => { window.__hc = 0; new MutationObserver((ms) => { for (const m of ms) for (const n of [...m.addedNodes, ...m.removedNodes]) if (n.classList?.contains("hovercard")) window.__hc++; }).observe(document.body, { childList: true }); });
+  const flips = [];
+  for (const dx of [60, 300]) for (const dy of [-0.5, 0, 0.5]) {
+    await page.mouse.move(r2.x + dx, r2.y + dy);
+    await page.waitForTimeout(300);
+    const a = await page.evaluate(() => window.__hc);
+    await page.waitForTimeout(900);
+    flips.push((await page.evaluate(() => window.__hc)) - a);
+  }
+  check("comps: cursor on a row boundary never flickers the card", flips.every((n) => n === 0) && (await rowBoxes()) === rows0, flips.join(","));
+  await page.mouse.move(r2.x + 60, r2.y + 10);
+  await page.waitForTimeout(300);
+  await page.mouse.wheel(0, 120);
+  await page.waitForTimeout(250);
+  check("comps: scrolling closes an open hover card", (await page.locator(".hovercard").count()) === 0, "");
+  await page.evaluate((v) => window.scrollTo(0, v), y);
+  await page.waitForTimeout(150);
   await naut.click();
   const drawer = page.locator(".drawer");
   await drawer.waitFor({ timeout: 5000 }).catch(() => {});
