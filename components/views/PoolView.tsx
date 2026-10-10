@@ -14,8 +14,7 @@ export function PoolView({ names, sources, stats, entries }: {
   const href = (r?: string) => (r ? `/pool?role=${r}` : "/pool");
   return (
     <>
-      <PageHeader title="Champion Pool" desc="Tiers are my pool calls; pick/ban numbers beside them are pro evidence. A low-sample pick only sits in core with a written reason."
-        actions={<span className="row tight"><SourceBadge layer="clash" label="Tier: my pool call" /><SourceBadge layer="pro" label="Stats: LCK playoffs" /></span>} />
+      <PageHeader title="Champion Pool" desc="Tiers are my calls; stats are LCK playoffs." />
       <div className="row" style={{ marginBottom: 12 }}>
         <nav className="seg" aria-label="Role">
           <Link href={href()} className={!role ? "active" : undefined}>All roles</Link>
@@ -34,7 +33,7 @@ export function PoolView({ names, sources, stats, entries }: {
                   <tr key={r.role + r.id} className={`role-${r.role}`}>
                     <td><span className="role-tag">{r.role}</span></td>
                     <td><ChampionRow id={r.id} name={names[r.id] ?? r.id} role={r.role} size="sm" /></td>
-                    <td><span className={`badge ${r.tier === "core" ? "clash" : r.tier === "depth" ? "plain" : "outline"}`}>{r.label}</span></td>
+                    <td><span className={`tier ${r.tier}`}>{r.label}</span></td>
                     <td className="num">{st ? st.picks : <span className="faint">–</span>}</td>
                     <td className="num">{st?.bans ?? <span className="faint">–</span>}</td>
                     <td className="num">{st ? pct(st.winRate) : <span className="faint">–</span>}</td>

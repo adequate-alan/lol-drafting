@@ -29,8 +29,7 @@ export function CompsView({ names, sources, drafts, allShells }: {
   const KINDS: [string | undefined, string][] = [[undefined, "All"], ["observed", "Observed pro"], ["generalized", "Template"]];
   return (
     <>
-      <PageHeader title="Comp Library" desc="Copy the jobs, not necessarily the champions. Swaps are same-role champions with similar attributes (general logic, not pro evidence)."
-        actions={<span className="row tight"><SourceBadge layer="pro" label="Observed pro comp" /><span className="badge outline">Template: generalized comp</span><SourceBadge layer="logic" label="Swaps: general logic" /></span>} />
+      <PageHeader title="Comp Library" desc="Copy the jobs, not the exact champions." />
       <div className="row" style={{ marginBottom: 12, gap: 10 }}>
         <nav className="seg" aria-label="Type">{KINDS.map(([k, l]) => <Link key={l} href={href({ kind: k })} className={kind === k ? "active" : undefined}>{l}</Link>)}</nav>
         <nav className="seg" aria-label="Difficulty">
@@ -48,8 +47,8 @@ export function CompsView({ names, sources, drafts, allShells }: {
                 <div className="row between">
                   <h2>{s.name}</h2>
                   <span className="row tight">
-                    {s.kind === "observed" ? <SourceBadge layer="pro" label="Observed pro" /> : <span className="badge outline">Template</span>}
-                    <span className="badge plain">{s.difficulty}</span>
+                    {s.kind === "observed" ? <SourceBadge layer="pro" label="Pro comp" /> : <span className="src logic"><span className="ldot" />Template</span>}
+                    <span className="xs faint">{s.difficulty}</span>
                   </span>
                 </div>
                 <span className="xs muted">{s.kind === "observed" ? `${s.observedBy}${d ? `, ${d.seriesGame} vs ${d.opponent}` : ""}` : "Generalized template"} · {s.identities.join(" · ")}</span>

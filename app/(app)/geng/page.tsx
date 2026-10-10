@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { BrandMark } from "@/components/Sidebar";
-import { ChampionRow, SectionHeader, SourceBadge, SourceLinks } from "@/components/ui";
+import { ChampionRow, SectionHeader, SourceLinks } from "@/components/ui";
 import { getGenG, getProDrafts } from "@/lib/data";
 import { nameMap, sourceMap } from "@/lib/lookup";
 import { ROLES, type GenGPattern } from "@/lib/schema";
@@ -24,8 +24,8 @@ export default function GenG() {
       <div className="brand-band">
         <BrandMark />
         <div style={{ display: "grid", gap: 3 }}>
-          <div className="row"><h1>Gen.G</h1><span className="badge"><span className="ldot" />Observed pro evidence</span></div>
-          <span className="desc">What Gen.G actually drafted. Kept apart from the synergy recommendations; earlier-2026 tendencies are labelled and never shown as current.</span>
+          <div className="row"><h1>Gen.G</h1></div>
+          <span className="desc">Gen.G's recorded playoff drafts. Earlier-2026 tendencies are marked as such.</span>
         </div>
         <div className="row" style={{ marginLeft: "auto", gap: 18 }}>
           <span className="xs" style={{ color: "var(--side-muted)" }}><b style={{ color: "var(--side-text-strong)", fontSize: 16 }} className="tnum">{drafts.length}</b> exact drafts</span>
@@ -43,11 +43,11 @@ export default function GenG() {
                 <div key={p.title} className={`pattern ${p.era === "earlier-2026" ? "earlier" : "current"}`}>
                   <div className="row">
                     <span className="p-title">{p.title}</span>
-                    <span className={`badge ${p.era === "earlier-2026" ? "caution" : "clash"}`}>{p.era === "earlier-2026" ? "earlier 2026, not current" : "current playoffs"}</span>
+                    {p.era === "earlier-2026" && <span className="badge caution">earlier 2026, not current</span>}
                   </div>
                   <p className="small" style={{ marginTop: 3 }}>{p.detail}</p>
                   <div className="row xs">
-                    {p.proDraftIds.map((id) => <Link key={id} className="badge outline" href={`/pro-drafts?team=Gen.G&id=${id}`}>{label[id] ?? id}</Link>)}
+                    {p.proDraftIds.map((id) => <Link key={id} className="game-link" href={`/pro-drafts?team=Gen.G&id=${id}`}>{label[id] ?? id}</Link>)}
                     <SourceLinks ids={p.sources} sources={sources} />
                   </div>
                 </div>
@@ -56,7 +56,7 @@ export default function GenG() {
           );
         })}
       </div>
-      <SectionHeader title="Exact Gen.G drafts" meta={`${drafts.length} recorded games`} end={<SourceBadge layer="pro" />} />
+      <SectionHeader title="Exact Gen.G drafts" meta={`${drafts.length} recorded games`} />
       <div className="table-wrap">
         <table>
           <thead><tr><th>Game</th><th>vs</th>{ROLES.map((r) => <th key={r}>{r}</th>)}<th>Read</th><th>Source</th></tr></thead>

@@ -6,21 +6,21 @@ import { ChampIcon } from "./ChampIcon";
 export type Layer = "clash" | "pro" | "logic";
 const LAYER_LABEL: Record<Layer, string> = { clash: "Synergy", pro: "Pro", logic: "Logic" };
 const LAYER_TITLE: Record<Layer, string> = {
-  clash: "Synergy Recommendation",
-  pro: "Observed Pro Evidence (Gol.gg)",
-  logic: "General Draft Logic",
+  clash: "Synergy",
+  pro: "Pro evidence",
+  logic: "Logic",
 };
 
 /** Which of the three layers a piece of information belongs to. */
 export function SourceBadge({ layer, label }: { layer: Layer; label?: string }) {
-  return <span className={`badge ${layer}`} title={LAYER_TITLE[layer]}><span className="ldot" />{label ?? LAYER_LABEL[layer]}</span>;
+  return <span className={`src ${layer}`} title={LAYER_TITLE[layer]}><span className="ldot" />{label ?? LAYER_LABEL[layer]}</span>;
 }
 export const EvidenceBadge = SourceBadge;
 
 export function LayerBlock({ layer, title, end, children }: { layer: Layer; title?: string; end?: React.ReactNode; children: React.ReactNode }) {
   return (
     <section className={`layer ${layer}`}>
-      <div className="layer-label"><SourceBadge layer={layer} /> {title ?? LAYER_TITLE[layer]}{end && <span style={{ marginLeft: "auto" }}>{end}</span>}</div>
+      <div className="layer-label"><span className="ldot" />{title ?? LAYER_TITLE[layer]}{end && <span style={{ marginLeft: "auto" }}>{end}</span>}</div>
       {children}
     </section>
   );
