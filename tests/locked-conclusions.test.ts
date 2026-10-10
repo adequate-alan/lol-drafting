@@ -38,18 +38,18 @@ describe("bot lane Clash defaults", () => {
     expect(bot("yunara").alternatives).toContain("braum");
   });
 
-  it("Ziggs → Nautilus / Leona with no Clash alternatives", () => {
+  it("Ziggs → Nautilus / Leona preferred; Camille and Alistar the only alternatives (alan, 2026-10-10)", () => {
     const z = bot("ziggs");
     expect(z.clashDefault).toEqual(["nautilus", "leona"]);
-    expect(z.alternatives).toEqual([]);
+    expect(z.alternatives).toEqual(["camille", "alistar"]);
     expect(clash("ziggs")).not.toContain("bard");
     expect(clash("ziggs")).not.toContain("karma");
   });
 
-  it("Ziggs keeps Pyke and Camille as observed pro variants, never as Clash picks", () => {
+  it("Ziggs keeps Pyke and Camille as observed pro games; only alan's word made Camille a saved alternative", () => {
     expect(observed("ziggs")).toEqual(expect.arrayContaining(["pyke", "camille"]));
     expect(clash("ziggs")).not.toContain("pyke");
-    expect(clash("ziggs")).not.toContain("camille");
+    expect(bot("ziggs").clashDefault).not.toContain("camille");
   });
 
   it("Ziggs carries the engage / catch logic warning", () => {
