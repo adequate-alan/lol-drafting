@@ -749,3 +749,12 @@ a.badge:hover { text-decoration: none; border-color: var(--accent); color: var(-
 
 /* Display cut of Neue Haas Grotesk for headings and the brand. */
 h1, .brand-name, .page-header h1, .brand-band h1 { font-family: var(--font-display); letter-spacing: -.01em; }
+
+/* Shown when a newer deploy is live */
+.update-notice {
+  position: fixed; right: var(--s6); bottom: var(--s6); z-index: 60; display: flex; align-items: center; gap: var(--s4);
+  padding: var(--s3) var(--s3) var(--s3) var(--s5); background: var(--surface-raised); color: var(--text);
+  border: 1px solid var(--accent); border-radius: var(--r-lg); box-shadow: var(--shadow-pop); font-size: var(--fs-sm); font-weight: 600;
+}
+.update-notice .icon-btn:hover { color: var(--text); background: var(--surface-sunken); }
+@media (max-width: 620px) { .update-notice { left: var(--s5); right: var(--s5); bottom: var(--s5); } .update-notice > span { margin-right: auto; } }
