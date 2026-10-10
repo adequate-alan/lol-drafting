@@ -23,8 +23,9 @@ function Point({ w, open = false }: { w: Insight; open?: boolean }) {
 
 export interface SiegeCell { value: string; title: string }
 
-export function CompCheck({ draft, enemyIds, champions, botPairings, active, bestOverall, names, grid, children }: {
+export function CompCheck({ draft, enemyIds, champions, botPairings, active, bestOverall, bestFixId, names, grid, children }: {
   draft: Draft; enemyIds: string[]; champions: Champion[]; botPairings: BotPairing[]; active?: Role; bestOverall?: string;
+  bestFixId?: string; // the ranking's best fix, so the rail and the list name the same champion
   names: Record<string, string>; grid?: (siege: SiegeCell) => ReactNode; children?: ReactNode;
 }) {
   const kits = useMemo(() => convertKits(champions), [champions]);
@@ -35,7 +36,7 @@ export function CompCheck({ draft, enemyIds, champions, botPairings, active, bes
   const locked = Object.values(draft).filter(Boolean) as string[];
   const noKit = locked.filter((id) => !kits.some((k) => k.id === id));
   const needs = active ? (r.roleNeeds[active] ?? []).slice(0, 3) : [];
-  const best = fix?.fixes.find((c) => c.fixScore > 0);
+  const best = (bestFixId && fix?.fixes.find((c) => c.champion === bestFixId)) || fix?.fixes.find((c) => c.fixScore > 0);
   const opportunities = r.versus.filter((v) => v.kind === "opportunity");
   const sg = r.facts.siege;
   const siege: SiegeCell = !r.facts.n ? { value: "—", title: "No picks yet" } : {
