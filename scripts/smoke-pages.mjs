@@ -140,6 +140,16 @@ const kitLoaded = await page.evaluate(async (fams) => {
 }, kitFamilies);
 const bodyFont = await page.evaluate(() => getComputedStyle(document.body).fontFamily);
 check("Adobe Fonts kit loads on this domain and is the body font", kitFamilies.length > 0 && kitLoaded.every((x) => x.endsWith("loaded") && !x.endsWith("not loaded")) && /neue-haas-grotesk-text/.test(bodyFont), `families: ${kitLoaded.join(", ") || "none found"} · body: ${bodyFont}`);
+// Refresh prompt: no prompt while the open tab matches the deploy; a newer version.json shows it
+await open("/");
+const ver = await page.evaluate(async (b) => (await fetch(`${b}/version.json`, { cache: "no-store" })).status, new URL(base).pathname.replace(/\/$/, ""));
+await page.waitForTimeout(800);
+const noPrompt = (await page.locator(".update-notice").count()) === 0;
+await page.route("**/version.json*", (r) => r.fulfill({ contentType: "application/json", body: JSON.stringify({ id: "newer-deploy" }) }));
+await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+const prompt = await page.locator(".update-notice", { hasText: "Site updated" }).waitFor({ timeout: 5000 }).then(() => true).catch(() => false);
+await page.unroute("**/version.json*");
+check("refresh prompt only appears after a new deploy", ver === 200 && noPrompt && prompt, `version.json ${ver}, prompt before ${!noPrompt}, after ${prompt}`);
 check("no failed requests / console errors", problems.length === 0, problems.slice(0, 10).join(" | "));
 await browser.close();
 const failed = results.filter((r) => !r.ok);

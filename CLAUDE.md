@@ -85,6 +85,7 @@ Change these only when alan explicitly says so, then update the test in the same
   WarningBadge, Metric), `components/Sidebar.tsx` and `components/ThemeToggle.tsx`. UI font is alan's Adobe Fonts kit (Neue Haas Grotesk Text, Display for headings; `TYPEKIT_CSS` in `lib/site.ts`, Inter as fallback), JetBrains Mono (`--font-mono`) only for numbers. Champion icons are Data Dragon squares
   (`lib/champion-icons.ts`; patch resolved at build time in `next.config.ts`), loaded by the browser, with initials as
   the fallback. No champion images are stored in the repo.
+- Each build writes `out/version.json` (commit SHA, `lib/build-id.mjs`); `components/UpdateNotice.tsx` polls it and offers a refresh after a new deploy.
 - `scripts/smoke-pages.mjs` runs against the live Pages URL after every deploy (the `smoke` job in pages.yml).
 - Warning severity (critical / caution) in the Draft Room is a display grouping only; the rules are in `lib/evaluate.ts`.
 
