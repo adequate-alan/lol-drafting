@@ -192,8 +192,9 @@ describe("bot-lane shapes", () => {
     }
   });
 
-  it("Kai'Sa + Rell is not a Clash shape anywhere (no Kai'Sa Clash record)", () => {
-    expect(bots.has("kaisa")).toBe(false);
+  it("Kai'Sa + Rell is not a Clash shape anywhere (Kai'Sa's record is Nautilus / Rakan only)", () => {
+    const kaisa = getBotPairings().find((b) => b.champion === "kaisa")!;
+    expect([...kaisa.clashDefault, ...kaisa.alternatives]).not.toContain("rell");
     for (const r of records()) {
       expect(r.clash.some((d) => d.bot === "kaisa" && d.support === "rell"), r.name).toBe(false);
     }

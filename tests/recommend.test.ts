@@ -4,6 +4,8 @@ import { describe, expect, it } from "vitest";
 import { getCounters, getDraftData } from "@/lib/data";
 import type { Draft } from "@/lib/evaluate";
 import { counterPicks } from "@/lib/counters";
+import { bestFix } from "@/lib/model-v2/analyze";
+import { convertKits } from "@/lib/model-v2/kits";
 import { recommend, savedSupports, teamNeeds, winConditions } from "@/lib/recommend";
 
 const data = getDraftData();
@@ -108,7 +110,7 @@ describe("pro evidence never moves a score", () => {
         expect(a[role]!.map((r) => [r.champion, r.score])).toEqual(b[role]!.map((r) => [r.champion, r.score]));
       }
     }
-  });
+    }, 30_000); // ~75 full drafts ranked twice; slower than vitest's 5s default on CI runners
 
   it("observed-only partners get no saved-pairing bonus", () => {
     const corki = recommend({ BOT: "corki" }, [], data, 50).SUPPORT!.find((r) => r.champion === "alistar");
@@ -160,6 +162,66 @@ describe("with a bot locked, only its saved supports are actionable (alan, 2026-
     expect(res[1].fitRank).toBeNull();
     expect(res[1].cautions[0]).toMatch(/Not one of Ziggs's saved supports: theoretical, not recommended/);
     expect(res[0].theoretical).toBe(false);
+  });
+});
+
+describe("Kai'Sa and Aphelios Synergy records (alan, 2026-10-10)", () => {
+  it("Kai'Sa with SUPPORT open recommends only Nautilus and Rakan", () => {
+    for (const o of others) {
+      const list = top({ ...o, BOT: "kaisa" }, "SUPPORT", [], Infinity);
+      expect(list.length, JSON.stringify(o)).toBeGreaterThan(0);
+      expect(list.every((id) => id === "nautilus" || id === "rakan"), `${JSON.stringify(o)}: ${list}`).toBe(true);
+    }
+    expect(top({ BOT: "kaisa" }, "SUPPORT", [], Infinity).sort()).toEqual(["nautilus", "rakan"]);
+    expect(top({ BOT: "kaisa" }, "SUPPORT", [], Infinity)).not.toContain("rell");
+  });
+
+  it("Aphelios with SUPPORT open recommends only Thresh and Lulu", () => {
+    for (const o of others) {
+      const list = top({ ...o, BOT: "aphelios" }, "SUPPORT", [], Infinity);
+      expect(list.length, JSON.stringify(o)).toBeGreaterThan(0);
+      expect(list.every((id) => id === "thresh" || id === "lulu"), `${JSON.stringify(o)}: ${list}`).toBe(true);
+    }
+    expect(top({ BOT: "aphelios" }, "SUPPORT", [], Infinity).sort()).toEqual(["lulu", "thresh"]);
+  });
+
+  it("both supports are joint preferred: each gets the full saved-default bonus", () => {
+    for (const [bot, sups] of [["kaisa", ["nautilus", "rakan"]], ["aphelios", ["thresh", "lulu"]]] as const) {
+      const list = recommend({ BOT: bot }, [], data, Infinity).SUPPORT!;
+      for (const s of sups) expect(list.find((r) => r.champion === s)?.saved, `${bot} ${s}`).toBe("default");
+    }
+  });
+
+  it("pro-only pairings never become Synergy automatically", () => {
+    for (const b of data.botPairings) {
+      const saved = [...b.clashDefault, ...b.alternatives];
+      const proOnly = [...new Set(b.observedProPairings.map((o) => o.champion))].filter((id) => !saved.includes(id));
+      const list = recommend({ BOT: b.champion }, [], data, Infinity).SUPPORT!;
+      for (const id of proOnly) {
+        expect(list.map((r) => r.champion), `${b.champion}: ${id}`).not.toContain(id);
+        for (const r of list) expect(r.parts.some((p) => p.kind === "saved" && p.text.includes(byId.get(id)!.name)), `${b.champion}: ${id}`).toBe(false);
+      }
+    }
+    // The two new records carry no pro evidence at all.
+    for (const id of ["kaisa", "aphelios"]) {
+      const b = data.botPairings.find((x) => x.champion === id)!;
+      expect(b.observedProPairings).toEqual([]);
+      expect(b.sources).toEqual([]);
+    }
+  });
+
+  it("logic suggestions respect the bot/support eligibility rule", () => {
+    const kits = convertKits(data.champions);
+    for (const [bot, sups] of [["kaisa", ["nautilus", "rakan"]], ["aphelios", ["thresh", "lulu"]]] as const) {
+      for (const d of [{ BOT: bot }, { TOP: "jayce", JUNGLE: "lee-sin", MID: "viktor", BOT: bot }] as Draft[]) {
+        const r = bestFix("SUPPORT", d, kits, data.botPairings);
+        expect(r.restricted).toBe(true);
+        for (const c of r.fixes) expect(sups, `${bot}: ${c.champion}`).toContain(c.champion);
+        for (const c of r.theoretical) expect(sups, `${bot}: ${c.champion}`).not.toContain(c.champion);
+        const best = recommend(d, [], data, Infinity).SUPPORT!.filter((x) => x.bestFix).map((x) => x.champion);
+        for (const id of best) expect(sups, `${bot} best fix ${id}`).toContain(id);
+      }
+    }
   });
 });
 
