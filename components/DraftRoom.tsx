@@ -20,7 +20,6 @@ const CRITICAL = new Set(["no-engage", "needs-fight-starter", "no-frontline", "i
 const severityOf = (w: DraftWarning): Severity => (CRITICAL.has(w.id) ? "critical" : "caution");
 
 const KIND_LABEL: Record<FitKind, string> = { saved: "Saved", synergy: "Synergy", need: "Need", matchup: "Matchup", risk: "Risk" };
-const SAVED_LABEL = { default: "Saved pick", alt: "Saved alt", fits: "Saved comp" } as const;
 const ENEMY_SLOTS = 5;
 
 export function DraftRoom({ data, sources, initial, initialEnemy, metaPicks }: {
@@ -243,26 +242,32 @@ export function DraftRoom({ data, sources, initial, initialEnemy, metaPicks }: {
   );
 }
 
+const STATUS = { default: "Default", alt: "Alt", fits: "Fits" } as const;
+
 function FitRow({ rec, rank, names, onPick }: { rec: Recommendation; rank: number; names: Record<string, string>; onPick: () => void }) {
+  const [open, setOpen] = useState(false);
   const name = names[rec.champion] ?? rec.champion;
-  const shown = rec.parts.slice(0, 3);
-  const rest = rec.parts.slice(3);
-  const Why = ({ parts }: { parts: Recommendation["parts"] }) => (
-    <ul className="fit-why">{parts.map((p, i) => (
-      <li key={i} className={`k-${p.kind}`}><span className="k">{KIND_LABEL[p.kind]}</span><span className="t">{p.text}</span><span className="pts tnum">{p.points > 0 ? "+" : ""}{p.points}</span></li>
-    ))}</ul>
-  );
+  const lead = rec.parts.find((p) => p.points > 0) ?? rec.parts[0];
+  const risk = rec.parts.some((p) => p.kind === "risk");
   return (
-    <div className={`fit-row ${rank === 0 ? "top" : ""}`}>
-      <button className="fit-head" onClick={onPick} title={`Lock ${name} at ${rec.role}`}>
+    <div className={`fit-row ${rank === 0 ? "top" : ""} ${open ? "open" : ""}`}>
+      <button className="fit-head" onClick={onPick} title={`Lock ${name} at ${rec.role}\n${rec.parts.map((p) => `${p.points > 0 ? "+" : ""}${p.points}  ${p.text}`).join("\n")}`}>
         <ChampIcon id={rec.champion} name={name} role={rec.role} size="md" />
-        <span className="name">{name}</span>
-        {rec.saved && <span className="badge clash">{SAVED_LABEL[rec.saved]}</span>}
-        {rec.proGames > 0 && <span className="badge pro" title="Recorded pro drafts with this champion next to one of your picks. Evidence only, not part of the score.">Pro {rec.proGames}</span>}
-        <span className={`fit-score tnum ${rec.score < 0 ? "neg" : ""}`} title="Draft-fit score">{rec.score > 0 ? "+" : ""}{rec.score}</span>
+        <span className="fit-line">
+          <span className="name">{name}</span>
+          {rec.saved && <span className={`status-tag ${rec.saved}`} title="Saved pairing">{STATUS[rec.saved]}</span>}
+          {rec.proGames > 0 && <span className="badge pro" title="Recorded pro drafts with this champion next to one of your picks. Evidence only, not part of the score.">Pro {rec.proGames}</span>}
+          {risk && <span className="status-tag risk">Risk</span>}
+        </span>
+        <span className="fit-reason truncate">{lead?.text}</span>
+        <span className={`fit-score ${rec.score < 0 ? "neg" : ""}`} title="Draft-fit score">{rec.score > 0 ? "+" : ""}{rec.score}</span>
       </button>
-      <Why parts={shown} />
-      {rest.length > 0 && <details className="fit-more"><summary>{rest.length} more reason{rest.length > 1 ? "s" : ""}</summary><Why parts={rest} /></details>}
+      <button className="fit-toggle" aria-expanded={open} aria-label={`Why ${name}`} title={`${rec.parts.length} reasons`} onClick={() => setOpen((o) => !o)}>
+        <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
+      </button>
+      <ul className="fit-why">{rec.parts.map((p, i) => (
+        <li key={i} className={`k-${p.kind}`}><span className="k">{KIND_LABEL[p.kind]}</span><span className="t">{p.text}</span><span className="pts">{p.points > 0 ? "+" : ""}{p.points}</span></li>
+      ))}</ul>
     </div>
   );
 }
@@ -293,7 +298,7 @@ function DraftSlot({ role, label, ariaLabel, listKey, value, names, byName, cham
   };
   return (
     <div className={`draft-slot ${role ? `role-${role}` : "enemy"} ${compact ? "compact" : ""} ${value ? "locked" : "open"}`}>
-      <span className="slot-icon">{value ? <ChampIcon id={value} name={names[value]} role={role} size={compact ? "ml" : "xl"} /> : <span className={`champ ${compact ? "ml" : "xl"}`}><span className="mono">{label.slice(0, 1)}</span></span>}</span>
+      <span className="slot-icon">{value ? <ChampIcon id={value} name={names[value]} role={role} size={compact ? "md" : "lg"} /> : <span className={`champ ${compact ? "md" : "lg"}`}><span className="mono">{label.slice(0, 1)}</span></span>}</span>
       <div className="slot-top"><span className="role-tag">{label}</span><span className="status">{value ? "Locked" : "Open"}</span></div>
       <div className="slot-main">
         {value ? <span className="slot-name truncate">{names[value]}</span> : (
@@ -349,7 +354,7 @@ function RecommendationGroup({ layer, title, data, open, names, onPick, empty, n
             <span className="role-tag">{role}</span>
             {data[role]!.map((s) => (
               <button key={s.champion} className="rec-row" title={s.reasons.join("\n")} onClick={() => onPick(role, s.champion)}>
-                <ChampIcon id={s.champion} name={names[s.champion] ?? s.champion} role={role} size="md" />
+                <ChampIcon id={s.champion} name={names[s.champion] ?? s.champion} role={role} size="sm" />
                 <span className="name">{names[s.champion] ?? s.champion}</span>
                 <span className="count">{s.score} game{s.score > 1 ? "s" : ""}</span>
                 <span className="why truncate">{s.reasons.slice(0, 2).join(", ") + (s.reasons.length > 2 ? ` +${s.reasons.length - 2}` : "")}</span>

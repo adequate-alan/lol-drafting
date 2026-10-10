@@ -13,14 +13,18 @@ const I = {
   geng: <path d="M8 1.75 13.5 4.5v4c0 3-2.4 5.1-5.5 5.75C4.9 13.6 2.5 11.5 2.5 8.5v-4z" />,
   meta: <path d="M2.5 13.5h11M4 11V7.5M7 11V4M10 11V6M13 11V2.5" />,
 };
-const LINKS = [
-  ["/", "Draft Room", I.draft],
-  ["/first-pick/bot", "First Pick", I.first],
-  ["/comps", "Comp Library", I.comps],
-  ["/pool", "Champion Pool", I.pool],
-  ["/pro-drafts", "Pro Drafts", I.pro],
-  ["/geng", "Gen.G", I.geng],
-  ["/meta", "Meta / Research", I.meta],
+const GROUPS = [
+  ["Draft", [
+    ["/", "Draft Room", I.draft],
+    ["/first-pick/bot", "First Pick", I.first],
+    ["/comps", "Comp Library", I.comps],
+    ["/pool", "Champion Pool", I.pool],
+  ]],
+  ["Pro evidence", [
+    ["/pro-drafts", "Pro Drafts", I.pro],
+    ["/geng", "Gen.G", I.geng],
+    ["/meta", "Meta / Research", I.meta],
+  ]],
 ] as const;
 
 export function BrandMark({ className = "brand-mark" }: { className?: string }) {
@@ -37,7 +41,7 @@ function Brand() {
   return (
     <Link href="/" className="brand">
       <BrandMark />
-      <span className="brand-name">League of Legends Draft Assistant<span className="brand-sub">LCK 2026 · Gol.gg evidence</span></span>
+      <span className="brand-name"><span className="brand-eyebrow">League of Legends </span>Draft Assistant</span>
     </Link>
   );
 }
@@ -63,16 +67,21 @@ export function Sidebar() {
       <aside id="sidebar" className={`sidebar ${open ? "open" : ""}`}>
         <Brand />
         <nav className="nav" aria-label="Sections">
-          {LINKS.map(([href, label, icon]) => (
-            <Link key={href} href={href} className={`nav-item ${active(href) ? "active" : ""}`} aria-current={active(href) ? "page" : undefined}>
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round">{icon}</svg>
-              {label}
-            </Link>
+          {GROUPS.map(([group, links]) => (
+            <div key={group} className="nav-group">
+              <div className="nav-label">{group}</div>
+              {links.map(([href, label, icon]) => (
+                <Link key={href} href={href} className={`nav-item ${active(href) ? "active" : ""}`} aria-current={active(href) ? "page" : undefined}>
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round">{icon}</svg>
+                  {label}
+                </Link>
+              ))}
+            </div>
           ))}
         </nav>
         <div className="sidebar-foot">
           <ThemeToggle />
-          <p className="sidebar-note">Synergy recommendations, pro evidence and general logic are kept apart on every page.</p>
+          <p className="sidebar-note">LCK 2026 · Gol.gg evidence. Synergy, pro evidence and general logic stay separate on every page.</p>
         </div>
       </aside>
     </>
