@@ -99,6 +99,14 @@ Change these only when alan explicitly says so, then update the test in the same
 - `scripts/smoke-pages.mjs` runs against the live Pages URL after every deploy (the `smoke` job in pages.yml).
 - Warning severity (critical / caution) in the Draft Room is a display grouping only; the rules are in `lib/evaluate.ts`.
 
+## Commit authorship
+
+Every commit from every thread is authored and committed as alan, so GitHub credits his account:
+`git -c user.name="adequate-alan" -c user.email="54249725+adequate-alan@users.noreply.github.com" commit ...`
+(or set both with `git config` in the checkout first). This is the noreply address his existing merge commits already
+use. Keep the required `Co-Authored-By: Claude ...` trailers; they don't affect his attribution. Never rewrite or
+force-push existing history unless alan asks.
+
 ## Commands
 
 `npm run dev` · `npm run typecheck` · `npm test` · `npm run build` (static export to `out/`)
