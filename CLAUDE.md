@@ -92,6 +92,7 @@ Change these only when alan explicitly says so, then update the test in the same
 - Ziggs → Nautilus / Leona. No saved alternatives (no Bard, no Karma). Pyke and Camille are observed pro variants only.
   General Draft Logic: "Ziggs needs reliable engage or catch somewhere else in the composition if support is not providing it."
 - Xayah → Rakan. Kalista → Renata. Zeri → Yuumi.
+- Mel → Alistar / Pyke / Leona (preferred), alternatives Karma, Bard, Neeko, Nautilus (alan, 2026-10-10).
 - Kai'Sa → Nautilus + Rakan, Aphelios → Thresh + Lulu: joint preferred, no alternatives (alan, 2026-10-10). Kai'Sa + Rell
   is not saved. Every BOT pool champion has a record (`tests/locked-conclusions.test.ts`).
 - Joint preferred supports for bots outside the pool (alan, 2026-10-10; Synergy preferences, not Pro Evidence): Draven,
