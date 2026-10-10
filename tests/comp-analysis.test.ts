@@ -4,7 +4,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { getBotPairings, getChampions } from "@/lib/data";
-import { analyze, bestFix, candidatesFor, type Insight } from "@/lib/model-v2/analyze";
+import { analyze, bestFix, candidatesFor, economyBurden, slotsOf, type Draft, type Insight } from "@/lib/model-v2/analyze";
 import { ARCHETYPES, EXTRA } from "@/lib/model-v2/archetypes";
 import { convertKits, KITS } from "@/lib/model-v2/kits";
 import { ChampionV2, Kit } from "@/lib/model-v2/schema";
@@ -118,9 +118,9 @@ describe("second-checkpoint corrections (alan, 2026-10-10)", () => {
     expect(ids([...r.weakPoints, ...r.more])).not.toContain("resource-conflict");
   });
 
-  it("Sejuani, Vi, Ornn, Leona, Nautilus, Rell, Maokai and Alistar are primary; Lee Sin, Syndra, Thresh, Trundle and Qiyana are catch", () => {
+  it("Sejuani, Vi, Ornn, Leona, Nautilus, Rell, Maokai, Alistar and Jarvan IV are primary; Lee Sin, Syndra, Thresh, Trundle and Qiyana are catch", () => {
     const fs = (id: string) => kits.find((c) => c.id === id)!.fightStart;
-    for (const id of ["sejuani", "vi", "ornn", "leona", "nautilus", "rell", "maokai", "alistar"]) expect(fs(id), id).toBe("primary");
+    for (const id of ["sejuani", "vi", "ornn", "leona", "nautilus", "rell", "maokai", "alistar", "jarvan-iv"]) expect(fs(id), id).toBe("primary");
     for (const id of ["lee-sin", "syndra", "thresh", "trundle", "qiyana"]) expect(fs(id), id).toBe("catch");
   });
 
@@ -133,6 +133,34 @@ describe("second-checkpoint corrections (alan, 2026-10-10)", () => {
   it("a support's poke counts less than a carry's", () => {
     const r = analyze(ARCHETYPES.find((a) => a.id === "poke")!.draft, kits);
     expect(r.identity.primary!.because).toMatch(/Karma adds utility poke/);
+  });
+});
+
+describe("economy is one team-wide income rule (alan, checkpoint 2 review)", () => {
+  // No reviewed jungler or support has resourceDemand 3 yet, so hungry versions are built from real kits.
+  const hungry = (id: string, resourceDemand: 0 | 1 | 2 | 3) => {
+    const c = kits.find((k) => k.id === id)!;
+    return { ...c, id: `${id}-${resourceDemand}`, kit: { ...c.kit, resourceDemand } };
+  };
+  const pool = [...kits, hungry("nocturne", 3), hungry("lulu", 3)];
+  const conflict = (draft: Draft) => ids((() => { const r = analyze(draft, pool); return [...r.weakPoints, ...r.more]; })()).includes("resource-conflict");
+
+  it("a carry jungler beside two hungry laners is a normal carry-jungle comp, not a warning", () => {
+    expect(conflict({ TOP: "ornn", JUNGLE: "nocturne-3", MID: "viktor", BOT: "jinx", SUPPORT: "lulu" })).toBe(false);
+  });
+  it("three hungry carries in TOP, MID and BOT is normal", () => {
+    expect(conflict({ TOP: "gwen", JUNGLE: "sejuani", MID: "viktor", BOT: "jinx", SUPPORT: "lulu" })).toBe(false);
+  });
+  it("a hungry jungler warns only on top of an already resource-heavy team", () => {
+    expect(conflict({ TOP: "gwen", JUNGLE: "nocturne-3", MID: "viktor", BOT: "jinx", SUPPORT: "lulu" })).toBe(true);
+  });
+  it("a truly hungry support weighs double", () => {
+    expect(conflict({ TOP: "ornn", JUNGLE: "sejuani", MID: "viktor", BOT: "jinx", SUPPORT: "lulu-3" })).toBe(true);
+    const b = economyBurden(slotsOf({ MID: "viktor", BOT: "jinx", SUPPORT: "lulu-3" }, pool));
+    expect(b.base).toBe(4);
+  });
+  it("Gwen / Trundle / Viktor / Ezreal / Karma keeps no resource warning", () => {
+    expect(conflict(ARCHETYPES.find((a) => a.id === "no-engage")!.draft)).toBe(false);
   });
 });
 

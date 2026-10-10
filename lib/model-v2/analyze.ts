@@ -119,6 +119,27 @@ export function facts(slots: Slot[]) {
 }
 export type Facts = ReturnType<typeof facts>;
 
+// Competing income demand, one rule for every comp. A hungry laner (resourceDemand 3) counts 1. A support counts its
+// demand above 1 (a truly hungry support 2), since the role earns least. Laners plus support are the base load; a
+// hungry jungler adds 1 but only matters once the base load is already at the threshold, so a carry jungler beside
+// one or two hungry laners is fine. Warns at ANALYSIS.economy.warn total, major at .major.
+export function economyBurden(slots: Slot[]) {
+  const E = T.economy;
+  const laners = slots.filter((s) => s.role !== "JUNGLE" && s.role !== "SUPPORT" && s.c.kit.resourceDemand >= 3);
+  const jungler = slots.find((s) => s.role === "JUNGLE" && s.c.kit.resourceDemand >= 3);
+  const sup = slots.find((s) => s.role === "SUPPORT" && s.c.kit.resourceDemand >= 2);
+  const supportLoad = sup ? sup.c.kit.resourceDemand - 1 : 0;
+  const base = laners.length + supportLoad;
+  const total = base + (jungler ? 1 : 0);
+  const warn = base >= E.base && total >= E.warn;
+  return {
+    base, total, warn,
+    severity: (total >= E.major ? "major" : "moderate") as Severity,
+    support: sup,
+    demanding: [...laners, ...(jungler ? [jungler] : []), ...(sup ? [sup] : [])],
+  };
+}
+
 // A carry who needs protecting: flagged needs-peel, or an immobile gold-hungry late-game ranged carry.
 const needsPeel = (s: Slot) => s.c.flags.includes("needs-peel") || (s.threat >= 3 && s.c.kit.resourceDemand >= 3 && s.c.kit.range >= 2 && s.c.kit.backlineAccess === 0 && s.c.kit.curve.late >= 3);
 // The carry the comp has to protect; a carry who dives with a dive comp is not waiting for peel.
@@ -252,11 +273,11 @@ export function weaknesses(slots: Slot[], f: Facts = facts(slots), ids: Identity
     out.push(W("falls-off", "weakness", "moderate", "Falls off late", "The comp is strongest before three items; a long game favours the enemy.", ["late"], 0.5, "falls off"));
 
   // Tensions
-  // Three gold-hungry carries in the three carry roles is normal. The conflict is a fourth, or a hungry pick in a
-  // role that cannot farm (support, or a jungler beside three hungry laners).
-  const lowEconRole = (s: Slot) => s.role === "SUPPORT" || s.role === "JUNGLE";
-  if (f.hungry.length >= 4 || (f.hungry.length >= T.resourceHungry && f.hungry.some(lowEconRole)))
-    out.push(W("resource-conflict", "tension", f.hungry.length >= 4 ? "major" : "moderate", "Too many resource-hungry picks", `${names(f.hungry)} all want gold and farm priority${f.hungry.some(lowEconRole) ? `, and ${names(f.hungry.filter(lowEconRole))} ${verb(f.hungry.filter(lowEconRole), "plays", "play")} a role that cannot feed it` : ""}.`, ["low-economy"], 1));
+  // Income demand is weighed across the whole team (economyBurden). Three hungry TOP/MID/BOT carries is normal; a
+  // hungry jungler adds to the burden but warns only on top of an already heavy team; a hungry support weighs double.
+  const econ = economyBurden(slots);
+  if (econ.warn)
+    out.push(W("resource-conflict", "tension", econ.severity, "Too many resource-hungry picks", `${names(econ.demanding)} all want gold and farm priority${econ.support ? `, and ${econ.support.c.name} wants it from the support role` : ""}; the map cannot feed every one of them.`, ["low-economy"], 1));
   if (team && has("poke") && f.disengage + f.counterEngage < 4)
     out.push(W("poke-no-disengage", "tension", "moderate", "Poke without disengage", "The comp wants to siege slowly but has poor tools to stop an engage before the poke has worked.", ["disengage", "peel"], 1));
   if (team && has("dive") && f.carries.filter((s) => s.c.kit.backlineAccess >= 2).length < 2)

@@ -1,9 +1,10 @@
 // Draft-fit recommendations (lib/recommend.ts): every champion is scored on saved pairings, synergy, team needs and
 // matchups. Saved pairings lead when the draft has no bigger hole; pro evidence never moves a score.
 import { describe, expect, it } from "vitest";
-import { getDraftData } from "@/lib/data";
+import { getCounters, getDraftData } from "@/lib/data";
 import type { Draft } from "@/lib/evaluate";
-import { recommend, teamNeeds, winConditions } from "@/lib/recommend";
+import { counterPicks } from "@/lib/counters";
+import { recommend, savedSupports, teamNeeds, winConditions } from "@/lib/recommend";
 
 const data = getDraftData();
 const byId = new Map(data.champions.map((c) => [c.id, c]));
@@ -46,20 +47,18 @@ describe("saved pairings lead an early draft", () => {
 });
 
 describe("ranking is by overall draft fit", () => {
-  it("a saved support loses to a pick that fixes the last hole", () => {
-    const d = { TOP: "jayce", JUNGLE: "nidalee", MID: "azir", BOT: "sivir" };
+  it("a saved default loses to a saved alternative that fixes the last hole", () => {
+    const d = { TOP: "jayce", JUNGLE: "nidalee", MID: "azir", BOT: "ezreal" };
     const list = recommend(d, [], data, 50).SUPPORT!;
-    expect(list[0].champion).not.toBe("lulu");
+    expect(list[0].champion).not.toBe("karma");
     expect(byId.get(list[0].champion)!.attrs.frontline).toBeGreaterThanOrEqual(2);
-    const lulu = list.find((r) => r.champion === "lulu")!;
-    expect(lulu.parts.some((p) => p.kind === "risk")).toBe(true);
+    const karma = list.find((r) => r.champion === "karma")!;
+    expect(karma.parts.some((p) => p.kind === "risk")).toBe(true);
   });
 
-  it("a carry that needs setup pulls engage supports up even without a saved pairing", () => {
+  it("a carry that needs setup pulls engage supports up", () => {
     const list = recommend({ BOT: "ziggs" }, [], data, 50).SUPPORT!;
-    const rell = list.find((r) => r.champion === "rell")!;
-    expect(rell.saved).toBeNull();
-    expect(rell.parts.some((p) => p.kind === "need" && /fight starter/.test(p.text))).toBe(true);
+    for (const id of ["nautilus", "leona"]) expect(list.find((r) => r.champion === id)!.parts.some((p) => p.kind === "need" && /fight starter/.test(p.text)), id).toBe(true);
   });
 
   it("enemy picks add matchup reasons", () => {
@@ -111,6 +110,48 @@ describe("pro evidence never moves a score", () => {
       expect(r?.saved ?? null, s).toBeNull();
       expect(r?.parts.some((p) => p.kind === "saved") ?? false, s).toBe(false);
     }
+  });
+});
+
+describe("with a bot locked, only its saved supports are actionable (alan, 2026-10-10)", () => {
+  const THEORETICAL = ["alistar", "maokai", "rell", "braum", "shen"];
+
+  it("Ziggs: Alistar, Maokai, Rell, Braum and Shen never appear in the Draft Room ranking, whatever else is locked", () => {
+    const drafts: Draft[] = [...others, { TOP: "jayce", JUNGLE: "lee-sin", MID: "viktor" }, { TOP: "fiora", JUNGLE: "nidalee", MID: "azir" }];
+    for (const o of drafts) {
+      const list = top({ ...o, BOT: "ziggs" }, "SUPPORT", ["vi", "galio"], Infinity);
+      expect(list.length, JSON.stringify(o)).toBeGreaterThan(0);
+      for (const id of THEORETICAL) expect(list, `${id} ${JSON.stringify(o)}`).not.toContain(id);
+      expect(list.every((id) => id === "nautilus" || id === "leona"), JSON.stringify(o)).toBe(true);
+    }
+  });
+
+  it("every bot with saved supports only gets its default and alternatives", () => {
+    for (const b of data.botPairings) for (const o of others.slice(0, 12)) {
+      const list = top({ ...o, BOT: b.champion }, "SUPPORT", [], Infinity);
+      const allowed = [...b.clashDefault, ...b.alternatives];
+      for (const id of list) expect(allowed, `${b.champion}: ${id}`).toContain(id);
+    }
+  });
+
+  it("other roles and a draft with no bot are unchanged: any support can be ranked", () => {
+    expect(savedSupports({ MID: "orianna" }, data.botPairings)).toBeNull();
+    expect(top({ TOP: "jayce", JUNGLE: "lee-sin", MID: "viktor" }, "SUPPORT", [], Infinity)).toEqual(expect.arrayContaining(["rell", "alistar"]));
+  });
+
+  it("a support counter outside the locked bot's saved supports is marked theoretical and listed last", () => {
+    const d: Draft = { TOP: "ornn", JUNGLE: "sejuani", MID: "orianna", BOT: "ziggs" };
+    const enemy = { SUPPORT: "lulu" };
+    const row = (champion: string, winRate: number) => ({ role: "SUPPORT" as const, enemy: "lulu", champion, winRate, games: 2000, patch: "16.20",
+      url: "https://dpm.lol/", updated: "2026-10-10", origin: "externally-provided" as const });
+    const counters = { ...getCounters(), proResults: [], dpmDuos: [], dpm: [row("alistar", 0.58), row("nautilus", 0.53)] };
+    const fits = recommend(d, ["lulu"], data, Infinity);
+    const res = counterPicks(d, enemy, { ...data, counters }, fits).SUPPORT!.counters;
+    expect(res.map((c) => c.champion)).toEqual(["nautilus", "alistar"]);
+    expect(res[1].theoretical).toBe(true);
+    expect(res[1].fitRank).toBeNull();
+    expect(res[1].cautions[0]).toMatch(/Not one of Ziggs's saved supports: theoretical, not recommended/);
+    expect(res[0].theoretical).toBe(false);
   });
 });
 

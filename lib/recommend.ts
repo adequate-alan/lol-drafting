@@ -1,7 +1,8 @@
 // Draft-fit recommendations: every champion who plays an open role is scored against the whole draft.
 //
 //   saved     - alan's saved pairings (clashDefault / alternatives / surrounding on the pairing records). A strong
-//               synergy bonus, never a filter: any champion can still win on fit.
+//               synergy bonus, not a filter, with one exception: with a bot locked, only that bot's saved supports
+//               (default or alternative) are recommended for SUPPORT (savedSupports). Others are theoretical only.
 //   synergy   - pairwise interactions with the locked allies (lane duos, engage + follow-up, poke stacking).
 //   need      - what the composition lacks (engage, frontline, peel, sustained damage, damage mix, a fight starter),
 //               weighted by how late in the draft it is.
@@ -84,6 +85,17 @@ const NEED_WARNINGS = new Set(["no-engage", "needs-fight-starter", "no-frontline
 const OTHER_WARNINGS = RULES.filter((r) => !NEED_WARNINGS.has(r.id)).map((r) => r.id);
 
 // ---------- saved pairings (alan's records) ----------
+
+/**
+ * The supports a locked bot may be recommended with: its saved default and alternatives. null when no bot is locked
+ * or the bot has no saved supports (then every support is a candidate). Every actionable support surface uses this;
+ * anything outside it is a theoretical fix, never a recommendation (alan, 2026-10-10: Ziggs → Nautilus / Leona only).
+ */
+export function savedSupports(draft: Draft, botPairings: BotPairing[]): string[] | null {
+  const rec = draft.BOT ? botPairings.find((b) => b.champion === draft.BOT) : undefined;
+  const ids = rec ? [...rec.clashDefault, ...rec.alternatives] : [];
+  return ids.length ? ids : null;
+}
 
 function savedParts(c: Champion, role: Role, draft: Draft, data: RecommendData, name: (id: string) => string): { parts: FitPart[]; tier: Recommendation["saved"] } {
   const parts: FitPart[] = [];
@@ -206,6 +218,7 @@ export function recommend(draft: Draft, enemyIds: string[], data: RecommendData,
   // Needs tied to a locked champion (setup, peel) count from the first pick.
   const urgency = (n: Need) => Math.max(0.5 * (picks.length - 1), n.personal ? 1 : 0);
   const before = new Set(warnings(draft, data.champions).map((w) => w.id));
+  const eligibleSupports = savedSupports(draft, data.botPairings);
 
   const out: Recommendations = {};
   for (const role of open) {
@@ -213,6 +226,7 @@ export function recommend(draft: Draft, enemyIds: string[], data: RecommendData,
     for (const c of data.champions) {
       // Roster-only champions have no attributes to score, so they are never suggested (they can still be locked).
       if (c.rosterOnly || !c.roles.includes(role) || taken.has(c.id)) continue;
+      if (role === "SUPPORT" && eligibleSupports && !eligibleSupports.includes(c.id)) continue;
       const { parts, tier } = savedParts(c, role, draft, data, name);
       parts.push(...synergyParts(c, role, allies));
       for (const n of needs) if (n.fills(c) && urgency(n) > 0) parts.push({ kind: "need", points: round(n.weight * urgency(n)), text: `Adds ${n.label}: ${n.text}` });
