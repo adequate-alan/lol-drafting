@@ -68,6 +68,17 @@ Change these only when alan explicitly says so, then update the test in the same
 - Data files are read at build time by `lib/data.ts` (`server-only`); nothing goes in `public/`.
 - Never commit `.env*` files, secrets or tokens.
 
+## UI
+
+- Gen.G-inspired design system: every color, spacing, radius and type size is a token in `app/globals.css`
+  (`:root[data-theme="light" | "dark"]`). Components use tokens only; don't add raw hex values in components.
+- Gold (`--accent`) marks selection and importance. Each layer keeps its own treatment: Clash = strongest (gold rule),
+  Pro = teal evidence styling, Logic = neutral gray. Don't restyle one layer to look like another.
+- Shared pieces live in `components/ui.tsx` (PageHeader, Panel, SourceBadge, ChampIcon, ChampionRow, DataTable,
+  WarningBadge, Metric), `components/Sidebar.tsx` and `components/ThemeToggle.tsx`. Champion tiles are monograms;
+  no champion images are bundled.
+- Warning severity (critical / caution) in the Draft Room is a display grouping only; the rules are in `lib/evaluate.ts`.
+
 ## Commands
 
 `npm run dev` · `npm run typecheck` · `npm test` · `npm run build` (static export to `out/`)

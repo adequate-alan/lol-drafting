@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { EvidenceBadge, SourceLinks, pct } from "@/components/ui";
+import { ChampionRow, PageHeader, SourceBadge, SourceLinks, pct } from "@/components/ui";
 import { ROLES, type MetaStat, type PoolEntry, type Source } from "@/lib/schema";
 
 export function PoolView({ names, sources, stats, entries }: {
@@ -9,52 +9,54 @@ export function PoolView({ names, sources, stats, entries }: {
 }) {
   const role = useSearchParams().get("role") ?? undefined;
   const pool = entries.filter((p) => !role || p.role === role);
-  const tierCell = (ids: string[], reasons: Record<string, string> = {}) => (
-    <div className="grid" style={{ gap: 3 }}>
-      {ids.map((id) => {
-        const s = stats[id];
-        return (
-          <div key={id} className="row">
-            <span className="chip" title={reasons[id]}>{names[id]}</span>
-            {s ? <span className="small muted">{s.picks}P{s.bans != null ? ` ${s.bans}B` : ""} · {pct(s.winRate)}{s.lowSample ? " · low sample" : ""}</span> : <span className="small muted">no stats</span>}
-            {reasons[id] && <span className="small" title={reasons[id]}>· justified</span>}
-          </div>
-        );
-      })}
-    </div>
-  );
+  const TIERS = [["core", "Core"], ["depth", "Depth"], ["flex", "Prepared / flex"]] as const;
+  const rows = pool.flatMap((p) => TIERS.flatMap(([tier, label]) => p[tier].map((id) => ({ role: p.role, id, tier, label, reason: tier === "core" ? p.coreReasons[id] : undefined }))));
+  const href = (r?: string) => (r ? `/pool?role=${r}` : "/pool");
   return (
     <>
-      <div className="page-head">
-        <h1>Champion Pool</h1>
-        <span className="small muted">Tiers are my Clash calls; pick/ban numbers beside them are pro evidence. A low-sample pick only sits in core with a written reason.</span>
+      <PageHeader title="Champion Pool" desc="Tiers are my Clash calls; pick/ban numbers beside them are pro evidence. A low-sample pick only sits in core with a written reason."
+        actions={<span className="row tight"><SourceBadge layer="clash" label="Tier: my Clash call" /><SourceBadge layer="pro" label="Stats: LCK playoffs" /></span>} />
+      <div className="row" style={{ marginBottom: 12 }}>
+        <nav className="seg" aria-label="Role">
+          <Link href={href()} className={!role ? "active" : undefined}>All roles</Link>
+          {ROLES.map((r) => <Link key={r} href={href(r)} className={role === r ? "active" : undefined}>{r}</Link>)}
+        </nav>
+        <span className="xs muted tnum" style={{ marginLeft: "auto" }}>{rows.length} champions</span>
       </div>
-      <nav className="tabs">
-        <Link href="/pool" className={!role ? "active" : undefined}>All</Link>
-        {ROLES.map((r) => <Link key={r} href={`/pool?role=${r}`} className={role === r ? "active" : undefined}>{r}</Link>)}
-      </nav>
-      <div className="table-wrap">
-        <table>
-          <thead><tr><th>Role</th><th>Core <EvidenceBadge layer="clash" /></th><th>Depth <EvidenceBadge layer="clash" /></th><th>Prepared / flex <EvidenceBadge layer="clash" /></th><th>What changed</th></tr></thead>
-          <tbody>
-            {pool.map((p) => (
-              <tr key={p.role} className={`role-${p.role}`}>
-                <td><span className="role-tag">{p.role}</span></td>
-                <td>{tierCell(p.core, p.coreReasons)}</td>
-                <td>{tierCell(p.depth)}</td>
-                <td>{tierCell(p.flex)}</td>
-                <td className="small" style={{ minWidth: 200 }}>{p.changed}<div style={{ marginTop: 4 }}><SourceLinks ids={p.sources} sources={sources} /></div></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {pool.some((p) => Object.keys(p.coreReasons).length) && (
-        <div className="card" style={{ marginTop: 10 }}>
-          <h3>Core picks with a small pro sample</h3>
-          {pool.flatMap((p) => Object.entries(p.coreReasons).map(([id, why]) => <p key={id} className="small"><b>{names[id]}:</b> {why}</p>))}
+      <div className="aside-layout">
+        <div className="table-wrap tall">
+          <table>
+            <thead><tr><th>Role</th><th>Champion</th><th>Clash tier</th><th className="num">Picks</th><th className="num">Bans</th><th className="num">Win rate</th><th>Sample</th><th>Why core</th></tr></thead>
+            <tbody>
+              {rows.map((r) => {
+                const st = stats[r.id];
+                return (
+                  <tr key={r.role + r.id} className={`role-${r.role}`}>
+                    <td><span className="role-tag">{r.role}</span></td>
+                    <td><ChampionRow name={names[r.id] ?? r.id} role={r.role} size="sm" /></td>
+                    <td><span className={`badge ${r.tier === "core" ? "clash" : r.tier === "depth" ? "plain" : "outline"}`}>{r.label}</span></td>
+                    <td className="num">{st ? st.picks : <span className="faint">–</span>}</td>
+                    <td className="num">{st?.bans ?? <span className="faint">–</span>}</td>
+                    <td className="num">{st ? pct(st.winRate) : <span className="faint">–</span>}</td>
+                    <td>{!st ? <span className="xs faint">no stats</span> : st.lowSample ? <span className="badge caution" title="Fewer than 5 picks">low sample</span> : <span className="xs faint">ok</span>}</td>
+                    <td className="xs muted wrap">{r.reason ?? ""}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-      )}
+        <section className="panel">
+          <div className="panel-head"><h2>What changed, by role</h2></div>
+          {pool.map((p) => (
+            <div key={p.role} className={`pattern role-${p.role}`}>
+              <span className="role-tag">{p.role}</span>
+              <p className="small" style={{ marginTop: 2 }}>{p.changed}</p>
+              <SourceLinks ids={p.sources} sources={sources} />
+            </div>
+          ))}
+        </section>
+      </div>
     </>
   );
 }

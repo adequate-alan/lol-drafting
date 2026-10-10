@@ -1,12 +1,9 @@
-import { NavLinks } from "@/components/NavLinks";
+import { Sidebar } from "@/components/Sidebar";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="app">
-      <nav className="nav">
-        <div className="brand">Clash Draft Room</div>
-        <NavLinks />
-      </nav>
+      <Sidebar />
       <main className="main">{children}</main>
     </div>
   );

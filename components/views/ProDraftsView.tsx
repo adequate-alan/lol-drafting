@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { EvidenceBadge, SourceLinks } from "@/components/ui";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ChampIcon, ChampionRow, PageHeader, SourceBadge, SourceLinks } from "@/components/ui";
 import { ROLES, type ProDraft, type Role, type Source } from "@/lib/schema";
 
 type Filters = { team?: string; champion?: string; role?: string; tournament?: string; series?: string; id?: string };
@@ -25,6 +25,7 @@ export function ProDraftsView({ names, sources, all }: {
   names: Record<string, string>; sources: Record<string, Source>; all: ProDraft[];
 }) {
   const params = useSearchParams();
+  const router = useRouter();
   const f: Filters = Object.fromEntries(KEYS.map((k) => [k, params.get(k) || undefined]));
   const rows = all.filter((d) => matches(d, f));
   const selected = f.id ? all.find((d) => d.id === f.id) : undefined;
@@ -32,58 +33,77 @@ export function ProDraftsView({ names, sources, all }: {
   const champions = uniq(all.flatMap((d) => ROLES.map((r) => d.picks[r]))).sort((a, b) => (names[a] ?? a).localeCompare(names[b] ?? b));
   const link = (id: string) => `/pro-drafts?${new URLSearchParams({ ...Object.fromEntries(Object.entries(f).filter(([, v]) => v)), id })}`;
 
+  const closeHref = (() => {
+    const q = new URLSearchParams(Object.entries(f).filter(([k, v]) => v && k !== "id") as [string, string][]);
+    return `/pro-drafts${q.size ? `?${q}` : ""}`;
+  })();
+  const setFilter = (key: keyof Filters, value: string) => {
+    const next = { ...f, [key]: value || undefined, id: undefined };
+    const q = new URLSearchParams(Object.entries(next).filter(([, v]) => v) as [string, string][]);
+    router.replace(`/pro-drafts${q.size ? `?${q}` : ""}`, { scroll: false });
+  };
+  const sel = (key: keyof Filters, label: string, any: string, options: [string, string][]) => (
+    <label>{label}
+      <select name={key} defaultValue={f[key] ?? ""} className={f[key] ? "active" : undefined} onChange={(e) => setFilter(key, e.target.value)}>
+        <option value="">{any}</option>{options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+      </select>
+    </label>
+  );
+  const active = KEYS.filter((k) => k !== "id" && f[k]).length;
+
   return (
     <>
-      <div className="page-head">
-        <h1>Pro Drafts</h1>
-        <EvidenceBadge layer="pro" />
-        <span className="small muted">Recorded pro games only. Evidence, not recommendations: a pairing here never becomes a Clash default on its own.</span>
-      </div>
-      <form key={params.toString()} className="filters" method="get">
-        <label>Team<select name="team" defaultValue={f.team ?? ""}><option value="">All</option>{uniq(all.map((d) => d.team)).map((t) => <option key={t}>{t}</option>)}</select></label>
-        <label>Champion<select name="champion" defaultValue={f.champion ?? ""}><option value="">All</option>{champions.map((c) => <option key={c} value={c}>{names[c] ?? c}</option>)}</select></label>
-        <label>Role<select name="role" defaultValue={f.role ?? ""}><option value="">Any</option>{ROLES.map((r) => <option key={r}>{r}</option>)}</select></label>
-        <label>Tournament<select name="tournament" defaultValue={f.tournament ?? ""}><option value="">All</option>{uniq(all.map((d) => d.tournament)).map((t) => <option key={t}>{t}</option>)}</select></label>
-        <label>Series<select name="series" defaultValue={f.series ?? ""}><option value="">All</option>{uniq(all.map(seriesOf)).map((s) => <option key={s}>{s}</option>)}</select></label>
-        <button className="btn primary" type="submit">Filter</button>
-        <Link className="btn" href="/pro-drafts">Clear</Link>
-        <span className="small muted">{rows.length} of {all.length} team-games</span>
-      </form>
+      <PageHeader title="Pro Drafts" badges={<SourceBadge layer="pro" label="Observed pro evidence" />}
+        desc="Recorded pro games only. Evidence, not recommendations: a pairing here never becomes a Clash default on its own." />
 
       {selected && (
-        <div className="card" style={{ marginBottom: 10 }}>
-          <div className="row" style={{ justifyContent: "space-between" }}>
-            <h2 style={{ margin: 0 }}>{selected.team} vs {selected.opponent} · {selected.seriesGame}</h2>
-            <span className="small muted">{selected.tournament}{selected.patch ? ` · patch ${selected.patch}` : ""}</span>
+        <section className="panel" style={{ marginBottom: 12 }}>
+          <div className="panel-head">
+            <h2>{selected.team} vs {selected.opponent} · {selected.seriesGame}</h2>
+            <span className="xs muted">{selected.tournament}{selected.patch ? ` · patch ${selected.patch}` : ""}</span>
+            <div className="end">
+              <Link className="btn sm primary" href={`/?${new URLSearchParams(Object.fromEntries(ROLES.map((r) => [r.toLowerCase(), selected.picks[r]])))}`}>Open in Draft Room</Link>
+              <Link className="btn sm ghost" href={closeHref} aria-label="Close game">×</Link>
+            </div>
           </div>
-          <div className="slots" style={{ marginTop: 8, marginBottom: 6 }}>
-            {ROLES.map((r) => (
-              <div key={r} className={`slot role-${r}`}>
-                <div className="slot-head"><span className="role-tag">{r}</span></div>
-                <div className="locked">{names[selected.picks[r]] ?? selected.picks[r]}</div>
-              </div>
-            ))}
-          </div>
-          <p><b>Read:</b> {selected.read}</p>
-          {selected.note && <p className="small">{selected.note}</p>}
-          <div className="row">
+          <div className="panel-body">
+            <div className="draft-slots" style={{ marginBottom: 8 }}>
+              {ROLES.map((r) => (
+                <div key={r} className={`draft-slot locked role-${r}`} style={{ minHeight: 58 }}>
+                  <span className="slot-icon"><ChampIcon name={names[selected.picks[r]] ?? selected.picks[r]} role={r} size="lg" /></span>
+                  <div className="slot-top"><span className="role-tag">{r}</span></div>
+                  <div className="slot-main"><span className="slot-name truncate" style={{ fontSize: 14 }}>{names[selected.picks[r]] ?? selected.picks[r]}</span></div>
+                </div>
+              ))}
+            </div>
+            <p><b>Read:</b> {selected.read}</p>
+            {selected.note && <p className="small muted">{selected.note}</p>}
             <SourceLinks ids={selected.sources} sources={sources} />
-            <Link className="btn" href={`/?${new URLSearchParams(Object.fromEntries(ROLES.map((r) => [r.toLowerCase(), selected.picks[r]])))}`}>Open in Draft Room</Link>
           </div>
-        </div>
+        </section>
       )}
 
-      <div className="table-wrap">
+      <form key={params.toString()} className="toolbar" method="get">
+        {sel("team", "Team", "All teams", uniq(all.map((d) => d.team)).map((t) => [t, t]))}
+        {sel("champion", "Champion", "All champions", champions.map((c) => [c, names[c] ?? c]))}
+        {sel("role", "Role", "Any role", ROLES.map((r) => [r, r]))}
+        {sel("tournament", "Tournament", "All", uniq(all.map((d) => d.tournament)).map((t) => [t, t]))}
+        {sel("series", "Series", "All series", uniq(all.map(seriesOf)).map((x) => [x, x]))}
+        <noscript><button className="btn primary sm" type="submit">Filter</button></noscript>
+        {active > 0 && <Link className="btn sm ghost" href="/pro-drafts">Clear {active} filter{active > 1 ? "s" : ""}</Link>}
+        <span className="count">{rows.length} of {all.length} team-games</span>
+      </form>
+      <div className="table-wrap tall">
         <table>
           <thead><tr><th>Game</th><th>Team</th><th>vs</th>{ROLES.map((r) => <th key={r}>{r}</th>)}<th>Read</th><th>Source</th></tr></thead>
           <tbody>
             {rows.map((d) => (
               <tr key={d.id} className={`clickable ${d.id === f.id ? "selected" : ""}`}>
-                <td><Link href={link(d.id)}>{d.seriesGame}</Link></td>
-                <td>{d.team}</td>
-                <td className="muted">{d.opponent}</td>
-                {ROLES.map((r) => <td key={r} style={d.picks[r] === f.champion ? { fontWeight: 700 } : undefined}>{names[d.picks[r]] ?? d.picks[r]}</td>)}
-                <td className="small">{d.read}</td>
+                <td><Link className="cell-link" href={link(d.id)} style={{ whiteSpace: "nowrap" }}>{d.seriesGame}</Link></td>
+                <td style={{ whiteSpace: "nowrap" }}>{d.team}</td>
+                <td className="muted" style={{ whiteSpace: "nowrap" }}>{d.opponent}</td>
+                {ROLES.map((r) => <td key={r}><ChampionRow name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={d.picks[r] === f.champion} /></td>)}
+                <td className="xs wrap">{d.read}</td>
                 <td><SourceLinks ids={d.sources} sources={sources} /></td>
               </tr>
             ))}

@@ -1,7 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { DraftRoom } from "@/components/DraftRoom";
-import { EvidenceBadge } from "@/components/ui";
+import { PageHeader, SourceBadge } from "@/components/ui";
 import type { DraftData } from "@/lib/data";
 import { ROLES, type Role, type Source } from "@/lib/schema";
 
@@ -20,13 +20,9 @@ export function DraftRoomView({ data, sources, metaPicks, unreviewed }: {
   }
   return (
     <>
-      <div className="page-head">
-        <h1>Draft Room</h1>
-        <span className="row small muted">
-          <EvidenceBadge layer="clash" /> my Clash recommendation <EvidenceBadge layer="pro" /> observed pro evidence <EvidenceBadge layer="logic" /> general draft logic
-        </span>
-      </div>
-      {unreviewed > 0 && <p className="small muted" style={{ marginTop: -6 }}>Champion attributes behind the profile and warnings are a first draft ({unreviewed} not yet reviewed).</p>}
+      <PageHeader title="Draft Room"
+        desc={unreviewed > 0 ? `Lock picks by role. Champion attributes behind the profile and warnings are a first draft (${unreviewed} not yet reviewed).` : "Lock picks by role."}
+        actions={<span className="row tight"><SourceBadge layer="clash" label="Clash: my recommendation" /><SourceBadge layer="pro" label="Pro: observed evidence" /><SourceBadge layer="logic" label="Logic: general draft logic" /></span>} />
       <DraftRoom key={JSON.stringify(initial)} data={data} sources={sources} initial={initial} metaPicks={metaPicks} />
     </>
   );
