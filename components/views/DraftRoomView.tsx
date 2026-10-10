@@ -1,7 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { DraftRoom } from "@/components/DraftRoom";
-import { PageHeader, SourceBadge } from "@/components/ui";
+import { PageHeader } from "@/components/ui";
 import type { DraftData } from "@/lib/data";
 import { ROLES, type Role, type Source } from "@/lib/schema";
 
@@ -21,9 +21,7 @@ export function DraftRoomView({ data, sources, metaPicks, unreviewed }: {
   const initialEnemy = (q.get("vs") ?? "").split(",").filter((id, i, a) => ids.has(id) && a.indexOf(id) === i && !Object.values(initial).includes(id)).slice(0, 5);
   return (
     <>
-      <PageHeader title="Draft Room"
-        desc={`Lock your picks by role and, if you know them, the enemy's. Recommendations are ranked by how well each champion fits the whole draft.${unreviewed > 0 ? ` Champion attributes are a first draft (${unreviewed} not yet reviewed).` : ""}`}
-        actions={<span className="row tight"><SourceBadge layer="clash" label="Synergy" /><SourceBadge layer="pro" label="Pro: observed evidence" /><SourceBadge layer="logic" label="Logic: general draft logic" /></span>} />
+      <PageHeader title="Draft Room" />
       <DraftRoom key={JSON.stringify(initial) + initialEnemy.join()} data={data} sources={sources} initial={initial} initialEnemy={initialEnemy} metaPicks={metaPicks} />
     </>
   );

@@ -27,8 +27,8 @@ export function MetaView({ names, sources, meta, rules, checked, notRefreshed, s
 
   return (
     <>
-      <PageHeader title="Meta / Research" badges={<SourceBadge layer="pro" label="Observed pro evidence" />}
-        desc="Priority (how early and often a pick is taken or banned) is not the same as win rate. Small samples are marked." />
+      <PageHeader title="Meta / Research"
+        desc="Priority is pick/ban presence, not win rate. Fewer than 5 picks is marked low sample." />
       <div className="stat-strip" style={{ marginBottom: 12 }}>
         <Metric label="Tournament" value={<span style={{ fontSize: 14 }}>{t.name}</span>} sub={<SourceLinks ids={t.sources} sources={sources} />} />
         <Metric label="Games" value={t.games} sub={`${t.recordedGames} recorded as exact drafts`} />
@@ -72,10 +72,10 @@ export function MetaView({ names, sources, meta, rules, checked, notRefreshed, s
       <p className="xs muted" style={{ marginTop: 6 }}>Bans are blank where the workbook did not record them.</p>
 
       <div className="grid cols-2" style={{ marginTop: 12 }}>
-        <Panel title="What changed in this read" end={<SourceBadge layer="pro" />}>
+        <Panel title="What changed">
           {meta.changes.map((c) => <p key={c.topic} className="small"><b>{c.topic}:</b> {c.note}</p>)}
         </Panel>
-        <Panel title="Drafting rules">
+        <Panel title="Rules">
           {rules.map((r) => <p key={r.id} className="small row" style={{ flexWrap: "nowrap", alignItems: "baseline" }}><SourceBadge layer={r.layer} /> <span>{r.text}</span></p>)}
         </Panel>
       </div>

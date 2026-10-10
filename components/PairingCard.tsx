@@ -15,7 +15,7 @@ function ObservedShapes({ list, names, sources, anchor, draftLabels }: {
   if (!list.length) return null;
   return (
     <div style={{ marginTop: 6 }}>
-      <div className="xs muted" style={{ marginBottom: 2 }}><b>Bot-lane duos seen in pro play</b> (evidence, not recommendations)</div>
+      <div className="xs muted" style={{ marginBottom: 2 }}><b>Pro bot lanes</b></div>
       {list.map((o) => (
         <div key={o.bot + o.support} className="obs-row">
           <Duo bot={o.bot} support={o.support} names={names} />
@@ -75,7 +75,7 @@ export function PairingCard({ item, names, sources, compact = false, draftLabels
     return (
       <article className="panel pick-card">
         <Head role="BOT" id={r.champion} name={names[r.champion]}>
-          <span className="badge plain">{confidenceLabel(r.confidence)} confidence</span><span className="badge plain">{r.status}</span>
+          <span className="xs faint">{confidenceLabel(r.confidence)} confidence</span>
         </Head>
         <div className="identities">{r.identities.join(" · ")}</div>
         <LayerBlock layer="clash">
@@ -88,7 +88,7 @@ export function PairingCard({ item, names, sources, compact = false, draftLabels
             </>}
           </dl>
         </LayerBlock>
-        <LayerBlock layer="pro" title="Observed pro pairings">
+        <LayerBlock layer="pro" title="Pro pairings">
           <Observed list={r.observedProPairings} names={names} sources={sources} role="SUPPORT" draftLabels={draftLabels} />
           {!compact && r.playoffRead && <p className="small" style={{ marginTop: 6 }}><b>Current playoff read:</b> {r.playoffRead}</p>}
         </LayerBlock>
@@ -103,8 +103,8 @@ export function PairingCard({ item, names, sources, compact = false, draftLabels
     return (
       <article className="panel pick-card">
         <Head role={r.role} id={r.anchor} name={names[r.anchor]}>
-          <span className="badge plain">{confidenceLabel(r.confidence)} confidence</span>
-          <span className={`badge ${r.status === "downgraded" ? "caution" : "plain"}`}>{r.status}</span>
+          <span className="xs faint">{confidenceLabel(r.confidence)} confidence</span>
+          {r.status === "downgraded" && <span className="badge caution">downgraded</span>}
         </Head>
         <div className="identities">{r.identities.join(" · ")}</div>
         <LayerBlock layer="clash">
@@ -114,7 +114,7 @@ export function PairingCard({ item, names, sources, compact = false, draftLabels
             {!compact && <><dt>Bot shape</dt><dd><span className="chip-list">{r.botShapes.length ? r.botShapes.map((d) => <Duo key={d.bot + d.support} bot={d.bot} support={d.support} names={names} />) : <span className="muted small">none</span>}</span></dd></>}
           </dl>
         </LayerBlock>
-        <LayerBlock layer="pro" title={`Observed pro ${other.toLowerCase()} partners`}>
+        <LayerBlock layer="pro" title={`Pro ${other.toLowerCase()} partners`}>
           <Observed list={r.observedProPairings} names={names} sources={sources} role={other} draftLabels={draftLabels} />
           {!compact && <ObservedShapes list={r.observedBotShapes} names={names} sources={sources} anchor={r.anchor} draftLabels={draftLabels} />}
           {!compact && r.playoffRead && <p className="small" style={{ marginTop: 6 }}><b>Current playoff read:</b> {r.playoffRead}</p>}
@@ -133,18 +133,18 @@ export function PairingCard({ item, names, sources, compact = false, draftLabels
   return (
     <article className="panel pick-card">
       <Head role="TOP" id={r.champion} name={names[r.champion]}>
-        <span className="badge clash" title="Blind-pick grade">Blind {r.blindGrade}</span>
-        <span className={`badge ${r.status === "downgraded" ? "caution" : "plain"}`}>{r.status}</span>
+        <span className="xs muted" title="Blind-pick grade">Blind <b className="grade">{r.blindGrade}</b></span>
+        {r.status === "downgraded" && <span className="badge caution">downgraded</span>}
       </Head>
       <div className="identities">{r.identities.join(" · ")}</div>
-      <LayerBlock layer="clash" title="Synergy Recommendation: surrounding comp">
+      <LayerBlock layer="clash" title="Synergy: surrounding comp">
         <dl className="kv">
           <dt>Jungle</dt><dd><ChipList ids={r.surrounding.jungle} names={names} role="JUNGLE" /></dd>
           <dt>Mid</dt><dd><ChipList ids={r.surrounding.mid} names={names} role="MID" /></dd>
           <dt>Bot shape</dt><dd><span className="chip-list">{r.surrounding.botShapes.map((d) => <Duo key={d.bot + d.support} bot={d.bot} support={d.support} names={names} />)}</span></dd>
         </dl>
       </LayerBlock>
-      <LayerBlock layer="pro" title="Observed pro evidence"
+      <LayerBlock layer="pro" title="Pro evidence"
         end={item.stats && <span className="xs muted tnum">{item.stats.picks} playoff picks · {Math.round(item.stats.winRate * 100)}% WR{item.stats.lowSample ? " · low sample" : ""}</span>}>
         {!compact && <Observed list={r.observedProPairings} names={names} sources={sources} role="JUNGLE" draftLabels={draftLabels} />}
         {!compact && <ObservedShapes list={r.observedBotShapes} names={names} sources={sources} anchor={r.champion} draftLabels={draftLabels} />}
