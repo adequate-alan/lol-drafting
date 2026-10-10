@@ -47,3 +47,33 @@ export type ChampionV2 = z.infer<typeof ChampionV2>;
 export const ENGAGE_METER: Record<FightStart, number> = { primary: 3, catch: 2, "follow-up": 1, none: 0 };
 
 export { ROLES };
+
+// ---------- v2 kit (comp analysis; proposal, NOT active) ----------
+// Deterministic champion facts the comp-analysis engine (lib/model-v2/analyze.ts) needs beyond the v1 attributes.
+// Every value is a 0–3 draft heuristic, not a measurement. The v1 attributes (frontline, peel, sustainedDps, burst,
+// poke, scaling, lanePressure, sidePressure, objectiveControl), fightStart and damageByRole stay as they are.
+export const KIT_FIELDS = [
+  "waveclear",       // clears a wave from range quickly: 0 slow / melee single-target … 3 instant from range
+  "range",           // effective teamfight range: 0 must stand on the target · 1 short · 2 standard ranged · 3 long / artillery
+  "tankDamage",      // kills a frontline: %HP, true damage, sustained shred
+  "backlineAccess",  // reaches a protected carry through or around a frontline
+  "disengage",       // stops or undoes an enemy engage before it lands: knockbacks, zones, team speed, shields on the target
+  "counterEngage",   // punishes an engage after it commits: turn-around CC
+  "followUp",        // capitalises at once on an ally's engage: AoE CC, burst on a locked target, fast reach
+  "aoeCc",           // multi-target crowd control in a fight (layered / wombo engage)
+  "resourceDemand",  // 3 needs gold and farm priority · 0 is happy on a low-economy role
+  "ultDependency",   // 3 most of the champion's fight value is its ultimate
+  "setupDependency", // 3 needs someone else to create the angle (needs-setup champions are 2+)
+] as const;
+export type KitField = (typeof KIT_FIELDS)[number];
+export const PowerCurve = z.object({ early: Scale, mid: Scale, late: Scale });
+export type PowerCurve = z.infer<typeof PowerCurve>;
+export const Kit = z.object({
+  ...(Object.fromEntries(KIT_FIELDS.map((f) => [f, Scale])) as Record<KitField, typeof Scale>),
+  // Relative strength at each stage: early = levels 1–6 / before first item, mid = 1–3 items, late = 4+ items.
+  curve: PowerCurve,
+  // Map-wide ultimate (Twisted Fate, Shen, Nocturne): turns a side lane into a fight elsewhere.
+  global: z.literal(true).optional(),
+});
+export type Kit = z.infer<typeof Kit>;
+export type ChampionKit = ChampionV2 & { kit: Kit };
