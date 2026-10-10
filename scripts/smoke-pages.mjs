@@ -323,6 +323,12 @@ await page.locator(".theme-toggle").click();
     && (await page.locator("nav[aria-label='Difficulty'] a").allTextContents()).join() === "All,Easy,Medium,Hard", "");
   check("comps: five champions across, no swap lists or source links shown by default",
     (await yp.locator(".lu-slot").count()) === 5 && (await page.locator(".swap-menu").count()) === 0 && (await yp.locator(".shell-sources").count()) === 0, "");
+  const rows = await page.locator(".shell-grid > .shell").evaluateAll((els) => {
+    const by = {};
+    for (const e of els) (by[Math.round(e.getBoundingClientRect().top)] ??= new Set()).add(Math.round(e.querySelector(".shell-actions").getBoundingClientRect().bottom));
+    return Object.values(by).map((x) => [...x]);
+  });
+  check("comps: action rows line up across each grid row", rows.length > 0 && rows.every((r) => r.length === 1), JSON.stringify(rows));
   await yp.locator(".lu-top .lu-swaps").click();
   await yp.locator(".swap-menu .swap-item", { hasText: "Ambessa" }).click();
   await page.waitForTimeout(200);
@@ -332,7 +338,10 @@ await page.locator(".theme-toggle").click();
   await yp.locator(".shell-preview button", { hasText: "Reset" }).click();
   check("comps: Reset restores the original comp", (await yp.locator(".lu-top .lu-name").textContent()) === "Rumble" && (await yp.locator(".shell-preview").count()) === 0, "");
   await yp.locator(".src-toggle").click();
-  check("comps: Sources (1) expands the exact evidence and refresh status", /Gol\.gg game/.test((await yp.locator(".shell-sources").textContent()) ?? ""), "");
+  check("comps: Details expands the full why plus the exact evidence and refresh status",
+    /Gol\.gg game/.test((await yp.locator(".shell-sources").textContent()) ?? "") && /Why it works/.test((await yp.locator(".shell-details").textContent()) ?? ""), "");
+  check("comps: short job labels on the card, the full job kept in its title",
+    (await yp.locator(".lu-top .lu-job").textContent()) === "Zone control" && (await yp.locator(".lu-top .lu-job").getAttribute("title")) === "Zone space and cut off exits", "");
 }
 // First Pick: hover card on desktop, drawer on click
 {
@@ -492,6 +501,8 @@ if (shots) {
         await page.screenshot({ path: `${shots}/review-${name}-${tag}-${theme}.png` });
       }
       await open("/comps/");
+      await page.waitForTimeout(700);
+      await page.screenshot({ path: `${shots}/review-comps-${tag}-${theme}.png` });
       await page.locator(".lu-champ").first().click();
       await page.waitForTimeout(400);
       await page.screenshot({ path: `${shots}/review-drawer-${tag}-${theme}.png` });

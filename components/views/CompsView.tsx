@@ -1,6 +1,7 @@
 "use client";
 // Comp Library: each shell reads as a draft board. Five champions across the top (hover for the quick card, click for
-// the drawer), then the win condition, why it works, actions, and sources behind a toggle. Swaps hide behind a
+// the drawer), each with a short job label (lib/comp-copy.ts; the full job is on the hover card and drawer), then the
+// win condition, one supporting line, actions, and the full "why" plus sources behind Details. Swaps hide behind a
 // "N swaps" control; picking one previews that variation in place (never saved, never pro evidence: swaps are
 // General Draft Logic, even on an observed pro comp) and compares it with the original on the comp check.
 import Link from "next/link";
@@ -9,6 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChampionDrawer, compLinks, useDrawerIndex, type CompContext, type DrawerTarget } from "@/components/ChampionDrawer";
 import { ChampionHoverCard, useHoverIntent } from "@/components/ChampionInteraction";
 import { ChampIcon, PageHeader, SourceBadge } from "@/components/ui";
+import { jobLabel, WHY_LINE } from "@/lib/comp-copy";
 import { draftHref, shellDraft, variationDiff } from "@/lib/comp-preview";
 import type { DrawerData } from "@/lib/data";
 import { shortDate } from "@/lib/evidence";
@@ -122,6 +124,8 @@ export function CompsView({ names, sources, drafts, allShells, data }: {
           const swapped = ROLES.filter((r) => swaps[r]);
           const srcs = [...new Set(s.sources)].map((id) => sources[id]).filter(Boolean);
           const showSrc = !!shownSources[s.id];
+          const whyLine = WHY_LINE[s.id] ?? s.why;
+          const hasDetails = srcs.length > 0 || whyLine !== s.why;
           return (
             <article key={s.id} id={s.id} className={`panel shell ${s.kind} ${swapped.length ? "previewing" : ""}`}>
               <header className="shell-head">
@@ -146,18 +150,23 @@ export function CompsView({ names, sources, drafts, allShells, data }: {
               {swapped.length > 0 && <Preview shell={s} swaps={swaps} names={names} data={data} onReset={() => setPreviews((p) => ({ ...p, [s.id]: {} }))} />}
               <div className="shell-foot">
                 <p className="wc">{s.winCondition}</p>
-                <p className="why xs muted">{s.why}</p>
+                <p className="why">{whyLine}</p>
                 <div className="row between shell-actions">
-                  {srcs.length > 0
-                    ? <button type="button" className="src-toggle xs" aria-expanded={showSrc} onClick={() => setShownSources((x) => ({ ...x, [s.id]: !showSrc }))}>
-                        Sources ({srcs.length}) <span aria-hidden="true">{showSrc ? "▴" : "▾"}</span>
+                  {hasDetails
+                    ? <button type="button" className="src-toggle" aria-expanded={showSrc} onClick={() => setShownSources((x) => ({ ...x, [s.id]: !showSrc }))}>
+                        Details{srcs.length > 0 && <span className="faint"> · {srcs.length} source{srcs.length > 1 ? "s" : ""}</span>} <span aria-hidden="true">{showSrc ? "▴" : "▾"}</span>
                       </button>
                     : <span />}
                   {swapped.length
                     ? <Link className="btn sm primary" href={draftHref(shellDraft(s, swaps))}>Use variation in Draft Room →</Link>
                     : <Link className="btn sm" href={`/?shell=${s.id}`}>Use in Draft Room →</Link>}
                 </div>
-                {showSrc && <SourceList list={srcs} />}
+                {showSrc && (
+                  <div className="shell-details">
+                    {whyLine !== s.why && <p className="shell-why-full"><span className="faint">Why it works</span> {s.why}</p>}
+                    {srcs.length > 0 && <SourceList list={srcs} />}
+                  </div>
+                )}
               </div>
             </article>
           );
@@ -216,9 +225,10 @@ function Lineup({ shell: s, swaps, names, data, index, active, selected, menu, o
               <ChampIcon id={id} name={names[id]} role={r} size="lg" />
               <b className="lu-name">{names[id]}</b>
             </button>
-            <p className="lu-job" title={slot.job}>{isSwap ? <span className="lu-for">for {names[slot.champion]}</span> : slot.job}</p>
+            <p className="lu-job" title={slot.job}>{isSwap ? <span className="lu-for">for {names[slot.champion]}</span> : jobLabel(slot.job)}</p>
             {slot.swaps.length > 0 && (
               <button type="button" className="lu-swaps" aria-expanded={menu === r} aria-haspopup="menu"
+                aria-label={isSwap ? `Swapped: swaps for ${names[slot.champion]}` : `${slot.swaps.length} swap${slot.swaps.length > 1 ? "s" : ""} for ${names[slot.champion]}`}
                 onPointerEnter={(e) => {
                   if (e.pointerType !== "mouse" || menu === r) return;
                   clearTimeout(timer.current);
@@ -231,7 +241,8 @@ function Lineup({ shell: s, swaps, names, data, index, active, selected, menu, o
                   byHover.current = false;
                   onMenu(menu === r ? undefined : r);
                 }}>
-                {isSwap ? "Swapped" : `${slot.swaps.length} swap${slot.swaps.length > 1 ? "s" : ""}`} <span aria-hidden="true">›</span>
+                <span aria-hidden="true" className="lu-swaps-icon">⇄</span>
+                <span className={isSwap ? "lu-swaps-n" : "lu-swaps-n num"}>{isSwap ? "Swapped" : slot.swaps.length}</span>
               </button>
             )}
             {menu === r && (
