@@ -13,7 +13,7 @@ import { ChampionCtx } from "@/components/InteractiveChampion";
 import { proLinks, savedLinks, type Slots } from "@/lib/comp-links";
 import type { DrawerData } from "@/lib/data";
 import { fresher, shortDate } from "@/lib/evidence";
-import { TIERS, type ProGame, type Tier } from "@/lib/pool-stats";
+import { TIERS, listsRole, type ProGame, type Tier } from "@/lib/pool-stats";
 import { synergyParts } from "@/lib/recommend";
 import { ROLES, type Attr, type Role } from "@/lib/schema";
 export { InteractiveChampion } from "@/components/InteractiveChampion";
@@ -144,7 +144,7 @@ export function ChampionHoverCard({ target, anchor, data, index, focus, comp, si
 
   const tier = poolTier(target.id, role, data);
   const games = index.games.filter((g) => g.picks[role] === target.id);
-  const stat = index.stats.filter((s) => s.stat.champion === target.id && s.stat.role === role).sort((a, b) => fresher(a.event, b.event))[0];
+  const stat = index.stats.filter((s) => s.stat.champion === target.id && listsRole(s.stat, role)).sort((a, b) => fresher(a.event, b.event))[0];
   const traits = champ ? [...TRAITS].filter(([a]) => champ.attrs[a] >= 2).sort((x, y) => champ.attrs[y[0]] - champ.attrs[x[0]]).slice(0, 2) : [];
   const lines = relationLines({ id: target.id, role }, data, index, focus, comp);
   const about = comp ? "this comp" : focus ? index.names[focus.id] ?? focus.id : undefined;

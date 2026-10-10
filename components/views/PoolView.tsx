@@ -4,7 +4,7 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import { Select } from "@/components/Select";
 import { ChampionRow, ChipList, LayerBlock, PageHeader, SourceLinks, pct } from "@/components/ui";
 import { describeLine, groupObserved, shortDate, type EventMap } from "@/lib/evidence";
-import { PARTNER_ROLE, SORTS, TIERS, poolRows, sortRows, type PoolInput, type PoolRow, type SortKey, type Tier } from "@/lib/pool-stats";
+import { PARTNER_ROLE, SORTS, TIERS, poolRows, presenceOf, roleShare, sortRows, type PoolInput, type PoolRow, type SortKey, type Tier } from "@/lib/pool-stats";
 import { ROLES, type BotPairing, type MidJunglePairing, type ObservedPairing, type Role, type TopPick } from "@/lib/schema";
 
 const TIER_LABEL = Object.fromEntries(TIERS) as Record<Tier, string>;
@@ -72,12 +72,14 @@ export function PoolView({ names, data, bot, midJungle, top }: {
           <thead><tr>
             <th>Champion</th><th className="hide-sm">Role</th>{sortHead("tier", "Tier", false)}
             {sortHead("picks", "Picks")}{sortHead("bans", "Bans", true, "hide-sm")}{sortHead("presence", "Presence", true, "hide-sm")}{sortHead("winRate", "Win rate")}
+            <th className="num hide-sm" title="Games stored in this repo with this champion in this role (not a tournament count)">Recorded</th>
             {sortHead("recency", "Latest", false)}<th className="hide-sm">Patch</th><th className="hide-sm">Last played</th><th className="hide-sm">Top partner</th>
           </tr></thead>
           <tbody>
             {rows.map((r) => {
               const key = r.role + r.id;
               const s = r.stat?.stat;
+              const pres = r.stat ? presenceOf(r.stat) : null;
               const isOpen = open === key;
               return (
                 <Fragment key={key}>
@@ -86,17 +88,18 @@ export function PoolView({ names, data, bot, midJungle, top }: {
                     <td><ChampionRow id={r.id} name={names[r.id] ?? r.id} role={r.role} size="md" /></td>
                     <td className="hide-sm"><span className={`role-tag role-${r.role}`}>{r.role}</span></td>
                     <td><span className={`tier ${r.tier}`}>{TIER_LABEL[r.tier]}</span></td>
-                    <td className="num">{s ? <>{s.picks}{s.lowSample && <span className="low" title="Fewer than 5 picks">*</span>}</> : DASH}</td>
+                    <td className="num" title={r.stat && !event ? `${r.stat.event.short} ${r.stat.event.patch} tournament stats` : undefined}>{s ? <>{s.picks}{s.lowSample && <span className="low" title="Fewer than 5 picks">*</span>}</> : DASH}</td>
                     <td className="num hide-sm">{s?.bans ?? DASH}</td>
-                    <td className="num hide-sm">{s?.presence != null ? <span className={`heat ${s.presence >= 0.3 ? "hi" : ""}`}>{pct(s.presence)}</span> : DASH}</td>
+                    <td className="num hide-sm">{pres != null ? <span className={`heat ${pres >= 0.3 ? "hi" : ""}`}>{pct(pres)}</span> : DASH}</td>
                     <td className="num">{s ? pct(s.winRate) : DASH}</td>
+                    <td className="num hide-sm">{r.games.length || DASH}</td>
                     <td className="nowrap">{r.latest ? <>{r.latest.eventName}{r.latest.event?.status === "ongoing" && <span className="badge pro ongoing" title="Event still running; numbers are not final">Ongoing</span>}</> : <span className="xs faint">No verified data</span>}</td>
                     <td className="num hide-sm">{r.latest?.patch ?? DASH}</td>
                     <td className="num hide-sm">{shortDate(r.latest?.date) ?? DASH}</td>
                     <td className="hide-sm">{r.partner ? <span className="nowrap">{names[r.partner.id] ?? r.partner.id} <span className="xs muted tnum">{r.partner.games}×</span></span> : DASH}</td>
                   </tr>
                   {isOpen && (
-                    <tr className="pool-detail"><td colSpan={11}>
+                    <tr className="pool-detail"><td colSpan={12}>
                       <Detail row={r} names={names} data={data} eventMap={eventMap} bot={bot} midJungle={midJungle} top={top} />
                     </td></tr>
                   )}
@@ -107,7 +110,9 @@ export function PoolView({ names, data, bot, midJungle, top }: {
         </table>
       </div>
       <p className="xs muted" style={{ marginTop: 6 }}>
-        Picks, bans, presence and win rate are tournament stats for the role they are recorded under; * is fewer than 5 picks.
+        Picks, bans, presence and win rate are full-tournament stats (bans and presence are champion-wide), shown for the role
+        the champion is listed under; with All tournaments each row uses its newest tournament. Recorded counts games stored
+        here and never feeds those numbers. * is fewer than 5 picks.
         {ongoing.length > 0 && ` ${ongoing.map((e) => e.short).join(", ")} is ongoing, so its numbers are not final.`}
       </p>
 
@@ -160,32 +165,27 @@ function Detail({ row: r, names, data, eventMap, bot, midJungle, top }: {
         </dl>
       </LayerBlock>
       <LayerBlock layer="pro" title="Pro evidence">
-        {r.stats.length + gameEvents.length === 0 && !r.games.length ? <p className="xs muted">No verified data for {names[r.id]} {r.role.toLowerCase()}.</p> : (
+        <div className="xs muted detail-label" title="Gol.gg tournament totals, not counted from the games stored here">Tournament stats</div>
+        {r.stats.length ? (
           <table className="mini">
-            <thead><tr><th>Tournament</th><th className="num">Patch</th><th className="num">Picks</th><th className="num">Bans</th><th className="num">Pres.</th><th className="num">WR</th><th className="num">Games</th><th>Source</th></tr></thead>
+            <thead><tr><th>Tournament</th><th className="num">Patch</th><th className="num">Games</th><th className="num">Picks</th><th className="num" title="Champion-wide">Bans</th><th className="num" title="(picks + bans) / tournament games">Pres.</th><th className="num">WR</th><th>Roles</th><th>Source</th></tr></thead>
             <tbody>
-              {r.stats.map(({ event: e, stat: s }) => (
+              {r.stats.map((x) => { const { event: e, stat: s } = x, pres = presenceOf(x); return (
                 <tr key={e.id}>
                   <td className="nowrap">{e.short}{e.status === "ongoing" && <span className="badge pro ongoing">Ongoing</span>}</td>
-                  <td className="num">{e.patch}</td><td className="num">{s.picks}</td><td className="num">{s.bans ?? "—"}</td>
-                  <td className="num">{s.presence != null ? pct(s.presence) : "—"}</td><td className="num">{pct(s.winRate)}</td>
-                  <td className="num">{r.games.filter((g) => g.event?.id === e.id).length}</td>
+                  <td className="num">{e.patch}</td><td className="num">{e.games ?? "—"}</td><td className="num">{s.picks}</td><td className="num">{s.bans ?? "—"}</td>
+                  <td className="num">{pres != null ? pct(pres) : "—"}</td><td className="num">{pct(s.winRate)}</td>
+                  <td className="xs nowrap">{roleShare(s) ?? "—"}</td>
                   <td>{s.sources.length ? <SourceLinks ids={s.sources} sources={data.sources} /> : <span className="xs faint" title={s.note}>provided, no page yet</span>}</td>
-                </tr>
-              ))}
-              {gameEvents.map((id) => { const e = eventMap[id]; return (
-                <tr key={id}>
-                  <td className="nowrap">{e.short}{e.status === "ongoing" && <span className="badge pro ongoing">Ongoing</span>}</td>
-                  <td className="num">{e.patch}</td><td className="num">—</td><td className="num">—</td><td className="num">—</td><td className="num">—</td>
-                  <td className="num">{r.games.filter((g) => g.event?.id === id).length}</td><td className="xs faint">games only</td>
                 </tr>
               ); })}
             </tbody>
           </table>
-        )}
+        ) : <p className="xs muted">No tournament stats for {names[r.id]} {r.role.toLowerCase()}{gameEvents.length ? ` (${gameEvents.map((id) => eventMap[id].short).join(", ")} has recorded games only)` : ""}.</p>}
+        {r.stats.length > 0 && gameEvents.length > 0 && <p className="xs faint">{gameEvents.map((id) => eventMap[id].short).join(", ")}: recorded games only, no tournament stats.</p>}
         {r.games.length > 0 && (
           <>
-            <div className="xs muted detail-label">Recent games ({r.role.toLowerCase()})</div>
+            <div className="xs muted detail-label" title="Drafts and game pages stored in this repo">Recorded games · {r.games.length} ({r.role.toLowerCase()})</div>
             {r.games.slice(0, 6).map((g) => {
               const p = g.picks[partnerRole];
               return (

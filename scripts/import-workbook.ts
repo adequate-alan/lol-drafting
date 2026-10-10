@@ -329,11 +329,7 @@ async function main() {
   });
 
   // ---------- meta ----------
-  const roleUsage = (id: string) => {
-    const u: Record<string, number> = {};
-    for (const d of proDrafts) for (const role of ROLES) if (d.picks[role] === id) u[role] = (u[role] ?? 0) + 1;
-    return u;
-  };
+  // Tournament aggregates only: presence is derived at read time and recorded-game counts are never stored here.
   const metaRows = table(use("PLAYOFF META"));
   const stats: MetaStat[] = metaRows.map((r) => {
     const id = champ(r.champion!, "PLAYOFF META");
@@ -341,8 +337,8 @@ async function main() {
     const [role, flex] = r.role!.split("/");
     return {
       champion: id, role: role as Role, ...(flex && flex !== "FLEX" ? { flexRole: flex as Role } : {}),
-      picks, bans, presence: games ? (picks + bans) / games : null, winRate: num(r.win_rate)!,
-      lowSample: picks < 5, roleUsage: roleUsage(id), priorityRead: r.priority_read ?? undefined,
+      picks, bans, winRate: num(r.win_rate)!,
+      lowSample: picks < 5, priorityRead: r.priority_read ?? undefined,
       note: r.draft_note ?? undefined, sources: urls(r.source).map((u) => source(u, { type: "golgg-champion" })),
     };
   });
@@ -355,8 +351,8 @@ async function main() {
       continue;
     }
     stats.push({
-      champion: id, role: "TOP", picks, bans: null, presence: null, winRate: wr, lowSample: picks < 5,
-      roleUsage: roleUsage(id), sources: urls(r.source_urls).map((u) => source(u)),
+      champion: id, role: "TOP", picks, bans: null, winRate: wr, lowSample: picks < 5,
+      sources: urls(r.source_urls).map((u) => source(u)),
     });
   }
   report.decisions.push("Top-lane picks/WR stored once in meta.json (TOP sheet values merged; bans unknown for champions without a PLAYOFF META row).");

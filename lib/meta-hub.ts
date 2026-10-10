@@ -2,7 +2,7 @@
 // (meta.json event stats, recorded drafts, supplied game pages). Display only: nothing here touches saved pairings, and
 // nothing is computed from champion attributes. Where the data cannot support a number, the number is left out.
 import { comparePatchDesc, fresher } from "./evidence";
-import { eventStats, proGames, type EventStat, type ProGame } from "./pool-stats";
+import { eventStats, listsRole, presenceOf, proGames, type EventStat, type ProGame } from "./pool-stats";
 import type { BotPairing, Meta, MetaEvent, ProDraft, Role, Source } from "./schema";
 
 export interface HubInput { meta: Meta; proDrafts: ProDraft[]; botPairings: BotPairing[]; sources: Record<string, Source> }
@@ -54,22 +54,24 @@ export function eventSummary(d: HubData, event: MetaEvent, sources: Record<strin
 export interface RoleRow {
   id: string;
   role: Role;
-  stat?: EventStat; // newest matching event stat for this role
-  games: ProGame[]; // recorded games in this role, newest first
+  stat?: EventStat; // tournament aggregate: newest matching event stat for this role
+  stats: EventStat[]; // every matching event stat, newest first
+  games: ProGame[]; // recorded evidence: stored games in this role, newest first
   latest?: { event?: MetaEvent; eventName: string; patch?: string; date?: string };
 }
 
 export function roleRows(d: HubData, role: Role, eventId?: string): RoleRow[] {
-  const stats = d.stats.filter(inEvent(eventId)).filter((s) => s.stat.role === role).sort((a, b) => fresher(a.event, b.event));
+  const stats = d.stats.filter(inEvent(eventId)).filter((s) => listsRole(s.stat, role)).sort((a, b) => fresher(a.event, b.event));
   const games = d.games.filter(inEvent(eventId)).filter((g) => g.picks[role]);
   const ids = new Set([...stats.map((s) => s.stat.champion), ...games.map((g) => g.picks[role]!)]);
   return [...ids].map((id) => {
-    const stat = stats.find((s) => s.stat.champion === id);
+    const mine = stats.filter((s) => s.stat.champion === id);
+    const stat = mine[0];
     const played = games.filter((g) => g.picks[role] === id);
     const fromGame = played[0] && { event: played[0].event, eventName: played[0].eventName, patch: played[0].patch, date: played[0].date };
     const fromStat = stat && { event: stat.event, eventName: stat.event.short, patch: stat.event.patch };
     const latest = fromGame && fromStat ? (fresher(fromStat, fromGame) < 0 ? fromStat : fromGame) : fromGame ?? fromStat;
-    return { id, role, stat, games: played, latest };
+    return { id, role, stat, stats: mine, games: played, latest };
   });
 }
 
@@ -81,7 +83,7 @@ export function sortRoleRows(rows: RoleRow[], key: HubSort): RoleRow[] {
     const s = r.stat?.stat;
     if (key === "picks") return s?.picks;
     if (key === "bans") return s?.bans ?? undefined;
-    if (key === "presence") return s?.presence ?? undefined;
+    if (key === "presence") return r.stat ? presenceOf(r.stat) ?? undefined : undefined;
     if (key === "winRate") return s?.winRate;
     return undefined;
   };
@@ -113,7 +115,7 @@ export function trending(d: HubData): Trending {
   const missing = [newer, older].filter((e) => !e.games).map((e) => e.short);
   if (missing.length) return { older, newer, rising: [], falling: [], blocked: `No total game count for ${missing.join(" and ")}, so pick rates can't be compared.` };
   const rate = (e: MetaEvent, id: string, role: Role) => {
-    const s = d.stats.find((x) => x.event.id === e.id && x.stat.champion === id && x.stat.role === role);
+    const s = d.stats.find((x) => x.event.id === e.id && x.stat.champion === id && listsRole(x.stat, role));
     return s ? { picks: s.stat.picks, rate: s.stat.picks / e.games! } : undefined;
   };
   const keys = new Set(d.stats.filter((s) => s.event.id === newer.id || s.event.id === older.id).map((s) => `${s.stat.champion}|${s.stat.role}`));
@@ -136,6 +138,7 @@ export function trending(d: HubData): Trending {
 
 // ---------- tournament comparison ----------
 
+// picks / presence are the tournament aggregate; games counts recorded games. Shown side by side, never combined.
 export interface CompareCell { picks?: number; presence?: number | null; games: number; latest?: string }
 export interface CompareRow { id: string; role: Role; cells: Record<string, CompareCell>; seenIn: string[] }
 
@@ -151,7 +154,7 @@ export function comparison(d: HubData, role?: Role): CompareRow[] {
     if (role && s.stat.role !== role) continue;
     const c = cell(row(s.stat.champion, s.stat.role), s.event);
     c.picks = s.stat.picks;
-    c.presence = s.stat.presence;
+    c.presence = presenceOf(s);
   }
   for (const g of d.games) {
     if (!g.event) continue;
