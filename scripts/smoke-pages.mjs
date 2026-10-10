@@ -232,31 +232,31 @@ await page.locator(".theme-toggle").click();
 {
   await open("/comps/");
   await page.evaluate(() => window.scrollTo(0, 400));
-  const naut = page.locator("#mage-bot-siege .comp-slot", { hasText: "Nautilus" });
+  const naut = page.locator("#mage-bot-siege .lu-champ", { hasText: "Nautilus" });
   await naut.scrollIntoViewIfNeeded();
   const y = await page.evaluate(() => scrollY);
-  const rowBoxes = () => page.$$eval(".comp-slot-row", (rs) => rs.map((r) => { const b = r.getBoundingClientRect(); return `${Math.round(b.top + scrollY)},${Math.round(b.height)}`; }).join("|"));
+  const rowBoxes = () => page.$$eval(".lu-slot", (rs) => rs.map((r) => { const b = r.getBoundingClientRect(); return `${Math.round(b.top + scrollY)},${Math.round(b.height)}`; }).join("|"));
   const rows0 = await rowBoxes();
-  for (const b of await page.locator("#mage-bot-siege .comp-slot, #classic-front-to-back .comp-slot").all()) { await b.hover(); await page.waitForTimeout(30); }
+  for (const b of await page.locator("#mage-bot-siege .lu-champ, #classic-front-to-back .lu-champ").all()) { await b.hover(); await page.waitForTimeout(30); }
   await naut.hover();
   await page.waitForTimeout(350);
   const nb = await naut.boundingBox(), cb = await page.locator(".hovercard").boundingBox().catch(() => null);
   check("comps: hover card floats beside the champion, inside the viewport", !!cb && (cb.x >= nb.x + nb.width || cb.x + cb.width <= nb.x) && cb.y >= 0 && cb.y + cb.height <= 900, JSON.stringify(cb));
-  check("comps: hovering champions never moves the rows", (await rowBoxes()) === rows0, "");
-  // Regression: the cursor resting exactly on the boundary between two rows must not open and close the card in a loop.
-  const rows = page.locator("#mage-bot-siege .comp-slot-row");
-  const r2 = await rows.nth(2).boundingBox();
+  check("comps: hovering champions never moves the lineup", (await rowBoxes()) === rows0, "");
+  // Regression: the cursor resting exactly on the boundary between two champions must not open and close the card in a loop.
+  const slots = page.locator("#mage-bot-siege .lu-slot");
+  const r2 = await slots.nth(2).boundingBox();
   await page.evaluate(() => { window.__hc = 0; new MutationObserver((ms) => { for (const m of ms) for (const n of [...m.addedNodes, ...m.removedNodes]) if (n.classList?.contains("hovercard")) window.__hc++; }).observe(document.body, { childList: true }); });
   const flips = [];
-  for (const dx of [60, 300]) for (const dy of [-0.5, 0, 0.5]) {
+  for (const dy of [30, 50]) for (const dx of [-0.5, 0, 0.5]) {
     await page.mouse.move(r2.x + dx, r2.y + dy);
     await page.waitForTimeout(300);
     const a = await page.evaluate(() => window.__hc);
     await page.waitForTimeout(900);
     flips.push((await page.evaluate(() => window.__hc)) - a);
   }
-  check("comps: cursor on a row boundary never flickers the card", flips.every((n) => n === 0) && (await rowBoxes()) === rows0, flips.join(","));
-  await page.mouse.move(r2.x + 60, r2.y + 10);
+  check("comps: cursor on a slot boundary never flickers the card", flips.every((n) => n === 0) && (await rowBoxes()) === rows0, flips.join(","));
+  await page.mouse.move(r2.x + r2.width / 2, r2.y + 40);
   await page.waitForTimeout(300);
   await page.mouse.wheel(0, 120);
   await page.waitForTimeout(250);
@@ -266,7 +266,7 @@ await page.locator(".theme-toggle").click();
   await naut.click();
   const drawer = page.locator(".drawer");
   await drawer.waitFor({ timeout: 5000 }).catch(() => {});
-  const marks = await page.locator("#mage-bot-siege .comp-slot-row.has-saved b").allTextContents();
+  const marks = await page.locator("#mage-bot-siege .lu-slot.has-saved .lu-name").allTextContents();
   check("comps: clicking Nautilus opens the drawer and marks Ziggs as Synergy", (await drawer.locator("h2").textContent()) === "Nautilus" && marks.includes("Ziggs"), marks.join(", "));
   const layers = await drawer.locator(".layer").evaluateAll((els) => els.map((e) => e.className));
   check("comps: drawer keeps Synergy, Pro and Logic separate", layers.join() === "layer clash,layer pro,layer logic", layers.join(" | "));
@@ -284,11 +284,29 @@ await page.locator(".theme-toggle").click();
   await page.waitForTimeout(500);
   check("comps: Use in Draft Room loads the champion in its role", /\/lol-drafting\/\?support=nautilus$/.test(page.url()) && /Nautilus/.test(await page.locator(".draft-slots").first().textContent()), page.url());
   await open("/comps/");
-  await page.locator("#mage-bot-siege .comp-slot", { hasText: "Nautilus" }).click();
+  await page.locator("#mage-bot-siege .lu-champ", { hasText: "Nautilus" }).click();
   await page.locator(".drawer a", { hasText: "View in Champion Pool" }).click();
   await page.waitForURL(/champ=nautilus/, { timeout: 8000 }).catch(() => {});
   await page.waitForTimeout(500);
   check("comps: View in Champion Pool opens that row", (await page.locator("tr.pool-row.open").textContent())?.includes("Nautilus") ?? false, page.url());
+  // Draft-board cards: swaps stay hidden until asked for; a swap previews in place and resets.
+  await open("/comps/");
+  const yp = page.locator("#yunara-protect");
+  check("comps: filters read Type All/Pro/Template and Difficulty All/Easy/Medium/Hard",
+    (await page.locator("nav[aria-label='Type'] a").allTextContents()).join() === "All,Pro,Template"
+    && (await page.locator("nav[aria-label='Difficulty'] a").allTextContents()).join() === "All,Easy,Medium,Hard", "");
+  check("comps: five champions across, no swap lists or source links shown by default",
+    (await yp.locator(".lu-slot").count()) === 5 && (await page.locator(".swap-menu").count()) === 0 && (await yp.locator(".shell-sources").count()) === 0, "");
+  await yp.locator(".lu-top .lu-swaps").click();
+  await yp.locator(".swap-menu .swap-item", { hasText: "Ambessa" }).click();
+  await page.waitForTimeout(200);
+  const variation = await yp.locator("a", { hasText: "Use variation in Draft Room" }).getAttribute("href").catch(() => "");
+  check("comps: picking a swap previews it with its own Draft Room link",
+    (await yp.locator(".lu-top .lu-name").textContent()) === "Ambessa" && (await yp.locator(".shell-preview").count()) === 1 && /top=ambessa&jungle=pantheon/.test(variation ?? ""), variation ?? "");
+  await yp.locator(".shell-preview button", { hasText: "Reset" }).click();
+  check("comps: Reset restores the original comp", (await yp.locator(".lu-top .lu-name").textContent()) === "Rumble" && (await yp.locator(".shell-preview").count()) === 0, "");
+  await yp.locator(".src-toggle").click();
+  check("comps: Sources (1) expands the exact evidence and refresh status", /Gol\.gg game/.test((await yp.locator(".shell-sources").textContent()) ?? ""), "");
 }
 // First Pick: hover card on desktop, drawer on click
 {
@@ -336,7 +354,7 @@ check("draft room at 390px: slots scroll inside their rows, no page overflow", d
   await m.close();
 }
 await open("/comps/");
-await page.locator(".comp-slot").first().click();
+await page.locator(".lu-champ").first().click();
 await page.waitForTimeout(400); // let the slide-up finish
 const sheet = await page.locator(".drawer").boundingBox().catch(() => null);
 const sheetOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
@@ -380,7 +398,7 @@ if (shots) {
         await page.screenshot({ path: `${shots}/review-${name}-${tag}-${theme}.png` });
       }
       await open("/comps/");
-      await page.locator(".comp-slot").first().click();
+      await page.locator(".lu-champ").first().click();
       await page.waitForTimeout(400);
       await page.screenshot({ path: `${shots}/review-drawer-${tag}-${theme}.png` });
     }

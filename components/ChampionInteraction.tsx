@@ -142,6 +142,7 @@ export function ChampionHoverCard({ target, anchor, data, index, focus, comp, on
   const traits = champ ? [...TRAITS].filter(([a]) => champ.attrs[a] >= 2).sort((x, y) => champ.attrs[y[0]] - champ.attrs[x[0]]).slice(0, 2) : [];
   const lines = relationLines({ id: target.id, role }, data, index, focus, comp);
   const about = comp ? "this comp" : focus ? index.names[focus.id] ?? focus.id : undefined;
+  const job = comp && comp.slots[role] === target.id ? comp.jobs?.[role] : undefined;
   const latest = games[0] ? [games[0].eventName, games[0].patch, shortDate(games[0].date)].filter(Boolean).join(" · ") : "";
 
   return createPortal(
@@ -155,6 +156,7 @@ export function ChampionHoverCard({ target, anchor, data, index, focus, comp, on
             {traits.length > 0 && <span className="hc-traits"> · {traits.map(([a, l]) => `${l} ${champ!.attrs[a]}`).join(" · ")}</span>}</span>
         </div>
       </div>
+      {job && <p className="hc-job xs"><span className="muted">Job</span> {job}</p>}
       {about && (
         <div className="hc-rel">
           {lines.map((l) => <p key={l.layer} className={`hc-line ${l.layer}`}><span className="ldot" /><b>{l.label}</b> {l.text}</p>)}

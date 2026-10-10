@@ -1,23 +1,37 @@
 "use client";
+// Comp Library: each shell reads as a draft board. Five champions across the top (hover for the quick card, click for
+// the drawer), then the win condition, why it works, actions, and sources behind a toggle. Swaps hide behind a
+// "N swaps" control; picking one previews that variation in place (never saved, never pro evidence: swaps are
+// General Draft Logic, even on an observed pro comp) and compares it with the original on the comp check.
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ChampionDrawer, compLinks, useDrawerIndex, type CompContext, type DrawerTarget } from "@/components/ChampionDrawer";
 import { ChampionHoverCard, useHoverIntent } from "@/components/ChampionInteraction";
-import { ChampIcon, PageHeader, SourceBadge, SourceLinks } from "@/components/ui";
+import { ChampIcon, PageHeader, SourceBadge } from "@/components/ui";
+import { draftHref, shellDraft, variationDiff } from "@/lib/comp-preview";
 import type { DrawerData } from "@/lib/data";
+import { shortDate } from "@/lib/evidence";
 import { ROLES, type CompShell, type ProDraft, type Role, type Source } from "@/lib/schema";
 
 type Slot = { shell: string; role: Role };
-const compOf = (s: CompShell): CompContext => ({
+type Swaps = Partial<Record<Role, string>>;
+
+const compOf = (s: CompShell, swaps: Swaps = {}): CompContext => ({
   name: s.name,
-  slots: Object.fromEntries(ROLES.map((r) => [r, s.slots[r].champion])) as CompContext["slots"],
+  slots: shellDraft(s, swaps),
   jobs: Object.fromEntries(ROLES.map((r) => [r, s.slots[r].job])),
   swaps: Object.fromEntries(ROLES.map((r) => [r, s.slots[r].swaps])),
   proDraftId: s.proDraftId,
 });
 
-const DIFF_ORDER = ["easy", "easy-medium", "medium", "hard"];
+// Display difficulty: three levels. The data keeps "easy-medium"; it reads as Medium here (sorted before plain medium).
+const DIFF_ORDER = ["easy", "easy-medium", "medium", "hard"] as const;
+type Level = "easy" | "medium" | "hard";
+const LEVEL: Record<CompShell["difficulty"], Level> = { easy: "easy", "easy-medium": "medium", medium: "medium", hard: "hard" };
+const LEVEL_LABEL: Record<Level, string> = { easy: "Easy", medium: "Medium", hard: "Hard" };
+const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
+const tag = (s: string) => { const t = s.replace(/-/g, " "); return t.charAt(0).toUpperCase() + t.slice(1); };
 
 export function CompsView({ names, sources, drafts, allShells, data }: {
   names: Record<string, string>; sources: Record<string, Source>; drafts: Record<string, ProDraft>; allShells: CompShell[]; data: DrawerData;
@@ -25,142 +39,264 @@ export function CompsView({ names, sources, drafts, allShells, data }: {
   const index = useDrawerIndex(data);
   const [open, setOpen] = useState<Slot | undefined>(undefined);
   const [hover, setHover] = useState<Slot | undefined>(undefined);
+  const [menu, setMenu] = useState<Slot | undefined>(undefined);
+  const [previews, setPreviews] = useState<Record<string, Swaps>>({});
+  const [shownSources, setShownSources] = useState<Record<string, boolean>>({});
   const opener = useRef<HTMLElement | null>(null);
   const openShell = open && allShells.find((s) => s.id === open.shell);
+  const swapsOf = (id: string) => previews[id] ?? {};
   const close = () => {
     setOpen(undefined);
-    // Back to the slot that opened the drawer, without scrolling the page.
+    // Back to the champion that opened the drawer, without scrolling the page.
     const el = opener.current;
     if (el && document.contains(el)) el.focus({ preventScroll: true });
   };
   const select = (slot: Slot, el?: HTMLElement | null) => {
     if (!open && el) opener.current = el;
     intent.hide();
+    setMenu(undefined);
     setOpen(slot);
+  };
+  const preview = (shell: string, role: Role, champ: string | undefined) => {
+    setPreviews((p) => {
+      const next = { ...p[shell], [role]: champ };
+      if (!champ) delete next[role];
+      return { ...p, [shell]: next };
+    });
+    setMenu(undefined);
   };
   // Hover: comp-mate highlights at once, the quick card after a short pause (out of the page flow, in a portal).
   const intent = useHoverIntent();
-  const onHover = (s: CompShell, role?: Role, el?: HTMLElement) => {
+  const onHover = (s: CompShell, role?: Role, el?: HTMLElement, id?: string) => {
     setHover(role ? { shell: s.id, role } : undefined);
-    if (role && el) intent.hover({ id: s.slots[role].champion, role }, el); else intent.unhover();
+    if (role && el) intent.hover({ id: id ?? shellDraft(s, swapsOf(s.id))[role], role }, el); else intent.unhover();
   };
   const cardShellId = intent.card?.el.closest("article.shell")?.id;
   const cardShell = cardShellId ? allShells.find((x) => x.id === cardShellId) : undefined;
-  // Highlights follow the hovered or focused slot, else the open one.
+  // Highlights follow the hovered or focused champion, else the open one.
   const active = hover ?? open;
   const params = useSearchParams();
   const kind = params.get("kind") || undefined;
-  const difficulty = params.get("difficulty") || undefined;
+  const rawDiff = params.get("difficulty") || undefined;
+  const level = rawDiff && rawDiff in LEVEL ? LEVEL[rawDiff as CompShell["difficulty"]] : undefined;
   // The cards render in the browser, after the browser's own jump to #shell-id has already run.
   useEffect(() => {
     const id = decodeURIComponent(window.location.hash.slice(1));
     if (id) document.getElementById(id)?.scrollIntoView();
   }, []);
+  // An open swap list closes on Escape or a press anywhere outside its slot.
+  useEffect(() => {
+    if (!menu) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setMenu(undefined); };
+    const onDown = (e: PointerEvent) => { if (!(e.target as Element | null)?.closest(".lu-slot.menu-open")) setMenu(undefined); };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onDown);
+    return () => { document.removeEventListener("keydown", onKey); document.removeEventListener("pointerdown", onDown); };
+  }, [menu]);
   const shells = [...allShells]
     .filter((s) => !kind || s.kind === kind)
-    .filter((s) => !difficulty || s.difficulty === difficulty)
+    .filter((s) => !level || LEVEL[s.difficulty] === level)
     .sort((a, b) => DIFF_ORDER.indexOf(a.difficulty) - DIFF_ORDER.indexOf(b.difficulty));
   const href = (o: Record<string, string | undefined>) => {
-    const q = new URLSearchParams(Object.entries({ kind, difficulty, ...o }).filter(([, v]) => v) as [string, string][]);
+    const q = new URLSearchParams(Object.entries({ kind, difficulty: level, ...o }).filter(([, v]) => v) as [string, string][]);
     return `/comps${q.size ? `?${q}` : ""}`;
   };
-  const KINDS: [string | undefined, string][] = [[undefined, "All"], ["observed", "Observed pro"], ["generalized", "Template"]];
+  const KINDS: [string | undefined, string][] = [[undefined, "All"], ["observed", "Pro"], ["generalized", "Template"]];
+  const LEVELS: [Level | undefined, string][] = [[undefined, "All"], ["easy", "Easy"], ["medium", "Medium"], ["hard", "Hard"]];
   return (
     <>
       <PageHeader title="Comp Library" desc="Copy the jobs, not the exact champions." />
-      <div className="row" style={{ marginBottom: 12, gap: 10 }}>
-        <nav className="seg" aria-label="Type">{KINDS.map(([k, l]) => <Link key={l} href={href({ kind: k })} className={kind === k ? "active" : undefined}>{l}</Link>)}</nav>
-        <nav className="seg" aria-label="Difficulty">
-          <Link href={href({ difficulty: undefined })} className={!difficulty ? "active" : undefined}>Any difficulty</Link>
-          {DIFF_ORDER.map((d) => <Link key={d} href={href({ difficulty: d })} className={difficulty === d ? "active" : undefined}>{d}</Link>)}
-        </nav>
-        <span className="xs muted tnum" style={{ marginLeft: "auto" }}>{shells.length} of {allShells.length} shells</span>
+      <div className="row comp-filters">
+        <span className="filter-group"><span className="filter-label">Type</span>
+          <nav className="seg" aria-label="Type">{KINDS.map(([k, l]) => <Link key={l} href={href({ kind: k })} className={kind === k ? "active" : undefined}>{l}</Link>)}</nav>
+        </span>
+        <span className="filter-group"><span className="filter-label">Difficulty</span>
+          <nav className="seg" aria-label="Difficulty">{LEVELS.map(([d, l]) => <Link key={l} href={href({ difficulty: d })} className={level === d ? "active" : undefined}>{l}</Link>)}</nav>
+        </span>
+        <span className="xs muted tnum" style={{ marginLeft: "auto" }}>{shells.length} of {allShells.length} comps</span>
       </div>
       <div className="shell-grid">
         {shells.map((s) => {
           const d = s.proDraftId ? drafts[s.proDraftId] : undefined;
+          const swaps = swapsOf(s.id);
+          const swapped = ROLES.filter((r) => swaps[r]);
+          const srcs = [...new Set(s.sources)].map((id) => sources[id]).filter(Boolean);
+          const showSrc = !!shownSources[s.id];
           return (
-            <article key={s.id} id={s.id} className={`panel shell ${s.kind}`}>
-              <div className="shell-head">
+            <article key={s.id} id={s.id} className={`panel shell ${s.kind} ${swapped.length ? "previewing" : ""}`}>
+              <header className="shell-head">
                 <div className="row between">
                   <h2>{s.name}</h2>
-                  <span className="row tight">
-                    {s.kind === "observed" ? <SourceBadge layer="pro" label="Pro comp" /> : <span className="src logic"><span className="ldot" />Template</span>}
-                    <span className="xs faint">{s.difficulty}</span>
+                  <span className="row tight shell-kind">
+                    {s.kind === "observed" ? <SourceBadge layer="pro" label="Pro" /> : <span className="src logic"><span className="ldot" />Template</span>}
+                    <span className="xs muted">{LEVEL_LABEL[LEVEL[s.difficulty]]}</span>
                   </span>
                 </div>
-                <span className="xs muted">{s.kind === "observed" ? `${s.observedBy}${d ? `, ${d.seriesGame} vs ${d.opponent}` : ""}` : "Generalized template"} · {s.identities.join(" · ")}</span>
-              </div>
-              <ShellSlots shell={s} names={names} data={data} index={index} active={active?.shell === s.id ? active.role : undefined}
-                selected={open?.shell === s.id ? open.role : undefined}
-                onOpen={(role, el) => select({ shell: s.id, role }, el)} onHover={(role, el) => onHover(s, role, el)} />
+                <span className="shell-tags xs muted">
+                  {s.kind === "observed" && <span className="shell-by">{s.observedBy}{d ? ` · ${d.seriesGame} vs ${d.opponent}` : ""}</span>}
+                  {s.identities.map((i) => <span key={i} className="shell-tag">{tag(i)}</span>)}
+                </span>
+              </header>
+              <Lineup shell={s} swaps={swaps} names={names} data={data} index={index}
+                active={active?.shell === s.id ? active.role : undefined} selected={open?.shell === s.id ? open.role : undefined}
+                menu={menu?.shell === s.id ? menu.role : undefined}
+                onMenu={(role) => setMenu(role ? { shell: s.id, role } : undefined)}
+                onPreview={(role, champ) => preview(s.id, role, champ)}
+                onOpen={(role, el) => select({ shell: s.id, role }, el)} onHover={(role, el, id) => onHover(s, role, el, id)} />
+              {swapped.length > 0 && <Preview shell={s} swaps={swaps} names={names} data={data} onReset={() => setPreviews((p) => ({ ...p, [s.id]: {} }))} />}
               <div className="shell-foot">
-                <p className="wc"><b>Win condition:</b> {s.winCondition}</p>
-                <p className="xs muted"><b>Why it works:</b> {s.why}</p>
-                <div className="row between">
-                  <SourceLinks ids={s.sources} sources={sources} />
-                  <Link className="btn sm" href={`/?shell=${s.id}`}>Use as template →</Link>
+                <p className="wc">{s.winCondition}</p>
+                <p className="why xs muted">{s.why}</p>
+                <div className="row between shell-actions">
+                  {srcs.length > 0
+                    ? <button type="button" className="src-toggle xs" aria-expanded={showSrc} onClick={() => setShownSources((x) => ({ ...x, [s.id]: !showSrc }))}>
+                        Sources ({srcs.length}) <span aria-hidden="true">{showSrc ? "▴" : "▾"}</span>
+                      </button>
+                    : <span />}
+                  {swapped.length
+                    ? <Link className="btn sm primary" href={draftHref(shellDraft(s, swaps))}>Use variation in Draft Room →</Link>
+                    : <Link className="btn sm" href={`/?shell=${s.id}`}>Use in Draft Room →</Link>}
                 </div>
+                {showSrc && <SourceList list={srcs} />}
               </div>
             </article>
           );
         })}
       </div>
-      {intent.card && !open && cardShell && (
-        <ChampionHoverCard key={`${cardShell.id}-${intent.card.t.role}`} target={intent.card.t} anchor={intent.card.el} data={data} index={index} comp={compOf(cardShell)}
+      {intent.card && !open && cardShell && intent.card.t.role && (
+        <ChampionHoverCard key={`${cardShell.id}-${intent.card.t.role}-${intent.card.t.id}`} target={intent.card.t} anchor={intent.card.el} data={data} index={index}
+          comp={compOf(cardShell, { ...swapsOf(cardShell.id), [intent.card.t.role]: intent.card.t.id })}
           onEnter={intent.keep} onLeave={intent.unhover} />
       )}
       {open && openShell && (
-        <ChampionDrawer target={{ id: openShell.slots[open.role].champion, role: open.role }} comp={compOf(openShell)} data={data} index={index}
-          onClose={close} onSelect={(t: DrawerTarget) => t.role && setOpen({ shell: open.shell, role: t.role })} />
+        <ChampionDrawer target={{ id: shellDraft(openShell, swapsOf(openShell.id))[open.role], role: open.role }} comp={compOf(openShell, swapsOf(openShell.id))}
+          data={data} index={index} onClose={close} onSelect={(t: DrawerTarget) => t.role && setOpen({ shell: open.shell, role: t.role })} />
       )}
     </>
   );
 }
 
-function ShellSlots({ shell: s, names, data, index, active, selected, onOpen, onHover }: {
-  shell: CompShell; names: Record<string, string>; data: DrawerData; index: ReturnType<typeof useDrawerIndex>;
-  active?: Role; selected?: Role; onOpen: (role: Role, el: HTMLElement) => void; onHover: (role?: Role, el?: HTMLElement) => void;
+function Lineup({ shell: s, swaps, names, data, index, active, selected, menu, onMenu, onPreview, onOpen, onHover }: {
+  shell: CompShell; swaps: Swaps; names: Record<string, string>; data: DrawerData; index: ReturnType<typeof useDrawerIndex>;
+  active?: Role; selected?: Role; menu?: Role;
+  onMenu: (role?: Role) => void; onPreview: (role: Role, champ: string | undefined) => void;
+  onOpen: (role: Role, el: HTMLElement) => void; onHover: (role?: Role, el?: HTMLElement, id?: string) => void;
 }) {
-  const links = active ? compLinks({ id: s.slots[active].champion, role: active }, compOf(s), data, index) : undefined;
+  const picks = shellDraft(s, swaps);
+  const links = active ? compLinks({ id: picks[active], role: active }, compOf(s, swaps), data, index) : undefined;
+  // Swap lists open on a short hover (mouse) or a click; leaving the slot closes a hover-opened list.
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const byHover = useRef(false);
+  useEffect(() => () => clearTimeout(timer.current), []);
   return (
-    <table className={`comp-slots ${active ? "linking" : ""} ${selected ? "selecting" : ""}`}>
-      <tbody>
-        {ROLES.map((r) => {
-          const id = s.slots[r].champion;
-          const saved = links?.savedRoles.has(r);
-          const pro = links?.proRoles.get(r);
-          const cls = [`role-${r}`, "comp-slot-row", r === active && "is-active", r === selected && "is-open", saved && "has-saved", pro && "has-pro"].filter(Boolean).join(" ");
-          return (
-            <tr key={r} className={cls} data-drawer-trigger
-              onPointerEnter={(e) => { if (e.pointerType === "mouse") onHover(r, e.currentTarget.querySelector<HTMLElement>(".comp-slot")!); }}
+    <div className={`lineup ${active ? "linking" : ""} ${selected ? "selecting" : ""}`}>
+      {ROLES.map((r) => {
+        const id = picks[r];
+        const slot = s.slots[r];
+        const saved = links?.savedRoles.has(r);
+        const pro = links?.proRoles.get(r);
+        const isSwap = !!swaps[r];
+        const cls = ["lu-slot", `role-${r}`, `lu-${r.toLowerCase()}`, r === active && "is-active", r === selected && "is-open", saved && "has-saved",
+          pro && "has-pro", isSwap && "is-swapped", menu === r && "menu-open"].filter(Boolean).join(" ");
+        const mark = saved ? "Saved pairing with the highlighted pick" : pro ? `Pro evidence with the highlighted pick${pro.games.length ? ` (${pro.games.length} game${pro.games.length > 1 ? "s" : ""})` : ""}` : undefined;
+        return (
+          <div key={r} className={cls} data-drawer-trigger
+            onPointerLeave={(e) => { if (e.pointerType === "mouse" && byHover.current) { clearTimeout(timer.current); timer.current = setTimeout(() => onMenu(undefined), 200); } }}
+            onPointerEnter={(e) => { if (e.pointerType === "mouse" && menu === r) clearTimeout(timer.current); }}>
+            <button type="button" className="lu-champ" aria-haspopup="dialog" aria-expanded={r === selected}
+              aria-label={`${names[id]}, ${r.toLowerCase()}${isSwap ? ` (preview swap for ${names[slot.champion]})` : ""}: open details`}
+              title={mark}
+              onClick={(e) => onOpen(r, e.currentTarget)}
+              onPointerEnter={(e) => { if (e.pointerType === "mouse") onHover(r, e.currentTarget); }}
               onPointerLeave={(e) => { if (e.pointerType === "mouse") onHover(undefined); }}
-              onClick={(e) => { if (!(e.target as Element).closest("button")) onOpen(r, e.currentTarget.querySelector("button")!); }}>
-              <td className="slot-cell">
-                <button type="button" className="comp-slot" aria-haspopup="dialog" aria-expanded={r === selected}
-                  aria-label={`${names[id]}, ${r.toLowerCase()}: open details`}
-                  onClick={(e) => onOpen(r, e.currentTarget)}
-                  onFocus={(e) => { if (e.currentTarget.matches(":focus-visible")) onHover(r, e.currentTarget); }} onBlur={() => onHover(undefined)}>
-                  <ChampIcon id={id} name={names[id]} role={r} size="md" />
-                  <span className="comp-slot-name"><span className={`role-tag role-${r}`}>{r}</span><b>{names[id]}</b></span>
-                  {/* Space is always reserved, so a highlight only changes colors, never the row's size. */}
-                  <span className="link-pips">
-                    <span className={`pip clash ${saved ? "on" : ""}`} title={saved ? "Saved pairing with the highlighted pick" : undefined}>Synergy</span>
-                    <span className={`pip pro ${pro ? "on" : ""}`} title={pro ? "Pro evidence with the highlighted pick" : undefined}>{pro?.games.length ? `Pro ${pro.games.length}` : "Pro"}</span>
-                  </span>
-                  <span className="chev" aria-hidden="true">›</span>
-                </button>
-              </td>
-              <td className="job">
-                {s.slots[r].job}
-                {s.slots[r].swaps.length > 0 && <span className="swaps" title="Same-role swaps with similar attributes (general draft logic)">
-                  <span className="faint">swap</span>{s.slots[r].swaps.map((x) => <span key={x} className="swap">{names[x]}</span>)}
-                </span>}
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+              onFocus={(e) => { if (e.currentTarget.matches(":focus-visible")) onHover(r, e.currentTarget); }} onBlur={() => onHover(undefined)}>
+              <span className={`role-tag role-${r}`}>{ROLE_LABEL[r]}</span>
+              <ChampIcon id={id} name={names[id]} role={r} size="lg" />
+              <b className="lu-name">{names[id]}</b>
+            </button>
+            <p className="lu-job" title={slot.job}>{isSwap ? <span className="lu-for">for {names[slot.champion]}</span> : slot.job}</p>
+            {slot.swaps.length > 0 && (
+              <button type="button" className="lu-swaps" aria-expanded={menu === r} aria-haspopup="menu"
+                onPointerEnter={(e) => {
+                  if (e.pointerType !== "mouse" || menu === r) return;
+                  clearTimeout(timer.current);
+                  timer.current = setTimeout(() => { byHover.current = true; onMenu(r); }, 180);
+                }}
+                onClick={() => {
+                  clearTimeout(timer.current);
+                  // A click on a list the pointer just opened keeps it open (and pinned); otherwise it toggles.
+                  if (menu === r && byHover.current) { byHover.current = false; return; }
+                  byHover.current = false;
+                  onMenu(menu === r ? undefined : r);
+                }}>
+                {isSwap ? "Swapped" : `${slot.swaps.length} swap${slot.swaps.length > 1 ? "s" : ""}`} <span aria-hidden="true">›</span>
+              </button>
+            )}
+            {menu === r && (
+              <div className="swap-menu" role="menu" aria-label={`Swaps for ${names[slot.champion]}`}>
+                <span className="swap-menu-head"><span className="ldot" />Swaps · General logic</span>
+                {isSwap && (
+                  <button type="button" role="menuitem" className="swap-item original" onClick={() => onPreview(r, undefined)}>
+                    <ChampIcon id={slot.champion} name={names[slot.champion]} role={r} size="sm" /><span>{names[slot.champion]}</span><span className="xs faint">original</span>
+                  </button>
+                )}
+                {slot.swaps.map((x) => (
+                  <button key={x} type="button" role="menuitem" className={`swap-item ${swaps[r] === x ? "on" : ""}`} aria-current={swaps[r] === x || undefined}
+                    onClick={() => { onHover(undefined); onPreview(r, swaps[r] === x ? undefined : x); }}
+                    onPointerEnter={(e) => { if (e.pointerType === "mouse") onHover(r, e.currentTarget, x); }}
+                    onPointerLeave={(e) => { if (e.pointerType === "mouse") onHover(undefined); }}>
+                    <ChampIcon id={x} name={names[x]} role={r} size="sm" /><span>{names[x]}</span>{swaps[r] === x && <span className="xs faint">previewing</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/** The preview state: what changed, how the comp check moves, and the way back. General Draft Logic only. */
+function Preview({ shell: s, swaps, names, data, onReset }: {
+  shell: CompShell; swaps: Swaps; names: Record<string, string>; data: DrawerData; onReset: () => void;
+}) {
+  const diff = variationDiff(shellDraft(s), shellDraft(s, swaps), data.champions);
+  const swapped = ROLES.filter((r) => swaps[r]);
+  const none = !diff.changes.length && !diff.added.length && !diff.cleared.length;
+  return (
+    <section className="shell-preview" aria-live="polite">
+      <div className="row between">
+        <span className="pv-title"><span className="ldot" /><b>Preview</b>{" "}
+          {swapped.map((r) => `${names[swaps[r]!]} for ${names[s.slots[r].champion]}`).join(", ")}</span>
+        <button type="button" className="btn sm ghost" onClick={onReset}>Reset</button>
+      </div>
+      <p className="pv-note">{s.kind === "observed" ? "Not in the observed pro draft. " : ""}Swaps are general draft logic, not pro evidence.</p>
+      <p className="pv-check">
+        {none && <span className="muted">Comp check unchanged.</span>}
+        {diff.changes.map((c) => <span key={c.label} className="pv-chg">{c.label} <span className="tnum">{c.from} → {c.to}</span></span>)}
+        {diff.added.map((w) => <span key={w.id} className="pv-warn" title={w.why}>New: {w.label}</span>)}
+        {diff.cleared.map((w) => <span key={w.id} className="pv-ok" title={w.rule}>Clears: {w.label}</span>)}
+      </p>
+    </section>
+  );
+}
+
+const TYPE_LABEL: Record<Source["type"], string> = {
+  "golgg-game": "game", "golgg-tournament": "tournament", "golgg-champion": "champion stats", "golgg-team": "team stats", other: "source",
+};
+
+function SourceList({ list }: { list: Source[] }) {
+  return (
+    <ul className="shell-sources">
+      {list.map((s) => (
+        <li key={s.id}>
+          <a href={s.url} target="_blank" rel="noopener noreferrer">Gol.gg {TYPE_LABEL[s.type]}{s.seriesGame ? ` ${s.seriesGame}` : ""}</a>
+          <span className="muted">{[s.tournament, s.team && s.opponent ? `${s.team} vs ${s.opponent}` : s.team, s.patch && `patch ${s.patch}`, s.date && shortDate(s.date)].filter(Boolean).join(" · ")}</span>
+          <span className="faint">{s.pendingClaim ? `externally provided ${s.pendingClaim.providedOn}, pending refresh`
+            : s.refreshStatus === "verified" && s.lastChecked ? `verified ${s.lastChecked}` : "not refreshed"}</span>
+        </li>
+      ))}
+    </ul>
   );
 }
