@@ -80,6 +80,12 @@ await open("/?bot=jinx&vs=ornn,jarvan-iv");
 const enemyText = await text(".draft-slot.enemy .slot-name");
 const vsWhy = await text(".recs .fit-why");
 check("enemy picks from ?vs= load and add matchup reasons", /Ornn/.test(enemyText) && /Matchup/i.test(vsWhy), enemyText);
+// Counters: a separate panel once an enemy lane opponent is known; enemy roles are detected from bare ids.
+const roleTags = await text(".draft-slot.enemy .role-tag");
+check("enemy roles detected from ?vs= (Ornn top, Jarvan IV jungle)", /Enemy TOP/.test(roleTags) && /Enemy JUNGLE/.test(roleTags), roleTags);
+const counterText = await text('section.counters');
+check("Counters panel is separate and never invents a counter", /Counters/.test(counterText) && /vs Ornn/.test(counterText)
+  && ((await page.locator("section.counters .counter-row").count()) > 0 || /No reliable counter data for Ornn/.test(counterText)), counterText.slice(0, 160));
 check("no Clash wording on the Draft Room", !/Clash/.test(await text("body")), "");
 // Locking through the UI keeps the base path in the URL and survives a refresh
 await open("/");
