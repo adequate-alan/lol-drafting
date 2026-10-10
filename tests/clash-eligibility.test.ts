@@ -111,6 +111,12 @@ describe("reverse direction: support locked, bot open", () => {
     expect(supports(v)).not.toContain("alistar");
     expect(supports(v)).not.toContain("rell");
   });
+
+  it("Kai'Sa + Rell is never a Clash suggestion, with Lissandra / Ambessa or alone", () => {
+    for (const d of [{}, { MID: "lissandra" }, { TOP: "ambessa" }, { SUPPORT: "rell" }, { MID: "lissandra", SUPPORT: "rell" }] as Draft[]) {
+      expect(bots(d), JSON.stringify(d)).not.toContain("kaisa");
+    }
+  });
 });
 
 describe("General Logic list respects Clash bot/support eligibility", () => {

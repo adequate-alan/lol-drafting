@@ -1,6 +1,7 @@
 # LoL Clash drafting site
 
-Private, single-user drafting dashboard for alan's Clash team. Next.js (App Router) + TypeScript, no database.
+Drafting dashboard for alan's Clash team. Next.js (App Router) + TypeScript, no database, deployed as a fully static
+export to GitHub Pages (https://adequate-alan.github.io/lol-drafting/).
 Data is normalized JSON in `data/`, validated by zod schemas in `lib/schema.ts`.
 
 ## Source of truth
@@ -56,14 +57,17 @@ Change these only when alan explicitly says so, then update the test in the same
 - Xayah → Rakan. Kalista → Renata. Zeri → Yuumi.
 - Skarner + Locke is the current pairing. Azir + Skarner is an earlier-2026 tendency only, never the current Gen.G default.
 
-## Security
+## Hosting and security
 
-- One user. Login checks `AUTH_USERNAME` and a scrypt `AUTH_PASSWORD_HASH`; the session is a signed HttpOnly cookie
-  (`SESSION_SECRET`). `proxy.ts` and `requireSession()` in `app/(app)/layout.tsx` both enforce it on the server.
-- Data files are read only on the server (`lib/data.ts`, `server-only`); nothing goes in `public/`.
-- Never commit `.env*` files (only `.env.example` with empty values), password hashes, secrets or tokens.
-- Do not create or deploy a Vercel project without alan's go-ahead.
+- Static export only (`output: "export"`, base path `/lol-drafting` in `lib/site.ts`), deployed by
+  `.github/workflows/pages.yml` on every push to `main`. No server runtime: no middleware/proxy, API routes, server
+  actions, `next/headers` or server `searchParams`; pages read URL filters with `useSearchParams` in a client view.
+  `tests/static-site.test.ts` enforces this.
+- The site is public by alan's choice (2026-10-10): there is no login, and every page and its data can be read.
+  Don't add fake client-side password protection.
+- Data files are read at build time by `lib/data.ts` (`server-only`); nothing goes in `public/`.
+- Never commit `.env*` files, secrets or tokens.
 
 ## Commands
 
-`npm run dev` · `npm run typecheck` · `npm test` · `npm run build` · `npm run hash-password`
+`npm run dev` · `npm run typecheck` · `npm test` · `npm run build` (static export to `out/`)

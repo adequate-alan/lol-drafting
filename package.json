@@ -6,14 +6,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "import:workbook": "tsx scripts/import-workbook.ts",
-    "hash-password": "tsx scripts/hash-password.ts"
+    "import:workbook": "tsx scripts/import-workbook.ts"
   },
   "dependencies": {
-    "jose": "6.2.12",
     "next": "16.4.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",

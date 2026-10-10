@@ -52,11 +52,6 @@ p { margin: 0 0 6px; }
 .nav a { color: var(--nav-text); display: block; padding: 6px 8px; border-radius: 5px; }
 .nav a:hover { background: var(--nav-2); text-decoration: none; color: #fff; }
 .nav a.active { background: var(--nav-2); color: #fff; font-weight: 600; box-shadow: inset 3px 0 0 #6ea0ff; }
-.nav .spacer { flex: 1; }
-.nav form button {
-  width: 100%; background: transparent; border: 1px solid #2c3d63; color: var(--nav-text);
-  padding: 5px; border-radius: 5px; cursor: pointer; font: inherit;
-}
 .main { padding: 16px 20px 40px; min-width: 0; }
 .page-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
 
@@ -130,7 +125,3 @@ input, select {
 .warning summary { cursor: pointer; font-weight: 600; }
 .sugg-role { display: grid; grid-template-columns: 62px 1fr; gap: 6px; align-items: start; margin-bottom: 6px; }
 
-.login { min-height: 100vh; display: grid; place-items: center; background: var(--nav); }
-.login form { background: var(--surface); padding: 22px; border-radius: 8px; width: 300px; display: grid; gap: 10px; }
-.login label { display: grid; gap: 3px; font-size: 12px; color: var(--muted); }
-.login .error { color: var(--warn); font-size: 12px; }

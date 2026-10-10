@@ -61,3 +61,8 @@ export function SourceLinks({ ids, sources }: { ids: string[]; sources: Record<s
 }
 
 export const pct = (v: number | null | undefined) => (v == null ? "–" : `${Math.round(v * 100)}%`);
+
+// Shown in the static HTML until the page reads its URL filters in the browser.
+export function PageLoading({ title }: { title: string }) {
+  return <div className="page-head"><h1>{title}</h1><span className="small muted">Loading…</span></div>;
+}

@@ -1,20 +1,13 @@
 import type { NextConfig } from "next";
+import { BASE_PATH } from "./lib/site";
 
+// Fully static export for GitHub Pages: no server, no API routes, no middleware.
 const nextConfig: NextConfig = {
-  poweredByHeader: false,
-  async headers() {
-    return [
-      {
-        source: "/:path*",
-        headers: [
-          { key: "X-Robots-Tag", value: "noindex, nofollow" },
-          { key: "X-Frame-Options", value: "DENY" },
-          { key: "Referrer-Policy", value: "same-origin" },
-          { key: "X-Content-Type-Options", value: "nosniff" },
-        ],
-      },
-    ];
-  },
+  output: "export",
+  basePath: BASE_PATH,
+  // pool/index.html instead of pool.html, so /lol-drafting/pool/ resolves the same way on every static host.
+  trailingSlash: true,
+  images: { unoptimized: true },
 };
 
 export default nextConfig;
