@@ -81,7 +81,6 @@ export function Sidebar() {
         </nav>
         <div className="sidebar-foot">
           <ThemeToggle />
-          <p className="sidebar-note">LCK 2026 · Gol.gg evidence. Synergy, pro evidence and general logic stay separate on every page.</p>
         </div>
       </aside>
     </>

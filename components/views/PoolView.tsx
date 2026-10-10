@@ -51,7 +51,7 @@ export function PoolView({ names, data, bot, midJungle, top }: {
 
   return (
     <>
-      <PageHeader title="Champion Pool" desc="Tiers are my calls. Pro stats are context and never change a tier." />
+      <PageHeader title="Champion Pool" />
       <div className="toolbar pool-tools">
         <nav className="seg" aria-label="Role">
           <button className={!role ? "active" : undefined} onClick={() => set("role", undefined)}>All</button>
