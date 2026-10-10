@@ -38,7 +38,9 @@ describe("Demacia Cup evidence", () => {
     expect(bot("ezreal").clashDefault).toEqual(["karma"]);
     expect(bot("yunara").clashDefault).toEqual(["lulu"]);
     expect(bot("jhin").clashDefault).toEqual(["alistar", "karma"]);
-    expect(bot("jhin").alternatives).toEqual(["bard", "neeko", "nautilus"]);
+    expect(bot("jhin").alternatives.filter((a) => !bot("jhin").proAlternatives?.includes(a))).toEqual(["bard", "neeko", "nautilus"]);
+    // No Demacia duo was new, so the Demacia Cup added no pro-derived alternative.
+    for (const [b, s] of duos) expect(bot(b).proAlternatives ?? [], `${b}+${s}`).not.toContain(s);
     expect(bot("corki").clashDefault).toEqual(["nami"]);
     expect(bot("ziggs").clashDefault).toEqual(["nautilus", "leona"]);
   });

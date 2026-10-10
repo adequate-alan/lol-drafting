@@ -10,11 +10,14 @@ const bot = (id: string) => {
 };
 const observed = (id: string) => bot(id).observedProPairings.map((o) => o.champion);
 const clash = (id: string) => [...bot(id).clashDefault, ...bot(id).alternatives];
+// alan's hand-saved alternatives, without those derived from pro games (lib/pro-alternatives.ts).
+const handAlts = (id: string) => bot(id).alternatives.filter((a) => !bot(id).proAlternatives?.includes(a));
 
 describe("bot lane Clash defaults", () => {
-  it("Corki → Nami; Alistar is observed only", () => {
+  it("Corki → Nami; Alistar is a pro-derived alternative, never the default", () => {
     expect(bot("corki").clashDefault).toEqual(["nami"]);
-    expect(clash("corki")).not.toContain("alistar");
+    expect(handAlts("corki")).not.toContain("alistar");
+    expect(bot("corki").proAlternatives).toContain("alistar");
     expect(observed("corki")).toContain("alistar");
   });
 
@@ -41,14 +44,16 @@ describe("bot lane Clash defaults", () => {
   it("Ziggs → Nautilus / Leona preferred; Camille and Alistar the only alternatives (alan, 2026-10-10)", () => {
     const z = bot("ziggs");
     expect(z.clashDefault).toEqual(["nautilus", "leona"]);
-    expect(z.alternatives).toEqual(["camille", "alistar"]);
+    expect(handAlts("ziggs")).toEqual(["camille", "alistar"]);
+    expect(z.proAlternatives).toEqual(["pyke"]);
     expect(clash("ziggs")).not.toContain("bard");
     expect(clash("ziggs")).not.toContain("karma");
   });
 
   it("Ziggs keeps Pyke and Camille as observed pro games; only alan's word made Camille a saved alternative", () => {
     expect(observed("ziggs")).toEqual(expect.arrayContaining(["pyke", "camille"]));
-    expect(clash("ziggs")).not.toContain("pyke");
+    expect(bot("ziggs").clashDefault).not.toContain("pyke");
+    expect(handAlts("ziggs")).not.toContain("pyke");
     expect(bot("ziggs").clashDefault).not.toContain("camille");
   });
 

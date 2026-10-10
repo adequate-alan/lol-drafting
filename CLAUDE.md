@@ -21,7 +21,11 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 2. **Observed Pro Evidence**: directly supported by Gol.gg (`observedProPairings`, `pro-drafts.json`, `geng.json`, `meta.json`), each with sources.
 3. **General Draft Logic**: reasoning without recent observed evidence (`logic`, `lib/evaluate.ts` rules).
 
-- A pro pairing never becomes a saved default or alternative automatically. One pro game is not a "best pairing".
+- A pro pairing never becomes a saved default. One pro game is not a "best pairing". Since alan's rule of 2026-10-10, a
+  pro pairing (`observedProPairings`, not earlier-2026) that is not already a default or alternative becomes an
+  alternative automatically: derived at load in `lib/pro-alternatives.ts`, never written to `data/`, listed in
+  `proAlternatives` and noted "from pro games, not hand-saved" wherever alternatives show. It gets the alternative
+  bonus and, for supports, the locked-bot eligibility like any alternative.
 - Pro usage informs alan's defaults but never silently overwrites them. Ask before changing a saved-pairing field.
 - Never delete valid pro evidence because it is not one of alan's saved picks. Pairings the workbook cites without a
   recorded draft stay, flagged `backedByGame: false`.
@@ -48,7 +52,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   fixes / also / tradeoffs and one `bestFix`, shown apart from best overall), matchups against the optional
   enemy picks (from champion attributes; there is no lane-matchup data), and risks (a new warning, or more holes than
   picks left). Every point comes with a written reason. Saved defaults must still lead an early draft (one pick
-  locked). **Pro evidence never adds to the score**; it is shown beside a recommendation and in the separate Pro
+  locked). **Pro evidence never adds to the score** (a pro-derived alternative scores only as an alternative); it is shown beside a recommendation and in the separate Pro
   Pairings panel. A saved `botShapes` entry needs a bot whose record lists the support.
 - **Counters** are a fourth, separate signal (`lib/counters.ts`, `data/counters.json`, `tests/counters.test.ts`): favourable
   into the enemy lane opponent (enemy roles detected from `?vs=`, or `?vs=top:aatrox`). DPM.LOL matchup rows are the
@@ -84,13 +88,13 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 
 Change these only when alan explicitly says so, then update the test in the same commit.
 
-- Corki → Nami. Alistar is observed only.
+- Corki → Nami. Alistar is a pro-derived alternative only.
 - Caitlyn → Bard / Karma.
 - Sivir → Lulu. Karma is the observed playoff / tempo alternative; alternatives Karma, Bard, Rakan, Seraphine.
 - Ezreal → Karma. Alternatives Seraphine, Bard, Milio, Neeko, Nautilus; never the default.
 - Yunara → Lulu. Braum is the anti-dive option.
 - Ziggs → Nautilus / Leona preferred; Camille and Alistar are saved alternatives (alan, 2026-10-10). No Bard, no Karma.
-  Pyke is an observed pro variant only; Camille's LCK game stays Pro Evidence beside her saved alternative.
+  Pyke is a pro-derived alternative only; Camille's LCK game stays Pro Evidence beside her saved alternative.
   General Draft Logic: "Ziggs needs reliable engage or catch somewhere else in the composition if support is not providing it."
 - Xayah → Rakan. Kalista → Renata. Zeri → Yuumi.
 - Mel → Alistar / Pyke / Leona (preferred), alternatives Karma, Bard, Neeko, Nautilus (alan, 2026-10-10).

@@ -112,20 +112,18 @@ describe("pro evidence never moves a score", () => {
     }
     }, 30_000); // ~75 full drafts ranked twice; slower than vitest's 5s default on CI runners
 
-  it("observed-only partners get no saved-pairing bonus", () => {
-    const corki = recommend({ BOT: "corki" }, [], data, 50).SUPPORT!.find((r) => r.champion === "alistar");
-    expect(corki?.saved ?? null).toBeNull();
-    for (const s of ["pyke"]) {
-      const r = recommend({ BOT: "ziggs" }, [], data, 50).SUPPORT!.find((x) => x.champion === s);
-      expect(r?.saved ?? null, s).toBeNull();
-      expect(r?.parts.some((p) => p.kind === "saved") ?? false, s).toBe(false);
+  it("a pro pairing counts only as a marked alternative, never as a preferred pick (alan, 2026-10-10)", () => {
+    for (const [b, s] of [["corki", "alistar"], ["ziggs", "pyke"]]) {
+      const r = recommend({ BOT: b }, [], data, 50).SUPPORT!.find((x) => x.champion === s)!;
+      expect(r.saved, `${b}+${s}`).toBe("alt");
+      expect(r.parts.find((p) => p.kind === "saved")!.text).toMatch(/from pro games, not hand-saved/);
     }
   });
 });
 
 describe("with a bot locked, only its saved supports are actionable (alan, 2026-10-10)", () => {
   const THEORETICAL = ["maokai", "rell", "braum", "shen"];
-  const ZIGGS = ["nautilus", "leona", "camille", "alistar"];
+  const ZIGGS = ["nautilus", "leona", "camille", "alistar", "pyke"]; // Pyke: pro-derived alternative
 
   it("Ziggs: Maokai, Rell, Braum and Shen never appear in the Draft Room ranking, whatever else is locked", () => {
     const drafts: Draft[] = [...others, { TOP: "jayce", JUNGLE: "lee-sin", MID: "viktor" }, { TOP: "fiora", JUNGLE: "nidalee", MID: "azir" }];
@@ -229,7 +227,7 @@ describe("Kai'Sa and Aphelios Synergy records (alan, 2026-10-10)", () => {
 describe("comp-analysis needs feed the ranking (alan's brief, items 8 and 10)", () => {
   it("Ziggs support: Nautilus is the best fix for frontline and engage, and only saved supports appear", () => {
     const list = recommend({ TOP: "jayce", JUNGLE: "lee-sin", MID: "viktor", BOT: "ziggs" }, [], data, Infinity).SUPPORT!;
-    expect(list.every((r) => ["nautilus", "leona", "camille", "alistar"].includes(r.champion))).toBe(true);
+    expect(list.every((r) => ["nautilus", "leona", "camille", "alistar", "pyke"].includes(r.champion))).toBe(true);
     const naut = list.find((r) => r.champion === "nautilus")!;
     expect(list[0].champion).toBe("nautilus");
     expect(list.filter((r) => r.bestFix).map((r) => r.champion)).toHaveLength(1);

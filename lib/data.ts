@@ -2,6 +2,7 @@ import "server-only";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { z } from "zod";
+import { withProAlternatives } from "./pro-alternatives";
 import { Files } from "./schema";
 
 // Data lives in /data and is read at build time; the static export embeds what each page renders.
@@ -19,8 +20,10 @@ function load<F extends FileName>(file: F): Parsed<F> {
 
 export const getChampions = () => load("champions.json");
 export const getSources = () => load("sources.json");
-export const getBotPairings = () => load("bot-pairings.json");
-export const getMidJungle = () => load("mid-jungle.json");
+// Pro pairings not already saved join the alternatives, marked as pro-derived (alan, 2026-10-10).
+let bots: Parsed<"bot-pairings.json"> | undefined, midJungle: Parsed<"mid-jungle.json"> | undefined;
+export const getBotPairings = () => (bots ??= load("bot-pairings.json").map(withProAlternatives));
+export const getMidJungle = () => (midJungle ??= load("mid-jungle.json").map(withProAlternatives));
 export const getTopPicks = () => load("top.json");
 export const getProDrafts = () => load("pro-drafts.json");
 export const getCompShells = () => load("comp-shells.json");

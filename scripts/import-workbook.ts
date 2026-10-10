@@ -292,7 +292,7 @@ async function main() {
     const status = slug(r.status ?? "current");
     const shapes = splitShapes(role, id, duos(r.best_bot_shape, where));
     return {
-      anchor: id, role, clashDefault, alternatives,
+      anchor: id, role, clashDefault, alternatives, alternativeNotes: {},
       botShapes: shapes.clash,
       observedBotShapes: shapes.observedShapes,
       observedProPairings: observed(role, id, role === "MID" ? "JUNGLE" : "MID", [], src),

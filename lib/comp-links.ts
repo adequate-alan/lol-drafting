@@ -41,7 +41,7 @@ export function savedLinks(role: Role, slots: Slots, data: LinkData, name: (id: 
     const p = PARTNER_ROLE[r];
     if (!rec || (role !== r && role !== p)) continue;
     if (rec.clashDefault.includes(slots[p])) add(role === r ? p : r, "default", `Saved pairing: ${name(slots[p])} is the primary ${label(p)} for ${name(slots[r])}`);
-    else if (rec.alternatives.includes(slots[p])) add(role === r ? p : r, "alt", `Saved pairing: ${name(slots[p])} is a secondary ${label(p)} for ${name(slots[r])}`);
+    else if (rec.alternatives.includes(slots[p])) add(role === r ? p : r, "alt", `Saved pairing: ${name(slots[p])} is a secondary ${label(p)} for ${name(slots[r])}${rec.alternativeNotes[slots[p]] ? ` (${rec.alternativeNotes[slots[p]]})` : ""}`);
   }
   // Surrounding comps on bot and top records.
   const around: [Role, { jungle: string[]; mid: string[] } | undefined][] = [["BOT", bot?.surrounding], ["TOP", data.topPicks.find((t) => t.champion === slots.TOP)?.surrounding]];

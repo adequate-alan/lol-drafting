@@ -117,7 +117,7 @@ export function PairingCard({ item, names, sources, events, compact = false, dra
         <LayerBlock layer="clash">
           <dl className="kv">
             <dt>Primary {other.toLowerCase()}</dt><dd><ChipList ids={r.clashDefault} names={names} role={other} strong /></dd>
-            <dt>Secondary</dt><dd><ChipList ids={r.alternatives} names={names} role={other} /></dd>
+            <dt>Secondary</dt><dd><ChipList ids={r.alternatives} names={names} role={other} notes={r.alternativeNotes} /></dd>
             {!compact && <><dt>Bot shape</dt><dd><span className="chip-list">{r.botShapes.length ? r.botShapes.map((d) => <Duo key={d.bot + d.support} bot={d.bot} support={d.support} names={names} />) : <span className="muted small">none</span>}</span></dd></>}
           </dl>
         </LayerBlock>

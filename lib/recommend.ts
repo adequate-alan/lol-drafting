@@ -124,7 +124,7 @@ function savedParts(c: Champion, role: Role, draft: Draft, data: RecommendData, 
     if (r === "SUPPORT" && role === "BOT") {
       const rec = botRecord(c.id);
       if (rec?.clashDefault.includes(ally)) { parts.push({ kind: "saved", points: 5, text: `Saved pairing: ${name(ally)} is its preferred support` }); better("default"); }
-      else if (rec?.alternatives.includes(ally)) { parts.push({ kind: "saved", points: 2.5, text: `Saved pairing: ${name(ally)} is an alternative support for it` }); better("alt"); }
+      else if (rec?.alternatives.includes(ally)) { parts.push({ kind: "saved", points: 2.5, text: `Saved pairing: ${name(ally)} is an alternative support for it${rec.alternativeNotes[ally] ? ` (${rec.alternativeNotes[ally]})` : ""}` }); better("alt"); }
     }
     if (r === "BOT" && (role === "JUNGLE" || role === "MID")) {
       const rec = botRecord(ally);
@@ -133,7 +133,7 @@ function savedParts(c: Champion, role: Role, draft: Draft, data: RecommendData, 
     if ((r === "MID" && role === "JUNGLE") || (r === "JUNGLE" && role === "MID")) {
       const rec = data.midJungle.find((m) => m.anchor === ally && m.role === r);
       if (rec?.clashDefault.includes(c.id)) { parts.push({ kind: "saved", points: 4, text: `Saved pairing: primary ${role.toLowerCase()} for ${name(ally)}` }); better("default"); }
-      else if (rec?.alternatives.includes(c.id)) { parts.push({ kind: "saved", points: 1.5, text: `Saved pairing: secondary ${role.toLowerCase()} for ${name(ally)}` }); better("alt"); }
+      else if (rec?.alternatives.includes(c.id)) { parts.push({ kind: "saved", points: 1.5, text: `Saved pairing: secondary ${role.toLowerCase()} for ${name(ally)}${rec.alternativeNotes[c.id] ? ` (${rec.alternativeNotes[c.id]})` : ""}` }); better("alt"); }
     }
     if (r === "TOP" && (role === "JUNGLE" || role === "MID")) {
       const rec = data.topPicks.find((t) => t.champion === ally);

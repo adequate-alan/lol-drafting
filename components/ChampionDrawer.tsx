@@ -12,6 +12,7 @@ import { observedFor, proLinks, recordFor, savedLinks, type Slots } from "@/lib/
 import type { DrawerData } from "@/lib/data";
 import { comparePatchDesc, describeLine, fresher, groupObserved, shortDate, type EventMap } from "@/lib/evidence";
 import { PARTNER_ROLE, TIERS, eventStats, listsRole, presenceOf, proGames, roleShare, type ProGame, type Tier } from "@/lib/pool-stats";
+import { handAlts } from "@/lib/pro-alternatives";
 import { synergyParts, teamNeeds } from "@/lib/recommend";
 import { ROLES, type Champion, type Role } from "@/lib/schema";
 
@@ -175,7 +176,7 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
           <dl className="kv">
             <dt>Pool</dt>
             <dd className="small">{tier ? <><span className={`tier ${tier.tier}`}>{TIER_LABEL[tier.tier]}</span>{tier.reason && <span className="muted"> {tier.reason}</span>}</> : <span className="muted">Not in my {role.toLowerCase()} pool</span>}</dd>
-            {saved.map((s) => (
+            {saved.filter((s) => s.ids.length || s.label !== "From pro games").map((s) => (
               <FragmentRow key={s.label} label={s.label}>
                 {s.ids.length ? <span className="drawer-chips">{s.ids.map((x) => <Mate key={x} id={x} role={s.role} names={names} inComp={comp?.slots[s.role] === x} />)}</span> : <span className="muted small">none saved</span>}
               </FragmentRow>
@@ -309,7 +310,8 @@ function savedPartners(id: string, role: Role, data: DrawerData): { label: strin
   const partner = PARTNER_ROLE[role];
   if (role === "BOT") {
     const b = data.botPairings.find((x) => x.champion === id);
-    return b ? [{ label: "Preferred", ids: b.clashDefault, role: "SUPPORT" }, { label: "Alternatives", ids: b.alternatives, role: "SUPPORT" }] : [];
+    return b ? [{ label: "Preferred", ids: b.clashDefault, role: "SUPPORT" }, { label: "Alternatives", ids: handAlts(b), role: "SUPPORT" },
+      { label: "From pro games", ids: b.proAlternatives ?? [], role: "SUPPORT" }] : [];
   }
   if (role === "SUPPORT") {
     const pref = data.botPairings.filter((b) => b.clashDefault.includes(id)).map((b) => b.champion);
@@ -321,7 +323,8 @@ function savedPartners(id: string, role: Role, data: DrawerData): { label: strin
     return t ? [{ label: "Jungle", ids: t.surrounding.jungle, role: "JUNGLE" }, { label: "Mid", ids: t.surrounding.mid, role: "MID" }] : [];
   }
   const m = data.midJungle.find((x) => x.anchor === id && x.role === role);
-  return m ? [{ label: "Primary", ids: m.clashDefault, role: partner }, { label: "Secondary", ids: m.alternatives, role: partner }] : [];
+  return m ? [{ label: "Primary", ids: m.clashDefault, role: partner }, { label: "Secondary", ids: handAlts(m), role: partner },
+    { label: "From pro games", ids: m.proAlternatives ?? [], role: partner }] : [];
 }
 
 /** Roles the champion has pro evidence in, most games first; stats-only roles after. */

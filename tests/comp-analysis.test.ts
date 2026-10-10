@@ -90,7 +90,7 @@ describe("needs and best fix", () => {
     const r = bestFix("SUPPORT", extra("support-open").draft, kits, getBotPairings());
     expect(r.restricted).toBe(true);
     expect(r.fixes.map((c) => c.champion)).toEqual(expect.arrayContaining(["leona", "nautilus"]));
-    expect(r.fixes.every((c) => ["nautilus", "leona", "camille", "alistar"].includes(c.champion))).toBe(true);
+    expect(r.fixes.every((c) => ["nautilus", "leona", "camille", "alistar", "pyke"].includes(c.champion))).toBe(true);
     expect(r.theoretical.map((c) => c.champion)).toEqual(expect.arrayContaining(["maokai", "rell"]));
   });
 
