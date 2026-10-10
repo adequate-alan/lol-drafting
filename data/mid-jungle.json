@@ -31,6 +31,7 @@
         "champion": "vi",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g1-geng"
         ],
@@ -43,6 +44,7 @@
         "champion": "qiyana",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g1-hle"
         ],
@@ -55,6 +57,7 @@
         "champion": "jarvan-iv",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g2-dk"
         ],
@@ -67,6 +70,7 @@
         "champion": "lee-sin",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-round-2-g1-geng"
         ],
@@ -79,6 +83,7 @@
         "champion": "chogath",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-round-4-g1-geng"
         ],
@@ -137,6 +142,7 @@
         "champion": "naafiri",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g1-hle",
           "lck26po-hle-t1-g1-t1"
@@ -194,6 +200,7 @@
         "champion": "jarvan-iv",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g2-hle"
         ],
@@ -206,6 +213,7 @@
         "champion": "vi",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g3-t1"
         ],
@@ -218,6 +226,7 @@
         "champion": "aatrox",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-round-4-g3-geng"
         ],
@@ -275,6 +284,7 @@
         "champion": "chogath",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g3-hle"
         ],
@@ -287,6 +297,7 @@
         "champion": "pantheon",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g2-t1"
         ],
@@ -299,6 +310,7 @@
         "champion": "skarner",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-round-2-g3-geng"
         ],
@@ -371,6 +383,7 @@
         "champion": "trundle",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g4-geng"
         ],
@@ -383,6 +396,7 @@
         "champion": "chogath",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g4-hle"
         ],
@@ -395,6 +409,7 @@
         "champion": "pantheon",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g3-dk"
         ],
@@ -451,6 +466,7 @@
         "champion": "qiyana",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g2-t1"
         ],
@@ -502,6 +518,7 @@
         "champion": "nocturne",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g2-geng"
         ],
@@ -556,6 +573,7 @@
         "champion": "lee-sin",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g1-t1"
         ],
@@ -609,6 +627,7 @@
         "champion": "vi",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g1-dk"
         ],
@@ -655,6 +674,7 @@
         "champion": "naafiri",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g4-t1"
         ],
@@ -717,6 +737,7 @@
         "champion": "chogath",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g4-dk"
         ],
@@ -833,6 +854,7 @@
         "champion": "skarner",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g4-hle",
           "lck26po-t1-dk-g3-t1"
@@ -847,6 +869,7 @@
         "champion": "jarvan-iv",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-round-4-g2-geng"
         ],
@@ -863,7 +886,7 @@
       "close-range-control",
       "engage-follow-up"
     ],
-    "playoffRead": "Skarner+Locke appeared in T1-DK G3 and again in Finals G4. This is one of the clearest new playoff pairings.",
+    "playoffRead": "Skarner+Locke appeared in T1-DK G3 and again in Finals G4. This is one of the clearest new playoff pairings. Locke is an established pro mid: 3 picks / 5 bans in the LCK playoffs (16.16) and, as reported, 3 more mid picks / 1 ban at the Demacia Cup (16.18).",
     "status": "added",
     "sources": [
       "golgg-game-82694",
@@ -902,6 +925,7 @@
         "champion": "akali",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g2-hle"
         ],
@@ -914,6 +938,7 @@
         "champion": "yone",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g2-hle"
         ],
@@ -926,6 +951,7 @@
         "champion": "ryze",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g2-dk"
         ],
@@ -938,6 +964,7 @@
         "champion": "locke",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-round-4-g2-geng"
         ],
@@ -993,6 +1020,7 @@
         "champion": "ryze",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g1-geng"
         ],
@@ -1005,6 +1033,7 @@
         "champion": "akali",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g3-t1"
         ],
@@ -1017,6 +1046,7 @@
         "champion": "taliyah",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g1-dk"
         ],
@@ -1029,6 +1059,7 @@
         "champion": "vex",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-round-4-g4-geng"
         ],
@@ -1085,6 +1116,7 @@
         "champion": "sylas",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g3-geng"
         ],
@@ -1097,6 +1129,7 @@
         "champion": "twisted-fate",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g3-hle"
         ],
@@ -1109,6 +1142,7 @@
         "champion": "cassiopeia",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g1-t1"
         ],
@@ -1121,6 +1155,7 @@
         "champion": "ryze",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-round-2-g1-geng"
         ],
@@ -1177,6 +1212,7 @@
         "champion": "orianna",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g1-hle",
           "lck26po-hle-t1-g1-t1"
@@ -1191,6 +1227,7 @@
         "champion": "galio",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g4-t1"
         ],
@@ -1253,6 +1290,7 @@
         "champion": "locke",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g4-hle",
           "lck26po-t1-dk-g3-t1"
@@ -1267,6 +1305,7 @@
         "champion": "syndra",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-round-2-g3-geng"
         ],
@@ -1322,6 +1361,7 @@
         "champion": "ryze",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g1-hle"
         ],
@@ -1334,6 +1374,7 @@
         "champion": "anivia",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g2-t1"
         ],
@@ -1390,6 +1431,7 @@
         "champion": "syndra",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g3-hle"
         ],
@@ -1402,6 +1444,7 @@
         "champion": "viktor",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g4-hle"
         ],
@@ -1414,6 +1457,7 @@
         "champion": "annie",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g4-dk"
         ],
@@ -1426,6 +1470,7 @@
         "champion": "ryze",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-round-4-g1-geng"
         ],
@@ -1443,11 +1488,12 @@
       "objective-control",
       "guaranteed-cc"
     ],
-    "playoffRead": "Cho jungle was real in the playoffs: Finals G3 with Syndra and HLE-T1 G4 with Viktor.",
+    "playoffRead": "Cho jungle was real in the playoffs: 9 jungle picks (reported, pending refresh), including Finals G3 with Syndra and HLE-T1 G4 with Viktor. FlyQuest has played it again at the Demacia Cup on 16.18, so it carried across patches.",
     "status": "added",
     "sources": [
       "golgg-game-82964",
-      "golgg-game-82748"
+      "golgg-game-82748",
+      "golgg-champion-13"
     ]
   },
   {
@@ -1476,6 +1522,7 @@
         "champion": "nocturne",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g4-t1"
         ],

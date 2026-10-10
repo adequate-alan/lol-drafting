@@ -294,7 +294,7 @@
         "MID": 3
       },
       "priorityRead": "Rising playoff pick",
-      "note": "Especially relevant with Skarner in late rounds.",
+      "note": "Especially relevant with Skarner in late rounds. Still picked at the Demacia Cup on 16.18 (see Current meta).",
       "sources": [
         "golgg-champion-173"
       ]
@@ -387,6 +387,106 @@
     {
       "topic": "ZIGGS",
       "note": "Keep Nautilus/Leona as the simple preferred supports. The notable playoff variant was Ziggs+Pyke."
+    }
+  ],
+  "events": [
+    {
+      "id": "demacia-cup-2026",
+      "name": "Demacia Cup Global Invitational 2026",
+      "short": "Demacia Cup",
+      "kind": "current-meta",
+      "patch": "16.18",
+      "draftMode": "Fearless Draft",
+      "status": "ongoing",
+      "startDate": "2026-10-03",
+      "endDate": "2026-10-17",
+      "scope": "Teams that missed Worlds. The newest patch sample, so it ranks above the LCK playoffs for what is played now, but it does not replace Gen.G/LCK evidence and is not final Worlds meta.",
+      "provided": {
+        "url": "https://esports.gg/news/league-of-legends/demacia-cup-global-invitational-2026-format-schedule-results/",
+        "claim": "Runs Oct 3 to 17, 2026, with teams that did not qualify for Worlds.",
+        "providedOn": "2026-10-10",
+        "providedBy": "alan"
+      },
+      "stats": [
+        {
+          "champion": "locke",
+          "role": "MID",
+          "picks": 3,
+          "bans": 1,
+          "presence": null,
+          "winRate": 0.6667,
+          "lowSample": true,
+          "roleUsage": {
+            "MID": 3
+          },
+          "priorityRead": "Still picked on 16.18",
+          "note": "Reported by alan on 2026-10-10; no Gol.gg page was supplied for these numbers yet. Presence needs the event game count.",
+          "sources": []
+        }
+      ],
+      "notes": [
+        {
+          "topic": "Ezreal + Karma",
+          "note": "Played together in JDG vs BRO on Oct 3. Current evidence for the saved Ezreal → Karma default.",
+          "sources": [
+            "golgg-game-83452"
+          ]
+        },
+        {
+          "topic": "Yunara + Lulu",
+          "note": "Team WE played it against BRO on Oct 4. Current evidence for the saved Yunara → Lulu default.",
+          "sources": [
+            "golgg-game-83460"
+          ]
+        },
+        {
+          "topic": "Sivir + Karma",
+          "note": "BRO played it against Team WE on Oct 4. Pro evidence only; Lulu stays the saved Sivir default.",
+          "sources": [
+            "golgg-game-83459"
+          ]
+        },
+        {
+          "topic": "Jhin + Bard",
+          "note": "GAM played it against Vitality on Oct 5. Pro evidence only.",
+          "sources": [
+            "golgg-game-83462"
+          ]
+        },
+        {
+          "topic": "Cho'Gath jungle",
+          "note": "FlyQuest has played Cho'Gath jungle here, including a win on Oct 7, after 9 jungle picks in the LCK playoffs. Reported without a game page, so no game is cited yet.",
+          "sources": [
+            "golgg-champion-13"
+          ]
+        },
+        {
+          "topic": "Corki, Ziggs",
+          "note": "No change. Corki was played here, but nothing in this event changes Corki → Nami or Ziggs → Nautilus / Leona.",
+          "sources": []
+        }
+      ],
+      "sources": [
+        "golgg-game-83452",
+        "golgg-game-83460",
+        "golgg-game-83459",
+        "golgg-game-83462"
+      ]
+    },
+    {
+      "id": "lck-2026-playoffs",
+      "name": "LCK 2026 Season Playoffs",
+      "short": "LCK Playoffs",
+      "kind": "playoffs",
+      "patch": "16.16",
+      "draftMode": "Fearless Draft",
+      "status": "complete",
+      "scope": "Main sample: the Meta table, recorded pro drafts and the Gen.G page all come from this event.",
+      "stats": [],
+      "notes": [],
+      "sources": [
+        "golgg-tournament-stats"
+      ]
     }
   ]
 }

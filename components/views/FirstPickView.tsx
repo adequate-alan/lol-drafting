@@ -3,13 +3,14 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { PairingCard, type CardRecord } from "@/components/PairingCard";
 import { ChampionRow, EvidenceBadge, PageHeader } from "@/components/ui";
+import type { EventMap } from "@/lib/evidence";
 import { TABS, type Tab } from "./first-pick-tabs";
 import type { BotPairing, MetaStat, MidJunglePairing, Role, Source, TopPick } from "@/lib/schema";
 
 const GRADE_ORDER = ["A", "A-", "B+", "B", "B-", "C+", "C"];
 
-export function FirstPickView({ tab, names, sources, stats, draftLabels, bot, midJungle, top }: {
-  tab: Tab; names: Record<string, string>; sources: Record<string, Source>; stats: Record<string, MetaStat>;
+export function FirstPickView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top }: {
+  tab: Tab; names: Record<string, string>; sources: Record<string, Source>; events: EventMap; stats: Record<string, MetaStat>;
   draftLabels: Record<string, string>; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[];
 }) {
   const params = useSearchParams();
@@ -61,7 +62,7 @@ export function FirstPickView({ tab, names, sources, stats, draftLabels, bot, mi
           </table>
         </div>
         <div>
-          {selected && <PairingCard item={selected} names={names} sources={sources} draftLabels={draftLabels} />}
+          {selected && <PairingCard item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels} />}
         </div>
       </div>
     </>
