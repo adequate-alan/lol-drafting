@@ -764,11 +764,11 @@
     "anchor": "ahri",
     "role": "MID",
     "clashDefault": [
+      "vi",
       "pantheon",
       "wukong"
     ],
     "alternatives": [
-      "vi",
       "nocturne",
       "lee-sin"
     ],
@@ -992,6 +992,7 @@
     "anchor": "vi",
     "role": "JUNGLE",
     "clashDefault": [
+      "ahri",
       "akali",
       "syndra"
     ],
