@@ -36,6 +36,7 @@
         "champion": "qiyana",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g1-hle",
           "lck26po-t1-dk-g2-t1"
@@ -99,6 +100,7 @@
         "champion": "chogath",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g4-hle"
         ],
@@ -111,6 +113,7 @@
         "champion": "vi",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g1-dk"
         ],
@@ -173,6 +176,7 @@
         "champion": "vi",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g3-t1"
         ],
@@ -185,6 +189,7 @@
         "champion": "jarvan-iv",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g2-dk"
         ],
@@ -248,6 +253,7 @@
         "champion": "vi",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g1-geng"
         ],
@@ -260,6 +266,7 @@
         "champion": "pantheon",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g2-t1"
         ],
@@ -272,6 +279,7 @@
         "champion": "lee-sin",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g1-t1"
         ],
@@ -284,6 +292,7 @@
         "champion": "jarvan-iv",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-round-4-g2-geng"
         ],
@@ -396,6 +405,7 @@
         "champion": "trundle",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g4-geng"
         ],
@@ -408,6 +418,7 @@
         "champion": "aatrox",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-round-4-g3-geng"
         ],
@@ -468,6 +479,7 @@
         "champion": "naafiri",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g4-t1"
         ],
@@ -480,6 +492,7 @@
         "champion": "lee-sin",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-round-2-g1-geng"
         ],
@@ -541,6 +554,7 @@
         "champion": "lee-sin",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-hle-t1-g3-hle"
         ],
@@ -553,6 +567,7 @@
         "champion": "skarner",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-t1-dk-g3-t1"
         ],
@@ -610,6 +625,7 @@
         "champion": "lee-sin",
         "context": "LCK 2026 Season Playoffs",
         "era": "current-playoffs",
+        "event": "lck-2026-playoffs",
         "proDraftIds": [
           "lck26po-finals-g3-geng"
         ],

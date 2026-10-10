@@ -1,14 +1,14 @@
 import { Suspense } from "react";
 import { PageLoading } from "@/components/ui";
 import { PoolView } from "@/components/views/PoolView";
-import { getMeta, getPool } from "@/lib/data";
+import { getBotPairings, getMeta, getMidJungle, getPool, getProDrafts, getTopPicks } from "@/lib/data";
 import { nameMap, sourceMap } from "@/lib/lookup";
 
 export default function Pool() {
-  const stats = Object.fromEntries(getMeta().stats.map((s) => [s.champion, s]));
+  const data = { pool: getPool(), meta: getMeta(), proDrafts: getProDrafts(), botPairings: getBotPairings(), sources: sourceMap() };
   return (
     <Suspense fallback={<PageLoading title="Champion Pool" />}>
-      <PoolView names={nameMap()} sources={sourceMap()} stats={stats} entries={getPool()} />
+      <PoolView names={nameMap()} data={data} bot={getBotPairings()} midJungle={getMidJungle()} top={getTopPicks()} />
     </Suspense>
   );
 }
