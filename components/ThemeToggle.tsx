@@ -9,7 +9,10 @@ export function ThemeToggle() {
   useEffect(() => setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light"), []);
   const next: Theme = theme === "dark" ? "light" : "dark";
   const flip = () => {
-    document.documentElement.dataset.theme = next;
+    const root = document.documentElement;
+    root.classList.add("theme-switching");
+    window.setTimeout(() => root.classList.remove("theme-switching"), 220);
+    root.dataset.theme = next;
     try { localStorage.setItem("theme", next); } catch { /* private mode: still switches for this visit */ }
     setTheme(next);
   };

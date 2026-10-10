@@ -53,7 +53,7 @@ export function ProDraftsView({ names, sources, all }: {
 
   return (
     <>
-      <PageHeader title="Pro Drafts" desc="Recorded LCK games from Gol.gg." />
+      <PageHeader title="Pro Drafts" />
 
       {selected && (
         <section className="panel" style={{ marginBottom: 12 }}>
@@ -68,10 +68,11 @@ export function ProDraftsView({ names, sources, all }: {
           <div className="panel-body">
             <div className="draft-slots" style={{ marginBottom: 8 }}>
               {ROLES.map((r) => (
-                <div key={r} className={`draft-slot locked role-${r}`} style={{ minHeight: 58 }}>
-                  <span className="slot-icon"><ChampIcon id={selected.picks[r]} name={names[selected.picks[r]] ?? selected.picks[r]} role={r} size="lg" /></span>
-                  <div className="slot-top"><span className="role-tag">{r}</span></div>
-                  <div className="slot-main"><span className="slot-name truncate" style={{ fontSize: 14 }}>{names[selected.picks[r]] ?? selected.picks[r]}</span></div>
+                <div key={r} className={`draft-slot locked role-${r}`}>
+                  <span className="slot-body">
+                    <span className="slot-icon"><ChampIcon id={selected.picks[r]} name={names[selected.picks[r]] ?? selected.picks[r]} role={r} size="lg" /></span>
+                    <span className="slot-text"><span className="role-tag">{r}</span><span className="slot-name truncate">{names[selected.picks[r]] ?? selected.picks[r]}</span></span>
+                  </span>
                 </div>
               ))}
             </div>

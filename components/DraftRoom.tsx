@@ -1,47 +1,48 @@
 "use client";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { picksOf, profile, RULES, warnings, type Draft, type DraftWarning } from "@/lib/evaluate";
-import { recommend, teamNeeds, winConditions, type FitKind, type Recommendation } from "@/lib/recommend";
-import { ROLES, type Attr, type Counters, type Role, type Source } from "@/lib/schema";
-import type { DrawerData } from "@/lib/data";
-import { counterPicks, describeEvidence, detectEnemyRoles, enemyParam, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
-import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
+import { recommend, teamNeeds, winConditions, type Need, type Recommendation } from "@/lib/recommend";
+import { ROLES, type Attr, type Role, type Source } from "@/lib/schema";
 import { describeLine } from "@/lib/evidence";
-import { proSuggestions, similarProDrafts, similarShells, type ProByRole, type SuggestData } from "@/lib/suggest";
+import { counterPicks, describeEvidence, enemyParam, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
+import { proSuggestions, similarProDrafts, similarShells, type ProSuggestion, type SuggestData } from "@/lib/suggest";
+import type { DraftData, DrawerData } from "@/lib/data";
+import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
 import { PairingCard, type CardRecord } from "./PairingCard";
-import { ChampIcon, ChampionRow, SourceBadge, WarningBadge, type Layer, type Severity } from "./ui";
+import { ChampIcon, ChampionRow, SourceBadge, WarningBadge, type Severity } from "./ui";
 
-const ATTR_LABEL: Record<Attr, string> = {
-  engage: "Engage", frontline: "Frontline", peel: "Peel", sustainedDps: "Sustained DPS", burst: "Burst", poke: "Poke",
-  scaling: "Scaling", lanePressure: "Lane pressure", sidePressure: "Side-lane pressure", objectiveControl: "Objective control",
-};
 const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
+// Lane partner: with Bot locked, Support is the natural next pick (and the other way round).
+const PARTNER: Partial<Record<Role, Role>> = { BOT: "SUPPORT", SUPPORT: "BOT", MID: "JUNGLE", JUNGLE: "MID" };
+// Whom an open role plays against: its lane opponent, or both enemy bot laners.
+const LANE: Record<Role, Role[]> = { TOP: ["TOP"], JUNGLE: ["JUNGLE"], MID: ["MID"], BOT: ["BOT", "SUPPORT"], SUPPORT: ["BOT", "SUPPORT"] };
 
 // Display grouping only: which rule warnings read as a structural hole versus something to keep an eye on.
 // The rules themselves (lib/evaluate.ts) are unchanged.
 const CRITICAL = new Set(["no-engage", "needs-fight-starter", "no-frontline", "insufficient-peel", "vulnerable-hard-engage"]);
 const severityOf = (w: DraftWarning): Severity => (CRITICAL.has(w.id) ? "critical" : "caution");
 
-const KIND_LABEL: Record<FitKind, string> = { saved: "Saved", synergy: "Synergy", need: "Need", matchup: "Matchup", risk: "Risk" };
-const ENEMY_SLOTS = 5;
+const KIND_LABEL: Record<string, string> = { saved: "Saved", synergy: "Synergy", need: "Need", matchup: "Matchup", counter: "Counter", risk: "Risk" };
+const STATUS = { default: "Default", alt: "Alt", fits: "Fits" } as const;
+const REC_LIMIT = 8;
 
 export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, metaPicks }: {
-  data: SuggestData & { counters: Counters };
-  drawerData: DrawerData;
+  data: DraftData;
   sources: Record<string, Source>;
+  drawerData: DrawerData;
   initial: Draft;
   initialEnemy: EnemyDraft; // roles from ?vs=top:aatrox, or detected for bare ids
   metaPicks: Record<string, { picks: number; winRate: number; lowSample: boolean }>;
 }) {
   const [draft, setDraft] = useState<Draft>(initial);
-  const [enemy, setEnemy] = useState<(string | undefined)[]>(() => {
-    const ids = ROLES.map((r) => initialEnemy[r]).filter(Boolean);
-    return Array.from({ length: ENEMY_SLOTS }, (_, i) => ids[i]);
-  });
-  // Roles given in the URL stick to their champion; everything else is placed by detectEnemyRoles.
-  const [enemyHints] = useState(() => new Map(ROLES.flatMap((r) => (initialEnemy[r] ? [[initialEnemy[r]!, r] as const] : []))));
+  // One enemy slot per role, in ROLES order.
+  const [enemy, setEnemy] = useState<(string | undefined)[]>(() => ROLES.map((r) => initialEnemy[r]));
+  const [focus, setFocus] = useState<Role>();
+  const [hover, setHover] = useState<string>();
   const [drawer, setDrawer] = useState<DrawerTarget>();
+  const [pinned, setPinned] = useState(false);
+  const board = useRef<HTMLDivElement>(null);
   const drawerIndex = useDrawerIndex(drawerData);
   const names = useMemo(() => Object.fromEntries(data.champions.map((c) => [c.id, c.name])), [data.champions]);
   const byName = useMemo(() => {
@@ -52,24 +53,27 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
   const eventMap = useMemo(() => Object.fromEntries((data.events ?? []).map((e) => [e.id, e])), [data.events]);
   const draftLabels = useMemo(() => Object.fromEntries(data.proDrafts.map((d) => [d.id, `${d.team} ${d.seriesGame}`])), [data.proDrafts]);
 
+  // The condensed draft bar appears once the full board scrolls out of view.
+  useEffect(() => {
+    const el = board.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setPinned(!e.isIntersecting && e.boundingClientRect.top < 0), { threshold: 0 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const enemyDraftOf = (list: (string | undefined)[]): EnemyDraft => Object.fromEntries(ROLES.flatMap((r, i) => (list[i] ? [[r, list[i]]] : [])));
   const update = (next: Draft, nextEnemy = enemy) => {
     setDraft(next);
     setEnemy(nextEnemy);
     const q = new URLSearchParams();
     ROLES.forEach((r) => next[r] && q.set(r.toLowerCase(), next[r]!));
-    const placed = enemyRolesOf(nextEnemy);
-    const vs = [enemyParam(placed), ...nextEnemy.filter((id) => id && !Object.values(placed).includes(id))].filter(Boolean);
-    if (vs.length) q.set("vs", vs.join(","));
+    const vs = enemyParam(enemyDraftOf(nextEnemy));
+    if (vs) q.set("vs", vs);
     // window.location keeps the GitHub Pages base path; usePathname() would drop it.
     window.history.replaceState(null, "", `${window.location.pathname}${q.size ? `?${q.toString().replace(/%2C/g, ",")}` : ""}`);
   };
-  function enemyRolesOf(list: (string | undefined)[]): EnemyDraft {
-    const ids = list.filter((e): e is string => !!e);
-    const fixed: EnemyDraft = {};
-    for (const id of ids) { const r = enemyHints.get(id); if (r && !fixed[r]) fixed[r] = id; }
-    return detectEnemyRoles(ids, data.champions, fixed);
-  }
-  const lock = (role: Role, id: string | undefined) => update({ ...draft, [role]: id });
+  const lock = (role: Role, id: string | undefined) => { setHover(undefined); update({ ...draft, [role]: id }); };
   const lockEnemy = (i: number, id: string | undefined) => update(draft, enemy.map((e, j) => (j === i ? id : e)));
 
   const enemyIds = enemy.filter((e): e is string => !!e);
@@ -81,21 +85,33 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
   const needs = picks.length ? teamNeeds(picks) : [];
   const plans = winConditions(picks);
   const enemyPlans = winConditions(enemyPicks);
-  const enemyDraft = enemyRolesOf(enemy);
-  const enemyRoleOf = new Map(ROLES.flatMap((r) => (enemyDraft[r] ? [[enemyDraft[r]!, r] as const] : [])));
-  // The full draft-fit list, so a counter can say where it ranks overall. The visible list is its top five.
+  const enemyDraft = enemyDraftOf(enemy);
+  // The full draft-fit list, so a counter can say where it ranks overall. The visible list is its top REC_LIMIT.
   const fits = recommend(draft, enemyIds, data, Infinity);
-  const recs = Object.fromEntries(Object.entries(fits).map(([r, list]) => [r, list!.slice(0, 5)])) as typeof fits;
+  const recs = Object.fromEntries(Object.entries(fits).map(([r, list]) => [r, list!.slice(0, REC_LIMIT)])) as typeof fits;
   const counters = counterPicks(draft, enemyDraft, data, fits);
-  const counterOf = (role: Role, id: string) => counters[role]?.counters.find((c) => c.champion === id);
   const proAll = proSuggestions(draft, data.proDrafts, { botPairings: data.botPairings, events: data.events, sources }, Infinity);
-  const pro: ProByRole = Object.fromEntries(Object.entries(proAll).map(([r, list]) => [r, list!.slice(0, 6)]));
-  const proCount = (role: Role, id: string) => proAll[role]?.find((p) => p.champion === id)?.score ?? 0;
   const similar = similarProDrafts(draft, data.proDrafts);
   const shells = similarShells(draft, data.shells);
   const open = ROLES.filter((r) => !draft[r]);
   const lockedCount = ROLES.length - open.length;
+  const started = lockedCount > 0 || enemyIds.length > 0;
   const critical = warns.filter((w) => severityOf(w) === "critical").length;
+
+  // The role being picked: the one the user chose, else the open lane partner of a locked pick, else the open role
+  // with the strongest fit.
+  const topScore = (r: Role) => recs[r]?.[0]?.score ?? -99;
+  const partnered = open.filter((r) => PARTNER[r] && draft[PARTNER[r]!]);
+  const active: Role | undefined = focus && open.includes(focus) ? focus
+    : [...(partnered.length ? partnered : open)].sort((a, b) => topScore(b) - topScore(a))[0];
+  const activeRecs = active ? recs[active] ?? [] : [];
+  const activePro = active ? proAll[active] ?? [] : [];
+  const proByChamp = new Map(activePro.map((s) => [s.champion, s]));
+  const proOnly = activePro.filter((s) => !activeRecs.some((r) => r.champion === s.champion)).slice(0, 6);
+  const activeCounters: RoleCounters | undefined = active ? counters[active] : undefined;
+  const counterByChamp = new Map((activeCounters?.counters ?? []).map((c) => [c.champion, c]));
+  const counterOnly = (activeCounters?.counters ?? []).filter((c) => !activeRecs.some((r) => r.champion === c.champion));
+  const laneFoes = active ? LANE[active].map((r) => enemy[ROLES.indexOf(r)]).filter((e): e is string => !!e) : [];
 
   const cards: CardRecord[] = ROLES.flatMap((role): CardRecord[] => {
     const id = draft[role];
@@ -109,300 +125,242 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
     ? [{ id: c.record.champion, text: c.record.logic.warning }]
     : c.kind === "top" ? [{ id: c.record.champion, text: `avoid ${c.record.logic.avoid}` }] : []);
 
+  const slotProps = { names, byName, champions: data.champions, taken, onOpen: (id: string, role?: Role) => setDrawer({ id, role }) };
+
   return (
-    <>
-      <div className="team-label">Your team</div>
-      <div className="draft-slots">
-        {ROLES.map((role) => (
-          <DraftSlot key={role} role={role} label={role} value={draft[role]} names={names} byName={byName}
-            champions={data.champions} taken={taken} onLock={(id) => lock(role, id)} suggested={recs[role]} />
-        ))}
-      </div>
-      <div className="team-label enemy">Enemy</div>
-      <div className="draft-slots enemy-slots">
-        {enemy.map((id, i) => (
-          <DraftSlot key={i} label={id && enemyRoleOf.has(id) ? `Enemy ${enemyRoleOf.get(id)}` : `Enemy ${i + 1}`} ariaLabel={`Enemy ${i + 1} champion`} listKey={`enemy-${i}`} value={id} names={names} byName={byName}
-            champions={data.champions} taken={taken} onLock={(v) => lockEnemy(i, v)} compact />
-        ))}
-      </div>
-      <div className="draft-bar">
-        <button className="btn sm" onClick={() => update({}, enemy.map(() => undefined))} disabled={!lockedCount && !enemyIds.length}>Clear draft</button>
-        <span className="xs muted tnum">{lockedCount}/5 locked{enemyIds.length ? ` · ${enemyIds.length} enemy` : ""}{open.length ? ` · open: ${open.map((r) => ROLE_LABEL[r]).join(", ")}` : ""}</span>
-        <span style={{ marginLeft: "auto" }} className="row tight">
+    <div className="draft-room">
+      <header className="page-header draft-head">
+        <div className="titles"><h1>Draft Room</h1></div>
+        <div className="actions">
+          <span className="xs muted tnum">{lockedCount}/5 locked{enemyIds.length ? ` · ${enemyIds.length} enemy` : ""}</span>
           {lockedCount >= 2 && (warns.length
-            ? <>{critical > 0 && <span className="badge danger">{critical} critical</span>}{warns.length - critical > 0 && <span className="badge caution">{warns.length - critical} caution</span>}</>
+            ? <span className="row tight">{critical > 0 && <span className="badge danger">{critical} critical</span>}{warns.length - critical > 0 && <span className="badge caution">{warns.length - critical} caution</span>}</span>
             : <span className="badge success">No warnings</span>)}
-        </span>
+          <button className="btn sm" onClick={() => { setFocus(undefined); update({}, ROLES.map(() => undefined)); }} disabled={!started}>Clear draft</button>
+        </div>
+      </header>
+
+      <div className="board" ref={board}>
+        <div className="team-row ally">
+          <div className="team-label">My team</div>
+          <div className="draft-slots">
+            {ROLES.map((role) => (
+              <DraftSlot key={role} side="ally" role={role} value={draft[role]} active={role === active} preview={role === active ? hover : undefined}
+                onActivate={() => setFocus(role)} onLock={(id) => lock(role, id)} suggested={recs[role]} {...slotProps} />
+            ))}
+          </div>
+        </div>
+        <div className="team-row enemy">
+          <div className="team-label">Enemy</div>
+          <div className="draft-slots">
+            {ROLES.map((role, i) => (
+              <DraftSlot key={role} side="enemy" role={role} value={enemy[i]} onLock={(v) => lockEnemy(i, v)} {...slotProps} />
+            ))}
+          </div>
+        </div>
       </div>
 
+      <MiniBoard show={pinned} draft={draft} enemy={enemy} active={active} names={names} onActivate={setFocus} />
+
       <div className="draft-layout">
-        <section className="panel analysis" aria-label="Comp Check">
-          <div className="panel-head"><h2>Comp Check</h2><div className="end"><SourceBadge layer="logic" /></div></div>
-          <div className="panel-body">
-            <div className="section-label">Profile<span className="faint" style={{ marginLeft: "auto", fontWeight: 500 }}>best · total</span></div>
-            <div className="meter-list">
-              {prof.meters.map((m) => <Meter key={m.attr} label={ATTR_LABEL[m.attr]} best={m.best} total={m.total} by={m.bestBy} empty={!lockedCount} />)}
+        <div className="draft-main">
+          <section className="recs" aria-label="Recommended Picks">
+            {!open.length ? <p className="rec-empty">All five roles are locked.</p> : (
+              <>
+                <div className="role-tabs" role="tablist" aria-label="Role to pick">
+                  {open.map((r) => {
+                    const top = recs[r]?.[0];
+                    return (
+                      <button key={r} role="tab" aria-selected={r === active} className={`role-tab role-${r} ${r === active ? "active" : ""}`} onClick={() => setFocus(r)}>
+                        <span className="role-name">{ROLE_LABEL[r]}</span>
+                        {top && r !== active && <span className="tab-top"><ChampIcon id={top.champion} name={names[top.champion]} size="xs" />{names[top.champion]}</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+                {active && (
+                  <div className={`fit-role role-${active}`} role="tabpanel" aria-label={`${ROLE_LABEL[active]} recommendations`}>
+                    <div className="fit-context">
+                      {laneFoes.length
+                        ? <span className="vs">vs {laneFoes.map((id, i) => <span key={id}>{i > 0 && " + "}<b>{names[id]}</b></span>)}</span>
+                        : enemyIds.length ? <span className="vs muted">vs {enemyIds.map((id) => names[id]).join(" · ")}</span> : null}
+                      <span className="sig-key" title="Pro games are shown as evidence only and never change the order. Matchups use champion attributes, not lane stats.">
+                        <span className="k-saved">Synergy</span><span className="k-counter">Counters</span><span className="k-pro">Pro</span><span className="k-need">Logic</span>
+                      </span>
+                    </div>
+                    {!started ? <p className="rec-empty">Lock a pick to start.</p>
+                      : activeRecs.length
+                        ? activeRecs.map((r) => (
+                          <FitRow key={r.champion} rec={r} pro={proByChamp.get(r.champion)} counter={counterByChamp.get(r.champion)} names={names} hovered={hover === r.champion}
+                            onHover={(h) => setHover(h ? r.champion : undefined)} onPick={() => lock(active, r.champion)} onOpen={() => setDrawer({ id: r.champion, role: active })} />
+                        ))
+                        : <p className="rec-empty">Nothing stands out yet.</p>}
+                  </div>
+                )}
+              </>
+            )}
+          </section>
+
+          {active && activeCounters && (
+            <section className="rec-group counters" aria-label="Counters">
+              <header><h3>Counters</h3><span className="xs faint">vs {vsNames(activeCounters.vs, names)}{activeCounters.scope === "duo" ? " (duo)" : ""}</span></header>
+              {!activeCounters.counters.length && <p className="empty">No reliable counter data for {vsNames(activeCounters.vs, names)}.</p>}
+              {activeCounters.counters.length > 0 && !counterOnly.length && <p className="empty">Every counter for this role is in the list above.</p>}
+              {counterOnly.map((c) => <CounterRow key={c.champion} c={c} names={names} onOpen={() => setDrawer({ id: c.champion, role: active })} />)}
+              {activeCounters.note && <p className="empty">{activeCounters.note}</p>}
+            </section>
+          )}
+
+          {started && active && (
+            <section className="rec-group pro" aria-label="Pro Pairings">
+              <header><h3>Pro Pairings</h3><span className="xs faint">{ROLE_LABEL[active]}</span></header>
+              {!activePro.length && <p className="empty">{lockedCount ? "No recorded pro game uses these picks." : "Lock a pick to start."}</p>}
+              {activePro.length > 0 && !proOnly.length && <p className="empty">Every pro pairing for this role is in the list above.</p>}
+              {proOnly.map((s) => <ProRow key={s.champion} s={s} role={active} names={names} onPick={() => lock(active, s.champion)} />)}
+            </section>
+          )}
+
+          {cards.length > 0 && (
+            <section className="draft-section">
+              <div className="section-header"><h2>Locked picks</h2></div>
+              <div className="grid cols-auto">{cards.map((c) => (
+                <PairingCard key={c.kind + ("champion" in c.record ? c.record.champion : c.record.anchor)} item={c} names={names} sources={sources} events={eventMap} compact draftLabels={draftLabels} />
+              ))}</div>
+            </section>
+          )}
+
+          <section className="draft-section">
+            <div className="section-header pro-head-line"><h2>Similar pro drafts</h2></div>
+            {!similar.length ? <p className="xs muted">Nothing recorded shares a champion with this draft.</p> : (
+              <div className="table-wrap">
+                <table>
+                  <thead><tr><th>Game</th><th>Team</th>{ROLES.map((r) => <th key={r}>{ROLE_LABEL[r]}</th>)}</tr></thead>
+                  <tbody>{similar.map(({ draft: d }) => (
+                    <tr key={d.id}>
+                      <td><Link className="cell-link nowrap" href={`/pro-drafts?id=${d.id}`}>{d.seriesGame}</Link></td><td className="muted nowrap">{d.team}</td>
+                      {ROLES.map((r) => <td key={r}><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={draft[r] === d.picks[r]} /></td>)}
+                    </tr>))}</tbody>
+                </table>
+              </div>
+            )}
+          </section>
+          <section className="draft-section">
+            <div className="section-header"><h2>Similar comps</h2></div>
+            <div className="shell-list">
+              {!shells.length && <p className="xs muted">No shell shares a pick or swap with this draft.</p>}
+              {shells.map(({ shell, exact, swap }) => (
+                <div key={shell.id} className="shell-line">
+                  <div className="row">
+                    <Link href={`/comps#${shell.id}`}><b>{shell.name}</b></Link>
+                    <span className="xs faint">{shell.kind === "observed" ? "pro" : "template"}</span>
+                    <span className="xs muted tnum">{exact} exact · {swap} swap</span>
+                  </div>
+                  <p className="xs muted">{ROLES.map((r) => names[shell.slots[r].champion]).join(" · ")} · {shell.winCondition}</p>
+                </div>
+              ))}
             </div>
-            <div className="section-label" style={{ marginTop: 10 }}>Damage</div>
-            {prof.damage.physicalShare === null ? <p className="xs muted">No damage yet.</p> : (
-              <>
-                <div className="dmg"><div className="ad" style={{ width: `${prof.damage.physicalShare * 100}%` }} /><div className="ap" style={{ flex: 1 }} /></div>
-                <div className="dmg-legend"><span className="ad">Physical {Math.round(prof.damage.physicalShare * 100)}%</span><span className="ap">Magic {Math.round((1 - prof.damage.physicalShare) * 100)}%</span></div>
-              </>
-            )}
-          </div>
-          <div className="panel-body">
-            <div className="section-label">Win condition</div>
-            {!plans.length
-              ? <p className="xs muted">{picks.length < 2 ? "Needs two picks." : "No clear plan yet."}</p>
-              : plans.slice(0, 3).map((w, i) => <div key={w.id} className={`plan ${i === 0 ? "main" : ""}`}><b>{w.title}</b><p>{w.text}</p></div>)}
-            {needs.length > 0 && (
-              <>
-                <div className="section-label" style={{ marginTop: 10 }}>Missing</div>
-                <ul className="needs">{needs.map((n) => <li key={n.id}><b>{n.label[0].toUpperCase() + n.label.slice(1)}</b>: {n.text}</li>)}</ul>
-              </>
-            )}
-            {enemyPlans.length > 0 && (
-              <>
-                <div className="section-label" style={{ marginTop: 10 }}>Enemy plan</div>
-                <div className="plan"><b>{enemyPlans[0].title}</b><p>{enemyPlans[0].text}</p></div>
-              </>
-            )}
-          </div>
-          <div className="panel-body">
-            <div className="section-label">Warnings</div>
-            {!warns.length && (lockedCount < 2
-              ? <p className="xs muted">Needs two picks.</p>
-              : <div className="healthy">No warnings.</div>)}
+          </section>
+        </div>
+
+        <aside className="comp-check" aria-label="Comp Check">
+          <div className="cc-head"><h2>Comp Check</h2><SourceBadge layer="logic" /></div>
+          <Indicators prof={prof} needs={needs} picks={picks.length} />
+
+          <div className="cc-section">
+            <div className="cc-label">Warnings</div>
+            {!warns.length && (lockedCount < 2 ? <p className="xs muted">Needs two picks.</p> : <p className="cc-ok">No warnings.</p>)}
             {[...warns].sort((a, b) => Number(severityOf(b) === "critical") - Number(severityOf(a) === "critical")).map((w) => (
-              <details key={w.id} className={`warning-item ${severityOf(w)}`} open>
+              <details key={w.id} className={`warning-item ${severityOf(w)}`} open={severityOf(w) === "critical"}>
                 <summary><WarningBadge severity={severityOf(w)} />{w.label}</summary>
                 <p>{w.why}</p>
                 <p className="xs muted">Rule: {w.rule}.</p>
               </details>
             ))}
-            {pickNotes.length > 0 && (
-              <div className="notes" style={{ marginTop: 10 }}>
-                <div className="section-label">Pick notes</div>
-                {pickNotes.map((n) => <p key={n.id}><b>{names[n.id]}:</b> {n.text}</p>)}
-              </div>
-            )}
-            <details className="rules" style={{ marginTop: 8 }}>
-              <summary>All {RULES.length} rules</summary>
-              <ul>{RULES.map((r) => <li key={r.id}><b>{r.label}:</b> {r.rule}</li>)}</ul>
-            </details>
           </div>
-        </section>
 
-        <div className="stack">
-          <section className="panel recs" aria-label="Recommended Picks">
-            <div className="panel-head">
-              <h2>Recommended Picks</h2>
-              <span className="xs faint">by draft fit</span>
+          <div className="cc-section">
+            <div className="cc-label">Win condition</div>
+            {!plans.length
+              ? <p className="xs muted">{picks.length < 2 ? "Needs two picks." : "No clear plan yet."}</p>
+              : plans.slice(0, 3).map((w, i) => <div key={w.id} className={`plan ${i === 0 ? "lead" : ""}`}><b>{w.title}</b>{i === 0 && <p>{w.text}</p>}</div>)}
+            {enemyPlans.length > 0 && <div className="plan enemy"><span className="cc-label inline">Enemy</span><b>{enemyPlans[0].title}</b></div>}
+          </div>
+
+          {pickNotes.length > 0 && (
+            <div className="cc-section notes">
+              <div className="cc-label">Pick notes</div>
+              {pickNotes.map((n) => <p key={n.id}><b>{names[n.id]}:</b> {n.text}</p>)}
             </div>
-            {!lockedCount && !enemyIds.length ? <div className="panel-body"><p className="xs muted">Lock a pick to start.</p></div> : (
-              <div className="fit-grid">
-                {open.map((role) => (
-                  <div key={role} className={`fit-role role-${role}`}>
-                    <div className="fit-role-head"><span className="role-tag">{role}</span></div>
-                    {recs[role]?.length
-                      ? recs[role]!.map((r, i) => <FitRow key={r.champion} rec={r} rank={i} proGames={proCount(role, r.champion)} counter={counterOf(role, r.champion)} names={names} onPick={() => lock(role, r.champion)} />)
-                      : <p className="rec-note">Nothing stands out yet.</p>}
-                  </div>
-                ))}
-                {!open.length && <p className="xs muted" style={{ padding: "var(--s4) var(--s5)" }}>All five roles are locked.</p>}
-              </div>
-            )}
-            <div className="panel-foot xs faint">Matchups use champion attributes, not lane stats. Pro games never add to the score.</div>
-          </section>
-
-          {enemyIds.length > 0 && <CountersPanel counters={counters} open={open} enemy={enemyDraft} names={names} dpm={data.counters.dpm.length + data.counters.dpmDuos.length > 0}
-            onOpen={(id, role) => setDrawer({ id, role })} />}
-
-          <section className="panel rec-columns single" aria-label="Pro Pairings">
-            <RecommendationGroup layer="pro" title="Pro Pairings" data={pro} open={open} names={names} onPick={lock}
-              empty={lockedCount ? "No recorded pro game uses these picks." : "Lock a pick to start."} />
-          </section>
-
-          {cards.length > 0 && <div className="grid cols-auto">{cards.map((c) => (
-            <PairingCard key={c.kind + ("champion" in c.record ? c.record.champion : c.record.anchor)} item={c} names={names} sources={sources} events={eventMap} compact draftLabels={draftLabels} />
-          ))}</div>}
-
-          <div className="stack">
-            <section className="panel">
-              <div className="panel-head pro-head"><h2>Similar pro drafts</h2></div>
-              {!similar.length ? <div className="panel-body"><p className="xs muted">Nothing recorded shares a champion with this draft.</p></div> : (
-                <div className="table-wrap">
-                  <table>
-                    <thead><tr><th>Game</th><th>Team</th>{ROLES.map((r) => <th key={r}>{ROLE_LABEL[r]}</th>)}</tr></thead>
-                    <tbody>{similar.map(({ draft: d }) => (
-                      <tr key={d.id}>
-                        <td><Link className="cell-link" style={{ whiteSpace: "nowrap" }} href={`/pro-drafts?id=${d.id}`}>{d.seriesGame}</Link></td><td className="muted" style={{ whiteSpace: "nowrap" }}>{d.team}</td>
-                        {ROLES.map((r) => <td key={r}><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={draft[r] === d.picks[r]} /></td>)}
-                      </tr>))}</tbody>
-                  </table>
-                </div>
-              )}
-            </section>
-            <section className="panel">
-              <div className="panel-head"><h2>Similar comps</h2></div>
-              <div className="panel-body shell-list">
-                {!shells.length && <p className="xs muted">No shell shares a pick or swap with this draft.</p>}
-                {shells.map(({ shell, exact, swap }) => (
-                  <div key={shell.id} style={{ padding: "4px 0" }}>
-                    <div className="row">
-                      <Link href={`/comps#${shell.id}`}><b>{shell.name}</b></Link>
-                      <span className="xs faint">{shell.kind === "observed" ? "pro" : "template"}</span>
-                      <span className="xs muted tnum">{exact} exact · {swap} swap</span>
-                    </div>
-                    <p className="xs muted">{ROLES.map((r) => names[shell.slots[r].champion]).join(" · ")} · {shell.winCondition}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </div>
-        </div>
+          )}
+          <details className="rules cc-section">
+            <summary>All {RULES.length} rules</summary>
+            <ul>{RULES.map((r) => <li key={r.id}><b>{r.label}:</b> {r.rule}</li>)}</ul>
+          </details>
+        </aside>
       </div>
+
       {drawer && <ChampionDrawer target={drawer} data={drawerData} index={drawerIndex} onClose={() => setDrawer(undefined)} onSelect={setDrawer} />}
-    </>
+    </div>
   );
 }
 
-const STATUS = { default: "Default", alt: "Alt", fits: "Fits" } as const;
+// ---------- recommendation rows ----------
 
-function FitRow({ rec, rank, proGames, counter, names, onPick }: { rec: Recommendation; rank: number; proGames: number; counter?: Counter; names: Record<string, string>; onPick: () => void }) {
+type Signal = { key: string; label: string; title?: string };
+
+function signalsOf(rec: Recommendation, pro?: ProSuggestion, counter?: Counter, names: Record<string, string> = {}): Signal[] {
+  const has = (kind: string) => rec.parts.some((p) => (p.kind as string) === kind && p.points > 0);
+  const out: Signal[] = [];
+  if (has("synergy")) out.push({ key: "synergy", label: "Synergy" });
+  if (counter) out.push({ key: "counter", label: "Counter", title: `${counterLine(counter, names)}. Counter signal only, not part of the score.` });
+  if (has("matchup")) out.push({ key: "matchup", label: "Matchup" });
+  if (pro) out.push({ key: "pro", label: `Pro ${pro.score}`, title: "Pro games with this champion next to one of your picks. Evidence only, not part of the score." });
+  if (rec.parts.some((p) => p.kind === "risk")) out.push({ key: "risk", label: "Risk" });
+  return out;
+}
+
+function FitRow({ rec, pro, counter, names, hovered, onHover, onPick, onOpen }: {
+  rec: Recommendation; pro?: ProSuggestion; counter?: Counter; names: Record<string, string>; hovered: boolean;
+  onHover: (on: boolean) => void; onPick: () => void; onOpen: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const name = names[rec.champion] ?? rec.champion;
   const lead = rec.parts.find((p) => p.points > 0) ?? rec.parts[0];
-  const risk = rec.parts.some((p) => p.kind === "risk");
+  const sigs = signalsOf(rec, pro, counter, names);
   return (
-    <div className={`fit-row ${rank === 0 ? "top" : ""} ${open ? "open" : ""}`}>
-      <button className="fit-head" onClick={onPick} title={`Lock ${name} at ${rec.role}\n${rec.parts.map((p) => `${p.points > 0 ? "+" : ""}${p.points}  ${p.text}`).join("\n")}`}>
+    <div className={`fit-row ${open ? "open" : ""} ${hovered ? "hovered" : ""}`} onMouseEnter={() => onHover(true)} onMouseLeave={() => onHover(false)}>
+      <button className="fit-icon" onClick={onOpen} aria-label={`${name} details`} title={`${name}: details`}>
         <ChampIcon id={rec.champion} name={name} role={rec.role} size="md" />
+      </button>
+      <button className="fit-head" onClick={onPick} onFocus={() => onHover(true)} onBlur={() => onHover(false)}
+        title={`Lock ${name} at ${rec.role}\n${rec.parts.map((p) => `${p.points > 0 ? "+" : ""}${p.points}  ${p.text}`).join("\n")}`}>
         <span className="fit-line">
           <span className="name">{name}</span>
-          {rec.saved && <span className={`status-tag ${rec.saved}`} title="Saved pairing">{STATUS[rec.saved]}</span>}
-          {proGames > 0 && <span className="badge pro" title="Pro games with this champion next to one of your picks. Evidence only, not part of the score.">Pro {proGames}</span>}
-          {counter && <span className="status-tag counter" title={`${counterLine(counter, names)}. Counter signal only, not part of the score.`}>Counter</span>}
-          {risk && <span className="status-tag risk">Risk</span>}
+          {rec.saved && <span className={`status-tag ${rec.saved}`}>{STATUS[rec.saved]}</span>}
+          {sigs.length > 0 && <span className="sig-line">{sigs.map((s) => <span key={s.key} className={`sig ${s.key}`} title={s.title}>{s.label}</span>)}</span>}
         </span>
         <span className="fit-reason truncate">{lead?.text}</span>
-        <span className={`fit-score ${rec.score < 0 ? "neg" : ""}`} title="Draft-fit score">{rec.score > 0 ? "+" : ""}{rec.score}</span>
       </button>
+      <span className={`fit-score ${rec.score < 0 ? "neg" : ""}`} title="Draft-fit score">{rec.score > 0 ? "+" : ""}{rec.score}</span>
       <button className="fit-toggle" aria-expanded={open} aria-label={`Why ${name}`} title={`${rec.parts.length} reasons`} onClick={() => setOpen((o) => !o)}>
         <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
       </button>
-      <ul className="fit-why">{rec.parts.map((p, i) => (
-        <li key={i} className={`k-${p.kind}`}><span className="k">{KIND_LABEL[p.kind]}</span><span className="t">{p.text}</span><span className="pts">{p.points > 0 ? "+" : ""}{p.points}</span></li>
-      ))}</ul>
-    </div>
-  );
-}
-
-function DraftSlot({ role, label, ariaLabel, listKey, value, names, byName, champions, taken, onLock, compact = false, suggested = [] }: {
-  role?: Role; label: string; ariaLabel?: string; listKey?: string; value?: string; names: Record<string, string>; byName: Map<string, string>;
-  champions: SuggestData["champions"]; taken: string[]; onLock: (id: string | undefined) => void; compact?: boolean; suggested?: Recommendation[];
-}) {
-  const [text, setText] = useState("");
-  const [open, setOpen] = useState(false);
-  const [active, setActive] = useState(0);
-  const listId = `champs-${listKey ?? role}`;
-  const q = text.trim().toLowerCase();
-  // With no query: the best draft fits first, then the role alphabetically. With a query: names that start with it,
-  // champions who play the role, then everyone else. Locked picks (both teams) are left out.
-  const fit = useMemo(() => new Map(suggested.map((s) => [s.champion, s.score])), [suggested]);
-  const matches = useMemo(() => {
-    const hit = (c: (typeof champions)[number]) => !q || c.name.toLowerCase().includes(q) || c.aliases.some((a) => a.toLowerCase().includes(q));
-    const pool = champions.filter((c) => !taken.includes(c.id) && hit(c) && (q || !role || c.roles.includes(role)));
-    const starts = (c: (typeof champions)[number]) => (q && c.name.toLowerCase().startsWith(q) ? 0 : 1);
-    const off = (c: (typeof champions)[number]) => Number(!!role && !c.roles.includes(role));
-    const rank = (c: (typeof champions)[number]) => (q ? 0 : -(fit.get(c.id) ?? -99));
-    return [...pool].sort((a, b) => off(a) - off(b) || starts(a) - starts(b) || rank(a) - rank(b) || a.name.localeCompare(b.name)).slice(0, q ? 8 : 10);
-  }, [champions, taken, q, role, fit]);
-  const mark = (name: string) => {
-    const i = q ? name.toLowerCase().indexOf(q) : -1;
-    return i < 0 ? name : <>{name.slice(0, i)}<mark>{name.slice(i, i + q.length)}</mark>{name.slice(i + q.length)}</>;
-  };
-  const pick = (id: string | undefined) => { if (id) { onLock(id); setText(""); setOpen(false); setActive(0); } };
-  const onKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "ArrowDown") { e.preventDefault(); setOpen(true); setActive((i) => Math.min(i + 1, matches.length - 1)); }
-    else if (e.key === "ArrowUp") { e.preventDefault(); setActive((i) => Math.max(i - 1, 0)); }
-    else if (e.key === "Enter") { e.preventDefault(); pick(byName.get(q) ?? matches[active]?.id); }
-    else if (e.key === "Escape") setOpen(false);
-  };
-  return (
-    <div className={`draft-slot ${role ? `role-${role}` : "enemy"} ${compact ? "compact" : ""} ${value ? "locked" : "open"}`}>
-      <span className="slot-icon">{value ? <ChampIcon id={value} name={names[value]} role={role} size={compact ? "md" : "xl"} /> : <span className={`champ ${compact ? "md" : "xl"}`}><span className="mono">{label.slice(0, 1)}</span></span>}</span>
-      <div className="slot-top"><span className="role-tag">{label}</span></div>
-      <div className="slot-main">
-        {value ? <span className="slot-name truncate">{names[value]}</span> : (
-          <div className="picker">
-            <input value={text} placeholder={compact ? "Champion" : "Pick champion"} aria-label={ariaLabel ?? `${role} champion`} role="combobox" aria-autocomplete="list"
-              aria-expanded={open && matches.length > 0} aria-controls={listId} aria-activedescendant={open && matches[active] ? `${listId}-${matches[active].id}` : undefined}
-              onChange={(e) => { setText(e.target.value); setOpen(true); setActive(0); }}
-              onFocus={() => setOpen(true)} onBlur={() => setOpen(false)} onKeyDown={onKey} />
-            {open && matches.length > 0 && (
-              <ul id={listId} role="listbox" className="picker-list">
-                {matches.map((c, i) => (
-                  <li key={c.id} id={`${listId}-${c.id}`} role="option" aria-selected={i === active} className={i === active ? "active" : undefined}
-                    onMouseDown={(e) => { e.preventDefault(); pick(c.id); }} onMouseEnter={() => setActive(i)}>
-                    <ChampIcon id={c.id} name={c.name} role={role && c.roles.includes(role) ? role : undefined} size="sm" />
-                    <span className="name">{mark(c.name)}</span>
-                    {fit.has(c.id)
-                      ? <span className="fit tnum">+{fit.get(c.id)}</span>
-                      : <span className="roles">{!role || c.roles.includes(role) ? c.roles.join(" · ") : `off-role · ${c.roles.join(" · ")}`}</span>}
-                  </li>
-                ))}
-              </ul>
-            )}
+      <div className="fit-detail">
+        <ul className="fit-why">{rec.parts.map((p, i) => (
+          <li key={i} className={`k-${p.kind}`}><span className="k">{KIND_LABEL[p.kind] ?? p.kind}</span><span className="t">{p.text}</span><span className="pts">{p.points > 0 ? "+" : ""}{p.points}</span></li>
+        ))}</ul>
+        {counter && (
+          <div className="fit-counter">
+            <span className="k">Counter</span>
+            <span className="t">{counterLine(counter, names)} · Pool: {tierLabel(counter.tier)}{counter.cautions.length ? ` · ${counter.cautions.join("; ")}` : ""}</span>
           </div>
         )}
-      </div>
-      <div className="slot-end">{value && <button className="icon-btn" onClick={() => onLock(undefined)} aria-label={`Clear ${label}`} title={`Clear ${label}`}>×</button>}</div>
-    </div>
-  );
-}
-
-function Meter({ label, best, total, by, empty }: { label: string; best: number; total: number; by: string | null; empty: boolean }) {
-  const state = empty ? "" : best >= 2 ? "ok" : "low";
-  return (
-    <div className={`meter ${state}`} title={by ? `Best: ${by}` : undefined}>
-      <span className="label">{label}</span>
-      <span className="segs" aria-hidden="true">{[1, 2, 3].map((n) => <i key={n} className={best >= n ? "on" : ""} />)}</span>
-      <span className="val"><b>{best}</b>/{total}</span>
-    </div>
-  );
-}
-
-function RecommendationGroup({ layer, title, data, open, names, onPick, empty, note }: {
-  layer: Layer; title: string; data: ProByRole; open: Role[]; names: Record<string, string>;
-  onPick: (role: Role, id: string) => void; empty: string; note?: string;
-}) {
-  const roles = open.filter((r) => data[r]?.length);
-  return (
-    <div className={`rec-group ${layer}`}>
-      <header><h3>{title}</h3></header>
-      {note && <p className="rec-lede">{note}</p>}
-      <div className="rec-body">
-        {!roles.length && <p className="empty">{empty}</p>}
-        {roles.map((role) => (
-          <div key={role} className={`rec-role role-${role}`}>
-            <span className="role-tag">{role}</span>
-            {data[role]!.map((s) => {
-              const [latest, ...older] = s.lines;
-              return (
-                <button key={s.champion} className="rec-row ev" title={s.reasons.join("\n")} onClick={() => onPick(role, s.champion)}>
-                  <ChampIcon id={s.champion} name={names[s.champion] ?? s.champion} role={role} size="sm" />
-                  <span className="name">{names[s.champion] ?? s.champion}</span>
-                  <span className="ev-lines">
-                    <span className="latest">{describeLine({ ...latest, label: latest.event })}{latest.ongoing ? " · ongoing" : ""}</span>
-                    {older.length > 0 && <span className="older truncate">+ older: {older.map((l) => describeLine({ ...l, label: l.event })).join("; ")}</span>}
-                  </span>
-                </button>
-              );
-            })}
+        {pro && (
+          <div className="fit-pro">
+            <span className="k">Pro</span>
+            <span className="t">{pro.lines.map((l) => `${describeLine({ ...l, label: l.event })}${l.ongoing ? " · ongoing" : ""}`).join("; ")}</span>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
@@ -413,47 +371,199 @@ const vsNames = (ids: string[], names: Record<string, string>) => ids.map((v) =>
 const counterLine = (c: Counter, names: Record<string, string>) =>
   `${STRENGTH[c.evidence.strength]} vs ${vsNames(c.evidence.vs, names)}${c.evidence.with ? ` with ${names[c.evidence.with] ?? c.evidence.with}` : ""} · ${describeEvidence(c.evidence)}`;
 
-// Counters: favourable into an enemy pick. A separate signal: never scored, never merged into Synergy, Pro Pairings or
-// Logic. Each row says where the champion ranks on overall draft fit, so a counter never reads as the best pick by itself.
-function CountersPanel({ counters, open, enemy, names, dpm, onOpen }: {
-  counters: Partial<Record<Role, RoleCounters>>; open: Role[]; enemy: EnemyDraft; names: Record<string, string>; dpm: boolean;
-  onOpen: (id: string, role: Role) => void;
-}) {
-  const roles = open.filter((r) => counters[r]);
+// A counter outside the visible fit list: never scored, so it says where it ranks on overall draft fit.
+function CounterRow({ c, names, onOpen }: { c: Counter; names: Record<string, string>; onOpen: () => void }) {
+  const e = c.evidence;
+  const name = names[c.champion] ?? c.champion;
+  const why = [counterLine(c, names), e.note, `Pool: ${tierLabel(c.tier)}`,
+    c.fitRank ? `Overall draft fit: #${c.fitRank} (${c.fit!.score > 0 ? "+" : ""}${c.fit!.score})` : "No draft-fit reasons yet", ...c.cautions].filter(Boolean).join("\n");
   return (
-    <section className="panel counters" aria-label="Counters">
-      <div className="panel-head"><h2>Counters</h2><span className="xs faint">into the enemy lane · pool first</span></div>
-      <div className="rec-body">
-        {!roles.length && <p className="empty">No enemy lane opponent for an open role yet.</p>}
-        {roles.map((role) => {
-          const rc = counters[role]!;
-          return (
-            <div key={role} className={`rec-role role-${role}`}>
-              <div className="counter-head"><span className="role-tag">{role}</span><span className="xs muted">vs {vsNames(rc.vs, names)}{rc.scope === "duo" ? " (duo)" : ""}</span></div>
-              {!rc.counters.length && <p className="empty">No reliable counter data for {vsNames(rc.vs, names)}.</p>}
-              {rc.counters.map((c) => {
-                const e = c.evidence;
-                const why = [counterLine(c, names), e.note, `Pool: ${tierLabel(c.tier)}`,
-                  c.fitRank === 1 ? "Also the best overall draft fit" : c.fitRank ? `Overall draft fit: #${c.fitRank} (${c.fit!.score > 0 ? "+" : ""}${c.fit!.score})` : "No draft-fit reasons yet",
-                  ...c.cautions].filter(Boolean).join("\n");
-                return (
-                  <button key={c.champion} className={`rec-row counter-row ${c.tier ? "" : "ref"}`} title={why} onClick={() => onOpen(c.champion, role)}>
-                    <ChampIcon id={c.champion} name={names[c.champion] ?? c.champion} role={role} size="sm" />
-                    <span className="name">{names[c.champion] ?? c.champion}</span>
-                    <span className="strength">{STRENGTH[e.strength]}</span>
-                    <span className={`badge ${e.source === "pro" ? "pro" : "outline"}`}>{e.source === "pro" ? "Pro" : "DPM"}</span>
-                    <span className="ev truncate">{describeEvidence(e).replace(/^(Pro|DPM) · /, "")}{e.with ? ` · with ${names[e.with] ?? e.with}` : ""}</span>
-                    <span className={`tier ${c.tier ?? "none"}`}>{tierLabel(c.tier)}</span>
-                    <span className={`fit-rank ${c.fitRank === 1 ? "best" : ""}`}>{c.fitRank === 1 ? "Best fit" : c.fitRank ? `Fit #${c.fitRank}` : "Unranked"}</span>
-                  </button>
-                );
-              })}
-              {rc.note && <p className="rec-note">{rc.note}</p>}
-            </div>
-          );
-        })}
+    <button className={`rec-row counter-row ${c.tier ? "" : "ref"}`} title={why} onClick={onOpen}>
+      <ChampIcon id={c.champion} name={name} role={c.role} size="sm" />
+      <span className="name">{name}</span>
+      <span className="strength">{STRENGTH[e.strength]}</span>
+      <span className={`badge ${e.source === "pro" ? "pro" : "outline"}`}>{e.source === "pro" ? "Pro" : "DPM"}</span>
+      <span className="ev truncate">{describeEvidence(e).replace(/^(Pro|DPM) · /, "")}{e.with ? ` · with ${names[e.with] ?? e.with}` : ""}</span>
+      <span className={`tier ${c.tier ?? "none"}`}>{tierLabel(c.tier)}</span>
+      <span className="fit-rank">{c.fitRank ? `Fit #${c.fitRank}` : "Unranked"}</span>
+    </button>
+  );
+}
+
+function ProRow({ s, role, names, onPick }: { s: ProSuggestion; role: Role; names: Record<string, string>; onPick: () => void }) {
+  const [latest, ...older] = s.lines;
+  const name = names[s.champion] ?? s.champion;
+  return (
+    <button className="rec-row ev" title={s.reasons.join("\n")} onClick={onPick}>
+      <ChampIcon id={s.champion} name={name} role={role} size="sm" />
+      <span className="name">{name}</span>
+      <span className="ev-lines">
+        <span className="latest">{describeLine({ ...latest, label: latest.event })}{latest.ongoing ? " · ongoing" : ""}</span>
+        {older.length > 0 && <span className="older truncate">+ older: {older.map((l) => describeLine({ ...l, label: l.event })).join("; ")}</span>}
+      </span>
+    </button>
+  );
+}
+
+// ---------- draft board ----------
+
+type SlotShared = {
+  names: Record<string, string>; byName: Map<string, string>; champions: SuggestData["champions"]; taken: string[];
+  onOpen: (id: string, role?: Role) => void;
+};
+
+function DraftSlot({ side, role, value, active = false, preview, onActivate, onLock, suggested = [], names, byName, champions, taken, onOpen }: SlotShared & {
+  side: "ally" | "enemy"; role: Role; value?: string; active?: boolean; preview?: string;
+  onActivate?: () => void; onLock: (id: string | undefined) => void; suggested?: Recommendation[];
+}) {
+  const [text, setText] = useState("");
+  const [open, setOpen] = useState(false);
+  const [hi, setHi] = useState(0);
+  const input = useRef<HTMLInputElement>(null);
+  const slot = useRef<HTMLDivElement>(null);
+  const refocus = useRef(false);
+  // On phones each team row scrolls sideways: keep the role being picked in view.
+  useEffect(() => {
+    const el = slot.current, row = el?.parentElement;
+    if (!active || !el || !row || row.scrollWidth <= row.clientWidth) return;
+    const left = el.offsetLeft - row.offsetLeft;
+    if (left < row.scrollLeft || left + el.offsetWidth > row.scrollLeft + row.clientWidth) row.scrollTo({ left: Math.max(0, left - 8), behavior: "smooth" });
+  }, [active]);
+  const ally = side === "ally";
+  const listId = ally ? `champs-${role}` : `champs-enemy-${role}`;
+  const label = ally ? role : `Enemy ${role}`;
+  // "Change" clears the slot; focus the picker once it is back.
+  useEffect(() => { if (!value && refocus.current) { refocus.current = false; input.current?.focus(); } }, [value]);
+  const q = text.trim().toLowerCase();
+  // With no query: the best draft fits first, then the role alphabetically. With a query: names that contain it, champions
+  // who play the role, then everyone else. Locked picks (both teams) are left out.
+  const fit = useMemo(() => new Map(suggested.map((s) => [s.champion, s.score])), [suggested]);
+  const matches = useMemo(() => {
+    const hit = (c: (typeof champions)[number]) => !q || c.name.toLowerCase().includes(q) || c.aliases.some((a) => a.toLowerCase().includes(q));
+    const pool = champions.filter((c) => !taken.includes(c.id) && hit(c) && (q || c.roles.includes(role)));
+    const starts = (c: (typeof champions)[number]) => (q && c.name.toLowerCase().startsWith(q) ? 0 : 1);
+    const off = (c: (typeof champions)[number]) => Number(!c.roles.includes(role));
+    const rank = (c: (typeof champions)[number]) => (q ? 0 : -(fit.get(c.id) ?? -99));
+    return [...pool].sort((a, b) => off(a) - off(b) || starts(a) - starts(b) || rank(a) - rank(b) || a.name.localeCompare(b.name)).slice(0, q ? 8 : 10);
+  }, [champions, taken, q, role, fit]);
+  const mark = (name: string) => {
+    const i = q ? name.toLowerCase().indexOf(q) : -1;
+    return i < 0 ? name : <>{name.slice(0, i)}<mark>{name.slice(i, i + q.length)}</mark>{name.slice(i + q.length)}</>;
+  };
+  const pick = (id: string | undefined) => { if (id) { onLock(id); setText(""); setOpen(false); setHi(0); } };
+  const onKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowDown") { e.preventDefault(); setOpen(true); setHi((i) => Math.min(i + 1, matches.length - 1)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setHi((i) => Math.max(i - 1, 0)); }
+    else if (e.key === "Enter") { e.preventDefault(); pick(byName.get(q) ?? matches[hi]?.id); }
+    else if (e.key === "Escape") { setOpen(false); input.current?.blur(); }
+  };
+  const cls = `draft-slot ${ally ? `role-${role}` : "enemy"} ${value ? "locked" : "open"} ${active ? "active" : ""}`;
+  const roleTag = <span className="role-tag">{role}</span>;
+
+  if (value) {
+    const name = names[value] ?? value;
+    const c = champions.find((x) => x.id === value);
+    return (
+      <div className={cls} data-role={role} ref={slot}>
+        <button className="slot-body" onClick={() => onOpen(value, role)} title={`${name}${c ? ` · ${c.roles.join(" · ")}` : ""}\nOpen details`}>
+          <span className="slot-icon" key={value}><ChampIcon id={value} name={name} role={ally ? role : undefined} size={ally ? "xl" : "lg"} /></span>
+          <span className="slot-text">{roleTag}<span className="slot-name truncate">{name}</span></span>
+        </button>
+        <span className="slot-actions">
+          <button className="slot-act" onClick={() => { refocus.current = true; onLock(undefined); }} aria-label={`Change ${label}`} title="Change">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true"><path d="M2 6a4 4 0 0 1 7-2.6M10 6a4 4 0 0 1-7 2.6M9 1v2.4H6.6M3 11V8.6h2.4" /></svg>
+          </button>
+          <button className="slot-act clear" onClick={() => onLock(undefined)} aria-label={`Clear ${label}`} title="Remove">×</button>
+        </span>
       </div>
-      <div className="panel-foot xs faint">Counters never change the draft-fit ranking. Pro needs {"\u2265"}3 recorded games with results; {dpm ? "DPM is SoloQ data." : "DPM.LOL data is not loaded yet."}</div>
-    </section>
+    );
+  }
+  return (
+    <div className={cls} data-role={role} ref={slot} onMouseDown={(e) => { if (e.target !== input.current) { e.preventDefault(); input.current?.focus(); } }}>
+      <div className="slot-body">
+        <span className="slot-icon">
+          {preview
+            ? <span className="ghost"><ChampIcon id={preview} name={names[preview] ?? preview} role={role} size={ally ? "xl" : "lg"} /></span>
+            : <span className={`champ ${ally ? "xl" : "lg"} empty`}><span className="mono">{role.slice(0, 1)}</span></span>}
+        </span>
+        <span className="slot-text">
+          {roleTag}
+          <span className="picker">
+            <input ref={input} value={text} placeholder={preview ? names[preview] : ally ? "Pick champion" : "Enemy pick"} aria-label={ally ? `${role} champion` : `Enemy ${role} champion`}
+              role="combobox" aria-autocomplete="list" aria-expanded={open && matches.length > 0} aria-controls={listId}
+              aria-activedescendant={open && matches[hi] ? `${listId}-${matches[hi].id}` : undefined}
+              onChange={(e) => { setText(e.target.value); setOpen(true); setHi(0); }}
+              onFocus={() => { setOpen(true); onActivate?.(); }} onBlur={() => setOpen(false)} onKeyDown={onKey} />
+            {open && matches.length > 0 && (
+              <ul id={listId} role="listbox" className="picker-list">
+                {matches.map((c, i) => (
+                  <li key={c.id} id={`${listId}-${c.id}`} role="option" aria-selected={i === hi} className={i === hi ? "active" : undefined}
+                    onMouseDown={(e) => { e.preventDefault(); pick(c.id); }} onMouseEnter={() => setHi(i)}>
+                    <ChampIcon id={c.id} name={c.name} role={c.roles.includes(role) ? role : undefined} size="sm" />
+                    <span className="name">{mark(c.name)}</span>
+                    {fit.has(c.id)
+                      ? <span className="fit tnum">+{fit.get(c.id)}</span>
+                      : <span className="roles">{c.roles.includes(role) ? c.roles.join(" · ") : `off-role · ${c.roles.join(" · ")}`}</span>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function MiniBoard({ show, draft, enemy, active, names, onActivate }: {
+  show: boolean; draft: Draft; enemy: (string | undefined)[]; active?: Role; names: Record<string, string>; onActivate: (r: Role) => void;
+}) {
+  const cell = (id: string | undefined, role: Role, ally: boolean) => {
+    const on = ally && role === active;
+    const body = id ? <ChampIcon id={id} name={names[id] ?? id} role={ally ? role : undefined} size="md" /> : <span className="mini-empty">{role.slice(0, 1)}</span>;
+    const title = `${ally ? "" : "Enemy "}${ROLE_LABEL[role]}${id ? `: ${names[id] ?? id}` : ""}`;
+    return ally && !id
+      ? <button key={role} className={`mini-slot role-${role} ${on ? "active" : ""}`} title={`Pick ${ROLE_LABEL[role]}`} onClick={() => onActivate(role)}>{body}</button>
+      : <span key={role} className={`mini-slot ${ally ? `role-${role}` : "enemy"} ${id ? "locked" : ""}`} title={title}>{body}</span>;
+  };
+  return (
+    <div className={`draft-mini ${show ? "show" : ""}`} inert={!show} aria-label="Draft summary">
+      <span className="mini-team">{ROLES.map((r) => cell(draft[r], r, true))}</span>
+      <span className="mini-vs">vs</span>
+      <span className="mini-team enemy">{ROLES.map((r, i) => cell(enemy[i], r, false))}</span>
+      {active && <span className="mini-active">Picking <b>{ROLE_LABEL[active]}</b></span>}
+    </div>
+  );
+}
+
+// ---------- Comp Check indicators ----------
+
+const scale = (v: number) => (v >= 3 ? "High" : v >= 2 ? "Mid" : "Low");
+
+function Indicators({ prof, needs, picks }: { prof: ReturnType<typeof profile>; needs: Need[]; picks: number }) {
+  const m = Object.fromEntries(prof.meters.map((x) => [x.attr, x])) as Record<Attr, (typeof prof.meters)[number]>;
+  // A missing job only reads as a problem once it matters: a need tied to a locked champion, or three picks in.
+  const problem = (...ids: Need["id"][]) => needs.find((n) => ids.includes(n.id) && (n.personal || picks >= 3));
+  const share = prof.damage.physicalShare;
+  const cells: { label: string; value: string; bad?: Need; title?: string }[] = [
+    { label: "Fight start", value: !picks ? "—" : needs.some((n) => n.id === "engage" || n.id === "setup") ? "None" : "✓", bad: problem("engage", "setup"), title: m.engage.bestBy ? `Best engage: ${m.engage.bestBy}` : undefined },
+    { label: "Frontline", value: picks ? String(m.frontline.best) : "—", bad: problem("frontline"), title: `Best ${m.frontline.best} · team ${m.frontline.total}` },
+    { label: "Peel", value: picks ? String(m.peel.total) : "—", bad: problem("peel"), title: `Team total · best ${m.peel.best}` },
+    { label: "Damage", value: share === null ? "—" : `AD ${Math.round(share * 100)} / AP ${Math.round((1 - share) * 100)}`, bad: problem("magic", "physical") },
+    { label: "Sustained", value: picks ? String(m.sustainedDps.best) : "—", bad: problem("dps") },
+    { label: "Scaling", value: picks ? scale(m.scaling.best) : "—" },
+    { label: "Burst", value: picks ? String(m.burst.best) : "—" },
+    { label: "Poke", value: picks ? String(m.poke.best) : "—" },
+    { label: "Objectives", value: picks ? scale(m.objectiveControl.best) : "—" },
+    { label: "Side lane", value: picks ? scale(m.sidePressure.best) : "—" },
+  ];
+  return (
+    <div className="cc-grid">
+      {cells.map((c) => (
+        <div key={c.label} className={`cc-cell ${c.bad ? "bad" : ""}`} title={c.bad ? c.bad.text : c.title}>
+          <span className="cc-k">{c.label}</span><span className="cc-v">{c.value}</span>
+        </div>
+      ))}
+    </div>
   );
 }
