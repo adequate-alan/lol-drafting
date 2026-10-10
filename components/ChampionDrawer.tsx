@@ -11,7 +11,7 @@ import { ChampIcon, LayerBlock, SourceLinks, pct } from "@/components/ui";
 import { observedFor, proLinks, recordFor, savedLinks, type Slots } from "@/lib/comp-links";
 import type { DrawerData } from "@/lib/data";
 import { comparePatchDesc, describeLine, fresher, groupObserved, shortDate, type EventMap } from "@/lib/evidence";
-import { PARTNER_ROLE, TIERS, eventStats, proGames, type ProGame, type Tier } from "@/lib/pool-stats";
+import { PARTNER_ROLE, TIERS, eventStats, listsRole, presenceOf, proGames, roleShare, type ProGame, type Tier } from "@/lib/pool-stats";
 import { synergyParts, teamNeeds } from "@/lib/recommend";
 import { ROLES, type Champion, type Role } from "@/lib/schema";
 
@@ -120,7 +120,7 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
   const tier = poolTier(id, role, data);
   const draftHref = `/?${role.toLowerCase()}=${id}`;
   const poolHref = `/pool/?role=${role}&champ=${id}`;
-  const stats = index.stats.filter((s) => s.stat.champion === id && s.stat.role === role)
+  const stats = index.stats.filter((s) => s.stat.champion === id && listsRole(s.stat, role))
     .sort((a, b) => fresher(a.event, b.event));
   const games = index.games.filter((g) => g.picks[role] === id);
   const observed = groupObserved(observedFor(id, role, data), index.events, data.sources);
@@ -213,26 +213,27 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
             </>
           )}
 
-          <div className="xs muted detail-label">Stats · {role.toLowerCase()}</div>
+          <div className="xs muted detail-label" title="Gol.gg tournament totals, not counted from the games stored here. Bans and presence are champion-wide.">Tournament stats</div>
           {stats.length ? (
             <table className="mini">
-              <thead><tr><th>Event</th><th className="num">Patch</th><th className="num">Picks</th><th className="num">Bans</th><th className="num">Pres.</th><th className="num">WR</th></tr></thead>
+              <thead><tr><th>Event</th><th className="num">Patch</th><th className="num">Picks</th><th className="num">Bans</th><th className="num">Pres.</th><th className="num">WR</th><th>Roles</th></tr></thead>
               <tbody>
-                {stats.map(({ event: e, stat: s }) => (
+                {stats.map(({ event: e, stat: s }) => { const pres = presenceOf({ event: e, stat: s }); return (
                   <tr key={e.id}>
                     <td className="nowrap">{e.short}{e.status === "ongoing" && <span className="badge pro ongoing" title="Event still running; numbers are not final">Ongoing</span>}</td>
                     <td className="num">{e.patch}</td>
                     <td className="num">{s.picks}{s.lowSample && <span className="low" title="Fewer than 5 picks">*</span>}</td>
                     <td className="num">{s.bans ?? "—"}</td>
-                    <td className="num">{s.presence != null ? pct(s.presence) : "—"}</td>
+                    <td className="num">{pres != null ? pct(pres) : "—"}</td>
                     <td className="num">{pct(s.winRate)}</td>
+                    <td className="xs nowrap">{roleShare(s) ?? "—"}</td>
                   </tr>
-                ))}
+                ); })}
               </tbody>
             </table>
           ) : <p className="xs muted">No tournament stats for {name(id)} {role.toLowerCase()}.</p>}
 
-          <div className="xs muted detail-label">Recent games</div>
+          <div className="xs muted detail-label" title="Drafts and game pages stored in this repo">Recorded games{games.length ? ` · ${games.length}` : ""}</div>
           {games.length ? games.slice(0, 5).map((g) => <GameRow key={g.key} g={g} role={role} names={names} data={data} comp={comp} />)
             : <p className="xs muted">No recorded games in this role.</p>}
           {games.length > 5 && <p className="xs faint">+{games.length - 5} older</p>}

@@ -4,12 +4,13 @@ import { Fragment, useMemo, useState } from "react";
 import type { DrawerData } from "@/lib/data";
 import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "@/components/ChampionDrawer";
 import { Select } from "@/components/Select";
-import { ChampIcon, PageHeader, SectionHeader, SourceBadge, SourceLinks, pct } from "@/components/ui";
+import { ChampIcon, LayerBlock, PageHeader, SectionHeader, SourceBadge, SourceLinks, pct } from "@/components/ui";
 import { shortDate } from "@/lib/evidence";
 import {
   HUB_SORTS, comparison, eventSummary, hubData, pairings, recentDrafts, roleRows, sortRoleRows, trending,
-  type HubInput, type HubSort, type Pairing,
+  type HubInput, type HubSort, type Pairing, type RoleRow,
 } from "@/lib/meta-hub";
+import { presenceOf, roleShare } from "@/lib/pool-stats";
 import { ROLES, type MetaEvent, type PoolEntry, type Role, type Rule, type Source } from "@/lib/schema";
 
 const DASH = <span className="faint">—</span>;
@@ -29,11 +30,14 @@ export function MetaView({ names, sources, input, pool, rules, drawerData }: {
     window.history.replaceState(null, "", `${window.location.pathname}${next.size ? `?${next}` : ""}`);
   };
   const hub = useMemo(() => hubData(input), [input]);
-  const eventId = hub.events.some((e) => e.id === get("event")) ? get("event") : undefined;
+  // Scope: one tournament at a time, newest by default, so 16.16 and 16.18 numbers are never mixed silently.
+  // "All tournaments" is an explicit choice (?event=all); each row then names the tournament its stats come from.
+  const allMode = get("event") === "all";
+  const eventId = allMode ? undefined : hub.events.find((e) => e.id === get("event"))?.id ?? hub.events[0]?.id;
   const role = (ROLES as readonly string[]).includes(get("role") ?? "") ? (get("role") as Role) : "MID";
   const selected = eventId ? hub.events.filter((e) => e.id === eventId) : hub.events;
   // Presence is the useful default where the event has it; otherwise newest evidence first.
-  const hasPresence = hub.stats.some((s) => (!eventId || s.event.id === eventId) && s.stat.presence != null);
+  const hasPresence = hub.stats.some((s) => (!eventId || s.event.id === eventId) && presenceOf(s) != null);
   const rawSort = get("sort");
   const sort: HubSort = rawSort && rawSort in HUB_SORTS ? (rawSort as HubSort) : hasPresence ? "presence" : "recency";
   const [drawer, setDrawer] = useState<DrawerTarget>();
@@ -60,28 +64,29 @@ export function MetaView({ names, sources, input, pool, rules, drawerData }: {
 
   return (
     <div className="meta-hub">
-      <PageHeader title="Meta / Research" desc="Pick/ban presence is priority, not win rate. * is fewer than 5 picks." />
+      <PageHeader title="Meta / Research" desc="Picks, bans, presence and win rate are full-tournament stats; Recorded counts the games stored here. Presence is priority, not win rate. * is fewer than 5 picks." />
 
       {/* 1. Current meta */}
       <div className="toolbar hub-tools">
-        <Select label="Tournament" value={eventId ?? ""} onChange={(v) => set("event", v || undefined)}
-          options={[{ value: "", label: "All tournaments" }, ...hub.events.map((e) => ({ value: e.id, label: e.name }))]} />
+        <Select label="Tournament" value={allMode ? "all" : eventId ?? ""} onChange={(v) => set("event", v === hub.events[0]?.id ? undefined : v)}
+          options={[...hub.events.map((e, i) => ({ value: e.id, label: `${e.name}${i === 0 ? " (current)" : ""}` })), { value: "all", label: "All tournaments" }]} />
         <span className="count">Pro evidence only · never changes saved pairings</span>
       </div>
       <div className="table-wrap hub-events">
         <table>
-          <thead><tr><th>Tournament</th><th className="num">Patch</th><th className="hide-sm">Dates</th><th>Status</th><th className="num">Games</th><th className="num">Champions</th><th className="hide-sm">Freshness</th></tr></thead>
+          <thead><tr><th>Tournament</th><th className="num">Patch</th><th className="hide-sm">Dates</th><th>Status</th><th className="num" title="Total games played in the tournament">Games</th><th className="num" title="Games stored in this repo">Recorded</th><th className="num hide-sm">Champions</th><th className="hide-sm">Freshness</th></tr></thead>
           <tbody>
-            {selected.map((e) => {
+            {hub.events.map((e) => {
               const s = eventSummary(hub, e, sources);
               return (
-                <tr key={e.id}>
+                <tr key={e.id} className={e.id === eventId ? "selected" : undefined}>
                   <td className="nowrap"><b>{e.short}</b> <span className="xs muted hide-sm">{e.name}</span></td>
                   <td className="num">{e.patch}</td>
                   <td className="hide-sm nowrap">{e.startDate ? `${shortDate(e.startDate)}–${shortDate(e.endDate)}` : DASH}</td>
                   <td>{e.status === "ongoing" ? <span className="badge pro">Ongoing</span> : <span className="xs muted">Completed</span>}</td>
-                  <td className="num" title={e.games ? `${e.games} played; ${s.recordedGames} with recorded picks` : "Games with recorded picks"}>{s.recordedGames}{e.games ? <span className="faint"> / {e.games}</span> : ""}</td>
-                  <td className="num">{s.champions}</td>
+                  <td className="num">{e.games ?? DASH}</td>
+                  <td className="num">{s.recordedGames}</td>
+                  <td className="num hide-sm">{s.champions}</td>
                   <td className="xs muted hide-sm">{[e.patch, status(e), s.refreshed ? "refreshed" : s.providedOn ? `updated ${shortDate(s.providedOn)} (provided, not refreshed)` : "not refreshed"].join(" · ")} <SourceLinks ids={e.sources.slice(0, 1)} sources={sources} /></td>
                 </tr>
               );
@@ -98,7 +103,7 @@ export function MetaView({ names, sources, input, pool, rules, drawerData }: {
       )}
 
       {/* 2. Role table */}
-      <SectionHeader title="By role" meta={eventId ? selected[0].short : "All tournaments, newest stats first"} />
+      <SectionHeader title="By role" meta={eventId ? `${selected[0].short} ${selected[0].patch} only` : "All tournaments: each row's stats name their tournament"} />
       <div className="toolbar">
         <nav className="seg scroll" aria-label="Role">
           {ROLES.map((r) => <button key={r} className={role === r ? "active" : undefined} onClick={() => set("role", r)}><span className={`role-tag role-${r}`}>{r}</span></button>)}
@@ -109,25 +114,34 @@ export function MetaView({ names, sources, input, pool, rules, drawerData }: {
         <table>
           <thead><tr>
             <th>Champion</th>{sortHead("picks")}{sortHead("bans", "hide-sm")}{sortHead("presence")}{sortHead("winRate")}
-            <th className="num hide-sm" title="Recorded games in this role">Games</th>
+            <th className="num hide-sm" title="Games stored in this repo with this champion in this role (not a tournament count)">Recorded</th>
+            <th className="hide-sm" title="Verified tournament picks per role">Role share</th>
+            {allMode && <th className="hide-sm">Stats from</th>}
             <th><button className={`sort ${sort === "recency" ? "active" : ""}`} onClick={() => set("sort", "recency")}>Latest{sort === "recency" ? " ↓" : ""}</button></th>
             <th className="num hide-sm">Patch</th><th className="num hide-sm">Last played</th>
           </tr></thead>
           <tbody>
             {rows.map((r) => {
-              const s = r.stat?.stat;
+              const s = r.stat?.stat, pres = r.stat ? presenceOf(r.stat) : null;
+              const k = `role-${r.role}-${r.id}`, open = openKey === k;
               return (
-                <tr key={r.id} className={`role-${r.role}`}>
-                  <td><Champ id={r.id} r={r.role} /></td>
-                  <td className="num">{s ? <>{s.picks}{s.lowSample && <span className="low" title="Fewer than 5 picks">*</span>}</> : DASH}</td>
-                  <td className="num hide-sm">{s?.bans ?? DASH}</td>
-                  <td className="num">{s?.presence != null ? <span className={s.presence >= 0.3 ? "heat-hi" : undefined}>{pct(s.presence)}</span> : DASH}</td>
-                  <td className="num">{s ? pct(s.winRate) : DASH}</td>
-                  <td className="num hide-sm">{r.games.length || DASH}</td>
-                  <td className="nowrap">{r.latest ? <>{r.latest.eventName}{r.latest.event?.status === "ongoing" && <span className="badge pro ongoing">Ongoing</span>}</> : DASH}</td>
-                  <td className="num hide-sm">{r.latest?.patch ?? DASH}</td>
-                  <td className="num hide-sm">{shortDate(r.latest?.date) ?? DASH}</td>
-                </tr>
+                <Fragment key={r.id}>
+                  <tr className={`role-${r.role} click-row ${open ? "open" : ""}`} onClick={() => toggle(k)} tabIndex={0} aria-expanded={open}
+                    onKeyDown={(e) => { if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggle(k); } }}>
+                    <td><Champ id={r.id} r={r.role} /></td>
+                    <td className="num">{s ? <>{s.picks}{s.lowSample && <span className="low" title="Fewer than 5 picks">*</span>}</> : DASH}</td>
+                    <td className="num hide-sm" title="Champion-wide: a ban has no role">{s?.bans ?? DASH}</td>
+                    <td className="num">{pres != null ? <span className={pres >= 0.3 ? "heat-hi" : undefined}>{pct(pres)}</span> : DASH}</td>
+                    <td className="num">{s ? pct(s.winRate) : DASH}</td>
+                    <td className="num hide-sm">{r.games.length || DASH}</td>
+                    <td className="hide-sm nowrap tnum">{s ? roleShare(s) ?? DASH : DASH}</td>
+                    {allMode && <td className="hide-sm nowrap">{r.stat ? `${r.stat.event.short} ${r.stat.event.patch}` : DASH}</td>}
+                    <td className="nowrap">{r.latest ? <>{r.latest.eventName}{r.latest.event?.status === "ongoing" && <span className="badge pro ongoing">Ongoing</span>}</> : DASH}</td>
+                    <td className="num hide-sm">{r.latest?.patch ?? DASH}</td>
+                    <td className="num hide-sm">{shortDate(r.latest?.date) ?? DASH}</td>
+                  </tr>
+                  {open && <tr className="hub-detail"><td colSpan={allMode ? 11 : 10}><RowDetail r={r} names={names} sources={sources} /></td></tr>}
+                </Fragment>
               );
             })}
           </tbody>
@@ -144,7 +158,7 @@ export function MetaView({ names, sources, input, pool, rules, drawerData }: {
       )}
 
       {/* 4. Tournament comparison */}
-      <SectionHeader title="Tournament comparison" meta={`${role} · picks (stats) / recorded games`} />
+      <SectionHeader title="Tournament comparison" meta={`${role} · tournament picks · recorded games`} />
       <div className="table-wrap hub-table mid">
         <table>
           <thead><tr><th>Champion</th>{hub.events.map((e) => <th key={e.id} className="num">{e.short} {e.patch}</th>)}<th>Seen in</th></tr></thead>
@@ -154,7 +168,7 @@ export function MetaView({ names, sources, input, pool, rules, drawerData }: {
                 <td><Champ id={c.id} r={c.role} /></td>
                 {hub.events.map((e) => {
                   const x = c.cells[e.id];
-                  return <td key={e.id} className="num">{x ? <>{x.picks != null ? `${x.picks}p` : "—"}<span className="faint"> / {x.games}g</span>{x.presence != null ? <span className="xs muted"> · {pct(x.presence)}</span> : ""}</> : DASH}</td>;
+                  return <td key={e.id} className="num">{x ? <>{x.picks != null ? `${x.picks} picks` : "—"}{x.presence != null ? <span className="xs muted"> · {pct(x.presence)}</span> : ""}<span className="faint"> · {x.games} rec.</span></> : DASH}</td>;
                 })}
                 <td className="xs">{c.seenIn.length === hub.events.length ? <b>Both</b> : <span className="muted">{c.seenIn.map((id) => hub.events.find((e) => e.id === id)?.short).join(", ")} only</span>}</td>
               </tr>
@@ -236,7 +250,7 @@ function PairingTable({ title, a, b, list, openKey, toggle, Champ, sources }: {
       <SectionHeader title={title} meta={`${list.length} duos · observed pro evidence`} />
       <div className="table-wrap hub-table mid">
         <table>
-          <thead><tr><th>{a === "BOT" ? "Bot" : "Mid"}</th><th>{b === "SUPPORT" ? "Support" : "Jungle"}</th><th className="num">Games</th><th>Tournament</th><th className="num hide-sm">Patch</th><th className="num hide-sm">Latest</th></tr></thead>
+          <thead><tr><th>{a === "BOT" ? "Bot" : "Mid"}</th><th>{b === "SUPPORT" ? "Support" : "Jungle"}</th><th className="num" title="Games stored in this repo">Recorded</th><th>Tournament</th><th className="num hide-sm">Patch</th><th className="num hide-sm">Latest</th></tr></thead>
           <tbody>
             {list.map((p) => {
               const k = `${a}-${p.a}-${p.b}`, open = openKey === k;
@@ -270,5 +284,36 @@ function PairingTable({ title, a, b, list, openKey, toggle, Champ, sources }: {
         </table>
       </div>
     </>
+  );
+}
+
+/** Row detail: where each number comes from. Tournament aggregates and recorded games are listed apart. */
+function RowDetail({ r, names, sources }: { r: RoleRow; names: Record<string, string>; sources: Record<string, Source> }) {
+  return (
+    <div className="hub-detail-grid">
+      <LayerBlock layer="pro" title="Tournament stats">
+        {r.stats.length ? r.stats.map((x) => {
+          const { event: e, stat: s } = x, pres = presenceOf(x);
+          return (
+            <div key={e.id} className="small tnum hub-scope">
+              <b>{e.name}</b> <span className="muted">· {e.patch} · {e.games ? `${e.games} games` : "total games unknown"}</span>
+              <div>{s.picks} pick{s.picks === 1 ? "" : "s"}{s.lowSample ? " (low sample)" : ""} · {s.bans ?? "—"} ban{s.bans === 1 ? "" : "s"} (champion-wide) · presence {pres != null ? `${pct(pres)} = (${s.picks} + ${s.bans}) / ${e.games}` : "— (needs bans and total games)"} · {pct(s.winRate)} WR · role share {roleShare(s) ?? "not verified"}</div>
+              <div className="xs muted">Tournament aggregate, not counted from recorded games. {s.sources.length ? <SourceLinks ids={s.sources} sources={sources} /> : <span title={s.note}>Reported by alan, no stats page yet.</span>}</div>
+            </div>
+          );
+        }) : <p className="xs muted">No tournament aggregate for {names[r.id] ?? r.id} {r.role.toLowerCase()} in this scope, so picks, bans, presence and win rate show —.</p>}
+      </LayerBlock>
+      <LayerBlock layer="pro" title={`Recorded games · ${r.games.length}`}>
+        {r.games.length ? r.games.slice(0, 8).map((g) => (
+          <div key={g.key} className="obs-row">
+            <span className="small nowrap">{g.label}</span>
+            <span className="ctx">{[g.eventName, g.patch, shortDate(g.date)].filter(Boolean).join(" · ")}</span>
+            {g.pending && <span className="badge plain">pending refresh</span>}
+            <SourceLinks ids={g.sources} sources={sources} />
+          </div>
+        )) : <p className="xs muted">No games stored for {names[r.id] ?? r.id} {r.role.toLowerCase()} in this scope.</p>}
+        {r.games.length > 8 && <p className="xs faint">+{r.games.length - 8} older</p>}
+      </LayerBlock>
+    </div>
   );
 }

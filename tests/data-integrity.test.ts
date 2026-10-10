@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import {
   getBotPairings, getChampions, getCompShells, getGenG, getMeta, getMidJungle, getPool, getProDrafts, getSources, getTopPicks,
 } from "@/lib/data";
+import { eventStats, presenceOf } from "@/lib/pool-stats";
 import { Files, ROLES } from "@/lib/schema";
 
 const dataDir = join(process.cwd(), "data");
@@ -115,12 +116,23 @@ describe("champion pool", () => {
     }
   });
 
-  it("presence is computed from picks and bans and never confused with win rate", () => {
-    const { games } = getMeta().tournament;
-    for (const s of getMeta().stats) {
-      if (s.bans == null) expect(s.presence).toBeNull();
-      else expect(s.presence).toBeCloseTo((s.picks + s.bans) / games, 6);
+  it("presence is (picks + bans) / tournament games and never confused with win rate", () => {
+    for (const x of eventStats(getMeta())) {
+      const { event, stat: s } = x;
+      if (s.bans == null || !event.games) expect(presenceOf(x)).toBeNull();
+      else expect(presenceOf(x)).toBeCloseTo((s.picks + s.bans) / event.games, 6);
       expect(s.lowSample).toBe(s.picks < 5);
+    }
+    // Spot check against Gol.gg's LCK playoff numbers: Jayce 9 picks + 4 bans over 41 games.
+    const jayce = eventStats(getMeta()).find((x) => x.event.id === "lck-2026-playoffs" && x.stat.champion === "jayce")!;
+    expect(presenceOf(jayce)).toBeCloseTo(13 / 41, 6);
+  });
+
+  it("tournament aggregates never carry recorded-game counts", () => {
+    const raw = JSON.parse(readFileSync("data/meta.json", "utf8"));
+    for (const s of [...raw.stats, ...raw.events.flatMap((e: { stats: unknown[] }) => e.stats)]) {
+      expect(s).not.toHaveProperty("roleUsage");
+      expect(s).not.toHaveProperty("presence");
     }
   });
 });

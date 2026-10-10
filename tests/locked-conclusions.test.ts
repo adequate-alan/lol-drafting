@@ -95,6 +95,14 @@ describe("mid / jungle", () => {
     expect(mj("vi").clashDefault).toEqual(expect.arrayContaining(["akali", "syndra"]));
   });
 
+  it("LeBlanc is a saved Lee Sin synergy, both ways (alan, 2026-10-10)", () => {
+    expect(mj("lee-sin").alternatives).toContain("leblanc");
+    expect(mj("lee-sin").clashDefault).toEqual(["cassiopeia", "ryze"]);
+    expect(mj("leblanc").role).toBe("MID");
+    expect(mj("leblanc").clashDefault).toEqual(["lee-sin"]);
+    expect(mj("leblanc").observedProPairings).toEqual([]);
+  });
+
   it("Yone pairs with Maokai and with Sejuani, both ways (alan, 2026-10-10)", () => {
     expect(mj("yone").role).toBe("MID");
     expect(mj("yone").clashDefault).toEqual(["maokai", "sejuani"]);

@@ -199,12 +199,14 @@ export const MetaStat = z.object({
   champion: ChampionId,
   role: Role,
   flexRole: Role.optional(),
+  // Tournament aggregate (Gol.gg tournament / champion stats), never counted from the drafts stored in this repo.
+  // picks, bans and winRate are champion-wide for the event; `role` is the role the champion is listed under.
+  // Presence is derived, not stored: (picks + bans) / event games (lib/pool-stats presenceOf).
   picks: z.number().int(),
-  bans: z.number().int().nullable(),
-  presence: z.number().nullable(),
+  bans: z.number().int().nullable(), // champion-level: a ban has no role
   winRate: z.number().min(0).max(1),
   lowSample: z.boolean(),
-  roleUsage: z.record(z.number().int()),
+  rolePicks: z.record(Role, z.number().int()).optional(), // verified picks per role, only when a source states them
   priorityRead: z.string().optional(),
   note: z.string().optional(),
   sources: z.array(SourceId),

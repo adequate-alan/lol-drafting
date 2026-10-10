@@ -29,6 +29,11 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   Pro evidence shows event, patch and date, newest patch first (`lib/evidence.ts`). A current-meta event never edits saved
   pairings and stays off the Gen.G page (`tests/demacia-cup.test.ts`).
 - Keep priority (pick/ban presence) separate from win rate, and mark small samples (`lowSample`, fewer than 5 picks).
+- Tournament aggregates (`meta.json` stats: picks, bans, win rate, verified `rolePicks`; totals in `events[].games`) and
+  recorded games (stored drafts and game pages, `proGames` in `lib/pool-stats.ts`) are two datasets (alan, 2026-10-10).
+  Never compute one from the other. Presence = (picks + bans) / tournament games (`presenceOf`), never stored. Bans are
+  champion-wide. Without an aggregate, picks / bans / presence / WR show "—". "Recorded" labels stored-game counts. Meta
+  defaults to the newest tournament; "All tournaments" is explicit and names each row's tournament.
 - A low-sample champion can only be in a pool's `core` tier with a written `coreReasons` entry.
 - Draft Room recommendations are ranked by overall draft fit (alan, 2026-10-10), in `lib/recommend.ts` and
   `tests/recommend.test.ts`. Every champion who plays the open role is a candidate. The score adds saved pairings
@@ -83,7 +88,8 @@ Change these only when alan explicitly says so, then update the test in the same
 - Ziggs → Nautilus / Leona. No saved alternatives (no Bard, no Karma). Pyke and Camille are observed pro variants only.
   General Draft Logic: "Ziggs needs reliable engage or catch somewhere else in the composition if support is not providing it."
 - Xayah → Rakan. Kalista → Renata. Zeri → Yuumi.
-- Ahri ↔ Vi are each other's primary. Yone (mid) ↔ Maokai and Yone ↔ Sejuani are saved pairs, both ways.
+- Ahri ↔ Vi are each other's primary. Yone (mid) ↔ Maokai and Yone ↔ Sejuani are saved pairs, both ways. LeBlanc ↔ Lee Sin is saved (LeBlanc a
+  secondary mid for Lee Sin; Lee Sin LeBlanc's only partner).
 - Skarner + Locke is the current pairing. Azir + Skarner is an earlier-2026 tendency only, never the current Gen.G default.
 
 ## Hosting and security

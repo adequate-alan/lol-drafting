@@ -39,6 +39,14 @@ describe("saved pairings lead an early draft", () => {
     expect(top({ MID: "locke" }, "JUNGLE")[0]).toBe("skarner");
   });
 
+  it("LeBlanc shows as a saved Lee Sin synergy, and Lee Sin leads for LeBlanc", () => {
+    const mid = recommend({ JUNGLE: "lee-sin" }, [], data, Infinity).MID!;
+    const lb = mid.find((r) => r.champion === "leblanc")!;
+    expect(lb.parts.some((p) => p.kind === "saved" && /Lee Sin/.test(p.text))).toBe(true);
+    expect(mid.findIndex((r) => r.champion === "leblanc")).toBeLessThan(6);
+    expect(top({ MID: "leblanc" }, "JUNGLE")[0]).toBe("lee-sin");
+  });
+
   it("Yone ↔ Maokai / Sejuani lead an early draft", () => {
     expect(top({ MID: "yone" }, "JUNGLE").slice(0, 2).sort()).toEqual(["maokai", "sejuani"]);
     expect(top({ JUNGLE: "maokai" }, "MID")[0]).toBe("yone");

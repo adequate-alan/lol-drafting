@@ -85,6 +85,26 @@ export function eventStats(meta: Meta): EventStat[] {
   return out;
 }
 
+// ---------- tournament aggregates ----------
+// Two datasets, never substituted for each other: tournament aggregates (meta.json stats: picks, bans, win rate, total
+// games) and recorded games (proGames: drafts and game pages stored in this repo). Aggregates are never counted from
+// recorded games, and recorded counts never stand in for tournament numbers.
+
+/** Presence = (picks + bans) / tournament games. Champion-wide, like bans; unknown without a ban count or game total. */
+export const presenceOf = ({ event, stat }: EventStat): number | null =>
+  stat.bans == null || !event.games ? null : (stat.picks + stat.bans) / event.games;
+
+/** The aggregate belongs to a role row when it is listed under that role or a source gives picks in it. */
+export const listsRole = (stat: MetaStat, role: Role) => stat.role === role || (stat.rolePicks?.[role] ?? 0) > 0;
+
+const ROLE_ABBR: Record<Role, string> = { TOP: "TOP", JUNGLE: "JG", MID: "MID", BOT: "BOT", SUPPORT: "SUP" };
+
+/** "8 SUP" or "6 MID · 2 SUP", only from verified role pick counts. */
+export function roleShare(stat: MetaStat): string | undefined {
+  const e = Object.entries(stat.rolePicks ?? {}).filter(([, n]) => n > 0) as [Role, number][];
+  return e.length ? e.sort((a, b) => b[1] - a[1]).map(([r, n]) => `${n} ${ROLE_ABBR[r]}`).join(" · ") : undefined;
+}
+
 export interface PoolFilter { event?: string; patch?: string }
 
 export function poolRows(input: PoolInput, filter: PoolFilter = {}): PoolRow[] {
@@ -98,7 +118,7 @@ export function poolRows(input: PoolInput, filter: PoolFilter = {}): PoolRow[] {
     for (const [tier] of TIERS) for (const id of p[tier]) {
       const role = p.role;
       // Role-aware: a stat counts only for the role it is recorded under (Camille top stats never show on Camille support).
-      const mine = stats.filter((s) => s.stat.champion === id && s.stat.role === role);
+      const mine = stats.filter((s) => s.stat.champion === id && listsRole(s.stat, role));
       const played = games.filter((g) => g.picks[role] === id);
       const counts = new Map<string, number>();
       for (const g of played) { const pid = g.picks[PARTNER_ROLE[role]]; if (pid) counts.set(pid, (counts.get(pid) ?? 0) + 1); }
@@ -127,7 +147,7 @@ export function sortRows(rows: PoolRow[], key: SortKey): PoolRow[] {
     const s = r.stat?.stat;
     if (key === "picks") return s?.picks;
     if (key === "bans") return s?.bans ?? undefined;
-    if (key === "presence") return s?.presence ?? undefined;
+    if (key === "presence") return r.stat ? presenceOf(r.stat) ?? undefined : undefined;
     if (key === "winRate") return s?.winRate;
     return undefined;
   };

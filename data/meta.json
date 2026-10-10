@@ -16,12 +16,8 @@
       "role": "TOP",
       "picks": 9,
       "bans": 4,
-      "presence": 0.3170731707317073,
       "winRate": 0.4444,
       "lowSample": false,
-      "roleUsage": {
-        "TOP": 2
-      },
       "priorityRead": "Elite top priority",
       "note": "Picked early despite middling results; 100% series presence.",
       "sources": [
@@ -33,12 +29,8 @@
       "role": "JUNGLE",
       "picks": 9,
       "bans": 6,
-      "presence": 0.36585365853658536,
       "winRate": 0.4444,
       "lowSample": false,
-      "roleUsage": {
-        "JUNGLE": 4
-      },
       "priorityRead": "Universal engage",
       "note": "100% series presence, easy to pair with many mid styles.",
       "sources": [
@@ -50,12 +42,8 @@
       "role": "TOP",
       "picks": 8,
       "bans": 11,
-      "presence": 0.4634146341463415,
       "winRate": 0.125,
       "lowSample": false,
-      "roleUsage": {
-        "TOP": 2
-      },
       "priorityRead": "High priority, bad outcome",
       "note": "Do not confuse draft priority with blind safety.",
       "sources": [
@@ -67,12 +55,8 @@
       "role": "BOT",
       "picks": 8,
       "bans": 0,
-      "presence": 0.1951219512195122,
       "winRate": 0.375,
       "lowSample": false,
-      "roleUsage": {
-        "BOT": 3
-      },
       "priorityRead": "High bot volume",
       "note": "Lulu is the clearest protect pairing.",
       "sources": [
@@ -84,12 +68,8 @@
       "role": "BOT",
       "picks": 8,
       "bans": 3,
-      "presence": 0.2682926829268293,
       "winRate": 0.5,
       "lowSample": false,
-      "roleUsage": {
-        "BOT": 4
-      },
       "priorityRead": "High Fearless value",
       "note": "Pairing rotates, but setup is mandatory.",
       "sources": [
@@ -101,12 +81,8 @@
       "role": "SUPPORT",
       "picks": 8,
       "bans": 1,
-      "presence": 0.21951219512195122,
       "winRate": 0.625,
       "lowSample": false,
-      "roleUsage": {
-        "SUPPORT": 2
-      },
       "priorityRead": "Strong support rotation",
       "note": "Best current example is Kalista+Renata.",
       "sources": [
@@ -118,12 +94,8 @@
       "role": "TOP",
       "picks": 7,
       "bans": 2,
-      "presence": 0.21951219512195122,
       "winRate": 0.5714,
       "lowSample": false,
-      "roleUsage": {
-        "TOP": 4
-      },
       "priorityRead": "Strong AP top",
       "note": "Needs reliable lockdown and mixed damage around him.",
       "sources": [
@@ -135,12 +107,8 @@
       "role": "JUNGLE",
       "picks": 7,
       "bans": 13,
-      "presence": 0.4878048780487805,
       "winRate": 0.5714,
       "lowSample": false,
-      "roleUsage": {
-        "JUNGLE": 4
-      },
       "priorityRead": "Elite tempo jungle",
       "note": "100% series presence and strong draft pressure.",
       "sources": [
@@ -152,12 +120,8 @@
       "role": "TOP",
       "picks": 7,
       "bans": null,
-      "presence": null,
       "winRate": 0.4286,
       "lowSample": false,
-      "roleUsage": {
-        "TOP": 2
-      },
       "sources": [
         "golgg-team-2809",
         "golgg-team-2802",
@@ -170,12 +134,8 @@
       "role": "MID",
       "picks": 6,
       "bans": 6,
-      "presence": 0.2926829268292683,
       "winRate": 0.5,
       "lowSample": false,
-      "roleUsage": {
-        "MID": 1
-      },
       "priorityRead": "Reliable backup engage",
       "note": "Simple point-click engage still valuable in Fearless.",
       "sources": [
@@ -187,12 +147,8 @@
       "role": "TOP",
       "picks": 6,
       "bans": null,
-      "presence": null,
       "winRate": 0.6667,
       "lowSample": false,
-      "roleUsage": {
-        "TOP": 2
-      },
       "sources": [
         "golgg-team-2809",
         "golgg-team-2802",
@@ -205,10 +161,8 @@
       "role": "TOP",
       "picks": 5,
       "bans": null,
-      "presence": null,
       "winRate": 0.4,
       "lowSample": false,
-      "roleUsage": {},
       "sources": [
         "golgg-team-2802",
         "golgg-team-2806",
@@ -220,12 +174,8 @@
       "role": "MID",
       "picks": 4,
       "bans": 1,
-      "presence": 0.12195121951219512,
       "winRate": 0.25,
       "lowSample": true,
-      "roleUsage": {
-        "MID": 1
-      },
       "priorityRead": "Niche pick tool",
       "note": "Useful with Nocturne/Vi; not a blind priority.",
       "sources": [
@@ -237,12 +187,8 @@
       "role": "BOT",
       "picks": 4,
       "bans": 3,
-      "presence": 0.17073170731707318,
       "winRate": 1,
       "lowSample": true,
-      "roleUsage": {
-        "BOT": 1
-      },
       "priorityRead": "Small sample, perfect result",
       "note": "Use with hard CC / AOE setup.",
       "sources": [
@@ -254,12 +200,8 @@
       "role": "TOP",
       "picks": 4,
       "bans": null,
-      "presence": null,
       "winRate": 0.75,
       "lowSample": true,
-      "roleUsage": {
-        "TOP": 2
-      },
       "sources": [
         "golgg-game-82965",
         "golgg-team-2804"
@@ -270,12 +212,8 @@
       "role": "TOP",
       "picks": 4,
       "bans": null,
-      "presence": null,
       "winRate": 0.75,
       "lowSample": true,
-      "roleUsage": {
-        "TOP": 2
-      },
       "sources": [
         "golgg-team-2809",
         "golgg-team-2805",
@@ -287,12 +225,8 @@
       "role": "MID",
       "picks": 3,
       "bans": 5,
-      "presence": 0.1951219512195122,
       "winRate": 0.6667,
       "lowSample": true,
-      "roleUsage": {
-        "MID": 3
-      },
       "priorityRead": "Rising playoff pick",
       "note": "Especially relevant with Skarner in late rounds. Still picked at the Demacia Cup on 16.18 (see Current meta).",
       "sources": [
@@ -304,12 +238,8 @@
       "role": "MID",
       "picks": 2,
       "bans": 2,
-      "presence": 0.0975609756097561,
       "winRate": 0,
       "lowSample": true,
-      "roleUsage": {
-        "MID": 1
-      },
       "priorityRead": "Downgraded",
       "note": "Old Azir+Skarner priority did not carry into playoffs.",
       "sources": [
@@ -321,12 +251,8 @@
       "role": "TOP",
       "picks": 1,
       "bans": null,
-      "presence": null,
       "winRate": 1,
       "lowSample": true,
-      "roleUsage": {
-        "TOP": 1
-      },
       "sources": [
         "golgg-game-82964",
         "golgg-team-2804"
@@ -337,10 +263,8 @@
       "role": "TOP",
       "picks": 1,
       "bans": null,
-      "presence": null,
       "winRate": 0,
       "lowSample": true,
-      "roleUsage": {},
       "sources": [
         "golgg-team-2809"
       ]
@@ -350,10 +274,8 @@
       "role": "TOP",
       "picks": 1,
       "bans": null,
-      "presence": null,
       "winRate": 1,
       "lowSample": true,
-      "roleUsage": {},
       "sources": [
         "golgg-team-2802"
       ]
@@ -413,15 +335,14 @@
           "role": "MID",
           "picks": 3,
           "bans": 1,
-          "presence": null,
           "winRate": 0.6667,
           "lowSample": true,
-          "roleUsage": {
-            "MID": 3
-          },
           "priorityRead": "Still picked on 16.18",
           "note": "Reported by alan on 2026-10-10; no Gol.gg page was supplied for these numbers yet. Presence needs the event game count.",
-          "sources": []
+          "sources": [],
+          "rolePicks": {
+            "MID": 3
+          }
         }
       ],
       "notes": [

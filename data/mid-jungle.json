@@ -1095,7 +1095,8 @@
     "alternatives": [
       "sylas",
       "twisted-fate",
-      "anivia"
+      "anivia",
+      "leblanc"
     ],
     "botShapes": [
       {
@@ -1612,6 +1613,27 @@
       "frontline"
     ],
     "playoffRead": "Saved pairing set by alan (2026-10-10): Yone with Maokai or Sejuani. No recorded pro game backs this pairing.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "anchor": "leblanc",
+    "role": "MID",
+    "clashDefault": [
+      "lee-sin"
+    ],
+    "alternatives": [],
+    "botShapes": [],
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "history": [],
+    "logic": {},
+    "confidence": "medium",
+    "identities": [
+      "pick",
+      "burst"
+    ],
+    "playoffRead": "Saved pairing set by alan (2026-10-10): LeBlanc with Lee Sin. No recorded pro game backs this pairing.",
     "status": "added",
     "sources": []
   }
