@@ -733,5 +733,179 @@
     "sources": [
       "golgg-team-2802"
     ]
+  },
+  {
+    "champion": "dr-mundo",
+    "blindGrade": "B",
+    "surrounding": {
+      "jungle": [
+        "lee-sin",
+        "vi"
+      ],
+      "mid": [
+        "syndra",
+        "viktor"
+      ],
+      "botShapes": []
+    },
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "logic": {
+      "gives": "blind-safe frontline, late-game tank",
+      "avoid": "early lane pressure elsewhere is needed to cover a slow early game"
+    },
+    "identities": [],
+    "playoffRead": "Synergy record set by alan (2026-10-10): blind grade and surrounding picks approved as proposed. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "gragas",
+    "blindGrade": "B",
+    "surrounding": {
+      "jungle": [
+        "lee-sin",
+        "vi"
+      ],
+      "mid": [
+        "ahri",
+        "syndra"
+      ],
+      "botShapes": []
+    },
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "logic": {
+      "gives": "engage and disengage from top, flexible frontline",
+      "avoid": "a comp with no damage threat to follow his engage"
+    },
+    "identities": [],
+    "playoffRead": "Synergy record set by alan (2026-10-10): blind grade and surrounding picks approved as proposed. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "galio",
+    "blindGrade": "B-",
+    "surrounding": {
+      "jungle": [
+        "nocturne",
+        "jarvan-iv"
+      ],
+      "mid": [
+        "orianna",
+        "ahri"
+      ],
+      "botShapes": []
+    },
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "logic": {
+      "gives": "magic-damage frontline, global follow-up onto dives",
+      "avoid": "a team with no dive to follow; long side-lane matchups"
+    },
+    "identities": [],
+    "playoffRead": "Synergy record set by alan (2026-10-10): blind grade and surrounding picks approved as proposed. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "jax",
+    "blindGrade": "B-",
+    "surrounding": {
+      "jungle": [
+        "sejuani",
+        "jarvan-iv"
+      ],
+      "mid": [
+        "orianna",
+        "galio"
+      ],
+      "botShapes": []
+    },
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "logic": {
+      "gives": "side-lane scaling, teamfight jump-in",
+      "avoid": "drafting him blind into hard lane counters"
+    },
+    "identities": [],
+    "playoffRead": "Synergy record set by alan (2026-10-10): blind grade and surrounding picks approved as proposed. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "varus",
+    "blindGrade": "C+",
+    "surrounding": {
+      "jungle": [
+        "jarvan-iv",
+        "sejuani"
+      ],
+      "mid": [
+        "orianna",
+        "azir"
+      ],
+      "botShapes": []
+    },
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "logic": {
+      "gives": "ranged lane pressure, poke and pick",
+      "avoid": "no frontline elsewhere; blind into dive"
+    },
+    "identities": [],
+    "playoffRead": "Synergy record set by alan (2026-10-10): blind grade and surrounding picks approved as proposed. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "fiora",
+    "blindGrade": "C+",
+    "surrounding": {
+      "jungle": [
+        "sejuani",
+        "maokai"
+      ],
+      "mid": [
+        "orianna",
+        "ryze"
+      ],
+      "botShapes": []
+    },
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "logic": {
+      "gives": "split push and duelling",
+      "avoid": "blind first pick; teams without engage to play 4v4"
+    },
+    "identities": [],
+    "playoffRead": "Synergy record set by alan (2026-10-10): blind grade and surrounding picks approved as proposed. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "anivia",
+    "blindGrade": "C",
+    "surrounding": {
+      "jungle": [
+        "skarner",
+        "sejuani"
+      ],
+      "mid": [
+        "azir"
+      ],
+      "botShapes": []
+    },
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "logic": {
+      "gives": "zone control and waveclear from top",
+      "avoid": "dive-heavy lanes; no frontline elsewhere"
+    },
+    "identities": [],
+    "playoffRead": "Synergy record set by alan (2026-10-10): blind grade and surrounding picks approved as proposed. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
   }
 ]

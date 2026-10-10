@@ -1,7 +1,7 @@
 // alan's locked Clash conclusions. A failure here means the data changed a decision
 // that only alan can change; update the data only after he says so.
 import { describe, expect, it } from "vitest";
-import { getBotPairings, getGenG, getMidJungle, getPool } from "@/lib/data";
+import { getBotPairings, getGenG, getMidJungle, getPool, getTopPicks } from "@/lib/data";
 
 const bot = (id: string) => {
   const r = getBotPairings().find((b) => b.champion === id);
@@ -146,6 +146,26 @@ describe("mid / jungle", () => {
     }
     expect(mj("pantheon").clashDefault).toEqual(["syndra", "ahri"]);
     expect(mj("nocturne").clashDefault).toEqual(["orianna", "lissandra"]);
+  });
+
+  it("Poppy and Vex records and top flex picks as alan approved (2026-10-10)", () => {
+    expect(mj("poppy").clashDefault).toEqual(["orianna", "syndra"]);
+    expect(mj("vex").clashDefault).toEqual(["jarvan-iv", "sejuani"]);
+    const top = (id: string) => getTopPicks().find((t) => t.champion === id)!;
+    const grades: Record<string, string> = { "dr-mundo": "B", gragas: "B", galio: "B-", jax: "B-", varus: "C+", fiora: "C+", anivia: "C" };
+    for (const [id, g] of Object.entries(grades)) {
+      expect(top(id).blindGrade, id).toBe(g);
+      expect(top(id).observedProPairings, id).toEqual([]);
+    }
+    expect(top("anivia").surrounding.mid).toEqual(["azir"]);
+  });
+
+  it("every MID, JUNGLE and TOP pool champion has a Synergy record", () => {
+    for (const p of getPool().filter((x) => x.role !== "BOT" && x.role !== "SUPPORT"))
+      for (const id of [...p.core, ...p.depth, ...p.flex]) {
+        if (p.role === "TOP") expect(getTopPicks().some((t) => t.champion === id), `TOP ${id}`).toBe(true);
+        else expect(getMidJungle().some((m) => m.anchor === id && m.role === p.role), `${p.role} ${id}`).toBe(true);
+      }
   });
 
   it("Yone pairs with Maokai and with Sejuani, both ways (alan, 2026-10-10)", () => {
