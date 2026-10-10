@@ -54,7 +54,8 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   `scripts/sync-champions.mjs` (run by `.github/workflows/sync-champions.yml`; Data Dragon is unreachable from Claude's
   environments) are `rosterOnly: true` with every attribute 0: lockable, searchable and usable as enemies, never
   recommended, never in the pool. Reviewing one means setting its attributes and removing `rosterOnly`. Never type a
-  roster from memory.
+  roster from memory. On 2026-10-10 every roster-only champion except Zaahen got attributes and a v2 kit
+  (`lib/model-v2/kits.ts`, unreviewed by alan); Zaahen and Locke wait for a kit review.
 
 ## Gol.gg research rules
 

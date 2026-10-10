@@ -79,23 +79,22 @@
     "roles": [
       "MID"
     ],
-    "damage": "mixed",
+    "damage": "AD",
     "attrs": {
       "engage": 0,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "sustainedDps": 2,
+      "burst": 2,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 3,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "alistar",
@@ -155,21 +154,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
-      "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "engage": 3,
+      "frontline": 3,
+      "peel": 1,
+      "sustainedDps": 1,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "scaling": 2,
+      "lanePressure": 1,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "anivia",
@@ -275,21 +273,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "sustainedDps": 3,
+      "burst": 1,
+      "poke": 2,
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "aurora",
@@ -301,21 +298,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
-      "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "peel": 1,
+      "sustainedDps": 1,
+      "burst": 3,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 2,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "azir",
@@ -370,23 +366,22 @@
     "roles": [
       "JUNGLE"
     ],
-    "damage": "AP",
+    "damage": "AD",
     "attrs": {
       "engage": 0,
-      "frontline": 0,
+      "frontline": 1,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 3,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 3,
+      "objectiveControl": 3
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "blitzcrank",
@@ -395,23 +390,22 @@
     "roles": [
       "SUPPORT"
     ],
-    "damage": "mixed",
+    "damage": "AP",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
-      "peel": 0,
+      "engage": 2,
+      "frontline": 1,
+      "peel": 1,
       "sustainedDps": 0,
-      "burst": 0,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "scaling": 1,
+      "lanePressure": 2,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "brand",
@@ -424,21 +418,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "sustainedDps": 3,
+      "burst": 2,
+      "poke": 2,
+      "scaling": 2,
+      "lanePressure": 2,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "braum",
@@ -474,21 +467,20 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
+      "engage": 2,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 3,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 1,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "caitlyn",
@@ -619,21 +611,20 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 1,
+      "frontline": 2,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 3,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 3,
+      "sidePressure": 2,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "diana",
@@ -643,23 +634,22 @@
       "JUNGLE",
       "MID"
     ],
-    "damage": "mixed",
+    "damage": "AP",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 3,
+      "frontline": 1,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 3,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "dr-mundo",
@@ -698,18 +688,17 @@
       "engage": 0,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 3,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "scaling": 2,
+      "lanePressure": 3,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "ekko",
@@ -721,21 +710,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 2,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 3,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 2,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "elise",
@@ -744,23 +732,22 @@
     "roles": [
       "JUNGLE"
     ],
-    "damage": "mixed",
+    "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 1,
+      "burst": 3,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 1,
+      "lanePressure": 3,
+      "sidePressure": 1,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "evelynn",
@@ -771,21 +758,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 1,
+      "burst": 3,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "ezreal",
@@ -819,21 +805,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 3,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "scaling": 2,
+      "lanePressure": 1,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "fiora",
@@ -865,23 +850,22 @@
     "roles": [
       "MID"
     ],
-    "damage": "mixed",
+    "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 1,
+      "burst": 3,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "galio",
@@ -919,20 +903,19 @@
     "damage": "AD",
     "attrs": {
       "engage": 0,
-      "frontline": 0,
+      "frontline": 1,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "sustainedDps": 2,
+      "burst": 3,
+      "poke": 2,
+      "scaling": 3,
+      "lanePressure": 2,
+      "sidePressure": 2,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "garen",
@@ -943,21 +926,20 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 1,
+      "frontline": 2,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 1,
+      "lanePressure": 2,
+      "sidePressure": 2,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "gnar",
@@ -1018,20 +1000,19 @@
     "damage": "AD",
     "attrs": {
       "engage": 0,
-      "frontline": 0,
+      "frontline": 1,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 3,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 3
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "gwen",
@@ -1065,21 +1046,20 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 3,
+      "frontline": 2,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "heimerdinger",
@@ -1094,19 +1074,18 @@
     "attrs": {
       "engage": 0,
       "frontline": 0,
-      "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "peel": 1,
+      "sustainedDps": 2,
+      "burst": 1,
+      "poke": 2,
+      "scaling": 2,
+      "lanePressure": 3,
+      "sidePressure": 2,
+      "objectiveControl": 3
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "hwei",
@@ -1116,23 +1095,22 @@
       "MID",
       "SUPPORT"
     ],
-    "damage": "mixed",
+    "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
-      "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "peel": 1,
+      "sustainedDps": 1,
+      "burst": 2,
+      "poke": 3,
+      "scaling": 2,
+      "lanePressure": 2,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "illaoi",
@@ -1144,20 +1122,19 @@
     "damage": "AD",
     "attrs": {
       "engage": 0,
-      "frontline": 0,
+      "frontline": 2,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 3,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 3,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "irelia",
@@ -1169,21 +1146,20 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 2,
+      "frontline": 1,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 3,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 3,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "ivern",
@@ -1194,21 +1170,22 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
-      "peel": 0,
+      "peel": 3,
       "sustainedDps": 0,
       "burst": 0,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "scaling": 2,
+      "lanePressure": 1,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 2
     },
-    "flags": [],
+    "flags": [
+      "disengage"
+    ],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "janna",
@@ -1221,19 +1198,20 @@
     "attrs": {
       "engage": 0,
       "frontline": 0,
-      "peel": 0,
+      "peel": 3,
       "sustainedDps": 0,
       "burst": 0,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "scaling": 2,
+      "lanePressure": 1,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 1
     },
-    "flags": [],
+    "flags": [
+      "disengage"
+    ],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "jarvan-iv",
@@ -1462,18 +1440,17 @@
       "engage": 0,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "sustainedDps": 3,
+      "burst": 2,
+      "poke": 1,
+      "scaling": 3,
+      "lanePressure": 1,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "kassadin",
@@ -1484,21 +1461,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 1,
+      "burst": 3,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "katarina",
@@ -1507,23 +1483,22 @@
     "roles": [
       "MID"
     ],
-    "damage": "AP",
+    "damage": "mixed",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 3,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "kayle",
@@ -1536,19 +1511,18 @@
     "attrs": {
       "engage": 0,
       "frontline": 0,
-      "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "peel": 1,
+      "sustainedDps": 3,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
+      "scaling": 3,
       "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "sidePressure": 2,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "kayn",
@@ -1559,21 +1533,20 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 1,
+      "frontline": 1,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 3,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "kennen",
@@ -1582,23 +1555,22 @@
     "roles": [
       "TOP"
     ],
-    "damage": "mixed",
+    "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 3,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "sustainedDps": 1,
+      "burst": 2,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "khazix",
@@ -1612,18 +1584,17 @@
       "engage": 0,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 1,
+      "burst": 3,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "kindred",
@@ -1636,19 +1607,18 @@
     "attrs": {
       "engage": 0,
       "frontline": 0,
-      "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "peel": 1,
+      "sustainedDps": 3,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 3,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 3
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "kled",
@@ -1659,21 +1629,20 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 3,
+      "frontline": 1,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 1,
+      "lanePressure": 3,
+      "sidePressure": 2,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "kog-maw",
@@ -1682,23 +1651,24 @@
     "roles": [
       "BOT"
     ],
-    "damage": "AD",
+    "damage": "mixed",
     "attrs": {
       "engage": 0,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "sustainedDps": 3,
+      "burst": 1,
+      "poke": 1,
+      "scaling": 3,
+      "lanePressure": 1,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 2
     },
-    "flags": [],
+    "flags": [
+      "needs-peel"
+    ],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "leblanc",
@@ -1709,21 +1679,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
       "peel": 0,
       "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "burst": 3,
+      "poke": 2,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "lee-sin",
@@ -1780,21 +1749,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 2,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "sustainedDps": 3,
+      "burst": 1,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "lissandra",
@@ -1928,21 +1896,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
-      "peel": 0,
+      "engage": 3,
+      "frontline": 3,
+      "peel": 1,
       "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "burst": 2,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "malzahar",
@@ -1953,21 +1920,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
-      "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "peel": 1,
+      "sustainedDps": 2,
+      "burst": 2,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 2,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "maokai",
@@ -2007,18 +1973,17 @@
       "engage": 0,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 3,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 2,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "mel",
@@ -2105,21 +2070,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 1,
+      "frontline": 2,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 3,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 2,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "morgana",
@@ -2130,21 +2094,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
-      "peel": 0,
+      "peel": 2,
       "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "burst": 1,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 1,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "naafiri",
@@ -2202,23 +2165,22 @@
     "roles": [
       "TOP"
     ],
-    "damage": "mixed",
+    "damage": "AD",
     "attrs": {
       "engage": 0,
-      "frontline": 0,
+      "frontline": 2,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
+      "scaling": 3,
       "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "sidePressure": 3,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "nautilus",
@@ -2279,18 +2241,17 @@
       "engage": 0,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "sustainedDps": 1,
+      "burst": 2,
+      "poke": 3,
+      "scaling": 1,
+      "lanePressure": 3,
+      "sidePressure": 1,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "nilah",
@@ -2301,21 +2262,20 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 3,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "scaling": 3,
+      "lanePressure": 1,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "nocturne",
@@ -2349,21 +2309,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
-      "peel": 0,
+      "engage": 2,
+      "frontline": 2,
+      "peel": 1,
       "sustainedDps": 0,
-      "burst": 0,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "scaling": 2,
+      "lanePressure": 1,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 3
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "olaf",
@@ -2546,18 +2505,17 @@
       "engage": 0,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "sustainedDps": 2,
+      "burst": 3,
+      "poke": 1,
+      "scaling": 1,
+      "lanePressure": 3,
+      "sidePressure": 3,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "rakan",
@@ -2589,23 +2547,22 @@
     "roles": [
       "JUNGLE"
     ],
-    "damage": "mixed",
+    "damage": "AP",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
-      "peel": 0,
+      "engage": 3,
+      "frontline": 3,
+      "peel": 1,
       "sustainedDps": 0,
-      "burst": 0,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "scaling": 2,
+      "lanePressure": 1,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "rek-sai",
@@ -2616,21 +2573,20 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 2,
+      "frontline": 1,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 1,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 1,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "rell",
@@ -2715,21 +2671,20 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 1,
+      "burst": 3,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "riven",
@@ -2740,21 +2695,20 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 1,
+      "frontline": 1,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 3,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 2,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "rumble",
@@ -2811,21 +2765,22 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 3,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "scaling": 2,
+      "lanePressure": 2,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 1
     },
-    "flags": [],
+    "flags": [
+      "needs-setup"
+    ],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "sejuani",
@@ -2858,23 +2813,22 @@
       "BOT",
       "SUPPORT"
     ],
-    "damage": "mixed",
+    "damage": "AD",
     "attrs": {
       "engage": 0,
       "frontline": 0,
-      "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "peel": 1,
+      "sustainedDps": 2,
+      "burst": 1,
+      "poke": 2,
+      "scaling": 3,
+      "lanePressure": 2,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "seraphine",
@@ -2909,21 +2863,20 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 2,
+      "frontline": 2,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 3,
+      "sidePressure": 1,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "shaco",
@@ -2933,23 +2886,22 @@
       "JUNGLE",
       "SUPPORT"
     ],
-    "damage": "AD",
+    "damage": "mixed",
     "attrs": {
       "engage": 0,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 1,
+      "burst": 3,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 1,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "shen",
@@ -2982,23 +2934,22 @@
     "roles": [
       "JUNGLE"
     ],
-    "damage": "AD",
+    "damage": "mixed",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 2,
+      "frontline": 2,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 3
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "singed",
@@ -3009,21 +2960,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
-      "peel": 0,
-      "sustainedDps": 0,
+      "engage": 1,
+      "frontline": 2,
+      "peel": 1,
+      "sustainedDps": 1,
       "burst": 0,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 2,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "sion",
@@ -3108,18 +3058,17 @@
       "engage": 0,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "sustainedDps": 3,
+      "burst": 1,
+      "poke": 2,
+      "scaling": 3,
+      "lanePressure": 1,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "sona",
@@ -3130,21 +3079,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
-      "peel": 0,
+      "peel": 2,
       "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "burst": 1,
+      "poke": 1,
+      "scaling": 3,
+      "lanePressure": 1,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "soraka",
@@ -3157,19 +3105,20 @@
     "attrs": {
       "engage": 0,
       "frontline": 0,
-      "peel": 0,
+      "peel": 3,
       "sustainedDps": 0,
       "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 2,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 1
     },
-    "flags": [],
+    "flags": [
+      "disengage"
+    ],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "swain",
@@ -3182,21 +3131,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
-      "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "engage": 1,
+      "frontline": 2,
+      "peel": 1,
+      "sustainedDps": 3,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "sylas",
@@ -3307,18 +3255,17 @@
       "engage": 0,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 1,
+      "burst": 3,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 1,
+      "lanePressure": 2,
+      "sidePressure": 2,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "taric",
@@ -3328,23 +3275,24 @@
       "MID",
       "SUPPORT"
     ],
-    "damage": "mixed",
+    "damage": "AP",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
-      "peel": 0,
+      "engage": 1,
+      "frontline": 2,
+      "peel": 3,
       "sustainedDps": 0,
       "burst": 0,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "scaling": 2,
+      "lanePressure": 1,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 1
     },
-    "flags": [],
+    "flags": [
+      "disengage"
+    ],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "teemo",
@@ -3360,18 +3308,17 @@
       "engage": 0,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "sustainedDps": 2,
+      "burst": 1,
+      "poke": 2,
+      "scaling": 2,
+      "lanePressure": 3,
+      "sidePressure": 2,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "thresh",
@@ -3410,19 +3357,18 @@
     "attrs": {
       "engage": 0,
       "frontline": 0,
-      "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "peel": 1,
+      "sustainedDps": 3,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 3,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 3
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "trundle",
@@ -3460,18 +3406,17 @@
       "engage": 0,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 3,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 3,
+      "lanePressure": 2,
+      "sidePressure": 3,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "twisted-fate",
@@ -3512,18 +3457,19 @@
       "engage": 0,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 3,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "scaling": 3,
+      "lanePressure": 1,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 2
     },
-    "flags": [],
+    "flags": [
+      "needs-peel"
+    ],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "udyr",
@@ -3533,23 +3479,22 @@
       "JUNGLE",
       "TOP"
     ],
-    "damage": "AD",
+    "damage": "mixed",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 2,
+      "frontline": 2,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 2,
+      "objectiveControl": 3
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "urgot",
@@ -3560,21 +3505,20 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 1,
+      "frontline": 2,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "sustainedDps": 3,
+      "burst": 1,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 2,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "varus",
@@ -3612,19 +3556,20 @@
     "attrs": {
       "engage": 0,
       "frontline": 0,
-      "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "peel": 1,
+      "sustainedDps": 3,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 2,
+      "objectiveControl": 1
     },
-    "flags": [],
+    "flags": [
+      "needs-peel"
+    ],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "veigar",
@@ -3636,21 +3581,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
-      "peel": 0,
+      "peel": 1,
       "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "burst": 3,
+      "poke": 1,
+      "scaling": 3,
+      "lanePressure": 1,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "velkoz",
@@ -3665,18 +3609,17 @@
       "engage": 0,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "sustainedDps": 1,
+      "burst": 2,
+      "poke": 3,
+      "scaling": 2,
+      "lanePressure": 2,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "vex",
@@ -3733,21 +3676,20 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "viktor",
@@ -3782,21 +3724,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 3,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 3,
+      "lanePressure": 1,
+      "sidePressure": 1,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "volibear",
@@ -3806,23 +3747,22 @@
       "JUNGLE",
       "TOP"
     ],
-    "damage": "AD",
+    "damage": "mixed",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 2,
+      "frontline": 2,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 2,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "warwick",
@@ -3832,23 +3772,22 @@
       "JUNGLE",
       "TOP"
     ],
-    "damage": "AD",
+    "damage": "mixed",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 2,
+      "frontline": 1,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 3,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 1,
+      "lanePressure": 2,
+      "sidePressure": 1,
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "wukong",
@@ -3911,17 +3850,16 @@
       "frontline": 0,
       "peel": 0,
       "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "burst": 3,
+      "poke": 3,
+      "scaling": 2,
+      "lanePressure": 2,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "xin-zhao",
@@ -3957,21 +3895,22 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 3,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 2,
+      "objectiveControl": 1
     },
-    "flags": [],
+    "flags": [
+      "needs-setup"
+    ],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "yone",
@@ -4104,21 +4043,20 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
-      "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "engage": 3,
+      "frontline": 3,
+      "peel": 1,
+      "sustainedDps": 1,
+      "burst": 1,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "scaling": 2,
+      "lanePressure": 1,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "zed",
@@ -4133,18 +4071,17 @@
       "engage": 0,
       "frontline": 0,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "sustainedDps": 1,
+      "burst": 3,
+      "poke": 1,
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 2,
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "zeri",
@@ -4207,19 +4144,18 @@
     "attrs": {
       "engage": 0,
       "frontline": 0,
-      "peel": 0,
+      "peel": 2,
       "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "burst": 1,
+      "poke": 2,
+      "scaling": 2,
+      "lanePressure": 2,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "zoe",
@@ -4234,17 +4170,16 @@
       "frontline": 0,
       "peel": 0,
       "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "burst": 3,
+      "poke": 3,
+      "scaling": 2,
+      "lanePressure": 2,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 1
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   },
   {
     "id": "zyra",
@@ -4255,20 +4190,19 @@
     ],
     "damage": "AP",
     "attrs": {
-      "engage": 0,
+      "engage": 1,
       "frontline": 0,
-      "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
-      "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
+      "peel": 1,
+      "sustainedDps": 2,
+      "burst": 2,
+      "poke": 2,
+      "scaling": 2,
+      "lanePressure": 2,
       "sidePressure": 0,
-      "objectiveControl": 0
+      "objectiveControl": 2
     },
     "flags": [],
     "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+    "note": "Roster entry from Data Dragon 16.20.1; roles from Meraki Analytics positions. Attributes set by Claude 2026-10-10 (roster conversion), not yet reviewed by alan."
   }
 ]

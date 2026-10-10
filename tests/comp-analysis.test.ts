@@ -137,22 +137,22 @@ describe("second-checkpoint corrections (alan, 2026-10-10)", () => {
 });
 
 describe("economy is one team-wide income rule (alan, checkpoint 2 review)", () => {
-  // No reviewed jungler or support has resourceDemand 3 yet, so hungry versions are built from real kits.
+  // Graves is a real hungry carry jungler; no support has resourceDemand 3, so a hungry Lulu is built from her kit.
   const hungry = (id: string, resourceDemand: 0 | 1 | 2 | 3) => {
     const c = kits.find((k) => k.id === id)!;
     return { ...c, id: `${id}-${resourceDemand}`, kit: { ...c.kit, resourceDemand } };
   };
-  const pool = [...kits, hungry("nocturne", 3), hungry("lulu", 3)];
+  const pool = [...kits, hungry("lulu", 3)];
   const conflict = (draft: Draft) => ids((() => { const r = analyze(draft, pool); return [...r.weakPoints, ...r.more]; })()).includes("resource-conflict");
 
   it("a carry jungler beside two hungry laners is a normal carry-jungle comp, not a warning", () => {
-    expect(conflict({ TOP: "ornn", JUNGLE: "nocturne-3", MID: "viktor", BOT: "jinx", SUPPORT: "lulu" })).toBe(false);
+    expect(conflict({ TOP: "ornn", JUNGLE: "graves", MID: "viktor", BOT: "jinx", SUPPORT: "lulu" })).toBe(false);
   });
   it("three hungry carries in TOP, MID and BOT is normal", () => {
     expect(conflict({ TOP: "gwen", JUNGLE: "sejuani", MID: "viktor", BOT: "jinx", SUPPORT: "lulu" })).toBe(false);
   });
   it("a hungry jungler warns only on top of an already resource-heavy team", () => {
-    expect(conflict({ TOP: "gwen", JUNGLE: "nocturne-3", MID: "viktor", BOT: "jinx", SUPPORT: "lulu" })).toBe(true);
+    expect(conflict({ TOP: "gwen", JUNGLE: "graves", MID: "viktor", BOT: "jinx", SUPPORT: "lulu" })).toBe(true);
   });
   it("a truly hungry support weighs double", () => {
     expect(conflict({ TOP: "ornn", JUNGLE: "sejuani", MID: "viktor", BOT: "jinx", SUPPORT: "lulu-3" })).toBe(true);
