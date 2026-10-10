@@ -135,9 +135,11 @@ describe("with a bot locked, only its saved supports are actionable (alan, 2026-
     }
   });
 
-  it("Viktor plays bot: a BOT candidate, and with him locked only Leona / Nautilus are recommended (alan, 2026-10-10)", () => {
+  it("Viktor plays bot: a BOT candidate, and with him locked only Leona / Nautilus / Camille are recommended (alan, 2026-10-10)", () => {
     expect(top({ SUPPORT: "leona" }, "BOT", [], Infinity)).toContain("viktor");
-    expect(top({ BOT: "viktor" }, "SUPPORT", [], Infinity).sort()).toEqual(["leona", "nautilus"]);
+    const list = top({ BOT: "viktor" }, "SUPPORT", [], Infinity);
+    expect(list.every((id) => ["leona", "nautilus", "camille"].includes(id))).toBe(true);
+    expect(list.slice(0, 2).sort()).toEqual(["leona", "nautilus"]);
   });
 
   it("every bot with saved supports only gets its default and alternatives", () => {
