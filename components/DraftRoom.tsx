@@ -419,6 +419,9 @@ function DraftSlot({ side, role, value, active = false, preview, onActivate, onL
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
   const [hi, setHi] = useState(0);
+  const [up, setUp] = useState(false);
+  const list = useRef<HTMLUListElement>(null);
+  const keyed = useRef(false);
   const input = useRef<HTMLInputElement>(null);
   const slot = useRef<HTMLDivElement>(null);
   const refocus = useRef(false);
@@ -444,16 +447,28 @@ function DraftSlot({ side, role, value, active = false, preview, onActivate, onL
     const starts = (c: (typeof champions)[number]) => (q && c.name.toLowerCase().startsWith(q) ? 0 : 1);
     const off = (c: (typeof champions)[number]) => Number(!c.roles.includes(role));
     const rank = (c: (typeof champions)[number]) => (q ? 0 : -(fit.get(c.id) ?? -99));
-    return [...pool].sort((a, b) => off(a) - off(b) || starts(a) - starts(b) || rank(a) - rank(b) || a.name.localeCompare(b.name)).slice(0, q ? 8 : 10);
+    return [...pool].sort((a, b) => off(a) - off(b) || starts(a) - starts(b) || rank(a) - rank(b) || a.name.localeCompare(b.name));
   }, [champions, taken, q, role, fit]);
   const mark = (name: string) => {
     const i = q ? name.toLowerCase().indexOf(q) : -1;
     return i < 0 ? name : <>{name.slice(0, i)}<mark>{name.slice(i, i + q.length)}</mark>{name.slice(i + q.length)}</>;
   };
+  // Keyboard navigation keeps the highlighted option in view; hovering with the mouse never scrolls the list.
+  useEffect(() => {
+    if (!keyed.current || !list.current) return;
+    keyed.current = false;
+    (list.current.children[hi] as HTMLElement | undefined)?.scrollIntoView({ block: "nearest" });
+  }, [hi]);
+  // Open below the input, or above it when there is clearly more room there.
+  const place = () => {
+    const r = input.current?.getBoundingClientRect();
+    if (r) { const below = window.innerHeight - r.bottom, above = r.top; setUp(below < 260 && above > below); }
+  };
   const pick = (id: string | undefined) => { if (id) { onLock(id); setText(""); setOpen(false); setHi(0); } };
   const onKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "ArrowDown") { e.preventDefault(); setOpen(true); setHi((i) => Math.min(i + 1, matches.length - 1)); }
-    else if (e.key === "ArrowUp") { e.preventDefault(); setHi((i) => Math.max(i - 1, 0)); }
+    if (e.key === "ArrowDown") { e.preventDefault(); keyed.current = true; setOpen(true); setHi((i) => Math.min(i + 1, matches.length - 1)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); keyed.current = true; setHi((i) => Math.max(i - 1, 0)); }
+    else if (e.key === "PageDown" || e.key === "PageUp") { e.preventDefault(); keyed.current = true; setHi((i) => Math.max(0, Math.min(matches.length - 1, i + (e.key === "PageDown" ? 7 : -7)))); }
     else if (e.key === "Enter") { e.preventDefault(); pick(byName.get(q) ?? matches[hi]?.id); }
     else if (e.key === "Escape") { setOpen(false); input.current?.blur(); }
   };
@@ -492,10 +507,10 @@ function DraftSlot({ side, role, value, active = false, preview, onActivate, onL
             <input ref={input} value={text} placeholder={preview ? names[preview] : ally ? "Pick champion" : "Enemy pick"} aria-label={ally ? `${role} champion` : `Enemy ${role} champion`}
               role="combobox" aria-autocomplete="list" aria-expanded={open && matches.length > 0} aria-controls={listId}
               aria-activedescendant={open && matches[hi] ? `${listId}-${matches[hi].id}` : undefined}
-              onChange={(e) => { setText(e.target.value); setOpen(true); setHi(0); }}
-              onFocus={() => { setOpen(true); onActivate?.(); }} onBlur={() => setOpen(false)} onKeyDown={onKey} />
+              onChange={(e) => { setText(e.target.value); setOpen(true); setHi(0); if (list.current) list.current.scrollTop = 0; }}
+              onFocus={() => { place(); setOpen(true); onActivate?.(); }} onBlur={() => setOpen(false)} onKeyDown={onKey} />
             {open && matches.length > 0 && (
-              <ul id={listId} role="listbox" className="picker-list">
+              <ul id={listId} ref={list} role="listbox" className={`picker-list ${up ? "up" : ""}`}>
                 {matches.map((c, i) => (
                   <li key={c.id} id={`${listId}-${c.id}`} role="option" aria-selected={i === hi} className={i === hi ? "active" : undefined}
                     onMouseDown={(e) => { e.preventDefault(); pick(c.id); }} onMouseEnter={() => setHi(i)}>

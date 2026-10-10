@@ -116,6 +116,23 @@ await page.reload({ waitUntil: "networkidle" });
 const lockedText = await text(".draft-slot.role-BOT .slot-name");
 check("UI lock writes ?bot= under base path and survives refresh", afterLock.includes("/lol-drafting/?bot=sivir") && lockedText.includes("Sivir"), afterLock);
 
+// Picker: a long list scrolls inside itself, not the page, and arrow keys keep the highlight in view
+await open("/?bot=ziggs");
+await page.locator('input[aria-label="TOP champion"]').click();
+const topList = page.locator("#champs-TOP");
+const lb = await topList.boundingBox();
+await page.mouse.move(lb.x + 40, lb.y + 40);
+await page.mouse.wheel(0, 300);
+await page.waitForTimeout(300);
+const pick = await topList.evaluate((el) => ({ h: el.clientHeight, sh: el.scrollHeight, top: el.scrollTop }));
+check("TOP picker scrolls internally (max height, page stays put)", pick.sh > pick.h && pick.h <= 422 && pick.top > 0 && (await page.evaluate(() => scrollY)) === 0, JSON.stringify(pick));
+for (let i = 0; i < 14; i++) await page.keyboard.press("ArrowDown");
+await page.waitForTimeout(200);
+check("picker keeps the highlighted option visible", await page.evaluate(() => {
+  const l = document.querySelector("#champs-TOP"), a = l?.querySelector('[aria-selected="true"]');
+  if (!l || !a) return false; const r = a.getBoundingClientRect(), b = l.getBoundingClientRect(); return r.top >= b.top - 1 && r.bottom <= b.bottom + 1;
+}), "");
+await page.keyboard.press("Escape");
 // Champion icons load from Data Dragon in both themes; a failed icon falls back to initials
 for (const theme of ["light", "dark"]) {
   await page.evaluate((t) => localStorage.setItem("theme", t), theme);

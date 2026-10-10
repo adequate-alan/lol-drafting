@@ -1008,3 +1008,14 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .hc-foot { padding-top: var(--s3); border-top: 1px solid var(--border); }
 .hc-title { display: grid; gap: 1px; min-width: 0; }
 @media (max-width: 560px) { .shell td.slot-cell { width: 160px; } .link-pips { display: none; } }
+
+/* Picker list scrolls inside itself (about 8 rows), flips above the input when space below is short */
+.picker-list {
+  max-height: min(420px, 60vh); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; z-index: 30;
+}
+.picker-list.up { top: auto; bottom: calc(100% + 4px); }
+.picker-list::-webkit-scrollbar { width: 8px; }
+.picker-list::-webkit-scrollbar-track { background: transparent; }
+.picker-list::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; border: 2px solid var(--surface-raised); }
+.picker-list::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
