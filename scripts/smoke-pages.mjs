@@ -26,7 +26,7 @@ async function choose(trigger, value) {
 async function h1() { return (await page.locator("main h1").first().textContent())?.trim(); }
 
 // Sections, direct loads and refreshes
-const sections = [["/", "Draft Room"], ["/first-pick/bot/", "First Pick"], ["/first-pick/support/", "First Pick"], ["/first-pick/mid-jungle/", "First Pick"], ["/first-pick/top/", "First Pick"],
+const sections = [["/", "Draft Room"], ["/synergies/bot/", "Champion Synergies"], ["/synergies/support/", "Champion Synergies"], ["/synergies/mid-jungle/", "Champion Synergies"], ["/synergies/top/", "Champion Synergies"],
   ["/comps/", "Comp Library"], ["/pool/", "Champion Pool"], ["/pro-drafts/", "Pro Drafts"], ["/geng/", "Gen.G"], ["/meta/", "Meta / Research"]];
 for (const [path, title] of sections) {
   const res = await open(path);
@@ -36,14 +36,19 @@ for (const [path, title] of sections) {
   check(`load + refresh ${path}`, res.status() === 200 && t === title && t2 === title, `${res.status()} "${t}" / after refresh "${t2}"`);
 }
 // Without trailing slash (typed URL)
-for (const path of ["/pool", "/meta", "/first-pick/bot"]) {
+for (const path of ["/pool", "/meta", "/synergies/bot"]) {
   const res = await open(path);
   check(`no-slash URL ${path}`, res.status() === 200 && !!(await h1()), `${res.status()} -> ${page.url()}`);
 }
-// First Pick index forwards to Bot
-await open("/first-pick/");
-await page.waitForURL(/first-pick\/bot\/$/, { timeout: 5000 }).catch(() => {});
-check("/first-pick/ forwards to Bot tab", /\/lol-drafting\/first-pick\/bot\/$/.test(page.url()) || page.url().endsWith("/first-pick/bot/"), page.url());
+// Champion Synergies (First Pick until 2026-10-10): the index forwards to Bot; old /first-pick/ links keep working, query included
+for (const [from, to] of [["/synergies/", "/synergies/bot/"], ["/synergies/", "/synergies/bot/"], ["/synergies/bot/", "/synergies/bot/"],
+  ["/synergies/mid-jungle/?champ=fizz&role=MID", "/synergies/mid-jungle/?champ=fizz&role=MID"]]) {
+  await open(from);
+  await page.waitForURL((u) => u.pathname.includes("/synergies/") && u.pathname.endsWith("/") && !u.pathname.endsWith("/synergies/"), { timeout: 5000 }).catch(() => {});
+  const u = new URL(page.url());
+  check(`${from} forwards to ${to}`, u.pathname + u.search === new URL(base).pathname + to && (await h1()) === "Champion Synergies", page.url());
+}
+check("Champion Synergies page title", (await page.title()) === "Champion Synergies · Draft Assistant", await page.title());
 
 // CSS applied (dark navy nav)
 await open("/");
@@ -51,20 +56,22 @@ const navBg = await page.locator("aside.sidebar").evaluate((e) => getComputedSty
 check("CSS loads under base path", navBg !== "rgba(0, 0, 0, 0)" && navBg !== "rgb(255, 255, 255)", navBg);
 
 // Client navigation through the sidebar keeps the base path
-const navTargets = ["First Pick", "Comp Library", "Champion Pool", "Pro Drafts", "Gen.G", "Meta / Research", "Draft Room"];
-for (const label of navTargets) {
+// Sidebar label, then the page title it opens (Synergies opens Champion Synergies).
+const navTargets = [["Synergies", "Champion Synergies"], "Comp Library", "Champion Pool", "Pro Drafts", "Gen.G", "Meta / Research", "Draft Room"];
+for (const target of navTargets) {
+  const [label, title] = Array.isArray(target) ? target : [target, target];
   await page.locator(".nav a", { hasText: label }).first().click();
-  await page.waitForFunction((l) => document.querySelector("main h1")?.textContent?.trim() === l, label, { timeout: 8000 }).catch(() => {});
+  await page.waitForFunction((l) => document.querySelector("main h1")?.textContent?.trim() === l, title, { timeout: 8000 }).catch(() => {});
   const u = new URL(page.url());
-  check(`nav click ${label}`, u.pathname.startsWith(new URL(base).pathname + "/") && (await h1()) === label, page.url());
+  check(`nav click ${label}`, u.pathname.startsWith(new URL(base).pathname + "/") && (await h1()) === title, page.url());
 }
 
 // Filters in the URL
 await open("/pro-drafts/?team=Gen.G&id=lck26po-finals-g1-geng");
 const card = await page.locator("main .panel-head h2").first().textContent();
 check("Pro Drafts filter + selected game from URL", /Gen\.G vs/.test(card ?? ""), card);
-await open("/first-pick/bot/?champ=ziggs");
-check("First Pick ?champ=ziggs selects Ziggs", (await page.locator("main").textContent()).includes("Ziggs"), "");
+await open("/synergies/bot/?champ=ziggs");
+check("Champion Synergies ?champ=ziggs selects Ziggs", (await page.locator("main").textContent()).includes("Ziggs"), "");
 
 // Draft Room: recommendations ranked by draft fit, pro evidence kept apart
 const recNames = async (role) => page.locator(`.recs .fit-role.role-${role} .fit-head .name`).allTextContents();
@@ -247,7 +254,7 @@ await page.locator(".theme-toggle").click();
   const drawer = await page.locator(".drawer").textContent().catch(() => "");
   check("meta: champion drawer keeps my pool apart from pro evidence", /Synergy/.test(drawer) && /Pool/.test(drawer) && /Pro evidence/i.test(drawer) && /View in Champion Pool/.test(drawer), drawer.slice(0, 80));
   await page.keyboard.press("Escape");
-  await open("/first-pick/bot/?champ=ezreal");
+  await open("/synergies/bot/?champ=ezreal");
   const karmaRow = await page.locator(".pro-table tr", { hasText: "Karma" }).first().innerText().catch(() => "");
   check("pro pairings show games, event, patch and date (Ezreal + Karma)", /1\s+Demacia Cup.*\s+16\.18\s+Oct 3/.test(karmaRow), karmaRow.replace(/\s+/g, " "));
 }
@@ -343,39 +350,39 @@ await page.locator(".theme-toggle").click();
   check("comps: short job labels on the card, the full job kept in its title",
     (await yp.locator(".lu-top .lu-job").textContent()) === "Zone control" && (await yp.locator(".lu-top .lu-job").getAttribute("title")) === "Zone space and cut off exits", "");
 }
-// First Pick: a champion with no saved record gets a Proposed profile (alan, 2026-10-10), notes inside their column
+// Champion Synergies: a champion with no saved record gets a Proposed profile (alan, 2026-10-10), notes inside their column
 {
-  await open("/first-pick/mid-jungle/?champ=fizz&role=MID");
+  await open("/synergies/mid-jungle/?champ=fizz&role=MID");
   const prop = page.locator(".scout .layer.clash.proposed");
   const text = (await prop.first().textContent().catch(() => "")) ?? "";
-  check("first pick: Fizz mid gets proposed jungle partners, labelled Proposed · kit-based", (await page.locator(".pick-rail a.active .rail-name").textContent().catch(() => "")) === "Fizz"
+  check("synergies: Fizz mid gets proposed jungle partners, labelled Proposed · kit-based", (await page.locator(".pick-rail a.active .rail-name").textContent().catch(() => "")) === "Fizz"
     && /Proposed jungle/.test(text) && /Proposed · kit-based/.test(text), text.slice(0, 120));
   const spill = await page.locator(".scout .prop-partner .chip-note").evaluateAll((els) => els.filter((e) => {
     const sec = e.closest(".scout-sec").getBoundingClientRect(), r = e.getBoundingClientRect();
     return r.right > sec.right + 1 || e.scrollWidth > e.clientWidth + 1;
   }).length);
-  check("first pick: proposed reasons wrap inside their column", spill === 0, `${spill} overflowing`);
-  await open("/first-pick/support/?champ=nami");
+  check("synergies: proposed reasons wrap inside their column", spill === 0, `${spill} overflowing`);
+  await open("/synergies/support/?champ=nami");
   const conf = (await page.locator(".scout .layer.clash:not(.proposed)").first().textContent().catch(() => "")) ?? "";
-  check("first pick: Support tab keeps Saved synergy (Nami with Corki) apart from Proposed", /Saved synergy/.test(conf) && /Corki/.test(conf) && (await page.locator(".scout .layer.clash.proposed").count()) === 1, conf.slice(0, 80));
+  check("synergies: Support tab keeps Saved synergy (Nami with Corki) apart from Proposed", /Saved synergy/.test(conf) && /Corki/.test(conf) && (await page.locator(".scout .layer.clash.proposed").count()) === 1, conf.slice(0, 80));
 }
-// First Pick: hover card on desktop, drawer on click
+// Champion Synergies: hover card on desktop, drawer on click
 {
-  await open("/first-pick/bot/?champ=caitlyn");
-  check("first pick: rail marks the selected pick", (await page.locator(".pick-rail a.active .rail-name").textContent().catch(() => "")) === "Caitlyn", "");
-  check("first pick: sources start collapsed", (await page.locator(".scout-sources").count()) === 1 && !(await page.locator(".scout-sources").evaluate((d) => d.open)), "");
+  await open("/synergies/bot/?champ=caitlyn");
+  check("synergies: rail marks the selected pick", (await page.locator(".pick-rail a.active .rail-name").textContent().catch(() => "")) === "Caitlyn", "");
+  check("synergies: sources start collapsed", (await page.locator(".scout-sources").count()) === 1 && !(await page.locator(".scout-sources").evaluate((d) => d.open)), "");
   await page.locator(".pick-rail input[type=search]").fill("nami");
   const railNames = await page.locator(".pick-rail .rail-name").allTextContents();
-  check("first pick: rail search matches partners (nami -> Corki)", railNames.includes("Corki") && !railNames.includes("Caitlyn"), railNames.join(","));
+  check("synergies: rail search matches partners (nami -> Corki)", railNames.includes("Corki") && !railNames.includes("Caitlyn"), railNames.join(","));
 
-  await open("/first-pick/bot/?champ=sivir");
+  await open("/synergies/bot/?champ=sivir");
   const lulu = page.locator(".pick-card .champ-btn", { hasText: "Lulu" }).first();
   await lulu.hover();
   const card = await page.locator(".hovercard").waitFor({ timeout: 3000 }).then(() => page.locator(".hovercard").textContent()).catch(() => "");
-  check("first pick: hovering Lulu shows Synergy · Default with Sivir", /Lulu/.test(card) && /Synergy · Default/.test(card) && /Peel 3/.test(card), card.slice(0, 120));
+  check("synergies: hovering Lulu shows Synergy · Default with Sivir", /Lulu/.test(card) && /Synergy · Default/.test(card) && /Peel 3/.test(card), card.slice(0, 120));
   await lulu.click();
   await page.locator(".drawer").waitFor({ timeout: 3000 }).catch(() => {});
-  check("first pick: clicking a champion opens the drawer", (await page.locator(".drawer h2").textContent().catch(() => "")) === "Lulu" && (await page.locator(".hovercard").count()) === 0, "");
+  check("synergies: clicking a champion opens the drawer", (await page.locator(".drawer h2").textContent().catch(() => "")) === "Lulu" && (await page.locator(".hovercard").count()) === 0, "");
   await page.keyboard.press("Escape");
 }
 // Mobile navigation
@@ -398,10 +405,10 @@ const draftOverflow = await page.evaluate(() => document.documentElement.scrollW
 check("draft room at 390px: slots scroll inside their rows, no page overflow", draftOverflow <= 0, `${draftOverflow}px`);
 {
   const m = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
-  await m.goto(base + "/first-pick/bot/?champ=sivir", { waitUntil: "networkidle" });
+  await m.goto(base + "/synergies/bot/?champ=sivir", { waitUntil: "networkidle" });
   await m.locator(".pick-card .champ-btn", { hasText: "Lulu" }).first().tap();
   await m.waitForTimeout(400);
-  check("first pick at 390px: a tap opens the drawer directly", (await m.locator(".drawer").count()) === 1 && (await m.locator(".hovercard").count()) === 0, "");
+  check("synergies at 390px: a tap opens the drawer directly", (await m.locator(".drawer").count()) === 1 && (await m.locator(".hovercard").count()) === 0, "");
   await m.close();
 }
 await open("/comps/");
@@ -511,7 +518,7 @@ if (shots) {
     await page.evaluate((t) => localStorage.setItem("theme", t), theme);
     for (const [w, h, tag] of [[1440, 900, "desk"], [390, 844, "mob"]]) {
       await page.setViewportSize({ width: w, height: h });
-      for (const [path, name] of [["/?top=ambessa&jungle=vi&bot=ziggs&vs=top:renekton,bot:sivir,support:lulu", "draft"], ["/", "empty"], ["/geng/", "geng"], ["/first-pick/bot/?champ=sivir", "firstpick"], ["/pool/", "pool"], ["/meta/", "meta"], ["/pro-drafts/", "prodrafts"]]) {
+      for (const [path, name] of [["/?top=ambessa&jungle=vi&bot=ziggs&vs=top:renekton,bot:sivir,support:lulu", "draft"], ["/", "empty"], ["/geng/", "geng"], ["/synergies/bot/?champ=sivir", "synergies"], ["/pool/", "pool"], ["/meta/", "meta"], ["/pro-drafts/", "prodrafts"]]) {
         await open(path);
         await page.waitForTimeout(700);
         await page.screenshot({ path: `${shots}/review-${name}-${tag}-${theme}.png` });

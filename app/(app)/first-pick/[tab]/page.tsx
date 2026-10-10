@@ -1,25 +1,15 @@
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import { PageLoading } from "@/components/ui";
-import { FirstPickView } from "@/components/views/FirstPickView";
-import { TABS, type Tab } from "@/components/views/first-pick-tabs";
-import { getBotPairings, getDrawerData, getMeta, getMidJungle, getPool, getProDrafts, getTopPicks } from "@/lib/data";
-import { eventMap, nameMap, sourceMap } from "@/lib/lookup";
+import { Forward } from "@/components/Forward";
+import { TABS } from "@/components/views/synergy-tabs";
 
+// Old /first-pick/<tab>/ links forward to the same Champion Synergies tab, query included (see ../page.tsx).
 export const dynamicParams = false;
 export function generateStaticParams() {
   return Object.keys(TABS).map((tab) => ({ tab }));
 }
 
-export default async function FirstPick({ params }: { params: Promise<{ tab: string }> }) {
+export default async function FirstPickTab({ params }: { params: Promise<{ tab: string }> }) {
   const { tab } = await params;
   if (!(tab in TABS)) notFound();
-  const stats = Object.fromEntries(getMeta().stats.filter((s) => s.winRate != null).map((s) => [s.champion, { ...s, winRate: s.winRate! }]));
-  const draftLabels = Object.fromEntries(getProDrafts().map((d) => [d.id, `${d.team} ${d.seriesGame}`]));
-  return (
-    <Suspense fallback={<PageLoading title="First Pick" />}>
-      <FirstPickView tab={tab as Tab} names={nameMap()} sources={sourceMap()} events={eventMap()} stats={stats} draftLabels={draftLabels}
-        bot={getBotPairings()} midJungle={getMidJungle()} top={getTopPicks()} pool={getPool()} drawerData={getDrawerData()} />
-    </Suspense>
-  );
+  return <Forward to={`/synergies/${tab}/`} label={`Champion Synergies: ${TABS[tab as keyof typeof TABS]}`} />;
 }

@@ -15,7 +15,7 @@ const grotesk = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Draft Assistant",
+  title: { default: "Draft Assistant", template: "%s · Draft Assistant" },
   description: "League of Legends drafting tool. Fan project, not endorsed by Riot Games.",
   robots: { index: false, follow: false },
 };

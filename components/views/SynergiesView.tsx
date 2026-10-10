@@ -9,15 +9,15 @@ import { ScoutingReport } from "@/components/ScoutingReport";
 import type { DrawerData } from "@/lib/data";
 import { PageHeader } from "@/components/ui";
 import type { EventMap } from "@/lib/evidence";
-import { TABS, type Tab } from "./first-pick-tabs";
-import { poolTierRank, sortBotPicks, sortMidJunglePicks } from "@/lib/first-pick-order";
+import { TABS, type Tab } from "./synergy-tabs";
+import { poolTierRank, sortBotPicks, sortMidJunglePicks } from "@/lib/synergy-order";
 import { proGames } from "@/lib/pool-stats";
 import { proposedCard, proposedPartners, shownPartners } from "@/lib/proposed";
 import type { BotPairing, MetaStat, MidJunglePairing, PoolEntry, Role, Source, TopPick } from "@/lib/schema";
 
 const GRADE_ORDER = ["A", "A-", "B+", "B", "B-", "C+", "C"];
 
-export function FirstPickView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top, pool, drawerData }: {
+export function SynergiesView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top, pool, drawerData }: {
   drawerData: DrawerData; tab: Tab; names: Record<string, string>; sources: Record<string, Source>; events: EventMap; stats: Record<string, MetaStat & { winRate: number }>;
   draftLabels: Record<string, string>; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; pool: PoolEntry[];
 }) {
@@ -97,27 +97,27 @@ export function FirstPickView({ tab, names, sources, events, stats, draftLabels,
 
   return (
     <>
-      <PageHeader title="First Pick"
+      <PageHeader title="Champion Synergies"
         actions={draftHref && <Link className="btn primary sm" href={draftHref}>Open in Draft Room →</Link>} />
       <nav className="tabs">
-        {(Object.keys(TABS) as Tab[]).map((t) => <Link key={t} href={`/first-pick/${t}`} className={t === tab ? "active" : undefined}>{TABS[t]}</Link>)}
+        {(Object.keys(TABS) as Tab[]).map((t) => <Link key={t} href={`/synergies/${t}`} className={t === tab ? "active" : undefined}>{TABS[t]}</Link>)}
       </nav>
       <div className="split scout-split">
-        <nav className="pick-rail" aria-label={`${TABS[tab]} first picks`}>
-          <input type="search" placeholder="Search picks or partners" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search picks" />
+        <nav className="pick-rail" aria-label={`${TABS[tab]} champions`}>
+          <input type="search" placeholder="Search champions or partners" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search champions" />
           <ul ref={rail}>
             {shown.map((x) => {
               const active = isSelected(x);
               return (
                 <li key={x.id + (x.role ?? "")} className={x.proposed ? "proposed" : undefined}>
-                  <Link href={`/first-pick/${tab}?champ=${x.id}${x.role ? `&role=${x.role}` : ""}`} className={active ? "active" : undefined} aria-current={active ? "page" : undefined}>
+                  <Link href={`/synergies/${tab}?champ=${x.id}${x.role ? `&role=${x.role}` : ""}`} className={active ? "active" : undefined} aria-current={active ? "page" : undefined}>
                     <ChampIcon id={x.id} name={x.label} role={listRole(x)} size="md" />
                     <span className="rail-text"><span className="rail-name">{x.label}</span><span className="rail-sub">{x.sub}</span></span>
                   </Link>
                 </li>
               );
             })}
-            {!shown.length && <li className="rail-empty">No picks match “{query}”.</li>}
+            {!shown.length && <li className="rail-empty">No champions match “{query}”.</li>}
           </ul>
         </nav>
         <div>

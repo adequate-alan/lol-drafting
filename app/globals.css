@@ -448,7 +448,7 @@ td.wrap { white-space: normal; min-width: 220px; line-height: 1.35; }
 
 
 /* ==========================================================================
-   Pairing cards (First Pick, Draft Room)
+   Pairing cards (Champion Synergies, Draft Room)
    ========================================================================== */
 .pick-card { overflow: hidden; }
 .pick-card .pick-head { display: flex; align-items: center; gap: var(--s4); padding: var(--s4) var(--s5); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
@@ -469,7 +469,7 @@ td.wrap { white-space: normal; min-width: 220px; line-height: 1.35; }
 .source-links .state { color: var(--text-faint); }
 
 /* ==========================================================================
-   First Pick
+   Champion Synergies
    ========================================================================== */
 .split { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: var(--s5); align-items: start; }
 .split > .table-wrap { position: sticky; top: var(--s5); max-height: calc(100vh - 150px); }

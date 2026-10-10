@@ -142,6 +142,11 @@ Change these only when alan explicitly says so, then update the test in the same
 
 ## UI
 
+- **Champion Synergies** (`/synergies/<tab>/`, sidebar "Synergies"; alan renamed it from First Pick on 2026-10-10) is
+  the champion synergy and pairing reference: rail, role tabs, saved / proposed partners, pro pairings, "Open in Draft
+  Room". Old `/first-pick/…` URLs forward there with their query (`components/Forward.tsx`). The name **First Pick** is
+  reserved for a future blind-pick feature (blind-pick safety, counterpick vulnerability, flexibility, draft priority);
+  don't reuse it for synergy content.
 - Gen.G ivory + champagne gold + black design system (alan, 2026-10-10: no navy; light mode is the strongest Gen.G look,
   dark mode is warm near-black; primitives `--ivory`, `--champagne`, `--black`, etc. mapped to semantic tokens; role
   colors only in the small role marker; Pro evidence a muted gray-teal); every color, spacing, radius and type size is a token in `app/globals.css`

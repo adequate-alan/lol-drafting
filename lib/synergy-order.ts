@@ -1,4 +1,4 @@
-// First Pick rail order (alan, 2026-10-10: "Pool tier"): core, then depth, then flex, then picks outside the pool;
+// Champion Synergies rail order (alan, 2026-10-10: "Pool tier"): core, then depth, then flex, then picks outside the pool;
 // confidence and name break ties. Mid / Jungle keeps mids above junglers. Top keeps its blind-grade order.
 // Display order only; nothing here touches saved pairings or the draft-fit score.
 import type { BotPairing, MidJunglePairing, PoolEntry, Role } from "./schema";
