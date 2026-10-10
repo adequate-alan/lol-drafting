@@ -460,19 +460,103 @@ td.wrap { white-space: normal; min-width: 220px; line-height: 1.35; }
 /* ==========================================================================
    Comp Library
    ========================================================================== */
+.comp-filters { margin-bottom: var(--s5); gap: var(--s5); }
+.filter-group { display: inline-flex; align-items: center; gap: var(--s3); }
+.filter-label { font-size: var(--fs-2xs); font-weight: 650; letter-spacing: .05em; text-transform: uppercase; color: var(--text-faint); }
 .shell-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(430px, 1fr)); gap: var(--s5); }
 @media (max-width: 560px) { .shell-grid { grid-template-columns: minmax(0, 1fr); } }
-.shell { display: flex; flex-direction: column; overflow: hidden; scroll-margin-top: 16px; }
+/* No overflow clipping: a slot's swap list drops below the lineup, over the card's own footer. */
+.shell { display: flex; flex-direction: column; scroll-margin-top: 16px; }
 .shell.observed { border-top: 2px solid var(--pro-line); }
 .shell.generalized { border-top: 2px solid var(--logic-line); }
 .shell:target { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
-.shell .shell-head { padding: var(--s4) var(--s5); display: grid; gap: 3px; border-bottom: 1px solid var(--border); }
+.shell .shell-head { padding: var(--s4) var(--s5) var(--s3); display: grid; gap: 3px; }
 .shell .shell-head h2 { font-size: var(--fs-md); }
-.shell table td { height: 34px; }
-.shell td.job { color: var(--text-muted); font-size: var(--fs-xs); white-space: normal; line-height: 1.3; }
-.shell .swaps { display: flex; gap: 3px; flex-wrap: wrap; align-items: center; justify-content: flex-end; }
-.shell .shell-foot { margin-top: auto; padding: var(--s4) var(--s5); border-top: 1px solid var(--border); display: grid; gap: var(--s3); }
-.shell .wc { font-size: var(--fs-sm); }
+.shell-kind .src { font-size: var(--fs-2xs); }
+.shell-tags { display: flex; flex-wrap: wrap; gap: 2px var(--s4); line-height: 1.35; }
+.shell-by { color: var(--pro); }
+.shell.generalized .shell-by { color: var(--logic); }
+.shell-tag + .shell-tag::before, .shell-by + .shell-tag::before { content: "·"; margin-right: var(--s4); color: var(--text-faint); }
+.shell .shell-foot { margin-top: auto; padding: var(--s4) var(--s5) var(--s4); border-top: 1px solid var(--border); display: grid; gap: var(--s3); }
+.shell .wc { font-size: var(--fs); font-weight: 600; line-height: 1.35; color: var(--text); }
+.shell .why { line-height: 1.4; }
+.shell-actions { margin-top: var(--s1); }
+.src-toggle { border: 0; background: none; padding: 0; font: inherit; font-size: var(--fs-xs); color: var(--text-muted); cursor: pointer; }
+.src-toggle:hover, .src-toggle[aria-expanded="true"] { color: var(--pro); }
+.src-toggle:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--r-sm); }
+.shell-sources { list-style: none; margin: 0; padding: var(--s3) 0 0; border-top: 1px dashed var(--border); display: grid; gap: var(--s2); font-size: var(--fs-xs); }
+.shell-sources li { display: flex; flex-wrap: wrap; gap: 2px var(--s4); }
+.shell-sources a { color: var(--pro); }
+
+/* Lineup: five champions across, role above, name and job below. Highlights only change colors and rings. */
+.lineup { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 0 var(--s3) var(--s4); }
+.lu-slot { position: relative; display: grid; justify-items: center; align-content: start; gap: 2px; padding: var(--s3) var(--s2) var(--s2); border-radius: var(--r); text-align: center; min-width: 0; transition: background var(--t-fast), opacity var(--t-fast); }
+.lu-champ {
+  display: grid; justify-items: center; gap: var(--s2); width: 100%; min-width: 0; padding: 0; border: 0; background: none; color: inherit;
+  font: inherit; cursor: pointer; border-radius: var(--r);
+}
+.lu-champ:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.lu-champ .role-tag { font-size: var(--fs-3xs); letter-spacing: .07em; }
+.lu-champ .champ { transition: box-shadow var(--t-fast); }
+.lu-name { display: block; max-width: 100%; font-size: var(--fs-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lu-job {
+  margin: 0; max-width: 100%; font-size: var(--fs-2xs); line-height: 1.3; color: var(--text-muted); min-height: 2.6em;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.lu-for { color: var(--logic); }
+.lu-swaps {
+  border: 0; background: none; padding: 1px var(--s2); font: inherit; font-size: var(--fs-2xs); color: var(--text-faint); cursor: pointer;
+  border-radius: var(--r-sm); white-space: nowrap;
+}
+.lu-swaps:hover, .lu-swaps[aria-expanded="true"] { color: var(--logic); background: var(--logic-subtle); }
+.lu-swaps:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.lu-slot:hover, .lu-slot.is-active { background: var(--surface-hover); }
+.lu-slot.is-open { background: var(--accent-subtle); }
+.lu-slot.is-open .champ { box-shadow: 0 0 0 2px var(--accent); }
+.lineup.linking .lu-slot.has-saved .champ { box-shadow: 0 0 0 2px var(--clash-line); }
+.lineup.linking .lu-slot.has-pro:not(.has-saved) .champ { box-shadow: 0 0 0 2px var(--pro-line); }
+.lineup.selecting .lu-slot:not(.is-open):not(.has-saved):not(.has-pro) { opacity: .55; }
+.lineup.selecting .lu-slot:not(.is-open):not(.has-saved):not(.has-pro):hover { opacity: 1; }
+/* A previewed swap: dashed slate ring (General Draft Logic), never the pro or saved treatment. */
+.lu-slot.is-swapped .champ { box-shadow: 0 0 0 1px var(--bg), 0 0 0 2px var(--logic-line); }
+.lu-slot.is-swapped .lu-swaps { color: var(--logic); }
+.swap-menu {
+  position: absolute; top: calc(100% - 2px); left: 50%; transform: translateX(-50%); z-index: 20; width: 168px;
+  display: grid; gap: 1px; padding: var(--s3); text-align: left;
+  background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--r-lg); box-shadow: var(--shadow-pop);
+}
+.lu-top .swap-menu, .lu-jungle .swap-menu { left: 0; transform: none; }
+.lu-bot .swap-menu, .lu-support .swap-menu { left: auto; right: 0; transform: none; }
+.swap-menu-head { display: flex; align-items: center; gap: 5px; padding: 0 var(--s2) var(--s2); font-size: var(--fs-2xs); font-weight: 650; color: var(--logic); }
+.swap-item {
+  display: flex; align-items: center; gap: var(--s4); width: 100%; padding: 3px var(--s2); border: 0; background: none; color: inherit;
+  font: inherit; font-size: var(--fs-sm); text-align: left; cursor: pointer; border-radius: var(--r);
+}
+.swap-item .faint { margin-left: auto; }
+.swap-item:hover, .swap-item:focus-visible { background: var(--surface-hover); outline: none; }
+.swap-item.on { background: var(--logic-subtle); }
+.swap-item.original { border-bottom: 1px solid var(--border); border-radius: var(--r) var(--r) 0 0; margin-bottom: 2px; }
+/* Preview strip: slate (General Draft Logic), between the lineup and the win condition. */
+.shell-preview {
+  margin: 0 var(--s5) var(--s4); padding: var(--s3) var(--s4); display: grid; gap: 3px; font-size: var(--fs-xs);
+  background: var(--logic-subtle); border: 1px dashed var(--logic-line); border-radius: var(--r);
+}
+.shell-preview .btn.sm { height: 20px; padding: 0 var(--s3); }
+.pv-title { display: inline-flex; align-items: center; gap: 5px; color: var(--text); }
+.pv-title .ldot, .pv-title b { color: var(--logic); }
+.pv-note { margin: 0; color: var(--text-muted); font-size: var(--fs-2xs); }
+.pv-check { margin: 0; display: flex; flex-wrap: wrap; gap: 2px var(--s5); }
+.pv-chg { color: var(--text-muted); }
+.pv-chg .tnum { color: var(--text); font-family: var(--font-mono); font-size: var(--fs-2xs); }
+.pv-warn { color: var(--caution); }
+.pv-ok { color: var(--success); }
+@media (max-width: 560px) {
+  .lineup { padding: 0 var(--s1) var(--s3); }
+  .lu-slot { padding: var(--s3) 1px var(--s2); }
+  .lu-champ .champ.lg { --size: 38px; }
+  .lu-name { font-size: var(--fs-xs); }
+  .comp-filters { gap: var(--s3); }
+}
 
 /* ==========================================================================
    Gen.G
@@ -517,8 +601,6 @@ th a.sort.active { color: var(--accent-text); }
 .grid.cols-2 + .section-header, .grid + .section-header { margin-top: var(--s6); }
 a.badge:hover { text-decoration: none; border-color: var(--accent); color: var(--text); }
 .shell-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--s3) var(--s6); }
-.shell .swaps { display: flex; gap: 2px 6px; flex-wrap: wrap; justify-content: flex-start; margin-top: 2px; font-size: var(--fs-2xs); }
-.shell .swap { color: var(--text-muted); border-bottom: 1px dashed var(--border-strong); line-height: 1.3; }
 
 /* Champion picker in open draft slots */
 .picker { position: relative; }
@@ -605,34 +687,8 @@ table.mini th, table.mini td { height: auto; padding: 3px var(--s3); }
 }
 
 /* ==========================================================================
-   Comp Library slots + champion drawer (components/ChampionDrawer.tsx)
+   Champion drawer (components/ChampionDrawer.tsx)
    ========================================================================== */
-.comp-slot-row { cursor: pointer; transition: background var(--t-fast); }
-.comp-slot-row:hover, .comp-slot-row.is-active { background: var(--surface-hover); }
-.comp-slot-row.is-open { background: var(--accent-subtle); box-shadow: inset 2px 0 0 var(--accent); }
-.comp-slot {
-  display: flex; align-items: center; gap: var(--s4); width: 100%; padding: 0; border: 0; background: none; color: inherit;
-  font: inherit; text-align: left; cursor: pointer; border-radius: var(--r);
-}
-.comp-slot:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-.comp-slot-name { display: grid; min-width: 0; line-height: 1.2; }
-.comp-slot-name b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.comp-slot .chev { margin-left: auto; color: var(--text-faint); font-size: var(--fs-md); opacity: 0; transition: opacity var(--t-fast); }
-.comp-slot-row:hover .chev, .comp-slot-row.is-active .chev, .comp-slot-row.is-open .chev { opacity: 1; color: var(--accent-text); }
-@media (hover: none) { .comp-slot .chev { opacity: .7; } }
-/* Pairing highlights: comp-mates of the hovered or open pick that share a saved link (gold) or pro evidence (teal).
-   The pips' space is always reserved and only their color changes, so hovering never moves the layout. */
-.shell td.slot-cell { width: 208px; }
-.link-pips { display: grid; gap: 1px; width: 44px; flex: none; margin-left: auto; text-align: right; line-height: 1.15; }
-.pip { font-size: var(--fs-2xs); font-weight: 650; letter-spacing: .02em; color: transparent; white-space: nowrap; }
-.pip.clash.on { color: var(--clash); }
-.pip.pro.on { color: var(--pro); font-family: var(--font-mono); letter-spacing: -.01em; }
-.comp-slot .chev { margin-left: 0; }
-.comp-slots.linking .comp-slot-row.has-saved { box-shadow: inset 2px 0 0 var(--clash-line); }
-.comp-slots.linking .comp-slot-row.has-pro:not(.has-saved) { box-shadow: inset 2px 0 0 var(--pro-line); }
-.comp-slots.selecting .comp-slot-row:not(.is-open):not(.has-saved):not(.has-pro) { opacity: .55; }
-.comp-slots.selecting .comp-slot-row:not(.is-open):not(.has-saved):not(.has-pro):hover { opacity: 1; }
-
 .drawer {
   position: fixed; top: 0; right: 0; bottom: 0; z-index: 50; width: min(420px, 100vw);
   display: flex; flex-direction: column; background: var(--surface-raised); border-left: 1px solid var(--border-strong);
@@ -995,6 +1051,7 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 @media (prefers-reduced-motion: reduce) { .hovercard { animation: none; } }
 .hc-head { display: flex; gap: var(--s4); align-items: center; }
 .hc-head b { font-size: var(--fs); }
+.hc-job { margin: 0; line-height: 1.35; }
 .hc-traits { font-family: var(--font-mono); letter-spacing: -.02em; }
 .hc-rel { display: grid; gap: var(--s2); padding-top: var(--s4); border-top: 1px solid var(--border); }
 .hc-line { margin: 0; line-height: 1.35; display: block; padding-left: 10px; position: relative; }
@@ -1005,7 +1062,6 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .hc-line.logic b, .hc-line.logic .ldot { color: var(--logic); }
 .hc-foot { padding-top: var(--s3); border-top: 1px solid var(--border); }
 .hc-title { display: grid; gap: 1px; min-width: 0; }
-@media (max-width: 560px) { .shell td.slot-cell { width: 160px; } .link-pips { display: none; } }
 
 /* Picker list scrolls inside itself (about 8 rows), flips above the input when space below is short */
 .picker-list {
