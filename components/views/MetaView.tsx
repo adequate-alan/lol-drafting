@@ -8,9 +8,9 @@ import { ChampIcon, LayerBlock, PageHeader, SectionHeader, SourceBadge, SourceLi
 import { shortDate } from "@/lib/evidence";
 import {
   HUB_SORTS, comparison, eventSummary, hubData, pairings, recentDrafts, roleRows, sortRoleRows, trending,
-  type HubInput, type HubSort, type Pairing, type RoleRow,
+  type HubInput, type HubSort, type Pairing, type RoleRow, type RoleTab,
 } from "@/lib/meta-hub";
-import { presenceOf, roleShare } from "@/lib/pool-stats";
+import { allRoles, presenceOf, roleShare } from "@/lib/pool-stats";
 import { ROLES, type MetaEvent, type PoolEntry, type Role, type Rule, type Source } from "@/lib/schema";
 
 const DASH = <span className="faint">—</span>;
@@ -34,7 +34,10 @@ export function MetaView({ names, sources, input, pool, rules, drawerData }: {
   // "All tournaments" is an explicit choice (?event=all); each row then names the tournament its stats come from.
   const allMode = get("event") === "all";
   const eventId = allMode ? undefined : hub.events.find((e) => e.id === get("event"))?.id ?? hub.events[0]?.id;
-  const role = (ROLES as readonly string[]).includes(get("role") ?? "") ? (get("role") as Role) : "MID";
+  // ALL lists every champion in scope, including those no source or recorded game places in a role.
+  const rawRole = get("role");
+  const role: RoleTab = rawRole === "ALL" || (ROLES as readonly string[]).includes(rawRole ?? "") ? (rawRole as RoleTab) : "MID";
+  const tabRole = role === "ALL" ? undefined : role;
   const selected = eventId ? hub.events.filter((e) => e.id === eventId) : hub.events;
   // Presence is the useful default where the event has it; otherwise newest evidence first.
   const hasPresence = hub.stats.some((s) => (!eventId || s.event.id === eventId) && presenceOf(s) != null);
@@ -47,7 +50,7 @@ export function MetaView({ names, sources, input, pool, rules, drawerData }: {
 
   const rows = sortRoleRows(roleRows(hub, role, eventId), sort);
   const trend = trending(hub);
-  const compare = comparison(hub, role);
+  const compare = comparison(hub, tabRole);
   const bot = pairings(hub, "BOT", "SUPPORT", eventId);
   const midJg = pairings(hub, "MID", "JUNGLE", eventId);
   const drafts = recentDrafts(hub, eventId);
@@ -107,14 +110,16 @@ export function MetaView({ names, sources, input, pool, rules, drawerData }: {
       <div className="toolbar">
         <nav className="seg scroll" aria-label="Role">
           {ROLES.map((r) => <button key={r} className={role === r ? "active" : undefined} onClick={() => set("role", r)}><span className={`role-tag role-${r}`}>{r}</span></button>)}
+          <button className={role === "ALL" ? "active" : undefined} onClick={() => set("role", "ALL")} title="Every champion in this scope, with or without role evidence">ALL</button>
         </nav>
         <span className="count">{rows.length} champions</span>
       </div>
+      <p className="xs muted hub-line">Picks, bans and win rate are champion-wide tournament totals across all roles; presence is computed as (picks + bans) / tournament games. A champion appears under a role only when its source or a recorded game shows that role{role === "ALL" ? "" : "; ALL lists everyone"}.</p>
       <div className="table-wrap tall hub-table">
         <table>
           <thead><tr>
-            <th>Champion</th>{sortHead("picks")}{sortHead("bans", "hide-sm")}{sortHead("presence")}{sortHead("winRate")}
-            <th className="num hide-sm" title="Games stored in this repo with this champion in this role (not a tournament count)">Recorded</th>
+            <th>Champion</th>{role === "ALL" && <th className="hide-sm" title="Roles named by the source or shown in recorded games">Roles</th>}{sortHead("picks")}{sortHead("bans", "hide-sm")}{sortHead("presence")}{sortHead("winRate")}
+            <th className="num hide-sm" title={`Games stored in this repo with this champion${role === "ALL" ? "" : " in this role"} (not a tournament count)`}>Recorded</th>
             <th className="hide-sm" title="Verified tournament picks per role">Role share</th>
             {allMode && <th className="hide-sm">Stats from</th>}
             <th><button className={`sort ${sort === "recency" ? "active" : ""}`} onClick={() => set("sort", "recency")}>Latest{sort === "recency" ? " ↓" : ""}</button></th>
@@ -123,16 +128,18 @@ export function MetaView({ names, sources, input, pool, rules, drawerData }: {
           <tbody>
             {rows.map((r) => {
               const s = r.stat?.stat, pres = r.stat ? presenceOf(r.stat) : null;
-              const k = `role-${r.role}-${r.id}`, open = openKey === k;
+              const k = `role-${r.role ?? "ALL"}-${r.id}`, open = openKey === k;
+              const flex = r.role && r.stat && allRoles(r.stat);
               return (
                 <Fragment key={r.id}>
-                  <tr className={`role-${r.role} click-row ${open ? "open" : ""}`} onClick={() => toggle(k)} tabIndex={0} aria-expanded={open}
+                  <tr className={`${r.role ? `role-${r.role} ` : ""}click-row ${open ? "open" : ""}`} onClick={() => toggle(k)} tabIndex={0} aria-expanded={open}
                     onKeyDown={(e) => { if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggle(k); } }}>
-                    <td><Champ id={r.id} r={r.role} /></td>
-                    <td className="num">{s ? <>{s.picks}{s.lowSample && <span className="low" title="Fewer than 5 picks">*</span>}</> : DASH}</td>
+                    <td><Champ id={r.id} r={r.role ?? r.roles[0]} /></td>
+                    {role === "ALL" && <td className="hide-sm nowrap">{r.roles.length ? r.roles.map((x, i) => <Fragment key={x}>{i > 0 && " "}<span className={`role-tag role-${x}`}>{x}</span></Fragment>) : <span className="faint" title="Neither the source nor a recorded game shows a role">—</span>}</td>}
+                    <td className="num">{s ? <>{s.picks}{s.lowSample && <span className="low" title="Fewer than 5 picks">*</span>}{flex && <span className="xs faint" title={`Champion-wide: played as ${r.stat!.roles.join(" / ")}; picks are not split by role`}> all roles</span>}</> : DASH}</td>
                     <td className="num hide-sm" title="Champion-wide: a ban has no role">{s?.bans ?? DASH}</td>
                     <td className="num">{pres != null ? <span className={pres >= 0.3 ? "heat-hi" : undefined}>{pct(pres)}</span> : DASH}</td>
-                    <td className="num">{s ? pct(s.winRate) : DASH}</td>
+                    <td className="num">{s?.winRate != null ? pct(s.winRate) : DASH}</td>
                     <td className="num hide-sm">{r.games.length || DASH}</td>
                     <td className="hide-sm nowrap tnum">{s ? roleShare(s) ?? DASH : DASH}</td>
                     {allMode && <td className="hide-sm nowrap">{r.stat ? `${r.stat.event.short} ${r.stat.event.patch}` : DASH}</td>}
@@ -140,7 +147,7 @@ export function MetaView({ names, sources, input, pool, rules, drawerData }: {
                     <td className="num hide-sm">{r.latest?.patch ?? DASH}</td>
                     <td className="num hide-sm">{shortDate(r.latest?.date) ?? DASH}</td>
                   </tr>
-                  {open && <tr className="hub-detail"><td colSpan={allMode ? 11 : 10}><RowDetail r={r} names={names} sources={sources} /></td></tr>}
+                  {open && <tr className="hub-detail"><td colSpan={10 + Number(allMode) + Number(role === "ALL")}><RowDetail r={r} names={names} sources={sources} /></td></tr>}
                 </Fragment>
               );
             })}
@@ -297,11 +304,11 @@ function RowDetail({ r, names, sources }: { r: RoleRow; names: Record<string, st
           return (
             <div key={e.id} className="small tnum hub-scope">
               <b>{e.name}</b> <span className="muted">· {e.patch} · {e.games ? `${e.games} games` : "total games unknown"}</span>
-              <div>{s.picks} pick{s.picks === 1 ? "" : "s"}{s.lowSample ? " (low sample)" : ""} · {s.bans ?? "—"} ban{s.bans === 1 ? "" : "s"} (champion-wide) · presence {pres != null ? `${pct(pres)} = (${s.picks} + ${s.bans}) / ${e.games}` : "— (needs bans and total games)"} · {pct(s.winRate)} WR · role share {roleShare(s) ?? "not verified"}</div>
+              <div>{s.picks} pick{s.picks === 1 ? "" : "s"}{s.lowSample ? " (low sample)" : ""} · {s.bans ?? "—"} ban{s.bans === 1 ? "" : "s"} (champion-wide) · presence {pres != null ? `${pct(pres)}, computed = (${s.picks} + ${s.bans}) / ${e.games}` : "— (needs bans and total games)"} · {s.winRate != null ? `${pct(s.winRate)} WR` : "no WR (banned only)"} · role share {roleShare(s) ?? "not verified"}</div>
               <div className="xs muted">Tournament aggregate, not counted from recorded games. {s.sources.length ? <SourceLinks ids={s.sources} sources={sources} /> : <span title={s.note}>Reported by alan, no stats page yet.</span>}</div>
             </div>
           );
-        }) : <p className="xs muted">No tournament aggregate for {names[r.id] ?? r.id} {r.role.toLowerCase()} in this scope, so picks, bans, presence and win rate show —.</p>}
+        }) : <p className="xs muted">No tournament aggregate for {names[r.id] ?? r.id}{r.role ? ` ${r.role.toLowerCase()}` : ""} in this scope, so picks, bans, presence and win rate show —.</p>}
       </LayerBlock>
       <LayerBlock layer="pro" title={`Recorded games · ${r.games.length}`}>
         {r.games.length ? r.games.slice(0, 8).map((g) => (
@@ -311,7 +318,7 @@ function RowDetail({ r, names, sources }: { r: RoleRow; names: Record<string, st
             {g.pending && <span className="badge plain">pending refresh</span>}
             <SourceLinks ids={g.sources} sources={sources} />
           </div>
-        )) : <p className="xs muted">No games stored for {names[r.id] ?? r.id} {r.role.toLowerCase()} in this scope.</p>}
+        )) : <p className="xs muted">No games stored for {names[r.id] ?? r.id}{r.role ? ` ${r.role.toLowerCase()}` : ""} in this scope.</p>}
         {r.games.length > 8 && <p className="xs faint">+{r.games.length - 8} older</p>}
       </LayerBlock>
     </div>

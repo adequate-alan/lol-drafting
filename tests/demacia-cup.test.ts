@@ -61,7 +61,8 @@ describe("Demacia Cup evidence", () => {
     expect(locke.roles).toEqual(["MID"]);
     expect(locke.reviewed).toBe(false);
     expect(locke.note).not.toMatch(/placeholder|not enough reference/i);
-    expect(events["demacia-cup-2026"].stats.find((s) => s.champion === "locke")).toMatchObject({ picks: 3, bans: 1, role: "MID" });
+    // Gol.gg's champion list (Oct 10) superseded alan's earlier 3 picks / 1 ban report.
+    expect(events["demacia-cup-2026"].stats.find((s) => s.champion === "locke")).toMatchObject({ picks: 5, bans: 4, wins: 2, role: "MID" });
   });
 });
 

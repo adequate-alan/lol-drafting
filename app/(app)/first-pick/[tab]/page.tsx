@@ -14,7 +14,7 @@ export function generateStaticParams() {
 export default async function FirstPick({ params }: { params: Promise<{ tab: string }> }) {
   const { tab } = await params;
   if (!(tab in TABS)) notFound();
-  const stats = Object.fromEntries(getMeta().stats.map((s) => [s.champion, s]));
+  const stats = Object.fromEntries(getMeta().stats.filter((s) => s.winRate != null).map((s) => [s.champion, { ...s, winRate: s.winRate! }]));
   const draftLabels = Object.fromEntries(getProDrafts().map((d) => [d.id, `${d.team} ${d.seriesGame}`]));
   return (
     <Suspense fallback={<PageLoading title="First Pick" />}>

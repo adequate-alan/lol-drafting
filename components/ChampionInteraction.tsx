@@ -144,7 +144,7 @@ export function ChampionHoverCard({ target, anchor, data, index, focus, comp, si
 
   const tier = poolTier(target.id, role, data);
   const games = index.games.filter((g) => g.picks[role] === target.id);
-  const stat = index.stats.filter((s) => s.stat.champion === target.id && listsRole(s.stat, role)).sort((a, b) => fresher(a.event, b.event))[0];
+  const stat = index.stats.filter((s) => s.stat.champion === target.id && (listsRole(s, role) || !s.roles.length)).sort((a, b) => fresher(a.event, b.event))[0];
   const traits = champ ? [...TRAITS].filter(([a]) => champ.attrs[a] >= 2).sort((x, y) => champ.attrs[y[0]] - champ.attrs[x[0]]).slice(0, 2) : [];
   const lines = relationLines({ id: target.id, role }, data, index, focus, comp);
   const about = comp ? "this comp" : focus ? index.names[focus.id] ?? focus.id : undefined;
@@ -170,7 +170,7 @@ export function ChampionHoverCard({ target, anchor, data, index, focus, comp, si
         </div>
       )}
       <div className="hc-foot xs muted">
-        {stat ? <span className="tnum">{stat.event.short} {stat.event.patch} · {stat.stat.picks} picks{stat.stat.lowSample ? "*" : ""} · {Math.round(stat.stat.winRate * 100)}% WR</span>
+        {stat ? <span className="tnum">{stat.event.short} {stat.event.patch} · {stat.stat.picks} picks{stat.stat.lowSample ? "*" : ""}{listsRole(stat, role) && stat.roles.length < 2 ? "" : " (all roles)"} · {stat.stat.winRate != null ? `${Math.round(stat.stat.winRate * 100)}% WR` : "banned only"}</span>
           : games.length ? <span className="tnum">{games.length} pro game{games.length > 1 ? "s" : ""} as {role.toLowerCase()} · {latest}</span> : "No pro data in this role"}
       </div>
     </div>,

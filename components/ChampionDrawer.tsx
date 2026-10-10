@@ -38,8 +38,10 @@ export function useDrawerIndex(data: DrawerData) {
     names: Object.fromEntries(data.champions.map((c) => [c.id, c.name])) as Record<string, string>,
     champs: Object.fromEntries(data.champions.map((c) => [c.id, c])) as Record<string, Champion>,
     events: Object.fromEntries(data.meta.events.map((e) => [e.id, e])) as EventMap,
-    games: proGames({ meta: data.meta, proDrafts: data.proDrafts, botPairings: data.botPairings, sources: data.sources }),
-    stats: eventStats(data.meta),
+    ...(() => {
+      const games = proGames({ meta: data.meta, proDrafts: data.proDrafts, botPairings: data.botPairings, sources: data.sources });
+      return { games, stats: eventStats(data.meta, games) };
+    })(),
   }), [data]);
 }
 export type DrawerIndex = ReturnType<typeof useDrawerIndex>;
@@ -120,7 +122,7 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
   const tier = poolTier(id, role, data);
   const draftHref = `/?${role.toLowerCase()}=${id}`;
   const poolHref = `/pool/?role=${role}&champ=${id}`;
-  const stats = index.stats.filter((s) => s.stat.champion === id && listsRole(s.stat, role))
+  const stats = index.stats.filter((s) => s.stat.champion === id && (listsRole(s, role) || !s.roles.length))
     .sort((a, b) => fresher(a.event, b.event));
   const games = index.games.filter((g) => g.picks[role] === id);
   const observed = groupObserved(observedFor(id, role, data), index.events, data.sources);
@@ -213,20 +215,20 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
             </>
           )}
 
-          <div className="xs muted detail-label" title="Gol.gg tournament totals, not counted from the games stored here. Bans and presence are champion-wide.">Tournament stats</div>
+          <div className="xs muted detail-label" title="Gol.gg tournament totals, not counted from the games stored here. Picks, bans, win rate and presence are champion-wide; presence is computed as (picks + bans) / games.">Tournament stats · all roles</div>
           {stats.length ? (
             <table className="mini">
               <thead><tr><th>Event</th><th className="num">Patch</th><th className="num">Picks</th><th className="num">Bans</th><th className="num">Pres.</th><th className="num">WR</th><th>Roles</th></tr></thead>
               <tbody>
-                {stats.map(({ event: e, stat: s }) => { const pres = presenceOf({ event: e, stat: s }); return (
+                {stats.map((x) => { const { event: e, stat: s } = x, pres = presenceOf(x); return (
                   <tr key={e.id}>
                     <td className="nowrap">{e.short}{e.status === "ongoing" && <span className="badge pro ongoing" title="Event still running; numbers are not final">Ongoing</span>}</td>
                     <td className="num">{e.patch}</td>
                     <td className="num">{s.picks}{s.lowSample && <span className="low" title="Fewer than 5 picks">*</span>}</td>
                     <td className="num">{s.bans ?? "—"}</td>
                     <td className="num">{pres != null ? pct(pres) : "—"}</td>
-                    <td className="num">{pct(s.winRate)}</td>
-                    <td className="xs nowrap">{roleShare(s) ?? "—"}</td>
+                    <td className="num">{s.winRate != null ? pct(s.winRate) : "—"}</td>
+                    <td className="xs nowrap">{roleShare(s) ?? (x.roles.join(" / ") || "not shown")}</td>
                   </tr>
                 ); })}
               </tbody>
@@ -326,6 +328,6 @@ function savedPartners(id: string, role: Role, data: DrawerData): { label: strin
 function rolesOf(id: string, index: DrawerIndex): Role[] {
   const n = new Map<Role, number>();
   for (const g of index.games) for (const r of ROLES) if (g.picks[r] === id) n.set(r, (n.get(r) ?? 0) + 1);
-  for (const s of index.stats) if (s.stat.champion === id && !n.has(s.stat.role)) n.set(s.stat.role, 0);
+  for (const s of index.stats) if (s.stat.champion === id) for (const r of s.roles) if (!n.has(r)) n.set(r, 0);
   return [...n.entries()].sort((a, b) => b[1] - a[1] || ROLES.indexOf(a[0]) - ROLES.indexOf(b[0])).map(([r]) => r);
 }
