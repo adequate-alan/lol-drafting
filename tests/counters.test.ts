@@ -242,15 +242,18 @@ describe("no counter without enough evidence", () => {
     const res = run({}, { TOP: "aatrox" }, input([], { dpm: [dpm("TOP", "aatrox", "jayce", 0.6, 120), dpm("TOP", "aatrox", "gnar", 0.51)] }));
     expect(res.TOP!.counters).toEqual([]);
   });
-  it("the stored data invents nothing: no DPM rows while dpm.lol is unreachable, and no recorded results", () => {
+  it("the stored data invents nothing: DPM rows only when collected, no recorded results", () => {
     const stored = getCounters();
-    expect(stored.dpmStatus.reachable).toBe(false);
-    expect(stored.dpm).toEqual([]);
+    if (!stored.dpmStatus.reachable) expect(stored.dpm).toEqual([]);
     expect(stored.dpmDuos).toEqual([]);
     expect(stored.proResults).toEqual([]);
-    const enemy = { TOP: "rumble", JUNGLE: "vi", MID: "ryze", BOT: "lucian", SUPPORT: "milio" };
-    const res = counterPicks({}, enemy, data, fits({}, enemy));
-    for (const r of Object.values(res)) expect(r!.counters).toEqual([]);
+    const byId = new Map(data.champions.map((c) => [c.id, c]));
+    for (const row of stored.dpm) {
+      expect(row.url).toMatch(/^https:\/\/dpm\.lol\/champions\//);
+      expect(byId.get(row.champion)?.roles, `${row.champion} ${row.role}`).toContain(row.role);
+      expect(byId.has(row.enemy), row.enemy).toBe(true);
+      expect(row.champion).not.toBe(row.enemy);
+    }
   });
   it("every stored row names a source, patch, sample and date", () => {
     const stored = getCounters();
