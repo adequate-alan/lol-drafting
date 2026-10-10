@@ -1,13 +1,20 @@
 /* ==========================================================================
    Design tokens
-   Gen.G-inspired: black + gold core, gold used only as an accent (selection, active
-   navigation and tabs, primary buttons, key borders, focus). Brand primitives first,
-   then semantic tokens per theme. Components use only the semantic tokens.
+   Gen.G premium / analytical. Brand primitives first, then semantic tokens per theme.
+   Components use only the semantic tokens. Gold = mine / selected / preferred; teal = pro
+   evidence; slate = logic; muted burgundy = enemy / counter; success, caution and danger
+   keep their own colors.
    ========================================================================== */
+/* Brand primitives (alan, 2026-10-10): muted metallic gold, warm neutrals, deep navy-black. Gold means
+   mine / selected / preferred only: active nav, locked allies, the role being picked, primary actions, default
+   recommendations, focus, small emphasis rules. Never every border, heading, badge or number. */
 :root {
-  --gold: #AA8A00; --gold-bright: #C9A227;
-  --black: #0A0A0A; --charcoal: #141414; --navy-black: #10131A;
-  --white: #FFFFFF; --off-white: #F6F5F1;
+  --gold: #B6922E; --gold-strong: #C8A84E; --gold-soft: #E8D9A6; --gold-deep: #8E7121;
+  --navy-black: #0B0D12; --navy-surface: #12151C; --navy-surface-2: #181C24; --navy-border: #292E38;
+  --warm-white: #F3F1EA; --warm-muted: #969BA6;
+  --paper: #F4F2EC; --paper-surface: #FBFAF7; --paper-surface-2: #EEECE6; --paper-border: #D8D4CB;
+  --ink: #181A1F; --ink-muted: #686B73;
+  --burgundy: #8F4545; --burgundy-line: #B85B5B;
 
   /* alan's Adobe Fonts kit (lib/site.ts); Inter is the fallback while it loads or if it is blocked. */
   --font: "neue-haas-grotesk-text", "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -24,96 +31,97 @@
   --mini-h: 50px;
   --scrim: rgba(0, 0, 0, .5);
   --side-chip: rgba(255, 255, 255, .06);
-  --side-chip-border: rgba(201, 162, 39, .4);
+  --side-chip-border: rgba(200, 168, 78, .4);
   --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--focus);
 }
 
-/* Light: warm off-white page, white surfaces, charcoal text, subtle gray borders, gold accents. */
+/* Light: warm off-white page, slightly brighter surfaces, ink text, deep gold accent. */
 :root, :root[data-theme="light"] {
   color-scheme: light;
-  --bg: var(--off-white);
-  --surface: var(--white);
-  --surface-raised: var(--white);
-  --surface-subtle: #FAF9F6;
-  --surface-sunken: #EFEDE7;
-  --surface-hover: #F8F5EA;
-  --border: #E4E1D8;
-  --border-strong: #CDC8BC;
-  --text: var(--charcoal);
-  --text-muted: #5B5D63;
-  --text-faint: #8A8C92;
-  --accent: var(--gold);
-  --accent-text: #806800;
-  --accent-hover: #957900;
-  --accent-subtle: #F5EFD6;
-  --accent-contrast: var(--white);
+  --bg: var(--paper);
+  --surface: var(--paper-surface);
+  --surface-raised: var(--paper-surface);
+  --surface-subtle: #F8F6F1;
+  --surface-sunken: var(--paper-surface-2);
+  --surface-hover: #F3EFE4;
+  --border: #E2DED5;
+  --border-strong: var(--paper-border);
+  --text: var(--ink);
+  --text-muted: var(--ink-muted);
+  --text-faint: #8F9299;
+  /* Darker gold in light mode keeps contrast on the warm page. */
+  --accent: var(--gold-deep);
+  --accent-text: #7A6119;
+  --accent-hover: #7A6119;
+  --accent-subtle: #F3EBD2;
+  --accent-contrast: var(--paper-surface);
   --focus: var(--gold);
   --shadow: none;
-  --shadow-pop: 0 8px 24px rgba(20, 20, 20, .14);
+  --shadow-pop: 0 8px 24px rgba(24, 26, 31, .12);
 
-  --side-bg: var(--black);
-  --side-surface: #1A1A1A;
-  --side-border: #232323;
-  --side-text: #B9B7B1;
-  --side-text-strong: #F6F5F1;
-  --side-muted: #77766F;
-  --side-accent: var(--gold-bright);
+  --side-bg: var(--navy-black);
+  --side-surface: #161A22;
+  --side-border: #1E222B;
+  --side-text: #B4B6BD;
+  --side-text-strong: var(--warm-white);
+  --side-muted: #727782;
+  --side-accent: var(--gold-strong);
 
-  --clash: #806800;  --clash-line: var(--gold); --clash-subtle: #F7F1DA;
-  --pro: #23697a;    --pro-line: #3b8698;   --pro-subtle: #e6f0f2;
-  --logic: #55585f;  --logic-line: #92949a; --logic-subtle: #F0EFEB;
-  --counter: #8F4545; --counter-line: #B85B5B; --counter-subtle: #f6eaea;
-  --danger: #b42318; --danger-subtle: #fcebe9; --danger-line: #e0877f;
-  --caution: #9a4d0a; --caution-subtle: #fbf0e1; --caution-line: #e3a35c;
-  --success: #2c7a4b; --success-subtle: #e5f3ea;
+  --clash: #7A6119;  --clash-line: var(--gold); --clash-subtle: #F5EEDA;
+  --pro: #24687A;    --pro-line: #3E8799;   --pro-subtle: #E6EFF1;
+  --logic: #586070;  --logic-line: #8E96A4; --logic-subtle: #EEEEEC;
+  --danger: #B0322A; --danger-subtle: #F8E9E6; --danger-line: #DC8A80;
+  --caution: #985012; --caution-subtle: #F8EEE0; --caution-line: #DCA060;
+  --success: #2F7650; --success-subtle: #E5F1E9;
+  --counter: var(--burgundy); --counter-line: var(--burgundy-line); --counter-subtle: #F4EAE8;
+  --enemy: var(--burgundy); --enemy-line: #C99592; --enemy-subtle: #F5EEEC;
 
-  --enemy: #7c5a5e;  --enemy-line: #b99a9d; --enemy-subtle: #F5F0EF;
-  --top: #b45f34; --jungle: #3a845a; --mid: #4569b0; --bot: #b5414c; --support: #7a5aad;
-  --ad: #c4733a; --ap: #5872cc;
+  --top: #B0623A; --jungle: #3D8059; --mid: #4A68A8; --bot: #A9474F; --support: #7659A6;
+  --ad: #C0743E; --ap: #5A71C4;
 }
 
-/* Dark: navy-black page, lifted charcoal surfaces, warm white text, bright gold accent. */
+/* Dark (the stronger identity): navy-black page, lifted charcoal surfaces, warm white text, muted gold. */
 :root[data-theme="dark"] {
   color-scheme: dark;
   --bg: var(--navy-black);
-  --surface: #171A21;
-  --surface-raised: #1C2028;
-  --surface-subtle: #13161C;
-  --surface-sunken: #0D0F14;
-  --surface-hover: #1F232C;
-  --border: #262A33;
-  --border-strong: #363B46;
-  --text: #F3F1EA;
-  --text-muted: #A4A6AD;
-  --text-faint: #6E717A;
-  --accent: var(--gold-bright);
-  --accent-text: #D9B744;
-  --accent-hover: #D6B23A;
-  --accent-subtle: rgba(201, 162, 39, .13);
-  --accent-contrast: var(--black);
-  --focus: var(--gold-bright);
+  --surface: var(--navy-surface);
+  --surface-raised: var(--navy-surface-2);
+  --surface-subtle: #0F1218;
+  --surface-sunken: #090B0F;
+  --surface-hover: #1A1E27;
+  --border: #21252E;
+  --border-strong: var(--navy-border);
+  --text: var(--warm-white);
+  --text-muted: var(--warm-muted);
+  --text-faint: #6A6F7A;
+  --accent: var(--gold-strong);
+  --accent-text: #CDB062;
+  --accent-hover: #D4B867;
+  --accent-subtle: rgba(182, 146, 46, .13);
+  --accent-contrast: var(--navy-black);
+  --focus: var(--gold-strong);
   --shadow: none;
-  --shadow-pop: 0 10px 30px rgba(0, 0, 0, .6);
+  --shadow-pop: 0 10px 30px rgba(0, 0, 0, .55);
 
-  --side-bg: var(--black);
-  --side-surface: #17181B;
-  --side-border: #1E1F23;
-  --side-text: #B3B2AD;
-  --side-text-strong: #F6F5F1;
-  --side-muted: #6C6C68;
-  --side-accent: var(--gold-bright);
+  --side-bg: #08090D;
+  --side-surface: #13161D;
+  --side-border: #1A1D25;
+  --side-text: #ADB0B8;
+  --side-text-strong: var(--warm-white);
+  --side-muted: #696E79;
+  --side-accent: var(--gold-strong);
 
-  --clash: #D9B744;  --clash-line: var(--gold-bright); --clash-subtle: rgba(201, 162, 39, .1);
-  --pro: #79c0cc;    --pro-line: #4f9bab;   --pro-subtle: rgba(79, 155, 171, .12);
-  --logic: #a9abb2;  --logic-line: #6a6d76; --logic-subtle: rgba(160, 162, 170, .08);
-  --counter: #d48a84; --counter-line: #9a4b4b; --counter-subtle: rgba(184, 91, 91, .1);
-  --danger: #f1857a; --danger-subtle: rgba(241, 133, 122, .12); --danger-line: #b8564c;
-  --caution: #efab62; --caution-subtle: rgba(239, 171, 98, .11); --caution-line: #a8702f;
-  --success: #6cc895; --success-subtle: rgba(108, 200, 149, .11);
+  --clash: #CDB062;  --clash-line: var(--gold); --clash-subtle: rgba(182, 146, 46, .09);
+  --pro: #7DBCC8;    --pro-line: #4C93A3;   --pro-subtle: rgba(76, 147, 163, .11);
+  --logic: #A3AAB6;  --logic-line: #5E6674; --logic-subtle: rgba(163, 170, 182, .07);
+  --danger: #EC8378; --danger-subtle: rgba(236, 131, 120, .11); --danger-line: #B0544A;
+  --caution: #E7A864; --caution-subtle: rgba(231, 168, 100, .10); --caution-line: #A26E30;
+  --success: #6CC294; --success-subtle: rgba(108, 194, 148, .10);
+  --counter: #D3908A; --counter-line: var(--burgundy); --counter-subtle: rgba(184, 91, 91, .09);
+  --enemy: #CC9A96;  --enemy-line: #6E4446; --enemy-subtle: rgba(184, 91, 91, .06);
 
-  --enemy: #cfa7aa;  --enemy-line: #75585c; --enemy-subtle: rgba(207, 167, 170, .06);
-  --top: #e08c5f; --jungle: #66b886; --mid: #7f9ee0; --bot: #e2747e; --support: #a98ad8;
-  --ad: #e39257; --ap: #7f95ea;
+  --top: #DB8D62; --jungle: #68B486; --mid: #819DDB; --bot: #DB7880; --support: #A88BD3;
+  --ad: #DE9459; --ap: #8196E4;
 }
 
 /* ==========================================================================
@@ -127,7 +135,8 @@ body {
   font: var(--fs)/var(--lh) var(--font);
   -webkit-font-smoothing: antialiased;
 }
-a { color: var(--accent-text); text-decoration: none; }
+a { color: var(--text); text-decoration: none; }
+a:hover { color: var(--accent-text); }
 a:hover { text-decoration: underline; text-underline-offset: 2px; }
 h1, h2, h3 { margin: 0; letter-spacing: -.01em; }
 h1 { font-size: var(--fs-xl); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; }
@@ -524,7 +533,7 @@ a.badge:hover { text-decoration: none; border-color: var(--accent); color: var(-
 .tier { font-size: var(--fs-xs); color: var(--text-muted); white-space: nowrap; }
 .tier.core { color: var(--accent-text); font-weight: 700; }
 .tier.flex { color: var(--text-faint); }
-.grade { color: var(--accent-text); font-family: var(--font-mono); }
+.grade { color: var(--text); font-weight: 650; font-family: var(--font-mono); }
 .game-link { font-size: var(--fs-xs); color: var(--text-muted); white-space: nowrap; border-bottom: 1px dotted var(--border-strong); }
 .game-link:hover { color: var(--accent-text); border-color: var(--accent); text-decoration: none; }
 .pro-head { box-shadow: inset 0 2px 0 var(--pro-line); }
@@ -535,7 +544,7 @@ a.badge:hover { text-decoration: none; border-color: var(--accent); color: var(-
 .picker-list li { transition: background var(--t-fast); }
 .picker-list li:hover:not(.active) { background: var(--surface-hover); }
 .picker-list mark { background: transparent; color: var(--accent-text); font-weight: 750; }
-.picker-list .fit { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--accent-text); font-weight: 650; }
+.picker-list .fit { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-muted); font-weight: 500; }
 .picker input:focus-visible { border-color: var(--accent); }
 
 .badge { border-radius: 2px; }
@@ -568,7 +577,7 @@ th button.sort:focus-visible { outline: 2px solid var(--accent); outline-offset:
 .pool-row.open > td { background: var(--accent-subtle); border-bottom-color: transparent; }
 .pool-row:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .pool-row .low { color: var(--caution); margin-left: 1px; }
-.pool-row .heat.hi { color: var(--accent-text); font-weight: 650; }
+.pool-row .heat.hi { color: var(--text); font-weight: 650; }
 .badge.ongoing { margin-left: var(--s3); text-transform: uppercase; letter-spacing: .04em; }
 .pool-detail > td { background: var(--surface-subtle); padding: var(--s4) var(--s5); height: auto; }
 .pool-detail-grid { display: grid; grid-template-columns: minmax(260px, 1fr) minmax(0, 2fr); gap: var(--s5); align-items: start; }
@@ -667,7 +676,7 @@ table.mini th, table.mini td { height: auto; padding: 3px var(--s3); }
 .champ-link:hover span { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 2px; }
 .champ-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--r-sm); }
 .meta-hub td .low { color: var(--caution); margin-left: 1px; }
-.meta-hub .heat-hi { color: var(--accent-text); font-weight: 650; }
+.meta-hub .heat-hi { color: var(--text); font-weight: 650; }
 .trend-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5); }
 .click-row { cursor: pointer; }
 .click-row:hover > td { background: var(--surface-hover); }
@@ -829,7 +838,7 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .status-tag.alt { color: var(--text-muted); }
 .sig-line { display: inline-flex; gap: var(--s3); min-width: 0; overflow: hidden; font-size: var(--fs-xs); color: var(--text-muted); white-space: nowrap; }
 .sig + .sig::before { content: "·"; margin-right: var(--s3); color: var(--text-faint); }
-.sig.synergy { color: var(--clash); }
+.sig.synergy { color: var(--text-muted); }
 .sig.counter { color: var(--counter); }
 .sig.matchup { color: var(--enemy); }
 .sig.pro { color: var(--pro); }
