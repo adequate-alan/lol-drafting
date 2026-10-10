@@ -3,15 +3,15 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { getChampions } from "@/lib/data";
-import { analyze, candidatesFor } from "@/lib/model-v2/analyze";
+import { getBotPairings, getChampions } from "@/lib/data";
+import { analyze, bestFix, candidatesFor, economyBurden, slotsOf, type Draft, type Insight } from "@/lib/model-v2/analyze";
 import { ARCHETYPES, EXTRA } from "@/lib/model-v2/archetypes";
 import { convertKits, KITS } from "@/lib/model-v2/kits";
 import { ChampionV2, Kit } from "@/lib/model-v2/schema";
 
 const kits = convertKits(getChampions());
 const extra = (id: string) => EXTRA.find((e) => e.id === id)!;
-const ids = (xs: { id: string }[]) => xs.map((x) => x.id);
+const ids = (xs: Insight[]) => xs.flatMap((x) => [x.id, ...(x.covers ?? [])]);
 
 describe("kit schema", () => {
   it("every conversion is a valid, unreviewed v2 champion with a valid kit", () => {
@@ -38,7 +38,9 @@ describe("the ten validation archetypes", () => {
     const r = analyze(a.draft, kits);
     expect(r.confidence).toBe("full");
     if (a.expect.primary) expect(r.identity.primary?.id).toBe(a.expect.primary);
+    if (a.expect.secondary) expect(r.identity.secondary?.id).toBe(a.expect.secondary);
     const all = ids([...r.weakPoints, ...r.more]);
+    if (a.expect.clean) expect(all).toEqual([]);
     for (const w of a.expect.weak ?? []) expect(all).toContain(w);
     for (const w of a.expect.notWeak ?? []) expect(all).not.toContain(w);
     expect(r.winCondition).toBeTruthy();
@@ -84,6 +86,13 @@ describe("needs and best fix", () => {
     expect(r.roleNeeds.SUPPORT!.map((n) => n.id).slice(0, 2)).toEqual(["frontline", "engage"]);
   });
 
+  it("with Ziggs locked, best fix is only Nautilus or Leona; other fixes are theoretical", () => {
+    const r = bestFix("SUPPORT", extra("support-open").draft, kits, getBotPairings());
+    expect(r.restricted).toBe(true);
+    expect(r.fixes.map((c) => c.champion).sort()).toEqual(["leona", "nautilus"]);
+    expect(r.theoretical.map((c) => c.champion)).toEqual(expect.arrayContaining(["alistar", "maokai", "rell"]));
+  });
+
   it("Nautilus fixes engage and frontline; a pure enchanter fixes neither", () => {
     const cs = candidatesFor("SUPPORT", extra("support-open").draft, kits);
     const naut = cs.find((c) => c.champion === "nautilus")!;
@@ -99,13 +108,76 @@ describe("needs and best fix", () => {
   });
 });
 
+describe("second-checkpoint corrections (alan, 2026-10-10)", () => {
+  it("Trundle is a catch, so Gwen/Trundle/Viktor/Ezreal/Karma relies on catch instead of having no starter", () => {
+    expect(kits.find((c) => c.id === "trundle")!.fightStart).toBe("catch");
+  });
+
+  it("three hungry carries in the three carry roles is not a resource conflict; a hungry support is", () => {
+    const r = analyze({ TOP: "gwen", JUNGLE: "trundle", MID: "viktor", BOT: "ezreal", SUPPORT: "karma" }, kits);
+    expect(ids([...r.weakPoints, ...r.more])).not.toContain("resource-conflict");
+  });
+
+  it("Sejuani, Vi, Ornn, Leona, Nautilus, Rell, Maokai, Alistar and Jarvan IV are primary; Lee Sin, Syndra, Thresh, Trundle and Qiyana are catch", () => {
+    const fs = (id: string) => kits.find((c) => c.id === id)!.fightStart;
+    for (const id of ["sejuani", "vi", "ornn", "leona", "nautilus", "rell", "maokai", "alistar", "jarvan-iv"]) expect(fs(id), id).toBe("primary");
+    for (const id of ["lee-sin", "syndra", "thresh", "trundle", "qiyana"]) expect(fs(id), id).toBe("catch");
+  });
+
+  it("AD imbalance and no tank damage with one cause show as one weak point", () => {
+    const r = analyze(ARCHETYPES.find((a) => a.id === "all-ad")!.draft, kits);
+    expect(r.weakPoints[0].id).toBe("armor-frontline");
+    expect(r.weakPoints.map((w) => w.id)).not.toContain("low-tank-damage");
+  });
+
+  it("a support's poke counts less than a carry's", () => {
+    const r = analyze(ARCHETYPES.find((a) => a.id === "poke")!.draft, kits);
+    expect(r.identity.primary!.because).toMatch(/Karma adds utility poke/);
+  });
+});
+
+describe("economy is one team-wide income rule (alan, checkpoint 2 review)", () => {
+  // No reviewed jungler or support has resourceDemand 3 yet, so hungry versions are built from real kits.
+  const hungry = (id: string, resourceDemand: 0 | 1 | 2 | 3) => {
+    const c = kits.find((k) => k.id === id)!;
+    return { ...c, id: `${id}-${resourceDemand}`, kit: { ...c.kit, resourceDemand } };
+  };
+  const pool = [...kits, hungry("nocturne", 3), hungry("lulu", 3)];
+  const conflict = (draft: Draft) => ids((() => { const r = analyze(draft, pool); return [...r.weakPoints, ...r.more]; })()).includes("resource-conflict");
+
+  it("a carry jungler beside two hungry laners is a normal carry-jungle comp, not a warning", () => {
+    expect(conflict({ TOP: "ornn", JUNGLE: "nocturne-3", MID: "viktor", BOT: "jinx", SUPPORT: "lulu" })).toBe(false);
+  });
+  it("three hungry carries in TOP, MID and BOT is normal", () => {
+    expect(conflict({ TOP: "gwen", JUNGLE: "sejuani", MID: "viktor", BOT: "jinx", SUPPORT: "lulu" })).toBe(false);
+  });
+  it("a hungry jungler warns only on top of an already resource-heavy team", () => {
+    expect(conflict({ TOP: "gwen", JUNGLE: "nocturne-3", MID: "viktor", BOT: "jinx", SUPPORT: "lulu" })).toBe(true);
+  });
+  it("a truly hungry support weighs double", () => {
+    expect(conflict({ TOP: "ornn", JUNGLE: "sejuani", MID: "viktor", BOT: "jinx", SUPPORT: "lulu-3" })).toBe(true);
+    const b = economyBurden(slotsOf({ MID: "viktor", BOT: "jinx", SUPPORT: "lulu-3" }, pool));
+    expect(b.base).toBe(4);
+  });
+  it("Gwen / Trundle / Viktor / Ezreal / Karma keeps no resource warning", () => {
+    expect(conflict(ARCHETYPES.find((a) => a.id === "no-engage")!.draft)).toBe(false);
+  });
+});
+
 describe("enemy-aware reads", () => {
-  it("an immobile main carry into Vi + Galio dive is flagged and asks for peel", () => {
+  it("existing anti-dive structure keeps the Vi + Galio dive read minor, and support needs peel, disengage, lane priority", () => {
     const e = extra("vs-dive");
     const r = analyze(e.draft, kits, e.enemy);
-    expect(ids(r.versus)).toContain("vulnerable-to-dive");
-    expect(r.versus.find((v) => v.id === "vulnerable-to-dive")!.text).toMatch(/Sivir/);
-    expect(r.roleNeeds.SUPPORT![0].id).toBe("peel");
+    const dive = r.versus.find((v) => v.id === "vulnerable-to-dive")!;
+    expect(dive.severity).toBe("minor");
+    expect(dive.text).toMatch(/Sivir/);
+    expect(r.headline).not.toMatch(/fragile/);
+    expect(r.roleNeeds.SUPPORT!.map((n) => n.label)).toEqual(["Peel", "Disengage", "Bot lane priority"]);
+  });
+
+  it("the same comp with no protection at all is a major dive risk", () => {
+    const r = analyze({ TOP: "jayce", MID: "viktor", BOT: "sivir", SUPPORT: "karma" }, kits, ["vi", "galio", "camille", "kaisa"]);
+    expect(r.versus.find((v) => v.id === "vulnerable-to-dive")?.severity).toBe("major");
   });
 
   it("the same comp without enemies has no enemy insights", () => {

@@ -32,7 +32,9 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 - A low-sample champion can only be in a pool's `core` tier with a written `coreReasons` entry.
 - Draft Room recommendations are ranked by overall draft fit (alan, 2026-10-10), in `lib/recommend.ts` and
   `tests/recommend.test.ts`. Every champion who plays the open role is a candidate. The score adds saved pairings
-  (a strong bonus, never a filter), pairwise synergy with the locked picks, team needs (engage, frontline, peel,
+  (a strong bonus, not a filter, except that with a bot locked only that bot's saved supports, default or
+  alternative, are recommended for SUPPORT: `savedSupports`, also used by Counters, which mark others theoretical; alan,
+  2026-10-10), pairwise synergy with the locked picks, team needs (engage, frontline, peel,
   sustained damage, damage mix, a fight starter; weighted more the later the pick), matchups against the optional
   enemy picks (from champion attributes; there is no lane-matchup data), and risks (a new warning, or more holes than
   picks left). Every point comes with a written reason. Saved defaults must still lead an early draft (one pick

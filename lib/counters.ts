@@ -14,8 +14,8 @@
 import type { Draft } from "./evaluate";
 import { comparePatchDesc } from "./evidence";
 import { TIERS, type Tier } from "./pool-stats";
-import type { Recommendation, Recommendations } from "./recommend";
-import { ROLES, type Champion, type Counters, type PoolEntry, type ProDraft, type Role } from "./schema";
+import { savedSupports, type Recommendation, type Recommendations } from "./recommend";
+import { ROLES, type BotPairing, type Champion, type Counters, type PoolEntry, type ProDraft, type Role } from "./schema";
 
 export type EnemyDraft = Partial<Record<Role, string>>;
 /** favorable < strong < confirmed (strong DPM matchup that pro games also support). */
@@ -198,6 +198,7 @@ export interface Counter {
   evidence: CounterEvidence; // the DPM matchup (always present: no DPM row, no counter)
   pro: ProSample | null; // the same matchup in recorded pro games, when it repeats; shown separately
   tier: Tier | null; // my pool tier in this role; null = out of pool, reference only
+  theoretical: boolean; // a support outside the locked bot's saved supports: shown for reference, never recommended
   fit: Recommendation | null; // the same champion on the overall draft-fit list
   fitRank: number | null; // 1 = best overall pick for the role
   cautions: string[]; // why it is not simply the pick: out of pool, triggers a warning, ranks lower on fit, pro disagrees
@@ -216,6 +217,7 @@ export interface CounterInput {
   proDrafts: ProDraft[];
   pool: PoolEntry[];
   counters: Counters;
+  botPairings?: BotPairing[];
 }
 
 const TIER_RANK: Record<Tier, number> = { core: 0, depth: 1, flex: 2 };
@@ -239,6 +241,7 @@ export function counterPicks(draft: Draft, enemy: EnemyDraft, input: CounterInpu
   const taken = new Set([...Object.values(draft), ...Object.values(enemy)].filter(Boolean) as string[]);
   const games = resultGames(input.proDrafts, input.counters.proResults);
   const out: Partial<Record<Role, RoleCounters>> = {};
+  const eligibleSupports = savedSupports(draft, input.botPairings ?? []);
 
   for (const role of ROLES.filter((r) => !draft[r])) {
     const bot = role === "BOT" || role === "SUPPORT";
@@ -291,14 +294,17 @@ export function counterPicks(draft: Draft, enemy: EnemyDraft, input: CounterInpu
       const idx = fitList.findIndex((r) => r.champion === champion);
       const fit = idx >= 0 ? fitList[idx] : null;
       const cautions: string[] = [];
+      const theoretical = role === "SUPPORT" && !!eligibleSupports && !eligibleSupports.includes(champion);
+      if (theoretical) cautions.push(`Not one of ${name(draft.BOT!)}'s saved supports: theoretical, not recommended`);
       if (!tier) cautions.push("Not in your pool: reference only");
       if (pro?.verdict === "disagrees") cautions.push(`Pro games disagree: ${pro.wins}–${pro.games - pro.wins} in this matchup`);
       for (const p of fit?.parts ?? []) if (p.kind === "risk") cautions.push(p.text);
       if (idx > 0) cautions.push(`#${idx + 1} on overall draft fit; ${name(fitList[0].champion)} fits the draft better`);
-      return { champion, role, strength: combined(evidence, pro), evidence, pro, tier, fit, fitRank: idx >= 0 ? idx + 1 : null, cautions };
+      return { champion, role, strength: combined(evidence, pro), evidence, pro, tier, theoretical, fit, fitRank: idx >= 0 ? idx + 1 : null, cautions };
     });
     counters.sort((a, b) =>
-      (a.tier ? TIER_RANK[a.tier] : 9) - (b.tier ? TIER_RANK[b.tier] : 9)
+      Number(a.theoretical) - Number(b.theoretical)
+      || (a.tier ? TIER_RANK[a.tier] : 9) - (b.tier ? TIER_RANK[b.tier] : 9)
       || STRENGTH_RANK[a.strength] - STRENGTH_RANK[b.strength]
       || b.evidence.games - a.evidence.games
       || a.champion.localeCompare(b.champion));

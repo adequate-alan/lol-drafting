@@ -6,8 +6,8 @@ import { ATTRS, Champion, Role, ROLES, type Attr } from "../schema";
 
 // How a champion can begin a fight. Follow-up never satisfies a fight-start requirement.
 export const FightStart = z.enum([
-  "primary",   // can start a five-player fight on demand
-  "catch",     // can start a fight by picking one target when a skillshot or setup lands
+  "primary",   // can reasonably be relied on as the team's main fight starter (Sejuani, Vi, Ornn, Leona, Nautilus, Rell, Maokai, Alistar); a skillshot start still counts
+  "catch",     // starts a fight by picking one target or cutting one off (Lee Sin, Syndra, Thresh, Trundle, Qiyana)
   "follow-up", // CC that adds to a fight someone else started
   "none",
 ]);
@@ -74,6 +74,8 @@ export const Kit = z.object({
   curve: PowerCurve,
   // Map-wide ultimate (Twisted Fate, Shen, Nocturne): turns a side lane into a fight elsewhere.
   global: z.literal(true).optional(),
+  // A carry surviving a diver alone (spell shield, dashes). Only the enemy-dive read uses it.
+  selfPeel: Scale,
 });
 export type Kit = z.infer<typeof Kit>;
 export type ChampionKit = ChampionV2 & { kit: Kit };

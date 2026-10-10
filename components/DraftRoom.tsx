@@ -395,14 +395,14 @@ function CounterRow({ c, names, onOpen }: { c: Counter; names: Record<string, st
   const why = [counterLine(c, names), e.note, `Pool: ${tierLabel(c.tier)}`,
     c.fitRank ? `Overall draft fit: #${c.fitRank} (${c.fit!.score > 0 ? "+" : ""}${c.fit!.score})` : "No draft-fit reasons yet", ...c.cautions].filter(Boolean).join("\n");
   return (
-    <button className={`rec-row counter-row ${c.tier ? "" : "ref"}`} title={why} onClick={onOpen}>
+    <button className={`rec-row counter-row ${c.tier && !c.theoretical ? "" : "ref"}`} title={why} onClick={onOpen}>
       <ChampIcon id={c.champion} name={name} role={c.role} size="sm" />
       <span className="name">{name}</span>
       <span className="strength">{STRENGTH[c.strength]}</span>
       <span className="badge outline">DPM</span>
       <span className="ev truncate">{describeEvidence(e).replace(/^DPM · /, "")}{e.with ? ` · with ${names[e.with] ?? e.with}` : ""}{c.pro && <span className="pro-sample"> · {describePro(c.pro)}</span>}</span>
       <span className={`tier ${c.tier ?? "none"}`}>{tierLabel(c.tier)}</span>
-      <span className="fit-rank">{c.fitRank ? `Fit #${c.fitRank}` : "Unranked"}</span>
+      <span className="fit-rank">{c.theoretical ? "Theoretical" : c.fitRank ? `Fit #${c.fitRank}` : "Unranked"}</span>
     </button>
   );
 }
