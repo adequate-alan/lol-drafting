@@ -542,7 +542,8 @@ td.wrap { white-space: normal; min-width: 220px; line-height: 1.35; }
 .comp-filters { margin-bottom: var(--s5); gap: var(--s5); }
 .filter-group { display: inline-flex; align-items: center; gap: var(--s3); }
 .filter-label { font-size: var(--fs-2xs); font-weight: 650; letter-spacing: .05em; text-transform: uppercase; color: var(--text-faint); }
-.shell-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(430px, 1fr)); gap: var(--s5); }
+/* Cards keep their own height: opening a preview or sources on one card never stretches its neighbour. */
+.shell-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(430px, 1fr)); gap: var(--s5); align-items: start; }
 @media (max-width: 560px) { .shell-grid { grid-template-columns: minmax(0, 1fr); } }
 /* No overflow clipping: a slot's swap list drops below the lineup, over the card's own footer. */
 .shell { display: flex; flex-direction: column; scroll-margin-top: 16px; }
