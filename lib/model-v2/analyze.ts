@@ -72,6 +72,28 @@ export function slotsOf(draft: Draft, champions: ChampionKit[]): Slot[] {
   });
 }
 
+/**
+ * Siege, 0–3: how well the comp pressures towers and holds the space in front of them once it has priority. Not a
+ * copy of Poke: structure pressure (artillery, traps, turrets, long-range tower damage) leads, then holding forward
+ * space (range), waveclear, poke on the defenders (a support's utility poke counts more here than in damage) and
+ * disengage / anti-engage so the siege survives a dive. Weights in ANALYSIS.siege.
+ */
+export function siegeOf(slots: Slot[]) {
+  const W = T.siege;
+  if (!slots.length) return { score: 0, pressure: 0, reach: 0, clear: 0, poke: 0, safety: 0, sources: [] as Slot[] };
+  const top = slots.map((s) => s.c.kit.structurePressure as number).sort((a, b) => b - a);
+  // Best source in full, then diminishing: one artillery carry is not a whole siege comp. Scaled back to 0–3.
+  const pressure = ((top[0] ?? 0) + 0.5 * (top[1] ?? 0) + 0.25 * (top[2] ?? 0)) / 1.75;
+  const reach = mean(slots.map((s) => s.c.kit.range));
+  const clear = mean(slots.map((s) => s.c.kit.waveclear));
+  const poke = mean(slots.map((s) => s.c.attrs.poke * Math.max(pokeWeight(s), 0.75)));
+  const safety = Math.min(3, sum(slots.map((s) => Math.max(s.c.kit.disengage, s.c.kit.counterEngage))) / Math.max(2, slots.length - 1));
+  const score = W.pressure * pressure + W.reach * reach + W.clear * clear + W.poke * poke + W.safety * safety;
+  return { score: r1(score), pressure: r1(pressure), reach: r1(reach), clear: r1(clear), poke: r1(poke), safety: r1(safety),
+    sources: slots.filter((s) => s.c.kit.structurePressure >= 2) };
+}
+export const SIEGE_LABEL = (score: number) => (score >= T.siege.high ? "High" : score >= T.siege.mid ? "Mid" : "Low");
+
 /** Team-level facts every rule reads. Exposed as the "supporting detail" under the diagnosis. */
 export function facts(slots: Slot[]) {
   const carries = slots.filter((s) => s.threat >= T.carryThreat);
@@ -115,6 +137,7 @@ export function facts(slots: Slot[]) {
     ultHeavy: slots.filter((s) => s.c.kit.ultDependency >= 3),
     setup: slots.filter((s) => s.c.kit.setupDependency >= 2 || s.c.flags.includes("needs-setup")),
     curve: { early: mean(slots.map((s) => s.c.kit.curve.early)), mid: mean(slots.map((s) => s.c.kit.curve.mid)), late: mean(slots.map((s) => s.c.kit.curve.late)) },
+    siege: siegeOf(slots),
   };
 }
 export type Facts = ReturnType<typeof facts>;
@@ -164,9 +187,11 @@ export function identities(slots: Slot[], f: Facts = facts(slots)): IdentityScor
   if (f.catchers.length >= 2 || (f.catchers.length >= 1 && bursty.length >= 2))
     out.push({ id: "pick", score: 2 * f.catchers.length + bursty.length + (f.primary.length ? 0 : 1),
       because: `catch from ${names(f.catchers)}${bursty.length ? `, burst from ${names(bursty)}` : ""}` });
-  if (f.pokers.length >= 2 && f.poke >= 6)
-    out.push({ id: "poke", score: f.poke + slots.filter((s) => s.c.kit.range >= 3 && s.threat >= 2).length,
-      because: `poke from ${names(f.pokers)}${f.utilityPokers.length ? `; ${names(f.utilityPokers)} ${verb(f.utilityPokers, "adds", "add")} utility poke` : ""}` });
+  // Poke / siege: enough poke, or a real siege (structure pressure, range, waveclear) with at least one poke threat.
+  const siege = f.siege;
+  if ((f.pokers.length >= 2 && f.poke >= 6) || (f.pokers.length >= 1 && siege.score >= T.siege.identity))
+    out.push({ id: "poke", score: f.poke + slots.filter((s) => s.c.kit.range >= 3 && s.threat >= 2).length + 3 * Math.max(0, siege.score - T.siege.high),
+      because: `poke from ${names(f.pokers)}${f.utilityPokers.length ? `; ${names(f.utilityPokers)} ${verb(f.utilityPokers, "adds", "add")} utility poke` : ""}${siege.score >= T.siege.high && siege.sources.length ? `; siege ${SIEGE_LABEL(siege.score).toLowerCase()} through ${names(siege.sources)}` : ""}` });
   const carry = slots.find(needsPeel);
   const peelers = carry ? slots.filter((s) => s !== carry && peeler(s)) : [];
   if (carry && peelers.length >= 2)

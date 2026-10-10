@@ -118,6 +118,10 @@ Change these only when alan explicitly says so, then update the test in the same
 - Each build writes `out/version.json` (commit SHA, `lib/build-id.mjs`); `components/UpdateNotice.tsx` polls it and offers a refresh after a new deploy.
 - `scripts/smoke-pages.mjs` runs against the live Pages URL after every deploy (the `smoke` job in pages.yml).
 - Warning severity (critical / caution) in the Draft Room is a display grouping only; the rules are in `lib/evaluate.ts`.
+- Comp Check (`components/CompCheck.tsx`) shows the comp-analysis engine (`lib/model-v2/analyze.ts`, `tests/comp-analysis.test.ts`):
+  identity, win condition, ranked weak points, role needs with best fix vs best overall, timing, and the compact grid.
+  Siege (`siegeOf`, alan 2026-10-10) is its own metric, not Poke: structure pressure first, then range, waveclear,
+  poke and disengage; it feeds the Poke / siege identity.
 
 ## Commit authorship
 

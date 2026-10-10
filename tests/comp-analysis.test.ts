@@ -1,10 +1,10 @@
 // Comp analysis proposal (lib/model-v2/analyze.ts): kit schema, the ten validation archetypes, early reads,
-// enemy-aware reads and best fix. Not wired into the site until alan approves the example diagnoses.
+// enemy-aware reads and best fix. Comp Check in the Draft Room renders it (alan approved checkpoint 2).
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { getBotPairings, getChampions } from "@/lib/data";
-import { analyze, bestFix, candidatesFor, economyBurden, slotsOf, type Draft, type Insight } from "@/lib/model-v2/analyze";
+import { analyze, bestFix, candidatesFor, economyBurden, SIEGE_LABEL, siegeOf, slotsOf, type Draft, type Insight } from "@/lib/model-v2/analyze";
 import { ARCHETYPES, EXTRA } from "@/lib/model-v2/archetypes";
 import { convertKits, KITS } from "@/lib/model-v2/kits";
 import { ChampionV2, Kit } from "@/lib/model-v2/schema";
@@ -164,6 +164,37 @@ describe("economy is one team-wide income rule (alan, checkpoint 2 review)", () 
   });
 });
 
+describe("Siege is its own metric, not a copy of Poke (alan, 2026-10-10)", () => {
+  const siege = (d: Draft) => siegeOf(slotsOf(d, kits)).score;
+  const band = (d: Draft) => SIEGE_LABEL(siege(d));
+  const arch = (id: string) => ARCHETYPES.find((a) => a.id === id)!.draft;
+
+  it("Caitlyn with Lux or Karma rates high", () => {
+    expect(band({ BOT: "caitlyn", SUPPORT: "lux" })).toBe("High");
+    expect(band({ BOT: "caitlyn", SUPPORT: "karma" })).toBe("High");
+  });
+  it("Ziggs heavily improves siege; Jayce improves it through poke and pressure", () => {
+    const base: Draft = { TOP: "ornn", JUNGLE: "sejuani", MID: "orianna", BOT: "kaisa", SUPPORT: "nautilus" };
+    expect(siege({ ...base, BOT: "ziggs" }) - siege(base)).toBeGreaterThanOrEqual(0.6);
+    const fighters: Draft = { TOP: "gnar", JUNGLE: "vi", MID: "ahri", BOT: "sivir", SUPPORT: "lulu" };
+    expect(siege({ ...fighters, TOP: "jayce" })).toBeGreaterThan(siege(fighters));
+  });
+  it("full dive has strong engage but weak siege; front-to-back is only average; the poke comp is high", () => {
+    expect(band(arch("dive"))).toBe("Low");
+    expect(band(arch("front-to-back"))).toBe("Mid");
+    expect(band(arch("poke"))).toBe("High");
+  });
+  it("siege is not poke: a burst pick comp with poke still sieges less than the artillery comp", () => {
+    expect(siege(arch("pick"))).toBeLessThan(siege(arch("poke")));
+    expect(analyze(arch("pick"), kits).identity.primary!.id).toBe("pick");
+  });
+  it("siege feeds identity: Caitlyn + Karma already reads as Poke / siege at two picks", () => {
+    const r = analyze({ BOT: "caitlyn", SUPPORT: "karma" }, kits);
+    expect(r.identity.primary?.id).toBe("poke");
+    expect(r.identity.primary!.because).toMatch(/siege high through Caitlyn/);
+  });
+});
+
 describe("enemy-aware reads", () => {
   it("existing anti-dive structure keeps the Vi + Galio dive read minor, and support needs peel, disengage, lane priority", () => {
     const e = extra("vs-dive");
@@ -185,13 +216,18 @@ describe("enemy-aware reads", () => {
   });
 });
 
-describe("comp analysis is not wired into the site yet", () => {
+describe("Comp Check reads the comp analysis engine", () => {
   const files = (dir: string): string[] => readdirSync(dir).flatMap((f) => {
     const p = join(dir, f);
     return statSync(p).isDirectory() ? files(p) : p.endsWith(".tsx") || p.endsWith(".ts") ? [p] : [];
   });
-  it("no page, component or active engine imports it", () => {
-    for (const f of [...files("app"), ...files("components"), "lib/recommend.ts", "lib/evaluate.ts", "lib/data.ts"])
-      expect(readFileSync(f, "utf8"), f).not.toMatch(/model-v2/);
+  it("the Draft Room renders CompCheck, which runs analyze and bestFix", () => {
+    expect(readFileSync("components/DraftRoom.tsx", "utf8")).toMatch(/<CompCheck /);
+    const cc = readFileSync("components/CompCheck.tsx", "utf8");
+    expect(cc).toMatch(/analyze\(/);
+    expect(cc).toMatch(/bestFix\(/);
+  });
+  it("the engine never reads pro evidence", () => {
+    for (const f of files("lib/model-v2")) expect(readFileSync(f, "utf8"), f).not.toMatch(/pro-drafts|proDrafts|observedProPairings|lib\/suggest|lib\/evidence/);
   });
 });

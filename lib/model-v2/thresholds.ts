@@ -29,6 +29,7 @@ export const ANALYSIS = {
   tankDamage: { best: 2, total: 5 },
   shortRangeCarries: 3,       // damage sources at range 0–1
   weakEarly: 1.5, weakLate: 1.5, // mean curve value at or below this is a weak stage
+  siege: { pressure: 0.4, reach: 0.15, clear: 0.15, poke: 0.15, safety: 0.15, high: 1.9, mid: 1.2, identity: 1.9 }, // siegeOf
   economy: { base: 3, warn: 4, major: 5 }, // income burden (economyBurden): laners + support base, then the jungler
   waveclearTotal: 6,          // team waveclear at or below this (4+ picks) is a siege weakness
   frontlineHeavy: { frontliners: 3, maxDamage: 8 }, // 3+ frontliners and summed damage threat under this
