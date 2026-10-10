@@ -457,6 +457,84 @@ td.wrap { white-space: normal; min-width: 220px; line-height: 1.35; }
 .split > .table-wrap { position: sticky; top: var(--s5); max-height: calc(100vh - 150px); }
 @media (max-width: 900px) { .split { grid-template-columns: minmax(0, 1fr); } .split > .table-wrap { position: static; max-height: 320px; } }
 
+/* Pick rail: a selection list, not a spreadsheet. Selection = gold inset rule + accent wash; hover only tints. */
+.scout-split { grid-template-columns: 264px minmax(0, 1fr); gap: var(--s6); }
+.pick-rail { position: sticky; top: var(--s5); display: flex; flex-direction: column; gap: var(--s3); max-height: calc(100vh - 140px); min-height: 0; }
+.pick-rail input[type="search"] { width: 100%; flex: none; }
+.pick-rail ul { position: relative; list-style: none; margin: 0; padding: var(--s2) 0; overflow-y: auto; min-height: 0; border-top: 1px solid var(--border); }
+.pick-rail li a {
+  display: flex; align-items: center; gap: var(--s4); padding: var(--s3) var(--s4); border-radius: var(--r);
+  color: var(--text); transition: background var(--t-fast);
+}
+.pick-rail li a:hover { background: var(--surface-hover); text-decoration: none; }
+.pick-rail li a.active { background: var(--accent-subtle); box-shadow: inset 3px 0 0 var(--accent); }
+.pick-rail .rail-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.pick-rail .rail-name { font-weight: 600; font-size: var(--fs-md); }
+.pick-rail a.active .rail-name { color: var(--accent-text); font-weight: 700; }
+.pick-rail .rail-sub { font-size: var(--fs-xs); color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pick-rail .rail-empty { padding: var(--s4); font-size: var(--fs-xs); color: var(--text-faint); }
+@media (max-width: 900px) {
+  .scout-split { grid-template-columns: minmax(0, 1fr); }
+  .pick-rail { position: static; max-height: none; }
+  .pick-rail ul { max-height: 264px; }
+}
+
+/* Scouting report: one panel, flat sections split by hairlines, short uppercase titles in the layer's color. */
+.scout .scout-head { display: flex; align-items: center; gap: var(--s6); padding: var(--s6) var(--s6) var(--s5); }
+.scout .scout-id { display: flex; flex-direction: column; gap: var(--s2); min-width: 0; }
+.scout .scout-id h2 { font-family: var(--font-display); font-size: 22px; line-height: 1.1; }
+.scout .scout-meta { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s2) var(--s5); font-size: var(--fs-xs); color: var(--text-muted); }
+.scout .scout-tags { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: var(--s2); }
+.scout .scout-tags span { padding: 1px var(--s3); border-radius: var(--r-sm); background: var(--surface-sunken); color: var(--text-muted); font-size: var(--fs-xs); }
+.scout .scout-sec { padding: var(--s5) var(--s6) var(--s6); border-top: 1px solid var(--border); }
+.scout .scout-sec.layer::before { top: var(--s5); bottom: var(--s5); }
+.scout .scout-title {
+  display: flex; align-items: center; gap: var(--s3); margin: 0 0 var(--s4); font-size: var(--fs-2xs); font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted);
+}
+.scout .scout-title .end { margin-left: auto; font-weight: 500; text-transform: none; letter-spacing: 0; color: var(--text-muted); font-size: var(--fs-xs); }
+.scout .layer.clash .scout-title { color: var(--clash); }
+.scout .layer.pro .scout-title { color: var(--pro); }
+.scout .layer.logic .scout-title { color: var(--logic); }
+.scout-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--s5) var(--s6); }
+.scout-group { min-width: 0; }
+.scout-group-title { margin-bottom: var(--s3); font-size: var(--fs-xs); font-weight: 600; color: var(--text-muted); }
+.scout-group + .scout-group { margin-top: 0; }
+.scout .layer.pro .scout-group { margin-top: var(--s5); }
+/* Flatter chips inside the report: only the preferred picks keep a visible box. */
+.scout .chip:not(.strong) { background: transparent; border-color: transparent; }
+.scout .champ-btn:hover > .chip:not(.strong) { border-color: var(--border-strong); background: var(--surface-hover); }
+.scout .chip-list { gap: var(--s2) var(--s3); }
+.scout-table { overflow-x: auto; margin: 0 calc(-1 * var(--s4)); }
+.scout-table table { font-size: var(--fs-sm); }
+.scout-table th { position: static; background: transparent; height: 22px; }
+.scout-table th, .scout-table td { padding-left: var(--s4); padding-right: var(--s4); }
+.scout-table tbody tr:hover td { background: transparent; }
+.scout-table td.notes { color: var(--text-muted); font-size: var(--fs-xs); white-space: nowrap; }
+.scout-table tr.older td { color: var(--text-muted); }
+.scout-read { margin-top: var(--s4); font-size: var(--fs-sm); color: var(--text-muted); }
+.scout-read b { color: var(--pro); font-weight: 650; }
+.scout-shapes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s2); }
+.scout-shapes li { display: flex; align-items: center; gap: var(--s4); flex-wrap: wrap; }
+.scout-callout {
+  padding: var(--s4) var(--s5); border-radius: var(--r); background: var(--logic-subtle);
+  box-shadow: inset 2px 0 0 var(--caution-line); font-size: var(--fs-sm);
+}
+.scout-callout b { margin-right: var(--s2); }
+.caution-text { color: var(--caution); }
+/* Sources: collapsed, muted, never competing with the read. */
+.scout-sources { padding: var(--s4) var(--s6); border-top: 1px solid var(--border); font-size: var(--fs-xs); color: var(--text-faint); }
+.scout-sources summary { cursor: pointer; width: max-content; color: var(--text-muted); }
+.scout-sources summary:hover { color: var(--text); }
+.scout-sources .source-links { display: flex; flex-direction: column; gap: var(--s2); margin-top: var(--s3); }
+.scout-sources .source-links a { width: max-content; max-width: 100%; color: var(--text-muted); }
+.scout-sources .source-links a:hover { color: var(--pro); }
+@media (max-width: 600px) {
+  .scout .scout-head { gap: var(--s5); padding: var(--s5); }
+  .scout .scout-sec { padding: var(--s5); }
+  .scout .scout-sources { padding: var(--s4) var(--s5); }
+}
+
 /* ==========================================================================
    Comp Library
    ========================================================================== */
