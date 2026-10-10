@@ -1,6 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState } from "react";
+import { Select } from "@/components/Select";
 import { ChampionRow, ChipList, LayerBlock, PageHeader, SourceLinks, pct } from "@/components/ui";
 import { describeLine, groupObserved, shortDate, type EventMap } from "@/lib/evidence";
 import { PARTNER_ROLE, SORTS, TIERS, poolRows, sortRows, type PoolInput, type PoolRow, type SortKey, type Tier } from "@/lib/pool-stats";
@@ -57,18 +58,12 @@ export function PoolView({ names, data, bot, midJungle, top }: {
           <button className={!role ? "active" : undefined} onClick={() => set("role", undefined)}>All</button>
           {ROLES.map((r) => <button key={r} className={role === r ? "active" : undefined} onClick={() => set("role", r)}><span className={`role-tag role-${r}`}>{r}</span></button>)}
         </nav>
-        <select aria-label="Pool tier" value={tier ?? ""} onChange={(e) => set("tier", e.target.value || undefined)}>
-          <option value="">All tiers</option>
-          {TIERS.map(([t, l]) => <option key={t} value={t}>{l}</option>)}
-        </select>
-        <select aria-label="Tournament" value={event ?? ""} onChange={(e) => set("event", e.target.value || undefined)}>
-          <option value="">All tournaments</option>
-          {events.map((e) => <option key={e.id} value={e.id}>{e.short}{e.status === "ongoing" ? " (ongoing)" : ""}</option>)}
-        </select>
-        <select aria-label="Patch" value={patch ?? ""} onChange={(e) => set("patch", e.target.value || undefined)}>
-          <option value="">All patches</option>
-          {patches.map((p) => <option key={p} value={p}>{p}</option>)}
-        </select>
+        <Select label="Pool tier" value={tier ?? ""} onChange={(v) => set("tier", v || undefined)}
+          options={[{ value: "", label: "All tiers" }, ...TIERS.map(([t, l]) => ({ value: t, label: l }))]} />
+        <Select label="Tournament" value={event ?? ""} onChange={(v) => set("event", v || undefined)}
+          options={[{ value: "", label: "All tournaments" }, ...events.map((e) => ({ value: e.id, label: `${e.short}${e.status === "ongoing" ? " (ongoing)" : ""}` }))]} />
+        <Select label="Patch" value={patch ?? ""} onChange={(v) => set("patch", v || undefined)}
+          options={[{ value: "", label: "All patches" }, ...patches.map((p) => ({ value: p, label: p }))]} />
         <input type="search" placeholder="Search" aria-label="Search champions" value={get("q") ?? ""} onChange={(e) => set("q", e.target.value || undefined)} />
         <span className="count">{rows.length} champions</span>
       </div>

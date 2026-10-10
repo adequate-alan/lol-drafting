@@ -3,6 +3,7 @@ import { useSearchParams } from "next/navigation";
 import { Fragment, useMemo, useState } from "react";
 import type { DrawerData } from "@/lib/data";
 import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "@/components/ChampionDrawer";
+import { Select } from "@/components/Select";
 import { ChampIcon, PageHeader, SectionHeader, SourceBadge, SourceLinks, pct } from "@/components/ui";
 import { shortDate } from "@/lib/evidence";
 import {
@@ -63,10 +64,8 @@ export function MetaView({ names, sources, input, pool, rules, drawerData }: {
 
       {/* 1. Current meta */}
       <div className="toolbar hub-tools">
-        <select aria-label="Tournament" value={eventId ?? ""} onChange={(e) => set("event", e.target.value || undefined)}>
-          <option value="">All tournaments</option>
-          {hub.events.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
-        </select>
+        <Select label="Tournament" value={eventId ?? ""} onChange={(v) => set("event", v || undefined)}
+          options={[{ value: "", label: "All tournaments" }, ...hub.events.map((e) => ({ value: e.id, label: e.name }))]} />
         <span className="count">Pro evidence only · never changes saved pairings</span>
       </div>
       <div className="table-wrap hub-events">
