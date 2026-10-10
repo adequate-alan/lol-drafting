@@ -142,7 +142,7 @@ function ShellSlots({ shell: s, names, data, index, active, selected, onOpen, on
                   onClick={(e) => onOpen(r, e.currentTarget)}
                   onFocus={(e) => { if (e.currentTarget.matches(":focus-visible")) onHover(r, e.currentTarget); }} onBlur={() => onHover(undefined)}>
                   <ChampIcon id={id} name={names[id]} role={r} size="md" />
-                  <span className="comp-slot-name"><span className="role-tag">{r}</span><b>{names[id]}</b></span>
+                  <span className="comp-slot-name"><span className={`role-tag role-${r}`}>{r}</span><b>{names[id]}</b></span>
                   {/* Space is always reserved, so a highlight only changes colors, never the row's size. */}
                   <span className="link-pips">
                     <span className={`pip clash ${saved ? "on" : ""}`} title={saved ? "Saved pairing with the highlighted pick" : undefined}>Synergy</span>

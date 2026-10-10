@@ -71,7 +71,7 @@ export function ProDraftsView({ names, sources, all }: {
                 <div key={r} className={`draft-slot locked role-${r}`}>
                   <span className="slot-body">
                     <span className="slot-icon"><ChampIcon id={selected.picks[r]} name={names[selected.picks[r]] ?? selected.picks[r]} role={r} size="lg" /></span>
-                    <span className="slot-text"><span className="role-tag">{r}</span><span className="slot-name truncate">{names[selected.picks[r]] ?? selected.picks[r]}</span></span>
+                    <span className="slot-text"><span className={`role-tag role-${r}`}>{r}</span><span className="slot-name truncate">{names[selected.picks[r]] ?? selected.picks[r]}</span></span>
                   </span>
                 </div>
               ))}
@@ -95,7 +95,7 @@ export function ProDraftsView({ names, sources, all }: {
       </form>
       <div className="table-wrap tall">
         <table>
-          <thead><tr><th>Game</th><th>Team</th><th>vs</th>{ROLES.map((r) => <th key={r}>{r}</th>)}<th>Read</th><th>Source</th></tr></thead>
+          <thead><tr><th>Game</th><th>Team</th><th>vs</th>{ROLES.map((r) => <th key={r}><span className={`role-tag role-${r}`}>{r}</span></th>)}<th>Read</th><th>Source</th></tr></thead>
           <tbody>
             {rows.map((d) => (
               <tr key={d.id} className={`clickable ${d.id === f.id ? "selected" : ""}`}>

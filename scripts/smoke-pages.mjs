@@ -355,6 +355,31 @@ await page.evaluate(() => window.dispatchEvent(new Event("focus")));
 const prompt = await page.locator(".update-notice", { hasText: "Site updated" }).waitFor({ timeout: 5000 }).then(() => true).catch(() => false);
 await page.unroute("**/version.json*");
 check("refresh prompt only appears after a new deploy", ver === 200 && noPrompt && prompt, `version.json ${ver}, prompt before ${!noPrompt}, after ${prompt}`);
+// Branding: custom mark and name in the sidebar, the fan-project notice in the footer
+await page.setViewportSize({ width: 1440, height: 900 });
+await open("/");
+check("sidebar brand is the custom Draft Assistant mark", /^Draft Assistant/.test((await text("aside.sidebar .brand-name")) ?? "") && (await page.locator("aside.sidebar svg.brand-mark").count()) === 1, "");
+check("fan-project notice in the footer", /Legal Jibber Jabber/.test((await text("footer.site-foot")) ?? "") && /does not endorse or sponsor/.test(await text("footer.site-foot")), "");
+// Review screenshots: desktop and mobile, light and dark
+if (shots) {
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate((t) => localStorage.setItem("theme", t), theme);
+    for (const [w, h, tag] of [[1440, 900, "desk"], [390, 844, "mob"]]) {
+      await page.setViewportSize({ width: w, height: h });
+      for (const [path, name] of [["/?top=ambessa&jungle=vi&bot=ziggs&vs=top:renekton,bot:sivir,support:lulu", "draft"], ["/first-pick/bot/?champ=sivir", "firstpick"], ["/pool/", "pool"], ["/meta/", "meta"]]) {
+        await open(path);
+        await page.waitForTimeout(700);
+        await page.screenshot({ path: `${shots}/review-${name}-${tag}-${theme}.png` });
+      }
+      await open("/comps/");
+      await page.locator(".comp-slot").first().click();
+      await page.waitForTimeout(400);
+      await page.screenshot({ path: `${shots}/review-drawer-${tag}-${theme}.png` });
+    }
+  }
+  await page.evaluate(() => localStorage.removeItem("theme"));
+  await page.setViewportSize({ width: 1440, height: 900 });
+}
 check("no failed requests / console errors", problems.length === 0, problems.slice(0, 10).join(" | "));
 await browser.close();
 const failed = results.filter((r) => !r.ok);

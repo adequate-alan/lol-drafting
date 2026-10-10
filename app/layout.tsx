@@ -5,7 +5,8 @@ import "./globals.css";
 import { TYPEKIT_CSS } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "League of Legends Draft Assistant",
+  title: "Draft Assistant",
+  description: "League of Legends drafting tool. Fan project, not endorsed by Riot Games.",
   robots: { index: false, follow: false },
 };
 
