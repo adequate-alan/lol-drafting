@@ -95,6 +95,17 @@ describe("mid / jungle", () => {
     expect(mj("vi").clashDefault).toEqual(expect.arrayContaining(["akali", "syndra"]));
   });
 
+  it("Yone pairs with Maokai and with Sejuani, both ways (alan, 2026-10-10)", () => {
+    expect(mj("yone").role).toBe("MID");
+    expect(mj("yone").clashDefault).toEqual(["maokai", "sejuani"]);
+    expect(mj("maokai").role).toBe("JUNGLE");
+    expect(mj("maokai").clashDefault).toEqual(["yone"]);
+    expect(mj("sejuani").role).toBe("JUNGLE");
+    expect(mj("sejuani").clashDefault).toEqual(["yone"]);
+    // Saved layer only: no pro evidence was supplied for these duos.
+    for (const id of ["yone", "maokai", "sejuani"]) expect(mj(id).observedProPairings).toEqual([]);
+  });
+
   it("no current Gen.G pattern presents Azir + Skarner", () => {
     const current = getGenG().filter((p) => p.era === "current-playoffs");
     for (const p of current) expect(/azir/i.test(p.title) && /skarner/i.test(p.title)).toBe(false);

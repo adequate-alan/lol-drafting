@@ -37,6 +37,12 @@ describe("saved pairings lead an early draft", () => {
   it("Skarner + Locke is the saved pairing, not Azir", () => {
     expect(top({ MID: "locke" }, "JUNGLE")[0]).toBe("skarner");
   });
+
+  it("Yone ↔ Maokai / Sejuani lead an early draft", () => {
+    expect(top({ MID: "yone" }, "JUNGLE").slice(0, 2).sort()).toEqual(["maokai", "sejuani"]);
+    expect(top({ JUNGLE: "maokai" }, "MID")[0]).toBe("yone");
+    expect(top({ JUNGLE: "sejuani" }, "MID")[0]).toBe("yone");
+  });
 });
 
 describe("ranking is by overall draft fit", () => {
