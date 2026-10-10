@@ -56,8 +56,8 @@ export function savedLinks(role: Role, slots: Slots, data: LinkData, name: (id: 
   // Bot-lane shapes on mid / jungle / top records, only for duos the bot's own record lists (CLAUDE.md).
   const listed = bot ? [...bot.clashDefault, ...bot.alternatives].includes(slots.SUPPORT) : false;
   if (listed) for (const r of ["MID", "JUNGLE", "TOP"] as const) {
-    const rec = recordFor(slots[r], r, data);
-    const shapes = rec && ("botShapes" in rec ? rec.botShapes : rec.surrounding.botShapes);
+    const shapes = r === "TOP" ? data.topPicks.find((t) => t.champion === slots.TOP)?.surrounding.botShapes
+      : data.midJungle.find((m) => m.anchor === slots[r] && m.role === r)?.botShapes;
     if (!shapes?.some((d) => d.bot === slots.BOT && d.support === slots.SUPPORT)) continue;
     const text = `Saved comp: ${name(slots.BOT)} + ${name(slots.SUPPORT)} bot lane for ${name(slots[r])}`;
     if (role === r) { add("BOT", "fits", text); add("SUPPORT", "fits", text); }
