@@ -134,6 +134,21 @@ describe("mid / jungle", () => {
     expect(mj("leblanc").observedProPairings).toEqual([]);
   });
 
+  it("records added from alan's saved links only mirror them, never pro evidence (2026-10-10)", () => {
+    for (const id of ["pantheon", "nocturne", "trundle", "wukong", "aatrox", "xin-zhao", "sylas", "twisted-fate"]) {
+      const r = mj(id);
+      expect(r.observedProPairings, id).toEqual([]);
+      expect(r.sources, id).toEqual([]);
+      for (const p of [...r.clashDefault, ...r.alternatives]) {
+        const back = mj(p);
+        expect(back.role, `${id} ↔ ${p}`).not.toBe(r.role);
+        expect([...back.clashDefault, ...back.alternatives], `${p} lists ${id}`).toContain(id);
+      }
+    }
+    expect(mj("pantheon").clashDefault).toEqual(["syndra", "ahri"]);
+    expect(mj("nocturne").clashDefault).toEqual(["orianna", "lissandra"]);
+  });
+
   it("Yone pairs with Maokai and with Sejuani, both ways (alan, 2026-10-10)", () => {
     expect(mj("yone").role).toBe("MID");
     expect(mj("yone").clashDefault).toEqual(["maokai", "sejuani"]);

@@ -1636,5 +1636,164 @@
     "playoffRead": "Saved pairing set by alan (2026-10-10): LeBlanc with Lee Sin. No recorded pro game backs this pairing.",
     "status": "added",
     "sources": []
+  },
+  {
+    "anchor": "pantheon",
+    "role": "JUNGLE",
+    "clashDefault": [
+      "syndra",
+      "ahri"
+    ],
+    "alternatives": [
+      "viktor",
+      "cassiopeia",
+      "taliyah",
+      "galio",
+      "annie"
+    ],
+    "botShapes": [],
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "history": [],
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "playoffRead": "Synergy record derived from alan's saved pairings (2026-10-10): Syndra, Ahri list Pantheon as a saved partner. Alternatives mirror Viktor, Cassiopeia, Taliyah, Galio, Annie. No recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "anchor": "nocturne",
+    "role": "JUNGLE",
+    "clashDefault": [
+      "orianna",
+      "lissandra"
+    ],
+    "alternatives": [
+      "ryze",
+      "akali",
+      "anivia",
+      "ahri",
+      "locke"
+    ],
+    "botShapes": [],
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "history": [],
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "playoffRead": "Synergy record derived from alan's saved pairings (2026-10-10): Orianna, Lissandra list Nocturne as a saved partner. Alternatives mirror Ryze, Akali, Anivia, Ahri, Locke. No recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "anchor": "trundle",
+    "role": "JUNGLE",
+    "clashDefault": [
+      "viktor"
+    ],
+    "alternatives": [],
+    "botShapes": [],
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "history": [],
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "playoffRead": "Synergy record derived from alan's saved pairings (2026-10-10): Viktor lists Trundle as a saved partner. No recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "anchor": "wukong",
+    "role": "JUNGLE",
+    "clashDefault": [
+      "ahri"
+    ],
+    "alternatives": [],
+    "botShapes": [],
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "history": [],
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "playoffRead": "Synergy record derived from alan's saved pairings (2026-10-10): Ahri lists Wukong as a saved partner. No recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "anchor": "aatrox",
+    "role": "JUNGLE",
+    "clashDefault": [
+      "akali"
+    ],
+    "alternatives": [],
+    "botShapes": [],
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "history": [],
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "playoffRead": "Synergy record derived from alan's saved pairings (2026-10-10): Akali lists Aatrox as a saved partner (as an alternative; the only saved partner, so the default here). No recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "anchor": "xin-zhao",
+    "role": "JUNGLE",
+    "clashDefault": [
+      "azir"
+    ],
+    "alternatives": [],
+    "botShapes": [],
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "history": [],
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "playoffRead": "Synergy record derived from alan's saved pairings (2026-10-10): Azir lists Xin Zhao as a saved partner (as an alternative; the only saved partner, so the default here). No recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "anchor": "sylas",
+    "role": "MID",
+    "clashDefault": [
+      "lee-sin",
+      "naafiri"
+    ],
+    "alternatives": [],
+    "botShapes": [],
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "history": [],
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "playoffRead": "Synergy record derived from alan's saved pairings (2026-10-10): Lee Sin, Naafiri list Sylas as a saved partner (as an alternative; the only saved partners, so the default here). No recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "anchor": "twisted-fate",
+    "role": "MID",
+    "clashDefault": [
+      "lee-sin"
+    ],
+    "alternatives": [],
+    "botShapes": [],
+    "observedBotShapes": [],
+    "observedProPairings": [],
+    "history": [],
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "playoffRead": "Synergy record derived from alan's saved pairings (2026-10-10): Lee Sin lists Twisted Fate as a saved partner (as an alternative; the only saved partner, so the default here). No recorded pro game backs it.",
+    "status": "added",
+    "sources": []
   }
 ]
