@@ -76,13 +76,13 @@ Change these only when alan explicitly says so, then update the test in the same
 
 ## UI
 
-- Gen.G-inspired design system: every color, spacing, radius and type size is a token in `app/globals.css`
+- Gen.G black + gold design system (brand primitives `--gold`, `--charcoal`, etc. mapped to semantic tokens); every color, spacing, radius and type size is a token in `app/globals.css`
   (`:root[data-theme="light" | "dark"]`). Components use tokens only; don't add raw hex values in components.
 - Gold (`--accent`) marks selection and importance. Each layer keeps its own treatment: Synergy = strongest (gold rule;
   CSS/class name `clash` is historical),
   Pro = teal evidence styling, Logic = neutral gray. Don't restyle one layer to look like another.
 - Shared pieces live in `components/ui.tsx` (PageHeader, Panel, SourceBadge, ChampIcon, ChampionRow, DataTable,
-  WarningBadge, Metric), `components/Sidebar.tsx` and `components/ThemeToggle.tsx`. Champion icons are Data Dragon squares
+  WarningBadge, Metric), `components/Sidebar.tsx` and `components/ThemeToggle.tsx`. Inter for UI, JetBrains Mono (`--font-mono`) only for numbers. Champion icons are Data Dragon squares
   (`lib/champion-icons.ts`; patch resolved at build time in `next.config.ts`), loaded by the browser, with initials as
   the fallback. No champion images are stored in the repo.
 - `scripts/smoke-pages.mjs` runs against the live Pages URL after every deploy (the `smoke` job in pages.yml).
