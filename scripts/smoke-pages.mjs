@@ -139,7 +139,7 @@ const kitLoaded = await page.evaluate(async (fams) => {
   return out;
 }, kitFamilies);
 const bodyFont = await page.evaluate(() => getComputedStyle(document.body).fontFamily);
-check("Adobe Fonts kit loads on this domain", kitFamilies.length > 0 && kitLoaded.every((x) => x.endsWith("loaded") && !x.endsWith("not loaded")), `families: ${kitLoaded.join(", ") || "none found"} · body: ${bodyFont}`);
+check("Adobe Fonts kit loads on this domain and is the body font", kitFamilies.length > 0 && kitLoaded.every((x) => x.endsWith("loaded") && !x.endsWith("not loaded")) && /neue-haas-grotesk-text/.test(bodyFont), `families: ${kitLoaded.join(", ") || "none found"} · body: ${bodyFont}`);
 check("no failed requests / console errors", problems.length === 0, problems.slice(0, 10).join(" | "));
 await browser.close();
 const failed = results.filter((r) => !r.ok);
