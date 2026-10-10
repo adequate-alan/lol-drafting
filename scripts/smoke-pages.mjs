@@ -41,8 +41,8 @@ for (const path of ["/pool", "/meta", "/synergies/bot"]) {
   check(`no-slash URL ${path}`, res.status() === 200 && !!(await h1()), `${res.status()} -> ${page.url()}`);
 }
 // Champion Synergies (First Pick until 2026-10-10): the index forwards to Bot; old /first-pick/ links keep working, query included
-for (const [from, to] of [["/synergies/", "/synergies/bot/"], ["/synergies/", "/synergies/bot/"], ["/synergies/bot/", "/synergies/bot/"],
-  ["/synergies/mid-jungle/?champ=fizz&role=MID", "/synergies/mid-jungle/?champ=fizz&role=MID"]]) {
+for (const [from, to] of [["/synergies/", "/synergies/bot/"], ["/first-pick/", "/synergies/bot/"], ["/first-pick/support/", "/synergies/support/"],
+  ["/first-pick/mid-jungle/?champ=fizz&role=MID", "/synergies/mid-jungle/?champ=fizz&role=MID"]]) {
   await open(from);
   await page.waitForURL((u) => u.pathname.includes("/synergies/") && u.pathname.endsWith("/") && !u.pathname.endsWith("/synergies/"), { timeout: 5000 }).catch(() => {});
   const u = new URL(page.url());
