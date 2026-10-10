@@ -1055,5 +1055,261 @@
     "notes": "Synergy record set by alan (2026-10-10): Thresh and Lulu are joint preferred supports. No recorded pro game backs it.",
     "status": "added",
     "sources": []
+  },
+  {
+    "champion": "draven",
+    "role": "BOT",
+    "clashDefault": [
+      "nautilus",
+      "rell"
+    ],
+    "alternatives": [],
+    "alternativeNotes": {},
+    "observedProPairings": [],
+    "surrounding": {
+      "jungle": [],
+      "mid": []
+    },
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "notes": "Synergy record set by alan (2026-10-10): Nautilus and Rell are joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "kog-maw",
+    "role": "BOT",
+    "clashDefault": [
+      "lulu",
+      "milio"
+    ],
+    "alternatives": [],
+    "alternativeNotes": {},
+    "observedProPairings": [],
+    "surrounding": {
+      "jungle": [],
+      "mid": []
+    },
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "notes": "Synergy record set by alan (2026-10-10): Lulu and Milio are joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "nilah",
+    "role": "BOT",
+    "clashDefault": [
+      "rakan",
+      "seraphine"
+    ],
+    "alternatives": [],
+    "alternativeNotes": {},
+    "observedProPairings": [],
+    "surrounding": {
+      "jungle": [],
+      "mid": []
+    },
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "notes": "Synergy record set by alan (2026-10-10): Rakan and Seraphine are joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "samira",
+    "role": "BOT",
+    "clashDefault": [
+      "nautilus",
+      "rell"
+    ],
+    "alternatives": [],
+    "alternativeNotes": {},
+    "observedProPairings": [],
+    "surrounding": {
+      "jungle": [],
+      "mid": []
+    },
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "notes": "Synergy record set by alan (2026-10-10): Nautilus and Rell are joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "senna",
+    "role": "BOT",
+    "clashDefault": [
+      "tahm-kench",
+      "seraphine"
+    ],
+    "alternatives": [],
+    "alternativeNotes": {},
+    "observedProPairings": [],
+    "surrounding": {
+      "jungle": [],
+      "mid": []
+    },
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "notes": "Synergy record set by alan (2026-10-10): Tahm Kench and Seraphine are joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "smolder",
+    "role": "BOT",
+    "clashDefault": [
+      "lulu",
+      "milio"
+    ],
+    "alternatives": [],
+    "alternativeNotes": {},
+    "observedProPairings": [],
+    "surrounding": {
+      "jungle": [],
+      "mid": []
+    },
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "notes": "Synergy record set by alan (2026-10-10): Lulu and Milio are joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "swain",
+    "role": "BOT",
+    "clashDefault": [
+      "nautilus",
+      "leona"
+    ],
+    "alternatives": [
+      "seraphine"
+    ],
+    "alternativeNotes": {
+      "seraphine": "alan: can still be a synergy for Swain, not a preferred pair."
+    },
+    "observedProPairings": [],
+    "surrounding": {
+      "jungle": [],
+      "mid": []
+    },
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "notes": "Synergy record set by alan (2026-10-10): Nautilus and Leona are joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it. Seraphine stays a Synergy alternative, not preferred.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "tristana",
+    "role": "BOT",
+    "clashDefault": [
+      "nautilus",
+      "rell"
+    ],
+    "alternatives": [],
+    "alternativeNotes": {},
+    "observedProPairings": [],
+    "surrounding": {
+      "jungle": [],
+      "mid": []
+    },
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "notes": "Synergy record set by alan (2026-10-10): Nautilus and Rell are joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "twitch",
+    "role": "BOT",
+    "clashDefault": [
+      "lulu",
+      "yuumi"
+    ],
+    "alternatives": [],
+    "alternativeNotes": {},
+    "observedProPairings": [],
+    "surrounding": {
+      "jungle": [],
+      "mid": []
+    },
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "notes": "Synergy record set by alan (2026-10-10): Lulu and Yuumi are joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "varus",
+    "role": "BOT",
+    "clashDefault": [
+      "karma",
+      "nautilus"
+    ],
+    "alternatives": [],
+    "alternativeNotes": {},
+    "observedProPairings": [],
+    "surrounding": {
+      "jungle": [],
+      "mid": []
+    },
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "notes": "Synergy record set by alan (2026-10-10): Karma and Nautilus are joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "vayne",
+    "role": "BOT",
+    "clashDefault": [
+      "lulu",
+      "milio"
+    ],
+    "alternatives": [],
+    "alternativeNotes": {},
+    "observedProPairings": [],
+    "surrounding": {
+      "jungle": [],
+      "mid": []
+    },
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "notes": "Synergy record set by alan (2026-10-10): Lulu and Milio are joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
+  },
+  {
+    "champion": "yasuo",
+    "role": "BOT",
+    "clashDefault": [
+      "rell",
+      "alistar"
+    ],
+    "alternatives": [],
+    "alternativeNotes": {},
+    "observedProPairings": [],
+    "surrounding": {
+      "jungle": [],
+      "mid": []
+    },
+    "logic": {},
+    "confidence": "medium",
+    "identities": [],
+    "notes": "Synergy record set by alan (2026-10-10): Rell and Alistar are joint preferred supports. alan's Synergy preference, not Pro Evidence; no recorded pro game backs it.",
+    "status": "added",
+    "sources": []
   }
 ]
