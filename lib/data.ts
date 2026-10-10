@@ -4,7 +4,7 @@ import { join } from "node:path";
 import type { z } from "zod";
 import { Files } from "./schema";
 
-// Data lives in /data (never /public) and is only read on the server, behind the session check.
+// Data lives in /data and is read at build time; the static export embeds what each page renders.
 type FileName = keyof typeof Files;
 type Parsed<F extends FileName> = z.infer<(typeof Files)[F]>;
 
@@ -29,7 +29,7 @@ export const getMeta = () => load("meta.json");
 export const getGenG = () => load("geng.json");
 export const getRules = () => load("rules.json");
 
-// Everything the interactive Draft Room needs, sent to the client only after the session check.
+// Everything the interactive Draft Room needs in the browser.
 export function getDraftData() {
   return {
     champions: getChampions(),

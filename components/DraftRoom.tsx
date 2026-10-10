@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { profile, RULES, warnings, type Draft } from "@/lib/evaluate";
 import { ATTRS, ROLES, type Attr, type Role, type Source } from "@/lib/schema";
@@ -19,7 +18,6 @@ export function DraftRoom({ data, sources, initial, metaPicks }: {
   initial: Draft;
   metaPicks: Record<string, { picks: number; winRate: number; lowSample: boolean }>;
 }) {
-  const pathname = usePathname();
   const [draft, setDraft] = useState<Draft>(initial);
   const names = useMemo(() => Object.fromEntries(data.champions.map((c) => [c.id, c.name])), [data.champions]);
   const byName = useMemo(() => {
@@ -33,7 +31,8 @@ export function DraftRoom({ data, sources, initial, metaPicks }: {
     setDraft(next);
     const q = new URLSearchParams();
     ROLES.forEach((r) => next[r] && q.set(r.toLowerCase(), next[r]!));
-    window.history.replaceState(null, "", `${pathname}${q.size ? `?${q}` : ""}`);
+    // window.location keeps the GitHub Pages base path; usePathname() would drop it.
+    window.history.replaceState(null, "", `${window.location.pathname}${q.size ? `?${q}` : ""}`);
   };
   const lock = (role: Role, id: string | undefined) => update({ ...draft, [role]: id });
 
