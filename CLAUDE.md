@@ -106,7 +106,7 @@ Change these only when alan explicitly says so, then update the test in the same
   WarningBadge, Metric), `components/ChampionDrawer.tsx` (champion + role drawer, optional comp context; links in
   `lib/comp-links.ts`; data from `getDrawerData()`), `components/ChampionInteraction.tsx` (ChampionProvider + ChampionHoverCard; `InteractiveChampion`
   in `components/InteractiveChampion.tsx` makes Chip/Duo hover-for-card, click-for-drawer inside a provider; zero layout
-  shift: no scale, no border-width or padding change on hover), `components/Sidebar.tsx` and `components/ThemeToggle.tsx`. UI font is alan's Adobe Fonts kit (Neue Haas Grotesk Text, Display for headings; `TYPEKIT_CSS` in `lib/site.ts`, Inter as fallback), JetBrains Mono (`--font-mono`) only for numbers. Champion icons are Data Dragon squares
+  shift: no scale, no border-width or padding change on hover), `components/Sidebar.tsx` and `components/ThemeToggle.tsx`. Type (alan, 2026-10-10): Space Grotesk (`--font-display`; titles, nav, tabs, buttons, labels, champion names; OFL, self-hosted from `assets/fonts` via `next/font/local` in `app/layout.tsx`), Inter (`--font`) for body copy, JetBrains Mono (`--font-mono`) only for numbers. No font CDN (the Adobe Fonts kit was removed). Champion icons are Data Dragon squares
   (`lib/champion-icons.ts`; patch resolved at build time in `next.config.ts`), loaded by the browser, with initials as
   the fallback. No champion images are stored in the repo.
 - GenRang (Gen.G's mascot, alan 2026-10-10) is a brand accent only: sidebar foot, Gen.G page header, Draft Room empty

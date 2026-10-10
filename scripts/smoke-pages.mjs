@@ -360,17 +360,20 @@ const sheet = await page.locator(".drawer").boundingBox().catch(() => null);
 const sheetOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
 check("comps at 390px: drawer is a bottom sheet with no page overflow", !!sheet && sheet.width === 390 && sheet.y > 100 && Math.round(sheet.y + sheet.height) === 844 && sheetOverflow <= 0, JSON.stringify(sheet));
 await page.setViewportSize({ width: 1440, height: 900 });
-// Adobe Fonts kit: read its families from the kit CSS, then confirm the browser can load them on this domain
-const kitCss = await fetch("https://use.typekit.net/lvt6ebv.css").then((r) => r.text()).catch(() => "");
-const kitFamilies = [...new Set([...kitCss.matchAll(/font-family:\s*"?([^";]+)"?;/g)].map((m) => m[1].trim()))];
+// Fonts: Space Grotesk (titles, nav, champion names) and Inter (body) load from this site, never from a font CDN
 await open("/");
-const kitLoaded = await page.evaluate(async (fams) => {
-  const out = [];
-  for (const f of fams) { try { const faces = await document.fonts.load(`16px "${f}"`); out.push(`${f}: ${faces.length ? "loaded" : "not loaded"}`); } catch (e) { out.push(`${f}: error`); } }
-  return out;
-}, kitFamilies);
-const bodyFont = await page.evaluate(() => getComputedStyle(document.body).fontFamily);
-check("Adobe Fonts kit loads on this domain and is the body font", kitFamilies.length > 0 && kitLoaded.every((x) => x.endsWith("loaded") && !x.endsWith("not loaded")) && /neue-haas-grotesk-text/.test(bodyFont), `families: ${kitLoaded.join(", ") || "none found"} · body: ${bodyFont}`);
+const fonts = await page.evaluate(async () => {
+  await document.fonts.ready;
+  const h1 = getComputedStyle(document.querySelector("main h1")).fontFamily;
+  const body = getComputedStyle(document.body).fontFamily;
+  // next/font gives the self-hosted face a generated family name; read it from the variable the layout sets
+  const family = getComputedStyle(document.documentElement).getPropertyValue("--font-grotesk").split(",")[0].trim().replace(/['"]/g, "");
+  const grotesk = [...document.fonts].filter((f) => f.status === "loaded" && f.family.replace(/['"]/g, "") === family).map((f) => f.family);
+  const cdn = [...document.querySelectorAll('link[rel="stylesheet"], link[rel="preconnect"]')].map((l) => l.href).filter((h) => /typekit|fonts\.googleapis|fonts\.gstatic/.test(h));
+  const preload = [...document.querySelectorAll('link[rel="preload"][as="font"]')].map((l) => l.href);
+  return { family, h1, body, grotesk, cdn, preload };
+});
+check("Space Grotesk is self-hosted, preloaded and used for titles; Inter for body", !!fonts.family && fonts.h1.replace(/['"]/g, "").startsWith(fonts.family) && fonts.grotesk.length > 0 && /^"?Inter Variable/.test(fonts.body) && fonts.cdn.length === 0 && fonts.preload.some((h) => h.includes("/lol-drafting/")), JSON.stringify(fonts).slice(0, 300));
 // Refresh prompt: no prompt while the open tab matches the deploy; a newer version.json shows it
 await open("/");
 const ver = await page.evaluate(async (b) => (await fetch(`${b}/version.json`, { cache: "no-store" })).status, new URL(base).pathname.replace(/\/$/, ""));
