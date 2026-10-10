@@ -28,6 +28,7 @@ export const getPool = () => load("pool.json");
 export const getMeta = () => load("meta.json");
 export const getGenG = () => load("geng.json");
 export const getRules = () => load("rules.json");
+export const getCounters = () => load("counters.json");
 
 // Everything the interactive Draft Room needs in the browser.
 export function getDraftData() {
@@ -40,6 +41,7 @@ export function getDraftData() {
     shells: getCompShells(),
     pool: getPool(),
     events: getMeta().events,
+    counters: getCounters(),
   };
 }
 export type DraftData = ReturnType<typeof getDraftData>;

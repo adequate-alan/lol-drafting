@@ -9,7 +9,7 @@ export default function DraftRoomPage() {
   const unreviewed = getChampions().filter((c) => !c.reviewed).length;
   return (
     <Suspense fallback={<PageLoading title="Draft Room" />}>
-      <DraftRoomView data={getDraftData()} sources={sourceMap()} metaPicks={metaPicks} unreviewed={unreviewed} />
+      <DraftRoomView data={getDraftData()} sources={sourceMap()} meta={getMeta()} metaPicks={metaPicks} unreviewed={unreviewed} />
     </Suspense>
   );
 }

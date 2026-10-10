@@ -1,0 +1,11 @@
+{
+  "updated": "2026-10-10",
+  "dpmStatus": {
+    "reachable": false,
+    "checkedOn": "2026-10-10",
+    "note": "dpm.lol is blocked by Claude's network policy (proxy 403 and no DNS from the fetch tool), so no DPM matchup data has been ingested. Add dpm.lol to the environment's allowed domains, or supply DPM rows as structured facts."
+  },
+  "proResults": [],
+  "dpm": [],
+  "dpmDuos": []
+}
