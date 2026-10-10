@@ -3,10 +3,10 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { picksOf, profile, RULES, warnings, type Draft, type DraftWarning } from "@/lib/evaluate";
 import { recommend, teamNeeds, winConditions, type FitKind, type Recommendation } from "@/lib/recommend";
-import { ROLES, type Attr, type Counters, type Meta, type Role, type Source } from "@/lib/schema";
+import { ROLES, type Attr, type Counters, type Role, type Source } from "@/lib/schema";
+import type { DrawerData } from "@/lib/data";
 import { counterPicks, describeEvidence, detectEnemyRoles, enemyParam, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
-import { hubData } from "@/lib/meta-hub";
-import { ChampionDrawer } from "./ChampionDrawer";
+import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
 import { describeLine } from "@/lib/evidence";
 import { proSuggestions, similarProDrafts, similarShells, type ProByRole, type SuggestData } from "@/lib/suggest";
 import { PairingCard, type CardRecord } from "./PairingCard";
@@ -26,9 +26,9 @@ const severityOf = (w: DraftWarning): Severity => (CRITICAL.has(w.id) ? "critica
 const KIND_LABEL: Record<FitKind, string> = { saved: "Saved", synergy: "Synergy", need: "Need", matchup: "Matchup", risk: "Risk" };
 const ENEMY_SLOTS = 5;
 
-export function DraftRoom({ data, sources, meta, initial, initialEnemy, metaPicks }: {
+export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, metaPicks }: {
   data: SuggestData & { counters: Counters };
-  meta: Meta;
+  drawerData: DrawerData;
   sources: Record<string, Source>;
   initial: Draft;
   initialEnemy: EnemyDraft; // roles from ?vs=top:aatrox, or detected for bare ids
@@ -41,7 +41,8 @@ export function DraftRoom({ data, sources, meta, initial, initialEnemy, metaPick
   });
   // Roles given in the URL stick to their champion; everything else is placed by detectEnemyRoles.
   const [enemyHints] = useState(() => new Map(ROLES.flatMap((r) => (initialEnemy[r] ? [[initialEnemy[r]!, r] as const] : []))));
-  const [drawer, setDrawer] = useState<{ id: string; role: Role }>();
+  const [drawer, setDrawer] = useState<DrawerTarget>();
+  const drawerIndex = useDrawerIndex(drawerData);
   const names = useMemo(() => Object.fromEntries(data.champions.map((c) => [c.id, c.name])), [data.champions]);
   const byName = useMemo(() => {
     const m = new Map<string, string>();
@@ -87,7 +88,6 @@ export function DraftRoom({ data, sources, meta, initial, initialEnemy, metaPick
   const recs = Object.fromEntries(Object.entries(fits).map(([r, list]) => [r, list!.slice(0, 5)])) as typeof fits;
   const counters = counterPicks(draft, enemyDraft, data, fits);
   const counterOf = (role: Role, id: string) => counters[role]?.counters.find((c) => c.champion === id);
-  const hub = useMemo(() => hubData({ meta, proDrafts: data.proDrafts, botPairings: data.botPairings, sources }), [meta, data.proDrafts, data.botPairings, sources]);
   const proAll = proSuggestions(draft, data.proDrafts, { botPairings: data.botPairings, events: data.events, sources }, Infinity);
   const pro: ProByRole = Object.fromEntries(Object.entries(proAll).map(([r, list]) => [r, list!.slice(0, 6)]));
   const proCount = (role: Role, id: string) => proAll[role]?.find((p) => p.champion === id)?.score ?? 0;
@@ -263,7 +263,7 @@ export function DraftRoom({ data, sources, meta, initial, initialEnemy, metaPick
           </div>
         </div>
       </div>
-      {drawer && <ChampionDrawer id={drawer.id} role={drawer.role} hub={hub} pool={data.pool} names={names} sources={sources} onClose={() => setDrawer(undefined)} />}
+      {drawer && <ChampionDrawer target={drawer} data={drawerData} index={drawerIndex} onClose={() => setDrawer(undefined)} onSelect={setDrawer} />}
     </>
   );
 }

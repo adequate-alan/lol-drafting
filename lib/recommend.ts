@@ -143,7 +143,7 @@ const DUOS: [Role, Role, string][] = [
   ["TOP", "JUNGLE", "Early pressure in the top half"],
 ];
 
-function synergyParts(c: Champion, role: Role, allies: { role: Role; champ: Champion }[]): FitPart[] {
+export function synergyParts(c: Champion, role: Role, allies: { role: Role; champ: Champion }[]): FitPart[] {
   const parts: FitPart[] = [];
   for (const [a, b, what] of DUOS) {
     const partnerRole = role === a ? b : role === b ? a : null;

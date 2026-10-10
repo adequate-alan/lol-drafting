@@ -1,7 +1,8 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useMemo, useState } from "react";
-import { ChampionDrawer } from "@/components/ChampionDrawer";
+import type { DrawerData } from "@/lib/data";
+import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "@/components/ChampionDrawer";
 import { ChampIcon, PageHeader, SectionHeader, SourceBadge, SourceLinks, pct } from "@/components/ui";
 import { shortDate } from "@/lib/evidence";
 import {
@@ -13,8 +14,8 @@ import { ROLES, type MetaEvent, type PoolEntry, type Role, type Rule, type Sourc
 const DASH = <span className="faint">—</span>;
 const status = (e: MetaEvent) => (e.status === "ongoing" ? "Ongoing" : "Completed");
 
-export function MetaView({ names, sources, input, pool, rules }: {
-  names: Record<string, string>; sources: Record<string, Source>; input: HubInput; pool: PoolEntry[]; rules: Rule[];
+export function MetaView({ names, sources, input, pool, rules, drawerData }: {
+  names: Record<string, string>; sources: Record<string, Source>; input: HubInput; pool: PoolEntry[]; rules: Rule[]; drawerData: DrawerData;
 }) {
   // View state lives in the URL so it can be shared; window.location keeps the GitHub Pages base path.
   const initial = useSearchParams();
@@ -34,7 +35,8 @@ export function MetaView({ names, sources, input, pool, rules }: {
   const hasPresence = hub.stats.some((s) => (!eventId || s.event.id === eventId) && s.stat.presence != null);
   const rawSort = get("sort");
   const sort: HubSort = rawSort && rawSort in HUB_SORTS ? (rawSort as HubSort) : hasPresence ? "presence" : "recency";
-  const [drawer, setDrawer] = useState<{ id: string; role?: Role }>();
+  const [drawer, setDrawer] = useState<DrawerTarget>();
+  const drawerIndex = useDrawerIndex(drawerData);
   const [openKey, setOpenKey] = useState<string>();
   const toggle = (k: string) => setOpenKey((o) => (o === k ? undefined : k));
 
@@ -46,7 +48,7 @@ export function MetaView({ names, sources, input, pool, rules }: {
   const drafts = recentDrafts(hub, eventId);
 
   const Champ = ({ id, r, size = "sm" }: { id: string; r?: Role; size?: "xs" | "sm" | "md" }) => (
-    <button className="champ-link" onClick={(e) => { e.stopPropagation(); setDrawer({ id, role: r }); }} title={`${names[id] ?? id} details`}>
+    <button className="champ-link" data-drawer-trigger onClick={(e) => { e.stopPropagation(); setDrawer({ id, role: r }); }} title={`${names[id] ?? id} details`}>
       <ChampIcon id={id} name={names[id] ?? id} role={r} size={size} /><span>{names[id] ?? id}</span>
     </button>
   );
@@ -221,7 +223,7 @@ export function MetaView({ names, sources, input, pool, rules }: {
         </section>
       </div>
 
-      {drawer && <ChampionDrawer id={drawer.id} role={drawer.role} hub={hub} pool={pool} names={names} sources={sources} onClose={() => setDrawer(undefined)} />}
+      {drawer && <ChampionDrawer target={drawer} data={drawerData} index={drawerIndex} onClose={() => setDrawer(undefined)} onSelect={setDrawer} />}
     </div>
   );
 }
