@@ -47,12 +47,12 @@ describe("enemy role detection", () => {
     expect(detectEnemyRoles(["ahri", "sivir", "lulu", "aatrox"], data.champions)).toEqual({ TOP: "aatrox", MID: "ahri", BOT: "sivir", SUPPORT: "lulu" });
   });
   it("resolves flex champions to the arrangement that fits everyone", () => {
-    // Aatrox plays top or jungle; with Jayce on top he goes jungle.
-    expect(detectEnemyRoles(["aatrox", "jayce"], data.champions)).toEqual({ TOP: "jayce", JUNGLE: "aatrox" });
+    // Aatrox plays top or jungle; with Ornn on top he goes jungle.
+    expect(detectEnemyRoles(["aatrox", "ornn"], data.champions)).toEqual({ TOP: "ornn", JUNGLE: "aatrox" });
   });
   it("keeps roles from the URL and leaves out a champion with no free role", () => {
     expect(parseEnemy("top:aatrox,ahri", data.champions)).toEqual({ TOP: "aatrox", MID: "ahri" });
-    expect(detectEnemyRoles(["ksante", "jayce"], data.champions)).toEqual({ TOP: "ksante" });
+    expect(detectEnemyRoles(["ksante", "ornn"], data.champions)).toEqual({ TOP: "ksante" });
     expect(parseEnemy("ornn,nope,ornn,jinx", data.champions, ["jinx"])).toEqual({ TOP: "ornn" });
     expect(enemyParam({ MID: "ahri", TOP: "aatrox" })).toBe("top:aatrox,mid:ahri");
   });

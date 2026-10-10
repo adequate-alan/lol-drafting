@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { z } from "zod";
 import { withProAlternatives } from "./pro-alternatives";
+import { withoutConfirmed } from "./proposed";
 import { Files } from "./schema";
 
 // Data lives in /data and is read at build time; the static export embeds what each page renders.
@@ -32,6 +33,9 @@ export const getMeta = () => load("meta.json");
 export const getGenG = () => load("geng.json");
 export const getRules = () => load("rules.json");
 export const getCounters = () => load("counters.json");
+// Synergy · Proposed: Claude's kit-based partners, minus every pairing alan already confirmed (lib/proposed.ts).
+let proposed: Parsed<"proposed-synergy.json"> | undefined;
+export const getProposed = () => (proposed ??= withoutConfirmed(load("proposed-synergy.json"), { botPairings: getBotPairings(), midJungle: getMidJungle(), topPicks: getTopPicks() }));
 
 // Everything the interactive Draft Room needs in the browser.
 export function getDraftData() {
@@ -45,6 +49,7 @@ export function getDraftData() {
     pool: getPool(),
     events: getMeta().events,
     counters: getCounters(),
+    proposed: getProposed().records,
   };
 }
 export type DraftData = ReturnType<typeof getDraftData>;
@@ -60,6 +65,7 @@ export function getDrawerData() {
     pool: getPool(),
     meta: getMeta(),
     sources: Object.fromEntries(getSources().map((s) => [s.id, s])),
+    proposed: getProposed().records,
   };
 }
 export type DrawerData = ReturnType<typeof getDrawerData>;

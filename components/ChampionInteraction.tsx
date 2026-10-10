@@ -14,6 +14,7 @@ import { proLinks, savedLinks, type Slots } from "@/lib/comp-links";
 import type { DrawerData } from "@/lib/data";
 import { fresher, shortDate } from "@/lib/evidence";
 import { TIERS, listsRole, type ProGame, type Tier } from "@/lib/pool-stats";
+import { proposedLink } from "@/lib/proposed";
 import { synergyParts } from "@/lib/recommend";
 import { ROLES, type Attr, type Role } from "@/lib/schema";
 export { InteractiveChampion } from "@/components/InteractiveChampion";
@@ -101,11 +102,22 @@ function relationLines(t: { id: string; role: Role }, data: DrawerData, index: D
   }
   const lines: Line[] = [];
   if (saved[0]) lines.push({ layer: "clash", label: `Synergy · ${KIND_LABEL[saved[0].kind]}`, text: saved[0].text.replace(/^Saved (pairing|comp): /, "") });
+  // Nothing saved: Claude's proposed link, labelled as a proposal (never as a saved pairing).
+  if (!saved.length) {
+    const mates = comp ? ROLES.filter((r) => r !== t.role && comp.slots[r]).map((r) => ({ id: comp.slots[r], role: r })) : focus && focus.id !== t.id ? [focus] : [];
+    for (const m of mates) {
+      // A saved bot's own record decides its supports; no proposed bot ↔ support line beside it.
+      const bot = t.role === "BOT" ? t.id : m.role === "BOT" ? m.id : undefined;
+      if (bot && (t.role === "SUPPORT" || m.role === "SUPPORT") && data.botPairings.some((b) => b.champion === bot)) continue;
+      const p = proposedLink(data.proposed, t.id, t.role, m.id, m.role);
+      if (p) { lines.push({ layer: "clash", label: "Synergy · Proposed", text: `${name(m.id)}: ${p.reason}` }); break; }
+    }
+  }
   const best = [...pro].sort((a, b) => b.games.length - a.games.length)[0];
   if (best) lines.push({ layer: "pro", label: "Pro", text: best.games.length
     ? `${best.games.length} game${best.games.length > 1 ? "s" : ""} with ${name(best.mate)} · ${[best.games[0].eventName, best.games[0].patch].filter(Boolean).join(" · ")}`
     : `cited with ${name(best.mate)}, no recorded draft` });
-  if (!saved.length && logic[0]) lines.push({ layer: "logic", label: "Logic", text: logic[0] });
+  if (!saved.length && !lines.some((l) => l.layer === "clash") && logic[0]) lines.push({ layer: "logic", label: "Logic", text: logic[0] });
   return lines;
 }
 

@@ -1266,7 +1266,8 @@
     "name": "Jayce",
     "aliases": [],
     "roles": [
-      "TOP"
+      "TOP",
+      "MID"
     ],
     "damage": "AD",
     "attrs": {
@@ -3248,6 +3249,7 @@
     "name": "Talon",
     "aliases": [],
     "roles": [
+      "MID",
       "JUNGLE"
     ],
     "damage": "AD",
@@ -4114,7 +4116,8 @@
     "name": "Ziggs",
     "aliases": [],
     "roles": [
-      "BOT"
+      "BOT",
+      "MID"
     ],
     "damage": "AP",
     "attrs": {

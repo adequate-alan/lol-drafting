@@ -1039,6 +1039,7 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .status-tag { font-size: var(--fs-2xs); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--text-faint); white-space: nowrap; }
 .status-tag.default { color: var(--clash); }
 .status-tag.alt { color: var(--text-muted); }
+.status-tag.proposed { color: var(--clash); opacity: .75; }
 .sig-line { display: inline-flex; gap: var(--s3); min-width: 0; overflow: hidden; font-size: var(--fs-xs); color: var(--text-muted); white-space: nowrap; }
 .sig + .sig::before { content: "·"; margin-right: var(--s3); color: var(--text-faint); }
 .sig.synergy { color: var(--text-muted); }
@@ -1062,6 +1063,7 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .fit-why .k, .fit-pro .k, .fit-counter .k { font-size: var(--fs-2xs); font-weight: 650; text-transform: uppercase; letter-spacing: .03em; color: var(--text-faint); padding-top: 1px; }
 .fit-why .pts { font-family: var(--font-mono); color: var(--text-faint); }
 .fit-why .k-saved .k, .fit-why .k-synergy .k { color: var(--clash); }
+.fit-why .k-proposed .k { color: var(--clash); opacity: .75; }
 .fit-why .k-need .k { color: var(--logic); }
 .fit-why .k-matchup .k { color: var(--enemy); }
 .fit-why .k-risk .k, .fit-why .k-risk .pts { color: var(--danger); }
@@ -1312,3 +1314,26 @@ th { letter-spacing: .06em; font-weight: 600; }
 .fit-read { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1px var(--s4); margin: 0 0 var(--s3); font-size: var(--fs-xs); }
 .fit-read dt { font-size: var(--fs-2xs); font-weight: 650; text-transform: uppercase; letter-spacing: .06em; color: var(--text-faint); padding-top: 1px; }
 .fit-read dd { margin: 0; color: var(--text-muted); }
+
+/* ==========================================================================
+   Synergy · Proposed (Claude's kit-based partners, lib/proposed.ts): same gold family as Synergy, but a dashed rule and
+   dashed chips so it never reads as a saved pairing. Notes wrap inside their column like other noted chips.
+   ========================================================================== */
+.layer.clash.proposed::before { width: 0; background: none; border-left: 2px dashed var(--clash-line); }
+.prop-tag {
+  font-size: var(--fs-2xs); font-weight: 600; letter-spacing: .04em; text-transform: none; color: var(--text-muted);
+  border: 1px dashed var(--clash-line); border-radius: var(--r-sm); padding: 0 var(--s2); white-space: nowrap;
+}
+.prop-groups { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s5); min-width: 0; }
+.prop-role { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s4) var(--s6); min-width: 0; }
+.prop-role > * { min-width: 0; }
+@container (min-width: 780px) { .prop-role { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.prop-groups.compact .prop-role { grid-template-columns: minmax(0, 1fr); }
+.prop-partner .chip.dim, .scout .prop-partner .chip.dim { border: 1px dashed var(--clash-line); background: transparent; color: var(--text); }
+.prop-conf { font-weight: 600; }
+.prop-conf.strong { color: var(--clash); }
+.prop-conf.provisional { color: var(--caution); }
+.prop-pro { color: var(--pro); font-weight: 600; }
+.prop-identity { margin: 0 0 var(--s4); color: var(--text-muted); font-size: var(--fs-sm); }
+.pick-rail li:not(.proposed) + li.proposed { margin-top: var(--s2); padding-top: var(--s2); border-top: 1px dashed var(--border); }
+.pool-proposed { margin-top: var(--s4); padding-top: var(--s3); border-top: 1px dashed var(--clash-line); }

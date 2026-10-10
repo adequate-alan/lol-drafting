@@ -54,6 +54,15 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   picks left). Every point comes with a written reason. Saved defaults must still lead an early draft (one pick
   locked). **Pro evidence never adds to the score** (a pro-derived alternative scores only as an alternative); it is shown beside a recommendation and in the separate Pro
   Pairings panel. A saved `botShapes` entry needs a bot whose record lists the support.
+- **Synergy · Proposed** (alan, 2026-10-10, "Complete Champion Synergy Expansion"): `data/proposed-synergy.json` holds
+  Claude's kit-based partners for every playable champion and role (preferred / alternatives, a specific reason and a
+  kit-fit confidence `strong` / `moderate` / `provisional` per partner). It sits inside Synergy but apart from alan's
+  Confirmed records: labelled "Proposed · kit-based" with dashed styling, never a saved default or alternative, never in
+  `savedSupports`, a draft-fit bonus below any saved link (`lib/recommend.ts` `proposedParts`), and a pair alan confirmed
+  (or a pro-derived alternative) is dropped at load (`lib/proposed.ts` `withoutConfirmed`). A saved bot's profile never
+  lists proposed supports (`shownPartners`). Confidence is about the kit fit; pro games show beside a proposal, never raise
+  it. Promoting a proposal to Confirmed means alan says so and it moves into the saved record files.
+  `tests/proposed-synergy.test.ts` holds coverage and separation.
 - **Counters** are a fourth, separate signal (`lib/counters.ts`, `data/counters.json`, `tests/counters.test.ts`): favourable
   into the enemy lane opponent (enemy roles detected from `?vs=`, or `?vs=top:aatrox`). DPM.LOL matchup rows are the
   counter signal (alan, 2026-10-10); no DPM row, no counter. Recorded pro games only corroborate: same role on opposite
@@ -69,7 +78,8 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   environments) are `rosterOnly: true` with every attribute 0: lockable, searchable and usable as enemies, never
   recommended, never in the pool. Reviewing one means setting its attributes and removing `rosterOnly`. Never type a
   roster from memory. On 2026-10-10 every roster-only champion except Zaahen got attributes and a v2 kit
-  (`lib/model-v2/kits.ts`, unreviewed by alan); Zaahen and Locke wait for a kit review.
+  (`lib/model-v2/kits.ts`, unreviewed by alan); Zaahen and Locke wait for a kit review. Role audit (2026-10-10): Talon
+  also MID, Ziggs also MID, Jayce also MID.
 
 ## Gol.gg research rules
 

@@ -1,5 +1,8 @@
+import { Fragment } from "react";
 import type { BotPairing, MidJunglePairing, ObservedBotShape, ObservedPairing, Role, Source, TopPick } from "@/lib/schema";
 import { describeLine, groupObserved, type EventMap } from "@/lib/evidence";
+import type { ProposedCard } from "@/lib/proposed";
+import { ProposedGroups, ProposedTag } from "./ProposedSynergy";
 import { ChampIcon, Chip, ChipList, Duo, EvidenceBadge, LayerBlock, SourceLinks } from "./ui";
 
 type Names = Record<string, string>;
@@ -8,7 +11,8 @@ type Sources = Record<string, Source>;
 export type CardRecord =
   | { kind: "bot"; record: BotPairing }
   | { kind: "mid-jungle"; record: MidJunglePairing }
-  | { kind: "top"; record: TopPick; stats?: { picks: number; winRate: number; lowSample: boolean } };
+  | { kind: "top"; record: TopPick; stats?: { picks: number; winRate: number; lowSample: boolean } }
+  | ProposedCard;
 
 function ObservedShapes({ list, names, sources, anchor, draftLabels }: {
   list: ObservedBotShape[]; names: Names; sources: Sources; anchor: string; draftLabels?: Record<string, string>;
@@ -101,6 +105,25 @@ export function PairingCard({ item, names, sources, events, compact = false, dra
         </LayerBlock>
         {r.logic.warning && <LayerBlock layer="logic" title="Warning"><p className="small">{r.logic.warning}</p></LayerBlock>}
         {!compact && r.sources.length > 0 && <div className="pick-foot"><SourceLinks ids={r.sources} sources={sources} /></div>}
+      </article>
+    );
+  }
+  if (item.kind === "proposed") {
+    // No saved record for this pick in this role: Claude's proposed partners, labelled as such, plus any saved links
+    // that reach it from other records.
+    return (
+      <article className="panel pick-card">
+        <Head role={item.role} id={item.id} name={names[item.id]}><ProposedTag /></Head>
+        {item.identity && <div className="identities">{item.identity}</div>}
+        {item.confirmed.length > 0 && (
+          <LayerBlock layer="clash">
+            <dl className="kv">{item.confirmed.map((g) => <Fragment key={g.label}><dt>{g.label}</dt><dd><ChipList ids={g.ids} names={names} role={g.role} /></dd></Fragment>)}</dl>
+          </LayerBlock>
+        )}
+        <section className="layer clash proposed">
+          <div className="layer-label"><span className="ldot" />Synergy · Proposed</div>
+          <ProposedGroups links={compact ? item.links.filter((l) => l.tier === "preferred") : item.links} names={names} compact />
+        </section>
       </article>
     );
   }

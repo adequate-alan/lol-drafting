@@ -149,6 +149,34 @@ export const TopPick = z.object({
 });
 export type TopPick = z.infer<typeof TopPick>;
 
+// ---------- proposed-synergy.json (Synergy · Proposed) ----------
+// Claude's kit-based partner recommendations for every champion and role (alan, 2026-10-10: "Complete Champion Synergy
+// Expansion"). Kept apart from alan's Confirmed records above: never a saved default, never part of the bot → support
+// eligibility rule, a smaller draft-fit bonus than any saved link, and always labelled "Proposed · kit-based". A pairing
+// already in a confirmed record is dropped at load (lib/proposed.ts), so a pair is never both. Confidence is about the
+// kit-based synergy itself; pro evidence is shown beside it from recorded games and never raises it.
+export const ProposedConfidence = z.enum(["strong", "moderate", "provisional"]);
+export type ProposedConfidence = z.infer<typeof ProposedConfidence>;
+export const ProposedPartner = z.object({ id: ChampionId, confidence: ProposedConfidence, reason: z.string().min(30).max(200) });
+export type ProposedPartner = z.infer<typeof ProposedPartner>;
+export const ProposedRecord = z.object({
+  champion: ChampionId,
+  role: Role,
+  identity: z.string().min(20),
+  partners: z.array(z.object({
+    role: Role,
+    preferred: z.array(ProposedPartner).min(1),
+    alternatives: z.array(ProposedPartner),
+  })).min(1),
+});
+export type ProposedRecord = z.infer<typeof ProposedRecord>;
+export const ProposedSynergy = z.object({
+  updated: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  basis: z.string(), // how the records were made, shown on the site
+  records: z.array(ProposedRecord),
+});
+export type ProposedSynergy = z.infer<typeof ProposedSynergy>;
+
 // ---------- pro-drafts.json (Observed only) ----------
 export const ProDraft = z.object({
   id: id,
@@ -311,4 +339,5 @@ export const Files = {
   "geng.json": z.array(GenGPattern),
   "rules.json": z.array(Rule),
   "counters.json": Counters,
+  "proposed-synergy.json": ProposedSynergy,
 } as const;
