@@ -59,6 +59,9 @@ export const Champion = z.object({
   attrs: z.object(Object.fromEntries(ATTRS.map((a) => [a, Scale])) as Record<Attr, typeof Scale>),
   flags: z.array(z.enum(["needs-setup", "needs-peel", "disengage"])),
   reviewed: z.boolean(),
+  // Added from the Data Dragon roster (scripts/sync-champions.mjs) with every attribute at 0: lockable and searchable,
+  // never recommended, until someone sets its attributes and removes the flag.
+  rosterOnly: z.literal(true).optional(),
   note: z.string().optional(),
 });
 export type Champion = z.infer<typeof Champion>;

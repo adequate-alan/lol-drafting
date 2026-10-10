@@ -73,6 +73,31 @@
     "reviewed": false
   },
   {
+    "id": "akshan",
+    "name": "Akshan",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "mixed",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "alistar",
     "name": "Alistar",
     "aliases": [],
@@ -119,6 +144,32 @@
     },
     "flags": [],
     "reviewed": false
+  },
+  {
+    "id": "amumu",
+    "name": "Amumu",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   },
   {
     "id": "anivia",
@@ -216,6 +267,57 @@
     "reviewed": false
   },
   {
+    "id": "aurelion-sol",
+    "name": "Aurelion Sol",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "aurora",
+    "name": "Aurora",
+    "aliases": [],
+    "roles": [
+      "MID",
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "azir",
     "name": "Azir",
     "aliases": [],
@@ -262,6 +364,83 @@
     "reviewed": false
   },
   {
+    "id": "belveth",
+    "name": "Bel'Veth",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "blitzcrank",
+    "name": "Blitzcrank",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "mixed",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "brand",
+    "name": "Brand",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "MID",
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "braum",
     "name": "Braum",
     "aliases": [],
@@ -285,6 +464,31 @@
       "disengage"
     ],
     "reviewed": false
+  },
+  {
+    "id": "briar",
+    "name": "Briar",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   },
   {
     "id": "caitlyn",
@@ -407,6 +611,57 @@
     "reviewed": false
   },
   {
+    "id": "darius",
+    "name": "Darius",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "diana",
+    "name": "Diana",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "MID"
+    ],
+    "damage": "mixed",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "dr-mundo",
     "name": "Dr. Mundo",
     "aliases": [
@@ -432,6 +687,107 @@
     "reviewed": false
   },
   {
+    "id": "draven",
+    "name": "Draven",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "ekko",
+    "name": "Ekko",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "elise",
+    "name": "Elise",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "mixed",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "evelynn",
+    "name": "Evelynn",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "ezreal",
     "name": "Ezreal",
     "aliases": [],
@@ -455,6 +811,31 @@
     "reviewed": false
   },
   {
+    "id": "fiddlesticks",
+    "name": "Fiddlesticks",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "fiora",
     "name": "Fiora",
     "aliases": [],
@@ -476,6 +857,31 @@
     },
     "flags": [],
     "reviewed": false
+  },
+  {
+    "id": "fizz",
+    "name": "Fizz",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "mixed",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   },
   {
     "id": "galio",
@@ -502,6 +908,56 @@
       "disengage"
     ],
     "reviewed": false
+  },
+  {
+    "id": "gangplank",
+    "name": "Gangplank",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "garen",
+    "name": "Garen",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   },
   {
     "id": "gnar",
@@ -553,6 +1009,31 @@
     "reviewed": false
   },
   {
+    "id": "graves",
+    "name": "Graves",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "gwen",
     "name": "Gwen",
     "aliases": [],
@@ -574,6 +1055,185 @@
     },
     "flags": [],
     "reviewed": false
+  },
+  {
+    "id": "hecarim",
+    "name": "Hecarim",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "heimerdinger",
+    "name": "Heimerdinger",
+    "aliases": [],
+    "roles": [
+      "MID",
+      "SUPPORT",
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "hwei",
+    "name": "Hwei",
+    "aliases": [],
+    "roles": [
+      "MID",
+      "SUPPORT"
+    ],
+    "damage": "mixed",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "illaoi",
+    "name": "Illaoi",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "irelia",
+    "name": "Irelia",
+    "aliases": [],
+    "roles": [
+      "MID",
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "ivern",
+    "name": "Ivern",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "janna",
+    "name": "Janna",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   },
   {
     "id": "jarvan-iv",
@@ -791,6 +1451,281 @@
     "reviewed": false
   },
   {
+    "id": "karthus",
+    "name": "Karthus",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "kassadin",
+    "name": "Kassadin",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "katarina",
+    "name": "Katarina",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "kayle",
+    "name": "Kayle",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "mixed",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "kayn",
+    "name": "Kayn",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "kennen",
+    "name": "Kennen",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "mixed",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "khazix",
+    "name": "Kha'Zix",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "kindred",
+    "name": "Kindred",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "kled",
+    "name": "Kled",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "kog-maw",
+    "name": "Kog'Maw",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "leblanc",
+    "name": "LeBlanc",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "lee-sin",
     "name": "Lee Sin",
     "aliases": [],
@@ -835,6 +1770,31 @@
     },
     "flags": [],
     "reviewed": false
+  },
+  {
+    "id": "lillia",
+    "name": "Lillia",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   },
   {
     "id": "lissandra",
@@ -958,6 +1918,58 @@
     "reviewed": false
   },
   {
+    "id": "malphite",
+    "name": "Malphite",
+    "aliases": [],
+    "roles": [
+      "MID",
+      "SUPPORT",
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "malzahar",
+    "name": "Malzahar",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "maokai",
     "name": "Maokai",
     "aliases": [],
@@ -982,6 +1994,31 @@
       "disengage"
     ],
     "reviewed": false
+  },
+  {
+    "id": "master-yi",
+    "name": "Master Yi",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   },
   {
     "id": "mel",
@@ -1060,6 +2097,56 @@
     "reviewed": false
   },
   {
+    "id": "mordekaiser",
+    "name": "Mordekaiser",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "morgana",
+    "name": "Morgana",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "naafiri",
     "name": "Naafiri",
     "aliases": [],
@@ -1109,6 +2196,31 @@
     "reviewed": false
   },
   {
+    "id": "nasus",
+    "name": "Nasus",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "mixed",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "nautilus",
     "name": "Nautilus",
     "aliases": [],
@@ -1156,6 +2268,56 @@
     "reviewed": false
   },
   {
+    "id": "nidalee",
+    "name": "Nidalee",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "nilah",
+    "name": "Nilah",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "nocturne",
     "name": "Nocturne",
     "aliases": [],
@@ -1177,6 +2339,31 @@
     },
     "flags": [],
     "reviewed": false
+  },
+  {
+    "id": "nunu-willump",
+    "name": "Nunu & Willump",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   },
   {
     "id": "olaf",
@@ -1348,6 +2535,31 @@
     "reviewed": false
   },
   {
+    "id": "quinn",
+    "name": "Quinn",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "rakan",
     "name": "Rakan",
     "aliases": [],
@@ -1369,6 +2581,56 @@
     },
     "flags": [],
     "reviewed": false
+  },
+  {
+    "id": "rammus",
+    "name": "Rammus",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "mixed",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "rek-sai",
+    "name": "Rek'Sai",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   },
   {
     "id": "rell",
@@ -1444,6 +2706,57 @@
     "reviewed": false
   },
   {
+    "id": "rengar",
+    "name": "Rengar",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "riven",
+    "name": "Riven",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "rumble",
     "name": "Rumble",
     "aliases": [],
@@ -1490,6 +2803,31 @@
     "reviewed": false
   },
   {
+    "id": "samira",
+    "name": "Samira",
+    "aliases": [],
+    "roles": [
+      "BOT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "sejuani",
     "name": "Sejuani",
     "aliases": [],
@@ -1511,6 +2849,32 @@
     },
     "flags": [],
     "reviewed": false
+  },
+  {
+    "id": "senna",
+    "name": "Senna",
+    "aliases": [],
+    "roles": [
+      "BOT",
+      "SUPPORT"
+    ],
+    "damage": "mixed",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   },
   {
     "id": "seraphine",
@@ -1537,6 +2901,57 @@
     "reviewed": false
   },
   {
+    "id": "sett",
+    "name": "Sett",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "shaco",
+    "name": "Shaco",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "SUPPORT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "shen",
     "name": "Shen",
     "aliases": [],
@@ -1559,6 +2974,56 @@
     },
     "flags": [],
     "reviewed": false
+  },
+  {
+    "id": "shyvana",
+    "name": "Shyvana",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "singed",
+    "name": "Singed",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   },
   {
     "id": "sion",
@@ -1628,6 +3093,110 @@
     },
     "flags": [],
     "reviewed": false
+  },
+  {
+    "id": "smolder",
+    "name": "Smolder",
+    "aliases": [],
+    "roles": [
+      "BOT",
+      "MID",
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "sona",
+    "name": "Sona",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "soraka",
+    "name": "Soraka",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "swain",
+    "name": "Swain",
+    "aliases": [],
+    "roles": [
+      "BOT",
+      "MID",
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   },
   {
     "id": "sylas",
@@ -1727,6 +3296,84 @@
     "reviewed": false
   },
   {
+    "id": "talon",
+    "name": "Talon",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "taric",
+    "name": "Taric",
+    "aliases": [],
+    "roles": [
+      "MID",
+      "SUPPORT"
+    ],
+    "damage": "mixed",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "teemo",
+    "name": "Teemo",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "SUPPORT",
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "thresh",
     "name": "Thresh",
     "aliases": [],
@@ -1752,6 +3399,32 @@
     "reviewed": false
   },
   {
+    "id": "tristana",
+    "name": "Tristana",
+    "aliases": [],
+    "roles": [
+      "BOT",
+      "MID"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "trundle",
     "name": "Trundle",
     "aliases": [],
@@ -1774,6 +3447,31 @@
     },
     "flags": [],
     "reviewed": false
+  },
+  {
+    "id": "tryndamere",
+    "name": "Tryndamere",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   },
   {
     "id": "twisted-fate",
@@ -1802,6 +3500,83 @@
     "reviewed": false
   },
   {
+    "id": "twitch",
+    "name": "Twitch",
+    "aliases": [],
+    "roles": [
+      "BOT",
+      "SUPPORT"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "udyr",
+    "name": "Udyr",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "urgot",
+    "name": "Urgot",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "varus",
     "name": "Varus",
     "aliases": [],
@@ -1824,6 +3599,84 @@
     },
     "flags": [],
     "reviewed": false
+  },
+  {
+    "id": "vayne",
+    "name": "Vayne",
+    "aliases": [],
+    "roles": [
+      "BOT",
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "veigar",
+    "name": "Veigar",
+    "aliases": [],
+    "roles": [
+      "MID",
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "velkoz",
+    "name": "Vel'Koz",
+    "aliases": [],
+    "roles": [
+      "MID",
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   },
   {
     "id": "vex",
@@ -1872,6 +3725,31 @@
     "reviewed": false
   },
   {
+    "id": "viego",
+    "name": "Viego",
+    "aliases": [],
+    "roles": [
+      "JUNGLE"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "viktor",
     "name": "Viktor",
     "aliases": [],
@@ -1893,6 +3771,84 @@
     },
     "flags": [],
     "reviewed": false
+  },
+  {
+    "id": "vladimir",
+    "name": "Vladimir",
+    "aliases": [],
+    "roles": [
+      "MID",
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "volibear",
+    "name": "Volibear",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "warwick",
+    "name": "Warwick",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   },
   {
     "id": "wukong",
@@ -1942,6 +3898,32 @@
     "reviewed": false
   },
   {
+    "id": "xerath",
+    "name": "Xerath",
+    "aliases": [],
+    "roles": [
+      "MID",
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "xin-zhao",
     "name": "Xin Zhao",
     "aliases": [],
@@ -1963,6 +3945,33 @@
     },
     "flags": [],
     "reviewed": false
+  },
+  {
+    "id": "yasuo",
+    "name": "Yasuo",
+    "aliases": [],
+    "roles": [
+      "BOT",
+      "MID",
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   },
   {
     "id": "yone",
@@ -2060,6 +4069,84 @@
     "reviewed": false
   },
   {
+    "id": "zaahen",
+    "name": "Zaahen",
+    "aliases": [],
+    "roles": [
+      "TOP"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Data Dragon class tags; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "zac",
+    "name": "Zac",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "SUPPORT",
+      "TOP"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "zed",
+    "name": "Zed",
+    "aliases": [],
+    "roles": [
+      "JUNGLE",
+      "MID"
+    ],
+    "damage": "AD",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
     "id": "zeri",
     "name": "Zeri",
     "aliases": [],
@@ -2108,5 +4195,80 @@
       "needs-setup"
     ],
     "reviewed": false
+  },
+  {
+    "id": "zilean",
+    "name": "Zilean",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "zoe",
+    "name": "Zoe",
+    "aliases": [],
+    "roles": [
+      "MID"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
+  },
+  {
+    "id": "zyra",
+    "name": "Zyra",
+    "aliases": [],
+    "roles": [
+      "SUPPORT"
+    ],
+    "damage": "AP",
+    "attrs": {
+      "engage": 0,
+      "frontline": 0,
+      "peel": 0,
+      "sustainedDps": 0,
+      "burst": 0,
+      "poke": 0,
+      "scaling": 0,
+      "lanePressure": 0,
+      "sidePressure": 0,
+      "objectiveControl": 0
+    },
+    "flags": [],
+    "reviewed": false,
+    "rosterOnly": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Roles from Meraki Analytics positions; damage type from Data Dragon ratings. Attributes not reviewed."
   }
 ]
