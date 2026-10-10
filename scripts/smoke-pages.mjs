@@ -117,6 +117,50 @@ await page.reload({ waitUntil: "networkidle" });
 const persisted = await page.evaluate(() => document.documentElement.dataset.theme);
 check("theme toggle switches and persists", before !== after && persisted === after, `${before} -> ${after}, after reload ${persisted}`);
 await page.locator(".theme-toggle").click();
+// Champion Pool stats and the Demacia Cup evidence set
+{
+  const rows = () => page.$$eval("tr.pool-row", (rs) => rs.map((r) => [...r.querySelectorAll("td")].map((td) => td.textContent.trim())));
+  const rank = { Core: 0, Depth: 1, "Prepared / flex": 2 };
+  await open("/pool/");
+  let r = await rows();
+  check("pool: default sort is pool tier", r.length > 50 && r.every((x, i) => i === 0 || rank[r[i - 1][2]] <= rank[x[2]]), `${r.length} rows`);
+  await page.click(".seg button:text-is('MID')"); r = await rows();
+  check("pool: role filter", r.length > 0 && r.every((x) => x[1] === "MID"), `${r.length} MID rows`);
+  await page.selectOption("select[aria-label='Pool tier']", "core"); r = await rows();
+  check("pool: tier filter", r.length > 0 && r.every((x) => x[2] === "Core"), `${r.length} rows`);
+  await open("/pool/?event=demacia-cup-2026");
+  r = (await rows()).filter((x) => !/No verified data/.test(x[7]));
+  check("pool: tournament filter shows Demacia marked ongoing", r.length > 0 && r.every((x) => /Demacia Cup/.test(x[7]) && /ongoing/i.test(x[7])), `${r.length} rows`);
+  await open("/pool/?patch=16.16");
+  r = (await rows()).filter((x) => x[8] !== "—");
+  check("pool: patch filter", r.length > 0 && r.every((x) => x[8] === "16.16"), `${r.length} rows`);
+  await open("/pool/");
+  await page.fill("input[type=search]", "locke"); r = await rows();
+  check("pool: search", r.length === 1 && r[0][0].endsWith("Locke"), r.map((x) => x[0]).join(", "));
+  await page.fill("input[type=search]", "");
+  for (const [label, i] of [["Picks", 3], ["Bans", 4], ["Presence", 5], ["Win rate", 6]]) {
+    await page.click(`th button.sort:has-text("${label}")`);
+    const n = (await rows()).map((x) => (x[i] === "—" ? null : parseFloat(x[i])));
+    const k = n.findIndex((x) => x == null), vals = n.slice(0, k < 0 ? n.length : k);
+    check(`pool: sort by ${label}`, vals.length > 0 && vals.every((x, j) => j === 0 || vals[j - 1] >= x) && n.slice(vals.length).every((x) => x == null), vals.slice(0, 4).join(", "));
+  }
+  await open("/pool/?q=ahri");
+  r = await rows();
+  check("pool: no verified stats shows —", r.length === 1 && r[0][3] === "—" && r[0][6] === "—", r[0]?.join(" | "));
+  await open("/pool/?q=galio");
+  r = await rows();
+  check("pool: role-specific rows stay separate (Galio top / mid)", r.length === 2 && new Set(r.map((x) => x[1])).size === 2, r.map((x) => x[1]).join(", "));
+  await open("/pool/?q=locke");
+  await page.click("tr.pool-row");
+  const mine = await page.locator("tr.pool-detail .layer.clash").textContent();
+  const pro = await page.locator("tr.pool-detail .layer.pro").textContent();
+  check("pool: row detail keeps my pool apart from pro evidence", /Skarner/.test(mine) && !/Gol\.gg/.test(mine) && /Demacia Cup/.test(pro), "");
+  check("pool: recent games and observed pairings render", /Recent games/.test(pro) && /Observed pairings/.test(pro), "");
+  await open("/meta/");
+  check("meta: Demacia Cup shown as ONGOING current meta", /Current meta · Demacia Cup/.test(await page.locator("main").textContent()) && (await page.locator(".current-event .badge").first().textContent())?.trim() === "ONGOING", "");
+  await open("/first-pick/bot/?champ=ezreal");
+  check("pro pairings show event · patch · date (Ezreal + Karma)", /1 game · Demacia Cup · 16\.18 · Oct 3/.test(await page.locator("main").textContent()), "");
+}
 // Mobile navigation
 await page.setViewportSize({ width: 390, height: 844 });
 await open("/pool/");
@@ -128,6 +172,10 @@ await page.waitForFunction(() => document.querySelector("main h1")?.textContent?
 check("mobile menu opens and navigates", hiddenBefore === "hidden" && (await h1()) === "Meta / Research", `sidebar ${hiddenBefore} -> ${page.url()}`);
 const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
 check("no horizontal page scroll at 390px", overflow <= 0, `${overflow}px`);
+await open("/pool/");
+await page.locator("tr.pool-row").first().click();
+const poolOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+check("pool at 390px with a row open: any scroll stays inside the table", poolOverflow <= 0, `${poolOverflow}px`);
 await page.setViewportSize({ width: 1440, height: 900 });
 // Adobe Fonts kit: read its families from the kit CSS, then confirm the browser can load them on this domain
 const kitCss = await fetch("https://use.typekit.net/lvt6ebv.css").then((r) => r.text()).catch(() => "");
