@@ -264,7 +264,8 @@ async function main() {
     const clash: Duo[] = [], observedShapes: ObservedBotShape[] = [];
     for (const sh of list) {
       const b = botPairings.find((x) => x.champion === sh.bot);
-      if (!b || [...b.clashDefault, ...b.alternatives].includes(sh.support)) { clash.push(sh); continue; }
+      if (!b) { report.warnings.push(`Bot shape ${sh.bot}+${sh.support} on ${anchor}: ${sh.bot} has no Clash record; dropped from Clash`); continue; }
+      if ([...b.clashDefault, ...b.alternatives].includes(sh.support)) { clash.push(sh); continue; }
       const duoDrafts = proDrafts.filter((x) => x.picks.BOT === sh.bot && x.picks.SUPPORT === sh.support);
       const withAnchor = duoDrafts.filter((x) => x.picks[role] === anchor);
       const used = withAnchor.length ? withAnchor : duoDrafts;
