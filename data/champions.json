@@ -3696,7 +3696,8 @@
     "name": "Viktor",
     "aliases": [],
     "roles": [
-      "MID"
+      "MID",
+      "BOT"
     ],
     "damage": "AP",
     "attrs": {
