@@ -1,6 +1,6 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { ChampionRow, ChipList, LayerBlock, PageHeader, SourceLinks, pct } from "@/components/ui";
 import { describeLine, groupObserved, shortDate, type EventMap } from "@/lib/evidence";
 import { PARTNER_ROLE, SORTS, TIERS, poolRows, sortRows, type PoolInput, type PoolRow, type SortKey, type Tier } from "@/lib/pool-stats";
@@ -29,7 +29,12 @@ export function PoolView({ names, data, bot, midJungle, top }: {
   const q = (get("q") ?? "").toLowerCase();
   const rawSort = get("sort");
   const sort: SortKey = rawSort && rawSort in SORTS ? (rawSort as SortKey) : "tier";
-  const [open, setOpen] = useState<string | undefined>(undefined);
+  // ?champ=id (with ?role=) opens that row, e.g. from the champion drawer's "View in Champion Pool".
+  const focus = get("champ");
+  const [open, setOpen] = useState<string | undefined>(focus && role ? role + focus : undefined);
+  useEffect(() => {
+    if (focus && role) document.getElementById(`pool-${role}-${focus}`)?.scrollIntoView({ block: "center" });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const events = data.meta.events;
   const eventMap: EventMap = useMemo(() => Object.fromEntries(events.map((e) => [e.id, e])), [events]);
@@ -81,7 +86,7 @@ export function PoolView({ names, data, bot, midJungle, top }: {
               const isOpen = open === key;
               return (
                 <Fragment key={key}>
-                  <tr className={`role-${r.role} pool-row ${isOpen ? "open" : ""}`} onClick={() => setOpen(isOpen ? undefined : key)}
+                  <tr id={`pool-${r.role}-${r.id}`} className={`role-${r.role} pool-row ${isOpen ? "open" : ""}`} onClick={() => setOpen(isOpen ? undefined : key)}
                     tabIndex={0} aria-expanded={isOpen} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setOpen(isOpen ? undefined : key); } }}>
                     <td><ChampionRow id={r.id} name={names[r.id] ?? r.id} role={r.role} size="md" /></td>
                     <td className="hide-sm"><span className="role-tag">{r.role}</span></td>
