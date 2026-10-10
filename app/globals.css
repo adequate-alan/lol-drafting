@@ -5,25 +5,23 @@
    evidence; slate = logic; muted burgundy = enemy / counter; success, caution and danger
    keep their own colors.
    ========================================================================== */
-/* Brand primitives (alan, 2026-10-10): muted metallic gold, warm neutrals, deep navy-black. Gold means
-   mine / selected / preferred only: active nav, locked allies, the role being picked, primary actions, default
-   recommendations, focus, small emphasis rules. Never every border, heading, badge or number. */
+/* Brand primitives (alan, 2026-10-10, second pass): Gen.G ivory, champagne gold and black, sampled from the
+   reference artwork (GG mark #D2B983 on #FFF8EE; banner cream and warm gray). No navy. Gold means mine / selected /
+   active / preferred / primary / focus only, plus the occasional thin rule. Never every border, heading or number. */
 :root {
-  --gold: #B6922E; --gold-strong: #C8A84E; --gold-soft: #E8D9A6; --gold-deep: #8E7121;
-  --navy-black: #0B0D12; --navy-surface: #12151C; --navy-surface-2: #181C24; --navy-border: #292E38;
-  --warm-white: #F3F1EA; --warm-muted: #969BA6;
-  --paper: #F4F2EC; --paper-surface: #FBFAF7; --paper-surface-2: #EEECE6; --paper-border: #D8D4CB;
-  --ink: #181A1F; --ink-muted: #686B73;
-  --burgundy: #8F4545; --burgundy-line: #B85B5B;
-
+  --ivory: #FFF8EE; --cream: #F9F3E7; --near-white: #FFFDF8; --warm-gray: #DED5C5; --warm-line: #EAE2D3;
+  --champagne: #D2B983; --champagne-strong: #C5A75F; --champagne-deep: #7E6426;
+  --black: #090909; --black-2: #111215; --black-3: #18191D; --black-line: #2B2925;
+  --cream-text: #F7F1E7; --taupe: #6B6255; --taupe-light: #AAA398;
+  --oxblood: #8A4A44;
   /* alan's Adobe Fonts kit (lib/site.ts); Inter is the fallback while it loads or if it is blocked. */
   --font: "neue-haas-grotesk-text", "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: "neue-haas-grotesk-display", var(--font);
   --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --fs-3xs: 9px; --fs-2xs: 10px; --fs-xs: 11px; --fs-sm: 12px; --fs: 13px; --fs-md: 14px; --fs-lg: 15px; --fs-xl: 18px;
+  --fs-3xs: 9px; --fs-2xs: 10px; --fs-xs: 11px; --fs-sm: 12px; --fs: 13px; --fs-md: 14px; --fs-lg: 15px; --fs-xl: 18px; --fs-2xl: 22px;
   --lh: 1.38;
   --s1: 2px; --s2: 4px; --s3: 6px; --s4: 8px; --s5: 12px; --s6: 16px; --s7: 20px;
-  --r-sm: 3px; --r: 4px; --r-lg: 6px;
+  --r-sm: 2px; --r: 2px; --r-lg: 3px;
   --side-w: 200px;
   --row-h: 28px;
   --t-fast: 90ms ease-out;
@@ -31,97 +29,101 @@
   --mini-h: 50px;
   --scrim: rgba(0, 0, 0, .5);
   --side-chip: rgba(255, 255, 255, .06);
-  --side-chip-border: rgba(200, 168, 78, .4);
+  --side-chip-border: color-mix(in srgb, var(--champagne) 40%, transparent);
   --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--focus);
 }
 
-/* Light: warm off-white page, slightly brighter surfaces, ink text, deep gold accent. */
+/* Light: the strongest Gen.G expression. Ivory page, near-white surfaces, black type, black sidebar, champagne state. */
 :root, :root[data-theme="light"] {
   color-scheme: light;
-  --bg: var(--paper);
-  --surface: var(--paper-surface);
-  --surface-raised: var(--paper-surface);
-  --surface-subtle: #F8F6F1;
-  --surface-sunken: var(--paper-surface-2);
-  --surface-hover: #F3EFE4;
-  --border: #E2DED5;
-  --border-strong: var(--paper-border);
-  --text: var(--ink);
-  --text-muted: var(--ink-muted);
-  --text-faint: #8F9299;
-  /* Darker gold in light mode keeps contrast on the warm page. */
-  --accent: var(--gold-deep);
-  --accent-text: #7A6119;
-  --accent-hover: #7A6119;
-  --accent-subtle: #F3EBD2;
-  --accent-contrast: var(--paper-surface);
-  --focus: var(--gold);
+  --bg: var(--ivory);
+  --surface: var(--near-white);
+  --surface-raised: var(--near-white);
+  --surface-subtle: #FCF6EC;
+  --surface-sunken: var(--cream);
+  --surface-hover: #F6EEDF;
+  --border: var(--warm-line);
+  --border-strong: var(--warm-gray);
+  --text: var(--black);
+  --text-muted: var(--taupe);
+  --text-faint: #978D7E;
+  /* Champagne is too light for text on ivory: text uses the deep cut, fills and rules use the strong cut. */
+  --accent: var(--champagne-strong);
+  --accent-text: var(--champagne-deep);
+  --accent-hover: #B8994F;
+  --accent-subtle: #F6ECD6;
+  --accent-contrast: var(--black);
+  --accent-rule: color-mix(in srgb, var(--champagne) 70%, transparent);
+  --focus: var(--champagne-strong);
   --shadow: none;
-  --shadow-pop: 0 8px 24px rgba(24, 26, 31, .12);
+  --shadow-pop: 0 6px 20px rgba(60, 45, 20, .12);
 
-  --side-bg: var(--navy-black);
-  --side-surface: #161A22;
-  --side-border: #1E222B;
-  --side-text: #B4B6BD;
-  --side-text-strong: var(--warm-white);
-  --side-muted: #727782;
-  --side-accent: var(--gold-strong);
+  --side-bg: var(--black);
+  --side-surface: #171614;
+  --side-border: #201E1B;
+  --side-text: #B3AA9B;
+  --side-text-strong: var(--cream-text);
+  --side-muted: #7A7366;
+  --side-accent: var(--champagne);
 
-  --clash: #7A6119;  --clash-line: var(--gold); --clash-subtle: #F5EEDA;
-  --pro: #24687A;    --pro-line: #3E8799;   --pro-subtle: #E6EFF1;
-  --logic: #586070;  --logic-line: #8E96A4; --logic-subtle: #EEEEEC;
-  --danger: #B0322A; --danger-subtle: #F8E9E6; --danger-line: #DC8A80;
-  --caution: #985012; --caution-subtle: #F8EEE0; --caution-line: #DCA060;
-  --success: #2F7650; --success-subtle: #E5F1E9;
-  --counter: var(--burgundy); --counter-line: var(--burgundy-line); --counter-subtle: #F4EAE8;
-  --enemy: var(--burgundy); --enemy-line: #C99592; --enemy-subtle: #F5EEEC;
+  --clash: var(--champagne-deep); --clash-line: var(--champagne-strong); --clash-subtle: #F7EEDA;
+  /* Pro evidence: a desaturated gray-teal cue, not a second brand color */
+  --pro: #5C7A80;    --pro-line: #8BA8AD;   --pro-subtle: rgba(139, 168, 173, .10);
+  --logic: #6E675C;  --logic-line: #B3AB9D; --logic-subtle: #F3EDE3;
+  --danger: #A33A2E; --danger-subtle: #F8E8E2; --danger-line: #D99A8E;
+  --caution: #8E5A1C; --caution-subtle: #F7ECDC; --caution-line: #D7AE74;
+  --success: #3D6E4C; --success-subtle: #E9F0E4;
+  --counter: var(--oxblood); --counter-line: #C29A92; --counter-subtle: #F6ECE6;
+  --enemy: var(--oxblood); --enemy-line: #CDABA4; --enemy-subtle: #F8F0EA;
 
-  --top: #B0623A; --jungle: #3D8059; --mid: #4A68A8; --bot: #A9474F; --support: #7659A6;
-  --ad: #C0743E; --ap: #5A71C4;
+  /* Role colors live only in the small role marker */
+  --top: #B5784F; --jungle: #6B8C6A; --mid: #6E82A8; --bot: #AE666C; --support: #8C78A8;
+  --ad: #B5784F; --ap: #6E82A8;
 }
 
-/* Dark (the stronger identity): navy-black page, lifted charcoal surfaces, warm white text, muted gold. */
+/* Dark: warm near-black, never navy. Cream text, warm borders, champagne state. */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: var(--navy-black);
-  --surface: var(--navy-surface);
-  --surface-raised: var(--navy-surface-2);
-  --surface-subtle: #0F1218;
-  --surface-sunken: #090B0F;
-  --surface-hover: #1A1E27;
-  --border: #21252E;
-  --border-strong: var(--navy-border);
-  --text: var(--warm-white);
-  --text-muted: var(--warm-muted);
-  --text-faint: #6A6F7A;
-  --accent: var(--gold-strong);
-  --accent-text: #CDB062;
-  --accent-hover: #D4B867;
-  --accent-subtle: rgba(182, 146, 46, .13);
-  --accent-contrast: var(--navy-black);
-  --focus: var(--gold-strong);
+  --bg: #090A0C;
+  --surface: var(--black-2);
+  --surface-raised: var(--black-3);
+  --surface-subtle: #0D0E10;
+  --surface-sunken: #070708;
+  --surface-hover: #1B1B1E;
+  --border: #23221F;
+  --border-strong: var(--black-line);
+  --text: var(--cream-text);
+  --text-muted: var(--taupe-light);
+  --text-faint: #75706A;
+  --accent: var(--champagne);
+  --accent-text: #DCC696;
+  --accent-hover: #DDC797;
+  --accent-subtle: rgba(210, 185, 131, .12);
+  --accent-contrast: var(--black);
+  --accent-rule: color-mix(in srgb, var(--champagne) 45%, transparent);
+  --focus: var(--champagne);
   --shadow: none;
-  --shadow-pop: 0 10px 30px rgba(0, 0, 0, .55);
+  --shadow-pop: 0 10px 28px rgba(0, 0, 0, .6);
 
-  --side-bg: #08090D;
-  --side-surface: #13161D;
-  --side-border: #1A1D25;
-  --side-text: #ADB0B8;
-  --side-text-strong: var(--warm-white);
-  --side-muted: #696E79;
-  --side-accent: var(--gold-strong);
+  --side-bg: #050506;
+  --side-surface: #141413;
+  --side-border: #1C1B19;
+  --side-text: #ADA597;
+  --side-text-strong: var(--cream-text);
+  --side-muted: #6F6A62;
+  --side-accent: var(--champagne);
 
-  --clash: #CDB062;  --clash-line: var(--gold); --clash-subtle: rgba(182, 146, 46, .09);
-  --pro: #7DBCC8;    --pro-line: #4C93A3;   --pro-subtle: rgba(76, 147, 163, .11);
-  --logic: #A3AAB6;  --logic-line: #5E6674; --logic-subtle: rgba(163, 170, 182, .07);
-  --danger: #EC8378; --danger-subtle: rgba(236, 131, 120, .11); --danger-line: #B0544A;
-  --caution: #E7A864; --caution-subtle: rgba(231, 168, 100, .10); --caution-line: #A26E30;
-  --success: #6CC294; --success-subtle: rgba(108, 194, 148, .10);
-  --counter: #D3908A; --counter-line: var(--burgundy); --counter-subtle: rgba(184, 91, 91, .09);
-  --enemy: #CC9A96;  --enemy-line: #6E4446; --enemy-subtle: rgba(184, 91, 91, .06);
+  --clash: #DCC696;  --clash-line: var(--champagne); --clash-subtle: rgba(210, 185, 131, .08);
+  --pro: #8BA8AD;    --pro-line: #6A8589;   --pro-subtle: rgba(139, 168, 173, .07);
+  --logic: #A9A398;  --logic-line: #5F5A52; --logic-subtle: rgba(169, 163, 152, .06);
+  --danger: #E08A7C; --danger-subtle: rgba(224, 138, 124, .10); --danger-line: #A9564A;
+  --caution: #DDAA6A; --caution-subtle: rgba(221, 170, 106, .09); --caution-line: #9C6E34;
+  --success: #86B58F; --success-subtle: rgba(134, 181, 143, .09);
+  --counter: #C99A93; --counter-line: #7A4A45; --counter-subtle: rgba(160, 90, 80, .08);
+  --enemy: #C4A09A;  --enemy-line: #5E403C; --enemy-subtle: rgba(160, 90, 80, .05);
 
-  --top: #DB8D62; --jungle: #68B486; --mid: #819DDB; --bot: #DB7880; --support: #A88BD3;
-  --ad: #DE9459; --ap: #8196E4;
+  --top: #C9946F; --jungle: #8DAE8B; --mid: #93A5C9; --bot: #C98A8F; --support: #AD9BC6;
+  --ad: #C9946F; --ap: #93A5C9;
 }
 
 /* ==========================================================================
@@ -139,7 +141,7 @@ a { color: var(--text); text-decoration: none; }
 a:hover { color: var(--accent-text); }
 a:hover { text-decoration: underline; text-underline-offset: 2px; }
 h1, h2, h3 { margin: 0; letter-spacing: -.01em; }
-h1 { font-size: var(--fs-xl); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; }
+h1 { font-size: var(--fs-2xl); font-weight: 700; letter-spacing: -.025em; line-height: 1.1; }
 h2 { font-size: var(--fs-md); font-weight: 650; }
 h3 { font-size: var(--fs); font-weight: 650; }
 p { margin: 0 0 var(--s3); }
@@ -243,7 +245,7 @@ b, strong { font-weight: 620; }
    ========================================================================== */
 .page-header {
   display: flex; align-items: flex-end; gap: var(--s5); flex-wrap: wrap;
-  padding-bottom: var(--s3); margin-bottom: var(--s4); border-bottom: 1px solid var(--border);
+  padding-bottom: var(--s3); margin-bottom: var(--s4); border-bottom: 1px solid var(--accent-rule);
 }
 .page-header .titles { display: grid; gap: 3px; min-width: 0; }
 .page-header .title-row { display: flex; align-items: center; gap: var(--s4); flex-wrap: wrap; }
@@ -309,16 +311,14 @@ th .role-tag { font-size: inherit; letter-spacing: inherit; color: inherit; }
 .champ .mono { position: relative; }
 /* Data Dragon squares carry a thin baked-in frame; a slight zoom crops it. */
 .champ img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.1); }
-.champ::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--role, transparent); z-index: 1; }
+.champ::after { content: none; }
 .champ.xs { --size: 20px; font-size: 8px; }
-.champ.xs::after { height: 1.5px; }
 .champ.sm { --size: 24px; }
 .champ.md { --size: 32px; }
 .champ.ml { --size: 36px; border-radius: var(--r); }
 .champ.lg { --size: 44px; border-radius: var(--r); }
 .champ.xl { --size: 52px; border-radius: var(--r); }
 .champ.xxl { --size: 60px; border-radius: var(--r); }
-.champ.xl::after, .champ.lg::after, .champ.xxl::after { height: 3px; }
 
 .chip {
   display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 6px 0 2px; border-radius: var(--r-sm);
@@ -1173,3 +1173,4 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .rec-group > header .src-line { margin-left: auto; }
 .panel .draft-slot, .panel .draft-slot.locked:not(.enemy) { min-height: 0; padding: 0; background: transparent; border-color: transparent; box-shadow: none; }
 @media (max-width: 760px) { .rec-group > header { flex-wrap: wrap; } .rec-group > header .src-line { margin-left: 0; flex-basis: 100%; } }
+.pick-rail a.active .champ { box-shadow: 0 0 0 1px var(--accent); }
