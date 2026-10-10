@@ -4,9 +4,9 @@ import { ChampIcon } from "./ChampIcon";
 // Shared building blocks. Every page composes these instead of styling its own markup.
 
 export type Layer = "clash" | "pro" | "logic";
-const LAYER_LABEL: Record<Layer, string> = { clash: "Clash", pro: "Pro", logic: "Logic" };
+const LAYER_LABEL: Record<Layer, string> = { clash: "Synergy", pro: "Pro", logic: "Logic" };
 const LAYER_TITLE: Record<Layer, string> = {
-  clash: "My Clash Recommendation",
+  clash: "Synergy Recommendation",
   pro: "Observed Pro Evidence (Gol.gg)",
   logic: "General Draft Logic",
 };

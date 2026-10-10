@@ -1,6 +1,7 @@
-# LoL Clash drafting site
+# League of Legends Draft Assistant
 
-Drafting dashboard for alan's Clash team. Next.js (App Router) + TypeScript, no database, deployed as a fully static
+General League of Legends drafting assistant (originally built for alan's Clash team; the UI no longer uses Clash
+branding). Next.js (App Router) + TypeScript, no database, deployed as a fully static
 export to GitHub Pages (https://adequate-alan.github.io/lol-drafting/).
 Data is normalized JSON in `data/`, validated by zod schemas in `lib/schema.ts`.
 
@@ -15,20 +16,25 @@ Data is normalized JSON in `data/`, validated by zod schemas in `lib/schema.ts`.
 
 Every recommendation, card and suggestion keeps these apart, in separate fields and separate UI blocks:
 
-1. **Clash Recommendation**: what alan wants to play (`clashDefault`, `alternatives`, `surrounding`, pool tiers).
+1. **Synergy Recommendation**: alan's saved pairings (`clashDefault`, `alternatives`, `surrounding`, pool tiers; the
+   field names are historical) plus the draft-fit ranking in `lib/recommend.ts`.
 2. **Observed Pro Evidence**: directly supported by Gol.gg (`observedProPairings`, `pro-drafts.json`, `geng.json`, `meta.json`), each with sources.
 3. **General Draft Logic**: reasoning without recent observed evidence (`logic`, `lib/evaluate.ts` rules).
 
-- A pro pairing never becomes a Clash default or alternative automatically. One pro game is not a "best pairing".
-- Pro usage informs alan's defaults but never silently overwrites them. Ask before changing a Clash field.
-- Never delete valid pro evidence because it is not one of alan's Clash picks. Pairings the workbook cites without a
+- A pro pairing never becomes a saved default or alternative automatically. One pro game is not a "best pairing".
+- Pro usage informs alan's defaults but never silently overwrites them. Ask before changing a saved-pairing field.
+- Never delete valid pro evidence because it is not one of alan's saved picks. Pairings the workbook cites without a
   recorded draft stay, flagged `backedByGame: false`.
 - Keep priority (pick/ban presence) separate from win rate, and mark small samples (`lowSample`, fewer than 5 picks).
 - A low-sample champion can only be in a pool's `core` tier with a written `coreReasons` entry.
-- Clash bot/support eligibility is a hard rule (`lib/suggest.ts`, `tests/clash-eligibility.test.ts`): with BOT locked,
-  only that bot's `clashDefault` + `alternatives` can be Clash supports (and the reverse with SUPPORT locked). Pro
-  pairings and bot-lane shapes on other records can only boost an eligible pick, never add one, and a Clash default
-  always ranks above an alternative. A Clash `botShapes` entry needs a bot with a Clash record that lists the support.
+- Draft Room recommendations are ranked by overall draft fit (alan, 2026-10-10), in `lib/recommend.ts` and
+  `tests/recommend.test.ts`. Every champion who plays the open role is a candidate. The score adds saved pairings
+  (a strong bonus, never a filter), pairwise synergy with the locked picks, team needs (engage, frontline, peel,
+  sustained damage, damage mix, a fight starter; weighted more the later the pick), matchups against the optional
+  enemy picks (from champion attributes; there is no lane-matchup data), and risks (a new warning, or more holes than
+  picks left). Every point comes with a written reason. Saved defaults must still lead an early draft (one pick
+  locked). **Pro evidence never adds to the score**; it is shown beside a recommendation and in the separate Pro
+  Pairings panel. A saved `botShapes` entry needs a bot whose record lists the support.
 
 ## Gol.gg research rules
 
@@ -43,7 +49,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 - If Gol.gg or the web is unavailable: say the research could not be refreshed, keep the last verified data, leave
   `refreshStatus: "not-refreshed"`, and **never invent tournament data or pretend a refresh happened**.
 
-## Locked Clash conclusions (enforced by `tests/locked-conclusions.test.ts`)
+## Locked saved pairings (enforced by `tests/locked-conclusions.test.ts`)
 
 Change these only when alan explicitly says so, then update the test in the same commit.
 
@@ -52,7 +58,7 @@ Change these only when alan explicitly says so, then update the test in the same
 - Sivir → Lulu. Karma is the observed playoff / tempo alternative; alternatives Karma, Bard, Rakan, Seraphine.
 - Ezreal → Karma. Alternatives Seraphine, Bard, Milio, Neeko, Nautilus; never the default.
 - Yunara → Lulu. Braum is the anti-dive option.
-- Ziggs → Nautilus / Leona. No Clash alternatives (no Bard, no Karma). Pyke and Camille are observed pro variants only.
+- Ziggs → Nautilus / Leona. No saved alternatives (no Bard, no Karma). Pyke and Camille are observed pro variants only.
   General Draft Logic: "Ziggs needs reliable engage or catch somewhere else in the composition if support is not providing it."
 - Xayah → Rakan. Kalista → Renata. Zeri → Yuumi.
 - Skarner + Locke is the current pairing. Azir + Skarner is an earlier-2026 tendency only, never the current Gen.G default.
@@ -72,7 +78,8 @@ Change these only when alan explicitly says so, then update the test in the same
 
 - Gen.G-inspired design system: every color, spacing, radius and type size is a token in `app/globals.css`
   (`:root[data-theme="light" | "dark"]`). Components use tokens only; don't add raw hex values in components.
-- Gold (`--accent`) marks selection and importance. Each layer keeps its own treatment: Clash = strongest (gold rule),
+- Gold (`--accent`) marks selection and importance. Each layer keeps its own treatment: Synergy = strongest (gold rule;
+  CSS/class name `clash` is historical),
   Pro = teal evidence styling, Logic = neutral gray. Don't restyle one layer to look like another.
 - Shared pieces live in `components/ui.tsx` (PageHeader, Panel, SourceBadge, ChampIcon, ChampionRow, DataTable,
   WarningBadge, Metric), `components/Sidebar.tsx` and `components/ThemeToggle.tsx`. Champion icons are Data Dragon squares

@@ -1,6 +1,6 @@
-# LoL Drafting
+# League of Legends Draft Assistant
 
-Clash drafting dashboard: Draft Room, First Pick, Comp Library, Champion Pool, Pro Drafts, Gen.G and Meta.
+League of Legends drafting assistant: Draft Room (recommendations ranked by synergy, team needs and matchups), First Pick, Comp Library, Champion Pool, Pro Drafts, Gen.G and Meta.
 See `CLAUDE.md` for the data rules.
 
 Live at https://adequate-alan.github.io/lol-drafting/ (GitHub Pages). The site is fully static and public: anyone with
@@ -17,7 +17,7 @@ npm run dev        # http://localhost:3000/lol-drafting/
 
 ```bash
 npm run typecheck
-npm test           # includes the locked Clash conclusions and the static-site guard
+npm test           # includes the locked saved pairings, the draft-fit ranking and the static-site guard
 npm run build      # static export to out/
 ```
 

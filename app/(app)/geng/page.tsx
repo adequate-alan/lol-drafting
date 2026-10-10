@@ -25,7 +25,7 @@ export default function GenG() {
         <BrandMark />
         <div style={{ display: "grid", gap: 3 }}>
           <div className="row"><h1>Gen.G</h1><span className="badge"><span className="ldot" />Observed pro evidence</span></div>
-          <span className="desc">What Gen.G actually drafted. Kept apart from my Clash recommendations; earlier-2026 tendencies are labelled and never shown as current.</span>
+          <span className="desc">What Gen.G actually drafted. Kept apart from the synergy recommendations; earlier-2026 tendencies are labelled and never shown as current.</span>
         </div>
         <div className="row" style={{ marginLeft: "auto", gap: 18 }}>
           <span className="xs" style={{ color: "var(--side-muted)" }}><b style={{ color: "var(--side-text-strong)", fontSize: 16 }} className="tnum">{drafts.length}</b> exact drafts</span>

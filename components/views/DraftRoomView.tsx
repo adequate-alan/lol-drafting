@@ -18,12 +18,13 @@ export function DraftRoomView({ data, sources, metaPicks, unreviewed }: {
     const v = shell ? shell.slots[role].champion : q.get(role.toLowerCase());
     if (typeof v === "string" && ids.has(v)) initial[role] = v;
   }
+  const initialEnemy = (q.get("vs") ?? "").split(",").filter((id, i, a) => ids.has(id) && a.indexOf(id) === i && !Object.values(initial).includes(id)).slice(0, 5);
   return (
     <>
       <PageHeader title="Draft Room"
-        desc={unreviewed > 0 ? `Lock picks by role. Champion attributes behind the profile and warnings are a first draft (${unreviewed} not yet reviewed).` : "Lock picks by role."}
-        actions={<span className="row tight"><SourceBadge layer="clash" label="Clash: my recommendation" /><SourceBadge layer="pro" label="Pro: observed evidence" /><SourceBadge layer="logic" label="Logic: general draft logic" /></span>} />
-      <DraftRoom key={JSON.stringify(initial)} data={data} sources={sources} initial={initial} metaPicks={metaPicks} />
+        desc={`Lock your picks by role and, if you know them, the enemy's. Recommendations are ranked by how well each champion fits the whole draft.${unreviewed > 0 ? ` Champion attributes are a first draft (${unreviewed} not yet reviewed).` : ""}`}
+        actions={<span className="row tight"><SourceBadge layer="clash" label="Synergy" /><SourceBadge layer="pro" label="Pro: observed evidence" /><SourceBadge layer="logic" label="Logic: general draft logic" /></span>} />
+      <DraftRoom key={JSON.stringify(initial) + initialEnemy.join()} data={data} sources={sources} initial={initial} initialEnemy={initialEnemy} metaPicks={metaPicks} />
     </>
   );
 }

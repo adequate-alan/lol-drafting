@@ -54,7 +54,7 @@ export function ProDraftsView({ names, sources, all }: {
   return (
     <>
       <PageHeader title="Pro Drafts" badges={<SourceBadge layer="pro" label="Observed pro evidence" />}
-        desc="Recorded pro games only. Evidence, not recommendations: a pairing here never becomes a Clash default on its own." />
+        desc="Recorded pro games only. Evidence, not recommendations: a pairing here is never a recommendation on its own." />
 
       {selected && (
         <section className="panel" style={{ marginBottom: 12 }}>

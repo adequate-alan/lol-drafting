@@ -115,7 +115,7 @@
       "scaling",
       "sustained-lane-trading"
     ],
-    "playoffRead": "Your old Corki+Nami read is still a good lane default. The playoffs only gave a clear late-stage Corki+Alistar example, so Nami stays the Clash default while Alistar is the current observed variant.",
+    "playoffRead": "Your old Corki+Nami read is still a good lane default. The playoffs only gave a clear late-stage Corki+Alistar example, so Nami stays the preferred support while Alistar is the current observed variant.",
     "status": "keep",
     "sources": [
       "golgg-game-82965",
@@ -135,7 +135,7 @@
       "seraphine"
     ],
     "alternativeNotes": {
-      "karma": "Observed playoff / tempo alternative, not the Clash default."
+      "karma": "Observed playoff / tempo alternative, not the preferred support."
     },
     "observedProPairings": [
       {
@@ -174,7 +174,7 @@
       "speed-up",
       "front-to-back-scaling"
     ],
-    "playoffRead": "Playoffs repeatedly showed the Karma tempo version, including T1-DK and Gen.G-KT. Lulu remains the cleaner protect-carry option for Clash.",
+    "playoffRead": "Playoffs repeatedly showed the Karma tempo version, including T1-DK and Gen.G-KT. Lulu remains the cleaner protect-carry option.",
     "status": "updated",
     "sources": [
       "golgg-game-82694",
@@ -594,7 +594,7 @@
       "dragon-fights",
       "layered-cc"
     ],
-    "playoffRead": "Gen.G used MF+Neeko in Round 4. Keep Nautilus/Leona as the simple Clash versions.",
+    "playoffRead": "Gen.G used MF+Neeko in Round 4. Keep Nautilus/Leona as the simple, reliable versions.",
     "status": "current",
     "sources": [
       "golgg-game-82628"
@@ -653,7 +653,7 @@
       "tower-pressure",
       "waveclear"
     ],
-    "playoffRead": "Your preferred Nautilus/Leona setup still makes the most sense for Clash execution. The major playoff variant was Ziggs+Pyke in Gen.G-HLE Round 4.",
+    "playoffRead": "Your preferred Nautilus/Leona setup still makes the most sense for reliable execution. The major playoff variant was Ziggs+Pyke in Gen.G-HLE Round 4.",
     "status": "keep",
     "sources": [
       "golgg-game-82627",

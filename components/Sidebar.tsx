@@ -37,7 +37,7 @@ function Brand() {
   return (
     <Link href="/" className="brand">
       <BrandMark />
-      <span className="brand-name">Clash Draft Room<span className="brand-sub">LCK 2026 · Gol.gg evidence</span></span>
+      <span className="brand-name">League of Legends Draft Assistant<span className="brand-sub">LCK 2026 · Gol.gg evidence</span></span>
     </Link>
   );
 }
@@ -72,7 +72,7 @@ export function Sidebar() {
         </nav>
         <div className="sidebar-foot">
           <ThemeToggle />
-          <p className="sidebar-note">Clash picks, pro evidence and general logic are kept apart on every page.</p>
+          <p className="sidebar-note">Synergy recommendations, pro evidence and general logic are kept apart on every page.</p>
         </div>
       </aside>
     </>
