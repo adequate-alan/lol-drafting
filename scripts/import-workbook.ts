@@ -463,8 +463,8 @@ async function main() {
   };
 
   // ---------- write + validate ----------
-  // counters.json is not in the workbook; the importer leaves it alone.
-  const out: Record<Exclude<keyof typeof Files, "counters.json">, unknown> = {
+  // counters.json and proposed-synergy.json are not in the workbook; the importer leaves them alone.
+  const out: Record<Exclude<keyof typeof Files, "counters.json" | "proposed-synergy.json">, unknown> = {
     "champions.json": champions,
     "sources.json": [...sources.values()],
     "bot-pairings.json": botPairings,
