@@ -77,6 +77,7 @@
   --success: #3D6E4C; --success-subtle: #E9F0E4;
   --counter: var(--oxblood); --counter-line: #C29A92; --counter-subtle: #F6ECE6;
   --enemy: var(--oxblood); --enemy-line: #CDABA4; --enemy-subtle: #F8F0EA;
+  --side-a: var(--pro-line); --side-b: var(--enemy-line);
 
   /* Role colors live only in the small role marker */
   --top: #B5784F; --jungle: #6B8C6A; --mid: #6E82A8; --bot: #AE666C; --support: #8C78A8;
@@ -124,6 +125,7 @@
   --success: #86B58F; --success-subtle: rgba(134, 181, 143, .09);
   --counter: #C99A93; --counter-line: #7A4A45; --counter-subtle: rgba(160, 90, 80, .08);
   --enemy: #C4A09A;  --enemy-line: #5E403C; --enemy-subtle: rgba(160, 90, 80, .05);
+  --side-a: var(--pro-line); --side-b: #8A5A54;
 
   --top: #C9946F; --jungle: #8DAE8B; --mid: #93A5C9; --bot: #C98A8F; --support: #AD9BC6;
   --ad: #C9946F; --ap: #93A5C9;
@@ -422,6 +424,13 @@ th {
 }
 th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 tbody tr:last-child td { border-bottom: 0; }
+/* Pro Drafts: the two sides of one game read as a block (only real same-game pairs, never zebra striping). The first
+   row sits on the subtle surface with no rule inside the pair; a stronger rule closes each pair; a thin side strip marks
+   each team. Hover and selection still win (declared after). */
+tr.pair-a td { background: var(--surface-subtle); border-bottom-color: transparent; }
+tbody tr.pair-b:not(:last-child) td { border-bottom-color: var(--border-strong); }
+tr.pair-a td:first-child { box-shadow: inset 3px 0 0 var(--side-a); }
+tr.pair-b td:first-child { box-shadow: inset 3px 0 0 var(--side-b); }
 tbody tr:hover td { background: var(--surface-hover); }
 tr.selected td { background: var(--accent-subtle); }
 tr.selected td:first-child { box-shadow: inset 3px 0 0 var(--accent); }

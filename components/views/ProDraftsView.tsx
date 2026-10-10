@@ -48,6 +48,18 @@ export function ProDraftsView({ names, sources, all }: {
       options={[{ value: "", label: any }, ...options.map(([value, l]) => ({ value, label: l }))]} />
   );
   const active = KEYS.filter((k) => k !== "id" && f[k]).length;
+  // Both sides of one game sit together as a two-row block. Pairs come from the game itself (tournament, series game
+  // and the two teams), not row order, so a filtered view that keeps only one side shows no pair.
+  const ordered = (() => {
+    const games = new Map<string, ProDraft[]>();
+    for (const d of rows) {
+      const k = `${d.tournament}|${d.seriesGame}|${[d.team, d.opponent].sort().join("|")}`;
+      games.set(k, [...(games.get(k) ?? []), d]);
+    }
+    return [...games.values()].flatMap((g) => g.length === 2 && g[0].team === g[1].opponent
+      ? [{ d: g[0], pair: "pair-a" }, { d: g[1], pair: "pair-b" }]
+      : g.map((d) => ({ d, pair: "" })));
+  })();
 
   return (
     <>
@@ -95,8 +107,8 @@ export function ProDraftsView({ names, sources, all }: {
         <table>
           <thead><tr><th>Game</th><th>Team</th><th>vs</th>{ROLES.map((r) => <th key={r}><span className={`role-tag role-${r}`}>{r}</span></th>)}<th>Read</th><th>Source</th></tr></thead>
           <tbody>
-            {rows.map((d) => (
-              <tr key={d.id} className={`clickable ${d.id === f.id ? "selected" : ""}`}>
+            {ordered.map(({ d, pair }) => (
+              <tr key={d.id} className={`clickable ${pair} ${d.id === f.id ? "selected" : ""}`.replace(/\s+/g, " ").trim()}>
                 <td><Link className="cell-link" href={link(d.id)} style={{ whiteSpace: "nowrap" }}>{d.seriesGame}</Link></td>
                 <td style={{ whiteSpace: "nowrap" }}>{d.team}</td>
                 <td className="muted" style={{ whiteSpace: "nowrap" }}>{d.opponent}</td>

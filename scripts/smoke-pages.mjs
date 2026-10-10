@@ -450,6 +450,17 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await page.keyboard.press("Escape");
   await page.setViewportSize({ width: 1440, height: 900 });
 }
+// Pro Drafts: both sides of one game form a two-row block; one-sided views show no pair
+{
+  await open("/pro-drafts/");
+  const rows = await page.$$eval(".table-wrap tbody tr", (rs) => rs.map((r) => ({ cls: r.className, game: r.cells[0]?.textContent.trim(), team: r.cells[1]?.textContent.trim(), vs: r.cells[2]?.textContent.trim() })));
+  const pairs = rows.flatMap((r, i) => (/pair-a/.test(r.cls) ? [[r, rows[i + 1]]] : []));
+  const ok = pairs.length > 0 && pairs.every(([a, b]) => b && /pair-b/.test(b.cls) && a.game === b.game && a.team === b.vs && a.vs === b.team);
+  const strip = await page.$eval("tr.pair-b td:first-child", (td) => getComputedStyle(td).boxShadow).catch(() => "");
+  check("pro drafts: both sides of a game are paired, with a side strip", ok && /inset/.test(strip), `${pairs.length} pairs of ${rows.length} rows`);
+  await open("/pro-drafts/?team=Gen.G");
+  check("pro drafts: a one-sided view shows no pairs", (await page.locator("tr.pair-a, tr.pair-b").count()) === 0, "");
+}
 await open("/geng/");
 check("GenRang on the Gen.G page", (await page.locator(".brand-band img.genrang").count()) === 1 && await mascotOk(), "");
 // Review screenshots: desktop and mobile, light and dark
@@ -458,7 +469,7 @@ if (shots) {
     await page.evaluate((t) => localStorage.setItem("theme", t), theme);
     for (const [w, h, tag] of [[1440, 900, "desk"], [390, 844, "mob"]]) {
       await page.setViewportSize({ width: w, height: h });
-      for (const [path, name] of [["/?top=ambessa&jungle=vi&bot=ziggs&vs=top:renekton,bot:sivir,support:lulu", "draft"], ["/", "empty"], ["/geng/", "geng"], ["/first-pick/bot/?champ=sivir", "firstpick"], ["/pool/", "pool"], ["/meta/", "meta"]]) {
+      for (const [path, name] of [["/?top=ambessa&jungle=vi&bot=ziggs&vs=top:renekton,bot:sivir,support:lulu", "draft"], ["/", "empty"], ["/geng/", "geng"], ["/first-pick/bot/?champ=sivir", "firstpick"], ["/pool/", "pool"], ["/meta/", "meta"], ["/pro-drafts/", "prodrafts"]]) {
         await open(path);
         await page.waitForTimeout(700);
         await page.screenshot({ path: `${shots}/review-${name}-${tag}-${theme}.png` });
