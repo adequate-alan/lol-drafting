@@ -241,8 +241,7 @@ function Lineup({ shell: s, swaps, names, data, index, active, selected, menu, o
                   byHover.current = false;
                   onMenu(menu === r ? undefined : r);
                 }}>
-                <span aria-hidden="true" className="lu-swaps-icon">⇄</span>
-                <span className={isSwap ? "lu-swaps-n" : "lu-swaps-n num"}>{isSwap ? "Swapped" : slot.swaps.length}</span>
+                <span className="lu-swaps-n">{isSwap ? "Swapped" : `${slot.swaps.length} swap${slot.swaps.length > 1 ? "s" : ""}`}</span>
               </button>
             )}
             {menu === r && (

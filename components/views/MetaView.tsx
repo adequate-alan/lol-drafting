@@ -96,11 +96,13 @@ export function MetaView({ names, sources, input, pool, rules, drawerData }: {
         </table>
       </div>
       {selected.some((e) => e.notes.length) && (
-        <ul className="hub-notes">
-          {selected.flatMap((e) => e.notes.map((n) => (
-            <li key={e.id + n.topic} className="small"><b>{n.topic}</b> <span className="xs faint">{e.short}</span> {n.note} <SourceLinks ids={n.sources} sources={sources} /></li>
-          )))}
-        </ul>
+        <Disclosure summary={`Tournament notes (${selected.reduce((n, e) => n + e.notes.length, 0)})`}>
+          <ul className="hub-notes">
+            {selected.flatMap((e) => e.notes.map((n) => (
+              <li key={e.id + n.topic} className="small"><b>{n.topic}</b> <span className="xs faint">{e.short}</span> {n.note} <SourceLinks ids={n.sources} sources={sources} /></li>
+            )))}
+          </ul>
+        </Disclosure>
       )}
 
       {/* 2. Role table */}
@@ -255,6 +257,7 @@ function PairingTable({ title, a, b, list, openKey, toggle, Champ, sources }: {
   return (
     <>
       <SectionHeader title={title} meta={`${list.length} duos · observed pro evidence`} />
+      {!list.length ? <p className="xs muted">No recorded game in this scope shows one.</p> : (
       <div className="table-wrap hub-table mid">
         <table>
           <thead><tr><th>{a === "BOT" ? "Bot" : "Mid"}</th><th>{b === "SUPPORT" ? "Support" : "Jungle"}</th><th className="num" title="Games stored in this repo">Recorded</th><th>Tournament</th><th className="num hide-sm">Patch</th><th className="num hide-sm">Latest</th></tr></thead>
@@ -290,6 +293,7 @@ function PairingTable({ title, a, b, list, openKey, toggle, Champ, sources }: {
           </tbody>
         </table>
       </div>
+      )}
     </>
   );
 }

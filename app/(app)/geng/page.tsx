@@ -24,13 +24,8 @@ export default function GenG() {
     <ChampionProvider data={getDrawerData()}>
       <div className="brand-band">
         <div className="band-text">
-          <span className="band-eyebrow">Gen.G Esports · LCK</span>
           <h1>Gen.G</h1>
-          <span className="desc">Gen.G's recorded playoff drafts. Earlier-2026 tendencies are marked as such.</span>
-          <div className="band-stats">
-            <span><b className="tnum">{drafts.length}</b> exact drafts</span>
-            <span><b className="tnum">{current}</b> current patterns</span>
-          </div>
+          <span className="desc">{drafts.length} recorded playoff drafts and {current} current patterns from the LCK. Earlier-2026 tendencies are marked as such.</span>
         </div>
         <GenRang variant="full" size={84} className="band-mascot" />
       </div>
@@ -49,7 +44,9 @@ export default function GenG() {
                   </div>
                   <p>{p.detail}</p>
                   <div className="row xs">
-                    {p.proDraftIds.map((id) => <Link key={id} className="game-link" href={`/pro-drafts?team=Gen.G&id=${id}`}>{label[id] ?? id}</Link>)}
+                    {p.proDraftIds.length === drafts.length && drafts.length > 3
+                      ? <Link className="game-link" href="/pro-drafts?team=Gen.G">All {drafts.length} games</Link>
+                      : p.proDraftIds.map((id) => <Link key={id} className="game-link" href={`/pro-drafts?team=Gen.G&id=${id}`}>{label[id] ?? id}</Link>)}
                     <SourceLinks ids={p.sources} sources={sources} />
                   </div>
                 </div>

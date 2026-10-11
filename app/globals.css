@@ -32,7 +32,7 @@
   --font: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: var(--font-grotesk), "Space Grotesk", var(--font);
   --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --fs-3xs: 9px; --fs-2xs: 10px; --fs-xs: 11px; --fs-sm: 12px; --fs: 13px; --fs-md: 14px; --fs-lg: 15px; --fs-xl: 18px; --fs-2xl: 22px; --fs-3xl: 30px;
+  --fs-3xs: 10px; --fs-2xs: 10px; --fs-xs: 11px; --fs-sm: 12px; --fs: 13px; --fs-md: 14px; --fs-lg: 15px; --fs-xl: 18px; --fs-2xl: 22px; --fs-3xl: 30px;
   --lh: 1.4;
   /* Weights: 700 page titles only, 600 names / headings / labels / active states, 500 controls, 400 reading. */
   --w-title: 700; --w-strong: 600; --w-control: 500;
@@ -103,7 +103,7 @@
   --success: #3D6E4C; --success-subtle: #E9F0E4;
   --counter: var(--oxblood); --counter-line: #C29A92; --counter-subtle: #F6ECE6;
   --enemy: var(--oxblood); --enemy-line: #CDABA4; --enemy-subtle: #F8F0EA;
-  --side-a: var(--pro-line); --side-b: var(--enemy-line);
+  --side-a: var(--border-strong); --side-b: var(--border-strong);
 
   /* Role colors live only in the small role marker */
   --top: #B5784F; --jungle: #6B8C6A; --mid: #6E82A8; --bot: #AE666C; --support: #8C78A8;
@@ -149,7 +149,7 @@
   --success: #86B58F; --success-subtle: rgba(134, 181, 143, .09);
   --counter: #C99A93; --counter-line: #7A4A45; --counter-subtle: rgba(160, 90, 80, .08);
   --enemy: #C4A09A;  --enemy-line: #5E403C; --enemy-subtle: rgba(160, 90, 80, .06);
-  --side-a: var(--pro-line); --side-b: #8A5A54;
+  --side-a: var(--border-strong); --side-b: var(--border-strong);
 
   --top: #C9946F; --jungle: #8DAE8B; --mid: #93A5C9; --bot: #C98A8F; --support: #AD9BC6;
 }
@@ -234,7 +234,7 @@ b, strong { font-weight: var(--w-strong); }
 /* Fan-project notice: discreet, outside the drafting workflow */
 .site-foot {
   max-width: 1680px; margin: 0 var(--s7); padding: var(--s2) 0 var(--s3);
-  font-size: var(--fs-3xs); line-height: 1.4; color: var(--text-faint); opacity: .6;
+  font-size: var(--fs-2xs); line-height: 1.4; color: var(--text-muted);
 }
 @media (max-width: 960px) {
   .app { grid-template-columns: minmax(0, 1fr); }
@@ -266,7 +266,7 @@ b, strong { font-weight: var(--w-strong); }
 h1, h2, h3, .brand-name, .nav-item, .nav-label, .tabs a, .seg a, .seg button, .btn, .role-tab, .team-label, .label,
 .section-header, .panel-head, .layer-label, .scout-title, .scout-group-title, .cc-label, th, .role-tag, .status-tag, .src,
 .theme-toggle, .slot-name, .fit-head .name, .rec-row .name, .rail-name, .cell-champ, .chip, .picker-list .name, .mate,
-.hc-head b, .drawer-title h2, .pick-head h2, .band-eyebrow, .side-mascot span, .mini-active, .slot-change, .lu-name,
+.hc-head b, .drawer-title h2, .pick-head h2, .side-mascot span, .mini-active, .slot-change, .lu-name,
 .select-trigger, .select-menu, .select-field > span, .filter-label, .disclosure > summary, .prop-tag, .sev, .cc-conf, .team-label {
   font-family: var(--font-display);
 }
@@ -675,9 +675,10 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .team-row { position: relative; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: var(--s4); align-items: stretch; }
 .team-row.ally { z-index: 2; }
 .team-row.enemy { z-index: 1; }
-.team-label { align-self: center; padding-left: var(--s4); font-size: var(--fs-xs); font-weight: var(--w-strong); line-height: 1.2; }
-.team-row.ally .team-label { box-shadow: inset 3px 0 0 var(--accent); color: var(--accent-text); }
-.team-row.enemy .team-label { box-shadow: inset 3px 0 0 var(--enemy-line); color: var(--enemy); }
+.team-label { display: inline-flex; align-items: center; gap: var(--s3); align-self: center; font-size: var(--fs-xs); font-weight: var(--w-strong); line-height: 1.2; }
+.team-label::before { content: ""; width: 6px; height: 6px; border-radius: 1px; background: currentColor; flex: none; }
+.team-row.ally .team-label { color: var(--accent-text); }
+.team-row.enemy .team-label { color: var(--enemy); }
 .draft-slots { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--s3); }
 .draft-slot {
   position: relative; display: flex; align-items: center; min-width: 0; min-height: 76px; padding: var(--s3) var(--s4);
@@ -791,7 +792,7 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .sig.counter { color: var(--counter); }
 .sig.matchup { color: var(--enemy); }
 .sig.pro { color: var(--pro); }
-.sig.risk { color: var(--danger); }
+.sig.risk { color: var(--caution); }
 .fit-score { font-size: var(--fs-xs); color: var(--text-faint); }
 .fit-score.neg { color: var(--danger); }
 .fit-toggle { display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--text-faint); cursor: pointer; font: inherit; }
@@ -924,6 +925,8 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
   .draft-slot.enemy .slot-name { font-size: var(--fs-md); }
 }
 @media (max-width: 1180px) {
+  .team-row { grid-template-columns: minmax(0, 1fr); gap: var(--s2); }
+  .draft-slot .champ.xxl { --size: var(--icon-md); }
   .draft-layout { grid-template-columns: minmax(0, 1fr); }
   .comp-check { position: static; max-height: none; overflow: visible; padding: var(--s5) 0 0; border-left: 0; border-top: 1px solid var(--border); }
   .cc-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
@@ -944,6 +947,13 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
   .draft-slot .slot-name, .draft-slot.enemy .slot-name { font-size: var(--fs-md); }
   .draft-slot .slot-change { top: 1px; right: 1px; }
   .draft-slot.open.active::after { display: none; }
+  /* Locked picks shrink to portrait + name so a whole team fits across the phone; the open slot keeps its input */
+  .draft-slot.locked, .draft-slot.enemy.locked { flex: 0 0 64px; min-height: 0; padding: var(--s2) 2px; }
+  .draft-slot.locked .slot-body { flex-direction: column; justify-content: center; gap: 2px; }
+  .draft-slot.locked .slot-text { justify-items: center; width: 100%; }
+  .draft-slot.locked .role-tag { display: none; }
+  .draft-slot.locked .slot-name, .draft-slot.enemy.locked .slot-name { max-width: 60px; font-size: var(--fs-2xs); text-align: center; }
+  .draft-slot.locked .champ.xxl, .draft-slot.locked .champ.lg { --size: 34px; }
   .picker { position: static; }
   .draft-slot .picker-list, .draft-slot:nth-child(n+4) .picker-list { left: 0; right: 0; width: auto; }
   .mini-slot { width: 28px; height: 28px; }
@@ -1052,7 +1062,7 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 
 /* ===== Comp Library (the reference page): three-column draft boards ===== */
 /* Cards in a row share one height; each card's action row sits on its bottom edge. */
-.shell-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(430px, 1fr)); gap: var(--s5); align-items: stretch; }
+.shell-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: var(--s5); align-items: stretch; }
 @media (max-width: 560px) { .shell-grid { grid-template-columns: minmax(0, 1fr); } }
 /* No overflow clipping: a slot's swap list drops below the lineup, over the card's own footer. */
 .shell { display: flex; flex-direction: column; scroll-margin-top: 16px; }
@@ -1177,8 +1187,8 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
    A thin side strip marks each team; a stronger rule closes each pair. Hover and selection still win. ===== */
 tr.pair-a td { background: var(--surface-subtle); border-bottom-color: transparent; }
 tbody tr.pair-b:not(:last-child) td { border-bottom-color: var(--border-strong); }
-tr.pair-a td:first-child { box-shadow: inset 3px 0 0 var(--side-a); }
-tr.pair-b td:first-child { box-shadow: inset 3px 0 0 var(--side-b); }
+tr.pair-a td:first-child { box-shadow: inset 1px 0 0 var(--side-a); }
+tr.pair-b td:first-child { box-shadow: inset 1px 0 0 var(--side-b); }
 tbody tr.pair-a:hover td, tbody tr.pair-b:hover td { background: var(--surface-hover); }
 tr.pair-a.selected td, tr.pair-b.selected td { background: var(--accent-subtle); }
 .game-panel { margin-bottom: var(--s5); }
@@ -1190,19 +1200,16 @@ tr.pair-a.selected td, tr.pair-b.selected td { background: var(--accent-subtle);
   overflow: hidden; background: var(--surface); border-bottom: 2px solid var(--accent);
 }
 .band-text { display: grid; gap: var(--s2); min-width: 0; padding-bottom: var(--s4); }
-.band-eyebrow { font-size: var(--fs-2xs); font-weight: var(--w-strong); letter-spacing: .12em; text-transform: uppercase; color: var(--accent-text); }
 .brand-band h1 { font-size: var(--fs-3xl); letter-spacing: -.01em; }
 .brand-band .desc { max-width: 640px; color: var(--text-muted); font-size: var(--fs-sm); }
-.band-stats { display: flex; gap: var(--s6); margin-top: var(--s1); font-size: var(--fs-xs); color: var(--text-muted); }
-.band-stats b { margin-right: 3px; font-family: var(--font-mono); font-size: var(--fs-lg); color: var(--text); }
 .band-mascot { flex: none; display: block; margin-left: auto; }
 @media (max-width: 620px) { .band-mascot { width: 64px; height: auto; } .brand-band h1 { font-size: var(--fs-2xl); } }
-.patterns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5) var(--s7); align-items: start; }
-@media (max-width: 900px) { .patterns { grid-template-columns: minmax(0, 1fr); } }
+.patterns { columns: 2; column-gap: var(--s7); }
+.pattern-group { break-inside: avoid; margin-bottom: var(--s6); }
+@media (max-width: 900px) { .patterns { columns: 1; } }
 .pattern-group > .section-header { margin: 0 0 var(--s2); }
 .pattern { padding: var(--s4) 0 var(--s4) var(--s5); border-top: 1px solid var(--border); }
-.pattern.current { box-shadow: inset 2px 0 0 var(--accent); }
-.pattern.earlier { box-shadow: inset 2px 0 0 var(--border-strong); }
+.pattern.earlier { color: var(--text-muted); }
 .pattern .p-title { font-family: var(--font-display); font-weight: var(--w-strong); }
 .pattern p { margin: 2px 0 var(--s2); font-size: var(--fs-sm); }
 
@@ -1215,3 +1222,11 @@ tr.pair-a.selected td, tr.pair-b.selected td { background: var(--accent-subtle);
   *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
   .drawer, .hovercard { animation: none; }
 }
+
+/* Wide stat tables: a faint stripe on every other champion row so long rows track across */
+.pool-table tbody tr.pool-row:nth-child(even of .pool-row) > td,
+.hub-table tbody tr.click-row:nth-child(even of .click-row) > td { background: var(--surface-subtle); }
+.pool-table tbody tr.pool-row:hover > td, .hub-table tbody tr.click-row:hover > td { background: var(--surface-hover); }
+.pool-table tbody tr.pool-row.open > td, .hub-table tbody tr.click-row.open > td { background: var(--accent-subtle); }
+.prop-fold { margin-top: 0; }
+.prop-fold > .disclosure-body { max-width: none; }

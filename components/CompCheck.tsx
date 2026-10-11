@@ -26,7 +26,7 @@ export interface SiegeCell { value: string; title: string }
 export function CompCheck({ draft, enemyIds, champions, botPairings, active, bestOverall, bestFixId, names, grid, children }: {
   draft: Draft; enemyIds: string[]; champions: Champion[]; botPairings: BotPairing[]; active?: Role; bestOverall?: string;
   bestFixId?: string; // the ranking's best fix, so the rail and the list name the same champion
-  names: Record<string, string>; grid?: (siege: SiegeCell) => ReactNode; children?: ReactNode;
+  names: Record<string, string>; grid?: (siege: SiegeCell, disengage: SiegeCell) => ReactNode; children?: ReactNode;
 }) {
   const kits = useMemo(() => convertKits(champions), [champions]);
   // The enemy list is rebuilt on every Draft Room render; key the reads on its contents.
@@ -43,6 +43,8 @@ export function CompCheck({ draft, enemyIds, champions, botPairings, active, bes
     value: SIEGE_LABEL(sg.score),
     title: `Siege ${sg.score}/3 · structure pressure ${sg.pressure}${sg.sources.length ? ` (${sg.sources.map((s) => s.c.name).join(", ")})` : ""} · range ${sg.reach} · waveclear ${sg.clear} · poke ${sg.poke} · disengage ${sg.safety}`,
   };
+  const disengage: SiegeCell = !r.facts.n ? { value: "—", title: "No picks yet" }
+    : { value: String(Math.round(r.facts.disengage)), title: `Team total disengage from kits · counter-engage ${Math.round(r.facts.counterEngage)}` };
   const identities = r.identity.all.filter((i) => i.score > 0).sort((a, b) => b.score - a.score);
 
   return (
@@ -58,7 +60,7 @@ export function CompCheck({ draft, enemyIds, champions, botPairings, active, bes
         <p className="xs muted">{noKit.map((id) => names[id] ?? id).join(", ")}: kit not reviewed yet, so Comp Check counts nothing from {noKit.length === 1 ? "this pick" : "these picks"}.</p>
       )}
 
-      {r.confidence === "none" ? <p className="xs muted">Needs two picks.</p> : (
+      {r.confidence === "none" ? <p className="xs muted">{r.facts.n ? "The full read starts at two picks." : "Lock a pick to start."}</p> : (
         <>
           <div className="cc-section cc-identity">
             <div className="cc-label">Identity</div>
@@ -90,7 +92,7 @@ export function CompCheck({ draft, enemyIds, champions, botPairings, active, bes
             </div>
           )}
 
-          {grid?.(siege)}
+          {grid?.(siege, disengage)}
 
           {r.timing && (
             <div className="cc-section">
@@ -107,7 +109,7 @@ export function CompCheck({ draft, enemyIds, champions, botPairings, active, bes
         </>
       )}
 
-      {r.confidence === "none" && grid?.(siege)}
+      {r.confidence === "none" && r.facts.n > 0 && grid?.(siege, disengage)}
 
       <details className="cc-section cc-more">
         <summary>Full analysis</summary>

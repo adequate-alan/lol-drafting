@@ -136,7 +136,11 @@ function ProposedSection({ links, names, proCount, noteFor }: { links: ProposedL
   if (!links.length) return null;
   return (
     <Section layer="clash" proposed title="Proposed synergy" end={<ProposedTag />}>
-      <ProposedGroups links={links} names={names} proCount={proCount} noteFor={noteFor} />
+      {/* Below alan's saved record, proposals stay folded so they never outweigh it. */}
+      <details className="disclosure prop-fold">
+        <summary>{links.length} kit-based partner{links.length === 1 ? "" : "s"}, not saved</summary>
+        <div className="disclosure-body"><ProposedGroups links={links} names={names} proCount={proCount} noteFor={noteFor} /></div>
+      </details>
     </Section>
   );
 }
