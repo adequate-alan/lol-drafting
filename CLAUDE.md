@@ -161,7 +161,7 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   environment. If it is not, say so plainly; never substitute a generic review and call it Impeccable. Claude's cloud
   environments can't reach the npm registry, so `npx impeccable install` and the plugin route fail there; clone the
   GitHub repo and run its bundled launcher (`plugin/skills/impeccable/scripts/impeccable context|detect`) and reference
-  files instead, and state that route in the report. Nothing from Impeccable is committed to this repo.
+  files instead, and state that route in the report. Nothing from Impeccable is committed to this repo except `PRODUCT.md` at the root (product facts from `/impeccable init`, alan 2026-10-11: audience, purpose, constraints, WCAG 2.2 AA target; no visual rules), which the launcher loads for every audit, critique and polish.
 - **`/impeccable audit`** (technical assessment): use when evaluating an existing page, introducing major UI changes or
   hunting inconsistencies across components. Covers spacing, typography, alignment, responsiveness, accessibility and
   design-system consistency. Run before significant redesigns and after substantial frontend changes to catch
