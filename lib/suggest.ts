@@ -22,7 +22,9 @@ export type ByRole = Partial<Record<Role, Suggestion[]>>;
 const openRoles = (draft: Draft) => ROLES.filter((r) => !draft[r]);
 const locked = (draft: Draft) => new Set(Object.values(draft).filter(Boolean) as string[]);
 
-export interface ProEvidence { label: string; event: string; patch?: string; date?: string; pending: boolean }
+// draft: the recorded draft (one team's side of one game) the evidence comes from; source: the game page it cites.
+// with: the locked picks on that same team in the same roles. Lets the Pro evidence card name each game it counted.
+export interface ProEvidence { label: string; event: string; patch?: string; date?: string; pending: boolean; draft?: string; source?: string; with?: string[] }
 export interface ProLine { event: string; games: number; patch?: string; date?: string; ongoing: boolean }
 export interface ProSuggestion extends Suggestion { evidence: ProEvidence[]; lines: ProLine[]; with: string[] } // with: the locked picks it was played next to
 export type ProByRole = Partial<Record<Role, ProSuggestion[]>>;
@@ -59,6 +61,7 @@ export function proSuggestions(draft: Draft, proDrafts: ProDraft[], extra: {
     const game = d.sources.map((id) => sources[id]).find((s) => s?.type === "golgg-game");
     for (const role of openRoles(draft)) add(role, d.picks[role], {
       label: `${d.team} ${d.seriesGame}`, event: ev?.short ?? d.tournament, patch: d.patch ?? ev?.patch, date: game?.date, pending: false,
+      draft: d.id, source: game?.id, with: allies,
     }, allies);
   }
   const recorded = new Set(proDrafts.flatMap((d) => d.sources));
@@ -70,9 +73,9 @@ export function proSuggestions(draft: Draft, proDrafts: ProDraft[], extra: {
       if (!games.length || games.length !== o.sources.length) continue;
       const ev = o.event ? events.find((e) => e.id === o.event) : undefined;
       for (const g of games) {
-        const e: ProEvidence = { label: g.seriesGame ?? `${g.team} vs ${g.opponent}`, event: ev?.short ?? o.context, patch: g.patch ?? ev?.patch, date: g.date, pending: true };
-        if (draft.BOT === b.champion) add("SUPPORT", o.champion, e, [b.champion]);
-        if (draft.SUPPORT === o.champion) add("BOT", b.champion, e, [o.champion]);
+        const e: ProEvidence = { label: g.seriesGame ?? `${g.team} vs ${g.opponent}`, event: ev?.short ?? o.context, patch: g.patch ?? ev?.patch, date: g.date, pending: true, source: g.id };
+        if (draft.BOT === b.champion) add("SUPPORT", o.champion, { ...e, with: [b.champion] }, [b.champion]);
+        if (draft.SUPPORT === o.champion) add("BOT", b.champion, { ...e, with: [o.champion] }, [o.champion]);
       }
     }
   }

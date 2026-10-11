@@ -574,13 +574,73 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .champ-btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 .champ-link { display: inline-flex; align-items: center; gap: var(--s3); white-space: nowrap; }
 
-/* Quick card */
-.hovercard {
-  position: fixed; z-index: 55; width: 288px; padding: var(--s4) var(--pad-card); display: grid; gap: var(--s4);
-  background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--r-lg); box-shadow: var(--shadow-pop);
-  font-size: var(--fs-sm); pointer-events: auto; animation: hc-in 90ms ease-out;
+/* Popovers (components/Popover.tsx): the one surface for every tooltip, hover card and contextual popover. Fixed-position
+   portals, so nothing shifts; placement keeps them in the viewport and caps the height, the surface scrolls inside. */
+.popover {
+  position: fixed; z-index: 55; box-sizing: border-box; max-height: min(78vh, 560px); overflow: auto; overscroll-behavior: contain;
+  padding: var(--s4) var(--pad-card); background: var(--surface-raised); color: var(--text);
+  border: 1px solid var(--border-strong); border-radius: var(--r-lg); box-shadow: var(--shadow-pop);
+  font-size: var(--fs-sm); line-height: 1.4; text-align: left; white-space: normal; animation: hc-in 90ms ease-out;
 }
 @keyframes hc-in { from { opacity: 0; transform: translateY(2px); } }
+.popover:focus-visible { box-shadow: var(--shadow-pop), var(--focus-ring); }
+/* Plain-text hints (components/TipLayer.tsx) */
+.popover.tip { z-index: 60; max-width: 300px; padding: var(--s3) var(--s4); font-size: var(--fs-xs); white-space: pre-line; pointer-events: none; box-shadow: var(--shadow-menu); }
+/* Phones: the same content as a bottom sheet */
+.popover.sheet { inset: auto 0 0 0; width: 100%; max-width: none; max-height: 82vh; padding: var(--s5) var(--s6) var(--s6); border-radius: var(--r-lg) var(--r-lg) 0 0; animation: sheet-in var(--t-med); }
+@keyframes sheet-in { from { transform: translateY(16px); opacity: 0; } }
+.popover-scrim { position: fixed; inset: 0; z-index: 54; background: var(--scrim); }
+.popover-close { width: 100%; margin-top: var(--s5); justify-content: center; }
+/* Triggers keep the look of the text they replace: no box, no padding, no layout change when open. */
+:where(.pop-trigger) { padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; text-align: inherit; }
+.pop-trigger:hover, .pop-trigger.is-open { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+/* Shared content pieces */
+.pop-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s5); }
+.pop-title { font-family: var(--font-display); font-size: var(--fs-md); font-weight: var(--w-strong); }
+.pop-title.pro { color: var(--pro); }
+.pop-title.counter { color: var(--counter); }
+.pop-head .mono { font-size: var(--fs-xs); color: var(--text-muted); }
+.pop-sub { margin: var(--s1) 0 0; color: var(--text-muted); font-size: var(--fs-xs); }
+.pop-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--s4); flex-wrap: wrap; margin-top: var(--s4); padding-top: var(--s3); border-top: 1px solid var(--border); font-size: var(--fs-2xs); color: var(--text-muted); }
+.pop-foot > span:first-child { flex: 1 1 180px; }
+.pop-kv { display: grid; grid-template-columns: auto 1fr; gap: var(--s2) var(--s4); margin: var(--s4) 0 0; font-size: var(--fs-xs); }
+.pop-kv dt { color: var(--text-muted); font-family: var(--font-display); font-weight: var(--w-control); }
+.pop-kv dd { margin: 0; }
+.pop-points { display: grid; gap: var(--s2); margin: var(--s4) 0 0; padding: 0; list-style: none; font-size: var(--fs-xs); }
+.pop-points li { display: grid; grid-template-columns: 64px 1fr auto; gap: var(--s4); align-items: baseline; }
+.pop-points .k { color: var(--text-muted); font-family: var(--font-display); font-weight: var(--w-control); }
+.pop-points .pts.neg { color: var(--danger); }
+.popover.fs { width: 320px; }
+.popover.ce { width: 320px; }
+/* Pro evidence card: games newest first, grouped by event; a mini draft per game */
+.popover.pe { width: 352px; }
+.popover.pe.sheet { width: 100%; }
+.pe-event { margin-top: var(--s4); }
+.pe-event-name { margin: 0 0 var(--s2); font-family: var(--font-display); font-size: var(--fs-xs); font-weight: var(--w-strong); color: var(--pro); }
+.pe-event-name .mono { color: var(--text-muted); font-weight: 400; }
+.pe-games { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.pe-game { display: grid; gap: var(--s2); padding: var(--s3) 0; border-top: 1px solid var(--border); }
+.pe-game-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s4); }
+.pe-teams { min-width: 0; font-size: var(--fs-sm); }
+.pe-teams b { font-family: var(--font-display); font-weight: var(--w-strong); }
+.pe-res { flex: none; font-family: var(--font-display); font-size: var(--fs-2xs); font-weight: var(--w-strong); }
+.pe-res.win { color: var(--success); }
+.pe-res.loss { color: var(--danger); }
+.pe-res.none { color: var(--text-faint); font-weight: var(--w-control); }
+.pe-meta { display: flex; justify-content: space-between; gap: var(--s4); font-size: var(--fs-2xs); color: var(--text-muted); }
+.pe-meta a { color: var(--pro); white-space: nowrap; }
+.pe-why { margin: 0; font-size: var(--fs-xs); line-height: 1.35; }
+.pe-why.vs { color: var(--text-muted); }
+.mini-draft { display: grid; gap: 3px; }
+.md-row { display: grid; grid-template-columns: 76px repeat(5, var(--icon-xs)); gap: 3px; align-items: center; }
+.md-row.none { grid-template-columns: 76px 1fr; font-size: var(--fs-2xs); }
+.md-team { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-2xs); color: var(--text-muted); }
+.md-cell { display: grid; border-radius: var(--r-sm); }
+.md-cell .champ { opacity: .55; }
+.md-cell.hl .champ, .md-cell.vs .champ { opacity: 1; }
+.md-cell.hl { box-shadow: 0 0 0 1.5px var(--pro-line); }
+.md-cell.vs { box-shadow: 0 0 0 1.5px var(--counter); }
+.hovercard { width: 288px; display: grid; gap: var(--s4); }
 .hc-head { display: flex; gap: var(--s4); align-items: center; }
 .hc-head b { font-size: var(--fs-md); }
 .hc-title { display: grid; gap: 1px; min-width: 0; }
@@ -779,10 +839,16 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .fit-icon { display: grid; padding: 0; border: 0; background: none; cursor: pointer; border-radius: var(--r-sm); }
 .fit-icon .champ.md { --size: var(--icon-ml); }
 .fit-icon:hover .champ { box-shadow: 0 0 0 1.5px var(--accent); }
-.fit-head { display: grid; gap: 1px; min-width: 0; padding: 0; border: 0; background: none; font: inherit; color: var(--text); text-align: left; cursor: pointer; }
+.fit-head { position: relative; display: grid; gap: 1px; min-width: 0; color: var(--text); cursor: pointer; }
 .fit-line { display: flex; align-items: baseline; gap: var(--s4); min-width: 0; }
-.fit-head .name { font-size: var(--fs-lg); white-space: nowrap; }
+.fit-head .name { padding: 0; border: 0; background: none; color: var(--text); font-size: var(--fs-lg); white-space: nowrap; cursor: pointer; }
+/* The lock button covers the whole head; evidence labels sit above it and open their own cards. */
+.fit-lock::after { content: ""; position: absolute; inset: 0; }
+.fit-lock:focus-visible { box-shadow: none; }
+.fit-lock:focus-visible::after { box-shadow: var(--focus-ring); border-radius: var(--r-sm); }
 .fit-head:hover .name { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+.sig-line { position: relative; z-index: 1; }
+.sig-line .pop-trigger.pro:hover, .sig-line .pop-trigger.pro.is-open { text-decoration-color: var(--pro-line); }
 .fit-reason { font-size: var(--fs-xs); color: var(--text-muted); line-height: 1.3; }
 /* Signal labels on a row: one per independent signal, each in its layer's colour (Synergy gold, Pro gray-teal,
    Fit neutral logic, Counter oxblood, Risk amber). Labels only; none of them moves a row. */
@@ -807,6 +873,7 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .fit-detail .fit-note { padding: 0; }
 .fit-more { margin: var(--s3) var(--s3) 0; }
 .fit-score { font-size: var(--fs-xs); color: var(--text-faint); }
+button.fit-score:hover, button.fit-score.is-open { color: var(--text); }
 .fit-score.neg { color: var(--danger); }
 .fit-toggle { display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--text-faint); cursor: pointer; font: inherit; }
 .fit-toggle:hover { background: var(--surface-sunken); color: var(--text); }

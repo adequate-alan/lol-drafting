@@ -10,6 +10,7 @@ import { createPortal } from "react-dom";
 import { ChampionDrawer, compLinks, poolTier, useDrawerIndex, type CompContext, type DrawerIndex, type DrawerTarget } from "@/components/ChampionDrawer";
 import { ChampIcon } from "@/components/ChampIcon";
 import { ChampionCtx } from "@/components/InteractiveChampion";
+import { HIDE_MS, place, SHOW_MS, SWITCH_MS } from "@/components/Popover";
 import { proLinks, savedLinks, type Slots } from "@/lib/comp-links";
 import type { DrawerData } from "@/lib/data";
 import { fresher, shortDate } from "@/lib/evidence";
@@ -21,9 +22,6 @@ export { InteractiveChampion } from "@/components/InteractiveChampion";
 
 type Focus = { id: string; role: Role };
 
-// Open after a short pause so sweeping the pointer across a row doesn't flash cards; once a card is up, moving to
-// another champion switches a little sooner. Closing waits a moment so the pointer can travel into the card.
-const SHOW_MS = 180, SWITCH_MS = 110, HIDE_MS = 120;
 
 /** Hover intent for the quick card, shared by the provider and by pages that run their own drawer (Comp Library). */
 export function useHoverIntent() {
@@ -121,23 +119,6 @@ function relationLines(t: { id: string; role: Role }, data: DrawerData, index: D
   return lines;
 }
 
-/** Beside the champion (right, else left), else below or above; always inside the viewport, never over the champion.
- *  `below` (a horizontal lineup) tries under the anchor first, then above, so the card never covers its comp-mates. */
-function place(a: DOMRect, w: number, h: number, side: "beside" | "below" = "beside") {
-  const m = 8, gap = 8, vw = window.innerWidth, vh = window.innerHeight;
-  const clampY = (y: number) => Math.min(Math.max(m, y), vh - h - m);
-  const clampX = (x: number) => Math.min(Math.max(m, x), vw - w - m);
-  if (side === "below") {
-    const left = clampX(a.left + a.width / 2 - w / 2);
-    if (a.bottom + gap + h + m <= vh) return { left, top: a.bottom + gap };
-    if (a.top - gap - h >= m) return { left, top: a.top - gap - h };
-  }
-  if (a.right + gap + w + m <= vw) return { left: a.right + gap, top: clampY(a.top - 4) };
-  if (a.left - gap - w >= m) return { left: a.left - gap - w, top: clampY(a.top - 4) };
-  if (a.bottom + gap + h + m <= vh) return { left: clampX(a.left), top: a.bottom + gap };
-  return { left: clampX(a.left), top: Math.max(m, a.top - gap - h) };
-}
-
 export function ChampionHoverCard({ target, anchor, data, index, focus, comp, side, onEnter, onLeave }: {
   target: DrawerTarget; anchor: HTMLElement; data: DrawerData; index: DrawerIndex; focus?: Focus; comp?: CompContext;
   side?: "beside" | "below"; onEnter: () => void; onLeave: () => void;
@@ -151,7 +132,7 @@ export function ChampionHoverCard({ target, anchor, data, index, focus, comp, si
   // Measured before paint, so the card never shows in the wrong place.
   useLayoutEffect(() => {
     const c = ref.current!.getBoundingClientRect();
-    setPos(place(anchor.getBoundingClientRect(), c.width, c.height, side));
+    setPos(place(anchor.getBoundingClientRect(), c.width, c.height, side, side === "below" ? "center" : "start"));
   }, [anchor, target.id, target.role, side]);
 
   const tier = poolTier(target.id, role, data);
@@ -164,7 +145,7 @@ export function ChampionHoverCard({ target, anchor, data, index, focus, comp, si
   const latest = games[0] ? [games[0].eventName, games[0].patch, shortDate(games[0].date)].filter(Boolean).join(" · ") : "";
 
   return createPortal(
-    <div ref={ref} className="hovercard" role="tooltip" onPointerEnter={onEnter} onPointerLeave={onLeave}
+    <div ref={ref} className="popover hovercard" role="tooltip" onPointerEnter={onEnter} onPointerLeave={onLeave}
       style={pos ? { top: pos.top, left: pos.left } : { top: 0, left: 0, visibility: "hidden" }}>
       <div className="hc-head">
         <ChampIcon id={target.id} name={name} role={role} size="md" />
