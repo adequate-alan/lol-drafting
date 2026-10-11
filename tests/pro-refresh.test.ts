@@ -64,6 +64,15 @@ describe("Gol.gg parsers", () => {
     expect(roles.red.find((x) => x.role === "SUPPORT")?.champion).toBe("Nautilus");
   });
 
+  it("names champions by icon file, since Gol.gg leaves apostrophes unescaped in alt text", () => {
+    const html = fixture("game-83540-fullstats.html").replace("champions_icon/Galio.png' alt='Galio'", "champions_icon/KSante.png' alt='K'Sante'");
+    const roles = parseFullstats(html)!;
+    expect(roles.blue[0]).toEqual({ champion: "KSante", role: "TOP" });
+    expect(resolve("KSante")).toBe("ksante");
+    expect(resolve("Kaisa")).toBe("kaisa");
+    expect(resolve("JarvanIV")).toBe("jarvan-iv");
+  });
+
   it("read the tournament champion table", () => {
     const t = parseChampionTable(fixture("demacia-championlist.html"))!;
     const played = t.rows.filter((r) => (r.picks ?? 0) + (r.bans ?? 0) > 0);

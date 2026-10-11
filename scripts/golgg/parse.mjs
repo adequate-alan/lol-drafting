@@ -69,7 +69,7 @@ function sidePanel(html, color) {
   const team = headText.replace(/\s*-\s*(WIN|LOSS)\s*$/, "").trim();
   const row = (label) => {
     const m = block.match(new RegExp(`<div class="col-2">${label}[\\s\\S]*?<div class="col-10">([\\s\\S]*?)</div>`, "i"));
-    return m ? [...m[1].matchAll(/<img[^>]*alt='([^']+)'/gi)].map((x) => decode(x[1])) : undefined;
+    return m ? [...m[1].matchAll(/<img[^>]*src='[^']*champions_icon\/([^'./]+)\.png'/gi)].map((x) => decode(x[1])) : undefined;
   };
   return { team: team || undefined, result, bans: row("Bans"), picks: row("Picks") };
 }
@@ -96,7 +96,8 @@ export function parseGamePage(html) {
 export function parseFullstats(html) {
   const t = html.match(/<table class='completestats[\s\S]*?<\/table>/i);
   if (!t) return undefined;
-  const champs = [...t[0].match(/<thead>[\s\S]*?<\/thead>/i)?.[0].matchAll(/<th>\s*<img[^>]*alt='([^']+)'/gi) ?? []].map((m) => decode(m[1]));
+  // The icon file name ("KSante.png"), not the alt text: Gol.gg leaves the apostrophe in alt='K'Sante' unescaped.
+  const champs = [...t[0].match(/<thead>[\s\S]*?<\/thead>/i)?.[0].matchAll(/<th>\s*<img[^>]*src='[^']*champions_icon\/([^'./]+)\.png'/gi) ?? []].map((m) => decode(m[1]));
   const roleRow = t[0].match(/<tr><td>Role<\/td>([\s\S]*?)<\/tr>/i);
   if (!roleRow) return undefined;
   const cells = [...roleRow[1].matchAll(/<td class='(blue|red)-header'[^>]*>([^<]*)<\/td>/gi)].map((m) => ({ side: m[1].toLowerCase(), role: m[2].trim() }));
