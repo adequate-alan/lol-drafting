@@ -190,7 +190,6 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
                       {laneFoes.length
                         ? <span className="vs">vs {laneFoes.map((id, i) => <span key={id}>{i > 0 && " + "}<b>{names[id]}</b></span>)}</span>
                         : enemyIds.length ? <span className="vs muted">vs {enemyIds.map((id) => names[id]).join(" · ")}</span> : null}
-                      </span>
                     </div>
                     {!started ? <div className="rec-empty start"><GenRang size={44} /><span>Lock a pick to start. Recommendations for the open role appear here.</span></div>
                       : activeRecs.length
