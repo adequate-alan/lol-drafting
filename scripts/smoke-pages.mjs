@@ -9,7 +9,9 @@ const page = await browser.newPage();
 const problems = [];
 page.on("console", (m) => m.type() === "error" && !/Failed to load resource/.test(m.text()) && problems.push(`console: ${m.text()}`));
 page.on("pageerror", (e) => problems.push(`pageerror: ${e.message}`));
-page.on("response", (r) => r.status() >= 400 && !r.url().includes("ddragon.leagueoflegends.com") && problems.push(`${r.status()} ${r.url()}`));
+// The "Last checked" line asks GitHub's public Actions API and falls back to the stored check; shared runner IPs often
+// hit its unauthenticated rate limit (403), which is not a site failure.
+page.on("response", (r) => r.status() >= 400 && !r.url().includes("ddragon.leagueoflegends.com") && !(r.url().startsWith("https://api.github.com/") && [403, 429].includes(r.status())) && problems.push(`${r.status()} ${r.url()}`));
 const results = [];
 const check = (name, ok, detail = "") => { results.push({ name, ok, detail }); };
 
