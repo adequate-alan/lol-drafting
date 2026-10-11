@@ -44,7 +44,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   shows it (`EventStat.roles`), never from the roster; otherwise it is marked "all roles" (Pool, drawer) or listed only on
   the Meta ALL tab. Aggregates never create Synergy records or touch saved pairings.
 - A low-sample champion can only be in a pool's `core` tier with a written `coreReasons` entry.
-- Draft Room recommendations are ranked by overall draft fit (alan, 2026-10-10), in `lib/recommend.ts` and
+- The draft-fit score (alan, 2026-10-10) lives in `lib/recommend.ts` and
   `tests/recommend.test.ts`. Every champion who plays the open role is a candidate. The score adds saved pairings
   (a strong bonus, not a filter, except that with a bot locked only that bot's saved supports, default or
   alternative, are recommended for SUPPORT: `savedSupports`, also used by Counters, which mark others theoretical; alan,
@@ -53,8 +53,17 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   fixes / also / tradeoffs and one `bestFix`, shown apart from best overall), matchups against the optional
   enemy picks (from champion attributes; there is no lane-matchup data), and risks (a new warning, or more holes than
   picks left). Every point comes with a written reason. Saved defaults must still lead an early draft (one pick
-  locked). **Pro evidence never adds to the score** (a pro-derived alternative scores only as an alternative); it is shown beside a recommendation and in the separate Pro
-  Pairings panel. A saved `botShapes` entry needs a bot whose record lists the support.
+  locked). **Pro evidence never adds to the score** (a pro-derived alternative scores only as an alternative); it is a Pro
+  label on the candidate row. A saved `botShapes` entry needs a bot whose record lists the support.
+- **One candidate list per open role** (alan, 2026-10-11; `lib/candidates.ts`, `tests/unified-candidates.test.ts`): the
+  Draft Room shows each champion once with independent labels: Synergy (saved or proposed), Pro (games next to a locked
+  pick, with count), Best fit / Best fix, Counter. There is no separate Pro Pairings or Counters list. A champion
+  qualifies through any one signal; a Pro-only candidate gets the same full row, never a Synergy label, and never
+  changes a saved record. Order: alan's preferred saved pairing first, then comp fit (draft fit without the saved and
+  proposed bonuses), ties by number of signals. Pro game counts and counters never move a row. With a saved bot locked,
+  a support outside its saved supports comes in only through games with that bot (counting only those), gets no
+  Synergy, Best fit or Best fix, and one with only a counter is "Theoretical" and listed last. Filters All / Synergy /
+  Pro / Best fit / Counters filter that one list.
 - **Synergy · Proposed** (alan, 2026-10-10, "Complete Champion Synergy Expansion"): `data/proposed-synergy.json` holds
   Claude's kit-based partners for every playable champion and role (preferred / alternatives, a specific reason and a
   kit-fit confidence `strong` / `moderate` / `provisional` per partner). It sits inside Synergy but apart from alan's
@@ -69,8 +78,8 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   counter signal (alan, 2026-10-10); no DPM row, no counter. Recorded pro games only corroborate: same role on opposite
   sides, a recorded winner in `proResults`, at least 3 games, patch-weighted. Agreement lifts the strength one step
   (favorable → strong → confirmed); disagreement keeps DPM as the signal and shows the pro sample separately, never
-  averaged. Never infer a counter from pro win/loss alone. Never scored, never merged into the other layers; pool tier
-  first; each counter shows its overall draft-fit rank. DPM rows come from alan as structured facts
+  averaged. Never infer a counter from pro win/loss alone. Never scored, never merged into the other layers; a Counter
+  label on the candidate row, with pool tier and draft-fit rank in the row detail. DPM rows come from alan as structured facts
   (`origin: "externally-provided"`); dpm.lol answers Claude's environments with a Cloudflare challenge. Never invent a
   counter or a game result.
 

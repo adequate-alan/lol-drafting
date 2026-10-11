@@ -2,11 +2,12 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { picksOf, profile, RULES, warnings, type Draft, type DraftWarning } from "@/lib/evaluate";
-import { recommend, teamNeeds, type Need, type Recommendation } from "@/lib/recommend";
+import { teamNeeds, type Need, type Recommendation } from "@/lib/recommend";
+import { draftCandidates, hasSignal, type Candidate, type Filter } from "@/lib/candidates";
 import { ROLES, type Attr, type Role, type Source } from "@/lib/schema";
 import { describeLine } from "@/lib/evidence";
-import { counterPicks, describeEvidence, describePro, enemyParam, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
-import { proSuggestions, similarProDrafts, similarShells, type ProSuggestion, type SuggestData } from "@/lib/suggest";
+import { describeEvidence, describePro, enemyParam, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
+import { similarProDrafts, similarShells, type ProSuggestion, type SuggestData } from "@/lib/suggest";
 import type { DraftData, DrawerData } from "@/lib/data";
 import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
 import { CompCheck, type SiegeCell } from "./CompCheck";
@@ -28,9 +29,15 @@ const LANE: Record<Role, Role[]> = { TOP: ["TOP"], JUNGLE: ["JUNGLE"], MID: ["MI
 const CRITICAL = new Set(["no-engage", "needs-fight-starter", "no-frontline", "insufficient-peel", "vulnerable-hard-engage"]);
 const severityOf = (w: DraftWarning): Severity => (CRITICAL.has(w.id) ? "critical" : "caution");
 
-const KIND_LABEL: Record<string, string> = { saved: "Saved", proposed: "Proposed", synergy: "Synergy", need: "Need", matchup: "Matchup", counter: "Counter", risk: "Risk" };
-const STATUS = { default: "Default", alt: "Alt", fits: "Fits" } as const;
-const REC_LIMIT = 8;
+const KIND_LABEL: Record<string, string> = { saved: "Saved", proposed: "Proposed", synergy: "Kit synergy", need: "Need", matchup: "Matchup", counter: "Counter", risk: "Risk" };
+const STATUS = { default: "Preferred", alt: "Alt", fits: "Fits" } as const;
+const REC_LIMIT = 8; // picker and role-tab hints: the top of the draft-fit list
+const ROW_LIMIT = 12; // unified list rows shown before "Show all"
+const FILTERS: { key: Filter; label: string }[] = [
+  { key: "all", label: "All" }, { key: "synergy", label: "Synergy" }, { key: "pro", label: "Pro" }, { key: "fit", label: "Best fit" }, { key: "counter", label: "Counters" },
+];
+const ORDER_NOTE = "Order: your preferred pairing first, then comp fit (synergy with your picks, team needs, matchups and risks). "
+  + "Synergy, Pro and Counter are labels on each row; pro game counts and counters never move a row. Ties go to the row with more signals.";
 
 export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, metaPicks }: {
   data: DraftData;
@@ -47,6 +54,8 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
   const [hover, setHover] = useState<string>();
   const [drawer, setDrawer] = useState<DrawerTarget>();
   const [pinned, setPinned] = useState(false);
+  const [filter, setFilter] = useState<Filter>("all");
+  const [showAll, setShowAll] = useState(false);
   // Clear draft keeps the last board for a few seconds so one misclick in champion select is recoverable.
   const [cleared, setCleared] = useState<{ draft: Draft; enemy: (string | undefined)[] }>();
   useEffect(() => {
@@ -96,11 +105,11 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
   const warns = warnings(draft, data.champions);
   const needs = picks.length ? teamNeeds(picks) : [];
   const enemyDraft = enemyDraftOf(enemy);
-  // The full draft-fit list, so a counter can say where it ranks overall. The visible list is its top REC_LIMIT.
-  const fits = recommend(draft, enemyIds, data, Infinity);
+  // Pro pairings first: a support seen next to a locked pick in pro games is read for fit even outside the locked bot's
+  // saved supports (eligible: false). `fits` is the eligible draft-fit list (picker hints, counters' fit rank).
+  // One candidate list per open role (lib/candidates.ts). `fits` is the eligible draft-fit list: picker hints, tab hints.
+  const { pro: proAll, fits, counters, unified } = draftCandidates(draft, enemyDraft, data, sources);
   const recs = Object.fromEntries(Object.entries(fits).map(([r, list]) => [r, list!.slice(0, REC_LIMIT)])) as typeof fits;
-  const counters = counterPicks(draft, enemyDraft, data, fits);
-  const proAll = proSuggestions(draft, data.proDrafts, { botPairings: data.botPairings, events: data.events, sources }, Infinity);
   const similar = similarProDrafts(draft, data.proDrafts);
   const shells = similarShells(draft, data.shells);
   const open = ROLES.filter((r) => !draft[r]);
@@ -114,13 +123,16 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
   const partnered = open.filter((r) => PARTNER[r] && draft[PARTNER[r]!]);
   const active: Role | undefined = focus && open.includes(focus) ? focus
     : [...(partnered.length ? partnered : open)].sort((a, b) => topScore(b) - topScore(a))[0];
-  const activeRecs = active ? recs[active] ?? [] : [];
-  const activePro = active ? proAll[active] ?? [] : [];
-  const proByChamp = new Map(activePro.map((s) => [s.champion, s]));
-  const proOnly = activePro.filter((s) => !activeRecs.some((r) => r.champion === s.champion)).slice(0, 6);
+  const activeRows = active ? unified[active] ?? [] : [];
+  // A new role or filter starts collapsed again.
+  const listKey = `${active}-${filter}`;
+  const [shownFor, setShownFor] = useState(listKey);
+  if (shownFor !== listKey) { setShownFor(listKey); setShowAll(false); }
   const activeCounters: RoleCounters | undefined = active ? counters[active] : undefined;
-  const counterByChamp = new Map((activeCounters?.counters ?? []).map((c) => [c.champion, c]));
-  const counterOnly = (activeCounters?.counters ?? []).filter((c) => !activeRecs.some((r) => r.champion === c.champion));
+  const shownRows = activeRows.filter((c) => hasSignal(c, filter));
+  const visibleRows = filter === "all" && !showAll ? shownRows.slice(0, ROW_LIMIT) : shownRows;
+  const proIds = active ? (proAll[active] ?? []).map((s) => s.champion) : [];
+  const proSourceLine = `Recorded Gol.gg games next to your picks: ${(data.events ?? []).map((e) => `${e.short} ${e.patch}${e.status === "ongoing" ? " (ongoing)" : ""}`).join(" · ")}. Evidence, never part of the order.`;
   const laneFoes = active ? LANE[active].map((r) => enemy[ROLES.indexOf(r)]).filter((e): e is string => !!e) : [];
 
   const cards: CardRecord[] = ROLES.flatMap((role): CardRecord[] => {
@@ -184,7 +196,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
               <>
                 <div className="role-tabs" role="tablist" aria-label="Role to pick">
                   {open.map((r) => {
-                    const top = recs[r]?.[0];
+                    const top = unified[r]?.[0];
                     return (
                       <button key={r} role="tab" aria-selected={r === active} className={`role-tab role-${r} ${r === active ? "active" : ""}`} onClick={() => setFocus(r)}>
                         <span className="role-name">{ROLE_LABEL[r]}</span>
@@ -196,48 +208,51 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
                 {active && (
                   <div className={`fit-role role-${active}`} role="tabpanel" aria-label={`${ROLE_LABEL[active]} recommendations`}>
                     <div className="fit-context">
+                      {started && (
+                        <div className="seg fit-filters" role="group" aria-label="Show recommendations by signal">
+                          {FILTERS.map((f) => {
+                            const n = f.key === "all" ? activeRows.length : activeRows.filter((c) => hasSignal(c, f.key)).length;
+                            const off = f.key === "counter" && !activeCounters;
+                            return (
+                              <button key={f.key} type="button" className={filter === f.key ? "active" : undefined} aria-pressed={filter === f.key} disabled={off}
+                                title={off ? "Add the enemy lane opponent to read counters" : f.key === "pro" ? proSourceLine : undefined} onClick={() => setFilter(f.key)}>
+                                {f.label}{!off && <span className="n tnum">{n}</span>}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                       {laneFoes.length
                         ? <span className="vs">vs {laneFoes.map((id, i) => <span key={id}>{i > 0 && " + "}<b>{names[id]}</b></span>)}</span>
                         : enemyIds.length ? <span className="vs muted">vs {enemyIds.map((id) => names[id]).join(" · ")}</span> : null}
+                      {started && <span className="order-note xs faint" title={ORDER_NOTE}>Preferred, then comp fit</span>}
                     </div>
+                    {activeCounters && (filter === "counter" || activeCounters.note) && (
+                      <p className="fit-note xs muted">
+                        {activeCounters.counters.length ? `Counters vs ${vsNames(activeCounters.vs, names)}${activeCounters.scope === "duo" ? " (duo)" : ""}.` : `No reliable counter data for ${vsNames(activeCounters.vs, names)}.`}
+                        {activeCounters.note ? ` ${activeCounters.note}` : ""}
+                      </p>
+                    )}
                     {!started ? <div className="rec-empty start"><GenRang size={44} /><span>Lock a pick to start. Recommendations for the open role appear here.</span></div>
-                      : activeRecs.length
-                        ? activeRecs.map((r) => (
-                          <FitRow key={r.champion} rec={r} pro={proByChamp.get(r.champion)} counter={counterByChamp.get(r.champion)} names={names} hovered={hover === r.champion}
-                            onHover={(h) => setHover(h ? r.champion : undefined)} onPick={() => lock(active, r.champion)} onOpen={() => setDrawer({ id: r.champion, role: active })} />
+                      : visibleRows.length
+                        ? visibleRows.map((c) => (
+                          <FitRow key={c.champion} c={c} bot={draft.BOT ? names[draft.BOT] ?? draft.BOT : undefined} names={names} hovered={hover === c.champion}
+                            onHover={(h) => setHover(h ? c.champion : undefined)} onPick={() => lock(active, c.champion)} onOpen={() => setDrawer({ id: c.champion, role: active })} />
                         ))
-                        : <p className="rec-empty">Nothing stands out yet.</p>}
+                        : <p className="rec-empty">{filter === "all" ? "Nothing stands out yet." : filter === "counter" && activeCounters?.counters.length === 0 ? "No counters to show." : "No candidate has this signal yet."}</p>}
+                    {visibleRows.length < shownRows.length && (
+                      <button type="button" className="btn sm fit-more" onClick={() => setShowAll(true)}>Show all {shownRows.length}</button>
+                    )}
                   </div>
                 )}
               </>
             )}
           </section>
 
-          {active && activeCounters && (
-            <section className="rec-group counters" aria-label="Counters">
-              <header><h3>Counters</h3><span className="xs faint">vs {vsNames(activeCounters.vs, names)}{activeCounters.scope === "duo" ? " (duo)" : ""}{activeCounters.counters.length > 0 && !counterOnly.length ? " · all ranked above" : ""}</span></header>
-              {!activeCounters.counters.length && <p className="empty">No reliable counter data for {vsNames(activeCounters.vs, names)}.</p>}
-              {counterOnly.map((c) => <CounterRow key={c.champion} c={c} names={names} onOpen={() => setDrawer({ id: c.champion, role: active })} />)}
-              {activeCounters.note && <p className="empty">{activeCounters.note}</p>}
-            </section>
-          )}
-
-          {started && active && (
-            <section className="rec-group pro" aria-label="Pro Pairings">
-              <header><h3>Pro Pairings</h3><span className="xs faint">{ROLE_LABEL[active]}</span>
-                <span className="xs faint src-line" title="Recorded Gol.gg games. Evidence only, never part of the score.">
-                  Gol.gg · {(data.events ?? []).map((e) => `${e.short} ${e.patch}${e.status === "ongoing" ? " (ongoing)" : ""}`).join(" · ")}
-                </span></header>
-              {!activePro.length && <p className="empty">{lockedCount ? "No recorded pro game uses these picks." : "Lock a pick to start."}</p>}
-              {activePro.length > 0 && !proOnly.length && <p className="empty">Every pro pairing for this role is in the list above.</p>}
-              {proOnly.map((s) => <ProRow key={s.champion} s={s} role={active} names={names} onPick={() => lock(active, s.champion)} />)}
-            </section>
-          )}
-
         </div>
 
         <CompCheck draft={draft} enemyIds={enemyIds} champions={data.champions} botPairings={data.botPairings} active={active}
-          bestOverall={activeRecs[0]?.champion} bestFixId={active ? fits[active]?.find((r) => r.bestFix)?.champion : undefined} names={names} grid={(siege, disengage) => <Indicators prof={prof} needs={needs} picks={picks.length} siege={siege} disengage={disengage} />}>
+          bestOverall={activeRows.find((c) => !c.theoretical)?.champion} bestFixId={active ? fits[active]?.find((r) => r.bestFix)?.champion : undefined} proIds={proIds} names={names} grid={(siege, disengage) => <Indicators prof={prof} needs={needs} picks={picks.length} siege={siege} disengage={disengage} />}>
           <div className="cc-section">
             <div className="cc-label">Rule checks</div>
             {!warns.length && (lockedCount < 2 ? <p className="xs muted">Needs two picks.</p> : <p className="cc-ok">No warnings.</p>)}
@@ -312,44 +327,69 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
 
 // ---------- recommendation rows ----------
 
-type Signal = { key: string; label: string; title?: string };
+type Chip = { key: string; label: string; title?: string };
 
-function signalsOf(rec: Recommendation, pro?: ProSuggestion, counter?: Counter, names: Record<string, string> = {}): Signal[] {
-  const has = (kind: string) => rec.parts.some((p) => (p.kind as string) === kind && p.points > 0);
-  const out: Signal[] = [];
-  if (has("synergy")) out.push({ key: "synergy", label: "Synergy" });
-  if (counter) out.push({ key: "counter", label: "Counter", title: `${counterLine(counter, names)}. Counter signal only, not part of the score.` });
-  if (has("matchup")) out.push({ key: "matchup", label: "Matchup" });
-  if (pro) out.push({ key: "pro", label: `Pro ${pro.score}`, title: "Pro games with this champion next to one of your picks. Evidence only, not part of the score." });
-  if (rec.parts.some((p) => p.kind === "risk")) out.push({ key: "risk", label: "Risk" });
+const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? "" : "s"}`;
+const proLine = (pro: ProSuggestion) => pro.lines.map((l) => `${describeLine({ ...l, label: l.event })}${l.ongoing ? " · ongoing" : ""}`).join("; ");
+const BONUS = new Set(["saved", "proposed"]);
+
+// The row's labels, one per independent signal, each in its own layer colour. Nothing here changes the order.
+function chipsOf(c: Candidate, names: Record<string, string>, bot?: string): Chip[] {
+  const r = c.fit;
+  const out: Chip[] = [];
+  if (r.eligible && r.saved) {
+    out.push(r.savedFromPro
+      ? { key: "syn alt", label: "Synergy · Alt (pro)", title: "Alternative from pro games, not hand-saved" }
+      : { key: `syn ${r.saved}`, label: `Synergy · ${STATUS[r.saved]}`, title: "Your saved pairing with a locked pick" });
+  } else if (r.eligible && r.proposed) {
+    out.push({ key: "syn proposed", label: "Proposed", title: "Proposed synergy with a locked pick: kit-based synergy that hasn't been added to your saved pairings." });
+  }
+  if (c.pro) out.push({ key: "pro", label: `Pro · ${plural(c.pro.score, "game")}`, title: `${plural(c.pro.score, "recorded pro game")} with ${c.pro.with.map((id) => names[id] ?? id).join(" or ")}: ${proLine(c.pro)}\nEvidence, never part of the order.` });
+  if (r.bestFix) out.push({ key: "fix", label: "Best fix", title: "Covers the most of this role's needs" });
+  if (c.bestFit) out.push({ key: "fit", label: "Best fit", title: "Top three on comp fit: synergy with your picks, team needs, matchups and risks" });
+  if (c.counter) out.push({ key: "counter", label: "Counter", title: `${counterLine(c.counter, names)}. Counter signal only, never part of the order.` });
+  if (c.theoretical) out.push({ key: "theory", label: "Theoretical", title: `Not one of ${bot ?? "the bot"}'s saved supports: theoretical, not recommended` });
+  if (r.parts.some((p) => p.kind === "risk")) out.push({ key: "risk", label: "Risk" });
   return out;
 }
 
-function FitRow({ rec, pro, counter, names, hovered, onHover, onPick, onOpen }: {
-  rec: Recommendation; pro?: ProSuggestion; counter?: Counter; names: Record<string, string>; hovered: boolean;
+/** Main benefit and potential drawback, one line. */
+function reasonOf(c: Candidate): { benefit: string; drawback?: string } {
+  const r = c.fit;
+  const lead = r.parts.find((p) => p.points > 0 && !BONUS.has(p.kind));
+  const benefit = r.fixes.length ? `Fixes ${r.fixes.join(", ").toLowerCase()}`
+    : lead?.text ?? (c.pro ? proLine(c.pro) : r.parts.find((p) => BONUS.has(p.kind))?.text ?? (c.counter ? `Counter: ${describeEvidence(c.counter.evidence)}` : "No comp reasons yet"));
+  const risk = r.parts.find((p) => p.kind === "risk" && !p.text.startsWith("Tradeoff"));
+  return { benefit, drawback: r.tradeoffs[0] ?? risk?.text };
+}
+
+function FitRow({ c, bot, names, hovered, onHover, onPick, onOpen }: {
+  c: Candidate; bot?: string; names: Record<string, string>; hovered: boolean;
   onHover: (on: boolean) => void; onPick: () => void; onOpen: () => void;
 }) {
   const [open, setOpen] = useState(false);
-  const name = names[rec.champion] ?? rec.champion;
-  const lead = rec.parts.find((p) => p.points > 0) ?? rec.parts[0];
-  const sigs = signalsOf(rec, pro, counter, names);
+  const rec = c.fit;
+  const name = names[c.champion] ?? c.champion;
+  const chips = chipsOf(c, names, bot);
+  const { benefit, drawback } = reasonOf(c);
+  const counter = c.counter;
+  const read = rec.parts.length > 0;
   return (
-    <div className={`fit-row ${open ? "open" : ""} ${hovered ? "hovered" : ""}`} onMouseEnter={() => onHover(true)} onMouseLeave={() => onHover(false)}>
+    <div className={`fit-row ${open ? "open" : ""} ${hovered ? "hovered" : ""} ${c.theoretical ? "ref" : ""}`} onMouseEnter={() => onHover(true)} onMouseLeave={() => onHover(false)}>
       <button className="fit-icon" onClick={onOpen} aria-label={`${name} details`} title={`${name}: details`}>
-        <ChampIcon id={rec.champion} name={name} role={rec.role} size="md" />
+        <ChampIcon id={c.champion} name={name} role={c.role} size="md" />
       </button>
       <button className="fit-head" onClick={onPick} onFocus={() => onHover(true)} onBlur={() => onHover(false)}
-        title={`Lock ${name} at ${rec.role}\n${rec.parts.map((p) => `${p.points > 0 ? "+" : ""}${p.points}  ${p.text}`).join("\n")}`}>
+        title={`Lock ${name} at ${c.role}${read ? `\n${rec.parts.map((p) => `${BONUS.has(p.kind) ? "" : `${p.points > 0 ? "+" : ""}${p.points}  `}${p.text}`).join("\n")}` : ""}`}>
         <span className="fit-line">
           <span className="name">{name}</span>
-          {rec.saved && <span className={`status-tag ${rec.saved}`}>{STATUS[rec.saved]}</span>}
-          {!rec.saved && rec.proposed && <span className="status-tag proposed" title="Proposed synergy with a locked pick: kit-based synergy that hasn't been added to your saved pairings.">Proposed</span>}
-          {rec.bestFix && <span className="status-tag fix" title="Covers the most of this role's needs">Best fix</span>}
-          {sigs.length > 0 && <span className="sig-line">{sigs.map((s) => <span key={s.key} className={`sig ${s.key}`} title={s.title}>{s.label}</span>)}</span>}
+          {chips.length > 0 && <span className="sig-line">{chips.map((s) => <span key={s.key} className={`sig ${s.key}`} title={s.title}>{s.label}</span>)}</span>}
         </span>
-        <span className="fit-reason truncate">{rec.fixes.length ? `Fixes ${rec.fixes.join(", ").toLowerCase()}${rec.tradeoffs.length ? ` · ${rec.tradeoffs[0]}` : ""}` : lead?.text}</span>
+        <span className="fit-reason truncate">{benefit}{drawback && <span className="drawback"> · {drawback}</span>}</span>
       </button>
-      <span className={`fit-score ${rec.score < 0 ? "neg" : ""}`} title="Draft-fit score">{rec.score > 0 ? "+" : ""}{rec.score}</span>
+      <span className={`fit-score ${c.compFit < 0 ? "neg" : ""}`} title="Comp fit: synergy with your picks, team needs, matchups and risks. Saved pairings, pro games and counters are labels, not counted.">
+        {read ? `${c.compFit > 0 ? "+" : ""}${c.compFit}` : "—"}
+      </span>
       <button className="fit-toggle" aria-expanded={open} aria-label={`Why ${name}`} title={`${rec.parts.length} reasons`} onClick={() => setOpen((o) => !o)}>
         <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
       </button>
@@ -361,21 +401,23 @@ function FitRow({ rec, pro, counter, names, hovered, onHover, onPick, onOpen }: 
             {rec.tradeoffs.length > 0 && <><dt>Tradeoff</dt><dd>{rec.tradeoffs.join("; ")}</dd></>}
           </dl>
         )}
-        <ul className="fit-why">{rec.parts.map((p, i) => (
-          <li key={i} className={`k-${p.kind}`}><span className="k">{KIND_LABEL[p.kind] ?? p.kind}</span><span className="t">{p.text}</span><span className="pts">{p.points > 0 ? "+" : ""}{p.points}</span></li>
-        ))}</ul>
+        {read && <ul className="fit-why">{rec.parts.map((p, i) => (
+          <li key={i} className={`k-${p.kind}`}><span className="k">{KIND_LABEL[p.kind] ?? p.kind}</span><span className="t">{p.text}</span><span className="pts">{BONUS.has(p.kind) ? "" : `${p.points > 0 ? "+" : ""}${p.points}`}</span></li>
+        ))}</ul>}
+        {c.pro && (
+          <div className="fit-pro">
+            <span className="k">Pro</span>
+            <span className="t">With {c.pro.with.map((id) => names[id] ?? id).join(" or ")} · {proLine(c.pro)}</span>
+          </div>
+        )}
         {counter && (
           <div className="fit-counter">
             <span className="k">Counter</span>
-            <span className="t">{counterLine(counter, names)} · Pool: {tierLabel(counter.tier)}{counter.cautions.length ? ` · ${counter.cautions.join("; ")}` : ""}</span>
+            <span className="t">{counterLine(counter, names)} · Pool: {tierLabel(counter.tier)}{counter.fitRank ? ` · draft fit #${counter.fitRank}` : ""}{counter.cautions.length ? ` · ${counter.cautions.join("; ")}` : ""}</span>
           </div>
         )}
-        {pro && (
-          <div className="fit-pro">
-            <span className="k">Pro</span>
-            <span className="t">{pro.lines.map((l) => `${describeLine({ ...l, label: l.event })}${l.ongoing ? " · ongoing" : ""}`).join("; ")}</span>
-          </div>
-        )}
+        {!rec.eligible && c.pro && <p className="fit-note xs muted">Not one of {bot ?? "the bot"}&apos;s saved supports: a pro pairing, not a saved one.</p>}
+        {!read && <p className="fit-note xs muted">No champion attributes yet, so no comp read.</p>}
       </div>
     </div>
   );
@@ -385,40 +427,6 @@ const STRENGTH = { confirmed: "Strong · pro agrees", strong: "Strong", favorabl
 const vsNames = (ids: string[], names: Record<string, string>) => ids.map((v) => names[v] ?? v).join(" + ");
 const counterLine = (c: Counter, names: Record<string, string>) =>
   `${STRENGTH[c.strength]} vs ${vsNames(c.evidence.vs, names)}${c.evidence.with ? ` with ${names[c.evidence.with] ?? c.evidence.with}` : ""} · ${describeEvidence(c.evidence)}${c.pro ? ` · ${describePro(c.pro)}` : ""}`;
-
-// A counter outside the visible fit list: never scored, so it says where it ranks on overall draft fit.
-function CounterRow({ c, names, onOpen }: { c: Counter; names: Record<string, string>; onOpen: () => void }) {
-  const e = c.evidence;
-  const name = names[c.champion] ?? c.champion;
-  const why = [counterLine(c, names), e.note, `Pool: ${tierLabel(c.tier)}`,
-    c.fitRank ? `Overall draft fit: #${c.fitRank} (${c.fit!.score > 0 ? "+" : ""}${c.fit!.score})` : "No draft-fit reasons yet", ...c.cautions].filter(Boolean).join("\n");
-  return (
-    <button className={`rec-row counter-row ${c.tier && !c.theoretical ? "" : "ref"}`} title={why} onClick={onOpen}>
-      <ChampIcon id={c.champion} name={name} role={c.role} size="sm" />
-      <span className="name">{name}</span>
-      <span className="strength">{STRENGTH[c.strength]}</span>
-      <span className="badge outline">DPM</span>
-      <span className="ev truncate">{describeEvidence(e).replace(/^DPM · /, "")}{e.with ? ` · with ${names[e.with] ?? e.with}` : ""}{c.pro && <span className="pro-sample"> · {describePro(c.pro)}</span>}</span>
-      <span className={`tier ${c.tier ?? "none"}`}>{tierLabel(c.tier)}</span>
-      <span className="fit-rank">{c.theoretical ? "Theoretical" : c.fitRank ? `Fit #${c.fitRank}` : "Unranked"}</span>
-    </button>
-  );
-}
-
-function ProRow({ s, role, names, onPick }: { s: ProSuggestion; role: Role; names: Record<string, string>; onPick: () => void }) {
-  const [latest, ...older] = s.lines;
-  const name = names[s.champion] ?? s.champion;
-  return (
-    <button className="rec-row ev" title={s.reasons.join("\n")} onClick={onPick}>
-      <ChampIcon id={s.champion} name={name} role={role} size="sm" />
-      <span className="name">{name}</span>
-      <span className="ev-lines">
-        <span className="latest">{describeLine({ ...latest, label: latest.event })}{latest.ongoing ? " · ongoing" : ""}</span>
-        {older.length > 0 && <span className="older truncate">+ older: {older.map((l) => describeLine({ ...l, label: l.event })).join("; ")}</span>}
-      </span>
-    </button>
-  );
-}
 
 // ---------- draft board ----------
 

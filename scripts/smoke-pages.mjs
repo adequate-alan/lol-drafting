@@ -75,7 +75,7 @@ check("Pro Drafts filter + selected game from URL", /Gen\.G vs/.test(card ?? "")
 await open("/synergies/bot/?champ=ziggs");
 check("Champion Synergies ?champ=ziggs selects Ziggs", (await page.locator("main").textContent()).includes("Ziggs"), "");
 
-// Draft Room: recommendations ranked by draft fit, pro evidence kept apart
+// Draft Room: one candidate list per open role; Synergy, Pro, Fit and Counter are separate labels on each row
 const recNames = async (role) => page.locator(`.recs .fit-role.role-${role} .fit-head .name`).allTextContents();
 const text = async (sel) => (await page.locator(sel).allTextContents()).join(" ");
 for (const [bot, first] of [["sivir", "Lulu"], ["ezreal", "Karma"], ["corki", "Nami"]]) {
@@ -90,7 +90,18 @@ const zigPro = await text(".layer.pro");
 check("Pyke / Camille still shown as pro evidence for Ziggs", /Pyke/.test(zigPro) && /Camille/.test(zigPro), zigPro.match(/.{0,40}(Pyke|Camille).{0,40}/g)?.join(" | ") ?? "");
 const why = await text(".recs .fit-role.role-SUPPORT .fit-why");
 check("recommendations explain why", /Saved pairing|fight starter/.test(why), why.slice(0, 160));
-check("Pro Pairings panel is separate from Recommended Picks", (await page.locator(".rec-group.pro h3", { hasText: "Pro Pairings" }).count()) === 1, "");
+check("no separate Pro Pairings list under the recommendations", (await page.locator(".rec-group").count()) === 0, "");
+// Jhin with Support open: Nautilus carries its Pro signal; supports seen with Jhin in pro games get full rows, no Synergy label.
+await open("/?bot=jhin");
+const proRow = (n) => page.locator(".recs .fit-row", { has: page.locator(".fit-head .name", { hasText: new RegExp(`^${n}$`) }) });
+check("Jhin: Nautilus shows its pro games", (await proRow("Nautilus").locator(".sig.pro").count()) === 1, await text(".recs .fit-row .sig-line"));
+const proOnly = [];
+for (const n of ["Leona", "Camille"]) if ((await proRow(n).locator(".sig.pro").count()) === 1 && (await proRow(n).locator(".sig.syn").count()) === 0) proOnly.push(n);
+check("Jhin: pro-only supports are full rows without a Synergy label", proOnly.length === 2, proOnly.join(", "));
+await page.locator(".fit-filters button", { hasText: "Pro" }).click();
+const proRows = await page.locator(".recs .fit-row").count();
+check("Pro filter shows only rows with pro games", proRows > 0 && (await page.locator(".recs .fit-row .sig.pro").count()) === proRows, `${proRows} rows`);
+await page.locator(".fit-filters button", { hasText: "All" }).click();
 await open("/?bot=jinx&vs=ornn,jarvan-iv");
 const enemyText = await text(".draft-slot.enemy .slot-name");
 const vsWhy = await text(".recs .fit-why");
@@ -102,14 +113,15 @@ check("enemy roles detected from ?vs= (Ornn top, Jarvan IV jungle)", /Ornn/.test
 await page.locator(".role-tab.role-TOP").click();
 const vsLine = await text(".recs .fit-context .vs");
 check("open role is linked to its lane opponent (Top vs Ornn)", /vs Ornn/.test(vsLine), vsLine);
-const counterText = await text('section.counters');
-check("Counters panel is separate and never invents a counter", /Counters/.test(counterText) && /vs Ornn/.test(counterText)
-  && ((await page.locator("section.counters .counter-row").count()) > 0 || /No reliable counter data for Ornn/.test(counterText)), counterText.slice(0, 160));
+await page.locator(".fit-filters button", { hasText: "Counters" }).click();
+const counterText = await text(".recs .fit-note");
+check("Counters filter reads the lane opponent and never invents a counter", /vs Ornn/.test(counterText)
+  && ((await page.locator(".recs .fit-row .sig.counter").count()) > 0 || /No reliable counter data for Ornn/.test(counterText)), counterText.slice(0, 160));
 // Real DPM rows: Top into Aatrox has stored matchups that clear the thresholds (Fiora, Gwen, Gragas, Ornn).
 await open("/?vs=top:aatrox");
 await page.locator(".role-tab.role-TOP").click();
-const dpmCounters = (await page.locator("section.counters .counter-row").count()) + (await page.locator(".recs .fit-counter").count());
-check("Counters show stored DPM matchups (Top vs Aatrox)", dpmCounters > 0 && !/No reliable counter data/.test(await text("section.counters")), `${dpmCounters} counters`);
+const dpmCounters = await page.locator(".recs .fit-row .sig.counter").count();
+check("Counters show stored DPM matchups (Top vs Aatrox)", dpmCounters > 0 && !/No reliable counter data/.test(await text(".recs")), `${dpmCounters} counters`);
 check("no Clash wording on the Draft Room", !/Clash/.test(await text("body")), "");
 // Draft Room workspace: the open role drives the list, one row per champion, Comp Check rail, pinned draft bar
 await open("/?bot=sivir&vs=renekton,,,ezreal,karma");
