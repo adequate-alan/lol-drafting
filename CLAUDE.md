@@ -152,6 +152,33 @@ Change these only when alan explicitly says so, then update the test in the same
   comments, internal data notes and docs only. Follow-up alan floated: shorten the "Proposed · kit-based" badge to
   "Proposed", with the tooltip carrying the distinction.
 
+## Design review with Impeccable (alan, 2026-10-11)
+
+Impeccable (github.com/pbakaus/impeccable) is the design-review method for frontend work. Audit finds what is
+inconsistent, critique finds what is ineffective, polish improves what already works.
+
+- **Check availability first.** Only invoke an Impeccable command after verifying it is available in the current
+  environment. If it is not, say so plainly; never substitute a generic review and call it Impeccable. Claude's cloud
+  environments can't reach the npm registry, so `npx impeccable install` and the plugin route fail there; clone the
+  GitHub repo and run its bundled launcher (`plugin/skills/impeccable/scripts/impeccable context|detect`) and reference
+  files instead, and state that route in the report. Nothing from Impeccable is committed to this repo.
+- **`/impeccable audit`** (technical assessment): use when evaluating an existing page, introducing major UI changes or
+  hunting inconsistencies across components. Covers spacing, typography, alignment, responsiveness, accessibility and
+  design-system consistency. Run before significant redesigns and after substantial frontend changes to catch
+  regressions. Not for minor text edits, data updates or backend-only changes.
+- **`/impeccable critique`** (design and usability): use when judging whether a layout communicates and supports the
+  drafting workflow: hierarchy, density, navigation, readability, usability. Run when adding pages, restructuring
+  layouts or choosing between competing approaches. Focus on whether the design works, not only whether it looks polished.
+- **`/impeccable polish`** (targeted refinement): after functionality and layout are settled. Refine spacing, type,
+  color, borders, alignment and interaction states selectively; preserve the design language and density.
+- **Workflow for major frontend changes:** audit → critique where layout or hierarchy is in question → structural or
+  functional changes → polish → validate against this design system and run the tests (unit, typecheck, build, smoke,
+  screenshots in both themes at desktop, tablet and phone). The commands are complementary, not mandatory for every task.
+- **Principles:** never redesign whole pages without clear justification; consistency, readability, density and
+  usability before decoration; preserve branding, functionality and architecture; no unnecessary whitespace, animation,
+  gradients or visual complexity; weigh each finding against what the site is for instead of implementing every
+  recommendation.
+
 ## Hosting and security
 
 - Static export only (`output: "export"`, base path `/lol-drafting` in `lib/site.ts`), deployed by
@@ -165,6 +192,17 @@ Change these only when alan explicitly says so, then update the test in the same
 
 ## UI
 
+- **Don't make pages busier with each feature** (alan, 2026-10-11). New data should make existing elements more useful
+  through hover (ChampionHoverCard), expansion (`components/Disclosure.tsx`, row detail) or the drawer, not a new
+  permanent panel. Explanatory footnotes, method notes and research sections go behind a Disclosure.
+- Design system (2026-10-11 cleanup): `app/globals.css` is one consolidated file (tokens → base → shell → type →
+  primitives → interaction → pages → motion). Extend a primitive before adding page CSS; no inline `style` for spacing.
+  Uppercase only for page titles (h1) and role codes; every other label shares the sentence-case `.label` style. Source
+  links carry their refresh status in the tooltip; only a pending external claim is marked inline ("· pending").
+  Every page that shows champions wraps them in `ChampionProvider`, so hover card, drawer and mobile sheet match.
+  Risk tags use the caution amber; oxblood is enemy and Counters only. Pro Drafts pair rows use a neutral strip: the
+  data records no blue/red side, so nothing may imply one. No eyebrow labels, hero-metric strips or side stripes
+  thicker than 1px (Impeccable craft floor).
 - **Champion Synergies** (`/synergies/<tab>/`, sidebar "Synergies"; alan renamed it from First Pick on 2026-10-10) is
   the champion synergy and pairing reference: rail, role tabs, saved / proposed partners, pro pairings, "Open in Draft
   Room". Old `/first-pick/…` URLs forward there with their query (`components/Forward.tsx`). The name **First Pick** is

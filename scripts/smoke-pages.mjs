@@ -165,12 +165,13 @@ for (const theme of ["light", "dark"]) {
   await page.evaluate((t) => localStorage.setItem("theme", t), theme);
   await open("/?top=ambessa&jungle=skarner&mid=locke&bot=ziggs");
   await page.waitForTimeout(1500);
-  const icons = await page.evaluate(() => [...document.querySelectorAll(".champ[data-icon]")].map((t) => {
+  // Icons inside a collapsed section load lazily when it opens, so only visible ones are checked.
+  const icons = await page.evaluate(() => [...document.querySelectorAll(".champ[data-icon]")].filter((t) => !t.closest("details:not([open])")).map((t) => {
     const img = t.querySelector("img");
     return { champ: t.dataset.champ, ok: !!img && img.complete && img.naturalWidth > 0, fallback: t.dataset.icon === "failed" && !!t.querySelector(".mono")?.textContent };
   }));
   const bad = icons.filter((i) => !i.ok);
-  check(`champion icons load (${theme})`, icons.length > 20 && bad.length === 0,
+  check(`champion icons load (${theme})`, icons.length > 8 && bad.length === 0,
     `${icons.length - bad.length}/${icons.length} loaded${bad.length ? `; not loaded: ${[...new Set(bad.map((b) => b.champ))].join(", ")}` : ""}`);
   check(`icons that fail show initials (${theme})`, bad.every((b) => b.fallback), `${bad.filter((b) => b.fallback).length}/${bad.length} fell back`);
   if (shots) await page.screenshot({ path: `${shots}/draft-${theme}.png`, fullPage: true });

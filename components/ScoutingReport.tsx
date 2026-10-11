@@ -121,9 +121,9 @@ function SourcesSection({ ids, sources }: { ids: string[]; sources: Sources }) {
 
 /** Synergy groups. Columns follow the section's width (container queries in globals.css), and a grid holding written
  *  notes stays at two columns until there is room for four readable ones. */
-const SBox = ({ children, noted }: { children: React.ReactNode; noted?: boolean }) => {
+const SBox = ({ children, noted, support }: { children: React.ReactNode; noted?: boolean; support?: boolean }) => {
   const n = Array.isArray(children) ? children.filter(Boolean).length : 1;
-  return <div className={`scout-grid n${n}${noted ? " noted" : ""}`}>{children}</div>;
+  return <div className={`scout-grid n${n}${noted ? " noted" : ""}${support ? " support" : ""}`}>{children}</div>;
 };
 const Shapes = ({ list, names }: { list: { bot: string; support: string }[]; names: Names }) =>
   list.length ? <span className="chip-list">{list.map((d) => <Duo key={d.bot + d.support} bot={d.bot} support={d.support} names={names} />)}</span> : <span className="muted small">none</span>;
@@ -136,7 +136,11 @@ function ProposedSection({ links, names, proCount, noteFor }: { links: ProposedL
   if (!links.length) return null;
   return (
     <Section layer="clash" proposed title="Proposed synergy" end={<ProposedTag />}>
-      <ProposedGroups links={links} names={names} proCount={proCount} noteFor={noteFor} />
+      {/* Below alan's saved record, proposals stay folded so they never outweigh it. */}
+      <details className="disclosure prop-fold">
+        <summary>{links.length} kit-based partner{links.length === 1 ? "" : "s"}, not saved</summary>
+        <div className="disclosure-body"><ProposedGroups links={links} names={names} proCount={proCount} noteFor={noteFor} /></div>
+      </details>
     </Section>
   );
 }
@@ -204,6 +208,8 @@ export function ScoutingReport({ item, names, sources, events, draftLabels, prop
           <SBox noted={r.alternatives.some((id) => r.alternativeNotes[id])}>
             <Group title="Preferred"><ChipList ids={r.clashDefault} names={names} role="SUPPORT" strong /></Group>
             <Group title="Alternatives"><ChipList ids={r.alternatives} names={names} role="SUPPORT" notes={r.alternativeNotes} empty="none (default only)" /></Group>
+          </SBox>
+          <SBox support>
             <Group title="Best jungle partners"><ChipList ids={r.surrounding.jungle} names={names} role="JUNGLE" /></Group>
             <Group title="Best mids"><ChipList ids={r.surrounding.mid} names={names} role="MID" /></Group>
           </SBox>
@@ -231,6 +237,8 @@ export function ScoutingReport({ item, names, sources, events, draftLabels, prop
           <SBox>
             <Group title={`Preferred ${otherName}`}><ChipList ids={r.clashDefault} names={names} role={other} strong /></Group>
             <Group title="Alternatives"><ChipList ids={r.alternatives} names={names} role={other} notes={r.alternativeNotes} /></Group>
+          </SBox>
+          <SBox support>
             <Group title="Bot shape"><Shapes list={r.botShapes} names={names} /></Group>
           </SBox>
         </Section>

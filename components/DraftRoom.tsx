@@ -14,6 +14,7 @@ import { ChampionHoverCard, useHoverIntent } from "./ChampionInteraction";
 import { GenRang } from "./GenRang";
 import { PairingCard, type CardRecord } from "./PairingCard";
 import { proposedCard } from "@/lib/proposed";
+import { Disclosure } from "./Disclosure";
 import { ChampIcon, ChampionRow, WarningBadge, type Severity } from "./ui";
 
 const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
@@ -46,6 +47,13 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
   const [hover, setHover] = useState<string>();
   const [drawer, setDrawer] = useState<DrawerTarget>();
   const [pinned, setPinned] = useState(false);
+  // Clear draft keeps the last board for a few seconds so one misclick in champion select is recoverable.
+  const [cleared, setCleared] = useState<{ draft: Draft; enemy: (string | undefined)[] }>();
+  useEffect(() => {
+    if (!cleared) return;
+    const t = setTimeout(() => setCleared(undefined), 8000);
+    return () => clearTimeout(t);
+  }, [cleared]);
   const board = useRef<HTMLDivElement>(null);
   const drawerIndex = useDrawerIndex(drawerData);
   const hoverCard = useHoverIntent();
@@ -141,7 +149,9 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
           {lockedCount >= 2 && (warns.length
             ? <span className="row tight">{critical > 0 && <span className="badge danger">{critical} critical</span>}{warns.length - critical > 0 && <span className="badge caution">{warns.length - critical} caution</span>}</span>
             : <span className="badge success">No warnings</span>)}
-          <button className="btn sm" title="Unlock every pick on both teams" onClick={() => { setFocus(undefined); update({}, ROLES.map(() => undefined)); }} disabled={!started}>Clear draft</button>
+          {cleared
+            ? <button className="btn sm" onClick={() => { update(cleared.draft, cleared.enemy); setCleared(undefined); }}>Draft cleared · Undo</button>
+            : <button className="btn sm" title="Unlock every pick on both teams" onClick={() => { setCleared({ draft, enemy }); setFocus(undefined); update({}, ROLES.map(() => undefined)); }} disabled={!started}>Clear draft</button>}
         </div>
       </header>
 
@@ -189,9 +199,6 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
                       {laneFoes.length
                         ? <span className="vs">vs {laneFoes.map((id, i) => <span key={id}>{i > 0 && " + "}<b>{names[id]}</b></span>)}</span>
                         : enemyIds.length ? <span className="vs muted">vs {enemyIds.map((id) => names[id]).join(" · ")}</span> : null}
-                      <span className="sig-key" title="Pro games are shown as evidence only and never change the order. Matchups use champion attributes, not lane stats.">
-                        <span className="k-saved">Synergy</span><span className="k-counter">Counters</span><span className="k-pro">Pro</span><span className="k-need">Logic</span>
-                      </span>
                     </div>
                     {!started ? <div className="rec-empty start"><GenRang size={44} /><span>Lock a pick to start. Recommendations for the open role appear here.</span></div>
                       : activeRecs.length
@@ -208,9 +215,8 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
 
           {active && activeCounters && (
             <section className="rec-group counters" aria-label="Counters">
-              <header><h3>Counters</h3><span className="xs faint">vs {vsNames(activeCounters.vs, names)}{activeCounters.scope === "duo" ? " (duo)" : ""}</span></header>
+              <header><h3>Counters</h3><span className="xs faint">vs {vsNames(activeCounters.vs, names)}{activeCounters.scope === "duo" ? " (duo)" : ""}{activeCounters.counters.length > 0 && !counterOnly.length ? " · all ranked above" : ""}</span></header>
               {!activeCounters.counters.length && <p className="empty">No reliable counter data for {vsNames(activeCounters.vs, names)}.</p>}
-              {activeCounters.counters.length > 0 && !counterOnly.length && <p className="empty">Every counter for this role is in the list above.</p>}
               {counterOnly.map((c) => <CounterRow key={c.champion} c={c} names={names} onOpen={() => setDrawer({ id: c.champion, role: active })} />)}
               {activeCounters.note && <p className="empty">{activeCounters.note}</p>}
             </section>
@@ -228,50 +234,10 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
             </section>
           )}
 
-          {cards.length > 0 && (
-            <section className="draft-section">
-              <div className="section-header"><h2>Locked picks</h2></div>
-              <div className="grid cols-auto">{cards.map((c) => (
-                <PairingCard key={c.kind + (c.kind === "proposed" ? c.id + c.role : "champion" in c.record ? c.record.champion : c.record.anchor)} item={c} names={names} sources={sources} events={eventMap} compact draftLabels={draftLabels} />
-              ))}</div>
-            </section>
-          )}
-
-          <section className="draft-section">
-            <div className="section-header pro-head-line"><h2>Similar pro drafts</h2></div>
-            {!similar.length ? <p className="xs muted">Nothing recorded shares a champion with this draft.</p> : (
-              <div className="table-wrap">
-                <table>
-                  <thead><tr><th>Game</th><th>Team</th>{ROLES.map((r) => <th key={r}><span className={`role-tag role-${r}`}>{r}</span></th>)}</tr></thead>
-                  <tbody>{similar.map(({ draft: d }) => (
-                    <tr key={d.id}>
-                      <td><Link className="cell-link nowrap" href={`/pro-drafts?id=${d.id}`}>{d.seriesGame}</Link></td><td className="muted nowrap">{d.team}</td>
-                      {ROLES.map((r) => <td key={r}><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={draft[r] === d.picks[r]} /></td>)}
-                    </tr>))}</tbody>
-                </table>
-              </div>
-            )}
-          </section>
-          <section className="draft-section">
-            <div className="section-header"><h2>Similar comps</h2></div>
-            <div className="shell-list">
-              {!shells.length && <p className="xs muted">No shell shares a pick or swap with this draft.</p>}
-              {shells.map(({ shell, exact, swap }) => (
-                <div key={shell.id} className="shell-line">
-                  <div className="row">
-                    <Link href={`/comps#${shell.id}`}><b>{shell.name}</b></Link>
-                    <span className="xs faint">{shell.kind === "observed" ? "pro" : "template"}</span>
-                    <span className="xs muted tnum">{exact} exact · {swap} swap</span>
-                  </div>
-                  <p className="xs muted">{ROLES.map((r) => names[shell.slots[r].champion]).join(" · ")} · {shell.winCondition}</p>
-                </div>
-              ))}
-            </div>
-          </section>
         </div>
 
         <CompCheck draft={draft} enemyIds={enemyIds} champions={data.champions} botPairings={data.botPairings} active={active}
-          bestOverall={activeRecs[0]?.champion} bestFixId={active ? fits[active]?.find((r) => r.bestFix)?.champion : undefined} names={names} grid={(siege) => <Indicators prof={prof} needs={needs} picks={picks.length} siege={siege} />}>
+          bestOverall={activeRecs[0]?.champion} bestFixId={active ? fits[active]?.find((r) => r.bestFix)?.champion : undefined} names={names} grid={(siege, disengage) => <Indicators prof={prof} needs={needs} picks={picks.length} siege={siege} disengage={disengage} />}>
           <div className="cc-section">
             <div className="cc-label">Rule checks</div>
             {!warns.length && (lockedCount < 2 ? <p className="xs muted">Needs two picks.</p> : <p className="cc-ok">No warnings.</p>)}
@@ -294,6 +260,45 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
             <ul>{RULES.map((r) => <li key={r.id}><b>{r.label}:</b> {r.rule}</li>)}</ul>
           </details>
         </CompCheck>
+      </div>
+
+      <div className="draft-research">
+        {cards.length > 0 && (
+          <Disclosure section summary="Locked picks" meta={`${cards.length}`}>
+            <div className="grid cols-auto">{cards.map((c) => (
+              <PairingCard key={c.kind + (c.kind === "proposed" ? c.id + c.role : "champion" in c.record ? c.record.champion : c.record.anchor)} item={c} names={names} sources={sources} events={eventMap} compact draftLabels={draftLabels} />
+            ))}</div>
+          </Disclosure>
+        )}
+        <Disclosure section lazy summary="Similar pro drafts" meta={similar.length ? `${similar.length}` : "none"}>
+          {!similar.length ? <p className="xs muted">Nothing recorded shares a champion with this draft.</p> : (
+            <div className="table-wrap">
+              <table>
+                <thead><tr><th>Game</th><th>Team</th>{ROLES.map((r) => <th key={r}><span className={`role-tag role-${r}`}>{r}</span></th>)}</tr></thead>
+                <tbody>{similar.map(({ draft: d }) => (
+                  <tr key={d.id}>
+                    <td><Link className="cell-link nowrap" href={`/pro-drafts?id=${d.id}`}>{d.seriesGame}</Link></td><td className="muted nowrap">{d.team}</td>
+                    {ROLES.map((r) => <td key={r}><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={draft[r] === d.picks[r]} /></td>)}
+                  </tr>))}</tbody>
+              </table>
+            </div>
+          )}
+        </Disclosure>
+        <Disclosure section lazy summary="Similar comps" meta={shells.length ? `${shells.length}` : "none"}>
+          <div className="shell-list">
+            {!shells.length && <p className="xs muted">No shell shares a pick or swap with this draft.</p>}
+            {shells.map(({ shell, exact, swap }) => (
+              <div key={shell.id} className="shell-line">
+                <div className="row">
+                  <Link href={`/comps#${shell.id}`}><b>{shell.name}</b></Link>
+                  <span className="xs faint">{shell.kind === "observed" ? "pro" : "template"}</span>
+                  <span className="xs muted tnum">{exact} exact · {swap} swap</span>
+                </div>
+                <p className="xs muted">{ROLES.map((r) => names[shell.slots[r].champion]).join(" · ")} · {shell.winCondition}</p>
+              </div>
+            ))}
+          </div>
+        </Disclosure>
       </div>
 
       {hoverCard.card && !drawer && (
@@ -573,16 +578,17 @@ function MiniBoard({ show, draft, enemy, active, names, onActivate }: {
 
 const scale = (v: number) => (v >= 3 ? "High" : v >= 2 ? "Mid" : "Low");
 
-function Indicators({ prof, needs, picks, siege }: { prof: ReturnType<typeof profile>; needs: Need[]; picks: number; siege: SiegeCell }) {
+function Indicators({ prof, needs, picks, siege, disengage }: { prof: ReturnType<typeof profile>; needs: Need[]; picks: number; siege: SiegeCell; disengage: SiegeCell }) {
   const m = Object.fromEntries(prof.meters.map((x) => [x.attr, x])) as Record<Attr, (typeof prof.meters)[number]>;
   // A missing job only reads as a problem once it matters: a need tied to a locked champion, or three picks in.
   const problem = (...ids: Need["id"][]) => needs.find((n) => ids.includes(n.id) && (n.personal || picks >= 3));
   const share = prof.damage.physicalShare;
   const cells: { label: string; value: string; bad?: Need; title?: string }[] = [
-    { label: "Fight start", value: !picks ? "—" : needs.some((n) => n.id === "engage" || n.id === "setup") ? "None" : "✓", bad: problem("engage", "setup"), title: m.engage.bestBy ? `Best engage: ${m.engage.bestBy}` : undefined },
+    { label: "Engage", value: !picks ? "—" : needs.some((n) => n.id === "engage" || n.id === "setup") ? "None" : "✓", bad: problem("engage", "setup"), title: m.engage.bestBy ? `Best engage: ${m.engage.bestBy}` : undefined },
     { label: "Frontline", value: picks ? String(m.frontline.best) : "—", bad: problem("frontline"), title: `Best ${m.frontline.best} · team ${m.frontline.total}` },
     { label: "Peel", value: picks ? String(m.peel.total) : "—", bad: problem("peel"), title: `Team total · best ${m.peel.best}` },
-    { label: "Damage", value: share === null ? "—" : `AD ${Math.round(share * 100)} / AP ${Math.round((1 - share) * 100)}`, bad: problem("magic", "physical") },
+    { label: "Disengage", value: disengage.value, title: disengage.title },
+    { label: "AD / AP", value: share === null ? "—" : `${Math.round(share * 100)} / ${Math.round((1 - share) * 100)}`, bad: problem("magic", "physical"), title: "Damage split, physical / magic" },
     { label: "Sustained", value: picks ? String(m.sustainedDps.best) : "—", bad: problem("dps") },
     { label: "Scaling", value: picks ? scale(m.scaling.best) : "—" },
     { label: "Burst", value: picks ? String(m.burst.best) : "—" },

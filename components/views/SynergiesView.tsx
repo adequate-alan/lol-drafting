@@ -105,7 +105,7 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
       <nav className="tabs">
         {(Object.keys(TABS) as Tab[]).map((t) => <Link key={t} href={`/synergies/${t}`} className={t === tab ? "active" : undefined}>{TABS[t]}</Link>)}
       </nav>
-      <div className="split scout-split">
+      <div className="split">
         <nav className="pick-rail" aria-label={`${TABS[tab]} champions`}>
           <input type="search" placeholder="Search champions or partners" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search champions" />
           <ul ref={rail}>

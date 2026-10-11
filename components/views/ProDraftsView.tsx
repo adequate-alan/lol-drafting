@@ -3,8 +3,10 @@ import { ProFreshness } from "@/components/ProFreshness";
 import type { Freshness } from "@/lib/pro-games";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { ChampionProvider } from "@/components/ChampionInteraction";
 import { Select } from "@/components/Select";
-import { ChampIcon, ChampionRow, PageHeader, SourceBadge, SourceLinks } from "@/components/ui";
+import type { DrawerData } from "@/lib/data";
+import { ChampIcon, ChampionRow, PageHeader, SourceLinks } from "@/components/ui";
 import { ROLES, type ProDraft, type Role, type Source } from "@/lib/schema";
 
 type Filters = { team?: string; champion?: string; role?: string; tournament?: string; series?: string; id?: string };
@@ -24,8 +26,8 @@ function matches(d: ProDraft, f: Filters) {
 
 const KEYS = ["team", "champion", "role", "tournament", "series", "id"] as const;
 
-export function ProDraftsView({ names, sources, all, freshness }: {
-  names: Record<string, string>; sources: Record<string, Source>; all: ProDraft[]; freshness: Freshness[];
+export function ProDraftsView({ names, sources, all, freshness, drawerData }: {
+  names: Record<string, string>; sources: Record<string, Source>; all: ProDraft[]; freshness: Freshness[]; drawerData: DrawerData;
 }) {
   const params = useSearchParams();
   const router = useRouter();
@@ -64,12 +66,12 @@ export function ProDraftsView({ names, sources, all, freshness }: {
   })();
 
   return (
-    <>
+    <ChampionProvider data={drawerData}>
       <PageHeader title="Pro Drafts" />
       <ProFreshness items={freshness} />
 
       {selected && (
-        <section className="panel" style={{ marginBottom: 12 }}>
+        <section className="panel game-panel">
           <div className="panel-head">
             <h2>{selected.team} vs {selected.opponent} · {selected.seriesGame}</h2>
             <span className="xs muted">{[selected.tournament, !selected.seriesGame.startsWith(selected.stage) && selected.stage, selected.patch && `patch ${selected.patch}`, selected.date, selected.side && `${selected.side} side`, selected.won != null && (selected.won ? "win" : "loss")].filter(Boolean).join(" · ")}</span>
@@ -79,7 +81,7 @@ export function ProDraftsView({ names, sources, all, freshness }: {
             </div>
           </div>
           <div className="panel-body">
-            <div className="draft-slots" style={{ marginBottom: 8 }}>
+            <div className="draft-slots">
               {ROLES.map((r) => (
                 <div key={r} className={`draft-slot locked role-${r}`}>
                   <span className="slot-body">
@@ -113,9 +115,9 @@ export function ProDraftsView({ names, sources, all, freshness }: {
           <tbody>
             {ordered.map(({ d, pair }) => (
               <tr key={d.id} className={`clickable ${pair} ${d.id === f.id ? "selected" : ""}`.replace(/\s+/g, " ").trim()}>
-                <td><Link className="cell-link" href={link(d.id)} style={{ whiteSpace: "nowrap" }}>{d.seriesGame}</Link></td>
-                <td style={{ whiteSpace: "nowrap" }}>{d.team}{d.won != null && <span className="xs muted" title={d.won ? "Won" : "Lost"}> {d.won ? "W" : "L"}</span>}</td>
-                <td className="muted" style={{ whiteSpace: "nowrap" }}>{d.opponent}</td>
+                <td><Link className="cell-link nowrap" href={link(d.id)}>{d.seriesGame}</Link></td>
+                <td className="nowrap">{d.team}{d.won != null && <span className="xs muted" title={d.won ? "Won" : "Lost"}> {d.won ? "W" : "L"}</span>}</td>
+                <td className="muted nowrap">{d.opponent}</td>
                 {ROLES.map((r) => <td key={r}><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={d.picks[r] === f.champion} /></td>)}
                 <td className="xs wrap">{d.read}</td>
                 <td><SourceLinks ids={d.sources} sources={sources} /></td>
@@ -125,6 +127,6 @@ export function ProDraftsView({ names, sources, all, freshness }: {
           </tbody>
         </table>
       </div>
-    </>
+    </ChampionProvider>
   );
 }
