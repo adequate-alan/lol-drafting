@@ -11,7 +11,7 @@ on:
   schedule:
     - cron: "0 12 * * *"
     - cron: "0 13 * * *"
-  # TEMPORARY: lets the branch run the updater before merge (writes to the branch only). Removed before merge.
+  # TEMPORARY: lets the branch run the updater once more before merge (writes to the branch only). Removed before merge.
   push:
     branches: ["claude/daily-pro-data-refresh-*"]
     paths: [".github/workflows/refresh-pro-data.yml"]
