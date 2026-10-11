@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { z } from "zod";
 import { withProAlternatives } from "./pro-alternatives";
+import { withGameSides } from "./draft-side";
 import { draftsFromGames, freshness, resultsFromGames, sourcesFromGames } from "./pro-games";
 import { withoutConfirmed } from "./proposed";
 import { Files } from "./schema";
@@ -32,7 +33,10 @@ let bots: Parsed<"bot-pairings.json"> | undefined, midJungle: Parsed<"mid-jungle
 export const getBotPairings = () => (bots ??= load("bot-pairings.json").map(withProAlternatives));
 export const getMidJungle = () => (midJungle ??= load("mid-jungle.json").map(withProAlternatives));
 export const getTopPicks = () => load("top.json");
-export const getProDrafts = () => (drafts ??= [...load("pro-drafts.json"), ...draftsFromGames(getProGames().games)]);
+export const getProDrafts = () => (drafts ??= [
+  ...withGameSides(load("pro-drafts.json"), Object.fromEntries(getSources().map((s) => [s.id, s]))),
+  ...draftsFromGames(getProGames().games),
+]);
 export const getCompShells = () => load("comp-shells.json");
 export const getPool = () => load("pool.json");
 export const getMeta = () => load("meta.json");

@@ -1,6 +1,6 @@
 // Draft side for Pro Drafts rows. The side is the one recorded for that game (Gol.gg game page, `side` on the draft),
 // never inferred from team, listing order or which team is named first. A draft without a recorded side is neutral.
-import type { ProDraft } from "./schema";
+import type { ProDraft, Source } from "./schema";
 
 export type DraftSide = "blue" | "red" | "none";
 
@@ -25,5 +25,20 @@ export function pairRows(rows: ProDraft[]): PairedRow[] {
       return [{ d: a, pair: "pair-a", side: sideOf(a) }, { d: b, pair: "pair-b", side: sideOf(b) }];
     }
     return g.map((d) => ({ d, pair: "", side: sideOf(d) }));
+  });
+}
+
+/** Stored drafts (data/pro-drafts.json) take side, result and date from the game record they cite (`Source.sides`,
+ *  read from its Gol.gg page), so both team rows of a game share one record. A draft whose team and opponent are not
+ *  that game's two sides gets nothing; a side a draft already carries is kept. */
+export function withGameSides(drafts: ProDraft[], sources: Record<string, Source>): ProDraft[] {
+  return drafts.map((d) => {
+    if (d.side) return d;
+    const game = d.sources.map((id) => sources[id]).find((s) => s?.type === "golgg-game" && s.sides);
+    const g = game?.sides;
+    if (!g) return d;
+    const side = d.team === g.blue && d.opponent === g.red ? "blue" : d.team === g.red && d.opponent === g.blue ? "red" : undefined;
+    if (!side) return d;
+    return { ...d, side, won: g.winner === side, date: d.date ?? game?.date };
   });
 }

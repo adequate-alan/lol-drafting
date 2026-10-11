@@ -208,8 +208,9 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   Risk tags use the caution amber; oxblood is enemy and Counters only. No eyebrow labels, hero-metric strips or side
   stripes thicker than 1px (Impeccable craft floor), except the Pro Drafts draft-side strip below.
 - **Pro Drafts side strips** (alan, 2026-10-11): each row has a 3px strip on its far left, `--team-blue` / `--team-red`
-  for the side recorded for that game (`ProDraft.side`, from the Gol.gg game page via `data/pro-games.json`), neutral
-  `--border-strong` when no side is recorded (the LCK archive drafts), with the side named on hover. The side comes from
+  for the side recorded for that game (`ProDraft.side`, from the Gol.gg game page via `data/pro-games.json`; stored LCK
+  drafts inherit it from their game source's `sides`, backfilled once on 2026-10-11 by `scripts/backfill-lck-sides.mjs`,
+  which is not part of the daily refresh), neutral `--border-strong` when no side is recorded, with the side named on hover. The side comes from
   each game, never from team identity, listing order or which team is named first (`lib/draft-side.ts`,
   `tests/pro-sides.test.ts`); filters keep each row's side. Both sides of a game pair blue first.
 - **Champion Synergies** (`/synergies/<tab>/`, sidebar "Synergies"; alan renamed it from First Pick on 2026-10-10) is
