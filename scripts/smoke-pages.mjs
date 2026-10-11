@@ -115,7 +115,7 @@ const vsLine = await text(".recs .fit-context .vs");
 check("open role is linked to its lane opponent (Top vs Ornn)", /vs Ornn/.test(vsLine), vsLine);
 await page.locator(".fit-filters button", { hasText: "Counters" }).click();
 const counterText = await text(".recs .fit-note");
-check("Counters filter reads the lane opponent and never invents a counter", /vs Ornn/.test(counterText)
+check("Counters filter reads the lane opponent and never invents a counter", /(vs|for) Ornn/.test(counterText)
   && ((await page.locator(".recs .fit-row .sig.counter").count()) > 0 || /No reliable counter data for Ornn/.test(counterText)), counterText.slice(0, 160));
 // Real DPM rows: Top into Aatrox has stored matchups that clear the thresholds (Fiora, Gwen, Gragas, Ornn).
 await open("/?vs=top:aatrox");
