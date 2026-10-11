@@ -1,0 +1,33 @@
+name: Review screenshots (temporary, design cleanup branch)
+
+on:
+  push:
+    branches: [claude/design-system-cleanup-l059jt]
+
+permissions:
+  contents: write
+
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: mkdir -p site && ln -s "$PWD/out" site/lol-drafting && (cd site && python3 -m http.server 8080 >/dev/null 2>&1 &) && sleep 2
+      - run: npm install --no-save --no-package-lock playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - run: mkdir -p review && node scripts/review-shots.mjs http://localhost:8080/lol-drafting review
+      - run: node scripts/smoke-pages.mjs http://localhost:8080/lol-drafting/ > review/smoke.txt 2>&1 || true
+      - run: |
+          cd review
+          git init -q -b review-shots
+          git config user.name adequate-alan
+          git config user.email 54249725+adequate-alan@users.noreply.github.com
+          echo "${GITHUB_SHA}" > SHA
+          git add -A && git commit -qm "Review screenshots for ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" review-shots:review-shots
