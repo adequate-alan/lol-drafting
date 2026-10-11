@@ -17,9 +17,15 @@
     "opponent": "HLE",
     "seriesGame": "Finals G1",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "Gen.G",
+      "red": "HLE",
+      "winner": "red"
+    },
+    "date": "2026-09-13"
   },
   {
     "id": "golgg-game-82963",
@@ -30,9 +36,15 @@
     "opponent": "HLE",
     "seriesGame": "Finals G2",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "HLE",
+      "red": "Gen.G",
+      "winner": "red"
+    },
+    "date": "2026-09-13"
   },
   {
     "id": "golgg-game-82964",
@@ -56,9 +68,15 @@
     "opponent": "HLE",
     "seriesGame": "Finals G4",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "Gen.G",
+      "red": "HLE",
+      "winner": "blue"
+    },
+    "date": "2026-09-13"
   },
   {
     "id": "golgg-game-82745",
@@ -69,9 +87,15 @@
     "opponent": "T1",
     "seriesGame": "HLE-T1 G1",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "HLE",
+      "red": "T1",
+      "winner": "blue"
+    },
+    "date": "2026-09-12"
   },
   {
     "id": "golgg-game-82746",
@@ -82,9 +106,15 @@
     "opponent": "HLE",
     "seriesGame": "HLE-T1 G2",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "T1",
+      "red": "HLE",
+      "winner": "red"
+    },
+    "date": "2026-09-12"
   },
   {
     "id": "golgg-game-82747",
@@ -95,9 +125,15 @@
     "opponent": "T1",
     "seriesGame": "HLE-T1 G3",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "HLE",
+      "red": "T1",
+      "winner": "red"
+    },
+    "date": "2026-09-12"
   },
   {
     "id": "golgg-game-82748",
@@ -108,9 +144,15 @@
     "opponent": "HLE",
     "seriesGame": "HLE-T1 G4",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "T1",
+      "red": "HLE",
+      "winner": "red"
+    },
+    "date": "2026-09-12"
   },
   {
     "id": "golgg-game-82692",
@@ -121,9 +163,15 @@
     "opponent": "T1",
     "seriesGame": "T1-DK G1",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "DK",
+      "red": "T1",
+      "winner": "red"
+    },
+    "date": "2026-09-06"
   },
   {
     "id": "golgg-game-82693",
@@ -134,9 +182,15 @@
     "opponent": "T1",
     "seriesGame": "T1-DK G2",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "DK",
+      "red": "T1",
+      "winner": "blue"
+    },
+    "date": "2026-09-06"
   },
   {
     "id": "golgg-game-82694",
@@ -147,9 +201,15 @@
     "opponent": "T1",
     "seriesGame": "T1-DK G3",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "DK",
+      "red": "T1",
+      "winner": "red"
+    },
+    "date": "2026-09-06"
   },
   {
     "id": "golgg-game-82695",
@@ -160,9 +220,15 @@
     "opponent": "T1",
     "seriesGame": "T1-DK G4",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "DK",
+      "red": "T1",
+      "winner": "red"
+    },
+    "date": "2026-09-06"
   },
   {
     "id": "golgg-game-82414",
@@ -173,9 +239,15 @@
     "opponent": "KT Rolster",
     "seriesGame": "Round 2 G1",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "Gen.G",
+      "red": "KT Rolster",
+      "winner": "blue"
+    },
+    "date": "2026-09-01"
   },
   {
     "id": "golgg-game-82416",
@@ -186,9 +258,15 @@
     "opponent": "KT Rolster",
     "seriesGame": "Round 2 G3",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "Gen.G",
+      "red": "KT Rolster",
+      "winner": "blue"
+    },
+    "date": "2026-09-01"
   },
   {
     "id": "golgg-game-82625",
@@ -199,9 +277,15 @@
     "opponent": "HLE",
     "seriesGame": "Round 4 G1",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "HLE",
+      "red": "Gen.G",
+      "winner": "blue"
+    },
+    "date": "2026-09-05"
   },
   {
     "id": "golgg-game-82626",
@@ -212,9 +296,15 @@
     "opponent": "HLE",
     "seriesGame": "Round 4 G2",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "Gen.G",
+      "red": "HLE",
+      "winner": "blue"
+    },
+    "date": "2026-09-05"
   },
   {
     "id": "golgg-game-82627",
@@ -231,7 +321,13 @@
     "pendingClaim": {
       "claim": "HLE drafted Ziggs bot + Pyke support. Camille is a top laner in this game, so it does not show Ziggs + Camille support.",
       "providedOn": "2026-10-10"
-    }
+    },
+    "sides": {
+      "blue": "HLE",
+      "red": "Gen.G",
+      "winner": "red"
+    },
+    "date": "2026-09-05"
   },
   {
     "id": "golgg-game-82628",
@@ -242,9 +338,15 @@
     "opponent": "HLE",
     "seriesGame": "Round 4 G4",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "Gen.G",
+      "red": "HLE",
+      "winner": "blue"
+    },
+    "date": "2026-09-05"
   },
   {
     "id": "golgg-tournament-picksandbans",
