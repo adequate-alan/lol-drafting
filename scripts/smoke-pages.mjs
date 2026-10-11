@@ -102,6 +102,35 @@ await page.locator(".fit-filters button", { hasText: "Pro" }).click();
 const proRows = await page.locator(".recs .fit-row").count();
 check("Pro filter shows only rows with pro games", proRows > 0 && (await page.locator(".recs .fit-row .sig.pro").count()) === proRows, `${proRows} rows`);
 await page.locator(".fit-filters button", { hasText: "All" }).click();
+// Pro evidence card (components/EvidenceCards.tsx on components/Popover.tsx): hovering "Pro · N games" names the games.
+{
+  const trigger = proRow("Nautilus").locator("button.sig.pro");
+  const label = Number(((await trigger.textContent()) ?? "").match(/(\d+) game/)?.[1] ?? 0);
+  await trigger.hover();
+  const card = page.locator(".popover.pe");
+  await card.waitFor({ timeout: 3000 }).catch(() => {});
+  const games = await card.locator(".pe-game").count();
+  const body = (await card.textContent().catch(() => "")) ?? "";
+  check("Pro evidence card lists the counted games (up to 3) with teams, result or none, and a Gol.gg link",
+    label > 0 && games === Math.min(label, 3) && / vs /.test(body) && /Win|Loss|Result not recorded|Pending/.test(body)
+      && (await card.locator("a[href*='gol.gg']").count()) > 0 && (label <= 3 || /View all \d+ games/.test(body)),
+    `${games} of ${label} · ${body.slice(0, 120)}`);
+  check("Pro evidence card says it is observed, never part of the order", /never part of the order/.test(body) && !/counter(pick)? (proven|confirmed)/i.test(body), "");
+  await card.locator("a").first().hover();
+  await page.waitForTimeout(400);
+  check("Pro evidence card stays open while the pointer moves into it", await card.isVisible(), "");
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(150);
+  check("Escape closes the Pro evidence card", (await card.count()) === 0, "");
+  // Plain hints render in the themed tip, not the browser's bubble.
+  await page.mouse.move(2, 2);
+  const syn = proRow("Nautilus").locator("span.sig.syn").first();
+  await syn.hover();
+  await page.waitForTimeout(600);
+  check("title hints render as the themed tip", (await page.locator(".popover.tip").count()) === 1 && (await syn.getAttribute("title")) === null,
+    (await page.locator(".popover.tip").textContent().catch(() => "")) ?? "");
+  await page.mouse.move(2, 2);
+}
 await open("/?bot=jinx&vs=ornn,jarvan-iv");
 const enemyText = await text(".draft-slot.enemy .slot-name");
 const vsWhy = await text(".recs .fit-why");

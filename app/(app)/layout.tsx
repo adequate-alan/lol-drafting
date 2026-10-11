@@ -1,4 +1,5 @@
 import { Sidebar } from "@/components/Sidebar";
+import { TipLayer } from "@/components/TipLayer";
 import { UpdateNotice } from "@/components/UpdateNotice";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -14,6 +15,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </footer>
       </div>
       <UpdateNotice />
+      <TipLayer />
     </div>
   );
 }
