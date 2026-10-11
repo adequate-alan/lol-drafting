@@ -20,20 +20,10 @@ jobs:
           D=tests/fixtures/golgg/raw; mkdir -p $D
           get() { echo "$2"; curl -sS -A "$UA" --max-time 30 -o "$D/$1" -w ' %{http_code}\n' "$2"; sleep 3; }
           T="Demacia%20Cup%20Global%20Invitational%202026"
-          get tournament-list.html "https://gol.gg/tournament/list/"
-          get demacia-matchlist.html "https://gol.gg/tournament/tournament-matchlist/$T/"
-          get demacia-championlist.html "https://gol.gg/champion/list/season-ALL/split-ALL/tournament-$T/"
-          get demacia-picksandbans.html "https://gol.gg/tournament/tournament-picksandbans/$T/"
-          get game-83540-summary.html "https://gol.gg/game/stats/83540/page-summary/"
-          get game-83540-game.html "https://gol.gg/game/stats/83540/page-game/"
-          get game-83452-game.html "https://gol.gg/game/stats/83452/page-game/"
-          get game-83578-preview.html "https://gol.gg/game/stats/83578/page-preview/"
-          curl -sS -A "$UA" --max-time 30 -o $D/trlist-s16.json -X POST -d "season=S16" "https://gol.gg/tournament/ajax.trlist.php"; sleep 3
-          for n in "World%20Championship%202026" "Worlds%202026" "Worlds%20Main%20Event%202026" "Worlds%20Play-In%202026"; do
-            get "worlds-$n.html" "https://gol.gg/tournament/tournament-matchlist/$n/"
-            grep -oiE '<title>[^<]*</title>' "$D/worlds-$n.html" || true
-          done
-          grep -oiE "World[^<\"']{0,40}2026" $D/tournament-list.html $D/trlist-s16.json | sort -u | head -20 || true
+          get game-83540-fullstats.html "https://gol.gg/game/stats/83540/page-fullstats/"
+          get game-83452-fullstats.html "https://gol.gg/game/stats/83452/page-fullstats/"
+          get game-83541-game.html "https://gol.gg/game/stats/83541/page-game/"
+          get game-83542-game.html "https://gol.gg/game/stats/83542/page-game/"
           ls -la $D
       - name: Commit
         run: |
