@@ -8,6 +8,7 @@ import { Select } from "@/components/Select";
 import type { DrawerData } from "@/lib/data";
 import { ChampIcon, ChampionRow, PageHeader, SourceLinks } from "@/components/ui";
 import { ROLES, type ProDraft, type Role, type Source } from "@/lib/schema";
+import { pairRows, SIDE_LABEL } from "@/lib/draft-side";
 
 type Filters = { team?: string; champion?: string; role?: string; tournament?: string; series?: string; id?: string };
 
@@ -52,18 +53,8 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData }: {
       options={[{ value: "", label: any }, ...options.map(([value, l]) => ({ value, label: l }))]} />
   );
   const active = KEYS.filter((k) => k !== "id" && f[k]).length;
-  // Both sides of one game sit together as a two-row block. Pairs come from the game itself (tournament, series game
-  // and the two teams), not row order, so a filtered view that keeps only one side shows no pair.
-  const ordered = (() => {
-    const games = new Map<string, ProDraft[]>();
-    for (const d of rows) {
-      const k = `${d.tournament}|${d.seriesGame}|${[d.team, d.opponent].sort().join("|")}`;
-      games.set(k, [...(games.get(k) ?? []), d]);
-    }
-    return [...games.values()].flatMap((g) => g.length === 2 && g[0].team === g[1].opponent
-      ? [{ d: g[0], pair: "pair-a" }, { d: g[1], pair: "pair-b" }]
-      : g.map((d) => ({ d, pair: "" })));
-  })();
+  // Both sides of one game sit together as a two-row block; each row's strip is that game's recorded side.
+  const ordered = pairRows(rows);
 
   return (
     <ChampionProvider data={drawerData}>
@@ -113,8 +104,8 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData }: {
         <table>
           <thead><tr><th>Game</th><th>Team</th><th>vs</th>{ROLES.map((r) => <th key={r}><span className={`role-tag role-${r}`}>{r}</span></th>)}<th>Read</th><th>Source</th></tr></thead>
           <tbody>
-            {ordered.map(({ d, pair }) => (
-              <tr key={d.id} className={`clickable ${pair} ${d.id === f.id ? "selected" : ""}`.replace(/\s+/g, " ").trim()}>
+            {ordered.map(({ d, pair, side }) => (
+              <tr key={d.id} className={`clickable side-${side} ${pair} ${d.id === f.id ? "selected" : ""}`.replace(/\s+/g, " ").trim()} title={SIDE_LABEL[side]} data-side={side}>
                 <td><Link className="cell-link nowrap" href={link(d.id)}>{d.seriesGame}</Link></td>
                 <td className="nowrap">{d.team}{d.won != null && <span className="xs muted" title={d.won ? "Won" : "Lost"}> {d.won ? "W" : "L"}</span>}</td>
                 <td className="muted nowrap">{d.opponent}</td>

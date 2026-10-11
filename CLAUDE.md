@@ -205,9 +205,13 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   Uppercase only for page titles (h1) and role codes; every other label shares the sentence-case `.label` style. Source
   links carry their refresh status in the tooltip; only a pending external claim is marked inline ("· pending").
   Every page that shows champions wraps them in `ChampionProvider`, so hover card, drawer and mobile sheet match.
-  Risk tags use the caution amber; oxblood is enemy and Counters only. Pro Drafts pair rows use a neutral strip: the
-  data records no blue/red side, so nothing may imply one. No eyebrow labels, hero-metric strips or side stripes
-  thicker than 1px (Impeccable craft floor).
+  Risk tags use the caution amber; oxblood is enemy and Counters only. No eyebrow labels, hero-metric strips or side
+  stripes thicker than 1px (Impeccable craft floor), except the Pro Drafts draft-side strip below.
+- **Pro Drafts side strips** (alan, 2026-10-11): each row has a 3px strip on its far left, `--team-blue` / `--team-red`
+  for the side recorded for that game (`ProDraft.side`, from the Gol.gg game page via `data/pro-games.json`), neutral
+  `--border-strong` when no side is recorded (the LCK archive drafts), with the side named on hover. The side comes from
+  each game, never from team identity, listing order or which team is named first (`lib/draft-side.ts`,
+  `tests/pro-sides.test.ts`); filters keep each row's side. Both sides of a game pair blue first.
 - **Champion Synergies** (`/synergies/<tab>/`, sidebar "Synergies"; alan renamed it from First Pick on 2026-10-10) is
   the champion synergy and pairing reference: rail, role tabs, saved / proposed partners, pro pairings, "Open in Draft
   Room". Old `/first-pick/…` URLs forward there with their query (`components/Forward.tsx`). The name **First Pick** is

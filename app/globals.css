@@ -103,7 +103,7 @@
   --success: #3D6E4C; --success-subtle: #E9F0E4;
   --counter: var(--oxblood); --counter-line: #C29A92; --counter-subtle: #F6ECE6;
   --enemy: var(--oxblood); --enemy-line: #CDABA4; --enemy-subtle: #F8F0EA;
-  --side-a: var(--border-strong); --side-b: var(--border-strong);
+  --team-blue: #3F6FA3; --team-red: #B04A40; /* draft side (Pro Drafts row strip), not team identity */
 
   /* Role colors live only in the small role marker */
   --top: #B5784F; --jungle: #6B8C6A; --mid: #6E82A8; --bot: #AE666C; --support: #8C78A8;
@@ -149,7 +149,7 @@
   --success: #86B58F; --success-subtle: rgba(134, 181, 143, .09);
   --counter: #C99A93; --counter-line: #7A4A45; --counter-subtle: rgba(160, 90, 80, .08);
   --enemy: #C4A09A;  --enemy-line: #5E403C; --enemy-subtle: rgba(160, 90, 80, .06);
-  --side-a: var(--border-strong); --side-b: var(--border-strong);
+  --team-blue: #6E9BCB; --team-red: #C9695D;
 
   --top: #C9946F; --jungle: #8DAE8B; --mid: #93A5C9; --bot: #C98A8F; --support: #AD9BC6;
 }
@@ -1195,8 +1195,10 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
    A thin side strip marks each team; a stronger rule closes each pair. Hover and selection still win. ===== */
 tr.pair-a td { background: var(--surface-subtle); border-bottom-color: transparent; }
 tbody tr.pair-b:not(:last-child) td { border-bottom-color: var(--border-strong); }
-tr.pair-a td:first-child { box-shadow: inset 1px 0 0 var(--side-a); }
-tr.pair-b td:first-child { box-shadow: inset 1px 0 0 var(--side-b); }
+/* Recorded draft side: a 3px strip on the row's first cell (box-shadow, so no layout shift); neutral when unrecorded. */
+tr.side-blue td:first-child { box-shadow: inset 3px 0 0 var(--team-blue); }
+tr.side-red td:first-child { box-shadow: inset 3px 0 0 var(--team-red); }
+tr.side-none td:first-child { box-shadow: inset 3px 0 0 var(--border-strong); }
 tbody tr.pair-a:hover td, tbody tr.pair-b:hover td { background: var(--surface-hover); }
 tr.pair-a.selected td, tr.pair-b.selected td { background: var(--accent-subtle); }
 .game-panel { margin-bottom: var(--s5); }
