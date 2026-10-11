@@ -29,7 +29,8 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 - Pro usage informs alan's defaults but never silently overwrites them. Ask before changing a saved-pairing field.
 - Never delete valid pro evidence because it is not one of alan's saved picks. Pairings the workbook cites without a
   recorded draft stay, flagged `backedByGame: false`.
-- Evidence sets are events in `meta.json` `events` (LCK 2026 playoffs on 16.16; Demacia Cup 2026 on 16.18, `ongoing`).
+- Evidence sets are events in `meta.json` `events` (LCK 2026 playoffs on 16.16, archive; Demacia Cup 2026 on 16.18 and
+  Worlds 2026 once listed, refreshed daily, see below).
   Pro evidence shows event, patch and date, newest patch first (`lib/evidence.ts`). A current-meta event never edits saved
   pairings and stays off the Gen.G page (`tests/demacia-cup.test.ts`).
 - Keep priority (pick/ban presence) separate from win rate, and mark small samples (`lowSample`, fewer than 5 picks).
@@ -93,6 +94,24 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   until it is read. Remove a citation whose game shows something else; don't drop the claim.
 - If Gol.gg or the web is unavailable: say the research could not be refreshed, keep the last verified data, leave
   `refreshStatus: "not-refreshed"`, and **never invent tournament data or pretend a refresh happened**.
+
+## Daily pro-data refresh (alan, 2026-10-11)
+
+- `.github/workflows/refresh-pro-data.yml` runs daily at 8 AM Eastern (cron 12:00 and 13:00 UTC, a gate keeps the one
+  matching New York's offset) and on `workflow_dispatch`. It reads Gol.gg with plain requests from the GitHub runner
+  (it answers there; robots.txt allows these pages) and stops, writing nothing, on any refusal or challenge. Never bypass one.
+- Only the tournaments in `data/pro-games.json` `tracked` are requested, by exact Gol.gg name: Demacia Cup Global
+  Invitational 2026 and Worlds 2026 (main event and play-in names). The LCK playoffs are a frozen archive. Adding a
+  tournament (2027 or any other) needs alan's approval. A tournament marked `complete` is not requested again.
+- `data/pro-games.json` is the one game-level dataset (Gol.gg game id is the key; sides, winner, picks by role from the
+  full-stats page, bans, patch, date, URL). `lib/pro-games.ts` derives drafts, sources and results at load. Games that
+  miss a field or contradict their series are rejected and reported as run warnings, never filled in.
+- Tournament totals are replaced only when the champion table sums to 10 picks per match-list game and, with every game
+  recorded, agrees champion by champion; then `rolePicks` comes from the game pages. Never across patches.
+- The updater writes only `pro-games.json`, `meta.json` and `sources.json`; imported games add no pro-derived
+  alternatives (alan: new pro pairings stay Pro Evidence). It commits as adequate-alan only when verified data changed,
+  after test/typecheck/build, then starts `pages.yml`. A supplied game link becomes verified only when its game shows the claim.
+- Tests that check fixed Demacia numbers are scoped to the known events; new imports must never be able to break them.
 
 ## Locked saved pairings (enforced by `tests/locked-conclusions.test.ts`)
 

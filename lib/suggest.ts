@@ -59,10 +59,12 @@ export function proSuggestions(draft: Draft, proDrafts: ProDraft[], extra: {
       label: `${d.team} ${d.seriesGame}`, event: ev?.short ?? d.tournament, patch: d.patch ?? ev?.patch, date: game?.date, pending: false,
     });
   }
+  const recorded = new Set(proDrafts.flatMap((d) => d.sources));
   for (const b of extra.botPairings ?? []) {
     for (const o of b.observedProPairings) {
       if (o.backedByGame) continue; // already counted through its recorded draft
-      const games = o.sources.map((id) => sources[id]).filter((s): s is Source => s?.type === "golgg-game" && !!s.pendingClaim);
+      // A supplied game page whose full game is now recorded is counted through that draft instead.
+      const games = o.sources.map((id) => sources[id]).filter((s): s is Source => s?.type === "golgg-game" && !!s.pendingClaim && !recorded.has(s.id));
       if (!games.length || games.length !== o.sources.length) continue;
       const ev = o.event ? events.find((e) => e.id === o.event) : undefined;
       for (const g of games) {

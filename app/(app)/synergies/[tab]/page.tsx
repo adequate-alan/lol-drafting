@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { PageLoading } from "@/components/ui";
 import { SynergiesView } from "@/components/views/SynergiesView";
 import { TABS, type Tab } from "@/components/views/synergy-tabs";
-import { getBotPairings, getDrawerData, getMeta, getMidJungle, getPool, getProDrafts, getTopPicks } from "@/lib/data";
+import { getBotPairings, getDrawerData, getMeta, getMidJungle, getPool, getProDrafts, getProFreshness, getTopPicks } from "@/lib/data";
 import { eventMap, nameMap, sourceMap } from "@/lib/lookup";
 
 export const metadata: Metadata = { title: "Champion Synergies" };
@@ -21,7 +21,7 @@ export default async function Synergies({ params }: { params: Promise<{ tab: str
   return (
     <Suspense fallback={<PageLoading title="Champion Synergies" />}>
       <SynergiesView tab={tab as Tab} names={nameMap()} sources={sourceMap()} events={eventMap()} stats={stats} draftLabels={draftLabels}
-        bot={getBotPairings()} midJungle={getMidJungle()} top={getTopPicks()} pool={getPool()} drawerData={getDrawerData()} />
+        bot={getBotPairings()} midJungle={getMidJungle()} top={getTopPicks()} pool={getPool()} drawerData={getDrawerData()} freshness={getProFreshness()} />
     </Suspense>
   );
 }

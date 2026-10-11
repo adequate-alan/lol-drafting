@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { GenRang } from "@/components/GenRang";
 import { ChampionRow, SectionHeader, SourceLinks } from "@/components/ui";
-import { getGenG, getProDrafts } from "@/lib/data";
+import { getGenG, getMeta, getProDrafts } from "@/lib/data";
 import { nameMap, sourceMap } from "@/lib/lookup";
 import { ROLES, type GenGPattern } from "@/lib/schema";
 
@@ -16,7 +16,8 @@ export default function GenG() {
   const names = nameMap();
   const sources = sourceMap();
   const patterns = getGenG();
-  const drafts = getProDrafts().filter((d) => d.team === "Gen.G");
+  // The LCK playoff sample only: current-meta events (Demacia Cup, Worlds 2026 imports) stay off this page.
+  const drafts = getProDrafts().filter((d) => d.team === "Gen.G" && d.tournament === getMeta().tournament.name);
   const label = Object.fromEntries(drafts.map((d) => [d.id, d.seriesGame]));
   const current = patterns.filter((p) => p.era !== "earlier-2026").length;
   return (

@@ -1,4 +1,6 @@
 "use client";
+import { ProFreshness } from "@/components/ProFreshness";
+import type { Freshness } from "@/lib/pro-games";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { Select } from "@/components/Select";
@@ -13,8 +15,8 @@ import { ROLES, type BotPairing, type MidJunglePairing, type ObservedPairing, ty
 const TIER_LABEL = Object.fromEntries(TIERS) as Record<Tier, string>;
 const DASH = <span className="faint">—</span>;
 
-export function PoolView({ names, data, bot, midJungle, top, proposed }: {
-  names: Record<string, string>; data: PoolInput; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; proposed: ProposedRecord[];
+export function PoolView({ names, data, bot, midJungle, top, proposed, freshness }: {
+  names: Record<string, string>; data: PoolInput; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; proposed: ProposedRecord[]; freshness: Freshness[];
 }) {
   // Filters live in the URL so a view can be shared; window.location keeps the GitHub Pages base path.
   const initial = useSearchParams();
@@ -56,6 +58,7 @@ export function PoolView({ names, data, bot, midJungle, top, proposed }: {
   return (
     <>
       <PageHeader title="Champion Pool" />
+      <ProFreshness items={freshness} />
       <div className="toolbar pool-tools">
         <nav className="seg" aria-label="Role">
           <button className={!role ? "active" : undefined} onClick={() => set("role", undefined)}>All</button>

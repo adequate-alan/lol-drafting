@@ -1,0 +1,86 @@
+name: Refresh pro data
+
+# Daily check of Gol.gg for newly completed games in the tracked tournaments only (data/pro-games.json `tracked`:
+# Demacia Cup Global Invitational 2026 and Worlds 2026; the LCK playoffs are a frozen archive). Imports verified games
+# and tournament totals, runs the full test suite, typecheck and build, and commits and deploys only when verified data
+# changed. A refused or failed request writes nothing. Saved pairings and pool tiers are never touched.
+#
+# 8 AM Eastern all year: cron is UTC, so both 12:00 UTC (8 AM EDT) and 13:00 UTC (8 AM EST) are scheduled and the gate
+# step lets through only the one that matches New York's current offset. GitHub may start scheduled runs late.
+on:
+  schedule:
+    - cron: "0 12 * * *"
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Check and report only; write and commit nothing"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write # commit refreshed data
+  actions: write # start the Pages deploy (a push made with GITHUB_TOKEN does not trigger workflows)
+
+concurrency:
+  group: refresh-pro-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - id: gate
+        name: Run at 8 AM Eastern only
+        run: |
+          offset=$(TZ=America/New_York date +%z)
+          run=true
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            if [ "${{ github.event.schedule }}" = "0 12 * * *" ] && [ "$offset" != "-0400" ]; then run=false; fi
+            if [ "${{ github.event.schedule }}" = "0 13 * * *" ] && [ "$offset" != "-0500" ]; then run=false; fi
+          fi
+          echo "New York offset $offset; run=$run"
+          echo "run=$run" >> "$GITHUB_OUTPUT"
+
+      - if: steps.gate.outputs.run == 'true'
+        uses: actions/checkout@v4
+      - if: steps.gate.outputs.run == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - id: refresh
+        if: steps.gate.outputs.run == 'true'
+        name: Check Gol.gg and import new verified games
+        run: node scripts/refresh-pro-data.mjs ${{ inputs.dry_run && '--dry-run' || '' }}
+
+      - if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
+        run: npm ci
+      - if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
+        run: npm test
+      - if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
+        run: npm run typecheck
+      - if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
+        run: npm run build
+
+      - id: commit
+        if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
+        name: Commit refreshed data
+        run: |
+          git config user.name "adequate-alan"
+          git config user.email "54249725+adequate-alan@users.noreply.github.com"
+          git add data/pro-games.json data/meta.json data/sources.json
+          git diff --cached --quiet && { echo "Nothing staged."; exit 0; }
+          git commit -m "Pro data: daily Gol.gg refresh $(date -u +%Y-%m-%d)" -m "$(node -e 'const p=require("./data/pro-games.json");console.log(p.tournaments.map(t=>`${t.golgg}: ${t.recorded}/${t.games} games recorded, ${t.seriesPlayed}/${t.series} series played, ${t.status}`).join("\n"))')"
+          for i in 1 2 3; do
+            git push origin "HEAD:${GITHUB_REF_NAME}" && { echo "pushed=true" >> "$GITHUB_OUTPUT"; exit 0; }
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+          done
+          exit 1
+
+      - if: steps.commit.outputs.pushed == 'true' && github.ref_name == 'main'
+        name: Deploy to GitHub Pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main

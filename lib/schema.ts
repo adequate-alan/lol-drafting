@@ -10,6 +10,7 @@ export const Role = z.enum(ROLES);
 export type Role = z.infer<typeof Role>;
 
 const id = z.string().regex(/^[a-z0-9-]+$/);
+const Day = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 export const ChampionId = id;
 export const SourceId = id;
 export type ChampionId = string;
@@ -187,11 +188,54 @@ export const ProDraft = z.object({
   opponent: z.string(),
   patch: z.string().optional(),
   picks: z.object({ TOP: ChampionId, JUNGLE: ChampionId, MID: ChampionId, BOT: ChampionId, SUPPORT: ChampionId }),
-  read: z.string(),
+  read: z.string(), // a hand-written read of the comp; empty on drafts imported from Gol.gg
   note: z.string().optional(),
   sources: z.array(SourceId).min(1),
+  // Set on drafts built from data/pro-games.json (lib/pro-games.ts): what the game page shows.
+  side: z.enum(["blue", "red"]).optional(),
+  won: z.boolean().optional(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  bans: z.array(ChampionId).optional(),
 });
 export type ProDraft = z.infer<typeof ProDraft>;
+
+// ---------- pro-games.json (Observed only; written by scripts/refresh-pro-data.mjs) ----------
+// One record per game, both sides together, read from its Gol.gg game page (teams, sides, result, bans, picks, patch,
+// date) and full-stats page (roles). The one dataset that Pro Drafts, Meta, Pool, Synergies, the Draft Room and counter
+// corroboration read imported games from (lib/pro-games.ts turns it into drafts, sources and results at load).
+const Picks = z.object({ TOP: ChampionId, JUNGLE: ChampionId, MID: ChampionId, BOT: ChampionId, SUPPORT: ChampionId });
+const GameSide = z.object({ team: z.string().min(1), picks: Picks, bans: z.array(ChampionId).max(5) });
+export const ProGame = z.object({
+  id: z.number().int().positive(), // Gol.gg game id: the stable key, so a game is never stored twice
+  event: id, // meta.json events id
+  tournament: z.string(),
+  seriesId: z.number().int().positive(), // Gol.gg id of the series' first game
+  series: z.string(),
+  game: z.number().int().positive(),
+  stage: z.string().optional(),
+  date: Day,
+  patch: z.string().regex(/^\d+\.\d+$/),
+  blue: GameSide,
+  red: GameSide,
+  winner: z.enum(["blue", "red"]),
+  url: z.string().url(),
+  rolesUrl: z.string().url(),
+  checkedOn: Day,
+});
+export type ProGame = z.infer<typeof ProGame>;
+export const ProGames = z.object({
+  // The only tournaments the daily refresh may request, by exact Gol.gg name (alan, 2026-10-11).
+  tracked: z.array(z.object({ event: id, label: z.string(), names: z.array(z.string()).min(1) })),
+  tournaments: z.array(z.object({
+    event: id, golgg: z.string(), status: z.enum(["ongoing", "complete"]),
+    series: z.number().int(), seriesPlayed: z.number().int(), games: z.number().int(), recorded: z.number().int(),
+    matchlist: z.string().url(),
+    lastUpdate: z.string().datetime().nullable(), // last time verified data changed
+    lastCheck: z.string().datetime().nullable(), // check that produced the stored data (later checks may have found nothing)
+  })),
+  games: z.array(ProGame),
+});
+export type ProGames = z.infer<typeof ProGames>;
 
 // ---------- comp-shells.json ----------
 export const CompShell = z.object({
@@ -247,7 +291,6 @@ export const MetaStat = z.object({
 export type MetaStat = z.infer<typeof MetaStat>;
 // A tournament evidence set. The LCK playoffs are the main sample (meta.tournament + meta.stats); a current-meta event
 // such as the Demacia Cup is a separate, newer sample with its own stats and notes. Neither ever edits saved pairings.
-const Day = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 export const MetaEvent = z.object({
   id: id,
   name: z.string(),
@@ -333,6 +376,7 @@ export const Files = {
   "mid-jungle.json": z.array(MidJunglePairing),
   "top.json": z.array(TopPick),
   "pro-drafts.json": z.array(ProDraft),
+  "pro-games.json": ProGames,
   "comp-shells.json": z.array(CompShell),
   "pool.json": z.array(PoolEntry),
   "meta.json": Meta,

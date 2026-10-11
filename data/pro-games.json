@@ -1,0 +1,21 @@
+{
+  "tracked": [
+    {
+      "event": "demacia-cup-2026",
+      "label": "Demacia Cup",
+      "names": ["Demacia Cup Global Invitational 2026"]
+    },
+    {
+      "event": "worlds-2026",
+      "label": "Worlds 2026",
+      "names": ["World Championship 2026", "Worlds 2026", "Worlds Main Event 2026"]
+    },
+    {
+      "event": "worlds-2026-play-in",
+      "label": "Worlds 2026 Play-In",
+      "names": ["Worlds Play-In 2026", "World Championship Play-In 2026", "Worlds 2026 Play-In"]
+    }
+  ],
+  "tournaments": [],
+  "games": []
+}
