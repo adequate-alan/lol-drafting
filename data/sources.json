@@ -55,9 +55,15 @@
     "opponent": "HLE",
     "seriesGame": "Finals G3",
     "patch": "16.16",
-    "lastChecked": null,
-    "refreshStatus": "not-refreshed",
-    "origin": "workbook"
+    "lastChecked": "2026-10-11",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh",
+    "sides": {
+      "blue": "HLE",
+      "red": "Gen.G",
+      "winner": "red"
+    },
+    "date": "2026-09-13"
   },
   {
     "id": "golgg-game-82965",
