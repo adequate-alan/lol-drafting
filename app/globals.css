@@ -954,6 +954,11 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
   .draft-slot.locked .role-tag { display: none; }
   .draft-slot.locked .slot-name, .draft-slot.enemy.locked .slot-name { max-width: 60px; font-size: var(--fs-2xs); text-align: center; }
   .draft-slot.locked .champ.xxl, .draft-slot.locked .champ.lg { --size: 34px; }
+  /* Open slots other than the one being picked shrink to their role initial; tapping one widens it again */
+  .draft-slot.open:not(.active):not(.editing):not(:focus-within) { flex: 0 0 52px; padding: var(--s2) 2px; justify-content: center; }
+  .draft-slot.open:not(.active):not(.editing):not(:focus-within) .slot-body { justify-content: center; }
+  .draft-slot.open:not(.active):not(.editing):not(:focus-within) .slot-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .draft-slot.open .champ.xxl.empty, .draft-slot.open .champ.lg.empty { --size: 34px; }
   .picker { position: static; }
   .draft-slot .picker-list, .draft-slot:nth-child(n+4) .picker-list { left: 0; right: 0; width: auto; }
   .mini-slot { width: 28px; height: 28px; }

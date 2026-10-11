@@ -588,7 +588,7 @@ function Indicators({ prof, needs, picks, siege, disengage }: { prof: ReturnType
     { label: "Frontline", value: picks ? String(m.frontline.best) : "—", bad: problem("frontline"), title: `Best ${m.frontline.best} · team ${m.frontline.total}` },
     { label: "Peel", value: picks ? String(m.peel.total) : "—", bad: problem("peel"), title: `Team total · best ${m.peel.best}` },
     { label: "Disengage", value: disengage.value, title: disengage.title },
-    { label: "Damage", value: share === null ? "—" : `AD ${Math.round(share * 100)} / AP ${Math.round((1 - share) * 100)}`, bad: problem("magic", "physical") },
+    { label: "AD / AP", value: share === null ? "—" : `${Math.round(share * 100)} / ${Math.round((1 - share) * 100)}`, bad: problem("magic", "physical"), title: "Damage split, physical / magic" },
     { label: "Sustained", value: picks ? String(m.sustainedDps.best) : "—", bad: problem("dps") },
     { label: "Scaling", value: picks ? scale(m.scaling.best) : "—" },
     { label: "Burst", value: picks ? String(m.burst.best) : "—" },
