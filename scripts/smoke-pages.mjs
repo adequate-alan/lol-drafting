@@ -217,7 +217,8 @@ await page.locator(".theme-toggle").click();
   check("pool: no verified stats shows —", r.length === 1 && r[0][3] === "—" && r[0][6] === "—", r[0]?.join(" | "));
   await open("/pool/?q=ahri");
   r = await rows();
-  check("pool: a champion-wide total no source places in a role is marked all roles (Ahri)", r.length === 1 && /all roles/.test(r[0][3]), r[0]?.join(" | "));
+  // Demacia role picks are verified on Gol.gg since the daily refresh, so Ahri's total sits under MID, not "all roles".
+  check("pool: a total placed in a role by its source is not marked all roles (Ahri MID)", r.length === 1 && r[0][1] === "MID" && /^\d/.test(r[0][3]) && !/all roles/.test(r[0][3]), r[0]?.join(" | "));
   await open("/pool/?q=galio");
   r = await rows();
   check("pool: role-specific rows stay separate (Galio top / mid)", r.length === 2 && new Set(r.map((x) => x[1])).size === 2, r.map((x) => x[1]).join(", "));
@@ -235,16 +236,21 @@ await page.locator(".theme-toggle").click();
   check("meta: role tabs switch the table", botRows > 0, `${botRows} BOT rows`);
   const duoCount = () => page.locator("text=Bot lane pairings").locator("xpath=following::table[1]").locator("tbody tr").count();
   const duos = await duoCount();
-  check("meta: defaults to the current tournament (Demacia duos only)", duos === 4, `${duos} duos`);
+  await open("/meta/?event=all");
+  const allDuos = await duoCount();
+  check("meta: defaults to the current tournament (fewer duos than All tournaments)", duos > 0 && allDuos > duos, `${duos} duos, ${allDuos} across all`);
+  await open("/meta/");
   const heads = await page.$$eval(".hub-table.tall thead th", (ths) => ths.map((t) => t.textContent.trim()));
   check("meta: Games is renamed Recorded, with a Role share column", heads.includes("Recorded") && heads.includes("Role share") && !heads.includes("Games"), heads.join(", "));
   const roleRow = (name) => page.$$eval(".hub-table.tall tbody tr.click-row", (rs, n) => rs.map((r) => [...r.querySelectorAll("td")].map((td) => td.textContent.trim())).find((c) => c[0].endsWith(n)), name);
   await open("/meta/?role=SUPPORT");
   const karma = await roleRow("Karma");
-  check("meta: Gol.gg totals and recorded count stay apart (Demacia Karma 7 / 5 / 31% / 43%, 2 recorded)", karma?.slice(1, 6).join("|") === "7|5|31%|43%|2", karma?.join(" | "));
+  // Demacia is ongoing and refreshed daily, so check shape and relationships here; LCK Renata below pins exact numbers.
+  const [kp, kb, kpres, kwr, krec] = (karma ?? []).slice(1, 6);
+  check("meta: Gol.gg totals and recorded count stay apart (Demacia Karma: picks, bans, presence, win rate, recorded ≤ picks)", /^\d+$/.test(kp) && /^\d+$/.test(kb) && /^\d+%$/.test(kpres) && /^\d+%$/.test(kwr) && /^\d+$/.test(krec) && +krec <= +kp, karma?.join(" | "));
   await open("/meta/?role=ALL");
   const wukong = await roleRow("Wukong");
-  check("meta: ALL lists champions no source places in a role (Demacia Wukong 8 picks, role —)", wukong?.[1] === "—" && wukong?.[2] === "8", wukong?.join(" | "));
+  check("meta: ALL places a champion by its verified role picks (Demacia Wukong, JUNGLE)", wukong?.[1] === "JUNGLE" && +wukong?.[2] >= 8, wukong?.join(" | "));
   await open("/meta/?role=SUPPORT&event=lck-2026-playoffs");
   const renata = await roleRow("Renata Glasc");
   check("meta: tournament stats and recorded count stay apart (LCK Renata 8 / 1 / 22% / 63%, 2 recorded)", renata?.slice(1, 6).join("|") === "8|1|22%|63%|2", renata?.join(" | "));
@@ -502,7 +508,8 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
 // Pro Drafts: both sides of one game form a two-row block; one-sided views show no pair
 {
   await open("/pro-drafts/");
-  const rows = await page.$$eval(".table-wrap tbody tr", (rs) => rs.map((r) => ({ cls: r.className, game: r.cells[0]?.textContent.trim(), team: r.cells[1]?.textContent.trim(), vs: r.cells[2]?.textContent.trim() })));
+  // The team cell may end with a W / L result marker; compare team names without it.
+  const rows = await page.$$eval(".table-wrap tbody tr", (rs) => rs.map((r) => ({ cls: r.className, game: r.cells[0]?.textContent.trim(), team: r.cells[1]?.textContent.trim().replace(/\s+[WL]$/, ""), vs: r.cells[2]?.textContent.trim() })));
   const pairs = rows.flatMap((r, i) => (/pair-a/.test(r.cls) ? [[r, rows[i + 1]]] : []));
   const ok = pairs.length > 0 && pairs.every(([a, b]) => b && /pair-b/.test(b.cls) && a.game === b.game && a.team === b.vs && a.vs === b.team);
   const strip = await page.$eval("tr.pair-b td:first-child", (td) => getComputedStyle(td).boxShadow).catch(() => "");
