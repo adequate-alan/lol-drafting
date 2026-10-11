@@ -508,17 +508,27 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await page.keyboard.press("Escape");
   await page.setViewportSize({ width: 1440, height: 900 });
 }
-// Pro Drafts: both sides of one game form a two-row block; one-sided views show no pair
+// Pro Drafts: both sides of one game form a two-row block; one-sided views show no pair. Each row's strip is the side
+// recorded for that game (blue / red, neutral when unrecorded), and it stays when filtering.
 {
   await open("/pro-drafts/");
   // The team cell may end with a W / L result marker; compare team names without it.
-  const rows = await page.$$eval(".table-wrap tbody tr", (rs) => rs.map((r) => ({ cls: r.className, game: r.cells[0]?.textContent.trim(), team: r.cells[1]?.textContent.trim().replace(/\s+[WL]$/, ""), vs: r.cells[2]?.textContent.trim() })));
+  const rows = await page.$$eval(".table-wrap tbody tr", (rs) => rs.map((r) => ({ cls: r.className, side: r.dataset.side, title: r.title, game: r.cells[0]?.textContent.trim(), team: r.cells[1]?.textContent.trim().replace(/\s+[WL]$/, ""), vs: r.cells[2]?.textContent.trim() })));
   const pairs = rows.flatMap((r, i) => (/pair-a/.test(r.cls) ? [[r, rows[i + 1]]] : []));
   const ok = pairs.length > 0 && pairs.every(([a, b]) => b && /pair-b/.test(b.cls) && a.game === b.game && a.team === b.vs && a.vs === b.team);
-  const strip = await page.$eval("tr.pair-b td:first-child", (td) => getComputedStyle(td).boxShadow).catch(() => "");
-  check("pro drafts: both sides of a game are paired, with a side strip", ok && /inset/.test(strip), `${pairs.length} pairs of ${rows.length} rows`);
-  await open("/pro-drafts/?team=Gen.G");
-  check("pro drafts: a one-sided view shows no pairs", (await page.locator("tr.pair-a, tr.pair-b").count()) === 0, "");
+  check("pro drafts: both sides of a game are paired", ok, `${pairs.length} pairs of ${rows.length} rows`);
+  const sided = pairs.filter(([a]) => a.side !== "none");
+  const oneEach = sided.length > 0 && sided.every(([a, b]) => a.side === "blue" && b.side === "red");
+  check("pro drafts: a recorded game shows one blue row then one red row", oneEach, `${sided.length} sided pairs`);
+  const strip = async (side) => page.$eval(`tr.side-${side} td:first-child`, (td) => getComputedStyle(td).boxShadow).catch(() => "");
+  const [blue, red] = [await strip("blue"), await strip("red")];
+  check("pro drafts: blue and red side strips are 3px and differ", /inset 3px/.test(blue) && /inset 3px/.test(red) && blue !== red, `${blue} | ${red}`);
+  check("pro drafts: side named on hover", rows.every((r) => ({ blue: "Blue side", red: "Red side", none: "Side not recorded" })[r.side] === r.title), "");
+  // A team seen on both sides, so the filtered view must show both colours.
+  const team = [...new Set(rows.map((r) => r.team))].find((t) => ["blue", "red"].every((sd) => rows.some((r) => r.team === t && r.side === sd))) ?? "";
+  await open(`/pro-drafts/?team=${encodeURIComponent(team)}`);
+  const one = await page.$$eval(".table-wrap tbody tr[data-side]", (rs) => rs.map((r) => r.dataset.side));
+  check("pro drafts: a one-sided view shows no pairs and keeps each row's side", (await page.locator("tr.pair-a, tr.pair-b").count()) === 0 && one.includes("blue") && one.includes("red"), `${team}: ${one.join(",")}`);
 }
 await open("/geng/");
 check("GenRang on the Gen.G page", (await page.locator(".brand-band img.genrang").count()) === 1 && await mascotOk(), "");
