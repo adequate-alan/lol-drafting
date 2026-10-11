@@ -7,7 +7,7 @@
 // For each cited game it reads the existing Gol.gg URLs (page-game: sides, result, date; page-fullstats: roles) with
 // plain requests a few seconds apart. A side is set only when one side of the page shows exactly the five champions of
 // a stored draft, role for role (or, when Gol.gg has no role table for the game, the same five champions in that side's
-// pick row); nothing is inferred from team names, row order or the winner. Games that cannot be
+// pick row, or, when the page lists no champions at all, its side header naming the stored team exactly); nothing is inferred from team names, row order or the winner. Games that cannot be
 // matched are reported and left without a side. Writes data/sources.json only (the game-level record each team row
 // inherits from); drafts, champions, roles, teams and evidence ids are untouched. A refused request stops the run.
 import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
@@ -62,12 +62,28 @@ for (const sid of gameIds) {
     picked[color] = new Set((page[color]?.picks ?? []).map(resolve).filter(Boolean));
   }
   const byRole = !!stats;
-  if (!byRole && !["blue", "red"].every((c) => picked[c].size === 5)) { fail("no role table and no five picks per side on the game page"); continue; }
+  const byPicks = !byRole && ["blue", "red"].every((c) => picked[c].size === 5);
+  // Last resort, for a game page that lists no champions: the page's own side headers, used only when one header names
+  // a stored draft's team exactly and the other header names someone else. The page states the side; nothing is assumed.
+  const byHeader = !byRole && !byPicks && (() => {
+    const named = mine.filter((d) => [page.blue?.team, page.red?.team].filter((t) => t === d.team).length === 1);
+    return named.length > 0 && page.blue?.team !== page.red?.team;
+  })();
+  // Header mode: a draft whose team the page names takes that side; its opponent's draft takes the other one.
+  const named = (d) => ["blue", "red"].find((c) => page[c]?.team === d.team);
+  const headerSide = (d) => {
+    if (named(d)) return named(d);
+    const anchor = mine.find((x) => named(x) && x.opponent === d.team);
+    return anchor && (named(anchor) === "blue" ? "red" : "blue");
+  };
+  if (!byRole && !byPicks && !byHeader) {
+    fail(`no role table, no picks, and side headers "${page.blue?.team}" / "${page.red?.team}" do not name the stored team`); continue;
+  }
   const results = { blue: page.blue?.result, red: page.red?.result };
   if (!((results.blue === "WIN") !== (results.red === "WIN") && results.blue && results.red)) { fail("page shows no single winner"); continue; }
-  const sideFor = (d) => ["blue", "red"].filter((c) => byRole
-    ? ROLES.every((r) => picks[c][r] === d.picks[r])
-    : ROLES.every((r) => picked[c].has(d.picks[r])));
+  const sideFor = (d) => ["blue", "red"].filter((c) => byRole ? ROLES.every((r) => picks[c][r] === d.picks[r])
+    : byPicks ? ROLES.every((r) => picked[c].has(d.picks[r]))
+    : headerSide(d) === c);
   const matched = mine.map((d) => ({ d, sides: sideFor(d) }));
   const bad = matched.find((m) => m.sides.length !== 1);
   if (bad) { fail(`${bad.d.team}'s stored picks match ${bad.sides.length} sides of the page`); continue; }
@@ -83,7 +99,7 @@ for (const sid of gameIds) {
   const date = /^\d{4}-\d{2}-\d{2}$/.test(page.date ?? "") ? page.date : undefined;
   Object.assign(src, { sides: { blue: sides.blue, red: sides.red, winner }, ...(date ? { date } : {}) });
   if (!src.pendingClaim) Object.assign(src, { lastChecked: today, refreshStatus: "verified", origin: "golgg-refresh" });
-  report.push(`${sid}${byRole ? "" : " (matched by the five picks; no role table)"}: blue ${sides.blue} (page: ${page.blue?.team}), red ${sides.red} (page: ${page.red?.team}), ${winner} won, ${date ?? "no date"}`);
+  report.push(`${sid}${byRole ? "" : byPicks ? " (matched by the five picks; no role table)" : " (from the page's side headers; no champions listed)"}: blue ${sides.blue} (page: ${page.blue?.team}), red ${sides.red} (page: ${page.red?.team}), ${winner} won, ${date ?? "no date"}`);
 }
 
 const lines = [`LCK side backfill, ${gameIds.length} games cited by stored drafts.`, ...report,
