@@ -195,6 +195,11 @@ inconsistent, critique finds what is ineffective, polish improves what already w
 - **Don't make pages busier with each feature** (alan, 2026-10-11). New data should make existing elements more useful
   through hover (ChampionHoverCard), expansion (`components/Disclosure.tsx`, row detail) or the drawer, not a new
   permanent panel. Explanatory footnotes, method notes and research sections go behind a Disclosure.
+  Folding must not hide evidence a drafting decision rests on: a recommendation's reasons, its pro evidence and
+  counters, warnings and Comp Check stay visible; a collapsed section always shows its count in the summary.
+- **The 2026-10-11 design is the baseline** (alan, PR #59). No broad redesigns and no changes for visual novelty.
+  Before a UI change, say how it helps a drafter (usability, density, consistency, clarity); if it doesn't, skip it.
+  Use Impeccable audit / critique / polish for targeted refinements (see above). Data, calculations and features stay.
 - Design system (2026-10-11 cleanup): `app/globals.css` is one consolidated file (tokens → base → shell → type →
   primitives → interaction → pages → motion). Extend a primitive before adding page CSS; no inline `style` for spacing.
   Uppercase only for page titles (h1) and role codes; every other label shares the sentence-case `.label` style. Source
