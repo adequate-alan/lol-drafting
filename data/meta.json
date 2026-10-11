@@ -1312,9 +1312,6 @@
           "wins": 2,
           "winRate": 1,
           "lowSample": true,
-          "rolePicks": {
-            "JUNGLE": 2
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1327,9 +1324,6 @@
           "wins": 4,
           "winRate": 0.8,
           "lowSample": false,
-          "rolePicks": {
-            "MID": 5
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1342,9 +1336,6 @@
           "wins": 3,
           "winRate": 0.6,
           "lowSample": false,
-          "rolePicks": {
-            "JUNGLE": 5
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1357,9 +1348,6 @@
           "wins": 5,
           "winRate": 0.5556,
           "lowSample": false,
-          "rolePicks": {
-            "JUNGLE": 9
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1372,9 +1360,6 @@
           "wins": 5,
           "winRate": 0.4167,
           "lowSample": false,
-          "rolePicks": {
-            "TOP": 12
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1387,9 +1372,6 @@
           "wins": 6,
           "winRate": 0.75,
           "lowSample": false,
-          "rolePicks": {
-            "MID": 8
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1402,9 +1384,6 @@
           "wins": 4,
           "winRate": 0.6667,
           "lowSample": false,
-          "rolePicks": {
-            "BOT": 6
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1417,9 +1396,6 @@
           "wins": 4,
           "winRate": 0.4444,
           "lowSample": false,
-          "rolePicks": {
-            "JUNGLE": 9
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1432,9 +1408,6 @@
           "wins": 8,
           "winRate": 0.5714,
           "lowSample": false,
-          "rolePicks": {
-            "BOT": 14
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1447,9 +1420,6 @@
           "wins": 4,
           "winRate": 0.4444,
           "lowSample": false,
-          "rolePicks": {
-            "JUNGLE": 9
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1462,9 +1432,6 @@
           "wins": 7,
           "winRate": 0.4375,
           "lowSample": false,
-          "rolePicks": {
-            "TOP": 16
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1477,9 +1444,6 @@
           "wins": 7,
           "winRate": 0.5,
           "lowSample": false,
-          "rolePicks": {
-            "SUPPORT": 14
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1492,9 +1456,6 @@
           "wins": 5,
           "winRate": 0.5556,
           "lowSample": false,
-          "rolePicks": {
-            "TOP": 9
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1507,9 +1468,6 @@
           "wins": 2,
           "winRate": 0.2857,
           "lowSample": false,
-          "rolePicks": {
-            "SUPPORT": 7
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1522,9 +1480,6 @@
           "wins": 8,
           "winRate": 0.4706,
           "lowSample": false,
-          "rolePicks": {
-            "MID": 17
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1537,9 +1492,6 @@
           "wins": 3,
           "winRate": 0.4286,
           "lowSample": false,
-          "rolePicks": {
-            "SUPPORT": 7
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1552,9 +1504,6 @@
           "wins": 1,
           "winRate": 0.125,
           "lowSample": false,
-          "rolePicks": {
-            "JUNGLE": 8
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1567,9 +1516,6 @@
           "wins": 5,
           "winRate": 0.4167,
           "lowSample": false,
-          "rolePicks": {
-            "MID": 12
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1582,9 +1528,6 @@
           "wins": 7,
           "winRate": 0.5,
           "lowSample": false,
-          "rolePicks": {
-            "BOT": 14
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1597,9 +1540,6 @@
           "wins": 8,
           "winRate": 0.5714,
           "lowSample": false,
-          "rolePicks": {
-            "SUPPORT": 14
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1612,9 +1552,6 @@
           "wins": 5,
           "winRate": 0.625,
           "lowSample": false,
-          "rolePicks": {
-            "JUNGLE": 8
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1627,9 +1564,6 @@
           "wins": 2,
           "winRate": 0.6667,
           "lowSample": true,
-          "rolePicks": {
-            "BOT": 3
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1642,10 +1576,6 @@
           "wins": 3,
           "winRate": 0.6,
           "lowSample": false,
-          "rolePicks": {
-            "TOP": 4,
-            "MID": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1658,9 +1588,6 @@
           "wins": 4,
           "winRate": 0.6667,
           "lowSample": false,
-          "rolePicks": {
-            "TOP": 6
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1673,9 +1600,6 @@
           "wins": 5,
           "winRate": 0.625,
           "lowSample": false,
-          "rolePicks": {
-            "BOT": 8
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1688,9 +1612,6 @@
           "wins": 5,
           "winRate": 0.7143,
           "lowSample": false,
-          "rolePicks": {
-            "BOT": 7
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1703,9 +1624,6 @@
           "wins": 3,
           "winRate": 0.4286,
           "lowSample": false,
-          "rolePicks": {
-            "SUPPORT": 7
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1718,9 +1636,6 @@
           "wins": 3,
           "winRate": 0.4286,
           "lowSample": false,
-          "rolePicks": {
-            "JUNGLE": 7
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1733,9 +1648,6 @@
           "wins": 1,
           "winRate": 0.1667,
           "lowSample": false,
-          "rolePicks": {
-            "MID": 6
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1748,9 +1660,6 @@
           "wins": 2,
           "winRate": 0.3333,
           "lowSample": false,
-          "rolePicks": {
-            "TOP": 6
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1763,9 +1672,6 @@
           "wins": 2,
           "winRate": 0.2857,
           "lowSample": false,
-          "rolePicks": {
-            "MID": 7
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1779,11 +1685,8 @@
           "wins": 2,
           "winRate": 0.4,
           "lowSample": false,
-          "rolePicks": {
-            "MID": 5
-          },
           "priorityRead": "Still picked on 16.18",
-          "note": "Gol.gg champion list, 2026-10-10: 5 picks / 4 bans / 2 wins so far (alan's earlier report was 3 picks / 1 ban). Roles of the 5 picks not broken down.",
+          "note": "Gol.gg champion list, 2026-10-10: 5 picks / 4 bans / 2 wins (alan's earlier report was 3 picks / 1 ban).",
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1796,9 +1699,6 @@
           "wins": 3,
           "winRate": 0.5,
           "lowSample": false,
-          "rolePicks": {
-            "SUPPORT": 6
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1811,9 +1711,6 @@
           "wins": 5,
           "winRate": 0.7143,
           "lowSample": false,
-          "rolePicks": {
-            "SUPPORT": 7
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1826,9 +1723,6 @@
           "wins": 5,
           "winRate": 1,
           "lowSample": false,
-          "rolePicks": {
-            "JUNGLE": 5
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1841,9 +1735,6 @@
           "wins": 2,
           "winRate": 0.5,
           "lowSample": true,
-          "rolePicks": {
-            "JUNGLE": 4
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1856,9 +1747,6 @@
           "wins": 1,
           "winRate": 0.3333,
           "lowSample": true,
-          "rolePicks": {
-            "MID": 3
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1871,9 +1759,6 @@
           "wins": 2,
           "winRate": 1,
           "lowSample": true,
-          "rolePicks": {
-            "JUNGLE": 2
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1886,9 +1771,6 @@
           "wins": 2,
           "winRate": 0.3333,
           "lowSample": false,
-          "rolePicks": {
-            "BOT": 6
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1901,9 +1783,6 @@
           "wins": 1,
           "winRate": 0.5,
           "lowSample": true,
-          "rolePicks": {
-            "TOP": 2
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1916,9 +1795,6 @@
           "wins": 1,
           "winRate": 0.5,
           "lowSample": true,
-          "rolePicks": {
-            "MID": 2
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1931,9 +1807,6 @@
           "wins": 2,
           "winRate": 0.5,
           "lowSample": true,
-          "rolePicks": {
-            "BOT": 4
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1946,9 +1819,6 @@
           "wins": 2,
           "winRate": 1,
           "lowSample": true,
-          "rolePicks": {
-            "SUPPORT": 2
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1961,9 +1831,6 @@
           "wins": 1,
           "winRate": 0.5,
           "lowSample": true,
-          "rolePicks": {
-            "MID": 2
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1976,9 +1843,6 @@
           "wins": 3,
           "winRate": 0.75,
           "lowSample": true,
-          "rolePicks": {
-            "TOP": 4
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -1991,9 +1855,6 @@
           "wins": 2,
           "winRate": 0.4,
           "lowSample": false,
-          "rolePicks": {
-            "SUPPORT": 5
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2006,9 +1867,6 @@
           "wins": 0,
           "winRate": 0,
           "lowSample": true,
-          "rolePicks": {
-            "JUNGLE": 3
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2021,9 +1879,6 @@
           "wins": 4,
           "winRate": 1,
           "lowSample": true,
-          "rolePicks": {
-            "MID": 4
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2036,9 +1891,6 @@
           "wins": 2,
           "winRate": 0.6667,
           "lowSample": true,
-          "rolePicks": {
-            "MID": 3
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2051,9 +1903,6 @@
           "wins": 1,
           "winRate": 1,
           "lowSample": true,
-          "rolePicks": {
-            "SUPPORT": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2066,9 +1915,6 @@
           "wins": 2,
           "winRate": 0.5,
           "lowSample": true,
-          "rolePicks": {
-            "TOP": 4
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2081,9 +1927,6 @@
           "wins": 2,
           "winRate": 0.6667,
           "lowSample": true,
-          "rolePicks": {
-            "TOP": 3
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2096,9 +1939,6 @@
           "wins": 0,
           "winRate": 0,
           "lowSample": true,
-          "rolePicks": {
-            "JUNGLE": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2111,10 +1951,6 @@
           "wins": 1,
           "winRate": 0.3333,
           "lowSample": true,
-          "rolePicks": {
-            "TOP": 1,
-            "BOT": 2
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2127,9 +1963,6 @@
           "wins": 1,
           "winRate": 0.25,
           "lowSample": true,
-          "rolePicks": {
-            "TOP": 4
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2142,9 +1975,6 @@
           "wins": 1,
           "winRate": 0.5,
           "lowSample": true,
-          "rolePicks": {
-            "TOP": 2
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2157,9 +1987,6 @@
           "wins": 1,
           "winRate": 0.3333,
           "lowSample": true,
-          "rolePicks": {
-            "BOT": 3
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2172,9 +1999,6 @@
           "wins": 2,
           "winRate": 0.6667,
           "lowSample": true,
-          "rolePicks": {
-            "JUNGLE": 3
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2187,9 +2011,6 @@
           "wins": 1,
           "winRate": 0.3333,
           "lowSample": true,
-          "rolePicks": {
-            "BOT": 3
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2202,9 +2023,6 @@
           "wins": 1,
           "winRate": 0.5,
           "lowSample": true,
-          "rolePicks": {
-            "BOT": 2
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2217,9 +2035,6 @@
           "wins": 1,
           "winRate": 0.5,
           "lowSample": true,
-          "rolePicks": {
-            "JUNGLE": 2
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2232,9 +2047,6 @@
           "wins": 0,
           "winRate": 0,
           "lowSample": true,
-          "rolePicks": {
-            "BOT": 2
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2247,9 +2059,6 @@
           "wins": 0,
           "winRate": 0,
           "lowSample": true,
-          "rolePicks": {
-            "BOT": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2262,9 +2071,6 @@
           "wins": 1,
           "winRate": 1,
           "lowSample": true,
-          "rolePicks": {
-            "SUPPORT": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2277,9 +2083,6 @@
           "wins": 1,
           "winRate": 0.5,
           "lowSample": true,
-          "rolePicks": {
-            "BOT": 2
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2292,9 +2095,6 @@
           "wins": 0,
           "winRate": 0,
           "lowSample": true,
-          "rolePicks": {
-            "SUPPORT": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2307,9 +2107,6 @@
           "wins": 0,
           "winRate": 0,
           "lowSample": true,
-          "rolePicks": {
-            "SUPPORT": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2322,10 +2119,6 @@
           "wins": 0,
           "winRate": 0,
           "lowSample": true,
-          "rolePicks": {
-            "TOP": 1,
-            "JUNGLE": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2338,9 +2131,6 @@
           "wins": 1,
           "winRate": 1,
           "lowSample": true,
-          "rolePicks": {
-            "SUPPORT": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2353,9 +2143,6 @@
           "wins": 0,
           "winRate": 0,
           "lowSample": true,
-          "rolePicks": {
-            "MID": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2368,9 +2155,6 @@
           "wins": 1,
           "winRate": 1,
           "lowSample": true,
-          "rolePicks": {
-            "SUPPORT": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2383,9 +2167,6 @@
           "wins": 0,
           "winRate": 0,
           "lowSample": true,
-          "rolePicks": {
-            "SUPPORT": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2398,9 +2179,6 @@
           "wins": 1,
           "winRate": 1,
           "lowSample": true,
-          "rolePicks": {
-            "TOP": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2413,9 +2191,6 @@
           "wins": 0,
           "winRate": 0,
           "lowSample": true,
-          "rolePicks": {
-            "MID": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2439,9 +2214,6 @@
           "wins": 0,
           "winRate": 0,
           "lowSample": true,
-          "rolePicks": {
-            "SUPPORT": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2454,9 +2226,6 @@
           "wins": 0,
           "winRate": 0,
           "lowSample": true,
-          "rolePicks": {
-            "SUPPORT": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2469,9 +2238,6 @@
           "wins": 0,
           "winRate": 0,
           "lowSample": true,
-          "rolePicks": {
-            "BOT": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2484,9 +2250,6 @@
           "wins": 0,
           "winRate": 0,
           "lowSample": true,
-          "rolePicks": {
-            "TOP": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2499,9 +2262,6 @@
           "wins": 1,
           "winRate": 1,
           "lowSample": true,
-          "rolePicks": {
-            "MID": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2514,9 +2274,6 @@
           "wins": 1,
           "winRate": 1,
           "lowSample": true,
-          "rolePicks": {
-            "TOP": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"
@@ -2529,9 +2286,6 @@
           "wins": 1,
           "winRate": 1,
           "lowSample": true,
-          "rolePicks": {
-            "TOP": 1
-          },
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-picksandbans-demacia-cup-2026"

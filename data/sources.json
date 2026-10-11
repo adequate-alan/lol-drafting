@@ -466,9 +466,14 @@
     "seriesGame": "JDG vs BRO",
     "patch": "16.18",
     "date": "2026-10-03",
-    "lastChecked": "2026-10-11",
-    "refreshStatus": "verified",
-    "origin": "golgg-refresh"
+    "lastChecked": null,
+    "refreshStatus": "not-refreshed",
+    "origin": "externally-provided",
+    "pendingClaim": {
+      "claim": "Ezreal and Karma were played together as bot/support.",
+      "providedOn": "2026-10-10",
+      "providedBy": "alan"
+    }
   },
   {
     "id": "golgg-game-83460",
@@ -480,9 +485,14 @@
     "seriesGame": "Team WE vs BRO",
     "patch": "16.18",
     "date": "2026-10-04",
-    "lastChecked": "2026-10-11",
-    "refreshStatus": "verified",
-    "origin": "golgg-refresh"
+    "lastChecked": null,
+    "refreshStatus": "not-refreshed",
+    "origin": "externally-provided",
+    "pendingClaim": {
+      "claim": "Team WE played Yunara bot + Lulu support.",
+      "providedOn": "2026-10-10",
+      "providedBy": "alan"
+    }
   },
   {
     "id": "golgg-game-83459",
@@ -494,9 +504,14 @@
     "seriesGame": "BRO vs Team WE",
     "patch": "16.18",
     "date": "2026-10-04",
-    "lastChecked": "2026-10-11",
-    "refreshStatus": "verified",
-    "origin": "golgg-refresh"
+    "lastChecked": null,
+    "refreshStatus": "not-refreshed",
+    "origin": "externally-provided",
+    "pendingClaim": {
+      "claim": "BRO played Sivir bot + Karma support.",
+      "providedOn": "2026-10-10",
+      "providedBy": "alan"
+    }
   },
   {
     "id": "golgg-game-83462",
@@ -508,9 +523,14 @@
     "seriesGame": "GAM vs Vitality",
     "patch": "16.18",
     "date": "2026-10-05",
-    "lastChecked": "2026-10-11",
-    "refreshStatus": "verified",
-    "origin": "golgg-refresh"
+    "lastChecked": null,
+    "refreshStatus": "not-refreshed",
+    "origin": "externally-provided",
+    "pendingClaim": {
+      "claim": "GAM played Jhin bot + Bard support.",
+      "providedOn": "2026-10-10",
+      "providedBy": "alan"
+    }
   },
   {
     "id": "golgg-champion-13",
@@ -552,7 +572,7 @@
     "url": "https://gol.gg/tournament/tournament-matchlist/Demacia%20Cup%20Global%20Invitational%202026/",
     "type": "golgg-tournament",
     "tournament": "Demacia Cup Global Invitational 2026",
-    "lastChecked": "2026-10-11",
+    "lastChecked": "2026-10-10",
     "refreshStatus": "verified",
     "origin": "golgg-refresh",
     "patch": "16.18"
@@ -562,7 +582,7 @@
     "url": "https://gol.gg/champion/list/season-ALL/split-ALL/tournament-Demacia%20Cup%20Global%20Invitational%202026/",
     "type": "golgg-tournament",
     "tournament": "Demacia Cup Global Invitational 2026",
-    "lastChecked": "2026-10-11",
+    "lastChecked": "2026-10-10",
     "refreshStatus": "verified",
     "origin": "golgg-refresh",
     "patch": "16.18"
