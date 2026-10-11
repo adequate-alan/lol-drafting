@@ -522,7 +522,9 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   check("pro drafts: a recorded game shows one blue row then one red row", oneEach, `${sided.length} sided pairs`);
   const strip = async (side) => page.$eval(`tr.side-${side} td:first-child`, (td) => getComputedStyle(td).boxShadow).catch(() => "");
   const [blue, red] = [await strip("blue"), await strip("red")];
-  check("pro drafts: blue and red side strips are 3px and differ", /inset 3px/.test(blue) && /inset 3px/.test(red) && blue !== red, `${blue} | ${red}`);
+  // Computed style reads "rgb(…) 3px 0px 0px 0px inset".
+  const threePx = /(^|\s)3px 0px 0px( 0px)? inset|inset 3px/;
+  check("pro drafts: blue and red side strips are 3px and differ", threePx.test(blue) && threePx.test(red) && blue !== red, `${blue} | ${red}`);
   check("pro drafts: side named on hover", rows.every((r) => ({ blue: "Blue side", red: "Red side", none: "Side not recorded" })[r.side] === r.title), "");
   // A team seen on both sides, so the filtered view must show both colours.
   const team = [...new Set(rows.map((r) => r.team))].find((t) => ["blue", "red"].every((sd) => rows.some((r) => r.team === t && r.side === sd))) ?? "";
