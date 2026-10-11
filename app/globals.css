@@ -264,8 +264,8 @@ b, strong { font-weight: var(--w-strong); }
 /* ---------- 4. Type ---------- */
 /* Space Grotesk carries the interface; Inter the reading; JetBrains Mono the numbers. One list, one place. */
 h1, h2, h3, .brand-name, .nav-item, .nav-label, .tabs a, .seg a, .seg button, .btn, .role-tab, .team-label, .label,
-.section-header, .panel-head, .layer-label, .scout-title, .scout-group-title, .cc-label, th, .role-tag, .status-tag, .src,
-.theme-toggle, .slot-name, .fit-head .name, .rec-row .name, .rail-name, .cell-champ, .chip, .picker-list .name, .mate,
+.section-header, .panel-head, .layer-label, .scout-title, .scout-group-title, .cc-label, th, .role-tag, .sig, .src,
+.theme-toggle, .slot-name, .fit-head .name, .rail-name, .cell-champ, .chip, .picker-list .name, .mate,
 .hc-head b, .drawer-title h2, .pick-head h2, .side-mascot span, .mini-active, .slot-change, .lu-name,
 .select-trigger, .select-menu, .select-field > span, .filter-label, .disclosure > summary, .prop-tag, .sev, .cc-conf, .team-label {
   font-family: var(--font-display);
@@ -282,7 +282,7 @@ h3 { font-size: var(--fs); font-weight: var(--w-strong); letter-spacing: -.005em
 /* Numbers */
 .mono, td.num, .fit-score, .cc-v, .count, .pts { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
 /* Champion names lead over scores, sources and metadata */
-.slot-name, .fit-head .name, .rec-row .name, .rail-name, .picker-list .name, .drawer-title h2, .pick-head h2, .hc-head b, .lu-name { font-weight: var(--w-strong); letter-spacing: -.01em; }
+.slot-name, .fit-head .name, .rail-name, .picker-list .name, .drawer-title h2, .pick-head h2, .hc-head b, .lu-name { font-weight: var(--w-strong); letter-spacing: -.01em; }
 .nav-item, .tabs a, .seg a, .seg button, .btn, .chip, .cell-champ { font-weight: var(--w-control); }
 .nav-item.active, .tabs a.active, .seg a.active, .seg button.active, .btn.primary, .chip.strong, .cell-champ.hit { font-weight: var(--w-strong); }
 
@@ -784,18 +784,28 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .fit-head .name { font-size: var(--fs-lg); white-space: nowrap; }
 .fit-head:hover .name { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
 .fit-reason { font-size: var(--fs-xs); color: var(--text-muted); line-height: 1.3; }
-.status-tag { font-size: var(--fs-xs); font-weight: var(--w-control); color: var(--text-faint); white-space: nowrap; }
-.status-tag.default { color: var(--clash); font-weight: var(--w-strong); }
-.status-tag.alt { color: var(--clash); }
-.status-tag.proposed { color: var(--clash); opacity: .75; }
-.status-tag.fix { color: var(--logic); }
-.status-tag.counter { color: var(--counter); }
-.sig-line { display: inline-flex; gap: var(--s3); min-width: 0; overflow: hidden; font-size: var(--fs-xs); color: var(--text-muted); white-space: nowrap; }
-.sig + .sig::before, .status-tag + .sig-line .sig:first-child::before { content: "·"; margin-right: var(--s3); color: var(--text-faint); }
-.sig.counter { color: var(--counter); }
-.sig.matchup { color: var(--enemy); }
+/* Signal labels on a row: one per independent signal, each in its layer's colour (Synergy gold, Pro gray-teal,
+   Fit neutral logic, Counter oxblood, Risk amber). Labels only; none of them moves a row. */
+.sig-line { display: inline-flex; flex-wrap: wrap; gap: 0 var(--s3); min-width: 0; font-size: var(--fs-xs); font-weight: var(--w-control); color: var(--text-muted); white-space: nowrap; }
+.sig + .sig::before { content: "·"; margin-right: var(--s3); color: var(--text-faint); font-weight: 400; }
+.sig.syn { color: var(--clash); }
+.sig.syn.default { font-weight: var(--w-strong); }
+.sig.syn.proposed { opacity: .75; }
 .sig.pro { color: var(--pro); }
+.sig.fix, .sig.fit { color: var(--logic); }
+.sig.counter { color: var(--counter); }
+.sig.theory { color: var(--text-faint); }
 .sig.risk { color: var(--caution); }
+.fit-reason .drawback { color: var(--caution); }
+.fit-row.ref { opacity: .7; }
+.fit-filters { flex: none; }
+.fit-filters button:disabled { cursor: default; opacity: .5; }
+.fit-filters button:disabled:hover { background: transparent; color: var(--text-muted); }
+.fit-filters .n { font-family: var(--font-mono); font-size: var(--fs-2xs); color: var(--text-faint); }
+.fit-context .order-note { margin-left: auto; cursor: help; }
+.fit-note { margin: 0; padding: var(--s2) var(--s3); }
+.fit-detail .fit-note { padding: 0; }
+.fit-more { margin: var(--s3) var(--s3) 0; }
 .fit-score { font-size: var(--fs-xs); color: var(--text-faint); }
 .fit-score.neg { color: var(--danger); }
 .fit-toggle { display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--text-faint); cursor: pointer; font: inherit; }
@@ -820,32 +830,6 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .fit-pro .k, .fit-pro .t { color: var(--pro); }
 .fit-counter .k { color: var(--counter); }
 
-/* Counters and Pro Pairings: their own groups under the list, never scored. A thin layer rule on the header. */
-.rec-group > header { display: flex; align-items: baseline; gap: var(--s4); padding: 0 0 var(--s3) var(--s4); border-bottom: 1px solid var(--border); }
-.rec-group.pro > header { box-shadow: inset 2px 0 0 var(--pro-line); }
-.rec-group.pro > header h3 { color: var(--pro); }
-.rec-group.counters > header { box-shadow: inset 2px 0 0 var(--counter-line); }
-.rec-group.counters > header h3 { color: var(--counter); }
-.rec-group > header .src-line { margin-left: auto; }
-.rec-group .empty { margin: 0; padding: var(--s3) 0; color: var(--text-muted); font-size: var(--fs-sm); }
-.rec-row {
-  display: grid; grid-template-columns: 24px auto minmax(0, 1fr); align-items: center; gap: var(--s4); width: 100%; min-height: 34px;
-  padding: 3px var(--s3); background: transparent; border: 0; border-bottom: 1px solid var(--border); color: var(--text); font: inherit; text-align: left; cursor: pointer;
-  transition: background var(--t-fast), box-shadow var(--t-fast);
-}
-.rec-row:hover { background: var(--surface-hover); box-shadow: inset 2px 0 0 var(--accent); }
-.rec-row .name { white-space: nowrap; }
-.rec-row .ev-lines { display: flex; flex-direction: column; min-width: 0; font-size: var(--fs-xs); line-height: 1.3; }
-.rec-row .ev-lines .latest { color: var(--pro); }
-.rec-row .ev-lines .older { color: var(--text-muted); }
-.rec-row.counter-row { grid-template-columns: 24px auto auto auto minmax(0, 1fr) auto auto; height: 32px; gap: var(--s3); }
-.counter-row .strength { font-size: var(--fs-xs); color: var(--counter); white-space: nowrap; }
-.counter-row .ev { font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: -.02em; color: var(--text-muted); }
-.counter-row .pro-sample { color: var(--pro); }
-.counter-row .tier.none { color: var(--text-faint); font-weight: 400; }
-.counter-row .fit-rank { font-family: var(--font-mono); font-size: var(--fs-2xs); color: var(--text-faint); white-space: nowrap; }
-.counter-row .fit-rank.best { color: var(--accent-text); }
-.counter-row.ref { opacity: .7; }
 
 /* Research under the workspace: locked-pick records, similar pro drafts, similar comps */
 .draft-research { display: grid; }
@@ -971,13 +955,8 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
   .fit-icon .champ.md { --size: var(--icon-md); }
   .fit-line { flex-wrap: wrap; row-gap: 0; }
   .fit-why li, .fit-pro, .fit-counter { grid-template-columns: 52px minmax(0, 1fr) auto; }
-  .rec-group > header { flex-wrap: wrap; }
-  .rec-group > header .src-line { margin-left: 0; flex-basis: 100%; }
+  .fit-context .order-note { display: none; }
   .draft-research .cols-auto { grid-template-columns: minmax(0, 1fr); }
-}
-@media (max-width: 640px) {
-  .rec-row.counter-row { grid-template-columns: 24px auto auto auto minmax(0, 1fr); }
-  .counter-row .tier, .counter-row .fit-rank { display: none; }
 }
 
 /* ===== Champion Synergies: pick rail + one scouting report, ordered selected → preferred → alternatives →

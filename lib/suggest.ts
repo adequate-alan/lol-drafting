@@ -24,7 +24,7 @@ const locked = (draft: Draft) => new Set(Object.values(draft).filter(Boolean) as
 
 export interface ProEvidence { label: string; event: string; patch?: string; date?: string; pending: boolean }
 export interface ProLine { event: string; games: number; patch?: string; date?: string; ongoing: boolean }
-export interface ProSuggestion extends Suggestion { evidence: ProEvidence[]; lines: ProLine[] }
+export interface ProSuggestion extends Suggestion { evidence: ProEvidence[]; lines: ProLine[]; with: string[] } // with: the locked picks it was played next to
 export type ProByRole = Partial<Record<Role, ProSuggestion[]>>;
 
 /**
@@ -38,10 +38,11 @@ export function proSuggestions(draft: Draft, proDrafts: ProDraft[], extra: {
   const sources = extra.sources ?? {};
   const taken = locked(draft);
   const out: Partial<Record<Role, Map<string, ProSuggestion>>> = {};
-  const add = (role: Role, champion: string, ev: ProEvidence) => {
+  const add = (role: Role, champion: string, ev: ProEvidence, allies: string[]) => {
     if (draft[role] || taken.has(champion)) return;
     const m = (out[role] ??= new Map());
-    const x = m.get(champion) ?? { champion, score: 0, reasons: [], evidence: [], lines: [] };
+    const x = m.get(champion) ?? { champion, score: 0, reasons: [], evidence: [], lines: [], with: [] };
+    for (const a of allies) if (!x.with.includes(a)) x.with.push(a);
     x.score += 1;
     x.evidence.push(ev);
     const why = ev.pending ? `${ev.label} (pending refresh)` : ev.label;
@@ -52,12 +53,13 @@ export function proSuggestions(draft: Draft, proDrafts: ProDraft[], extra: {
 
   const lockedRoles = ROLES.filter((r) => draft[r]);
   for (const d of proDrafts) {
-    if (!lockedRoles.some((r) => d.picks[r] === draft[r])) continue;
+    const allies = lockedRoles.filter((r) => d.picks[r] === draft[r]).map((r) => draft[r]!);
+    if (!allies.length) continue;
     const ev = eventOf(d.tournament);
     const game = d.sources.map((id) => sources[id]).find((s) => s?.type === "golgg-game");
     for (const role of openRoles(draft)) add(role, d.picks[role], {
       label: `${d.team} ${d.seriesGame}`, event: ev?.short ?? d.tournament, patch: d.patch ?? ev?.patch, date: game?.date, pending: false,
-    });
+    }, allies);
   }
   const recorded = new Set(proDrafts.flatMap((d) => d.sources));
   for (const b of extra.botPairings ?? []) {
@@ -69,8 +71,8 @@ export function proSuggestions(draft: Draft, proDrafts: ProDraft[], extra: {
       const ev = o.event ? events.find((e) => e.id === o.event) : undefined;
       for (const g of games) {
         const e: ProEvidence = { label: g.seriesGame ?? `${g.team} vs ${g.opponent}`, event: ev?.short ?? o.context, patch: g.patch ?? ev?.patch, date: g.date, pending: true };
-        if (draft.BOT === b.champion) add("SUPPORT", o.champion, e);
-        if (draft.SUPPORT === o.champion) add("BOT", b.champion, e);
+        if (draft.BOT === b.champion) add("SUPPORT", o.champion, e, [b.champion]);
+        if (draft.SUPPORT === o.champion) add("BOT", b.champion, e, [o.champion]);
       }
     }
   }

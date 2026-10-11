@@ -43,6 +43,8 @@ export interface Recommendation {
   also: string[]; // lower-priority team needs it covers as well
   tradeoffs: string[]; // what it costs the comp
   bestFix: boolean; // covers the most of the role's needs among the eligible candidates (shown apart from best overall)
+  eligible: boolean; // false only for a support outside the locked bot's saved supports, read on request (opts.include)
+  savedFromPro: boolean; // the saved link is a pro-derived alternative ("from pro games, not hand-saved")
 }
 export type Recommendations = Partial<Record<Role, Recommendation[]>>;
 
@@ -110,12 +112,15 @@ export function savedSupports(draft: Draft, botPairings: BotPairing[]): string[]
   return ids.length ? ids : null;
 }
 
-function savedParts(c: Champion, role: Role, draft: Draft, data: RecommendData, name: (id: string) => string): { parts: FitPart[]; tier: Recommendation["saved"] } {
+function savedParts(c: Champion, role: Role, draft: Draft, data: RecommendData, name: (id: string) => string): { parts: FitPart[]; tier: Recommendation["saved"]; fromPro: boolean } {
   const parts: FitPart[] = [];
   let tier: Recommendation["saved"] = null;
-  const better = (t: NonNullable<Recommendation["saved"]>) => {
+  // The best link is a pro-derived alternative, not one alan saved by hand.
+  let fromPro = false;
+  const better = (t: NonNullable<Recommendation["saved"]>, pro = false) => {
     const rank = { default: 0, alt: 1, fits: 2 } as const;
-    if (!tier || rank[t] < rank[tier]) tier = t;
+    if (!tier || rank[t] < rank[tier]) { tier = t; fromPro = pro; }
+    else if (rank[t] === rank[tier] && !pro) fromPro = false;
   };
   const botRecord = (id: string) => data.botPairings.find((b) => b.champion === id);
   for (const r of ROLES) {
@@ -124,12 +129,12 @@ function savedParts(c: Champion, role: Role, draft: Draft, data: RecommendData, 
     if (r === "BOT" && role === "SUPPORT") {
       const rec = botRecord(ally);
       if (rec?.clashDefault.includes(c.id)) { parts.push({ kind: "saved", points: 5, text: `Saved pairing: preferred support for ${name(ally)}` }); better("default"); }
-      else if (rec?.alternatives.includes(c.id)) { parts.push({ kind: "saved", points: 2.5, text: `Saved pairing: alternative support for ${name(ally)}${rec.alternativeNotes[c.id] ? ` (${rec.alternativeNotes[c.id]})` : ""}` }); better("alt"); }
+      else if (rec?.alternatives.includes(c.id)) { parts.push({ kind: "saved", points: 2.5, text: `Saved pairing: alternative support for ${name(ally)}${rec.alternativeNotes[c.id] ? ` (${rec.alternativeNotes[c.id]})` : ""}` }); better("alt", !!rec.proAlternatives?.includes(c.id)); }
     }
     if (r === "SUPPORT" && role === "BOT") {
       const rec = botRecord(c.id);
       if (rec?.clashDefault.includes(ally)) { parts.push({ kind: "saved", points: 5, text: `Saved pairing: ${name(ally)} is its preferred support` }); better("default"); }
-      else if (rec?.alternatives.includes(ally)) { parts.push({ kind: "saved", points: 2.5, text: `Saved pairing: ${name(ally)} is an alternative support for it${rec.alternativeNotes[ally] ? ` (${rec.alternativeNotes[ally]})` : ""}` }); better("alt"); }
+      else if (rec?.alternatives.includes(ally)) { parts.push({ kind: "saved", points: 2.5, text: `Saved pairing: ${name(ally)} is an alternative support for it${rec.alternativeNotes[ally] ? ` (${rec.alternativeNotes[ally]})` : ""}` }); better("alt", !!rec.proAlternatives?.includes(ally)); }
     }
     if (r === "BOT" && (role === "JUNGLE" || role === "MID")) {
       const rec = botRecord(ally);
@@ -138,7 +143,7 @@ function savedParts(c: Champion, role: Role, draft: Draft, data: RecommendData, 
     if ((r === "MID" && role === "JUNGLE") || (r === "JUNGLE" && role === "MID")) {
       const rec = data.midJungle.find((m) => m.anchor === ally && m.role === r);
       if (rec?.clashDefault.includes(c.id)) { parts.push({ kind: "saved", points: 4, text: `Saved pairing: primary ${role.toLowerCase()} for ${name(ally)}` }); better("default"); }
-      else if (rec?.alternatives.includes(c.id)) { parts.push({ kind: "saved", points: 1.5, text: `Saved pairing: secondary ${role.toLowerCase()} for ${name(ally)}${rec.alternativeNotes[c.id] ? ` (${rec.alternativeNotes[c.id]})` : ""}` }); better("alt"); }
+      else if (rec?.alternatives.includes(c.id)) { parts.push({ kind: "saved", points: 1.5, text: `Saved pairing: secondary ${role.toLowerCase()} for ${name(ally)}${rec.alternativeNotes[c.id] ? ` (${rec.alternativeNotes[c.id]})` : ""}` }); better("alt", !!rec.proAlternatives?.includes(c.id)); }
     }
     if (r === "TOP" && (role === "JUNGLE" || role === "MID")) {
       const rec = data.topPicks.find((t) => t.champion === ally);
@@ -157,7 +162,7 @@ function savedParts(c: Champion, role: Role, draft: Draft, data: RecommendData, 
       }
     }
   }
-  return { parts, tier };
+  return { parts, tier, fromPro };
 }
 
 // ---------- proposed synergy (Claude's kit-based partners, not saved by alan) ----------
@@ -249,7 +254,12 @@ const kitsFor = (champions: Champion[]) => {
 // Engine need priority (about 3 for a baseline job, 6–7 for a major weakness) to points on the v1 scale.
 const NEED_POINTS = 0.5;
 
-export function recommend(draft: Draft, enemyIds: string[], data: RecommendData, limit = 5): Recommendations {
+/**
+ * `opts.include` reads named champions even where the eligibility rule leaves them out (a support outside the locked
+ * bot's saved supports, seen next to a locked pick in pro games). They come back with `eligible: false`, get no saved
+ * or proposed bonus, and never take Best fix.
+ */
+export function recommend(draft: Draft, enemyIds: string[], data: RecommendData, limit = 5, opts: { include?: Partial<Record<Role, string[]>> } = {}): Recommendations {
   const byId = new Map(data.champions.map((c) => [c.id, c]));
   const name = (id: string) => byId.get(id)?.name ?? id;
   const allies = ROLES.flatMap((r) => (draft[r] && byId.has(draft[r]!) ? [{ role: r, champ: byId.get(draft[r]!)! }] : []));
@@ -278,9 +288,11 @@ export function recommend(draft: Draft, enemyIds: string[], data: RecommendData,
     const fixScore = new Map<string, number>();
     for (const c of data.champions) {
       // Roster-only champions have no attributes to score, so they are never suggested (they can still be locked).
-      if (c.rosterOnly || !c.roles.includes(role) || taken.has(c.id)) continue;
-      if (role === "SUPPORT" && eligibleSupports && !eligibleSupports.includes(c.id)) continue;
-      const { parts, tier } = savedParts(c, role, draft, data, name);
+      const forced = !!opts.include?.[role]?.includes(c.id);
+      if (c.rosterOnly || (!c.roles.includes(role) && !forced) || taken.has(c.id)) continue;
+      const eligible = !(role === "SUPPORT" && eligibleSupports && !eligibleSupports.includes(c.id));
+      if (!eligible && !forced) continue;
+      const { parts, tier, fromPro } = savedParts(c, role, draft, data, name);
       // With a saved bot locked, its own record alone orders the supports (preferred before alternative): no proposed
       // bonus may reorder them.
       const prop = role === "SUPPORT" && eligibleSupports ? { parts: [], tier: null } : proposedParts(c, role, draft, data.proposed, name);
@@ -319,14 +331,14 @@ export function recommend(draft: Draft, enemyIds: string[], data: RecommendData,
         parts.push({ kind: "risk", points: -2.5 * (holes.length - left), text: `Leaves ${holes.map((h) => h.label).join(", ")} unsolved with ${left === 0 ? "no picks" : left === 1 ? "one pick" : `${left} picks`} left` });
       }
       const score = round(parts.reduce((s, p) => s + p.points, 0));
-      if (!parts.length) continue;
+      if (!parts.length && !forced) continue;
       recs.push({ champion: c.id, role, score, parts: parts.sort((a, b) => b.points - a.points), saved: tier, proposed: prop.tier, proGames: proGames(c.id, role, draft, data.proDrafts),
-        fixes: read.fixes, also: read.also, tradeoffs: read.tradeoffs, bestFix: false });
+        fixes: read.fixes, also: read.also, tradeoffs: read.tradeoffs, bestFix: false, eligible, savedFromPro: fromPro });
       fixScore.set(c.id, read.fixScore);
     }
     // Best fix: most of the role's needs covered (fewest tradeoffs on a tie), among the same eligible candidates.
     const fs = (r: Recommendation) => fixScore.get(r.champion) ?? 0;
-    const fix = recs.filter((r) => fs(r) > 0).sort((a, b) => fs(b) - fs(a) || a.tradeoffs.length - b.tradeoffs.length || b.score - a.score)[0];
+    const fix = recs.filter((r) => r.eligible && fs(r) > 0).sort((a, b) => fs(b) - fs(a) || a.tradeoffs.length - b.tradeoffs.length || b.score - a.score)[0];
     if (fix) fix.bestFix = true;
     // On a tied score, alan's saved tier decides (preferred before alternative before fits), then a proposed partner,
     // then the name.

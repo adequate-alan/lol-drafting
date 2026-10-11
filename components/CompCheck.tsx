@@ -23,9 +23,10 @@ function Point({ w, open = false }: { w: Insight; open?: boolean }) {
 
 export interface SiegeCell { value: string; title: string }
 
-export function CompCheck({ draft, enemyIds, champions, botPairings, active, bestOverall, bestFixId, names, grid, children }: {
+export function CompCheck({ draft, enemyIds, champions, botPairings, active, bestOverall, bestFixId, proIds = [], names, grid, children }: {
   draft: Draft; enemyIds: string[]; champions: Champion[]; botPairings: BotPairing[]; active?: Role; bestOverall?: string;
   bestFixId?: string; // the ranking's best fix, so the rail and the list name the same champion
+  proIds?: string[]; // candidates the list already shows through their pro games: not repeated as theoretical
   names: Record<string, string>; grid?: (siege: SiegeCell, disengage: SiegeCell) => ReactNode; children?: ReactNode;
 }) {
   const kits = useMemo(() => convertKits(champions), [champions]);
@@ -83,9 +84,9 @@ export function CompCheck({ draft, enemyIds, champions, botPairings, active, bes
               {(best || bestOverall) && (
                 <div className="cc-picks">
                   {best && <div><span className="k">Best fix</span><b>{names[best.champion] ?? best.champion}</b><span className="t">{best.fixes.map((f) => f.label).join(", ")}{best.tradeoffs.length ? ` · costs: ${best.tradeoffs.join("; ")}` : ""}</span></div>}
-                  {bestOverall && <div><span className="k">Best overall</span><b>{names[bestOverall] ?? bestOverall}</b><span className="t">Top of the draft-fit list</span></div>}
-                  {fix?.restricted && fix.theoretical.length > 0 && (
-                    <div className="theory"><span className="k">Theoretical</span><span className="t">{fix.theoretical.slice(0, 4).map((c) => names[c.champion] ?? c.champion).join(", ")}: outside {names[draft.BOT!] ?? draft.BOT}&apos;s saved supports, not recommended</span></div>
+                  {bestOverall && <div><span className="k">Best overall</span><b>{names[bestOverall] ?? bestOverall}</b><span className="t">Top of the recommendation list</span></div>}
+                  {fix?.restricted && fix.theoretical.some((c) => !proIds.includes(c.champion)) && (
+                    <div className="theory"><span className="k">Theoretical</span><span className="t">{fix.theoretical.filter((c) => !proIds.includes(c.champion)).slice(0, 4).map((c) => names[c.champion] ?? c.champion).join(", ")}: outside {names[draft.BOT!] ?? draft.BOT}&apos;s saved supports, not recommended</span></div>
                   )}
                 </div>
               )}
