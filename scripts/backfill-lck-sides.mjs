@@ -6,7 +6,8 @@
 //
 // For each cited game it reads the existing Gol.gg URLs (page-game: sides, result, date; page-fullstats: roles) with
 // plain requests a few seconds apart. A side is set only when one side of the page shows exactly the five champions of
-// a stored draft, role for role; nothing is inferred from team names, row order or the winner. Games that cannot be
+// a stored draft, role for role (or, when Gol.gg has no role table for the game, the same five champions in that side's
+// pick row); nothing is inferred from team names, row order or the winner. Games that cannot be
 // matched are reported and left without a side. Writes data/sources.json only (the game-level record each team row
 // inherits from); drafts, champions, roles, teams and evidence ids are untouched. A refused request stops the run.
 import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
@@ -44,23 +45,29 @@ const gameIds = [...new Set(drafts.flatMap((d) => d.sources))].filter((id) => by
 const report = [], unresolved = [];
 for (const sid of gameIds) {
   const src = byId.get(sid);
+  if (src.sides) continue; // already recovered from its page
   const num = Number((src.url.match(/game\/stats\/(\d+)\//) ?? [])[1]);
   const mine = drafts.filter((d) => d.sources.includes(sid));
   const fail = (why) => { unresolved.push(`${sid} (${mine.map((d) => `${d.team} ${d.seriesGame}`).join(", ")}): ${why}`); };
   if (!num) { fail("no game id in the URL"); continue; }
   const page = parseGamePage(await get(gameUrl(num)));
   const stats = parseFullstats(await get(gameUrl(num, "page-fullstats")));
-  if (!stats) { fail("no role table on the full-stats page"); continue; }
   if (!/LCK/i.test(page.tournament ?? "")) { fail(`page tournament is "${page.tournament}"`); continue; }
   const roleOf = { TOP: "TOP", JUNGLE: "JUNGLE", MID: "MID", ADC: "BOT", BOT: "BOT", SUPPORT: "SUPPORT" };
-  const picks = {};
+  const picks = {}, picked = {};
   for (const color of ["blue", "red"]) {
     picks[color] = {};
-    for (const { champion, role } of stats[color]) picks[color][roleOf[role]] = resolve(champion);
+    for (const { champion, role } of stats?.[color] ?? []) picks[color][roleOf[role]] = resolve(champion);
+    // The side panel's five picks (draft order, no roles): enough to tell the sides apart when the role table is missing.
+    picked[color] = new Set((page[color]?.picks ?? []).map(resolve).filter(Boolean));
   }
+  const byRole = !!stats;
+  if (!byRole && !["blue", "red"].every((c) => picked[c].size === 5)) { fail("no role table and no five picks per side on the game page"); continue; }
   const results = { blue: page.blue?.result, red: page.red?.result };
   if (!((results.blue === "WIN") !== (results.red === "WIN") && results.blue && results.red)) { fail("page shows no single winner"); continue; }
-  const sideFor = (d) => ["blue", "red"].filter((c) => ROLES.every((r) => picks[c][r] === d.picks[r]));
+  const sideFor = (d) => ["blue", "red"].filter((c) => byRole
+    ? ROLES.every((r) => picks[c][r] === d.picks[r])
+    : ROLES.every((r) => picked[c].has(d.picks[r])));
   const matched = mine.map((d) => ({ d, sides: sideFor(d) }));
   const bad = matched.find((m) => m.sides.length !== 1);
   if (bad) { fail(`${bad.d.team}'s stored picks match ${bad.sides.length} sides of the page`); continue; }
@@ -76,7 +83,7 @@ for (const sid of gameIds) {
   const date = /^\d{4}-\d{2}-\d{2}$/.test(page.date ?? "") ? page.date : undefined;
   Object.assign(src, { sides: { blue: sides.blue, red: sides.red, winner }, ...(date ? { date } : {}) });
   if (!src.pendingClaim) Object.assign(src, { lastChecked: today, refreshStatus: "verified", origin: "golgg-refresh" });
-  report.push(`${sid}: blue ${sides.blue} (page: ${page.blue?.team}), red ${sides.red} (page: ${page.red?.team}), ${winner} won, ${date ?? "no date"}`);
+  report.push(`${sid}${byRole ? "" : " (matched by the five picks; no role table)"}: blue ${sides.blue} (page: ${page.blue?.team}), red ${sides.red} (page: ${page.red?.team}), ${winner} won, ${date ?? "no date"}`);
 }
 
 const lines = [`LCK side backfill, ${gameIds.length} games cited by stored drafts.`, ...report,
