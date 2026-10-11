@@ -1,4 +1,6 @@
 "use client";
+import { ProFreshness } from "@/components/ProFreshness";
+import type { Freshness } from "@/lib/pro-games";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -17,9 +19,9 @@ import type { BotPairing, MetaStat, MidJunglePairing, PoolEntry, Role, Source, T
 
 const GRADE_ORDER = ["A", "A-", "B+", "B", "B-", "C+", "C"];
 
-export function SynergiesView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top, pool, drawerData }: {
+export function SynergiesView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top, pool, drawerData, freshness }: {
   drawerData: DrawerData; tab: Tab; names: Record<string, string>; sources: Record<string, Source>; events: EventMap; stats: Record<string, MetaStat & { winRate: number }>;
-  draftLabels: Record<string, string>; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; pool: PoolEntry[];
+  draftLabels: Record<string, string>; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; pool: PoolEntry[]; freshness: Freshness[];
 }) {
   const params = useSearchParams();
   const champ = params.get("champ") || undefined;
@@ -99,6 +101,7 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
     <>
       <PageHeader title="Champion Synergies"
         actions={draftHref && <Link className="btn primary sm" href={draftHref}>Open in Draft Room →</Link>} />
+      <ProFreshness items={freshness} />
       <nav className="tabs">
         {(Object.keys(TABS) as Tab[]).map((t) => <Link key={t} href={`/synergies/${t}`} className={t === tab ? "active" : undefined}>{TABS[t]}</Link>)}
       </nav>

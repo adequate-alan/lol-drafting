@@ -2295,7 +2295,7 @@
       "notes": [
         {
           "topic": "Gol.gg tables",
-          "note": "Picks, bans, wins and losses from Gol.gg's tournament champion list (the picks-and-bans page only has them as tooltips; they agree). Gol.gg has no presence column: presence here is computed as (picks + bans) / total games. Bans are champion-level. Gol.gg shows a site-wide 'stats not updated since 4 April' banner, but both tables include this event's games. Total games = 39, the sum of series scores in the match list: 20 of 24 series played, the 4 quarterfinals (Oct 12–13) not yet.",
+          "note": "Picks, bans, wins and losses from Gol.gg's tournament champion list, refreshed daily with the match list since Oct 11 (scripts/refresh-pro-data.mjs). Gol.gg has no presence column: presence here is computed as (picks + bans) / total games, where total games is the sum of series scores in the match list. Bans are champion-level. Totals are only replaced when the table adds up to the match list and agrees with every recorded game.",
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
             "golgg-tournament-matchlist-demacia-cup-2026"
