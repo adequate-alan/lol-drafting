@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { z } from "zod";
 import { withProAlternatives } from "./pro-alternatives";
+import { draftsFromGames, freshness, resultsFromGames, sourcesFromGames } from "./pro-games";
 import { withoutConfirmed } from "./proposed";
 import { Files } from "./schema";
 
@@ -20,19 +21,24 @@ function load<F extends FileName>(file: F): Parsed<F> {
 }
 
 export const getChampions = () => load("champions.json");
-export const getSources = () => load("sources.json");
+// Imported pro games (data/pro-games.json, refreshed daily from Gol.gg) join the hand-recorded drafts, sources and
+// results here, so every page reads one list. Each game is stored once; its two drafts and its source are derived.
+export const getProGames = () => load("pro-games.json");
+let sources: Parsed<"sources.json"> | undefined, drafts: Parsed<"pro-drafts.json"> | undefined, counters: Parsed<"counters.json"> | undefined;
+export const getSources = () => (sources ??= [...load("sources.json"), ...sourcesFromGames(getProGames().games, load("sources.json"))]);
+export const getProFreshness = () => freshness(getProGames());
 // Pro pairings not already saved join the alternatives, marked as pro-derived (alan, 2026-10-10).
 let bots: Parsed<"bot-pairings.json"> | undefined, midJungle: Parsed<"mid-jungle.json"> | undefined;
 export const getBotPairings = () => (bots ??= load("bot-pairings.json").map(withProAlternatives));
 export const getMidJungle = () => (midJungle ??= load("mid-jungle.json").map(withProAlternatives));
 export const getTopPicks = () => load("top.json");
-export const getProDrafts = () => load("pro-drafts.json");
+export const getProDrafts = () => (drafts ??= [...load("pro-drafts.json"), ...draftsFromGames(getProGames().games)]);
 export const getCompShells = () => load("comp-shells.json");
 export const getPool = () => load("pool.json");
 export const getMeta = () => load("meta.json");
 export const getGenG = () => load("geng.json");
 export const getRules = () => load("rules.json");
-export const getCounters = () => load("counters.json");
+export const getCounters = () => (counters ??= ((c) => ({ ...c, proResults: [...c.proResults, ...resultsFromGames(getProGames().games, c.proResults)] }))(load("counters.json")));
 // Synergy · Proposed: Claude's kit-based partners, minus every pairing alan already confirmed (lib/proposed.ts).
 let proposed: Parsed<"proposed-synergy.json"> | undefined;
 export const getProposed = () => (proposed ??= withoutConfirmed(load("proposed-synergy.json"), { botPairings: getBotPairings(), midJungle: getMidJungle(), topPicks: getTopPicks() }));

@@ -1,4 +1,6 @@
 "use client";
+import { ProFreshness } from "@/components/ProFreshness";
+import type { Freshness } from "@/lib/pro-games";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { ChampionProvider } from "@/components/ChampionInteraction";
@@ -16,8 +18,8 @@ import { ROLES, type BotPairing, type MidJunglePairing, type ObservedPairing, ty
 const TIER_LABEL = Object.fromEntries(TIERS) as Record<Tier, string>;
 const DASH = <span className="faint">—</span>;
 
-export function PoolView({ names, data, bot, midJungle, top, proposed, drawerData }: {
-  names: Record<string, string>; data: PoolInput; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; proposed: ProposedRecord[]; drawerData: DrawerData;
+export function PoolView({ names, data, bot, midJungle, top, proposed, freshness, drawerData }: {
+  names: Record<string, string>; data: PoolInput; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; proposed: ProposedRecord[]; freshness: Freshness[]; drawerData: DrawerData;
 }) {
   // Filters live in the URL so a view can be shared; window.location keeps the GitHub Pages base path.
   const initial = useSearchParams();
@@ -59,6 +61,7 @@ export function PoolView({ names, data, bot, midJungle, top, proposed, drawerDat
   return (
     <ChampionProvider data={drawerData}>
       <PageHeader title="Champion Pool" />
+      <ProFreshness items={freshness} />
       <div className="toolbar">
         <nav className="seg" aria-label="Role">
           <button className={!role ? "active" : undefined} onClick={() => set("role", undefined)}>All</button>

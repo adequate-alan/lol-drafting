@@ -294,7 +294,10 @@ h3 { font-size: var(--fs); font-weight: var(--w-strong); letter-spacing: -.005em
 }
 .page-header .titles { display: grid; gap: 3px; min-width: 0; }
 .page-header .title-row { display: flex; align-items: center; gap: var(--s4); flex-wrap: wrap; }
-.page-header .desc { max-width: 820px; color: var(--text-muted); font-size: var(--fs-sm); }
+/* Pro-data freshness under a page title: subtle, one muted line. */
+.pro-freshness { display: flex; flex-wrap: wrap; gap: 0 var(--s2); margin: calc(-1 * var(--s2)) 0 var(--s4); }
+.pro-freshness > span + span::before { content: "·"; margin-right: var(--s2); }
+.page-header .desc { max-width: 820px; color: var(--text-muted); font-size: var(--fs-sm); line-height: 1.4; }
 .page-header .actions { margin-left: auto; display: flex; gap: var(--s4); align-items: center; flex-wrap: wrap; }
 
 /* Section header: a title and quiet meta, no box. Sections are separated by space, not containers. */

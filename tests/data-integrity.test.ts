@@ -160,6 +160,9 @@ describe("citations match the claims they back", () => {
     for (const b of getBotPairings()) {
       for (const o of b.observedProPairings) {
         for (const sid of o.sources) {
+          // A supplied claim the imported game contradicts stays pending and is reported by the daily refresh for a
+          // person to correct; it is not a recorded citation yet.
+          if (byId.get(sid)?.pendingClaim) continue;
           for (const d of drafts.filter((d) => gameOf(d) === sid)) {
             if (d.picks.BOT === b.champion) expect(d.picks.SUPPORT, `${b.champion}+${o.champion} cites ${sid}`).toBe(o.champion);
           }

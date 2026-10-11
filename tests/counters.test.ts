@@ -2,9 +2,11 @@
 // counter signal; recorded pro games (same role, opposite sides, recorded winner, repeated, newer patches weigh more) only
 // corroborate it and never make a counter alone. Pool first, and a counter never moves the draft-fit ranking. The
 // fixtures below are test data, not claims about real games.
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { counterPicks, describeEvidence, describePro, detectEnemyRoles, enemyParam, parseEnemy, resultGames, type CounterInput, type EnemyDraft } from "@/lib/counters";
-import { getCounters, getDraftData } from "@/lib/data";
+import { getCounters, getDraftData, getProGames } from "@/lib/data";
 import type { Draft } from "@/lib/evaluate";
 import { recommend } from "@/lib/recommend";
 import type { Counters, DpmDuoMatchup, DpmMatchup, ProDraft, Role } from "@/lib/schema";
@@ -246,7 +248,12 @@ describe("no counter without enough evidence", () => {
     const stored = getCounters();
     if (!stored.dpmStatus.reachable) expect(stored.dpm).toEqual([]);
     expect(stored.dpmDuos).toEqual([]);
-    expect(stored.proResults).toEqual([]);
+    // Hand-entered results: none. Results come only from games the daily refresh recorded from Gol.gg, one per game.
+    const raw = JSON.parse(readFileSync(join(process.cwd(), "data/counters.json"), "utf8")) as { proResults: unknown[] };
+    expect(raw.proResults).toEqual([]);
+    const imported = new Set(getProGames().games.map((g) => `golgg-game-${g.id}`));
+    for (const r of stored.proResults) expect(imported.has(r.game), r.game).toBe(true);
+    expect(stored.proResults.length).toBe(imported.size);
     const byId = new Map(data.champions.map((c) => [c.id, c]));
     for (const row of stored.dpm) {
       expect(row.url).toMatch(/^https:\/\/dpm\.lol\/champions\//);

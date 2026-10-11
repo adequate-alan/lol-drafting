@@ -59,12 +59,13 @@ export function proGames({ meta, proDrafts, botPairings, sources }: Omit<PoolInp
     const ev = eventByName(meta.events, d.tournament);
     const game = d.sources.map((id) => sources[id]).find((s) => s?.type === "golgg-game");
     return { key: d.id, event: ev, eventName: ev?.short ?? d.tournament, label: `${d.team} ${d.seriesGame}`, team: d.team, opponent: d.opponent, gameSource: game?.id,
-      patch: d.patch ?? ev?.patch, date: game?.date, picks: d.picks, draftId: d.id, pending: false, sources: d.sources };
+      patch: d.patch ?? ev?.patch, date: d.date ?? game?.date, picks: d.picks, draftId: d.id, pending: false, sources: d.sources };
   });
+  const recorded = new Set(proDrafts.flatMap((d) => d.sources));
   for (const b of botPairings) for (const o of b.observedProPairings) {
     if (o.backedByGame) continue; // its recorded draft is already listed
     const cited = o.sources.map((id) => sources[id]);
-    if (!cited.length || !cited.every((s) => s?.type === "golgg-game" && s.pendingClaim)) continue;
+    if (!cited.length || !cited.every((s) => s?.type === "golgg-game" && s.pendingClaim && !recorded.has(s.id))) continue;
     for (const s of cited as Source[]) {
       const ev = o.event ? meta.events.find((e) => e.id === o.event) : eventByName(meta.events, s.tournament);
       out.push({ key: `${s.id}-${b.champion}-${o.champion}`, event: ev, eventName: ev?.short ?? s.tournament ?? o.context,

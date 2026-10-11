@@ -1,4 +1,6 @@
 "use client";
+import { ProFreshness } from "@/components/ProFreshness";
+import type { Freshness } from "@/lib/pro-games";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useMemo, useState } from "react";
 import type { DrawerData } from "@/lib/data";
@@ -16,8 +18,8 @@ import { ROLES, type PoolEntry, type Role, type Rule, type Source } from "@/lib/
 
 const DASH = <span className="faint">—</span>;
 
-export function MetaView({ names, sources, input, pool, rules, drawerData }: {
-  names: Record<string, string>; sources: Record<string, Source>; input: HubInput; pool: PoolEntry[]; rules: Rule[]; drawerData: DrawerData;
+export function MetaView({ names, sources, input, pool, rules, drawerData, freshness }: {
+  names: Record<string, string>; sources: Record<string, Source>; input: HubInput; pool: PoolEntry[]; rules: Rule[]; drawerData: DrawerData; freshness: Freshness[];
 }) {
   // View state lives in the URL so it can be shared; window.location keeps the GitHub Pages base path.
   const initial = useSearchParams();
@@ -67,6 +69,7 @@ export function MetaView({ names, sources, input, pool, rules, drawerData }: {
     <ChampionProvider data={drawerData}>
     <div className="meta-hub">
       <PageHeader title="Meta / Research" />
+      <ProFreshness items={freshness} />
 
       {/* 1. Current meta */}
       <div className="toolbar hub-tools">

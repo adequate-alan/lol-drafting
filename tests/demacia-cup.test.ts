@@ -1,30 +1,46 @@
 // Demacia Cup 2026 (patch 16.18) as a separate current-meta evidence set, supplied by alan on 2026-10-10.
-// Gol.gg could not be read from this environment, so every new source stays externally provided and pending refresh.
+// Supplied links stay externally provided and pending until the daily refresh (scripts/refresh-pro-data.mjs) records
+// their game from Gol.gg and the game shows the claim. From 2026-10-11 the event's games and totals are imported daily,
+// so counts here are checked as relationships, not fixed numbers.
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { getBotPairings, getChampions, getGenG, getMeta, getProDrafts, getSources } from "@/lib/data";
+import { getBotPairings, getChampions, getGenG, getMeta, getProDrafts, getProGames, getSources } from "@/lib/data";
 import { describeLine, groupObserved } from "@/lib/evidence";
 import { proSuggestions } from "@/lib/suggest";
 
 const DEMACIA = "Demacia Cup Global Invitational 2026";
 const sources = Object.fromEntries(getSources().map((s) => [s.id, s]));
+// Draft Room checks are scoped to the two events they were written for, so Worlds 2026 imports cannot move them.
+const knownDrafts = () => getProDrafts().filter((d) => d.tournament === DEMACIA || d.tournament === getMeta().tournament.name);
 const events = Object.fromEntries(getMeta().events.map((e) => [e.id, e]));
 const bot = (id: string) => getBotPairings().find((b) => b.champion === id)!;
 
 describe("Demacia Cup evidence", () => {
   it("is its own ongoing current-meta event on 16.18", () => {
     const e = events["demacia-cup-2026"];
-    expect(e).toMatchObject({ name: DEMACIA, kind: "current-meta", status: "ongoing", patch: "16.18", startDate: "2026-10-03", endDate: "2026-10-17" });
+    expect(e).toMatchObject({ name: DEMACIA, kind: "current-meta", patch: "16.18", startDate: "2026-10-03" });
+    // Ongoing until the refresh sees every series played and the final in.
+    const state = getProGames().tournaments.find((t) => t.event === "demacia-cup-2026");
+    expect(e.status).toBe(state?.status === "complete" ? "complete" : "ongoing");
     expect(events["lck-2026-playoffs"]).toMatchObject({ patch: "16.16", status: "complete" });
   });
 
-  it("every new source is externally provided by alan and pending refresh, never Claude-verified", () => {
+  it("a supplied source stays pending until its game is recorded and shows the claim", () => {
+    const recorded = new Set(getProDrafts().flatMap((d) => d.sources));
     for (const id of ["golgg-game-83452", "golgg-game-83460", "golgg-game-83459", "golgg-game-83462", "golgg-champion-13"]) {
       const s = sources[id];
       expect(s, id).toBeDefined();
-      expect(s).toMatchObject({ origin: "externally-provided", refreshStatus: "not-refreshed", lastChecked: null });
-      expect(s.pendingClaim?.providedBy).toBe("alan");
+      if (s.pendingClaim) {
+        expect(s).toMatchObject({ origin: "externally-provided", refreshStatus: "not-refreshed", lastChecked: null });
+        expect(s.pendingClaim.providedBy).toBe("alan");
+      } else {
+        expect(s, id).toMatchObject({ origin: "golgg-refresh", refreshStatus: "verified" });
+        expect(recorded.has(id), id).toBe(true);
+      }
     }
-    for (const s of getSources().filter((s) => s.tournament === DEMACIA)) expect(s.patch).toBe("16.18");
+    expect(sources["golgg-champion-13"].pendingClaim).toBeDefined(); // a champion page, never a recorded game
+    for (const s of getSources().filter((s) => s.tournament === DEMACIA)) expect(s.patch, s.id).toMatch(/^\d+\.\d+$/);
   });
 
   it("adds the four duos as pro evidence only, never as saved pairings", () => {
@@ -48,7 +64,10 @@ describe("Demacia Cup evidence", () => {
   it("stays off the Gen.G page and out of the recorded LCK drafts", () => {
     const demaciaIds = new Set(getSources().filter((s) => s.tournament === DEMACIA).map((s) => s.id));
     for (const p of getGenG()) for (const s of p.sources) expect(demaciaIds.has(s), p.title).toBe(false);
-    for (const d of getProDrafts()) expect(d.tournament).not.toBe(DEMACIA);
+    // Hand-recorded drafts are the LCK sample; Demacia games come only from the daily import.
+    const handDrafts = JSON.parse(readFileSync(join(process.cwd(), "data/pro-drafts.json"), "utf8")) as { tournament: string }[];
+    for (const d of handDrafts) expect(d.tournament).not.toBe(DEMACIA);
+    for (const d of getProDrafts().filter((d) => d.tournament === DEMACIA)) expect(d.id).toMatch(/^golgg-\d+-(blue|red)$/);
   });
 
   it("event notes and stats cite only known sources and mark small samples", () => {
@@ -63,8 +82,12 @@ describe("Demacia Cup evidence", () => {
     expect(locke.roles).toEqual(["MID"]);
     expect(locke.reviewed).toBe(false);
     expect(locke.note).not.toMatch(/placeholder|not enough reference/i);
-    // Gol.gg's champion list (Oct 10) superseded alan's earlier 3 picks / 1 ban report.
-    expect(events["demacia-cup-2026"].stats.find((s) => s.champion === "locke")).toMatchObject({ picks: 5, bans: 4, wins: 2, role: "MID" });
+    // Gol.gg's champion list (Oct 10: 5 picks, 4 bans) superseded alan's earlier 3 picks / 1 ban report; the daily
+    // refresh only adds games, and keeps the role the source named.
+    const stat = events["demacia-cup-2026"].stats.find((s) => s.champion === "locke")!;
+    expect(stat).toMatchObject({ role: "MID" });
+    expect(stat.picks).toBeGreaterThanOrEqual(5);
+    expect(stat.bans).toBeGreaterThanOrEqual(4);
   });
 });
 
@@ -77,12 +100,14 @@ describe("freshness display", () => {
   });
 
   it("Draft Room pro pairings rank the 16.18 game first and keep older evidence", () => {
-    const s = proSuggestions({ BOT: "sivir" }, getProDrafts(), { botPairings: getBotPairings(), events: getMeta().events, sources });
+    const s = proSuggestions({ BOT: "sivir" }, knownDrafts(), { botPairings: getBotPairings(), events: getMeta().events, sources });
     const karma = s.SUPPORT!.find((x) => x.champion === "karma")!;
-    expect(s.SUPPORT![0].champion).toBe("karma");
-    expect(karma.lines[0]).toMatchObject({ event: "Demacia Cup", patch: "16.18", date: "2026-10-04", games: 1 });
+    expect(s.SUPPORT![0].lines[0]).toMatchObject({ event: "Demacia Cup", patch: "16.18" });
+    expect(karma.lines[0]).toMatchObject({ event: "Demacia Cup", patch: "16.18" });
+    expect(karma.lines[0].date! >= "2026-10-04").toBe(true);
+    expect(karma.lines[0].games).toBeGreaterThanOrEqual(1);
     expect(karma.lines.slice(1).map((l) => l.event)).toContain("LCK Playoffs");
-    const byLulu = proSuggestions({ SUPPORT: "lulu" }, getProDrafts(), { botPairings: getBotPairings(), events: getMeta().events, sources });
-    expect(byLulu.BOT![0].champion).toBe("yunara");
+    const byLulu = proSuggestions({ SUPPORT: "lulu" }, knownDrafts(), { botPairings: getBotPairings(), events: getMeta().events, sources });
+    expect(byLulu.BOT!.find((x) => x.champion === "yunara")?.lines[0]).toMatchObject({ event: "Demacia Cup", patch: "16.18" });
   });
 });

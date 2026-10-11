@@ -6,11 +6,13 @@
 //   node scripts/import-golgg-tournament.mjs --event <meta event id> --picks <page.html|table.json>
 //        [--matchlist <page.html|matches.json>] [--games N] [--checked YYYY-MM-DD] [--verified] [--write]
 //
-// Gol.gg is unreachable from Claude's cloud environments, so the pages are saved elsewhere (alan's Mac) and passed in.
+// For pages saved by hand. Demacia Cup and Worlds 2026 are refreshed daily by scripts/refresh-pro-data.mjs instead;
+// the LCK playoffs are a frozen archive.
 // --verified marks the sources as re-read by Claude (refreshStatus "verified"); leave it off for pages a person supplied.
 // Without --write it prints what would change and touches nothing.
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { decode, num, tables } from "./golgg/parse.mjs";
 
 const args = Object.fromEntries(process.argv.slice(2).reduce((acc, a, i, all) => {
   if (a.startsWith("--")) acc.push([a.slice(2), all[i + 1] && !all[i + 1].startsWith("--") ? all[i + 1] : true]);
@@ -25,22 +27,7 @@ const meta = read("meta.json"), sources = read("sources.json"), champions = read
 const event = meta.events.find((e) => e.id === args.event) ?? fail(`unknown event ${args.event}`);
 const isMain = event.name === meta.tournament.name;
 
-// ---------- parsing ----------
-const decode = (s) => s.replace(/&amp;/g, "&").replace(/&#0?39;|&apos;/g, "'").replace(/&quot;/g, '"').replace(/&nbsp;/g, " ")
-  .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&#(\d+);/g, (_, n) => String.fromCharCode(+n));
-const text = (html) => decode(html.replace(/<[^>]*>/g, " ")).replace(/\s+/g, " ").trim();
-
-/** Every table as { head: string[], rows: { cells: string[], raw: string[] }[] }. */
-function tables(html) {
-  return [...html.matchAll(/<table[\s\S]*?<\/table>/gi)].map(([t]) => {
-    const trs = [...t.matchAll(/<tr[\s\S]*?<\/tr>/gi)].map(([tr]) => [...tr.matchAll(/<t([hd])[^>]*>([\s\S]*?)<\/t[hd]>/gi)].map((m) => ({ th: m[1].toLowerCase() === "h", raw: m[2] })));
-    const headRow = trs.find((r) => r.length && r.every((c) => c.th)) ?? [];
-    return { head: headRow.map((c) => text(c.raw)), rows: trs.filter((r) => r !== headRow && r.some((c) => !c.th)).map((r) => ({ cells: r.map((c) => text(c.raw)), raw: r.map((c) => c.raw) })) };
-  });
-}
-
-const num = (s) => { const m = String(s ?? "").replace(/,/g, "").match(/-?\d+(\.\d+)?/); return m ? Number(m[0]) : undefined; };
-
+// ---------- parsing (shared with the daily refresh, scripts/golgg/parse.mjs) ----------
 function parsePicks(file) {
   const src = readFileSync(file, "utf8");
   if (file.endsWith(".json")) {
