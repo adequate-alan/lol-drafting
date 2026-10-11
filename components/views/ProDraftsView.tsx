@@ -1,8 +1,10 @@
 "use client";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { ChampionProvider } from "@/components/ChampionInteraction";
 import { Select } from "@/components/Select";
-import { ChampIcon, ChampionRow, PageHeader, SourceBadge, SourceLinks } from "@/components/ui";
+import type { DrawerData } from "@/lib/data";
+import { ChampIcon, ChampionRow, PageHeader, SourceLinks } from "@/components/ui";
 import { ROLES, type ProDraft, type Role, type Source } from "@/lib/schema";
 
 type Filters = { team?: string; champion?: string; role?: string; tournament?: string; series?: string; id?: string };
@@ -22,8 +24,8 @@ function matches(d: ProDraft, f: Filters) {
 
 const KEYS = ["team", "champion", "role", "tournament", "series", "id"] as const;
 
-export function ProDraftsView({ names, sources, all }: {
-  names: Record<string, string>; sources: Record<string, Source>; all: ProDraft[];
+export function ProDraftsView({ names, sources, all, drawerData }: {
+  names: Record<string, string>; sources: Record<string, Source>; all: ProDraft[]; drawerData: DrawerData;
 }) {
   const params = useSearchParams();
   const router = useRouter();
@@ -62,11 +64,11 @@ export function ProDraftsView({ names, sources, all }: {
   })();
 
   return (
-    <>
+    <ChampionProvider data={drawerData}>
       <PageHeader title="Pro Drafts" />
 
       {selected && (
-        <section className="panel" style={{ marginBottom: 12 }}>
+        <section className="panel game-panel">
           <div className="panel-head">
             <h2>{selected.team} vs {selected.opponent} · {selected.seriesGame}</h2>
             <span className="xs muted">{selected.tournament}{selected.patch ? ` · patch ${selected.patch}` : ""}</span>
@@ -76,7 +78,7 @@ export function ProDraftsView({ names, sources, all }: {
             </div>
           </div>
           <div className="panel-body">
-            <div className="draft-slots" style={{ marginBottom: 8 }}>
+            <div className="draft-slots">
               {ROLES.map((r) => (
                 <div key={r} className={`draft-slot locked role-${r}`}>
                   <span className="slot-body">
@@ -109,9 +111,9 @@ export function ProDraftsView({ names, sources, all }: {
           <tbody>
             {ordered.map(({ d, pair }) => (
               <tr key={d.id} className={`clickable ${pair} ${d.id === f.id ? "selected" : ""}`.replace(/\s+/g, " ").trim()}>
-                <td><Link className="cell-link" href={link(d.id)} style={{ whiteSpace: "nowrap" }}>{d.seriesGame}</Link></td>
-                <td style={{ whiteSpace: "nowrap" }}>{d.team}</td>
-                <td className="muted" style={{ whiteSpace: "nowrap" }}>{d.opponent}</td>
+                <td><Link className="cell-link nowrap" href={link(d.id)}>{d.seriesGame}</Link></td>
+                <td className="nowrap">{d.team}</td>
+                <td className="muted nowrap">{d.opponent}</td>
                 {ROLES.map((r) => <td key={r}><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={d.picks[r] === f.champion} /></td>)}
                 <td className="xs wrap">{d.read}</td>
                 <td><SourceLinks ids={d.sources} sources={sources} /></td>
@@ -121,6 +123,6 @@ export function ProDraftsView({ names, sources, all }: {
           </tbody>
         </table>
       </div>
-    </>
+    </ChampionProvider>
   );
 }

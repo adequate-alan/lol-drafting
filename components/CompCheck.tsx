@@ -90,6 +90,8 @@ export function CompCheck({ draft, enemyIds, champions, botPairings, active, bes
             </div>
           )}
 
+          {grid?.(siege)}
+
           {r.timing && (
             <div className="cc-section">
               <div className="cc-label">Timing</div>
@@ -105,7 +107,7 @@ export function CompCheck({ draft, enemyIds, champions, botPairings, active, bes
         </>
       )}
 
-      {grid?.(siege)}
+      {r.confidence === "none" && grid?.(siege)}
 
       <details className="cc-section cc-more">
         <summary>Full analysis</summary>

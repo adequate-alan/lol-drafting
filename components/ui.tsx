@@ -21,7 +21,7 @@ export const EvidenceBadge = SourceBadge;
 export function LayerBlock({ layer, title, end, children }: { layer: Layer; title?: string; end?: React.ReactNode; children: React.ReactNode }) {
   return (
     <section className={`layer ${layer}`}>
-      <div className="layer-label"><span className="ldot" />{title ?? LAYER_TITLE[layer]}{end && <span style={{ marginLeft: "auto" }}>{end}</span>}</div>
+      <div className="layer-label"><span className="ldot" />{title ?? LAYER_TITLE[layer]}{end && <span className="push">{end}</span>}</div>
       {children}
     </section>
   );
@@ -73,14 +73,6 @@ export function Panel({ title, meta, end, children, className = "", bodyClass = 
   );
 }
 
-export function DataTable({ children, tall = false, className = "" }: { children: React.ReactNode; tall?: boolean; className?: string }) {
-  return <div className={`table-wrap ${tall ? "tall" : ""} ${className}`}><table>{children}</table></div>;
-}
-
-export function Metric({ label, value, sub }: { label: string; value: React.ReactNode; sub?: React.ReactNode }) {
-  return <div className="metric"><span className="m-label">{label}</span><span className="m-value">{value}</span>{sub && <span className="m-sub">{sub}</span>}</div>;
-}
-
 export type Severity = "critical" | "caution" | "healthy";
 export function WarningBadge({ severity }: { severity: Severity }) {
   const cls = severity === "critical" ? "danger" : severity === "caution" ? "caution" : "success";
@@ -110,9 +102,11 @@ export function ChipList({ ids, names, role, empty = "none", notes, strong, dim 
   return <span className="chip-list">{ids.map((id) => <Chip key={id} id={id} name={names[id] ?? id} role={role} note={notes?.[id]} strong={strong} dim={dim} />)}</span>;
 }
 
-/** A champion name with its monogram, for table cells and lists. */
+/** A champion name with its monogram, for table cells and lists. Inside a ChampionProvider it gets the shared hover
+ *  card and drawer. */
 export function ChampionRow({ id, name, role, hit = false, size = "sm" }: { id?: string; name: string; role?: Role; hit?: boolean; size?: "xs" | "sm" | "md" }) {
-  return <span className={`cell-champ ${hit ? "hit" : ""} ${role ? `role-${role}` : ""}`}><ChampIcon id={id} name={name} role={role} size={size} />{name}</span>;
+  const row = <span className={`cell-champ ${hit ? "hit" : ""} ${role ? `role-${role}` : ""}`}><ChampIcon id={id} name={name} role={role} size={size} />{name}</span>;
+  return id ? <InteractiveChampion id={id} role={role}>{row}</InteractiveChampion> : row;
 }
 
 export function Duo({ bot, support, names }: { bot: string; support: string; names: Record<string, string> }) {
@@ -135,12 +129,11 @@ export function SourceLinks({ ids, sources }: { ids: string[]; sources: Record<s
   return (
     <span className="source-links">
       {list.map((s) => (
-        <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer"
+        <a key={s.id} href={s.url} className={s.refreshStatus === "verified" ? "" : "unverified"} target="_blank" rel="noopener noreferrer"
           title={`${s.tournament ?? ""} ${s.seriesGame ?? ""} ${s.team ? `${s.team} vs ${s.opponent}` : ""}\n${s.lastChecked ? `Last checked ${s.lastChecked}` : "Not refreshed since the workbook import"}${s.pendingClaim ? `\nExternally provided${s.pendingClaim.providedBy ? ` by ${s.pendingClaim.providedBy}` : ""} ${s.pendingClaim.providedOn}, pending refresh: ${s.pendingClaim.claim}` : ""}`}>
           Gol.gg {TYPE_LABEL[s.type]}{s.seriesGame ? ` ${s.seriesGame}` : s.team ? ` ${s.team} vs ${s.opponent}` : ""}
-          {s.pendingClaim
-            ? <span className="state"> · externally provided, pending refresh</span>
-            : s.refreshStatus === "not-refreshed" && <span className="state"> · not refreshed</span>}
+          {/* Status lives in the tooltip; only a pending external claim is marked inline. */}
+          {s.pendingClaim && <span className="state"> · pending</span>}
         </a>
       ))}
     </span>

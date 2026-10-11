@@ -14,6 +14,7 @@ import { ChampionHoverCard, useHoverIntent } from "./ChampionInteraction";
 import { GenRang } from "./GenRang";
 import { PairingCard, type CardRecord } from "./PairingCard";
 import { proposedCard } from "@/lib/proposed";
+import { Disclosure } from "./Disclosure";
 import { ChampIcon, ChampionRow, WarningBadge, type Severity } from "./ui";
 
 const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
@@ -189,8 +190,6 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
                       {laneFoes.length
                         ? <span className="vs">vs {laneFoes.map((id, i) => <span key={id}>{i > 0 && " + "}<b>{names[id]}</b></span>)}</span>
                         : enemyIds.length ? <span className="vs muted">vs {enemyIds.map((id) => names[id]).join(" · ")}</span> : null}
-                      <span className="sig-key" title="Pro games are shown as evidence only and never change the order. Matchups use champion attributes, not lane stats.">
-                        <span className="k-saved">Synergy</span><span className="k-counter">Counters</span><span className="k-pro">Pro</span><span className="k-need">Logic</span>
                       </span>
                     </div>
                     {!started ? <div className="rec-empty start"><GenRang size={44} /><span>Lock a pick to start. Recommendations for the open role appear here.</span></div>
@@ -228,46 +227,6 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
             </section>
           )}
 
-          {cards.length > 0 && (
-            <section className="draft-section">
-              <div className="section-header"><h2>Locked picks</h2></div>
-              <div className="grid cols-auto">{cards.map((c) => (
-                <PairingCard key={c.kind + (c.kind === "proposed" ? c.id + c.role : "champion" in c.record ? c.record.champion : c.record.anchor)} item={c} names={names} sources={sources} events={eventMap} compact draftLabels={draftLabels} />
-              ))}</div>
-            </section>
-          )}
-
-          <section className="draft-section">
-            <div className="section-header pro-head-line"><h2>Similar pro drafts</h2></div>
-            {!similar.length ? <p className="xs muted">Nothing recorded shares a champion with this draft.</p> : (
-              <div className="table-wrap">
-                <table>
-                  <thead><tr><th>Game</th><th>Team</th>{ROLES.map((r) => <th key={r}><span className={`role-tag role-${r}`}>{r}</span></th>)}</tr></thead>
-                  <tbody>{similar.map(({ draft: d }) => (
-                    <tr key={d.id}>
-                      <td><Link className="cell-link nowrap" href={`/pro-drafts?id=${d.id}`}>{d.seriesGame}</Link></td><td className="muted nowrap">{d.team}</td>
-                      {ROLES.map((r) => <td key={r}><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={draft[r] === d.picks[r]} /></td>)}
-                    </tr>))}</tbody>
-                </table>
-              </div>
-            )}
-          </section>
-          <section className="draft-section">
-            <div className="section-header"><h2>Similar comps</h2></div>
-            <div className="shell-list">
-              {!shells.length && <p className="xs muted">No shell shares a pick or swap with this draft.</p>}
-              {shells.map(({ shell, exact, swap }) => (
-                <div key={shell.id} className="shell-line">
-                  <div className="row">
-                    <Link href={`/comps#${shell.id}`}><b>{shell.name}</b></Link>
-                    <span className="xs faint">{shell.kind === "observed" ? "pro" : "template"}</span>
-                    <span className="xs muted tnum">{exact} exact · {swap} swap</span>
-                  </div>
-                  <p className="xs muted">{ROLES.map((r) => names[shell.slots[r].champion]).join(" · ")} · {shell.winCondition}</p>
-                </div>
-              ))}
-            </div>
-          </section>
         </div>
 
         <CompCheck draft={draft} enemyIds={enemyIds} champions={data.champions} botPairings={data.botPairings} active={active}
@@ -294,6 +253,45 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
             <ul>{RULES.map((r) => <li key={r.id}><b>{r.label}:</b> {r.rule}</li>)}</ul>
           </details>
         </CompCheck>
+      </div>
+
+      <div className="draft-research">
+        {cards.length > 0 && (
+          <Disclosure section open summary="Locked picks" meta={`${cards.length}`}>
+            <div className="grid cols-auto">{cards.map((c) => (
+              <PairingCard key={c.kind + (c.kind === "proposed" ? c.id + c.role : "champion" in c.record ? c.record.champion : c.record.anchor)} item={c} names={names} sources={sources} events={eventMap} compact draftLabels={draftLabels} />
+            ))}</div>
+          </Disclosure>
+        )}
+        <Disclosure section lazy summary="Similar pro drafts" meta={similar.length ? `${similar.length}` : "none"}>
+          {!similar.length ? <p className="xs muted">Nothing recorded shares a champion with this draft.</p> : (
+            <div className="table-wrap">
+              <table>
+                <thead><tr><th>Game</th><th>Team</th>{ROLES.map((r) => <th key={r}><span className={`role-tag role-${r}`}>{r}</span></th>)}</tr></thead>
+                <tbody>{similar.map(({ draft: d }) => (
+                  <tr key={d.id}>
+                    <td><Link className="cell-link nowrap" href={`/pro-drafts?id=${d.id}`}>{d.seriesGame}</Link></td><td className="muted nowrap">{d.team}</td>
+                    {ROLES.map((r) => <td key={r}><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={draft[r] === d.picks[r]} /></td>)}
+                  </tr>))}</tbody>
+              </table>
+            </div>
+          )}
+        </Disclosure>
+        <Disclosure section lazy summary="Similar comps" meta={shells.length ? `${shells.length}` : "none"}>
+          <div className="shell-list">
+            {!shells.length && <p className="xs muted">No shell shares a pick or swap with this draft.</p>}
+            {shells.map(({ shell, exact, swap }) => (
+              <div key={shell.id} className="shell-line">
+                <div className="row">
+                  <Link href={`/comps#${shell.id}`}><b>{shell.name}</b></Link>
+                  <span className="xs faint">{shell.kind === "observed" ? "pro" : "template"}</span>
+                  <span className="xs muted tnum">{exact} exact · {swap} swap</span>
+                </div>
+                <p className="xs muted">{ROLES.map((r) => names[shell.slots[r].champion]).join(" · ")} · {shell.winCondition}</p>
+              </div>
+            ))}
+          </div>
+        </Disclosure>
       </div>
 
       {hoverCard.card && !drawer && (

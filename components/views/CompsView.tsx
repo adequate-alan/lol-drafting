@@ -107,15 +107,15 @@ export function CompsView({ names, sources, drafts, allShells, data }: {
   const LEVELS: [Level | undefined, string][] = [[undefined, "All"], ["easy", "Easy"], ["medium", "Medium"], ["hard", "Hard"]];
   return (
     <>
-      <PageHeader title="Comp Library" desc="Copy the jobs, not the exact champions." />
-      <div className="row comp-filters">
+      <PageHeader title="Comp Library" />
+      <div className="filters">
         <span className="filter-group"><span className="filter-label">Type</span>
           <nav className="seg" aria-label="Type">{KINDS.map(([k, l]) => <Link key={l} href={href({ kind: k })} className={kind === k ? "active" : undefined}>{l}</Link>)}</nav>
         </span>
         <span className="filter-group"><span className="filter-label">Difficulty</span>
           <nav className="seg" aria-label="Difficulty">{LEVELS.map(([d, l]) => <Link key={l} href={href({ difficulty: d })} className={level === d ? "active" : undefined}>{l}</Link>)}</nav>
         </span>
-        <span className="xs muted tnum" style={{ marginLeft: "auto" }}>{shells.length} of {allShells.length} comps</span>
+        <span className="count">{shells.length} of {allShells.length} comps</span>
       </div>
       <div className="shell-grid">
         {shells.map((s) => {

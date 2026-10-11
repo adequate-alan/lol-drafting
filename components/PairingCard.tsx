@@ -19,8 +19,8 @@ function ObservedShapes({ list, names, sources, anchor, draftLabels }: {
 }) {
   if (!list.length) return null;
   return (
-    <div style={{ marginTop: 6 }}>
-      <div className="xs muted" style={{ marginBottom: 2 }}><b>Pro bot lanes</b></div>
+    <div className="gap-top">
+      <div className="label">Pro bot lanes</div>
       {list.map((o) => (
         <div key={o.bot + o.support} className="obs-row">
           <Duo bot={o.bot} support={o.support} names={names} />
@@ -101,7 +101,7 @@ export function PairingCard({ item, names, sources, events, compact = false, dra
         </LayerBlock>
         <LayerBlock layer="pro" title="Pro pairings">
           <Observed list={r.observedProPairings} names={names} sources={sources} events={events} role="SUPPORT" draftLabels={draftLabels} />
-          {!compact && r.playoffRead && <p className="small" style={{ marginTop: 6 }}><b>Current playoff read:</b> {r.playoffRead}</p>}
+          {!compact && r.playoffRead && <p className="small gap-top"><b>Current playoff read:</b> {r.playoffRead}</p>}
         </LayerBlock>
         {r.logic.warning && <LayerBlock layer="logic" title="Warning"><p className="small">{r.logic.warning}</p></LayerBlock>}
         {!compact && r.sources.length > 0 && <div className="pick-foot"><SourceLinks ids={r.sources} sources={sources} /></div>}
@@ -147,7 +147,7 @@ export function PairingCard({ item, names, sources, events, compact = false, dra
         <LayerBlock layer="pro" title={`Pro ${other.toLowerCase()} partners`}>
           <Observed list={r.observedProPairings} names={names} sources={sources} events={events} role={other} draftLabels={draftLabels} />
           {!compact && <ObservedShapes list={r.observedBotShapes} names={names} sources={sources} anchor={r.anchor} draftLabels={draftLabels} />}
-          {!compact && r.playoffRead && <p className="small" style={{ marginTop: 6 }}><b>Current playoff read:</b> {r.playoffRead}</p>}
+          {!compact && r.playoffRead && <p className="small gap-top"><b>Current playoff read:</b> {r.playoffRead}</p>}
         </LayerBlock>
         {r.history.length > 0 && (
           <section className="layer">
@@ -178,7 +178,7 @@ export function PairingCard({ item, names, sources, events, compact = false, dra
         end={item.stats && <span className="xs muted tnum">{item.stats.picks} playoff picks · {Math.round(item.stats.winRate * 100)}% WR{item.stats.lowSample ? " · low sample" : ""}</span>}>
         {!compact && <Observed list={r.observedProPairings} names={names} sources={sources} events={events} role="JUNGLE" draftLabels={draftLabels} />}
         {!compact && <ObservedShapes list={r.observedBotShapes} names={names} sources={sources} anchor={r.champion} draftLabels={draftLabels} />}
-        {r.playoffRead && <p className="small" style={{ marginTop: 6 }}><b>Current playoff read:</b> {r.playoffRead}</p>}
+        {r.playoffRead && <p className="small gap-top"><b>Current playoff read:</b> {r.playoffRead}</p>}
       </LayerBlock>
       <LayerBlock layer="logic">
         <dl className="kv">

@@ -1,8 +1,11 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState } from "react";
+import { ChampionProvider } from "@/components/ChampionInteraction";
+import { Disclosure } from "@/components/Disclosure";
 import { Select } from "@/components/Select";
-import { ChampionRow, ChipList, LayerBlock, PageHeader, SourceLinks, pct } from "@/components/ui";
+import type { DrawerData } from "@/lib/data";
+import { ChampionRow, ChipList, LayerBlock, PageHeader, SectionHeader, SourceLinks, pct } from "@/components/ui";
 import { describeLine, groupObserved, shortDate, type EventMap } from "@/lib/evidence";
 import { PARTNER_ROLE, SORTS, TIERS, allRoles, poolRows, presenceOf, roleShare, roleUnconfirmed, sortRows, type PoolInput, type PoolRow, type SortKey, type Tier } from "@/lib/pool-stats";
 import { handAlts } from "@/lib/pro-alternatives";
@@ -13,8 +16,8 @@ import { ROLES, type BotPairing, type MidJunglePairing, type ObservedPairing, ty
 const TIER_LABEL = Object.fromEntries(TIERS) as Record<Tier, string>;
 const DASH = <span className="faint">—</span>;
 
-export function PoolView({ names, data, bot, midJungle, top, proposed }: {
-  names: Record<string, string>; data: PoolInput; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; proposed: ProposedRecord[];
+export function PoolView({ names, data, bot, midJungle, top, proposed, drawerData }: {
+  names: Record<string, string>; data: PoolInput; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; proposed: ProposedRecord[]; drawerData: DrawerData;
 }) {
   // Filters live in the URL so a view can be shared; window.location keeps the GitHub Pages base path.
   const initial = useSearchParams();
@@ -54,9 +57,9 @@ export function PoolView({ names, data, bot, midJungle, top, proposed }: {
   );
 
   return (
-    <>
+    <ChampionProvider data={drawerData}>
       <PageHeader title="Champion Pool" />
-      <div className="toolbar pool-tools">
+      <div className="toolbar">
         <nav className="seg" aria-label="Role">
           <button className={!role ? "active" : undefined} onClick={() => set("role", undefined)}>All</button>
           {ROLES.map((r) => <button key={r} className={role === r ? "active" : undefined} onClick={() => set("role", r)}><span className={`role-tag role-${r}`}>{r}</span></button>)}
@@ -88,7 +91,7 @@ export function PoolView({ names, data, bot, midJungle, top, proposed }: {
                 <Fragment key={key}>
                   <tr id={`pool-${r.role}-${r.id}`} className={`role-${r.role} pool-row ${isOpen ? "open" : ""}`} onClick={() => setOpen(isOpen ? undefined : key)}
                     tabIndex={0} aria-expanded={isOpen} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setOpen(isOpen ? undefined : key); } }}>
-                    <td><ChampionRow id={r.id} name={names[r.id] ?? r.id} role={r.role} size="md" /></td>
+                    <td><ChampionRow id={r.id} name={names[r.id] ?? r.id} role={r.role} /></td>
                     <td className="hide-sm"><span className={`role-tag role-${r.role}`}>{r.role}</span></td>
                     <td><span className={`tier ${r.tier}`}>{TIER_LABEL[r.tier]}</span></td>
                     <td className="num" title={r.stat && !event ? `${r.stat.event.short} ${r.stat.event.patch} tournament stats` : undefined}>{s ? <>{s.picks}{s.lowSample && <span className="low" title="Fewer than 5 picks">*</span>}{(roleUnconfirmed(r.stat!, r.role) || allRoles(r.stat!)) && <span className="xs faint" title="Champion-wide tournament total; the source does not split it by role"> all roles</span>}</> : DASH}</td>
@@ -112,26 +115,26 @@ export function PoolView({ names, data, bot, midJungle, top, proposed }: {
           </tbody>
         </table>
       </div>
-      <p className="xs muted" style={{ marginTop: 6 }}>
-        Picks, bans, presence and win rate are full-tournament stats (bans and presence are champion-wide), shown for the role
-        the champion is listed under; with All tournaments each row uses its newest tournament. Recorded counts games stored
-        here and never feeds those numbers. * is fewer than 5 picks.
-        {ongoing.length > 0 && ` ${ongoing.map((e) => e.short).join(", ")} is ongoing, so its numbers are not final.`}
-      </p>
+      <Disclosure summary="How these numbers work">
+        <p>
+          Picks, bans, presence and win rate are full-tournament stats (bans and presence are champion-wide), shown for the role
+          the champion is listed under; with All tournaments each row uses its newest tournament. Recorded counts games stored
+          here and never feeds those numbers. * is fewer than 5 picks.
+          {ongoing.length > 0 && ` ${ongoing.map((e) => e.short).join(", ")} is ongoing, so its numbers are not final.`}
+        </p>
+      </Disclosure>
 
-      <section className="panel" style={{ marginTop: 12 }}>
-        <div className="panel-head"><h2>What changed, by role</h2></div>
-        <div className="pool-changes">
-          {data.pool.filter((p) => !role || p.role === role).map((p) => (
-            <div key={p.role} className={`pattern role-${p.role}`}>
-              <span className={`role-tag role-${p.role}`}>{p.role}</span>
-              <p className="small" style={{ marginTop: 2 }}>{p.changed}</p>
-              <SourceLinks ids={p.sources} sources={data.sources} />
-            </div>
-          ))}
-        </div>
-      </section>
-    </>
+      <SectionHeader title="What changed, by role" />
+      <div className="pool-changes">
+        {data.pool.filter((p) => !role || p.role === role).map((p) => (
+          <div key={p.role} className={`pattern role-${p.role}`}>
+            <span className={`role-tag role-${p.role}`}>{p.role}</span>
+            <p className="small">{p.changed}</p>
+            <SourceLinks ids={p.sources} sources={data.sources} />
+          </div>
+        ))}
+      </div>
+    </ChampionProvider>
   );
 }
 

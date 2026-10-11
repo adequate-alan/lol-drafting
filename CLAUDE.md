@@ -146,6 +146,14 @@ Change these only when alan explicitly says so, then update the test in the same
 
 ## UI
 
+- **Don't make pages busier with each feature** (alan, 2026-10-11). New data should make existing elements more useful
+  through hover (ChampionHoverCard), expansion (`components/Disclosure.tsx`, row detail) or the drawer, not a new
+  permanent panel. Explanatory footnotes, method notes and research sections go behind a Disclosure.
+- Design system (2026-10-11 cleanup): `app/globals.css` is one consolidated file (tokens → base → shell → type →
+  primitives → interaction → pages → motion). Extend a primitive before adding page CSS; no inline `style` for spacing.
+  Uppercase only for page titles (h1) and role codes; every other label shares the sentence-case `.label` style. Source
+  links carry their refresh status in the tooltip; only a pending external claim is marked inline ("· pending").
+  Every page that shows champions wraps them in `ChampionProvider`, so hover card, drawer and mobile sheet match.
 - **Champion Synergies** (`/synergies/<tab>/`, sidebar "Synergies"; alan renamed it from First Pick on 2026-10-10) is
   the champion synergy and pairing reference: rail, role tabs, saved / proposed partners, pro pairings, "Open in Draft
   Room". Old `/first-pick/…` URLs forward there with their query (`components/Forward.tsx`). The name **First Pick** is
