@@ -31,6 +31,9 @@ export const Source = z.object({
   seriesGame: z.string().optional(),
   patch: z.string().optional(),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(), // game date, when known
+  // A game's sides and winner as its Gol.gg page shows them, team names as the stored drafts write them. Each stored
+  // draft citing the game inherits its side from here (lib/draft-side.ts). Set only from a read of the page.
+  sides: z.object({ blue: z.string(), red: z.string(), winner: z.enum(["blue", "red"]) }).optional(),
   lastChecked: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
   refreshStatus: z.enum(["verified", "not-refreshed"]), // "verified" only when Claude itself re-read the page
   origin: z.enum(["workbook", "golgg-refresh", "externally-provided"]),
