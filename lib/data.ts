@@ -6,6 +6,7 @@ import { buildLibrary, type Library } from "./comp-library";
 import { withProAlternatives } from "./pro-alternatives";
 import { withGameSides } from "./draft-side";
 import { draftsFromGames, freshness, resultsFromGames, sourcesFromGames } from "./pro-games";
+import { buildPatchIndex } from "./patch-changes";
 import { withoutConfirmed } from "./proposed";
 import { Files } from "./schema";
 
@@ -51,6 +52,11 @@ export const getCounters = () => (counters ??= ((c) => ({ ...c, proResults: [...
 let proposed: Parsed<"proposed-synergy.json"> | undefined;
 export const getProposed = () => (proposed ??= withoutConfirmed(load("proposed-synergy.json"), { botPairings: getBotPairings(), midJungle: getMidJungle(), topPicks: getTopPicks() }));
 
+// Official Riot patch notes (26.16 onward, refreshed daily) and the compact index pages pass to the browser.
+export const getPatchNotes = () => load("patch-notes.json");
+let patchIndex: ReturnType<typeof buildPatchIndex> | undefined;
+export const getPatchIndex = () => (patchIndex ??= buildPatchIndex(getPatchNotes()));
+
 // Everything the interactive Draft Room needs in the browser.
 export function getDraftData() {
   return {
@@ -80,6 +86,7 @@ export function getDrawerData() {
     meta: getMeta(),
     sources: Object.fromEntries(getSources().map((s) => [s.id, s])),
     proposed: getProposed().records,
+    patches: getPatchIndex(),
   };
 }
 export type DrawerData = ReturnType<typeof getDrawerData>;

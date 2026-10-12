@@ -1301,6 +1301,89 @@ tr.pair-a.selected td, tr.pair-b.selected td { background: var(--accent-subtle);
 .pattern .p-title { font-family: var(--font-display); font-weight: var(--w-strong); }
 .pattern p { margin: 2px 0 var(--s2); font-size: var(--fs-sm); }
 
+/* ===== Patch Notes: Riot's official changes, compact rows, before → after in mono. Buff / nerf are colored text only.
+   Riot's note and the draft implications (analysis, dashed tag) stay folded under each entry. ===== */
+.toolbar.pn-tools { position: sticky; top: 0; z-index: 6; margin-bottom: var(--s5); border-bottom: 1px solid var(--border); border-radius: var(--r-lg); }
+.pn-step { display: inline-flex; align-items: center; gap: var(--s1); }
+.pn-step .icon-btn:disabled { opacity: .35; cursor: default; background: transparent; }
+.seg button:disabled { opacity: .45; cursor: default; background: transparent; }
+.seg button .count { color: var(--text-faint); font-size: var(--fs-2xs); }
+.pn-modes { margin-left: auto; display: inline-flex; gap: var(--s3); }
+.pn-meta { display: inline-flex; flex-wrap: wrap; gap: 0 var(--s3); }
+.pn-meta > * + *::before { content: "·"; margin-right: var(--s3); color: var(--text-faint); }
+.pn-meta b { color: var(--text); font-weight: var(--w-strong); }
+.pn-section + .pn-section { margin-top: var(--s6); }
+.pn-section > .section-header { margin-bottom: var(--s3); }
+.pn-cat { margin: var(--s4) 0 var(--s3); font-size: var(--fs-sm); font-weight: var(--w-strong); color: var(--text-muted); }
+.pn-cat .count { margin-left: var(--s2); font-size: var(--fs-2xs); font-weight: 400; color: var(--text-faint); }
+.pn-list { columns: 2 400px; column-gap: var(--s4); }
+.pn-entry {
+  break-inside: avoid; display: grid; gap: var(--s3); margin-bottom: var(--s4); padding: var(--s4);
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); scroll-margin-top: 72px;
+}
+.pn-entry.pn-target { border-color: var(--accent); }
+.pn-head { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; min-width: 0; }
+.pn-name { font-family: var(--font-display); font-weight: var(--w-strong); }
+.pn-src { margin-left: auto; font-size: var(--fs-2xs); color: var(--text-faint); }
+.pn-src:hover { color: var(--text); }
+.pn-icon { flex: none; width: var(--icon-md); height: var(--icon-md); border-radius: var(--r-sm); object-fit: cover; background: var(--surface-sunken); box-shadow: inset 0 0 0 1px var(--border); }
+.pn-icon.sm { width: var(--icon-sm); height: var(--icon-sm); }
+.pn-icon.sys { display: inline-grid; place-items: center; font-family: var(--font-display); font-size: var(--fs-2xs); color: var(--text-muted); text-transform: lowercase; }
+.pn-verdict { font-size: var(--fs-2xs); font-weight: var(--w-strong); white-space: nowrap; }
+.v-buff { color: var(--success); }
+.v-nerf { color: var(--danger); }
+.v-adjustment { color: var(--text-muted); }
+.v-rework { color: var(--accent-text); }
+.pn-tags { display: inline-flex; flex-wrap: wrap; gap: var(--s2); }
+.pn-tag { display: inline-flex; align-items: center; height: 16px; padding: 0 4px; font-size: var(--fs-2xs); color: var(--text-muted); border: 1px solid var(--border-strong); border-radius: var(--r-sm); white-space: nowrap; }
+.pn-tag.t-new { color: var(--success); }
+.pn-tag.t-removed { color: var(--danger); }
+.pn-lines .pn-tag { margin-right: var(--s2); }
+.pn-groups { display: grid; gap: var(--s3); }
+.pn-group { display: grid; gap: 2px; }
+.pn-ability { display: inline-flex; align-items: center; gap: var(--s2); font-size: var(--fs-xs); font-weight: var(--w-control); color: var(--text-muted); }
+.pn-ability img { width: 18px; height: 18px; border-radius: var(--r-sm); }
+.pn-lines { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); line-height: 1.35; }
+.pn-label { margin-right: var(--s2); color: var(--text); font-weight: var(--w-control); }
+.pn-label::after { content: ":"; }
+.pn-vals { font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: -.02em; overflow-wrap: anywhere; }
+.pn-old { color: var(--text-muted); }
+.pn-arrow { margin: 0 5px; color: var(--accent-text); font-family: var(--font); }
+.pn-new { color: var(--text); font-weight: var(--w-strong); }
+.pn-text { color: var(--text-muted); }
+.pn-affects { margin: 0; }
+.pn-fold { margin-top: 0; }
+.pn-fold > .disclosure-body p { margin: 0; }
+.pn-analysis { margin-left: var(--s2); padding: 0 4px; font-size: var(--fs-2xs); color: var(--logic); border: 1px dashed var(--logic-line); border-radius: var(--r-sm); }
+.pn-patch { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--accent-text); white-space: nowrap; }
+.pn-range { margin: 0 0 var(--s4); }
+.pn-hits { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); }
+.pn-hit { display: inline-flex; align-items: baseline; gap: 4px; color: var(--text); }
+.pn-hit .tnum { font-family: var(--font-mono); font-size: var(--fs-xs); }
+.pn-compare td { vertical-align: top; padding-top: 6px; padding-bottom: 6px; }
+.pn-cmp-patch { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: var(--s2) var(--s3); }
+.pn-rows { display: grid; gap: var(--s3); margin: 0; padding: 0; list-style: none; }
+.pn-row { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: var(--s3); font-size: var(--fs-xs); line-height: 1.35; }
+.pn-row-main { display: grid; gap: 1px; min-width: 0; }
+.pn-row-line { color: var(--text-muted); }
+.drawer-patch { padding: var(--s4) var(--pad-card); border-bottom: 1px solid var(--border); }
+.drawer-patch > .disclosure { margin-top: 0; }
+.drawer-patch .disclosure-body p { margin: 0; }
+.hc-patch { margin: 0 0 var(--s2); }
+.pop-trigger.pn-since { font-size: var(--fs-xs); color: var(--accent-text); white-space: nowrap; }
+.pop-trigger.pn-since .count { color: var(--text-faint); }
+.pn-since-card { width: min(380px, calc(100vw - 16px)); }
+.pn-since-card p { margin: 0 0 var(--s3); }
+@media (max-width: 960px) {
+  .toolbar.pn-tools { top: 48px; }
+  .pn-entry { scroll-margin-top: 120px; }
+}
+@media (max-width: 620px) {
+  .toolbar.pn-tools { position: static; }
+  .pn-modes { margin-left: 0; }
+  .pn-list { columns: 1; }
+}
+
 /* ---------- 8. Motion ---------- */
 /* Theme switch: colors cross-fade briefly (ThemeToggle sets the class) */
 .theme-switching, .theme-switching *, .theme-switching *::before, .theme-switching *::after {

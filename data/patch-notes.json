@@ -1,0 +1,3403 @@
+{
+  "firstPatch": "26.16",
+  "source": "https://www.leagueoflegends.com/en-us/news/tags/patch-notes/",
+  "patches": [
+    {
+      "patch": "26.20",
+      "short": "16.20",
+      "title": "League of Legends Patch 26.20 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-20-notes/",
+      "published": "2026-10-06",
+      "rev": "0wTGOHdF3u4bmKC2Z9kPkR",
+      "midPatch": [],
+      "excluded": [
+        "Patch Highlights",
+        "Private Replays",
+        "Classic",
+        "ARAM: Mayhem",
+        "ARAM",
+        "Ranked 5s",
+        "Upcoming Skins & Chromas"
+      ],
+      "bugfixesLeftOut": 12,
+      "entries": [
+        {
+          "id": "champion-ambessa",
+          "kind": "champion",
+          "subject": "Ambessa",
+          "anchor": "patch-ambessa",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Ambessa.png",
+          "context": "Ambessa has been too reliable in her late game output for players with high mastery in all brackets, but especially pro-play.",
+          "groups": [
+            {
+              "title": "Passive - Drakehound's Step",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/passive/Icon_Ambessa_Passive.png",
+              "changes": [
+                {
+                  "text": "Damage: 5 - 30 (+25% bonus AD) ⇒ 5 - 25 (+20% bonus AD)",
+                  "label": "Damage",
+                  "before": "5 - 30 (+25% bonus AD)",
+                  "after": "5 - 25 (+20% bonus AD)"
+                }
+              ]
+            }
+          ],
+          "ref": "ambessa",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-ashe",
+          "kind": "champion",
+          "subject": "Ashe",
+          "anchor": "patch-ashe",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Ashe.png",
+          "context": "Ashe is one of the premier marksmen in pro play at the moment, and we're seeing her output too much raw damage given her position as the highest utility marksman in the game.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Attack Damage per Level: 3.5 ⇒ 3",
+                  "label": "Attack Damage per Level",
+                  "before": "3.5",
+                  "after": "3"
+                }
+              ]
+            }
+          ],
+          "ref": "ashe",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-cassiopeia",
+          "kind": "champion",
+          "subject": "Cassiopeia",
+          "anchor": "patch-cassiopeia",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Cassiopeia.png",
+          "context": "Our changes two patches ago to Cassiopeia have been pretty good directionally, with most players being proportionally less impacted from those adjustments than pros. We're taking another swing at her early resources because of how dominant she still is in early laning, making her work a little harder to create an advantage.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Base Health: 630 ⇒ 610",
+                  "label": "Base Health",
+                  "before": "630",
+                  "after": "610"
+                },
+                {
+                  "text": "Base Mana: 480 ⇒ 450",
+                  "label": "Base Mana",
+                  "before": "480",
+                  "after": "450"
+                }
+              ]
+            }
+          ],
+          "ref": "cassiopeia",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-diana",
+          "kind": "champion",
+          "subject": "Diana",
+          "anchor": "patch-diana",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Diana.png",
+          "context": "While Diana's assassin build shines, her bruiser builds tend to be lagging a good bit behind. We want to inject a bit more power into that playstyle.",
+          "groups": [
+            {
+              "title": "W - Pale Cascade",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/DianaOrbs.png",
+              "changes": [
+                {
+                  "text": "Shield Bonus Health Ratio: 11% ⇒ 14%",
+                  "label": "Shield Bonus Health Ratio",
+                  "before": "11%",
+                  "after": "14%"
+                }
+              ]
+            }
+          ],
+          "ref": "diana",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-kennen",
+          "kind": "champion",
+          "subject": "Kennen",
+          "anchor": "patch-kennen",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Kennen.png",
+          "context": "Stacking the odds a bit more in his favor with his signature spell (in Riftbound) and offsetting Rocketbelt changes that he'll be a bit less excited about.",
+          "groups": [
+            {
+              "title": "E - Lightning Rush",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/KennenLightningRush.png",
+              "changes": [
+                {
+                  "text": "Bonus Attack Speed: 40 / 50 / 60 / 70 / 80% ⇒ 50 / 60 / 70 / 80 / 90%",
+                  "label": "Bonus Attack Speed",
+                  "before": "40 / 50 / 60 / 70 / 80%",
+                  "after": "50 / 60 / 70 / 80 / 90%"
+                }
+              ]
+            }
+          ],
+          "ref": "kennen",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-kindred",
+          "kind": "champion",
+          "subject": "Kindred",
+          "anchor": "patch-kindred",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Kindred.png",
+          "context": "Kindred is currently a bit weak, so we're giving them buffs in areas that won't make them much more overwhelming in early invades. Optimistically, they'd also make a pretty unique addition to the meta.",
+          "groups": [
+            {
+              "title": "W - Wolf's Frenzy",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/KindredW.png",
+              "changes": [
+                {
+                  "text": "Monster Mod: 150% ⇒ 165%",
+                  "label": "Monster Mod",
+                  "before": "150%",
+                  "after": "165%"
+                }
+              ]
+            },
+            {
+              "title": "E - Mounting Dread",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/KindredEWrapper.png",
+              "changes": [
+                {
+                  "text": "Slow Duration: 1s ⇒ 1.5s",
+                  "label": "Slow Duration",
+                  "before": "1s",
+                  "after": "1.5s"
+                },
+                {
+                  "text": "Small Monster Targeting: Enabled ⇒ Removed",
+                  "label": "Small Monster Targeting",
+                  "before": "Enabled",
+                  "after": "Removed"
+                }
+              ]
+            }
+          ],
+          "ref": "kindred",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-ksante",
+          "kind": "champion",
+          "subject": "K'Sante",
+          "anchor": "patch-ksante",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/KSante.png",
+          "context": "Warding off this warden from being as reliable as a blind pick in coordinated play - hurting early mana and consistent W damage reduction, which should be skewed for elite audiences.",
+          "groups": [
+            {
+              "title": "W - Path Maker",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/KSanteW.png",
+              "changes": [
+                {
+                  "text": "Mana Cost: 40 / 45 / 50 / 55 / 60 ⇒ 45 / 50 / 55 / 60 / 65",
+                  "label": "Mana Cost",
+                  "before": "40 / 45 / 50 / 55 / 60",
+                  "after": "45 / 50 / 55 / 60 / 65"
+                },
+                {
+                  "text": "W Base/All-Out Damage Reduction: 30 / 75% ⇒ 25 / 70%",
+                  "label": "W Base/All-Out Damage Reduction",
+                  "before": "30 / 75%",
+                  "after": "25 / 70%"
+                }
+              ]
+            }
+          ],
+          "ref": "ksante",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-lillia",
+          "kind": "champion",
+          "subject": "Lillia",
+          "anchor": "patch-lillia",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Lillia.png",
+          "context": "Last patch we looked to inject a bit more power into the deer, but didn't quite see the movement we were looking for. We believe there is a bit more room for her to really prance around various levels of play so we are following up with another buff that'll really help her shine.",
+          "groups": [
+            {
+              "title": "R - Lilting Lullaby",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/LilliaR.png",
+              "changes": [
+                {
+                  "text": "Duration: 2.5s ⇒ 2.5 / 2.75 / 3s",
+                  "label": "Duration",
+                  "before": "2.5s",
+                  "after": "2.5 / 2.75 / 3s"
+                }
+              ]
+            }
+          ],
+          "ref": "lillia",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-lucian",
+          "kind": "champion",
+          "subject": "Lucian",
+          "anchor": "patch-lucian",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Lucian.png",
+          "context": "Last patch's adjustment to help normalize mid and bot performance ended up landing as a nerf for bot lane, so we're following up with a buff to make up for the lost power.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Attack Damage: 60 + 2.5/Level ⇒ 60 + 2.9/Level",
+                  "label": "Attack Damage",
+                  "before": "60 + 2.5/Level",
+                  "after": "60 + 2.9/Level"
+                }
+              ]
+            }
+          ],
+          "ref": "lucian",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-mordekaiser",
+          "kind": "champion",
+          "subject": "Mordekaiser",
+          "anchor": "patch-mordekaiser",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Mordekaiser.png",
+          "context": "Windows between Mordekaiser's ultimates make it hard to keep up with the pace of much of his opposition. His bread and butter (Q) can also feel less impactful as the pace of the game increases, so we think it can do more damage later on.",
+          "groups": [
+            {
+              "title": "Q - Obliterate",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/MordekaiserQ.png",
+              "changes": [
+                {
+                  "text": "Scaling Level 10-20: (+5/lvl) ⇒ (+7/lvl)",
+                  "label": "Scaling Level 10-20",
+                  "before": "(+5/lvl)",
+                  "after": "(+7/lvl)"
+                }
+              ]
+            },
+            {
+              "title": "R - Realm of Death",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/MordekaiserR.png",
+              "changes": [
+                {
+                  "text": "Cooldown: 140 / 120 / 100s ⇒ 120 / 110 / 100s",
+                  "label": "Cooldown",
+                  "before": "140 / 120 / 100s",
+                  "after": "120 / 110 / 100s"
+                }
+              ]
+            }
+          ],
+          "ref": "mordekaiser",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-neeko",
+          "kind": "champion",
+          "subject": "Neeko",
+          "anchor": "patch-neeko",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Neeko.png",
+          "context": "Rocketbelt's adjustment this patch will probably land as a small nerf for Neeko, so we're giving her some minor compensation",
+          "groups": [
+            {
+              "title": "E - Tangle-Barbs",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/NeekoE.png",
+              "changes": [
+                {
+                  "text": "Base Damage: 70 / 105 / 140 / 175 / 210 (+65% AP) ⇒ 80 / 115 / 150 / 185 / 220 (+65% AP)",
+                  "label": "Base Damage",
+                  "before": "70 / 105 / 140 / 175 / 210 (+65% AP)",
+                  "after": "80 / 115 / 150 / 185 / 220 (+65% AP)"
+                },
+                {
+                  "text": "Empowered Root Duration: 1.8 / 2.1 / 2.4 / 2.7 / 3s ⇒ 2 / 2.25 / 2.5 / 2.75 / 3s",
+                  "label": "Empowered Root Duration",
+                  "before": "1.8 / 2.1 / 2.4 / 2.7 / 3s",
+                  "after": "2 / 2.25 / 2.5 / 2.75 / 3s"
+                }
+              ]
+            }
+          ],
+          "ref": "neeko",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-smolder",
+          "kind": "champion",
+          "subject": "Smolder",
+          "anchor": "patch-smolder",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Smolder.png",
+          "context": "Smolder has lost quite a bit of power over the last few patches, with the Cleaver ranged nerf and bot lane meta changes disfavoring him significantly. We're further encouraging crit builds to bring his bruiser and full crit builds closer in power.",
+          "groups": [
+            {
+              "title": "Passive - Dragon Practice",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/passive/Icons_Smolder_Passive.png",
+              "changes": [
+                {
+                  "text": "Super Scorcher Bonus Magic Damage: 25 - 55% (+0-9% with IE) of Dragon Practice Stacks, scaling with Crit Chance ⇒ 25 - 60% (+0-10.5% with IE) of Dragon Practice Stacks, scaling with Crit Chance",
+                  "label": "Super Scorcher Bonus Magic Damage",
+                  "before": "25 - 55% (+0-9% with IE) of Dragon Practice Stacks, scaling with Crit Chance",
+                  "after": "25 - 60% (+0-10.5% with IE) of Dragon Practice Stacks, scaling with Crit Chance"
+                },
+                {
+                  "text": "Flap Flap Flap Bonus Magic Damage: 8 - 12.8% (+0-1.44% with IE) of Dragon Practice Stacks, scaling with Crit Chance ⇒ 8 - 14% (+0-1.8% with IE) of Dragon Practice Stacks, scaling with Crit Chance",
+                  "label": "Flap Flap Flap Bonus Magic Damage",
+                  "before": "8 - 12.8% (+0-1.44% with IE) of Dragon Practice Stacks, scaling with Crit Chance",
+                  "after": "8 - 14% (+0-1.8% with IE) of Dragon Practice Stacks, scaling with Crit Chance"
+                }
+              ]
+            },
+            {
+              "title": "R - Mmooommmm!",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/SmolderR.png",
+              "changes": [
+                {
+                  "text": "Self Heal: 100 / 135 / 170 (+50% bonus AD) (+75% AP) ⇒ 100 / 175 / 250 (+75% bonus AD) (+75% AP)",
+                  "label": "Self Heal",
+                  "before": "100 / 135 / 170 (+50% bonus AD) (+75% AP)",
+                  "after": "100 / 175 / 250 (+75% bonus AD) (+75% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "smolder",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-swain",
+          "kind": "champion",
+          "subject": "Swain",
+          "anchor": "patch-swain",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Swain.png",
+          "context": "We're giving Swain mid a moderate buff this patch while also making an adjustment that should help normalize his mid and bot lane performance.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Base Magic Resistance: 31 ⇒ 34",
+                  "label": "Base Magic Resistance",
+                  "before": "31",
+                  "after": "34"
+                },
+                {
+                  "text": "Base Armor: 25 ⇒ 23",
+                  "label": "Base Armor",
+                  "before": "25",
+                  "after": "23"
+                }
+              ]
+            },
+            {
+              "title": "W - Vision of Empire",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/SwainW.png",
+              "changes": [
+                {
+                  "text": "Damage: 70 / 105 / 140 / 175 / 210 (+60%) ⇒ 70 / 115 / 160 / 205 / 250 (+60%)",
+                  "label": "Damage",
+                  "before": "70 / 105 / 140 / 175 / 210 (+60%)",
+                  "after": "70 / 115 / 160 / 205 / 250 (+60%)"
+                },
+                {
+                  "text": "Cooldown: 22 / 21 / 20 / 19 / 18s ⇒ 20 / 19 / 18 / 17 / 16s",
+                  "label": "Cooldown",
+                  "before": "22 / 21 / 20 / 19 / 18s",
+                  "after": "20 / 19 / 18 / 17 / 16s"
+                }
+              ]
+            }
+          ],
+          "ref": "swain",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-tahm-kench",
+          "kind": "champion",
+          "subject": "Tahm Kench",
+          "anchor": "patch-tahmkench",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/TahmKench.png",
+          "context": "As one of the tank supports with the lowest health regen, and many health scaling values on his abilities, Tahm Kench lost out on the recent adjustments to the support item. We're giving him compensation for that.",
+          "groups": [
+            {
+              "title": "Q - Tongue Lash",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/TahmKenchQ.png",
+              "changes": [
+                {
+                  "text": "Base Healing: 10 / 13.75 / 17.5 / 21.25 / 25 ⇒ 10 / 20 / 30 / 40 / 50",
+                  "label": "Base Healing",
+                  "before": "10 / 13.75 / 17.5 / 21.25 / 25",
+                  "after": "10 / 20 / 30 / 40 / 50"
+                }
+              ]
+            }
+          ],
+          "ref": "tahm-kench",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-vayne",
+          "kind": "champion",
+          "subject": "Vayne",
+          "anchor": "patch-vayne",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Vayne.png",
+          "context": "Vayne has settled into a fairly weak spot, and while we still aren't totally happy with her top vs bot skew, we're getting closer. We're adjusting her base stats to help in bot where she needs to weather harass, and reverting a mana cost to her Q that simply felt way too bad.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Health per 5: 4 + .5/Level ⇒ 5.5 +.4/Level",
+                  "label": "Health per 5",
+                  "before": "4 + .5/Level",
+                  "after": "5.5 +.4/Level"
+                }
+              ]
+            },
+            {
+              "title": "Q - Tumble",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/VayneTumble.png",
+              "changes": [
+                {
+                  "text": "Mana Cost: 46 / 42 / 38 / 34 / 30 ⇒ 30",
+                  "label": "Mana Cost",
+                  "before": "46 / 42 / 38 / 34 / 30",
+                  "after": "30"
+                }
+              ]
+            }
+          ],
+          "ref": "vayne",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-yunara",
+          "kind": "champion",
+          "subject": "Yunara",
+          "anchor": "patch-vayne",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Yunara.png",
+          "context": "Yunara is the leading candidate for \"handshake hyperscaler do nothing\" and we want to avoid that becoming the dominant meta, especially heading into worlds.",
+          "groups": [
+            {
+              "title": "Q - Cultivation of Spirit",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/YunaraQ.png",
+              "changes": [
+                {
+                  "text": "Passive On Hit Damage: 5 / 10 / 15 / 20 / 25 (+20% AP) ⇒ 3 / 8 / 13 / 18 / 23 (+20% AP)",
+                  "label": "Passive On Hit Damage",
+                  "before": "5 / 10 / 15 / 20 / 25 (+20% AP)",
+                  "after": "3 / 8 / 13 / 18 / 23 (+20% AP)"
+                },
+                {
+                  "text": "Active On Hit Damage: 5 / 10 / 15 / 20 / 25 (+20% AP) ⇒ 3 / 8 / 13 / 18 / 23 (+20% AP)",
+                  "label": "Active On Hit Damage",
+                  "before": "5 / 10 / 15 / 20 / 25 (+20% AP)",
+                  "after": "3 / 8 / 13 / 18 / 23 (+20% AP)"
+                }
+              ]
+            },
+            {
+              "title": "W - Arc of Judgement",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/YunaraW.png",
+              "changes": [
+                {
+                  "text": "Slow Stacking: Stacks with other slows ⇒ No longer stacks with other slows",
+                  "label": "Slow Stacking",
+                  "before": "Stacks with other slows",
+                  "after": "No longer stacks with other slows"
+                }
+              ]
+            }
+          ],
+          "ref": "yunara",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-experimental-hexplate",
+          "kind": "item",
+          "subject": "Experimental Hexplate",
+          "anchor": "patch-Experimental-Hexplate",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/item/3073.png",
+          "context": "We've been fairly unhappy with how this item has played out for ranged users, especially as a first rush in top lane where it makes them too resilient to burst and too lethal during all ins.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Ranged Mod: 70% of Value (35% Attack Speed, 14% Move Speed) ⇒ 50% of Value (25% Attack Speed, 10% Move Speed)",
+                  "label": "Ranged Mod",
+                  "before": "70% of Value (35% Attack Speed, 14% Move Speed)",
+                  "after": "50% of Value (25% Attack Speed, 10% Move Speed)"
+                }
+              ]
+            }
+          ],
+          "ref": "experimental-hexplate",
+          "itemId": "3073",
+          "categories": [
+            "effect"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-hextech-rocketbelt",
+          "kind": "item",
+          "subject": "Hextech Rocketbelt",
+          "anchor": "patch-Hextech-Rocketbelt",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/item/223152.png",
+          "context": "Rocketbelt continues to be used a bit too much as an escape compared to a risky engage tool, so we are pulling back on its generic value in favor of emphasizing aggressive action with it, especially for AP Bruisers who rely on it for all ins.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Ability Haste: 20 ⇒ 10",
+                  "label": "Ability Haste",
+                  "before": "20",
+                  "after": "10"
+                },
+                {
+                  "text": "Active Damage: 100 (+10% AP) ⇒ 135 (+15% AP)",
+                  "label": "Active Damage",
+                  "before": "100 (+10% AP)",
+                  "after": "135 (+15% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "hextech-rocketbelt",
+          "itemId": "223152",
+          "categories": [
+            "stats",
+            "effect"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-runaans-hurricane",
+          "kind": "item",
+          "subject": "Runaan's Hurricane",
+          "anchor": "patch-Runaans-Hurricane",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/item/223085.png",
+          "context": "This item was slightly overbuffed, so pulling back on that a bit.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Attack Damage per Bolt: 65% ⇒ 60%",
+                  "label": "Attack Damage per Bolt",
+                  "before": "65%",
+                  "after": "60%"
+                }
+              ]
+            }
+          ],
+          "ref": "runaans-hurricane",
+          "itemId": "223085",
+          "categories": [
+            "effect"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "system-bug-fixes",
+          "kind": "system",
+          "subject": "Bug fixes",
+          "category": "bugfix",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Fixed a bug where Orianna's (R) VFX and actual hitbox become misplaced if she casts (R) before the ball reaches a fast-moving ally like Nocturne."
+                },
+                {
+                  "text": "Fixed a bug where a Sylas-stolen Depth Charge (R) from Nautilus could fizzle after Sylas lost vision of the target."
+                },
+                {
+                  "text": "Fixed a bug where Xin Zhao's Three Talon Strike (Q) went completely on cooldown if the first attack was dodged by spells like Shen's Shadow Dash (E) or Jax's Counterstrike (E)."
+                },
+                {
+                  "text": "Fixed a bug where Shyvana's Dragon's Descent (R) ability fails to cancel enemy teleports."
+                },
+                {
+                  "text": "Fixed a bug where Kayle's Reckoning (Q) applies the on-hit Spellblade effect from Sheen, Lich Bane, Trinity Force, and Iceborne Gauntlet."
+                },
+                {
+                  "text": "Fixed a bug where Sivir's Spell Shield (E) does not block Leona's Zenith Blade (E)."
+                },
+                {
+                  "text": "Fixed a bug where Malphite's Flash summoner spell is disabled after using Unstoppable Force (R)."
+                },
+                {
+                  "text": "Fixed a bug where rapidly pressing Recall gains Guinsoo's Rageblade stacks."
+                },
+                {
+                  "text": "Fixed a bug where Runaan's Hurricane Volley (P) triggers Minions' Call for Help."
+                },
+                {
+                  "text": "Fixed a bug where Sivir's Spell Shield does not block damage from Miss Fortune's Q."
+                }
+              ]
+            }
+          ],
+          "affects": [
+            "nocturne",
+            "orianna",
+            "nautilus",
+            "sylas",
+            "xin-zhao",
+            "talon",
+            "shen",
+            "jax",
+            "shyvana",
+            "kayle",
+            "leona",
+            "sivir",
+            "malphite",
+            "miss-fortune"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        }
+      ],
+      "updatedAt": "2026-10-12T08:17:00.000Z"
+    },
+    {
+      "patch": "26.19",
+      "short": "16.19",
+      "title": "Patch 26.19 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-19-notes/",
+      "published": "2026-09-22",
+      "rev": "5Qqn1BHjpykeOOQTvvZ7W3",
+      "midPatch": [],
+      "excluded": [
+        "Patch Highlights",
+        "Team Voice",
+        "Classic",
+        "ARAM: Mayhem",
+        "Arena",
+        "Upcoming Skins & Chromas"
+      ],
+      "bugfixesLeftOut": 4,
+      "entries": [
+        {
+          "id": "champion-aatrox",
+          "kind": "champion",
+          "subject": "Aatrox",
+          "anchor": "patch-aatrox",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Aatrox.png",
+          "context": "We think The Darkin Blade has lost a fair bit of power with Sundered Sky nerfs that were aimed more at opening up the jungle meta, so we are giving him a bump so he remains a world-ending threat.",
+          "groups": [
+            {
+              "title": "W - Infernal Chains",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/AatroxW.png",
+              "changes": [
+                {
+                  "text": "Cooldown: 20 / 18 / 16 / 14 / 12 seconds ⇒ 18 / 16.5 / 15 / 13.5 / 12 seconds",
+                  "label": "Cooldown",
+                  "before": "20 / 18 / 16 / 14 / 12 seconds",
+                  "after": "18 / 16.5 / 15 / 13.5 / 12 seconds"
+                }
+              ]
+            },
+            {
+              "title": "E - Umbral Dash",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/AatroxE.png",
+              "changes": [
+                {
+                  "text": "Health Heal Ratio: 1.1% per 100 bonus health ⇒ 1.3% per 100 bonus health",
+                  "label": "Health Heal Ratio",
+                  "before": "1.1% per 100 bonus health",
+                  "after": "1.3% per 100 bonus health"
+                }
+              ]
+            }
+          ],
+          "ref": "aatrox",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-aphelios",
+          "kind": "champion",
+          "subject": "Aphelios",
+          "anchor": "patch-aphelios",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Aphelios.png",
+          "context": "Aphelios has been kiting the spotlight for a while now, even though he's a hypercarry in an enchanter meta that should favor him, so we're looking to give him a little boost to encourage him to get out of his comfort zone.",
+          "groups": [
+            {
+              "title": "Calibrum",
+              "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/6360fc58cd4daba2dc9b4125424fdf160593f5ce-64x64.png",
+              "changes": [
+                {
+                  "text": "Moonshot Damage: 70 - 160 (+42 - 60% bonus AD) (+100% AP) ⇒ 80 - 170 (+42 - 60% bonus AD) (+100% AP)",
+                  "label": "Moonshot Damage",
+                  "before": "70 - 160 (+42 - 60% bonus AD) (+100% AP)",
+                  "after": "80 - 170 (+42 - 60% bonus AD) (+100% AP)"
+                }
+              ]
+            },
+            {
+              "title": "Severum",
+              "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/3f47fc99f8f99d39d27b7162d3a4f65f419a90de-64x64.png",
+              "changes": [
+                {
+                  "text": "Healing: 2 - 7.1%, increased to 5 - 17.75% ⇒ 2 - 8%, increased to 5 - 20%",
+                  "label": "Healing",
+                  "before": "2 - 7.1%, increased to 5 - 17.75%",
+                  "after": "2 - 8%, increased to 5 - 20%"
+                }
+              ]
+            },
+            {
+              "title": "Gravitum",
+              "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/2de6fe8a2477f2e41213136e7d61958491d5781a-64x64.png",
+              "changes": [
+                {
+                  "text": "Slow: 30% for 2.5 seconds, decaying to 10% after 0.7 seconds ⇒ 30% for 2.5 seconds, decaying to 15% after 0.7 seconds",
+                  "label": "Slow",
+                  "before": "30% for 2.5 seconds, decaying to 10% after 0.7 seconds",
+                  "after": "30% for 2.5 seconds, decaying to 15% after 0.7 seconds"
+                }
+              ]
+            },
+            {
+              "title": "Infernum",
+              "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/b1f6d242158fe73dfbda64052edf530cfe19c517-64x64.png",
+              "changes": [
+                {
+                  "text": "Duskwave Cooldown: 9 / 8.25 / 7.5 / 6.75 / 6 seconds ⇒ 8 / 7.25 / 6.5 / 5.75 / 5 seconds",
+                  "label": "Duskwave Cooldown",
+                  "before": "9 / 8.25 / 7.5 / 6.75 / 6 seconds",
+                  "after": "8 / 7.25 / 6.5 / 5.75 / 5 seconds"
+                }
+              ]
+            },
+            {
+              "title": "Crescendum",
+              "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/f4b7c11ce37d875e0b45a4ef3cdd3b7cc6021623-64x64.png",
+              "changes": [
+                {
+                  "text": "Mini-Crescendum Damage: 15% AD, decreasing by 1.5% AD to a minimum of 5% AD for the 8th+ chakram ⇒ 16% AD, decreasing by 1.5% AD to a minimum of 5% AD for the 9th+ chakram",
+                  "label": "Mini-Crescendum Damage",
+                  "before": "15% AD, decreasing by 1.5% AD to a minimum of 5% AD for the 8th+ chakram",
+                  "after": "16% AD, decreasing by 1.5% AD to a minimum of 5% AD for the 9th+ chakram"
+                }
+              ]
+            }
+          ],
+          "ref": "aphelios",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-aurora",
+          "kind": "champion",
+          "subject": "Aurora",
+          "anchor": "patch-aurora",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Aurora.png",
+          "context": "Despite not receiving any changes since last year, Aurora has fallen off as we've had to nerf Rocketbelt into a fairer state. We're giving our favorite Bryni a bit more power in her waveclear and outplay potential with her ultimate.",
+          "groups": [
+            {
+              "title": "E - The Weirding",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/AuroraE.png",
+              "changes": [
+                {
+                  "text": "Base Damage: 70 / 110 / 150 / 190 / 230 ⇒ 80 / 120 / 160 / 200 / 240",
+                  "label": "Base Damage",
+                  "before": "70 / 110 / 150 / 190 / 230",
+                  "after": "80 / 120 / 160 / 200 / 240"
+                }
+              ]
+            },
+            {
+              "title": "R - Between Worlds",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/AuroraR.png",
+              "changes": [
+                {
+                  "text": "Rift Duration: 1.75 / 2.5 / 3.25 seconds ⇒ 2.25 / 2.75 / 3.25 seconds",
+                  "label": "Rift Duration",
+                  "before": "1.75 / 2.5 / 3.25 seconds",
+                  "after": "2.25 / 2.75 / 3.25 seconds"
+                }
+              ]
+            }
+          ],
+          "ref": "aurora",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-draven",
+          "kind": "champion",
+          "subject": "Draven",
+          "anchor": "patch-draven",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Draven.png",
+          "context": "Since all bot laners received significantly increased gold income thanks to role quests, Draven's potential to gain a gold advantage through his Adoration stacks has lost some of its impact. We're giving him a helping hand (axe?) by tapping up his early game damage.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Attack Damage: 62 ⇒ 64",
+                  "label": "Attack Damage",
+                  "before": "62",
+                  "after": "64"
+                }
+              ]
+            }
+          ],
+          "ref": "draven",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-elise",
+          "kind": "champion",
+          "subject": "Elise",
+          "anchor": "patch-elise",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Elise.png",
+          "context": "This year started strong for AP junglers that could use Dusk and Dawn, but others like Elise have been in a weak spot for a while, so we are helping out our friendly neighborhood spider with clear speed and damage.",
+          "groups": [
+            {
+              "title": "Passive - Spider Queen",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/passive/ElisePassive.png",
+              "changes": [
+                {
+                  "text": "Passive Magic Damage On-Hit: 12 / 22 / 32 / 42 ⇒ 14 / 24 / 34 / 44",
+                  "label": "Passive Magic Damage On-Hit",
+                  "before": "12 / 22 / 32 / 42",
+                  "after": "14 / 24 / 34 / 44"
+                }
+              ]
+            },
+            {
+              "title": "W - Skittering Frenzy",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/EliseHumanW.png",
+              "changes": [
+                {
+                  "text": "Bonus Attack Speed: 60 / 75 / 90 / 105 / 120% ⇒ 70 / 85 / 100 / 115 / 130%",
+                  "label": "Bonus Attack Speed",
+                  "before": "60 / 75 / 90 / 105 / 120%",
+                  "after": "70 / 85 / 100 / 115 / 130%"
+                }
+              ]
+            }
+          ],
+          "ref": "elise",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-fiora",
+          "kind": "champion",
+          "subject": "Fiora",
+          "anchor": "patch-fiora",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Fiora.png",
+          "context": "Our Grand Duelist has room to shine a bit more when she succeeds after finding her opening, without giving her sharper 1v1 tools.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Health Growth: 99 ⇒ 105",
+                  "label": "Health Growth",
+                  "before": "99",
+                  "after": "105"
+                }
+              ]
+            },
+            {
+              "title": "R - Grand Challenge",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/FioraR.png",
+              "changes": [
+                {
+                  "text": "Heal Range: 550 ⇒ 600",
+                  "label": "Heal Range",
+                  "before": "550",
+                  "after": "600"
+                },
+                {
+                  "text": "Heal Per Tick: 18.75 / 25 / 31.25 (+15% bonus AD) ⇒ 20 / 26.25 / 32.5 (+17.5% bonus AD)",
+                  "label": "Heal Per Tick",
+                  "before": "18.75 / 25 / 31.25 (+15% bonus AD)",
+                  "after": "20 / 26.25 / 32.5 (+17.5% bonus AD)"
+                },
+                {
+                  "text": "Maximum Heal: 375 / 500 / 625 (+300% bonus AD) ⇒ 400 / 525 / 650 (+350% bonus AD)",
+                  "label": "Maximum Heal",
+                  "before": "375 / 500 / 625 (+300% bonus AD)",
+                  "after": "400 / 525 / 650 (+350% bonus AD)"
+                }
+              ]
+            }
+          ],
+          "ref": "fiora",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-khazix",
+          "kind": "champion",
+          "subject": "Kha'Zix",
+          "anchor": "patch-khazix",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Khazix.png",
+          "context": "Kha'Zix has been on the fringe of the meta now that the jungle is no longer dominated by Sundered Sky users. We are taking this opportunity to buff some of his weaker evolves to give him the flexibility to adapt and overcome.",
+          "groups": [
+            {
+              "title": "Passive - Unseen Threat",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/passive/Khazix_P.png",
+              "changes": [
+                {
+                  "text": "Damage: 17 - 136 (+50% bonus AD) ⇒ 22 - 141 (+50% bonus AD)",
+                  "label": "Damage",
+                  "before": "17 - 136 (+50% bonus AD)",
+                  "after": "22 - 141 (+50% bonus AD)"
+                }
+              ]
+            },
+            {
+              "title": "W - Void Spike",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/KhazixW.png",
+              "changes": [
+                {
+                  "text": "Evolved Slow Duration: 2 seconds ⇒ 2.25 seconds",
+                  "label": "Evolved Slow Duration",
+                  "before": "2 seconds",
+                  "after": "2.25 seconds"
+                }
+              ]
+            },
+            {
+              "title": "E - Leap",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/KhazixE.png",
+              "changes": [
+                {
+                  "text": "Evolved Range Bonus: +200 ⇒ +300",
+                  "label": "Evolved Range Bonus",
+                  "before": "+200",
+                  "after": "+300"
+                }
+              ]
+            }
+          ],
+          "ref": "khazix",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-lillia",
+          "kind": "champion",
+          "subject": "Lillia",
+          "anchor": "patch-lillia",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Lillia.png",
+          "context": "Lillia is on the edge of being viable at higher levels of play and we believe her current pattern requires her to get in danger's way, so we're helping her durability. We also want to give Lillia opportunities to really be a playmaker so we're making the enemies she lullabies a little extra sleepy.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Armor: 22 ⇒ 24",
+                  "label": "Armor",
+                  "before": "22",
+                  "after": "24"
+                }
+              ]
+            },
+            {
+              "title": "R - Lilting Lullaby",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/LilliaR.png",
+              "changes": [
+                {
+                  "text": "Sleep Duration: 2 seconds ⇒ 2.5 seconds",
+                  "label": "Sleep Duration",
+                  "before": "2 seconds",
+                  "after": "2.5 seconds"
+                }
+              ]
+            }
+          ],
+          "ref": "lillia",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-lucian",
+          "kind": "champion",
+          "subject": "Lucian",
+          "anchor": "patch-lucian",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Lucian.png",
+          "context": "Years ago, we added the Vigilance Passive so Lucian bot players didn't feel like their champ was being nerfed because of mid laners, which ended up being super effective. We think now is a good opportunity to adjust the tuning of the passive and strike a balance between both roles.",
+          "groups": [
+            {
+              "title": "Passive - Vigilance",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.18.1/img/passive/Lucian_Passive.png",
+              "changes": [
+                {
+                  "text": "Empowered On-Hit Damage: 15 (+20% AD) ⇒ 5 (+15% AD)",
+                  "label": "Empowered On-Hit Damage",
+                  "before": "15 (+20% AD)",
+                  "after": "5 (+15% AD)"
+                }
+              ]
+            },
+            {
+              "title": "Q - Piercing Light",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/LucianQ.png",
+              "changes": [
+                {
+                  "text": "Base Damage: 80 / 115 / 150 / 185 / 220 (+100% bonus AD) ⇒ 90 / 130 / 170 / 210 / 250 (+100% bonus AD)",
+                  "label": "Base Damage",
+                  "before": "80 / 115 / 150 / 185 / 220 (+100% bonus AD)",
+                  "after": "90 / 130 / 170 / 210 / 250 (+100% bonus AD)"
+                }
+              ]
+            }
+          ],
+          "ref": "lucian",
+          "category": "adjustment",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-master-yi",
+          "kind": "champion",
+          "subject": "Master Yi",
+          "anchor": "patch-masteryi",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/MasterYi.png",
+          "context": "Somewhat overdue, but because Duskblade was removed a while ago, we're removing the Ability Haste penalty we had to apply to his Q CDR mechanic. This should have minimal impact on Summoner's Rift, but we see you Mayhem and Arena!",
+          "groups": [
+            {
+              "title": "Q - Alpha Strike",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/AlphaStrike.png",
+              "changes": [
+                {
+                  "text": "Cooldown Refund on Hit: -1 second, scaling down with Ability Haste ⇒ 1 second",
+                  "label": "Cooldown Refund on Hit",
+                  "before": "-1 second, scaling down with Ability Haste",
+                  "after": "1 second"
+                }
+              ]
+            }
+          ],
+          "ref": "master-yi",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-nasus",
+          "kind": "champion",
+          "subject": "Nasus",
+          "anchor": "patch-nasus",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Nasus.png",
+          "context": "Nasus is difficult to keep down these days, and part of that is how quickly getting his early stacks leads to more reliable stacking. These higher highs will be compensated with some lower lows through some more vulnerability early on with lower damage and lifesteal lane sustain values off of that, and a bit longer before he really comes online.",
+          "groups": [
+            {
+              "title": "Q - Siphoning Strike",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/NasusQ.png",
+              "changes": [
+                {
+                  "text": "Bonus Damage: 40 / 60 / 80 / 100 / 120 ⇒ 30 / 50 / 70 / 90 / 110",
+                  "label": "Bonus Damage",
+                  "before": "40 / 60 / 80 / 100 / 120",
+                  "after": "30 / 50 / 70 / 90 / 110"
+                }
+              ]
+            }
+          ],
+          "ref": "nasus",
+          "category": "adjustment",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-nocturne",
+          "kind": "champion",
+          "subject": "Nocturne",
+          "anchor": "patch-nocturne",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Nocturne.png",
+          "context": "Nocturne has been a popular and powerful jungler in both pro and solo-queue for a while, so we're hitting the map presence and dueling power he benefits from through his ultimate.",
+          "groups": [
+            {
+              "title": "R - Paranoia",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/NocturneParanoia.png",
+              "changes": [
+                {
+                  "text": "Cooldown: 140 / 115 / 90 seconds ⇒ 160 / 130 / 100 seconds",
+                  "label": "Cooldown",
+                  "before": "140 / 115 / 90 seconds",
+                  "after": "160 / 130 / 100 seconds"
+                }
+              ]
+            }
+          ],
+          "ref": "nocturne",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-poppy",
+          "kind": "champion",
+          "subject": "Poppy",
+          "anchor": "patch-poppy",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Poppy.png",
+          "context": "Poppy's flex potential and jungle presence has been a bit problematic, suppressing many champions across the board as a strong counterpick. For this change, we're targeting her flexibility by reverting a previous buff to jungle clear.",
+          "groups": [
+            {
+              "title": "Q - Hammer Shock",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/PoppyQ.png",
+              "changes": [
+                {
+                  "text": "Minion/Monster Maximum Health Cap: 85 / 120 / 155 / 190 / 225 ⇒ 70 / 105 / 140 / 175 / 210",
+                  "label": "Minion/Monster Maximum Health Cap",
+                  "before": "85 / 120 / 155 / 190 / 225",
+                  "after": "70 / 105 / 140 / 175 / 210"
+                }
+              ]
+            }
+          ],
+          "ref": "poppy",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-rumble",
+          "kind": "champion",
+          "subject": "Rumble",
+          "anchor": "patch-rumble",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Rumble.png",
+          "context": "At higher levels of play, we've seen Rumble continue to take over games, even after our changes earlier this year designed to hit his power in lane. Here, we're making some modifications to his passive that's much more elite-skewed, while giving Rumble in the Jungle some compensation.",
+          "groups": [
+            {
+              "title": "Passive - Junkyard Titan",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/passive/Rumble_JunkyardTitan1.png",
+              "changes": [
+                {
+                  "text": "Overheat Attack Speed: 50 - 130% ⇒ 30 - 100%",
+                  "label": "Overheat Attack Speed",
+                  "before": "50 - 130%",
+                  "after": "30 - 100%"
+                },
+                {
+                  "text": "Monster Cap: 65 - 150 ⇒ 90 - 175",
+                  "label": "Monster Cap",
+                  "before": "65 - 150",
+                  "after": "90 - 175"
+                }
+              ]
+            }
+          ],
+          "ref": "rumble",
+          "category": "adjustment",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-ryze",
+          "kind": "champion",
+          "subject": "Ryze",
+          "anchor": "patch-ryze",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Ryze.png",
+          "context": "Between strong itemization options and best-in-class skirmish and roam potential demonstrated by his most skilled players, it's high time we put some restraints on the archmage, while giving him some help with bad solo queue matchups.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Armor Growth: 4.2 ⇒ 4.7",
+                  "label": "Armor Growth",
+                  "before": "4.2",
+                  "after": "4.7"
+                }
+              ]
+            },
+            {
+              "title": "Q - Overload",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/RyzeQWrapper.png",
+              "changes": [
+                {
+                  "text": "Flux Bonus Damage: 25 / 50 / 75 / 100% increased damage ⇒ 15 / 40 / 65 / 90% increased damage",
+                  "label": "Flux Bonus Damage",
+                  "before": "25 / 50 / 75 / 100% increased damage",
+                  "after": "15 / 40 / 65 / 90% increased damage"
+                }
+              ]
+            },
+            {
+              "title": "E - Spell Flux",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/spell/RyzeE.png",
+              "changes": [
+                {
+                  "text": "Mana Cost: 35 / 45 / 55 / 65 / 75 ⇒ 40 / 50 / 60 / 70 / 80",
+                  "label": "Mana Cost",
+                  "before": "35 / 45 / 55 / 65 / 75",
+                  "after": "40 / 50 / 60 / 70 / 80"
+                }
+              ]
+            }
+          ],
+          "ref": "ryze",
+          "category": "adjustment",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-vi",
+          "kind": "champion",
+          "subject": "Vi",
+          "anchor": "patch-vi",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Vi.png",
+          "context": "Vi has been a meta staple for the entire year, and now that Sundered Sky is in a better spot, we're going after her durability and early clear speed to make her a riskier pick who can still bring the pain if you are willing to build for it.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Attack Damage: 63 + 3.5/Level ⇒ 61 + 3.9/Level",
+                  "label": "Attack Damage",
+                  "before": "63 + 3.5/Level",
+                  "after": "61 + 3.9/Level"
+                }
+              ]
+            },
+            {
+              "title": "Passive - Blast Shield",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/passive/ViPassive.png",
+              "changes": [
+                {
+                  "text": "Shield: 12% Maximum Health ⇒ 10% Maximum Health",
+                  "label": "Shield",
+                  "before": "12% Maximum Health",
+                  "after": "10% Maximum Health"
+                }
+              ]
+            }
+          ],
+          "ref": "vi",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-volibear",
+          "kind": "champion",
+          "subject": "Volibear",
+          "anchor": "patch-volibear",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/champion/Volibear.png",
+          "context": "This year we've been carefully buffing up AD Volibear, but he remains on the weak side even with his very unique AP build. We're tuning him up to help him out across both the fringe AD build and his core AP build.",
+          "groups": [
+            {
+              "title": "Passive - The Relentless Storm",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/passive/Volibear_Icon_P.png",
+              "changes": [
+                {
+                  "text": "Attack Speed per Stack: 5% (+3% per 100 AP) ⇒ 5% (+4% per 100 AP)",
+                  "label": "Attack Speed per Stack",
+                  "before": "5% (+3% per 100 AP)",
+                  "after": "5% (+4% per 100 AP)"
+                },
+                {
+                  "text": "Lightning On-Hit Damage: 11 - 60 (Levels 1-18) (+45% AP) ⇒ 11 - 60 (Levels 1-18) (+45% AP) (+20% bonus AD)",
+                  "label": "Lightning On-Hit Damage",
+                  "before": "11 - 60 (Levels 1-18) (+45% AP)",
+                  "after": "11 - 60 (Levels 1-18) (+45% AP) (+20% bonus AD)"
+                }
+              ]
+            }
+          ],
+          "ref": "volibear",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-world-atlas-and-runic-compass",
+          "kind": "item",
+          "subject": "World Atlas and Runic Compass",
+          "context": "We think melee supports have too much of their power in roaming and all-ins and are too weak in sustained laning. In response, we're shifting the flat health to health regen on World Atlas and Runic Compass, which will benefit them more due to their higher base health regen values.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Health: 30 / 100 / 200 ⇒ 0 / 60 / 200",
+                  "label": "Health",
+                  "before": "30 / 100 / 200",
+                  "after": "0 / 60 / 200"
+                },
+                {
+                  "text": "Health Regeneration: 25% / 50% / 75% ⇒ 50% / 75% / 75%",
+                  "label": "Health Regeneration",
+                  "before": "25% / 50% / 75%",
+                  "after": "50% / 75% / 75%"
+                }
+              ]
+            }
+          ],
+          "ref": "world-atlas-and-runic-compass",
+          "categories": [
+            "stats"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "system-teleport-cooldown",
+          "kind": "system",
+          "subject": "Teleport Cooldown",
+          "context": "As the meta has continued to adjust to role quests, it's become clear that top lane is slightly weak, especially for split pushing. We're in turn buffing the cooldown of both the free role quest Teleport and upgraded Unleashed Teleport to promote those alternative strategies.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Top Role Quest's Free Teleport Cooldown: 420 seconds ⇒ 390 seconds",
+                  "label": "Top Role Quest's Free Teleport Cooldown",
+                  "before": "420 seconds",
+                  "after": "390 seconds"
+                },
+                {
+                  "text": "Top Role Quest's Upgraded Unleashed Teleport Cooldown: 330 - 240 seconds ⇒ 300 - 210 seconds",
+                  "label": "Top Role Quest's Upgraded Unleashed Teleport Cooldown",
+                  "before": "330 - 240 seconds",
+                  "after": "300 - 210 seconds"
+                },
+                {
+                  "text": "Non-Top Unleashed Teleport Cooldown: 330 - 240 seconds ⇒ Unchanged",
+                  "label": "Non-Top Unleashed Teleport Cooldown",
+                  "before": "330 - 240 seconds",
+                  "after": "Unchanged"
+                }
+              ]
+            }
+          ],
+          "category": "summoners",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "system-bug-fixes",
+          "kind": "system",
+          "subject": "Bug fixes",
+          "category": "bugfix",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Fixed a bug where Renata's R would not amp damage caused by Berserk targets."
+                },
+                {
+                  "text": "Fixed a bug where Taliyah's W terrain was smaller than the hitbox."
+                },
+                {
+                  "text": "Fixed a bug where Yunara's auto resets would not extend Hail of Blades appropriately."
+                },
+                {
+                  "text": "Fixed a bug where Renekton would not gain 20 fury from his ult when it was cast immediately after W."
+                },
+                {
+                  "text": "Fixed a bug where clones would not receive Homeguards after running back to the fountain"
+                },
+                {
+                  "text": "Fixed a bug where Camille's W would count as two hits when triggering bone plating."
+                },
+                {
+                  "text": "Fixed a bug where Camille's Passive would sometimes not proc Shield Bash."
+                },
+                {
+                  "text": "Fixed a bug where Aatrox Q sweetspots use crit text instead of enhanced damage text."
+                }
+              ]
+            }
+          ],
+          "affects": [
+            "taliyah",
+            "yunara",
+            "renekton",
+            "camille",
+            "aatrox"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        }
+      ],
+      "updatedAt": "2026-10-12T08:17:00.000Z"
+    },
+    {
+      "patch": "26.18",
+      "short": "16.18",
+      "title": "League of Legends Patch 26.18 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-18-notes/",
+      "published": "2026-09-09",
+      "rev": "bZyVr6G4AiAxNkYfLIEZkU",
+      "midPatch": [],
+      "excluded": [
+        "Patch Highlights",
+        "Hall of Legends",
+        "Classic",
+        "ARAM: Mayhem",
+        "Upcoming Skins & Chromas"
+      ],
+      "bugfixesLeftOut": 2,
+      "entries": [
+        {
+          "id": "champion-bard",
+          "kind": "champion",
+          "subject": "Bard",
+          "anchor": "patch-bard",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Bard.png",
+          "context": "Bard has been a meta staple for much of the year. Earlier we toned his damage down to what we think are reasonable levels, so this time we are going to target his durability which has also stood out as high given his mobility and long range ultimate utility.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Armor: 34 + 5/Level ⇒ 32 + 4.7/Level",
+                  "label": "Armor",
+                  "before": "34 + 5/Level",
+                  "after": "32 + 4.7/Level"
+                }
+              ]
+            }
+          ],
+          "ref": "bard",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-cassiopeia",
+          "kind": "champion",
+          "subject": "Cassiopeia",
+          "anchor": "patch-cassiopeia",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Cassiopeia.png",
+          "context": "Cassio has always scaled with skill, but this year has propelled her to new heights of pro play dominance despite being weaker for average players. These adjustments should tap down her laning power, especially in pro where defensive purchases are valued more than raw AP, while giving her back some scaling power. It will still be critical to use empowered E's, but raising her floor lets us be a bit more flexible with tuning.",
+          "groups": [
+            {
+              "title": "Passive - Serpentine Grace",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/passive/Cassiopeia_Passive.png",
+              "changes": [
+                {
+                  "text": "Move Speed Bonus: 6% - 40% (based on level) ⇒ 5% - 36% (based on level)",
+                  "label": "Move Speed Bonus",
+                  "before": "6% - 40% (based on level)",
+                  "after": "5% - 36% (based on level)"
+                }
+              ]
+            },
+            {
+              "title": "Q - Noxious Blast",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/CassiopeiaQ.png",
+              "changes": [
+                {
+                  "text": "Damage: 75 / 110 / 145 / 180 / 215 ⇒ 65 / 100 / 135 / 170 / 205",
+                  "label": "Damage",
+                  "before": "75 / 110 / 145 / 180 / 215",
+                  "after": "65 / 100 / 135 / 170 / 205"
+                },
+                {
+                  "text": "Ability Power Ratio: 65% ⇒ 75%",
+                  "label": "Ability Power Ratio",
+                  "before": "65%",
+                  "after": "75%"
+                }
+              ]
+            },
+            {
+              "title": "E - Twin Fang",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/CassiopeiaE.png",
+              "changes": [
+                {
+                  "text": "Mana Cost: 40 ⇒ 45",
+                  "label": "Mana Cost",
+                  "before": "40",
+                  "after": "45"
+                },
+                {
+                  "text": "Base Ability Power Ratio: 10% ⇒ 20%",
+                  "label": "Base Ability Power Ratio",
+                  "before": "10%",
+                  "after": "20%"
+                },
+                {
+                  "text": "Enhanced Ability Power Ratio: 55% ⇒ 45%",
+                  "label": "Enhanced Ability Power Ratio",
+                  "before": "55%",
+                  "after": "45%"
+                },
+                {
+                  "text": "Total Ability Power Ratio: 65% ⇒ 65%",
+                  "label": "Total Ability Power Ratio",
+                  "before": "65%",
+                  "after": "65%"
+                },
+                {
+                  "text": "Damage: 52 - 120 ⇒ 50 - 120",
+                  "label": "Damage",
+                  "before": "52 - 120",
+                  "after": "50 - 120"
+                }
+              ]
+            },
+            {
+              "title": "R - Petrifying Gaze",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/CassiopeiaR.png",
+              "changes": [
+                {
+                  "text": "Damage: 150 / 250 / 350 ⇒ 125 / 225 / 325",
+                  "label": "Damage",
+                  "before": "150 / 250 / 350",
+                  "after": "125 / 225 / 325"
+                },
+                {
+                  "text": "Ability Power Ratio: 50% ⇒ 75%",
+                  "label": "Ability Power Ratio",
+                  "before": "50%",
+                  "after": "75%"
+                }
+              ]
+            }
+          ],
+          "ref": "cassiopeia",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-ekko",
+          "kind": "champion",
+          "subject": "Ekko",
+          "anchor": "patch-ekko",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Ekko.png",
+          "context": "As one of our assassins that offer opponents a wider mix of gameplay options, Ekko has found a slightly weak steady state since Dusk & Dawn's update mid year. We believe he has some room for power, especially in mid where he scales slightly worse, without buffing his Hail of Blades pattern.",
+          "groups": [
+            {
+              "title": "Q - Timewinder",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/EkkoQ.png",
+              "changes": [
+                {
+                  "text": "Mana Cost: 50 / 60 / 70 / 80 / 90 ⇒ 40 / 50 / 60 / 70 / 80",
+                  "label": "Mana Cost",
+                  "before": "50 / 60 / 70 / 80 / 90",
+                  "after": "40 / 50 / 60 / 70 / 80"
+                },
+                {
+                  "text": "Return Damage Ability Power Ratio: 60% ⇒ 70%",
+                  "label": "Return Damage Ability Power Ratio",
+                  "before": "60%",
+                  "after": "70%"
+                }
+              ]
+            }
+          ],
+          "ref": "ekko",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-kassadin",
+          "kind": "champion",
+          "subject": "Kassadin",
+          "anchor": "patch-kassadin",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Kassadin.png",
+          "context": "Kassadin had a strong start to 2026 but hasn't regained his…footing…since our earlier nerfs. His Q should feel more punchy with his scaling, and we're aiming to provide more early agency through good Riftwalk usage without touching his late game fantasy.",
+          "groups": [
+            {
+              "title": "Q - Null Sphere",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/NullLance.png",
+              "changes": [
+                {
+                  "text": "Ability Power Ratio: 70% AP ⇒ 80% AP",
+                  "label": "Ability Power Ratio",
+                  "before": "70% AP",
+                  "after": "80% AP"
+                }
+              ]
+            },
+            {
+              "title": "R - Riftwalk",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/RiftWalk.png",
+              "changes": [
+                {
+                  "text": "Base Damage: 70 / 90 / 110 ⇒ 80 / 95 / 110",
+                  "label": "Base Damage",
+                  "before": "70 / 90 / 110",
+                  "after": "80 / 95 / 110"
+                }
+              ]
+            }
+          ],
+          "ref": "kassadin",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-master-yi",
+          "kind": "champion",
+          "subject": "Master Yi",
+          "anchor": "patch-masteryi",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/MasterYi.png",
+          "context": "Yi drew the short end of the stick on the Rageblade bugfix from earlier this year due to his double strike interactions. While the actual impact for most Rageblade users was minor (and we are compensating Rageblade as well for that this patch), he was impacted harder than the other users. He's also just been unable to scale as well as a melee carry compared to his normal power level, so we are also giving him a buff up.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Armor Growth: 33 + 4.5/Level ⇒ 33 + 5/Level",
+                  "label": "Armor Growth",
+                  "before": "33 + 4.5/Level",
+                  "after": "33 + 5/Level"
+                }
+              ]
+            },
+            {
+              "title": "R - Highlander",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/Highlander.png",
+              "changes": [
+                {
+                  "text": "Move Speed: 35 / 45 / 55% ⇒ 40 / 50 / 60%",
+                  "label": "Move Speed",
+                  "before": "35 / 45 / 55%",
+                  "after": "40 / 50 / 60%"
+                }
+              ]
+            }
+          ],
+          "ref": "master-yi",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-nautilus",
+          "kind": "champion",
+          "subject": "Nautilus",
+          "anchor": "patch-nautilus",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Nautilus.png",
+          "context": "Nautilus has been sitting near the top of the meta for the entire year, even before our work to bring other tank supports up in power, and we feel nerfing him will open up room for a more variety. That said, we know a lot of his value is in being able to lock down champions effectively, and that'll remain a core strength.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Attack Damage: 61 + 3.3/Level ⇒ 58 + 3.3/Level",
+                  "label": "Attack Damage",
+                  "before": "61 + 3.3/Level",
+                  "after": "58 + 3.3/Level"
+                }
+              ]
+            },
+            {
+              "title": "Q - Dredge Line",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/NautilusAnchorDrag.png",
+              "changes": [
+                {
+                  "text": "Damage: 85 / 130 / 175 / 220 / 265 (+90% AP) ⇒ 85 / 125 / 165 / 205 / 245 (+90% AP)",
+                  "label": "Damage",
+                  "before": "85 / 130 / 175 / 220 / 265 (+90% AP)",
+                  "after": "85 / 125 / 165 / 205 / 245 (+90% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "nautilus",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-seraphine",
+          "kind": "champion",
+          "subject": "Seraphine",
+          "anchor": "patch-seraphine",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Seraphine.png",
+          "context": "Seraphine bot has been a source of frustration for opponents for some time, despite a minor nerf a few patches ago. We are nerfing her E's rank up to target this head on, as support Seraphine usually maxes it last (which basically means she never has it maxed as a support.)",
+          "groups": [
+            {
+              "title": "E - Beat Drop",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/SeraphineE.png",
+              "changes": [
+                {
+                  "text": "Cooldown: 11 / 10.5 / 10 / 9.5 / 9s ⇒ 11s",
+                  "label": "Cooldown",
+                  "before": "11 / 10.5 / 10 / 9.5 / 9s",
+                  "after": "11s"
+                }
+              ]
+            }
+          ],
+          "ref": "seraphine",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-syndra",
+          "kind": "champion",
+          "subject": "Syndra",
+          "anchor": "patch-syndra",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Syndra.png",
+          "context": "Our MSI changes were effective at pulling her to the forefront of pro play for the first time in years, but unfortunately she's too performant in specific solo queue settings. Our data shows that W damage is a meaningfully larger share of damage in the tiers where she's stronger than desired, so this should help tap her down while still preserving her core fantasies. Her passive is also now better breakpointed to increase reliance on Lost Chapter in early-mid levels, nerfing her higher winrate builds that make do with less mana investment.",
+          "groups": [
+            {
+              "title": "Passive - Transcendent",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/passive/SyndraPassive.png",
+              "changes": [
+                {
+                  "text": "Splinter Mana: 20 - 255 ⇒ 20 - 199",
+                  "label": "Splinter Mana",
+                  "before": "20 - 255",
+                  "after": "20 - 199"
+                }
+              ]
+            },
+            {
+              "title": "W - Force of Will",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/SyndraW.png",
+              "changes": [
+                {
+                  "text": "Cooldown: 12 / 11 / 10 / 9 / 8s ⇒ 13 / 12 / 11 / 10 / 9s",
+                  "label": "Cooldown",
+                  "before": "12 / 11 / 10 / 9 / 8s",
+                  "after": "13 / 12 / 11 / 10 / 9s"
+                }
+              ]
+            }
+          ],
+          "ref": "syndra",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-viego",
+          "kind": "champion",
+          "subject": "Viego",
+          "anchor": "patch-viego",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Viego.png",
+          "context": "Viego's winrate has been on a downward trend recently, and his players have noticed and begun dropping him. He has a fair bit of room to bring up, both just generally and for the viability of his more bruisery alt build.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Attack Damage Growth: 3.5 ⇒ 4",
+                  "label": "Attack Damage Growth",
+                  "before": "3.5",
+                  "after": "4"
+                }
+              ]
+            },
+            {
+              "title": "Passive - Sovereign's Domination",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/passive/Viego_Passive.png",
+              "changes": [
+                {
+                  "text": "Heal: 2% (+…. ) ⇒ 2% (+ 2.5% per 100 bonus AD) (+ 2% per 100 AP) (+ 5% per 100% bonus attack speed) (+ 2% per 500 bonus HP) of the target's maximum health",
+                  "label": "Heal",
+                  "before": "2% (+…. )",
+                  "after": "2% (+ 2.5% per 100 bonus AD) (+ 2% per 100 AP) (+ 5% per 100% bonus attack speed) (+ 2% per 500 bonus HP) of the target's maximum health"
+                }
+              ]
+            }
+          ],
+          "ref": "viego",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-zaahen",
+          "kind": "champion",
+          "subject": "Zaahen",
+          "anchor": "patch-zaahen",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Zaahen.png",
+          "context": "We're using a QoL change here as an opportunity to give Zaahen some love! This might read as a nerf, but Zaahen's Q lined up with his passive in such a way that it meant he always left his resurrection (and GA, Zilean R) with Q on CD, so now he's always happier. His Q2 is also a clean double of his Q1 base damage now.",
+          "groups": [
+            {
+              "title": "Q - The Darkin Glaive",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/ZaahenQ.png",
+              "changes": [
+                {
+                  "text": "Cooldown Behavior: If Q is active, it is now placed on Cooldown immediately upon being put in Resurrection",
+                  "tag": "new",
+                  "label": "Cooldown Behavior",
+                  "value": "If Q is active, it is now placed on Cooldown immediately upon being put in Resurrection"
+                },
+                {
+                  "text": "Q2 Damage: 25 / 50 / 75 / 100 / 125 (+20 / 25 / 30 / 35 / 40% bonus AD) ⇒ 30 / 60 / 90 / 120 / 150 (+20 / 25 / 30 / 35 / 40% bonus AD)",
+                  "label": "Q2 Damage",
+                  "before": "25 / 50 / 75 / 100 / 125 (+20 / 25 / 30 / 35 / 40% bonus AD)",
+                  "after": "30 / 60 / 90 / 120 / 150 (+20 / 25 / 30 / 35 / 40% bonus AD)"
+                }
+              ]
+            }
+          ],
+          "ref": "zaahen",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-zeri",
+          "kind": "champion",
+          "subject": "Zeri",
+          "anchor": "patch-zeri",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Zeri.png",
+          "context": "Zeri has been slowly climbing in winrate with the recent Runaan's Hurricane and Yun Tal Wildarrows buffs. She now sits very high in winrate compared to her historical resting, which is worrying for a champ that is so skill intensive. As she has also begun showing up in pro, we expect she has a high chance of becoming meta dominant, so we are pulling some power out of her burst and waveclear.",
+          "groups": [
+            {
+              "title": "W - Ultrashock Laser",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/ZeriW.png",
+              "changes": [
+                {
+                  "text": "Damage: 30 / 70 / 110 / 150 / 190 (+120% tAD) ⇒ 30 / 70 / 110 / 150 / 190 (+100% tAD)",
+                  "label": "Damage",
+                  "before": "30 / 70 / 110 / 150 / 190 (+120% tAD)",
+                  "after": "30 / 70 / 110 / 150 / 190 (+100% tAD)"
+                },
+                {
+                  "text": "Wall Damage: 45 / 105 / 165 / 225 / 285 (+180% tAD) ⇒ 45 / 105 / 165 / 225 / 285 (+150% tAD)",
+                  "label": "Wall Damage",
+                  "before": "45 / 105 / 165 / 225 / 285 (+180% tAD)",
+                  "after": "45 / 105 / 165 / 225 / 285 (+150% tAD)"
+                },
+                {
+                  "text": "Critical Strike: 150% (+15% IE)",
+                  "label": "Critical Strike",
+                  "value": "150% (+15% IE)"
+                }
+              ]
+            }
+          ],
+          "ref": "zeri",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-guinsoos-rageblade",
+          "kind": "item",
+          "subject": "Guinsoo's Rageblade",
+          "anchor": "patch-Guinsoos-Rageblade",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/item/3124.png",
+          "context": "In light of the bugfix nerfing rageblade by a minor amount by pushing back when the first double hit triggers, we are compensating with a similarly minor QoL buff to help players get it stacked up and keep it stacked.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Seething Strike Stack Duration: 3s ⇒ 4s",
+                  "label": "Seething Strike Stack Duration",
+                  "before": "3s",
+                  "after": "4s"
+                }
+              ]
+            }
+          ],
+          "ref": "guinsoos-rageblade",
+          "itemId": "3124",
+          "categories": [
+            "effect"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "system-bug-fixes",
+          "kind": "system",
+          "subject": "Bug fixes",
+          "category": "bugfix",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Fixed a bug where Baron Nashor's max stacks of Void Corruption was higher than intended."
+                },
+                {
+                  "text": "Fixed a bug where Serpent's Fang's Shield Reaver damage applied Omnivamp."
+                }
+              ]
+            }
+          ],
+          "affects": [],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        }
+      ],
+      "updatedAt": "2026-10-12T08:17:00.000Z"
+    },
+    {
+      "patch": "26.17",
+      "short": "16.17",
+      "title": "League of Legends Patch 26.17 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-17-notes/",
+      "published": "2026-08-25",
+      "rev": "liqTmNjDGCfStTcPX8pcI5",
+      "midPatch": [],
+      "excluded": [
+        "Patch Highlights",
+        "Classic",
+        "ARAM: Mayhem",
+        "Arena",
+        "Updated System Requirements",
+        "Upcoming Skins & Chromas"
+      ],
+      "bugfixesLeftOut": 2,
+      "entries": [
+        {
+          "id": "champion-aurelion-sol",
+          "kind": "champion",
+          "subject": "Aurelion Sol",
+          "anchor": "patch-aurelionsol",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/AurelionSol.png",
+          "context": "Aurelion Sol has come out the loser of last patch's mage adjustments, so we are giving him a buff to help him out. In particular, we are buffing his W cooldown so he can use it a bit more freely rather than only when a reset is likely. This should also make it a bit more clear to players that W is typically the stronger second skill to max, rather than E. Q - Breath of Light",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Mana Cost Per Second: 35 / 40 / 45 / 50 / 55 ⇒ 30 / 35 / 40 / 45 / 50",
+                  "label": "Mana Cost Per Second",
+                  "before": "35 / 40 / 45 / 50 / 55",
+                  "after": "30 / 35 / 40 / 45 / 50"
+                }
+              ]
+            },
+            {
+              "title": "W - Astral Flight",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/AurelionSolW.png",
+              "changes": [
+                {
+                  "text": "Cooldown: 22 / 20.5 / 19 / 17.5 / 16s ⇒ 22 / 20 / 18 / 16 / 14s",
+                  "label": "Cooldown",
+                  "before": "22 / 20.5 / 19 / 17.5 / 16s",
+                  "after": "22 / 20 / 18 / 16 / 14s"
+                }
+              ]
+            }
+          ],
+          "ref": "aurelion-sol",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-chogath",
+          "kind": "champion",
+          "subject": "Cho'Gath",
+          "anchor": "patch-chogath",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Chogath.png",
+          "context": "Cho's early game has lost pizzazz with Hail of Blades and Hextech Rocketbelt nerfs, so we are making it up with a bit of early damage when he does get those autos off.",
+          "groups": [
+            {
+              "title": "E - Vorpal Spikes",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/spell/VorpalSpikes.png",
+              "changes": [
+                {
+                  "text": "Base Damage (x3 attacks): 20 / 40 / 60 / 80 / 100 (+30% AP) (+2.5% - 3.9% (+.5% Per Feast) Target Max HP) ⇒ 30 / 50 / 70 / 90 / 110 (+30% AP) (+2.5% - 3.9% (+.5% Per Feast) Target Max HP)",
+                  "label": "Base Damage (x3 attacks)",
+                  "before": "20 / 40 / 60 / 80 / 100 (+30% AP) (+2.5% - 3.9% (+.5% Per Feast) Target Max HP)",
+                  "after": "30 / 50 / 70 / 90 / 110 (+30% AP) (+2.5% - 3.9% (+.5% Per Feast) Target Max HP)"
+                }
+              ]
+            }
+          ],
+          "ref": "chogath",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-graves",
+          "kind": "champion",
+          "subject": "Graves",
+          "anchor": "patch-graves",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Graves.png",
+          "context": "Graves has had a number of indirect buffs over the last few patches and this has put him in a pretty strong spot. We are looking to soften a bit of his ability to snowball the game with high AD builds. Q - End of the Line",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Initial Damage: 50 / 75 / 100 / 125 / 150 (+65% bonus AD) ⇒ 50 / 75 / 100 / 125 / 150 (+55% bonus AD)",
+                  "label": "Initial Damage",
+                  "before": "50 / 75 / 100 / 125 / 150 (+65% bonus AD)",
+                  "after": "50 / 75 / 100 / 125 / 150 (+55% bonus AD)"
+                },
+                {
+                  "text": "Return Damage: 80 / 125 / 170 / 215 / 260 (+55 / 70 / 85 / 100 / 115% bonus AD) ⇒ 80 / 125 / 170 / 215 / 260 (+45 / 60 / 75 / 90 / 105% bonus AD)",
+                  "label": "Return Damage",
+                  "before": "80 / 125 / 170 / 215 / 260 (+55 / 70 / 85 / 100 / 115% bonus AD)",
+                  "after": "80 / 125 / 170 / 215 / 260 (+45 / 60 / 75 / 90 / 105% bonus AD)"
+                }
+              ]
+            }
+          ],
+          "ref": "graves",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-irelia",
+          "kind": "champion",
+          "subject": "Irelia",
+          "anchor": "patch-irelia",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Irelia.png",
+          "context": "Irelia is one of League’s highest stakes snowballing dependant skirmishers, but we feel like even when ahead she is failing to scale into a real carry threat\n\nAdditionally, we are buffing some of her AP ratios to support wacky ARAM/Arena builds. We don’t expect this to make AP Irelia suddenly good for SR.",
+          "groups": [
+            {
+              "title": "Q - Bladesurge",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/IreliaQ.png",
+              "changes": [
+                {
+                  "text": "Damage: 5 / 25 / 45 / 65 / 85 (+70% AD) ⇒ 5 / 25 / 45 / 65 / 85 (+80% AD)",
+                  "label": "Damage",
+                  "before": "5 / 25 / 45 / 65 / 85 (+70% AD)",
+                  "after": "5 / 25 / 45 / 65 / 85 (+80% AD)"
+                }
+              ]
+            },
+            {
+              "title": "W - Defiant Dance",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/spell/IreliaW.png",
+              "changes": [
+                {
+                  "text": "Damage Reduction Ability Power Ratio: 7% per 100 AP (Halved for Magic Damage) (reduced to 75% value for Magic Damage in Arena) ⇒ 8% per 100 AP (Halved for Magic Damage) (reduced to 75% value for Magic Damage in Arena)",
+                  "label": "Damage Reduction Ability Power Ratio",
+                  "before": "7% per 100 AP (Halved for Magic Damage) (reduced to 75% value for Magic Damage in Arena)",
+                  "after": "8% per 100 AP (Halved for Magic Damage) (reduced to 75% value for Magic Damage in Arena)"
+                }
+              ]
+            },
+            {
+              "title": "R - Vanguard's Edge",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/spell/IreliaR.png",
+              "changes": [
+                {
+                  "text": "Ability Power Ratio: 70% ⇒ 100% (It is already 100% in Arena, so this is standardizing the value)",
+                  "label": "Ability Power Ratio",
+                  "before": "70%",
+                  "after": "100% (It is already 100% in Arena, so this is standardizing the value)"
+                }
+              ]
+            }
+          ],
+          "ref": "irelia",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-leblanc",
+          "kind": "champion",
+          "subject": "LeBlanc",
+          "anchor": "patch-leblanc",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Leblanc.png",
+          "context": "With the previous version of Statikk Shiv that drove nerfing her AS ratios no longer in the game, we’re bringing these closer to a typical champion’s baseline. Simultaneously, having some room for power, we are giving her some AP ratio buffs to make sure she's still interested primarily in AP assassination builds.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Attack Speed Ratio: 0.4 ⇒ 0.625",
+                  "label": "Attack Speed Ratio",
+                  "before": "0.4",
+                  "after": "0.625"
+                },
+                {
+                  "text": "Attack Speed Growth: 2.35% ⇒ 1.5%",
+                  "label": "Attack Speed Growth",
+                  "before": "2.35%",
+                  "after": "1.5%"
+                }
+              ]
+            },
+            {
+              "title": "W - Distortion",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/LeblancW.png",
+              "changes": [
+                {
+                  "text": "Damage: 75 / 115 / 155 / 195 / 235 (+80% AP) ⇒ 75 / 115 / 155 / 195 / 235 (+90% AP)",
+                  "label": "Damage",
+                  "before": "75 / 115 / 155 / 195 / 235 (+80% AP)",
+                  "after": "75 / 115 / 155 / 195 / 235 (+90% AP)"
+                }
+              ]
+            },
+            {
+              "title": "RW - Mimic: Distortion",
+              "changes": [
+                {
+                  "text": "Damage: 150 / 315 / 480 (+80% AP) ⇒ 150 / 315 / 480 (+90% AP)",
+                  "label": "Damage",
+                  "before": "150 / 315 / 480 (+80% AP)",
+                  "after": "150 / 315 / 480 (+90% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "leblanc",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-nasus",
+          "kind": "champion",
+          "subject": "Nasus",
+          "anchor": "patch-nasus",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Nasus.png",
+          "context": "Nasus top has been able to benefit from the shift in his stacking paradigm. We are happy to see our favorite dog get his fill of treats, but want to make sure that we keep his power within reasonable bounds, therefore we are going to be tapping down some of Nasus' top specific strengths, like persistently lifestealing off of minions.",
+          "groups": [
+            {
+              "title": "Passive - Soul Eater",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/passive/Nasus_Passive.png",
+              "changes": [
+                {
+                  "text": "Life Steal: 12 / 18 / 24% ⇒ 10 / 15 / 20%",
+                  "label": "Life Steal",
+                  "before": "12 / 18 / 24%",
+                  "after": "10 / 15 / 20%"
+                }
+              ]
+            }
+          ],
+          "ref": "nasus",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-nocturne",
+          "kind": "champion",
+          "subject": "Nocturne",
+          "anchor": "patch-nocturne",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/champion/Nocturne.png",
+          "context": "Nocturne has been sitting in a pretty strong state across skill levels for a while. We are excited about the opportunities that open up when Nocturne unlocks his ult, but want to add a bit more personal risk to him accessing that high moment.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Armor: 38 ⇒ 36",
+                  "label": "Armor",
+                  "before": "38",
+                  "after": "36"
+                },
+                {
+                  "text": "Health: 655 ⇒ 640",
+                  "label": "Health",
+                  "before": "655",
+                  "after": "640"
+                }
+              ]
+            }
+          ],
+          "ref": "nocturne",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-qiyana",
+          "kind": "champion",
+          "subject": "Qiyana",
+          "anchor": "patch-qiyana",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Qiyana.png",
+          "context": "Qiyana's play has moved out of primarily mid to jungle. While we are happy to support her as a jungler, mid is where she’s been underwhelming recently .",
+          "groups": [
+            {
+              "title": "Q - Elemental Wrath",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/QiyanaQ.png",
+              "changes": [
+                {
+                  "text": "Damage: 70 / 100 / 130 / 160 / 190 (+85% bonus AD) ⇒ 80 / 110 / 140 / 170 / 200 (+90% bonus AD)",
+                  "label": "Damage",
+                  "before": "70 / 100 / 130 / 160 / 190 (+85% bonus AD)",
+                  "after": "80 / 110 / 140 / 170 / 200 (+90% bonus AD)"
+                },
+                {
+                  "text": "Monster Damage Modifier: 175% against Monsters ⇒ 160% against Monsters",
+                  "label": "Monster Damage Modifier",
+                  "before": "175% against Monsters",
+                  "after": "160% against Monsters"
+                }
+              ]
+            }
+          ],
+          "ref": "qiyana",
+          "category": "adjustment",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-thresh",
+          "kind": "champion",
+          "subject": "Thresh",
+          "anchor": "patch-thresh",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Thresh.png",
+          "context": "Thresh has been quietly sitting at a high winrate and picking up playrate over the year.",
+          "groups": [
+            {
+              "title": "E - Flay",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/ThreshE.png",
+              "changes": [
+                {
+                  "text": "Active Damage: 75 / 120 / 165 / 210 / 255 (+70% AP) ⇒ 65 / 110 / 155 / 200 / 245 (+60% AP)",
+                  "label": "Active Damage",
+                  "before": "75 / 120 / 165 / 210 / 255 (+70% AP)",
+                  "after": "65 / 110 / 155 / 200 / 245 (+60% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "thresh",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-trundle",
+          "kind": "champion",
+          "subject": "Trundle",
+          "anchor": "patch-trundle",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Trundle.png",
+          "context": "Sometimes you just wanna club your opponents to death, and while Trundle has been a resilient utility pick for his pillar and ult, we feel his personal clubbing power has actually been a bit limp.",
+          "groups": [
+            {
+              "title": "W - Frozen Domain",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/trundledesecrate.png",
+              "changes": [
+                {
+                  "text": "Attack Speed: 30 / 45 / 60 / 75 / 90% ⇒ 30 / 50 / 70 / 90 / 110%",
+                  "label": "Attack Speed",
+                  "before": "30 / 45 / 60 / 75 / 90%",
+                  "after": "30 / 50 / 70 / 90 / 110%"
+                }
+              ]
+            }
+          ],
+          "ref": "trundle",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-vayne",
+          "kind": "champion",
+          "subject": "Vayne",
+          "anchor": "patch-vayne",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Vayne.png",
+          "context": "We believe Vayne may need larger scope work in the future to help out her bot lane, but for now are prioritizing constraining her top lane power. These changes should impact her up there more than in bot lane.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Health: 550 + 103/Level ⇒ 580 + 98/Level",
+                  "label": "Health",
+                  "before": "550 + 103/Level",
+                  "after": "580 + 98/Level"
+                },
+                {
+                  "text": "Health Regeneration: 3.5 + .55/Level ⇒ 4 + .5/Level",
+                  "label": "Health Regeneration",
+                  "before": "3.5 + .55/Level",
+                  "after": "4 + .5/Level"
+                },
+                {
+                  "text": "Attack Speed Ratio: .658 + 3.3%/Level ⇒ .67 + 2.8%/Level",
+                  "label": "Attack Speed Ratio",
+                  "before": ".658 + 3.3%/Level",
+                  "after": ".67 + 2.8%/Level"
+                }
+              ]
+            },
+            {
+              "title": "Q - Tumble",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/VayneTumble.png",
+              "changes": [
+                {
+                  "text": "Mana Cost: 30 ⇒ 46 / 42 / 38 / 34 / 30",
+                  "label": "Mana Cost",
+                  "before": "30",
+                  "after": "46 / 42 / 38 / 34 / 30"
+                }
+              ]
+            },
+            {
+              "title": "W - Silver Bolts",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/VayneSilveredBolts.png",
+              "changes": [
+                {
+                  "text": "True Damage: 6 / 7 / 8 / 9 / 10% Target Max HP ⇒ 4 / 5.5 / 7 / 8.5 / 10% Target Max HP",
+                  "label": "True Damage",
+                  "before": "6 / 7 / 8 / 9 / 10% Target Max HP",
+                  "after": "4 / 5.5 / 7 / 8.5 / 10% Target Max HP"
+                },
+                {
+                  "text": "Minimum Damage: 50 / 65 / 80 / 95 / 110 ⇒ 40 / 55 / 70 / 85 / 100",
+                  "label": "Minimum Damage",
+                  "before": "50 / 65 / 80 / 95 / 110",
+                  "after": "40 / 55 / 70 / 85 / 100"
+                }
+              ]
+            }
+          ],
+          "ref": "vayne",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-xerath",
+          "kind": "champion",
+          "subject": "Xerath",
+          "anchor": "patch-xerath",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Xerath.png",
+          "context": "Xerath has rested slightly high in power both mid and bot, and after last patch's adjustments to mages has come out on top in mid lane compared to others. Given his extremely high ban rate in certain regions, he's due a light nerf.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Health: 596 ⇒ 575",
+                  "label": "Health",
+                  "before": "596",
+                  "after": "575"
+                }
+              ]
+            },
+            {
+              "title": "Q - Arcanopulse",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/XerathArcanopulseChargeUp.png",
+              "changes": [
+                {
+                  "text": "Damage: 75 / 115 / 155 / 195 / 235 (+90% AP) ⇒ 70 / 110 / 150 / 190 / 230 (+90% AP)",
+                  "label": "Damage",
+                  "before": "75 / 115 / 155 / 195 / 235 (+90% AP)",
+                  "after": "70 / 110 / 150 / 190 / 230 (+90% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "xerath",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-yasuo",
+          "kind": "champion",
+          "subject": "Yasuo",
+          "anchor": "patch-yasuo",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Yasuo.png",
+          "context": "While Yasuo has definitely been able to snowball and carry games, we believe that similar to Irelia, he is too reliant on snowballing rather than just being a proper scaling carry. We also want to encourage him to prioritize early crit strike builds over Blade of the Ruined King, so we are reducing his crit damage penalty which will simultaneously encourage this as well help him scale without significantly impacting his early game snowball.",
+          "groups": [
+            {
+              "title": "Passive - Way of the Wanderer",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/passive/Yasuo_Passive.png",
+              "changes": [
+                {
+                  "text": "Critical Strike Damage Reduction: -10% ⇒ -5%",
+                  "label": "Critical Strike Damage Reduction",
+                  "before": "-10%",
+                  "after": "-5%"
+                }
+              ]
+            }
+          ],
+          "ref": "yasuo",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-yone",
+          "kind": "champion",
+          "subject": "Yone",
+          "anchor": "patch-yone",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/Yone.png",
+          "context": "Similar to Yasuo, Yone has also been an excessively snowball reliant carry, though less so. Bros stay together.",
+          "groups": [
+            {
+              "title": "Passive - Way of the Hunter",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/passive/YonePassive.png",
+              "changes": [
+                {
+                  "text": "Critical Strike Damage Reduction: -10% ⇒ -5%",
+                  "label": "Critical Strike Damage Reduction",
+                  "before": "-10%",
+                  "after": "-5%"
+                }
+              ]
+            }
+          ],
+          "ref": "yone",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-stormrazor",
+          "kind": "item",
+          "subject": "Stormrazor",
+          "anchor": "patch-Stormrazor",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/item/3095.png",
+          "context": "Stormrazor almost had its time in the sun earlier this year, but has ended up remaining second fiddle.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Attack Speed: 20% ⇒ 25%",
+                  "label": "Attack Speed",
+                  "before": "20%",
+                  "after": "25%"
+                }
+              ]
+            }
+          ],
+          "ref": "stormrazor",
+          "itemId": "3095",
+          "categories": [
+            "stats"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-sundered-sky",
+          "kind": "item",
+          "subject": "Sundered Sky",
+          "anchor": "patch-Sundered-Sky",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/item/6610.png",
+          "context": "Last patch’s Sundered Sky nerf was a step in the right direction, but landed a bit under-target given all of the other moving pieces of that patch.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Health: 450 ⇒ 400",
+                  "label": "Health",
+                  "before": "450",
+                  "after": "400"
+                },
+                {
+                  "text": "Attack Damage: 45 ⇒ 40",
+                  "label": "Attack Damage",
+                  "before": "45",
+                  "after": "40"
+                }
+              ]
+            }
+          ],
+          "ref": "sundered-sky",
+          "itemId": "6610",
+          "categories": [
+            "stats"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "system-bug-fixes",
+          "kind": "system",
+          "subject": "Bug fixes",
+          "category": "bugfix",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Fixed a bug where Jayce's EQ damage was not properly displayed as enhanced damage."
+                },
+                {
+                  "text": "Fixed a bug where Diana's E dash speed was slower than intended in certain cases."
+                },
+                {
+                  "text": "Fixed a bug where Akali's Shuriken (E) could travel across the map, allowing her to hit and dash to targets at unintended distances."
+                },
+                {
+                  "text": "Fixed a bug where Vladimir P would not properly convert AP from runes."
+                },
+                {
+                  "text": "Fixed a bug in Blind Pick (Custom Games) where junglers would be locked out of their starting items in very rare cases."
+                }
+              ]
+            }
+          ],
+          "affects": [
+            "jayce",
+            "diana",
+            "akali",
+            "vladimir"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        }
+      ],
+      "updatedAt": "2026-10-12T08:17:00.000Z"
+    },
+    {
+      "patch": "26.16",
+      "short": "16.16",
+      "title": "League of Legends Patch 26.16 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
+      "published": "2026-08-11",
+      "rev": "IXkUD6YbqhSzZ9MGAPwzpI",
+      "midPatch": [],
+      "excluded": [
+        "Patch Highlights",
+        "Classic",
+        "ARAM: Mayhem",
+        "Arena",
+        "Upcoming Skins & Chromas"
+      ],
+      "bugfixesLeftOut": 4,
+      "entries": [
+        {
+          "id": "champion-azir",
+          "kind": "champion",
+          "subject": "Azir",
+          "anchor": "patch-azir",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/champion/Azir.png",
+          "context": "We are continuing to monitor Azir, especially as players continue to pick up Press The Attack as his optimal keystone. For now however, we are going to give him a moderate buff to his laning to help him out.",
+          "groups": [
+            {
+              "title": "Q - Conquering Sands",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/spell/AzirQWrapper.png",
+              "changes": [
+                {
+                  "text": "Damage: 60 / 80 / 100 / 120 / 140 (+35 / 40 / 45 / 50 / 55% AP) ⇒ 75 / 95 / 115 / 135 / 155 (+35 / 40 / 45 / 50 / 55% AP)",
+                  "label": "Damage",
+                  "before": "60 / 80 / 100 / 120 / 140 (+35 / 40 / 45 / 50 / 55% AP)",
+                  "after": "75 / 95 / 115 / 135 / 155 (+35 / 40 / 45 / 50 / 55% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "azir",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-belveth",
+          "kind": "champion",
+          "subject": "Bel'Veth",
+          "anchor": "patch-belveth",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/champion/Belveth.png",
+          "context": "Bel'Veth has come out with the scaling curve of Kayle and Aurelion Sol. Her power is rapidly growing across all skill brackets and given her early game is already quite weak, we've opted to make her late game a bit less sharp.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Health Growth: 110 ⇒ 105",
+                  "label": "Health Growth",
+                  "before": "110",
+                  "after": "105"
+                }
+              ]
+            },
+            {
+              "title": "R - Endless Banquet",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/spell/BelvethR.png",
+              "changes": [
+                {
+                  "text": "True Form Total Attack Speed: 5 / 15 / 25% ⇒ 6 / 13 / 20%",
+                  "label": "True Form Total Attack Speed",
+                  "before": "5 / 15 / 25%",
+                  "after": "6 / 13 / 20%"
+                },
+                {
+                  "text": "True Form Remora Indicator: Resource bar now turns purple when True Form can spawn Remora",
+                  "tag": "new",
+                  "label": "True Form Remora Indicator",
+                  "value": "Resource bar now turns purple when True Form can spawn Remora"
+                }
+              ]
+            }
+          ],
+          "ref": "belveth",
+          "category": "nerf",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-camille",
+          "kind": "champion",
+          "subject": "Camille",
+          "anchor": "patch-camille",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/champion/Camille.png",
+          "context": "With roaming supports all the rage, Camille has been queen. We are simultaneously looking to nerf her support roaming power while keeping or (hopefully) actually buffing her top lane. This means trading the raw all in power behind her passive shield early game in favor of significantly lowered cooldowns for better repeatable trading.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Mana: 339 ⇒ 375",
+                  "label": "Mana",
+                  "before": "339",
+                  "after": "375"
+                }
+              ]
+            },
+            {
+              "title": "Passive - Adaptive Defenses",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/passive/Camille_Passive.png",
+              "changes": [
+                {
+                  "text": "Shield: 20% Maximum Health ⇒ 10 / 15 / 20 / 25% Maximum Health (levels 1 / 7 / 13 / 19)",
+                  "label": "Shield",
+                  "before": "20% Maximum Health",
+                  "after": "10 / 15 / 20 / 25% Maximum Health (levels 1 / 7 / 13 / 19)"
+                },
+                {
+                  "text": "Cooldown: 18 / 14 / 10 / 6s (levels 1 / 7 / 13 / 19) ⇒ 14 / 11 / 8s (levels 1 / 7 / 13)",
+                  "label": "Cooldown",
+                  "before": "18 / 14 / 10 / 6s (levels 1 / 7 / 13 / 19)",
+                  "after": "14 / 11 / 8s (levels 1 / 7 / 13)"
+                }
+              ]
+            },
+            {
+              "title": "W - Tactical Sweep",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/spell/CamilleW.png",
+              "changes": [
+                {
+                  "text": "Cooldown: 15 / 14 / 13 / 12 / 11s ⇒ 12 / 11.5 / 11 / 10.5 / 10s",
+                  "label": "Cooldown",
+                  "before": "15 / 14 / 13 / 12 / 11s",
+                  "after": "12 / 11.5 / 11 / 10.5 / 10s"
+                },
+                {
+                  "text": "Outer Cone Bonus Damage: 6 / 6.5 / 7 / 7.5 / 8% (+2.5% per 100 bonus Attack Damage) Target Maximum Health ⇒ 7 / 7.5 / 8 / 8.5 / 9% (+2.5% per 100 bonus Attack Damage) Target Maximum Health",
+                  "label": "Outer Cone Bonus Damage",
+                  "before": "6 / 6.5 / 7 / 7.5 / 8% (+2.5% per 100 bonus Attack Damage) Target Maximum Health",
+                  "after": "7 / 7.5 / 8 / 8.5 / 9% (+2.5% per 100 bonus Attack Damage) Target Maximum Health"
+                }
+              ]
+            }
+          ],
+          "ref": "camille",
+          "category": "adjustment",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-gwen",
+          "kind": "champion",
+          "subject": "Gwen",
+          "anchor": "patch-gwen",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/champion/Gwen.png",
+          "context": "Gwen has remained slightly weak since her nerfs earlier this year. We are buffing her passive sustain back up towards where it has previously been, which should help her be a powerful threat in some of her stronger matchups without making her feel uncounterable.",
+          "groups": [
+            {
+              "title": "Passive - A Thousand Cuts",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/passive/Gwen_Passive.png",
+              "changes": [
+                {
+                  "text": "Healing On Champions: 50% post-mitigation, capped to 10-25 (based on level) (+6.5% AP) ⇒ 67% post-mitigation, capped to 12-40 (based on level) (+7% AP)",
+                  "label": "Healing On Champions",
+                  "before": "50% post-mitigation, capped to 10-25 (based on level) (+6.5% AP)",
+                  "after": "67% post-mitigation, capped to 12-40 (based on level) (+7% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "gwen",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-kennen",
+          "kind": "champion",
+          "subject": "Kennen",
+          "anchor": "patch-kennen",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/champion/Kennen.png",
+          "context": "With the reshape to Hextech Rocketbelt to prevent it from becoming the ubiquitous mage legendary, Kennen came out behind the pack. We are buffing him to compensate, making sure he is rewarded well when he does find the right flanks for those huge team-deleting ults.",
+          "groups": [
+            {
+              "title": "R - Slicing Maelstrom",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/spell/KennenShurikenStorm.png",
+              "changes": [
+                {
+                  "text": "Bonus Resistances: 20 / 40 / 60 ⇒ 25 / 50 / 75",
+                  "label": "Bonus Resistances",
+                  "before": "20 / 40 / 60",
+                  "after": "25 / 50 / 75"
+                },
+                {
+                  "text": "Damage: 40 / 75 / 110 (+22.5% AP) ⇒ 40 / 80 / 120 (+25% AP)",
+                  "label": "Damage",
+                  "before": "40 / 75 / 110 (+22.5% AP)",
+                  "after": "40 / 80 / 120 (+25% AP)"
+                },
+                {
+                  "text": "Maximum Damage: 300 / 562.5 / 825 (+168.75% AP) ⇒ 300 / 600 / 900 (+187.5% AP)",
+                  "label": "Maximum Damage",
+                  "before": "300 / 562.5 / 825 (+168.75% AP)",
+                  "after": "300 / 600 / 900 (+187.5% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "kennen",
+          "category": "buff",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-nasus",
+          "kind": "champion",
+          "subject": "Nasus",
+          "anchor": "patch-nasus",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/champion/Nasus.png",
+          "context": "Nasus has been a distinct jungle pick that we think is pretty exciting to see; however his top lane has lagged very far behind. We are adjusting his Q stack generation to bring these two roles closer to each other in raw power.",
+          "groups": [
+            {
+              "title": "Q - Siphoning Strike",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/spell/NasusQ.png",
+              "changes": [
+                {
+                  "text": "Stacks: 3, increased to 12 on champions / large minions / monsters ⇒ 4, increased to 10 on champions / large minions / monsters",
+                  "label": "Stacks",
+                  "before": "3, increased to 12 on champions / large minions / monsters",
+                  "after": "4, increased to 10 on champions / large minions / monsters"
+                }
+              ]
+            }
+          ],
+          "ref": "nasus",
+          "category": "adjustment",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "champion-poppy",
+          "kind": "champion",
+          "subject": "Poppy",
+          "anchor": "patch-poppy",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/champion/Poppy.png",
+          "context": "Poppy is meant to be a tank whose gameplay has leaned too far into early game snowball fighter, to the point she's choosing Hail of Blades and Sundered Sky over more tank runes and items. We're looking to shift power out of her early game AD fighter pattern and enable her tank pattern by significantly increasing her scaling with durability and giving her enough mana growth that sustained combat doesn't immediately run her out of resources.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Attack Damage: 60 ⇒ 56",
+                  "label": "Attack Damage",
+                  "before": "60",
+                  "after": "56"
+                },
+                {
+                  "text": "Health Regeneration: 8 ⇒ 9",
+                  "label": "Health Regeneration",
+                  "before": "8",
+                  "after": "9"
+                },
+                {
+                  "text": "Mana: 280 + 40/level ⇒ 300 + 45/level",
+                  "label": "Mana",
+                  "before": "280 + 40/level",
+                  "after": "300 + 45/level"
+                }
+              ]
+            },
+            {
+              "title": "Q - Hammer Shock",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/spell/PoppyQ.png",
+              "changes": [
+                {
+                  "text": "Damage: 30 / 55 / 80 / 105 / 130 (+100% bonus Attack Damage) (+9% Target Maximum Health), twice ⇒ 30 / 55 / 80 / 105 / 130 (+75% bonus Attack Damage) (+7 / 7.5 / 8 / 8.5 / 9% Target Maximum Health), twice",
+                  "label": "Damage",
+                  "before": "30 / 55 / 80 / 105 / 130 (+100% bonus Attack Damage) (+9% Target Maximum Health), twice",
+                  "after": "30 / 55 / 80 / 105 / 130 (+75% bonus Attack Damage) (+7 / 7.5 / 8 / 8.5 / 9% Target Maximum Health), twice"
+                },
+                {
+                  "text": "Target Maximum Health Monster Cap: 75 / 105 / 135 / 165 / 195 ⇒ 85 / 120 / 155 / 190 / 225",
+                  "label": "Target Maximum Health Monster Cap",
+                  "before": "75 / 105 / 135 / 165 / 195",
+                  "after": "85 / 120 / 155 / 190 / 225"
+                },
+                {
+                  "text": "Slow Amount: 20 / 25 / 30 / 35 / 40% ⇒ 20 / 23 / 26 / 29 / 32% (+8% per 1000 bonus Health)",
+                  "label": "Slow Amount",
+                  "before": "20 / 25 / 30 / 35 / 40%",
+                  "after": "20 / 23 / 26 / 29 / 32% (+8% per 1000 bonus Health)"
+                }
+              ]
+            },
+            {
+              "title": "W - Steadfast Presence",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.15.1/img/spell/PoppyW.png",
+              "changes": [
+                {
+                  "text": "Total Armor and Magic Resistance: 12%, doubled below 40% Maximum Health ⇒ 16%, doubled below 40% Maximum Health",
+                  "label": "Total Armor and Magic Resistance",
+                  "before": "12%, doubled below 40% Maximum Health",
+                  "after": "16%, doubled below 40% Maximum Health"
+                }
+              ]
+            }
+          ],
+          "ref": "poppy",
+          "category": "adjustment",
+          "categoryBasis": "reviewed",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-berserkers-greaves",
+          "kind": "item",
+          "subject": "Berserker's Greaves",
+          "anchor": "patch-Berserkers-Greaves",
+          "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/0e32f582f77e13c9d12aa6e4973ce6854b71d3be-1080x1080.jpg",
+          "context": "Berserker's Greaves have been sitting at a particularly low state of power for a while now, and with the state of AD champions in both bot and mid, we feel this is the right time to buff them.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Attack Speed: 25% ⇒ 30%",
+                  "label": "Attack Speed",
+                  "before": "25%",
+                  "after": "30%"
+                },
+                {
+                  "text": "T3 Attack Speed: 40% ⇒ 45%",
+                  "label": "T3 Attack Speed",
+                  "before": "40%",
+                  "after": "45%"
+                }
+              ]
+            }
+          ],
+          "ref": "berserkers-greaves",
+          "categories": [
+            "stats"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-black-cleaver",
+          "kind": "item",
+          "subject": "Black Cleaver",
+          "anchor": "patch-Black-Cleaver",
+          "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/078f4aceabfe8cf75e140e03223f11696e930d22-512x512.png",
+          "context": "Black Cleaver has become a Smolder / Senna item more than a core AD fighter item. We are re-adding the Melee / Ranged split on the move speed effect to buy space to buff it for AD fighters without pushing it over the top for its ranged user base.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Attack Damage: 40 ⇒ 45",
+                  "label": "Attack Damage",
+                  "before": "40",
+                  "after": "45"
+                },
+                {
+                  "text": "Fervor Move Speed: 20 for 2s ⇒ [20 Melee || 10 Ranged] for 2s",
+                  "label": "Fervor Move Speed",
+                  "before": "20 for 2s",
+                  "after": "[20 Melee || 10 Ranged] for 2s"
+                }
+              ]
+            }
+          ],
+          "ref": "black-cleaver",
+          "categories": [
+            "stats",
+            "effect"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-eclipse",
+          "kind": "item",
+          "subject": "Eclipse",
+          "anchor": "patch-Eclipse",
+          "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/5989ddee5c636892399a87f15f5f95ce43f11b26-512x512.png",
+          "context": "Eclipse has similarly fallen behind as an option for AD champions as a high ticket early AD item that isn't in the Lethality space. We feel it has clear space for a buff.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Damage: [6% Melee || 4% Ranged] Target Maximum Health ⇒ [8% Melee || 5% Ranged] Target Maximum Health",
+                  "label": "Damage",
+                  "before": "[6% Melee || 4% Ranged] Target Maximum Health",
+                  "after": "[8% Melee || 5% Ranged] Target Maximum Health"
+                },
+                {
+                  "text": "Shield: [160 + 40% bonus Attack Damage Melee || 80 + 20% bonus Attack Damage Ranged] ⇒ [150 + 40% bonus Attack Damage Melee || 75 + 20% bonus Attack Damage Ranged]",
+                  "label": "Shield",
+                  "before": "[160 + 40% bonus Attack Damage Melee || 80 + 20% bonus Attack Damage Ranged]",
+                  "after": "[150 + 40% bonus Attack Damage Melee || 75 + 20% bonus Attack Damage Ranged]"
+                }
+              ]
+            }
+          ],
+          "ref": "eclipse",
+          "categories": [
+            "effect"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-runaans-hurricane",
+          "kind": "item",
+          "subject": "Runaan's Hurricane",
+          "anchor": "patch-Runaans-Hurricane",
+          "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/295d802fc4c2541bb3b93a76ea2c2fbcbd9967d5-512x512.jpg",
+          "context": "Runaan's Hurricane has lost all of its core users over the course of the year as ADCs have moved to a wider variety of AS Crit itemization. We are buffing its unique effect and movespeed to help players capitalize on the positioning requirements of that unique effect.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Move Speed: 4% ⇒ 5%",
+                  "label": "Move Speed",
+                  "before": "4%",
+                  "after": "5%"
+                },
+                {
+                  "text": "Wind's Fury Bolt Damage: 55% Attack Damage ⇒ 65% Attack Damage",
+                  "label": "Wind's Fury Bolt Damage",
+                  "before": "55% Attack Damage",
+                  "after": "65% Attack Damage"
+                }
+              ]
+            }
+          ],
+          "ref": "runaans-hurricane",
+          "categories": [
+            "stats",
+            "effect"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-steraks-gage",
+          "kind": "item",
+          "subject": "Sterak's Gage",
+          "anchor": "patch-Steraks-Gage",
+          "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/6c69ddde86705876c3894dfad0d1317d2e496d66-512x512.png",
+          "context": "Sterak's Gage has also lost its position as the premium juggernaut / diver teamfight item, with Guardian Angel taking its place. We think Sterak's is a much healthier fit for these champions to take.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Bonus Attack Damage: 45% of Base Attack Damage ⇒ 50% of Base Attack Damage",
+                  "label": "Bonus Attack Damage",
+                  "before": "45% of Base Attack Damage",
+                  "after": "50% of Base Attack Damage"
+                }
+              ]
+            }
+          ],
+          "ref": "steraks-gage",
+          "categories": [
+            "stats"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-sundered-sky",
+          "kind": "item",
+          "subject": "Sundered Sky",
+          "anchor": "patch-Sundered-Sky",
+          "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/1da3c726b2c888fcadef76f75de1c24c1ed090cf-512x512.png",
+          "context": "Sundered Sky, on the other hand, has been the meta dominant AD fighter item for the last year. While we do find it exciting to see when players manage to chain its triggers through a teamfight and barely survive risky engages, we think it's a bit too performant when optimized to the point where it's healing for more than even lifesteal based items.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Recipe: Tunneler (1150g) + Caulfield's (1050g) + Ruby Crystal (400g) + 500g ⇒ Tunneler (1150g) + Caulfield's (1050g) + 900g",
+                  "label": "Recipe",
+                  "before": "Tunneler (1150g) + Caulfield's (1050g) + Ruby Crystal (400g) + 500g",
+                  "after": "Tunneler (1150g) + Caulfield's (1050g) + 900g"
+                },
+                {
+                  "text": "Healing: [100% Melee || 50% Ranged] Base Attack Damage + 6% Missing Health ⇒ [90% Melee || 45% Ranged] Base Attack Damage + 4% Missing Health",
+                  "label": "Healing",
+                  "before": "[100% Melee || 50% Ranged] Base Attack Damage + 6% Missing Health",
+                  "after": "[90% Melee || 45% Ranged] Base Attack Damage + 4% Missing Health"
+                },
+                {
+                  "text": "Health: 400 ⇒ 450",
+                  "label": "Health",
+                  "before": "400",
+                  "after": "450"
+                }
+              ]
+            }
+          ],
+          "ref": "sundered-sky",
+          "categories": [
+            "stats",
+            "cost",
+            "effect"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-sunfire-cape",
+          "kind": "item",
+          "subject": "Sunfire Cape",
+          "anchor": "patch-Sunfire-Cape",
+          "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/c743b81ebbf9a8a8285bdf60c0af30e4d641309b-200x200.jpg",
+          "context": "Sunfire Cape has remained a powerful item in League, both in purchase and winrate, but players have repeatedly called out dissatisfaction with the item because of how directly it's compared against Hollow Radiance. We are upping its cost to match Hollow Radiance and shifting its power towards PvP damage to give the item more comparable advantages.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Damage: 20 (+1% bonus Health) ⇒ 20 (+1.5% bonus Health)",
+                  "label": "Damage",
+                  "before": "20 (+1% bonus Health)",
+                  "after": "20 (+1.5% bonus Health)"
+                },
+                {
+                  "text": "Minion / Monster Modifier: 160% Minion, 200% Monster ⇒ 150% Minion, 180% Monster",
+                  "label": "Minion / Monster Modifier",
+                  "before": "160% Minion, 200% Monster",
+                  "after": "150% Minion, 180% Monster"
+                },
+                {
+                  "text": "Recipe: 600g ⇒ 700g",
+                  "label": "Recipe",
+                  "before": "600g",
+                  "after": "700g"
+                }
+              ]
+            }
+          ],
+          "ref": "sunfire-cape",
+          "categories": [
+            "cost",
+            "effect"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-chainlaced-crushers",
+          "kind": "item",
+          "subject": "Chainlaced Crushers",
+          "anchor": "patch-Chainlaced-Crushers",
+          "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/baec396740d4bc550d0069638d7fc35a01bd598e-512x512.png",
+          "context": "We continue to feel that defensive boot optimizations in mid lane stifle action. Since we are looking to shift mage power back from bot lane to mid lane this patch, we are also taking the time to nerf down mid lane counter itemization against mages.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Magic Resistance: 30 ⇒ 25",
+                  "label": "Magic Resistance",
+                  "before": "30",
+                  "after": "25"
+                }
+              ]
+            }
+          ],
+          "ref": "chainlaced-crushers",
+          "categories": [
+            "stats"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-spellslingers-shoes",
+          "kind": "item",
+          "subject": "Spellslinger's Shoes",
+          "anchor": "patch-Spellslingers-Shoes",
+          "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/0bbda1b75554118466ecdd8d95e46ea803595280-512x512.jpg",
+          "context": "Along with Chainlaced Crushers' change, we are buffing Spellslinger's Shoes to further affect mid vs bot mage balance.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Magic Penetration: 18 + 8% ⇒ 20 + 8%",
+                  "label": "Magic Penetration",
+                  "before": "18 + 8%",
+                  "after": "20 + 8%"
+                }
+              ]
+            }
+          ],
+          "ref": "spellslingers-shoes",
+          "categories": [
+            "stats"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "item-tiamat",
+          "kind": "item",
+          "subject": "Tiamat",
+          "anchor": "patch-Tiamat",
+          "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/7314607c6d5c915e3ba4b2ec1103185deed29083-512x512.png",
+          "context": "Tiamat has ended up in a state where even if you are buying a Hydra item, it's optimal NOT to purchase it until you have all the other components. That's pretty lame, yo.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Attack Damage: 20 ⇒ 25",
+                  "label": "Attack Damage",
+                  "before": "20",
+                  "after": "25"
+                }
+              ]
+            }
+          ],
+          "ref": "tiamat",
+          "categories": [
+            "stats"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "rune-fleet-footwork",
+          "kind": "rune",
+          "subject": "Fleet Footwork",
+          "anchor": "patch-Fleet-Footwork",
+          "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/d676509226b6e267cdaeb7fe8cea75081a81ace8-256x256.png",
+          "context": "Fleet Footwork has been a relatively weaker and underutilized Precision keystone, and we feel like it has room to be a decent option for sustaining against harass past early laning and onwards.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Healing: 10-130 ( +[10% bonus AD Melee || 6% bonus AD Ranged]) ( +[5% AP Melee || 3% AP Ranged]) ⇒ 15-160 ( +[10% bonus AD Melee || 6% bonus AD Ranged]) ( +[5% AP Melee || 3% AP Ranged])",
+                  "label": "Healing",
+                  "before": "10-130 ( +[10% bonus AD Melee || 6% bonus AD Ranged]) ( +[5% AP Melee || 3% AP Ranged])",
+                  "after": "15-160 ( +[10% bonus AD Melee || 6% bonus AD Ranged]) ( +[5% AP Melee || 3% AP Ranged])"
+                }
+              ]
+            }
+          ],
+          "ref": "fleet-footwork",
+          "category": "keystone",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "rune-hail-of-blades",
+          "kind": "rune",
+          "subject": "Hail of Blades",
+          "anchor": "patch-Hail-of-Blades",
+          "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/c92f2d30fc0d1b84c74a65d1219f78d8906a5bde-256x256.png",
+          "context": "Hail of Blades is currently contributing significantly to the extreme early game roaming meta with its super front loaded power skew. We are pushing its power back towards scaling to help soften this impact.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Attack Speed: 120% Melee || 60% Ranged ⇒ 90% Melee || 60% Ranged",
+                  "label": "Attack Speed",
+                  "before": "120% Melee || 60% Ranged",
+                  "after": "90% Melee || 60% Ranged"
+                },
+                {
+                  "text": "Bonus True Damage: 4-20 (+8% bonus AD) (+6% AP) ⇒ 2-20 (+12% bonus AD) (+10% AP)",
+                  "label": "Bonus True Damage",
+                  "before": "4-20 (+8% bonus AD) (+6% AP)",
+                  "after": "2-20 (+12% bonus AD) (+10% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "hail-of-blades",
+          "category": "keystone",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "system-adc-magic-resistance",
+          "kind": "system",
+          "subject": "ADC MAGIC RESISTANCE",
+          "context": "Finally, next to the changes to boot rewards in midlane, we are also adjusting MR for all ADC champions to help them out against mages early game. We also hope this will help a few of them in mid lane, where we believe a healthier pool of AD champions (including potentially Akshan and Tristana) will also help create a more diverse jungle meta beyond AD fighters.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Affected Champions: Akshan, Aphelios, Ashe, Caitlyn, Corki, Draven, Ezreal, Graves, Jhin, Jinx, Kai'Sa, Kalista, Kindred, Kog'Maw, Lucian, Miss Fortune, Quinn, Samira, Senna, Sivir, Smolder, Twitch, Varus, Vayne, Xayah, Yunara, Zeri",
+                  "label": "Affected Champions",
+                  "value": "Akshan, Aphelios, Ashe, Caitlyn, Corki, Draven, Ezreal, Graves, Jhin, Jinx, Kai'Sa, Kalista, Kindred, Kog'Maw, Lucian, Miss Fortune, Quinn, Samira, Senna, Sivir, Smolder, Twitch, Varus, Vayne, Xayah, Yunara, Zeri"
+                },
+                {
+                  "text": "Magic Resistance: 30 + 1.3/level ⇒ 33 + 1.1/level",
+                  "label": "Magic Resistance",
+                  "before": "30 + 1.3/level",
+                  "after": "33 + 1.1/level"
+                },
+                {
+                  "text": "Tristana Magic Resistance: 28 + 1.3/level ⇒ 33 + 1.1/level",
+                  "label": "Tristana Magic Resistance",
+                  "before": "28 + 1.3/level",
+                  "after": "33 + 1.1/level"
+                }
+              ]
+            }
+          ],
+          "category": "other",
+          "affects": [
+            "akshan",
+            "aphelios",
+            "ashe",
+            "caitlyn",
+            "corki",
+            "draven",
+            "ezreal",
+            "graves",
+            "jhin",
+            "jinx",
+            "kaisa",
+            "kalista",
+            "kindred",
+            "kog-maw",
+            "lucian",
+            "miss-fortune",
+            "quinn",
+            "samira",
+            "senna",
+            "sivir",
+            "smolder",
+            "twitch",
+            "varus",
+            "vayne",
+            "xayah",
+            "yunara",
+            "zeri"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "system-jungle-pets",
+          "kind": "system",
+          "subject": "JUNGLE PETS",
+          "context": "Speaking of a more diverse jungle Meta, we are adjusting the way jungle pets scales to help mage and tank junglers against the current AD fighter meta.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Damage Per Attack: 20 - 150 (based on level) (+10% bonus Attack Damage) (+12% Ability Power) (+20% bonus Armor) (+20% bonus Magic Resistance) (+3% bonus Health) ⇒ 20 - 150 (based on level) (+10% bonus Attack Damage) (+16% Ability Power) (+25% bonus Armor) (+25% bonus Magic Resistance) (+4% bonus Health)",
+                  "label": "Damage Per Attack",
+                  "before": "20 - 150 (based on level) (+10% bonus Attack Damage) (+12% Ability Power) (+20% bonus Armor) (+20% bonus Magic Resistance) (+3% bonus Health)",
+                  "after": "20 - 150 (based on level) (+10% bonus Attack Damage) (+16% Ability Power) (+25% bonus Armor) (+25% bonus Magic Resistance) (+4% bonus Health)"
+                }
+              ]
+            }
+          ],
+          "category": "jungle",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "system-support-role-quest",
+          "kind": "system",
+          "subject": "SUPPORT ROLE QUEST",
+          "context": "Finally, we are adjusting Support Role Quest progress to penalize heavy early game roaming by increasing the penalty while outside of bot lane, and removing the bonus progress gained from champion combat over minion last hitting.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Stack Consumption On Champion / Turret Damage: 22 Melee || 20 Ranged and 24 Melee || 22 Ranged ⇒ 18 and 21",
+                  "label": "Stack Consumption On Champion / Turret Damage",
+                  "before": "22 Melee || 20 Ranged and 24 Melee || 22 Ranged",
+                  "after": "18 and 21"
+                },
+                {
+                  "text": "Stack Consumption On Creep Score: 15 and 20 ⇒ 18 and 21",
+                  "label": "Stack Consumption On Creep Score",
+                  "before": "15 and 20",
+                  "after": "18 and 21"
+                },
+                {
+                  "text": "Minion Creep Score Experience / Gold Penalty: -25% outside of bot lane until level 3 ⇒ -33% outside of bot lane until level 5",
+                  "label": "Minion Creep Score Experience / Gold Penalty",
+                  "before": "-25% outside of bot lane until level 3",
+                  "after": "-33% outside of bot lane until level 5"
+                }
+              ]
+            }
+          ],
+          "category": "role-quests",
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        },
+        {
+          "id": "system-bug-fixes",
+          "kind": "system",
+          "subject": "Bug fixes",
+          "category": "bugfix",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Fixed a bug where Viego with the Bot lane Role Quest would be able to steal his possessed target's boots."
+                },
+                {
+                  "text": "Fixed a bug where upgrading from Hexdrinker to Maw of Malmortius did not reset the cooldown of the item."
+                },
+                {
+                  "text": "Fixed a bug where Locke picking up his (R) artifact would refund based on its current cooldown instead of the total cooldown."
+                },
+                {
+                  "text": "Fixed a bug where Support players' Control wards would be consumed when trying to place them while dead."
+                },
+                {
+                  "text": "Fixed a bug where Ambessa's omnivamp would apply on turrets when driving Rift Herald into them."
+                },
+                {
+                  "text": "Fixed a bug where Mordekaiser (R) improperly gains Ability Haste."
+                },
+                {
+                  "text": "Fixed a bug where Bel'Veth's resource bar would incorrectly update if she hit 80 stacks while already in True Form."
+                },
+                {
+                  "text": "Fixed a bug where Locke (R) execution would be considered a spell cast."
+                }
+              ]
+            }
+          ],
+          "affects": [
+            "viego",
+            "locke",
+            "ambessa",
+            "mordekaiser",
+            "belveth"
+          ],
+          "updatedAt": "2026-10-12T08:17:00.000Z"
+        }
+      ],
+      "updatedAt": "2026-10-12T08:17:00.000Z"
+    }
+  ]
+}
