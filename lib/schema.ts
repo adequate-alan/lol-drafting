@@ -314,6 +314,36 @@ export const CompShell = z.object({
 });
 export type CompShell = z.infer<typeof CompShell>;
 
+// ---------- discovered-comps.json (written only by the weekly discovery, scripts/discover-comps.ts) ----------
+// Observed Pro Comps the weekly review added (lib/comp-discovery.ts), and observed variations filed under library comps.
+// Lineups are Observed Pro Evidence (each game is a data/pro-games.json record, referenced by Gol.gg id and side);
+// identity, jobs, win condition, strengths, weak points and difficulty are the comp check's read (General Draft Logic).
+const Identity = z.enum(["front-to-back", "dive", "pick", "poke", "protect", "skirmish", "wombo", "split", "tempo", "scaling"]);
+const LineupRef = z.object({ game: z.number().int().positive(), side: z.enum(["blue", "red"]) });
+export const DiscoveredComp = z.object({
+  id: id,
+  name: z.string().min(1),
+  addedOn: Day,
+  primary: Identity,
+  secondary: Identity.nullable(),
+  tags: z.array(z.string()),
+  slots: z.object(Object.fromEntries(ROLES.map((r) => [r, z.object({ champion: ChampionId, job: z.string().min(1).max(16) })])) as Record<Role, z.ZodObject<{ champion: typeof ChampionId; job: z.ZodString }>>),
+  winCondition: z.string().min(1),
+  why: z.string().min(1),
+  timing: z.string(),
+  strengths: z.array(z.string()),
+  weaknesses: z.array(z.object({ label: z.string(), severity: z.enum(["major", "moderate", "minor"]) })),
+  difficulty: z.enum(["easy", "medium", "hard"]),
+  games: z.array(LineupRef).min(1),
+});
+export type DiscoveredComp = z.infer<typeof DiscoveredComp>;
+export const DiscoveredComps = z.object({
+  lastAddition: Day.nullable(),
+  comps: z.array(DiscoveredComp),
+  variations: z.array(z.object({ of: id, picks: Picks, addedOn: Day, games: z.array(LineupRef).min(1) })),
+});
+export type DiscoveredComps = z.infer<typeof DiscoveredComps>;
+
 // ---------- pool.json ----------
 export const PoolEntry = z.object({
   role: Role,
@@ -437,6 +467,7 @@ export const Files = {
   "pro-builds.json": ProBuilds,
   "build-assets.json": BuildAssets,
   "comp-shells.json": z.array(CompShell),
+  "discovered-comps.json": DiscoveredComps,
   "pool.json": z.array(PoolEntry),
   "meta.json": Meta,
   "geng.json": z.array(GenGPattern),

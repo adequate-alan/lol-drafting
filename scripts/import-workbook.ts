@@ -464,8 +464,8 @@ async function main() {
 
   // ---------- write + validate ----------
   // counters.json, proposed-synergy.json, pro-games.json, pro-builds.json and build-assets.json (the daily Gol.gg
-  // refresh) are not in the workbook; the importer leaves them alone.
-  const out: Record<Exclude<keyof typeof Files, "counters.json" | "proposed-synergy.json" | "pro-games.json" | "pro-builds.json" | "build-assets.json">, unknown> = {
+  // refresh) and discovered-comps.json (the weekly comp discovery) are not in the workbook; the importer leaves them alone.
+  const out: Record<Exclude<keyof typeof Files, "counters.json" | "proposed-synergy.json" | "pro-games.json" | "pro-builds.json" | "build-assets.json" | "discovered-comps.json">, unknown> = {
     "champions.json": champions,
     "sources.json": [...sources.values()],
     "bot-pairings.json": botPairings,

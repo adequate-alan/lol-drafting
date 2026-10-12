@@ -79,7 +79,8 @@ export function CompCheck({ draft, enemyIds, champions, botPairings, active, bes
             <div className="cc-section">
               <div className="cc-label">{active.charAt(0) + active.slice(1).toLowerCase()} needs</div>
               {!needs.length ? <p className="xs muted">Nothing specific; take the best fit.</p> : (
-                <ol className="cc-needs">{needs.map((n) => <li key={n.id} title={n.because}><b>{n.label}</b><span>{n.because}</span></li>)}</ol>
+                // The weak point above already names the cause; repeat it under a need only when it adds something
+                <ol className="cc-needs">{needs.map((n) => <li key={n.id} title={n.because}><b>{n.label}</b>{!r.weakPoints.some((w) => w.label === n.because) && <span>{n.because}</span>}</li>)}</ol>
               )}
               {(best || bestOverall) && (
                 <div className="cc-picks">
