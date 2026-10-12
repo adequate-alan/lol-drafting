@@ -18,20 +18,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Check icon paths
+      - name: Save one live game page
         run: |
-          for u in https://ddragon.leagueoflegends.com/cdn/img/perk-images/StatMods/StatModsAttackSpeedIcon.png \
-                   https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/7204_Resolve.png \
-                   https://ddragon.leagueoflegends.com/cdn/16.18.1/img/spell/YorickQ.png \
-                   https://ddragon.leagueoflegends.com/cdn/16.18.1/img/item/6665.png; do
-            curl -sS -o /dev/null -w "%{http_code} $u\n" "$u"; done | tee tmp-icons.txt
+          mkdir -p tmp-fetch
+          curl -sS -A "lol-drafting-refresh/1.0 (+https://github.com/adequate-alan/lol-drafting; daily, a few pages)" -o tmp-fetch/game-83452-game-live.html https://gol.gg/game/stats/83452/page-game/
       - name: Backfill builds
         run: node scripts/refresh-pro-data.mjs --builds-only
       - name: Commit
         run: |
           git config user.name "adequate-alan"
           git config user.email "54249725+adequate-alan@users.noreply.github.com"
-          rm -rf tmp-fetch
-          git add -A tmp-fetch data/pro-builds.json data/build-assets.json tmp-icons.txt
+          git add -A tmp-fetch data/pro-builds.json data/build-assets.json
           git commit -m "Pro builds: backfill player builds for recorded games from Gol.gg"
           git push origin HEAD:${GITHUB_REF_NAME}

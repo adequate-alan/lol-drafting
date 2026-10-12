@@ -18,8 +18,11 @@ export const DDRAGON = "https://ddragon.leagueoflegends.com";
 export function parsePlayers(html) {
   const tablesHtml = [...html.matchAll(/<table class='playersInfosLine[\s\S]*?<\/table>/gi)].map((m) => m[0]);
   if (tablesHtml.length !== 2) return undefined;
-  const side = (t) => [...t.matchAll(/champions_icon\/([^'./]+)\.png'\/><\/a>&nbsp;<a class='link-blanc' href='[^']*player-stats\/(\d+)\/[^']*'[^>]*>([^<]*)<\/a>/g)]
-    .map((m) => ({ champion: decode(m[1]), playerId: Number(m[2]), player: decode(m[3]).trim() }));
+  // One <tr> per player: the champion icon and the player-stats link, whatever markup sits between them.
+  const side = (t) => [...t.matchAll(/<tr[\s\S]*?<\/tr>/gi)].map(([tr]) => {
+    const champ = tr.match(/champions_icon\/([^'"./]+)\.png/i), link = tr.match(/player-stats\/(\d+)\/[^>]*>([^<]*)<\/a>/i);
+    return champ && link ? { champion: decode(champ[1]), playerId: Number(link[1]), player: decode(link[2]).trim() } : undefined;
+  }).filter(Boolean);
   return { blue: side(tablesHtml[0]), red: side(tablesHtml[1]) };
 }
 
