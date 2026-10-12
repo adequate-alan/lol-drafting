@@ -200,11 +200,14 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   `--avatar-*` tokens; width and height fixed in markup, so nothing shifts while it loads). Without a checked photo it
   shows the player's initials: never a champion icon, never a generated image, never another player's photo.
 - `data/player-portraits.json` (`PlayerPortraits` in `lib/schema.ts`) is the one library, keyed by Gol.gg player id:
-  name, team, `file` (`assets/players/<id>.webp`), Commons file page (`source`), `original` URL and width, license,
-  author, photo context, the crop in original pixels and `checkedOn`. Only Wikimedia Commons files under a free
-  license (CC BY / CC BY-SA / CC0 / public domain) are used; the credit ("Photo: author, license, via Wikimedia
-  Commons") is in the avatar tooltip and in the Pinned Players "Photo credits" Disclosure. Photos from DPM.LOL, Gol.gg,
-  team sites or social media are not reused: they carry no reuse license. No team logos (trademarks).
+  `provider`, name, team, `file` (`assets/players/<id>.webp`), the page it came from (`source`), `original` URL and
+  width, the crop in original pixels and `checkedOn`. Two providers: `commons` (Wikimedia Commons files under a free
+  license, CC BY / CC BY-SA / CC0 / public domain, with license, author and photo context; credit "Photo: author,
+  license, via Wikimedia Commons") and `dpm.lol` (alan's decision, 2026-10-12: dpm.lol's pro profile photos,
+  `https://dpm.lol/esport/players/<handle>.webp`, fetched on his Mac because dpm.lol challenges Claude's environments;
+  dpm.lol states no reuse license, so the credit says "Photo via dpm.lol" and the Disclosure says none is claimed).
+  dpm.lol's generic `nopicture.webp` is not a photo; a dpm.lol page for the handle on another team is not the player.
+  Credits are in the avatar tooltip and the Pinned Players "Photo credits" Disclosure. No team logos (trademarks).
 - A portrait is added by hand and only when the photo is the same person: `scripts/find-player-portraits.mjs`
   (separate from the match refresh, never run by it; a missing photo never fails an import) matches each recorded
   player to a Wikidata League of Legends player item by exact handle, reads the Commons license metadata and writes

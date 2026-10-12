@@ -2,269 +2,1155 @@
   "portraits": [
     {
       "playerId": 48,
+      "provider": "dpm.lol",
       "name": "Faker",
       "team": "T1",
       "file": "assets/players/48.webp",
-      "source": "https://commons.wikimedia.org/wiki/File:T1_Faker_Lee_Sang-Hyeok_in_a_2026_Interview.png",
-      "original": "https://upload.wikimedia.org/wikipedia/commons/5/5c/T1_Faker_Lee_Sang-Hyeok_in_a_2026_Interview.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "license": "CC BY 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
-      "author": "Marie Claire",
-      "photo": "interview, 2026",
+      "source": "https://dpm.lol/pro/Faker",
+      "original": "https://dpm.lol/esport/players/faker.webp",
+      "originalWidth": 220,
       "crop": {
         "left": 0,
         "top": 0,
-        "size": 594
+        "size": 220
       },
-      "checkedOn": "2026-10-12",
-      "originalWidth": 594
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 564,
+      "provider": "dpm.lol",
+      "name": "Cube",
+      "team": "Team WE",
+      "file": "assets/players/564.webp",
+      "source": "https://dpm.lol/pro/Cube",
+      "original": "https://dpm.lol/esport/players/cube.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-10-12"
     },
     {
       "playerId": 650,
+      "provider": "dpm.lol",
       "name": "Bdd",
       "team": "KT Rolster",
       "file": "assets/players/650.webp",
-      "source": "https://commons.wikimedia.org/wiki/File:BDD_interview_2021.jpg",
-      "original": "https://upload.wikimedia.org/wikipedia/commons/1/1c/BDD_interview_2021.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "license": "CC BY 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
-      "author": "fomos esports",
-      "photo": "interview, 2021",
+      "source": "https://dpm.lol/pro/Bdd",
+      "original": "https://dpm.lol/esport/players/bdd.webp",
+      "originalWidth": 375,
       "crop": {
-        "left": 14,
-        "top": 3,
-        "size": 582
+        "left": 39,
+        "top": 0,
+        "size": 297
       },
-      "checkedOn": "2026-10-12",
-      "originalWidth": 636
+      "checkedOn": "2026-10-12"
     },
     {
       "playerId": 685,
+      "provider": "dpm.lol",
       "name": "Ruler",
       "team": "Gen.G",
       "file": "assets/players/685.webp",
-      "source": "https://commons.wikimedia.org/wiki/File:Ruler_interview_2022.jpg",
-      "original": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Ruler_interview_2022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "license": "CC BY 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
-      "author": "fomos esports",
-      "photo": "interview, 2022",
+      "source": "https://dpm.lol/pro/Ruler",
+      "original": "https://dpm.lol/esport/players/ruler.webp",
+      "originalWidth": 375,
       "crop": {
-        "left": 53,
-        "top": 29,
-        "size": 571
+        "left": 39,
+        "top": 0,
+        "size": 297
       },
-      "checkedOn": "2026-10-12",
-      "originalWidth": 702
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 733,
+      "provider": "dpm.lol",
+      "name": "Contractz",
+      "team": "Shopify Rebellion",
+      "file": "assets/players/733.webp",
+      "source": "https://dpm.lol/pro/Contractz",
+      "original": "https://dpm.lol/esport/players/contractz.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 799,
+      "provider": "dpm.lol",
+      "name": "Teddy",
+      "team": "HANJIN BRION",
+      "file": "assets/players/799.webp",
+      "source": "https://dpm.lol/pro/Teddy",
+      "original": "https://dpm.lol/esport/players/teddy.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 854,
+      "provider": "dpm.lol",
+      "name": "Zeyzal",
+      "team": "Shopify Rebellion",
+      "file": "assets/players/854.webp",
+      "source": "https://dpm.lol/pro/Zeyzal",
+      "original": "https://dpm.lol/esport/players/zeyzal.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 21,
+        "top": 0,
+        "size": 178
+      },
+      "checkedOn": "2026-10-12"
     },
     {
       "playerId": 983,
+      "provider": "dpm.lol",
       "name": "Cuzz",
       "team": "KT Rolster",
       "file": "assets/players/983.webp",
-      "source": "https://commons.wikimedia.org/wiki/File:%EC%BB%A4%EC%A6%88_%EB%AC%B8%EC%9A%B0%EC%B0%AC.jpg",
-      "original": "https://upload.wikimedia.org/wikipedia/commons/0/09/%EC%BB%A4%EC%A6%88_%EB%AC%B8%EC%9A%B0%EC%B0%AC.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "license": "CC BY 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
-      "author": "fomos esports",
-      "photo": "interview, 2017",
+      "source": "https://dpm.lol/pro/Cuzz",
+      "original": "https://dpm.lol/esport/players/cuzz.webp",
+      "originalWidth": 375,
       "crop": {
-        "left": 53,
-        "top": 31,
-        "size": 598
+        "left": 39,
+        "top": 0,
+        "size": 297
       },
-      "checkedOn": "2026-10-12",
-      "originalWidth": 732
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 1115,
+      "provider": "dpm.lol",
+      "name": "Kiin",
+      "team": "Gen.G",
+      "file": "assets/players/1115.webp",
+      "source": "https://dpm.lol/pro/Kiin",
+      "original": "https://dpm.lol/esport/players/kiin.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 1169,
+      "provider": "dpm.lol",
+      "name": "Crisp",
+      "team": "LGD Gaming",
+      "file": "assets/players/1169.webp",
+      "source": "https://dpm.lol/pro/Crisp",
+      "original": "https://dpm.lol/esport/players/crisp.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-10-12"
     },
     {
       "playerId": 1242,
+      "provider": "dpm.lol",
       "name": "Doran",
       "team": "T1",
       "file": "assets/players/1242.webp",
-      "source": "https://commons.wikimedia.org/wiki/File:Doran_2025.jpg",
-      "original": "https://upload.wikimedia.org/wikipedia/commons/f/fd/Doran_2025.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "license": "CC BY 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
-      "author": "Fomos Esports",
-      "photo": "interview, 2025",
+      "source": "https://dpm.lol/pro/Doran",
+      "original": "https://dpm.lol/esport/players/doran.webp",
+      "originalWidth": 220,
       "crop": {
-        "left": 13,
-        "top": 41,
-        "size": 598
+        "left": 0,
+        "top": 0,
+        "size": 220
       },
-      "checkedOn": "2026-10-12",
-      "originalWidth": 675
+      "checkedOn": "2026-10-12"
     },
     {
       "playerId": 1250,
+      "provider": "dpm.lol",
       "name": "ShowMaker",
       "team": "Dplus KIA",
       "file": "assets/players/1250.webp",
-      "source": "https://commons.wikimedia.org/wiki/File:Showmaker,_fomos_esports_2019.png",
-      "original": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Showmaker%2C_fomos_esports_2019.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "license": "CC BY 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
-      "author": "fomos esports",
-      "photo": "interview, 2019",
+      "source": "https://dpm.lol/pro/ShowMaker",
+      "original": "https://dpm.lol/esport/players/showmaker.webp",
+      "originalWidth": 375,
       "crop": {
-        "left": 0,
-        "top": 18,
-        "size": 491
+        "left": 39,
+        "top": 0,
+        "size": 297
       },
-      "checkedOn": "2026-10-12",
-      "originalWidth": 491
+      "checkedOn": "2026-10-12"
     },
     {
       "playerId": 1258,
+      "provider": "dpm.lol",
       "name": "Keria",
       "team": "T1",
       "file": "assets/players/1258.webp",
-      "source": "https://commons.wikimedia.org/wiki/File:Keria,_2023_worlds_winning_team_interview.jpg",
-      "original": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Keria%2C_2023_worlds_winning_team_interview.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "license": "CC BY 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
-      "author": "fomos esports",
-      "photo": "interview, 2023",
+      "source": "https://dpm.lol/pro/Keria",
+      "original": "https://dpm.lol/esport/players/keria.webp",
+      "originalWidth": 220,
       "crop": {
-        "left": 33,
-        "top": 29,
-        "size": 618
+        "left": 0,
+        "top": 0,
+        "size": 220
       },
-      "checkedOn": "2026-10-12",
-      "originalWidth": 684
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 1265,
+      "provider": "dpm.lol",
+      "name": "Effort",
+      "team": "KT Rolster",
+      "file": "assets/players/1265.webp",
+      "source": "https://dpm.lol/pro/Effort",
+      "original": "https://dpm.lol/esport/players/effort.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 1584,
+      "provider": "dpm.lol",
+      "name": "Carzzy",
+      "team": "Team Vitality",
+      "file": "assets/players/1584.webp",
+      "source": "https://dpm.lol/pro/Carzzy",
+      "original": "https://dpm.lol/esport/players/carzzy.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-10-12"
     },
     {
       "playerId": 1629,
+      "provider": "dpm.lol",
       "name": "Chovy",
       "team": "Gen.G",
       "file": "assets/players/1629.webp",
-      "source": "https://commons.wikimedia.org/wiki/File:Chovy_Season_Kickoff_2023.jpg",
-      "original": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Chovy_Season_Kickoff_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "license": "CC BY 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
-      "author": "E레기",
-      "photo": "interview, 2023",
+      "source": "https://dpm.lol/pro/Chovy",
+      "original": "https://dpm.lol/esport/players/chovy.webp",
+      "originalWidth": 375,
       "crop": {
-        "left": 184,
+        "left": 39,
         "top": 0,
-        "size": 487
+        "size": 297
       },
-      "checkedOn": "2026-10-12",
-      "originalWidth": 885
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 1671,
+      "provider": "dpm.lol",
+      "name": "Kiaya",
+      "team": "GAM Esports",
+      "file": "assets/players/1671.webp",
+      "source": "https://dpm.lol/pro/Kiaya",
+      "original": "https://dpm.lol/esport/players/kiaya.webp",
+      "originalWidth": 750,
+      "crop": {
+        "left": 78,
+        "top": 0,
+        "size": 594
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 1708,
+      "provider": "dpm.lol",
+      "name": "Angel",
+      "team": "JD Gaming",
+      "file": "assets/players/1708.webp",
+      "source": "https://dpm.lol/pro/Angel",
+      "original": "https://dpm.lol/esport/players/angel.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-10-12"
     },
     {
       "playerId": 1909,
+      "provider": "dpm.lol",
       "name": "Canyon",
       "team": "Gen.G",
       "file": "assets/players/1909.webp",
-      "source": "https://commons.wikimedia.org/wiki/File:Canyon_interview_2019.jpg",
-      "original": "https://upload.wikimedia.org/wikipedia/commons/0/08/Canyon_interview_2019.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "license": "CC BY 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
-      "author": "fomos esports",
-      "photo": "interview, 2019",
+      "source": "https://dpm.lol/pro/Canyon",
+      "original": "https://dpm.lol/esport/players/canyon.webp",
+      "originalWidth": 375,
       "crop": {
-        "left": 36,
-        "top": 87,
-        "size": 531
+        "left": 39,
+        "top": 0,
+        "size": 297
       },
-      "checkedOn": "2026-10-12",
-      "originalWidth": 628
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 1931,
+      "provider": "dpm.lol",
+      "name": "GALA",
+      "team": "JD Gaming",
+      "file": "assets/players/1931.webp",
+      "source": "https://dpm.lol/pro/GALA",
+      "original": "https://dpm.lol/esport/players/gala.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 1971,
+      "provider": "dpm.lol",
+      "name": "Kellin",
+      "team": "BNK FearX",
+      "file": "assets/players/1971.webp",
+      "source": "https://dpm.lol/pro/Kellin",
+      "original": "https://dpm.lol/esport/players/kellin.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 2078,
+      "provider": "dpm.lol",
+      "name": "Artemis",
+      "team": "GAM Esports",
+      "file": "assets/players/2078.webp",
+      "source": "https://dpm.lol/pro/Artemis",
+      "original": "https://dpm.lol/esport/players/artemis.webp",
+      "originalWidth": 750,
+      "crop": {
+        "left": 78,
+        "top": 0,
+        "size": 594
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 2085,
+      "provider": "dpm.lol",
+      "name": "Bvoy",
+      "team": "Shopify Rebellion",
+      "file": "assets/players/2085.webp",
+      "source": "https://dpm.lol/pro/Bvoy",
+      "original": "https://dpm.lol/esport/players/bvoy.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 2359,
+      "provider": "dpm.lol",
+      "name": "Fudge",
+      "team": "Shopify Rebellion",
+      "file": "assets/players/2359.webp",
+      "source": "https://dpm.lol/pro/Fudge",
+      "original": "https://dpm.lol/esport/players/fudge.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
     },
     {
       "playerId": 2360,
+      "provider": "dpm.lol",
       "name": "Kanavi",
       "team": "Hanwha Life Esports",
       "file": "assets/players/2360.webp",
-      "source": "https://commons.wikimedia.org/wiki/File:Kanavi_2020_interview.jpg",
-      "original": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Kanavi_2020_interview.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "license": "CC BY 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
-      "author": "E레기",
-      "photo": "interview, 2020",
+      "source": "https://dpm.lol/pro/Kanavi",
+      "original": "https://dpm.lol/esport/players/kanavi.webp",
+      "originalWidth": 220,
       "crop": {
-        "left": 18,
-        "top": 30,
-        "size": 408
+        "left": 0,
+        "top": 0,
+        "size": 220
       },
-      "checkedOn": "2026-10-12",
-      "originalWidth": 462
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 2648,
+      "provider": "dpm.lol",
+      "name": "Quad",
+      "team": "FlyQuest",
+      "file": "assets/players/2648.webp",
+      "source": "https://dpm.lol/pro/Quad",
+      "original": "https://dpm.lol/esport/players/quad.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 41,
+        "top": 0,
+        "size": 138
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 2906,
+      "provider": "dpm.lol",
+      "name": "Zeka",
+      "team": "Hanwha Life Esports",
+      "file": "assets/players/2906.webp",
+      "source": "https://dpm.lol/pro/Zeka",
+      "original": "https://dpm.lol/esport/players/zeka.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 3047,
+      "provider": "dpm.lol",
+      "name": "SamD",
+      "team": "Natus Vincere",
+      "file": "assets/players/3047.webp",
+      "source": "https://dpm.lol/pro/SamD",
+      "original": "https://dpm.lol/esport/players/samd.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
     },
     {
       "playerId": 3247,
+      "provider": "dpm.lol",
       "name": "Gumayusi",
       "team": "Hanwha Life Esports",
       "file": "assets/players/3247.webp",
-      "source": "https://commons.wikimedia.org/wiki/File:T1_Gumayusi_Lee_Min-hyeong_in_an_interview,_2026.png",
-      "original": "https://upload.wikimedia.org/wikipedia/commons/5/54/T1_Gumayusi_Lee_Min-hyeong_in_an_interview%2C_2026.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "license": "CC BY 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
-      "author": "Marie Claire",
-      "photo": "interview, 2026",
+      "source": "https://dpm.lol/pro/Gumayusi",
+      "original": "https://dpm.lol/esport/players/gumayusi.webp",
+      "originalWidth": 220,
       "crop": {
         "left": 0,
-        "top": 36,
-        "size": 594
+        "top": 0,
+        "size": 220
       },
-      "checkedOn": "2026-10-12",
-      "originalWidth": 594
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 3324,
+      "provider": "dpm.lol",
+      "name": "Karis",
+      "team": "Team WE",
+      "file": "assets/players/3324.webp",
+      "source": "https://dpm.lol/pro/Karis",
+      "original": "https://dpm.lol/esport/players/karis.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 3326,
+      "provider": "dpm.lol",
+      "name": "Vicla",
+      "team": "BNK FearX",
+      "file": "assets/players/3326.webp",
+      "source": "https://dpm.lol/pro/VicLa",
+      "original": "https://dpm.lol/esport/players/vicla.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 3327,
+      "provider": "dpm.lol",
+      "name": "GIDEON",
+      "team": "HANJIN BRION",
+      "file": "assets/players/3327.webp",
+      "source": "https://dpm.lol/pro/GIDEON",
+      "original": "https://dpm.lol/esport/players/gideon.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 3350,
+      "provider": "dpm.lol",
+      "name": "Heng",
+      "team": "LGD Gaming",
+      "file": "assets/players/3350.webp",
+      "source": "https://dpm.lol/pro/Heng",
+      "original": "https://dpm.lol/esport/players/heng.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 3411,
+      "provider": "dpm.lol",
+      "name": "Delight",
+      "team": "Hanwha Life Esports",
+      "file": "assets/players/3411.webp",
+      "source": "https://dpm.lol/pro/Delight",
+      "original": "https://dpm.lol/esport/players/delight.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 3421,
+      "provider": "dpm.lol",
+      "name": "Clear",
+      "team": "BNK FearX",
+      "file": "assets/players/3421.webp",
+      "source": "https://dpm.lol/pro/Clear",
+      "original": "https://dpm.lol/esport/players/clear.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 3424,
+      "provider": "dpm.lol",
+      "name": "Taeyoon",
+      "team": "BNK FearX",
+      "file": "assets/players/3424.webp",
+      "source": "https://dpm.lol/pro/Taeyoon",
+      "original": "https://dpm.lol/esport/players/taeyoon.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 3436,
+      "provider": "dpm.lol",
+      "name": "Roamer",
+      "team": "HANJIN BRION",
+      "file": "assets/players/3436.webp",
+      "source": "https://dpm.lol/pro/Roamer",
+      "original": "https://dpm.lol/esport/players/roamer.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 3439,
+      "provider": "dpm.lol",
+      "name": "FIESTA",
+      "team": "Team Vitality",
+      "file": "assets/players/3439.webp",
+      "source": "https://dpm.lol/pro/FIESTA",
+      "original": "https://dpm.lol/esport/players/fiesta.webp",
+      "originalWidth": 784,
+      "crop": {
+        "left": 82,
+        "top": 0,
+        "size": 621
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 3482,
+      "provider": "dpm.lol",
+      "name": "Lyncas",
+      "team": "Team Vitality",
+      "file": "assets/players/3482.webp",
+      "source": "https://dpm.lol/pro/Lyncas",
+      "original": "https://dpm.lol/esport/players/lyncas.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-10-12"
     },
     {
       "playerId": 3658,
+      "provider": "dpm.lol",
       "name": "Zeus",
       "team": "Hanwha Life Esports",
       "file": "assets/players/3658.webp",
-      "source": "https://commons.wikimedia.org/wiki/File:Zeus_2024_post-match_interview.jpg",
-      "original": "https://upload.wikimedia.org/wikipedia/commons/e/e3/Zeus_2024_post-match_interview.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "license": "CC BY 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
-      "author": "Fomos Esports",
-      "photo": "interview, 2024",
+      "source": "https://dpm.lol/pro/Zeus",
+      "original": "https://dpm.lol/esport/players/zeus.webp",
+      "originalWidth": 375,
       "crop": {
-        "left": 22,
-        "top": 46,
-        "size": 366
+        "left": 39,
+        "top": 0,
+        "size": 297
       },
-      "checkedOn": "2026-10-12",
-      "originalWidth": 409
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 3706,
+      "provider": "dpm.lol",
+      "name": "Maynter",
+      "team": "Natus Vincere",
+      "file": "assets/players/3706.webp",
+      "source": "https://dpm.lol/pro/Maynter",
+      "original": "https://dpm.lol/esport/players/maynter.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 31,
+        "top": 0,
+        "size": 158
+      },
+      "checkedOn": "2026-10-12"
     },
     {
       "playerId": 3741,
+      "provider": "dpm.lol",
       "name": "Oner",
       "team": "T1",
       "file": "assets/players/3741.webp",
-      "source": "https://commons.wikimedia.org/wiki/File:Oner_at_Worlds_2025.jpg",
-      "original": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Oner_at_Worlds_2025.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "license": "CC BY 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
-      "author": "LTA Spanish",
-      "photo": "interview, 2025",
+      "source": "https://dpm.lol/pro/Oner",
+      "original": "https://dpm.lol/esport/players/oner.webp",
+      "originalWidth": 220,
       "crop": {
-        "left": 27,
-        "top": 51,
-        "size": 388
+        "left": 0,
+        "top": 0,
+        "size": 220
       },
-      "checkedOn": "2026-10-12",
-      "originalWidth": 462
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 3895,
+      "provider": "dpm.lol",
+      "name": "Lucid",
+      "team": "Dplus KIA",
+      "file": "assets/players/3895.webp",
+      "source": "https://dpm.lol/pro/Lucid",
+      "original": "https://dpm.lol/esport/players/lucid.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 4119,
+      "provider": "dpm.lol",
+      "name": "Burdol",
+      "team": "LGD Gaming",
+      "file": "assets/players/4119.webp",
+      "source": "https://dpm.lol/pro/Burdol",
+      "original": "https://dpm.lol/esport/players/burdol.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 4233,
+      "provider": "dpm.lol",
+      "name": "Raptor",
+      "team": "BNK FearX",
+      "file": "assets/players/4233.webp",
+      "source": "https://dpm.lol/pro/Raptor",
+      "original": "https://dpm.lol/esport/players/raptor.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
     },
     {
       "playerId": 4247,
+      "provider": "dpm.lol",
       "name": "Peyz",
       "team": "T1",
       "file": "assets/players/4247.webp",
-      "source": "https://commons.wikimedia.org/wiki/File:GEN_Peyz_2023.jpg",
-      "original": "https://upload.wikimedia.org/wikipedia/commons/9/9a/GEN_Peyz_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "license": "CC BY 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
-      "author": "E레기",
-      "photo": "interview, 2023",
+      "source": "https://dpm.lol/pro/Peyz",
+      "original": "https://dpm.lol/esport/players/peyz.webp",
+      "originalWidth": 220,
       "crop": {
-        "left": 204,
-        "top": 3,
-        "size": 673
+        "left": 0,
+        "top": 0,
+        "size": 220
       },
-      "checkedOn": "2026-10-12",
-      "originalWidth": 1080
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 4259,
+      "provider": "dpm.lol",
+      "name": "Duro",
+      "team": "Gen.G",
+      "file": "assets/players/4259.webp",
+      "source": "https://dpm.lol/pro/Duro",
+      "original": "https://dpm.lol/esport/players/duro.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 4411,
+      "provider": "dpm.lol",
+      "name": "Fleshy",
+      "team": "Team Vitality",
+      "file": "assets/players/4411.webp",
+      "source": "https://dpm.lol/pro/Fleshy",
+      "original": "https://dpm.lol/esport/players/fleshy.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 29,
+        "top": 0,
+        "size": 162
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 4455,
+      "provider": "dpm.lol",
+      "name": "Parus",
+      "team": "Natus Vincere",
+      "file": "assets/players/4455.webp",
+      "source": "https://dpm.lol/pro/Parus",
+      "original": "https://dpm.lol/esport/players/parus.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 4561,
+      "provider": "dpm.lol",
+      "name": "Poby",
+      "team": "Natus Vincere",
+      "file": "assets/players/4561.webp",
+      "source": "https://dpm.lol/pro/Poby",
+      "original": "https://dpm.lol/esport/players/poby.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 4612,
+      "provider": "dpm.lol",
+      "name": "Gryffinn",
+      "team": "FlyQuest",
+      "file": "assets/players/4612.webp",
+      "source": "https://dpm.lol/pro/Gryffinn",
+      "original": "https://dpm.lol/esport/players/gryffinn.webp",
+      "originalWidth": 70,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 70
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 4755,
+      "provider": "dpm.lol",
+      "name": "Jiwoo",
+      "team": "KT Rolster",
+      "file": "assets/players/4755.webp",
+      "source": "https://dpm.lol/pro/Jiwoo",
+      "original": "https://dpm.lol/esport/players/jiwoo.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 4758,
+      "provider": "dpm.lol",
+      "name": "Morttheus",
+      "team": "RED Canids",
+      "file": "assets/players/4758.webp",
+      "source": "https://dpm.lol/pro/Morttheus",
+      "original": "https://dpm.lol/esport/players/morttheus.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 4765,
+      "provider": "dpm.lol",
+      "name": "Fuuu",
+      "team": "RED Canids",
+      "file": "assets/players/4765.webp",
+      "source": "https://dpm.lol/pro/Fuuu",
+      "original": "https://dpm.lol/esport/players/fuuu.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 4885,
+      "provider": "dpm.lol",
+      "name": "Massu",
+      "team": "FlyQuest",
+      "file": "assets/players/4885.webp",
+      "source": "https://dpm.lol/pro/Massu",
+      "original": "https://dpm.lol/esport/players/massu.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 4918,
+      "provider": "dpm.lol",
+      "name": "Xiaoxu",
+      "team": "JD Gaming",
+      "file": "assets/players/4918.webp",
+      "source": "https://dpm.lol/pro/Xiaoxu",
+      "original": "https://dpm.lol/esport/players/xiaoxu.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 4919,
+      "provider": "dpm.lol",
+      "name": "Tangyuan",
+      "team": "LGD Gaming",
+      "file": "assets/players/4919.webp",
+      "source": "https://dpm.lol/pro/Tangyuan",
+      "original": "https://dpm.lol/esport/players/tangyuan.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 4925,
+      "provider": "dpm.lol",
+      "name": "Casting",
+      "team": "HANJIN BRION",
+      "file": "assets/players/4925.webp",
+      "source": "https://dpm.lol/pro/Casting",
+      "original": "https://dpm.lol/esport/players/casting.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 4940,
+      "provider": "dpm.lol",
+      "name": "Smash",
+      "team": "Dplus KIA",
+      "file": "assets/players/4940.webp",
+      "source": "https://dpm.lol/pro/Smash",
+      "original": "https://dpm.lol/esport/players/smash.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 5122,
+      "provider": "dpm.lol",
+      "name": "PerfecT",
+      "team": "KT Rolster",
+      "file": "assets/players/5122.webp",
+      "source": "https://dpm.lol/pro/PerfecT",
+      "original": "https://dpm.lol/esport/players/perfect.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 5137,
+      "provider": "dpm.lol",
+      "name": "Manel",
+      "team": "RED Canids",
+      "file": "assets/players/5137.webp",
+      "source": "https://dpm.lol/pro/Manel",
+      "original": "https://dpm.lol/esport/players/manel.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 17,
+        "top": 0,
+        "size": 186
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 5204,
+      "provider": "dpm.lol",
+      "name": "Career",
+      "team": "Dplus KIA",
+      "file": "assets/players/5204.webp",
+      "source": "https://dpm.lol/pro/Career",
+      "original": "https://dpm.lol/esport/players/career.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 5358,
+      "provider": "dpm.lol",
+      "name": "Monki",
+      "team": "Team WE",
+      "file": "assets/players/5358.webp",
+      "source": "https://dpm.lol/pro/Monki",
+      "original": "https://dpm.lol/esport/players/monki.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 5359,
+      "provider": "dpm.lol",
+      "name": "Vampire",
+      "team": "JD Gaming",
+      "file": "assets/players/5359.webp",
+      "source": "https://dpm.lol/pro/Vampire",
+      "original": "https://dpm.lol/esport/players/vampire.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 5360,
+      "provider": "dpm.lol",
+      "name": "xiaofang",
+      "team": "JD Gaming",
+      "file": "assets/players/5360.webp",
+      "source": "https://dpm.lol/pro/xiaofang",
+      "original": "https://dpm.lol/esport/players/xiaofang.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 5368,
+      "provider": "dpm.lol",
+      "name": "Shaoye",
+      "team": "LGD Gaming",
+      "file": "assets/players/5368.webp",
+      "source": "https://dpm.lol/pro/Shaoye",
+      "original": "https://dpm.lol/esport/players/shaoye.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 5382,
+      "provider": "dpm.lol",
+      "name": "Namgung",
+      "team": "HANJIN BRION",
+      "file": "assets/players/5382.webp",
+      "source": "https://dpm.lol/pro/Namgung",
+      "original": "https://dpm.lol/esport/players/namgung.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 5392,
+      "provider": "dpm.lol",
+      "name": "Siwoo",
+      "team": "Dplus KIA",
+      "file": "assets/players/5392.webp",
+      "source": "https://dpm.lol/pro/Siwoo",
+      "original": "https://dpm.lol/esport/players/siwoo.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 5456,
+      "provider": "dpm.lol",
+      "name": "Gakgos",
+      "team": "FlyQuest",
+      "file": "assets/players/5456.webp",
+      "source": "https://dpm.lol/pro/Gakgos",
+      "original": "https://dpm.lol/esport/players/gakgos.webp",
+      "originalWidth": 784,
+      "crop": {
+        "left": 82,
+        "top": 0,
+        "size": 621
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 5566,
+      "provider": "dpm.lol",
+      "name": "Zinie",
+      "team": "Shopify Rebellion",
+      "file": "assets/players/5566.webp",
+      "source": "https://dpm.lol/pro/Zinie",
+      "original": "https://dpm.lol/esport/players/zinie.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 5599,
+      "provider": "dpm.lol",
+      "name": "zynts",
+      "team": "RED Canids",
+      "file": "assets/players/5599.webp",
+      "source": "https://dpm.lol/pro/zynts",
+      "original": "https://dpm.lol/esport/players/zynts.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 14,
+        "top": 0,
+        "size": 192
+      },
+      "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 5923,
+      "provider": "dpm.lol",
+      "name": "About",
+      "team": "Team WE",
+      "file": "assets/players/5923.webp",
+      "source": "https://dpm.lol/pro/About",
+      "original": "https://dpm.lol/esport/players/about.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-10-12"
     }
   ]
 }

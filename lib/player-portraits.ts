@@ -14,7 +14,9 @@ export function portraitOf(id: number | string | undefined): Portrait | undefine
   if (!meta || !img) return undefined;
   return { src: img.src, width: img.width, height: img.height, credit: creditLine(meta), meta };
 }
-export const creditLine = (p: PlayerPortrait) => `Photo: ${p.author}, ${p.license}${p.photo ? ` (${p.photo})` : ""}, via Wikimedia Commons`;
+export const creditLine = (p: PlayerPortrait) => p.provider === "commons"
+  ? `Photo: ${p.author}, ${p.license}${p.photo ? ` (${p.photo})` : ""}, via Wikimedia Commons`
+  : "Photo via dpm.lol";
 export const allPortraits = () => (data as PlayerPortraits).portraits;
 
 /** Two letters for the fallback: the first two letters of a one-word handle, else the first letter of two words. */
