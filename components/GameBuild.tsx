@@ -19,7 +19,7 @@ export function GameHeader({ r, name, evName, compact, end }: { r: BuildRow; nam
   return (
     <div className={`game-head side-${r.side} ${compact ? "compact" : ""}`}>
       <div className="game-who">
-        <span className="game-player"><PlayerAvatar id={b.playerId} name={b.player} size={compact ? "sm" : "md"} /><Link href={profileHref(String(b.playerId))} title={`${b.player}'s recorded games, champions and builds`}><b>{b.player}</b></Link> <span className="muted">{r.team}</span></span>
+        <span className="game-player"><PlayerAvatar id={b.playerId} name={b.player} size={compact ? "sm" : "lg"} /><Link href={profileHref(String(b.playerId))} title={`${b.player}'s recorded games, champions and builds`}><b>{b.player}</b></Link> <span className="muted">{r.team}</span></span>
         {r.opponent && (
           <span className="small game-vs"><span className="faint">vs</span>
             <InteractiveChampion id={r.opponent.champion} role={b.role}><ChampIcon id={r.opponent.champion} name={name(r.opponent.champion)} size="xs" /> {name(r.opponent.champion)}</InteractiveChampion>

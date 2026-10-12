@@ -3,8 +3,8 @@
 // credit is in the tooltip (Commons licenses ask for attribution) and in the Pinned Players photo credits.
 import { initials, portraitOf } from "@/lib/player-portraits";
 
-export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl";
-const PX: Record<AvatarSize, number> = { xs: 20, sm: 24, md: 36, lg: 48, xl: 104 }; // the --avatar-* tokens
+export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl" | "hero";
+const PX: Record<AvatarSize, number> = { xs: 20, sm: 24, md: 36, lg: 48, xl: 104, hero: 144 }; // the --avatar-* tokens
 
 export function PlayerAvatar({ id, name, size = "sm", className = "" }: { id?: number | string; name: string; size?: AvatarSize; className?: string }) {
   const p = portraitOf(id);
