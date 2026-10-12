@@ -53,9 +53,19 @@
   --mini-h: 50px;
   --icon-xs: 20px; --icon-sm: 24px; --icon-md: 32px; --icon-ml: 36px; --icon-lg: 48px; --icon-xl: 52px; --icon-xxl: 60px;
 
-  /* Motion */
-  --t-fast: 90ms ease-out;
-  --t-med: 150ms cubic-bezier(.2, .7, .2, 1);
+  /* Motion (alan, 2026-10-12): one system for the whole site. Smooth is not the same as animated: hover, selection and
+     filter feedback is near-instant colour; only surfaces that arrive (dropdowns, popovers, drawers, sheets) move, a
+     few pixels, and they leave faster than they came. Reduced motion keeps the fades and drops the movement (section 8). */
+  --ease-out: cubic-bezier(.16, 1, .3, 1); /* arrivals: decelerate, no bounce */
+  --ease-in: cubic-bezier(.4, 0, 1, 1);    /* exits */
+  --dur-hover: 100ms;    /* hover and press feedback: colour, background, border */
+  --dur-select: 140ms;   /* tabs, segmented controls, selection and lock acknowledgement */
+  --dur-pop: 140ms;      /* dropdowns, popovers, hover cards, tips: in */
+  --dur-pop-out: 90ms;   /*                                      out */
+  --dur-panel: 220ms;    /* drawer, bottom sheets, mobile navigation, pinned mini board: in */
+  --dur-panel-out: 160ms; /*                                                              out */
+  --t-fast: var(--dur-hover) ease-out;
+  --t-med: var(--dur-select) var(--ease-out);
 
   --scrim: rgba(0, 0, 0, .5);
   --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--focus);
@@ -157,6 +167,8 @@
 /* ---------- 2. Base ---------- */
 * { box-sizing: border-box; }
 html, body { margin: 0; }
+/* Short and long pages keep the same content width: a classic scrollbar appearing never nudges the layout sideways. */
+@media (min-width: 961px) { html { scrollbar-gutter: stable; } }
 body {
   background: var(--bg); color: var(--text);
   font: var(--fs)/var(--lh) var(--font);
@@ -250,11 +262,12 @@ b, strong { font-weight: var(--w-strong); }
   .menu-btn:hover { border-color: var(--side-accent); }
   .sidebar {
     position: fixed; top: 48px; left: 0; bottom: 0; width: min(280px, 86vw); height: auto; z-index: 40;
-    transform: translateX(-100%); visibility: hidden; transition: transform 140ms ease-out, visibility 140ms;
+    transform: translateX(-100%); visibility: hidden;
+    transition: transform var(--dur-panel-out) var(--ease-in), visibility 0s linear var(--dur-panel-out);
     box-shadow: var(--shadow-pop);
   }
   .sidebar > .brand { display: none; }
-  .sidebar.open { transform: none; visibility: visible; }
+  .sidebar.open { transform: none; visibility: visible; transition: transform var(--dur-panel) var(--ease-out), visibility 0s; }
   .scrim { position: fixed; inset: 48px 0 0 0; z-index: 35; background: var(--scrim); border: 0; padding: 0; }
   .main { padding: var(--s4) var(--s6) var(--s7); }
   .main-col { min-height: calc(100vh - 48px); }
@@ -562,7 +575,9 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
   position: fixed; z-index: 70; margin: 0; padding: var(--s1); list-style: none; overflow-y: auto; overscroll-behavior: contain;
   font-size: var(--fs-sm); color: var(--text); scrollbar-width: thin;
   background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--r); box-shadow: var(--shadow-menu);
+  animation: pop-in var(--dur-pop) var(--ease-out);
 }
+.select-menu.above { animation-name: pop-in-up; }
 .select-option { display: flex; align-items: center; gap: var(--s3); min-height: 26px; padding: 0 var(--s4) 0 var(--s3); border-radius: var(--r-sm); cursor: pointer; white-space: nowrap; transition: background var(--t-fast); }
 .select-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .select-check { flex: none; width: 10px; height: 10px; color: var(--accent-text); visibility: hidden; }
@@ -589,15 +604,17 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
   position: fixed; z-index: 55; box-sizing: border-box; max-height: min(78vh, 560px); overflow: auto; overscroll-behavior: contain;
   padding: var(--s4) var(--pad-card); background: var(--surface-raised); color: var(--text);
   border: 1px solid var(--border-strong); border-radius: var(--r-lg); box-shadow: var(--shadow-pop);
-  font-size: var(--fs-sm); line-height: 1.4; text-align: left; white-space: normal; animation: hc-in 90ms ease-out;
+  font-size: var(--fs-sm); line-height: 1.4; text-align: left; white-space: normal; animation: pop-in var(--dur-pop) var(--ease-out);
 }
-@keyframes hc-in { from { opacity: 0; transform: translateY(2px); } }
+/* Moving between neighbouring champions swaps the card's content in place: no second entrance. */
+.popover.hovercard.swap { animation: none; }
+@keyframes pop-in { from { opacity: 0; transform: translateY(3px); } }
+@keyframes pop-in-up { from { opacity: 0; transform: translateY(-3px); } }
 .popover:focus-visible { box-shadow: var(--shadow-pop), var(--focus-ring); }
 /* Plain-text hints (components/TipLayer.tsx) */
 .popover.tip { z-index: 60; max-width: 300px; padding: var(--s3) var(--s4); font-size: var(--fs-xs); white-space: pre-line; pointer-events: none; box-shadow: var(--shadow-menu); }
 /* Phones: the same content as a bottom sheet */
-.popover.sheet { inset: auto 0 0 0; width: 100%; max-width: none; max-height: 82vh; padding: var(--s5) var(--s6) var(--s6); border-radius: var(--r-lg) var(--r-lg) 0 0; animation: sheet-in var(--t-med); }
-@keyframes sheet-in { from { transform: translateY(16px); opacity: 0; } }
+.popover.sheet { inset: auto 0 0 0; width: 100%; max-width: none; max-height: 82vh; padding: var(--s5) var(--s6) var(--s6); border-radius: var(--r-lg) var(--r-lg) 0 0; animation: sheet-in var(--dur-panel) var(--ease-out); }
 .popover-scrim { position: fixed; inset: 0; z-index: 54; background: var(--scrim); }
 .popover-close { width: 100%; margin-top: var(--s5); justify-content: center; }
 /* Triggers keep the look of the text they replace: no box, no padding, no layout change when open. */
@@ -668,10 +685,17 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .drawer {
   position: fixed; top: 0; right: 0; bottom: 0; z-index: 50; width: min(420px, 100vw); display: flex; flex-direction: column;
   background: var(--surface-raised); border-left: 1px solid var(--border-strong); box-shadow: var(--shadow-pop);
-  outline: none; animation: drawer-in 140ms ease-out;
+  outline: none; animation: drawer-in var(--dur-panel) var(--ease-out);
 }
-@keyframes drawer-in { from { transform: translateX(16px); opacity: 0; } }
+/* Closing plays the arrival backwards, faster; ChampionDrawer unmounts on animationend. Switching champions inside an
+   open drawer never re-runs the entrance. */
+.drawer.closing { animation: drawer-out var(--dur-panel-out) var(--ease-in) forwards; pointer-events: none; }
+@keyframes drawer-in { from { transform: translateX(24px); opacity: 0; } }
+@keyframes drawer-out { to { transform: translateX(24px); opacity: 0; } }
 @keyframes sheet-in { from { transform: translateY(24px); opacity: 0; } }
+@keyframes sheet-out { to { transform: translateY(24px); opacity: 0; } }
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes fade-out { to { opacity: 0; } }
 .drawer-head { display: flex; align-items: center; gap: var(--s4); padding: var(--pad-card); border-bottom: 1px solid var(--border); }
 .drawer-title { display: grid; gap: 2px; min-width: 0; }
 .drawer-title h2 { font-size: var(--fs-xl); }
@@ -681,7 +705,9 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .role-switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-radius: var(--r-sm); }
 .drawer-nav { display: flex; gap: var(--s1); margin-left: auto; }
 .drawer-nav .icon-btn { width: 28px; height: 28px; font-size: var(--fs-lg); }
-.drawer-body { flex: 1; display: grid; align-content: start; overflow-y: auto; overscroll-behavior: contain; }
+.drawer-body { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; }
+/* Phones: the sheet gets the popover sheet's scrim, and the page behind it holds still (ChampionDrawer locks its scroll). */
+.drawer-scrim { display: none; }
 .drawer-body > .layer { padding-top: var(--s5); padding-bottom: var(--s5); border-bottom: 1px solid var(--border); }
 .drawer-job { display: grid; gap: 2px; padding: var(--s4) var(--pad-card); border-bottom: 1px solid var(--border); }
 .drawer-job p { margin: 0; }
@@ -698,6 +724,9 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
     top: auto; left: 0; width: 100%; max-height: 78vh; border-left: 0; border-top: 1px solid var(--border-strong);
     border-radius: var(--r-lg) var(--r-lg) 0 0; animation-name: sheet-in;
   }
+  .drawer.closing { animation-name: sheet-out; }
+  .drawer-scrim { display: block; position: fixed; inset: 0; z-index: 49; background: var(--scrim); animation: fade-in var(--dur-panel) var(--ease-out); }
+  .drawer-scrim.closing { animation: fade-out var(--dur-panel-out) var(--ease-in) forwards; }
   .drawer-foot { padding-bottom: calc(var(--s4) + env(safe-area-inset-bottom)); }
   .drawer-foot .btn { flex: 1; justify-content: center; }
 }
@@ -711,7 +740,7 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .player-picker input::placeholder { color: var(--text-muted); }
 .player-picker .select-trigger.is-set input::placeholder { color: var(--text); }
 .player-picker .select-trigger:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-subtle); }
-.player-menu { position: absolute; top: calc(100% + 4px); left: 0; min-width: 100%; width: max-content; max-width: 280px; max-height: 300px; overflow-y: auto; z-index: 70; }
+.player-menu { width: max-content; max-width: min(280px, calc(100vw - 16px)); }
 .player-menu .select-option { justify-content: space-between; }
 .player-menu .select-option.last-pinned { border-bottom: 1px solid var(--border); border-radius: 0; }
 .player-menu .select-option.empty { color: var(--text-faint); cursor: default; }
@@ -970,8 +999,9 @@ button.slot-body:hover .slot-name { text-decoration: underline; text-decoration-
 .draft-slot.enemy .slot-name { font-size: var(--fs-lg); }
 .draft-slot.enemy.locked { background: var(--enemy-subtle); border-color: var(--border-strong); box-shadow: inset 0 2px 0 var(--enemy-line); }
 .draft-slot.enemy.open { border-color: var(--border); }
-.draft-slot.locked .slot-icon { animation: lock-in var(--t-med) both; }
-@keyframes lock-in { from { opacity: .35; transform: scale(.92); } }
+/* A pick just locked here acknowledges itself once; picks restored from a link or Back to Draft Room sit still. */
+.draft-slot.locked.fresh .slot-icon { animation: lock-in var(--dur-select) var(--ease-out) both; }
+@keyframes lock-in { from { opacity: .5; transform: scale(.94); } }
 .draft-slot input { width: 100%; height: 26px; padding: 0 var(--s3); font-size: var(--fs-sm); background: transparent; border-color: transparent; }
 .draft-slot input:hover { border-color: transparent; }
 .draft-slot.active input, .draft-slot input:focus-visible { background: var(--surface); border-color: var(--border-strong); }
@@ -1008,9 +1038,9 @@ button.slot-body:hover .slot-name { text-decoration: underline; text-decoration-
   display: flex; align-items: center; gap: var(--s4); padding: 0 var(--s7);
   background: var(--bg); border-bottom: 1px solid var(--border); box-shadow: var(--shadow-pop);
   transform: translateY(-100%); opacity: 0; visibility: hidden;
-  transition: transform var(--t-med), opacity var(--t-med), visibility var(--t-med);
+  transition: transform var(--dur-panel-out) var(--ease-in), opacity var(--dur-panel-out) var(--ease-in), visibility 0s linear var(--dur-panel-out);
 }
-.draft-mini.show { transform: none; opacity: 1; visibility: visible; }
+.draft-mini.show { transform: none; opacity: 1; visibility: visible; transition: transform var(--dur-panel) var(--ease-out), opacity var(--dur-panel) var(--ease-out), visibility 0s; }
 /* Comp Check summary line (alan, 2026-10-12): only where the rail sits below the list. What the draft is missing,
    never a score; tapping it jumps to the full Comp Check. */
 .cc-summary { display: none; }
@@ -1649,14 +1679,42 @@ tr.pair-a.selected td, tr.pair-b.selected td { background: var(--accent-subtle);
   .pn-list { columns: 1; }
 }
 
+/* Touch (coarse pointers): the same layout, larger hit areas. Segmented controls and tabs grow to 32-40px; small
+   inline triggers get an invisible margin so a tap that lands just beside a label opens the label, never the row's
+   lock or another control. WCAG 2.2 target size (24px) at least, without making desktop any less dense. */
+@media (pointer: coarse) {
+  .seg a, .seg button { height: 32px; }
+  .tabs a { height: 40px; }
+  .btn.sm { height: 32px; }
+  .select-trigger { height: 32px; }
+  .select-option { min-height: 36px; }
+  .pop-trigger, .src-toggle, .pn-src, .role-switch { position: relative; }
+  .pop-trigger::after, .src-toggle::after, .pn-src::after, .role-switch::after { content: ""; position: absolute; inset: -8px -3px; }
+}
+
 /* ---------- 8. Motion ---------- */
 /* Theme switch: colors cross-fade briefly (ThemeToggle sets the class) */
 .theme-switching, .theme-switching *, .theme-switching *::before, .theme-switching *::after {
-  transition: background-color var(--t-med), border-color var(--t-med), color var(--t-med), fill var(--t-med) !important;
+  transition: background-color var(--dur-select) ease-out, border-color var(--dur-select) ease-out, color var(--dur-select) ease-out, fill var(--dur-select) ease-out !important;
 }
+/* Reduced motion: nothing slides, scales or travels; surfaces still fade so the change of state stays legible. */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
-  .drawer, .hovercard { animation: none; }
+  :root { --dur-panel: 140ms; --dur-panel-out: 100ms; --dur-pop: 100ms; }
+  @keyframes pop-in { from { opacity: 0; } }
+  @keyframes pop-in-up { from { opacity: 0; } }
+  @keyframes drawer-in { from { opacity: 0; } }
+  @keyframes drawer-out { to { opacity: 0; } }
+  @keyframes sheet-in { from { opacity: 0; } }
+  @keyframes sheet-out { to { opacity: 0; } }
+  @keyframes lock-in { from { opacity: .5; } }
+  .draft-mini, .draft-mini.show { transform: none; }
+  @media (max-width: 960px) {
+    .sidebar, .sidebar.open { transform: none; }
+    .sidebar { opacity: 0; transition: opacity var(--dur-panel-out) ease-out, visibility 0s linear var(--dur-panel-out); }
+    .sidebar.open { opacity: 1; transition: opacity var(--dur-panel) ease-out, visibility 0s; }
+  }
+  .select-chevron, .disclosure > summary::before, .fit-toggle svg { transition: none; }
+  html { scroll-behavior: auto; }
 }
 
 /* Wide stat tables: a faint stripe on every other champion row so long rows track across */

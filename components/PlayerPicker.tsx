@@ -3,7 +3,9 @@
 // ones you follow. Pins are a per-browser convenience kept in localStorage (the site has no accounts), one list per kind;
 // pinned entries are listed first and marked in the game strip. Reuses the shared dropdown's surface
 // (.select-trigger / .select-menu).
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
+import { createPortal } from "react-dom";
+import { menuPlace, type MenuPos } from "@/components/Select";
 import { isLegacyPin, migratePins, togglePin } from "@/lib/pinned-players";
 import type { BuildRow } from "@/lib/pro-builds";
 
@@ -95,18 +97,42 @@ export function PinPicker({ kind, value, options: entries, onChange, placeholder
   const box = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLInputElement>(null);
   const list = useRef<HTMLUListElement>(null);
+  const menu = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<MenuPos | null>(null);
 
   const q = query.trim().toLowerCase();
-  const sorted = [...players].filter((p) => !pinnedOnly || isPinned(p) || p === value).sort((a, b) => Number(isPinned(b)) - Number(isPinned(a)) || label(a).localeCompare(label(b)));
+  // Pinned first, in the order they had when the menu opened: pinning a row never moves it out from under the pointer.
+  const [orderPins, setOrderPins] = useState<string[]>();
+  useEffect(() => { setOrderPins(open ? players.filter(isPinned) : undefined); }, [open]);
+  const first = (p: string) => (orderPins ? orderPins.includes(p) : isPinned(p));
+  const sorted = [...players].filter((p) => !pinnedOnly || isPinned(p) || p === value).sort((a, b) => Number(first(b)) - Number(first(a)) || label(a).localeCompare(label(b)));
   const shown = q ? sorted.filter((p) => label(p).toLowerCase().includes(q)) : sorted;
   const options = q ? shown : ["", ...shown]; // "" = all
 
+  // The menu is the shared dropdown's: portalled, fixed, placed by menuPlace (flips above when below is short), so a
+  // toolbar or table never clips it. The side is chosen when it opens and kept while typing narrows the list.
+  const side = useRef<"below" | "above">(undefined);
+  const placeMenu = useCallback(() => {
+    const r = box.current?.querySelector(".select-trigger")?.getBoundingClientRect();
+    if (!r) return;
+    const next = menuPlace(r, Math.max(options.length, 6) + 1, 150, 280);
+    const now = next.top != null ? "below" : "above";
+    side.current ??= now;
+    if (side.current === now) return setPos(next);
+    const room = side.current === "below" ? window.innerHeight - r.bottom - 12 : r.top - 12;
+    setPos(side.current === "below" ? { ...next, top: r.bottom + 4, bottom: undefined, maxHeight: Math.min(300, room) }
+      : { ...next, top: undefined, bottom: window.innerHeight - r.top + 4, maxHeight: Math.min(300, room) });
+  }, [options.length]);
+  useLayoutEffect(() => { if (open) placeMenu(); else { setPos(null); side.current = undefined; } }, [open, placeMenu]);
   useEffect(() => {
     if (!open) return;
-    const away = (e: PointerEvent) => { if (!box.current?.contains(e.target as Node)) close(); };
+    const away = (e: PointerEvent) => { const t = e.target as Node; if (!box.current?.contains(t) && !menu.current?.contains(t)) close(); };
+    const onScroll = (e: Event) => { if (!menu.current?.contains(e.target as Node)) placeMenu(); };
     document.addEventListener("pointerdown", away);
-    return () => document.removeEventListener("pointerdown", away);
-  }, [open]);
+    window.addEventListener("scroll", onScroll, true);
+    window.addEventListener("resize", placeMenu);
+    return () => { document.removeEventListener("pointerdown", away); window.removeEventListener("scroll", onScroll, true); window.removeEventListener("resize", placeMenu); };
+  }, [open, placeMenu]);
   useEffect(() => { (list.current?.children[active] as HTMLElement | undefined)?.scrollIntoView({ block: "nearest" }); }, [active, open]);
 
   const close = () => { setOpen(false); setQuery(""); };
@@ -115,24 +141,29 @@ export function PinPicker({ kind, value, options: entries, onChange, placeholder
     if (e.key === "ArrowDown") { e.preventDefault(); setOpen(true); setActive((i) => Math.min(options.length - 1, i + 1)); }
     else if (e.key === "ArrowUp") { e.preventDefault(); setActive((i) => Math.max(0, i - 1)); }
     else if (e.key === "Enter") { e.preventDefault(); if (open && options[active] !== undefined) pick(options[active]); else setOpen(true); }
-    else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); close(); }
+    // Escape closes an open menu (and stops there, like Select); with the menu closed it leaves the field.
+    else if (e.key === "Escape") { if (open) { e.preventDefault(); e.stopPropagation(); close(); } else input.current?.blur(); }
     else if (e.key === "Tab") close();
   };
 
   const listId = `${id}-list`;
   return (
     <div ref={box} className="player-picker">
-      <div className={`select-trigger ${value ? "is-set" : ""}`} onClick={() => { setOpen(true); input.current?.focus(); }}>
+      <div className={`select-trigger ${value ? "is-set" : ""}`} aria-expanded={open || undefined} onClick={() => { setOpen(true); input.current?.focus(); }}>
         {value && !query && isPinned(value) && <PinIcon on />}
         <input ref={input} type="text" role="combobox" aria-label={noun} aria-autocomplete="list" aria-expanded={open} aria-controls={listId}
           aria-activedescendant={open && options.length ? `${id}-${active}` : undefined}
           placeholder={!value && placeholder ? placeholder : label(value)} value={query} spellCheck={false} autoComplete="off"
-          onFocus={() => { setOpen(true); setActive(Math.max(0, options.indexOf(value))); }}
+          // Focus alone never opens the menu (Tab passes through the filter row quietly, like the shared dropdown);
+          // a click, typing or ArrowDown does.
+          onFocus={() => setActive(Math.max(0, options.indexOf(value)))}
           onChange={(e) => { setQuery(e.target.value); setOpen(true); setActive(0); }} onKeyDown={onKey} />
-        <svg className="select-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        {/* The chevron opens and closes the menu, like the shared dropdown's trigger; the text field keeps it open for typing. */}
+        <svg className="select-chevron" viewBox="0 0 10 10" aria-hidden="true" onMouseDown={(e) => { e.preventDefault(); }} onClick={(e) => { if (open) { e.stopPropagation(); close(); } }}><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </div>
-      {open && (
-        <div className="select-menu player-menu">
+      {open && pos && createPortal(
+        <div ref={menu} className={`select-menu player-menu ${pos.bottom != null ? "above" : ""}`.trim()}
+          style={{ left: pos.left, minWidth: pos.width, top: pos.top, bottom: pos.bottom, maxHeight: pos.maxHeight }}>
         <button type="button" className={`pinned-only ${pinnedOnly ? "on" : ""}`} aria-pressed={pinnedOnly}
           onMouseDown={(e) => e.preventDefault()} onClick={() => { setPinnedOnly((x) => !x); setActive(0); }}>
           <PinIcon on={pinnedOnly} /> Pinned only
@@ -140,7 +171,7 @@ export function PinPicker({ kind, value, options: entries, onChange, placeholder
         <ul ref={list} id={listId} role="listbox" aria-label={plural} className="player-options">
           {options.map((p, i) => (
             <li key={p || "all"} id={`${id}-${i}`} role="option" aria-selected={p === value} data-value={p}
-              className={`select-option ${i === active ? "is-active" : ""} ${p && isPinned(p) && !isPinned(options[i + 1] ?? "") && options[i + 1] ? "last-pinned" : ""}`.trim()}
+              className={`select-option ${i === active ? "is-active" : ""} ${p && first(p) && !first(options[i + 1] ?? "") && options[i + 1] ? "last-pinned" : ""}`.trim()}
               onMouseDown={(e) => e.preventDefault()} onMouseMove={() => i !== active && setActive(i)} onClick={() => pick(p)}>
               <span className="select-label">{label(p)}</span>
               {p && (
@@ -154,7 +185,8 @@ export function PinPicker({ kind, value, options: entries, onChange, placeholder
           ))}
           {!options.length && <li className="select-option empty">{pinnedOnly && !q ? `No pinned ${plural} here` : `No ${noun.toLowerCase()} matches “${query}”`}</li>}
         </ul>
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );

@@ -31,6 +31,7 @@ import {
 } from "@/lib/pro-builds";
 import { ROLES, type Role } from "@/lib/schema";
 import { cleanFrom, draftHref as backHref } from "@/lib/my-role";
+import { rovingIndex, rovingKeys } from "@/components/roving";
 
 type Mode = "games" | "common" | "compare";
 const MODES: [Mode, string][] = [["games", "Games"], ["common", "Common build"], ["compare", "Compare"]];
@@ -193,8 +194,8 @@ export function ProBuildsView({ index, names, events, drawerData }: {
                   onChange={(v) => update({ [x.k]: v || undefined, game: undefined, a: undefined, b: undefined })} />
               ))}
               {active.length > 0 && <button type="button" className="btn sm ghost" onClick={() => update(Object.fromEntries([...active, "game", "a", "b"].map((k) => [k, undefined])))}>Clear filters</button>}
-              <div className="seg push" role="tablist" aria-label="View">
-                {MODES.map(([m, l]) => <button key={m} type="button" role="tab" aria-selected={mode === m} className={mode === m ? "active" : undefined} onClick={() => update({ mode: m === "games" ? undefined : m })}>{l}</button>)}
+              <div className="seg push" role="tablist" aria-label="View" onKeyDown={(e) => rovingKeys(e)}>
+                {MODES.map(([m, l]) => <button key={m} type="button" role="tab" aria-selected={mode === m} tabIndex={rovingIndex(mode === m)} className={mode === m ? "active" : undefined} onClick={() => update({ mode: m === "games" ? undefined : m })}>{l}</button>)}
               </div>
             </div>
 
@@ -221,9 +222,9 @@ function GamesView({ rows, current, preferPinned, name, evName, onPick }: {
   const r = rows.find((x) => String(x.game.id) === current) ?? (preferPinned ? rows.find((x) => isPinned(String(x.build.playerId))) : undefined) ?? rows[0];
   return (
     <>
-      <div className="build-picks" role="listbox" aria-label="Recorded games">
+      <div className="build-picks" role="listbox" aria-label="Recorded games" onKeyDown={(e) => rovingKeys(e, "[role='option']")}>
         {rows.map((x) => (
-          <button key={x.key} type="button" role="option" aria-selected={x === r} className={`build-pick side-${x.side} ${x === r ? "active" : ""}`} onClick={() => onPick(x.game.id)}
+          <button key={x.key} type="button" role="option" aria-selected={x === r} tabIndex={rovingIndex(x === r)} className={`build-pick side-${x.side} ${x === r ? "active" : ""}`} onClick={() => onPick(x.game.id)}
             title={`${x.build.player} (${x.team}) vs ${x.opponentTeam}\n${evName(x)} · ${patchLabel(x.game.patch)} · ${shortDate(x.game.date)} · ${x.side} side · ${x.won ? "win" : "loss"}`}>
             <span className="small nowrap">{isPinned(String(x.build.playerId)) && <PinIcon on />}<b>{x.build.player}</b> <span className="muted">{team.isPinned(x.team) && <PinIcon on />}{x.team}</span></span>
             <span className="xs muted nowrap">{x.opponent && <>vs {name(x.opponent.champion)} · </>}{shortDate(x.game.date)} <span className={x.won ? "win" : "loss"}>{x.won ? "W" : "L"}</span></span>

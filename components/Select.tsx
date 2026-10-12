@@ -8,12 +8,27 @@ import { createPortal } from "react-dom";
 
 export type SelectOption = { value: string; label: string };
 
-type Pos = { left: number; width: number; maxHeight: number; top?: number; bottom?: number };
+export type MenuPos = { left: number; width: number; maxHeight: number; top?: number; bottom?: number };
 
 const MENU_MAX = 300;
 const ROW = 26;
 const GAP = 4;
 const EDGE = 8;
+
+/**
+ * Where a dropdown menu goes under (or over) its trigger: below when it fits or below is roomier, else above; never
+ * narrower than the trigger, kept inside the viewport, scrolling inside past `MENU_MAX`. Shared by every dropdown
+ * (Select here, PinPicker in components/PlayerPicker.tsx) so they open, flip and size the same way.
+ */
+export function menuPlace(r: DOMRect, rows: number, minWidth = 160, maxWidth = Infinity): MenuPos {
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const natural = Math.min(MENU_MAX, rows * ROW + 6);
+  const below = vh - r.bottom - GAP - EDGE, above = r.top - GAP - EDGE;
+  const width = Math.min(Math.max(r.width, minWidth), maxWidth, vw - 2 * EDGE);
+  const left = Math.min(Math.max(r.left, EDGE), vw - width - EDGE);
+  if (below >= natural || below >= above) return { left, width, top: r.bottom + GAP, maxHeight: Math.min(MENU_MAX, below) };
+  return { left, width, bottom: vh - r.top + GAP, maxHeight: Math.min(MENU_MAX, above) };
+}
 
 export function Select({ label, value, options, onChange, showLabel = false, className = "" }: {
   /** Accessible name; shown above the trigger when showLabel is set. */
@@ -31,7 +46,7 @@ export function Select({ label, value, options, onChange, showLabel = false, cla
   const list = useRef<HTMLUListElement>(null);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
-  const [pos, setPos] = useState<Pos | null>(null);
+  const [pos, setPos] = useState<MenuPos | null>(null);
   const typed = useRef({ text: "", at: 0 });
 
   const selectedIndex = Math.max(0, options.findIndex((o) => o.value === value));
@@ -40,14 +55,7 @@ export function Select({ label, value, options, onChange, showLabel = false, cla
   const place = useCallback(() => {
     const el = trigger.current;
     if (!el) return;
-    const r = el.getBoundingClientRect();
-    const vw = window.innerWidth, vh = window.innerHeight;
-    const natural = Math.min(MENU_MAX, options.length * ROW + 6);
-    const below = vh - r.bottom - GAP - EDGE, above = r.top - GAP - EDGE;
-    const width = Math.min(Math.max(r.width, 160), vw - 2 * EDGE);
-    const left = Math.min(Math.max(r.left, EDGE), vw - width - EDGE);
-    if (below >= natural || below >= above) setPos({ left, width, top: r.bottom + GAP, maxHeight: Math.min(MENU_MAX, below) });
-    else setPos({ left, width, bottom: vh - r.top + GAP, maxHeight: Math.min(MENU_MAX, above) });
+    setPos(menuPlace(el.getBoundingClientRect(), options.length));
   }, [options.length]);
 
   const openMenu = (index = selectedIndex) => { setActive(index); setOpen(true); };

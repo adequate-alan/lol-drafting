@@ -20,8 +20,10 @@ import { proposedCard } from "@/lib/proposed";
 import { Disclosure } from "./Disclosure";
 import { CounterTrigger, ProEvidenceTrigger, type ProCtx } from "./EvidenceCards";
 import { Popover } from "./Popover";
-import { AUTO_BUILDS_KEY, MY_ROLE_KEY, buildsEntry, draftQuery, myBuildsHref, opensBuilds, parseRole } from "@/lib/my-role";
+import { AUTO_BUILDS_KEY, MY_ROLE_KEY, buildsEntry, draftQuery, markOwnQuery, myBuildsHref, opensBuilds, parseRole } from "@/lib/my-role";
 import { ChampIcon, ChampionRow, WarningBadge, type Severity } from "./ui";
+import { scrollBehavior } from "@/lib/motion";
+import { rovingIndex, rovingKeys } from "./roving";
 
 const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
 // Lane partner: with Bot locked, Support is the natural next pick (and the other way round).
@@ -41,6 +43,7 @@ const ROW_LIMIT = 12; // unified list rows shown before "Show all"
 const FILTERS: { key: Filter; label: string }[] = [
   { key: "all", label: "All" }, { key: "synergy", label: "Synergy" }, { key: "pro", label: "Pro" }, { key: "fit", label: "Best fit" }, { key: "counter", label: "Counters" }, { key: "priority", label: "Priority" },
 ];
+const enemyDraftOf = (list: (string | undefined)[]): EnemyDraft => Object.fromEntries(ROLES.flatMap((r, i) => (list[i] ? [[r, list[i]]] : [])));
 const ORDER_NOTE = "Order: your preferred pairing first, then comp fit (synergy with your picks, team needs, matchups and risks). "
   + "Synergy, Pro, Counter and Pro priority are labels on each row; pro game counts, counters and presence never move a row. Ties go to the row with more signals.";
 
@@ -58,9 +61,16 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   const [enemy, setEnemy] = useState<(string | undefined)[]>(() => ROLES.map((r) => initialEnemy[r]));
   const [focus, setFocus] = useState<Role | undefined>(initialFocus);
   const [hover, setHover] = useState<string>();
+  // The slot preview follows the row the pointer rests on, not every row it crosses: a short intent delay, and leaving
+  // a row waits a moment so moving to the next row swaps the preview instead of blanking it in between.
+  const previewTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const preview = (id: string | undefined) => { clearTimeout(previewTimer.current); previewTimer.current = setTimeout(() => setHover(id), id ? 80 : 120); };
+  useEffect(() => () => clearTimeout(previewTimer.current), []);
   const [drawer, setDrawer] = useState<DrawerTarget>();
   const [pinned, setPinned] = useState(false);
   const [filter, setFilter] = useState<Filter>(initialFilter);
+  // The slot locked last ("ally:BOT", "enemy:MID"): only it plays the lock acknowledgement.
+  const [fresh, setFresh] = useState<string>();
   // My Role: the role I play, kept in this browser. Separate from the role being picked below.
   const [myRole, setMyRoleState] = useState<Role>();
   const [autoBuilds, setAutoBuildsState] = useState(false);
@@ -99,7 +109,6 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
     return () => io.disconnect();
   }, []);
 
-  const enemyDraftOf = (list: (string | undefined)[]): EnemyDraft => Object.fromEntries(ROLES.flatMap((r, i) => (list[i] ? [[r, list[i]]] : [])));
   const update = (next: Draft, nextEnemy = enemy) => {
     setDraft(next);
     setEnemy(nextEnemy);
@@ -107,34 +116,45 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
     ROLES.forEach((r) => next[r] && q.set(r.toLowerCase(), next[r]!));
     const vs = enemyParam(enemyDraftOf(nextEnemy));
     if (vs) q.set("vs", vs);
-    // window.location keeps the GitHub Pages base path; usePathname() would drop it.
+    // window.location keeps the GitHub Pages base path; usePathname() would drop it. Marked as the room's own write so
+    // the page keeps this room (components/views/DraftRoomView.tsx).
+    markOwnQuery(q.toString());
     window.history.replaceState(null, "", `${window.location.pathname}${q.size ? `?${q.toString().replace(/%2C/g, ",")}` : ""}`);
   };
   const lock = (role: Role, id: string | undefined) => {
+    clearTimeout(previewTimer.current);
     setHover(undefined);
+    setFresh(`ally:${role}`);
     const next = { ...draft, [role]: id };
     update(next);
     // Only a confirmed lock of my own role opens Pro Builds, and only with the preference on (alan, 2026-10-12).
     if (opensBuilds({ myRole, auto: autoBuilds, role, champion: id, previous: draft[role], hasBuilds: !!id && !!buildsEntry(drawerData.builds, id, role) }))
       router.push(myBuildsHref(drawerData.builds, id!, role, draftQuery({ draft: next, vs: enemyParam(enemyDraftOf(enemy)), focus, filter })));
   };
-  const lockEnemy = (i: number, id: string | undefined) => update(draft, enemy.map((e, j) => (j === i ? id : e)));
+  const lockEnemy = (i: number, id: string | undefined) => { setFresh(`enemy:${ROLES[i]}`); update(draft, enemy.map((e, j) => (j === i ? id : e))); };
 
-  const enemyIds = enemy.filter((e): e is string => !!e);
-  const taken = [...(Object.values(draft).filter(Boolean) as string[]), ...enemyIds];
-  const picks = picksOf(draft, data.champions);
-  const prof = profile(draft, data.champions);
-  const warns = warnings(draft, data.champions);
-  const needs = picks.length ? teamNeeds(picks) : [];
-  const enemyDraft = enemyDraftOf(enemy);
-  // Pro pairings first: a support seen next to a locked pick in pro games is read for fit even outside the locked bot's
-  // saved supports (eligible: false). `fits` is the eligible draft-fit list (picker hints, counters' fit rank).
-  // One candidate list per open role (lib/candidates.ts). `fits` is the eligible draft-fit list: picker hints, tab hints.
-  const { pro: proAll, fits, counters, unified } = draftCandidates(draft, enemyDraft, data, sources);
-  const recs = Object.fromEntries(Object.entries(fits).map(([r, list]) => [r, list!.slice(0, REC_LIMIT)])) as typeof fits;
-  const similar = similarProDrafts(draft, data.proDrafts);
-  const proCtx: ProCtx = { drafts: data.proDrafts, sources, enemy: enemyDraft, names };
-  const shells = similarShells(draft, data.shells);
+  // Everything read from the board is derived once per board change. Hovering a row, opening a card, switching the
+  // filter or the role tab re-renders the room without re-ranking the roster (they were 70-160ms long tasks).
+  const { enemyIds, taken, picks, prof, warns, needs, enemyDraft, proAll, fits, counters, unified, recs, similar, shells } = useMemo(() => {
+    const enemyIds = enemy.filter((e): e is string => !!e);
+    const picks = picksOf(draft, data.champions);
+    const enemyDraft = enemyDraftOf(enemy);
+    // One candidate list per open role (lib/candidates.ts). Pro pairings first: a support seen next to a locked pick in
+    // pro games is read for fit even outside the locked bot's saved supports (eligible: false). `fits` is the eligible
+    // draft-fit list: picker hints, tab hints, counters' fit rank.
+    const { pro: proAll, fits, counters, unified } = draftCandidates(draft, enemyDraft, data, sources);
+    return {
+      enemyIds, picks, enemyDraft, proAll, fits, counters, unified,
+      taken: [...(Object.values(draft).filter(Boolean) as string[]), ...enemyIds],
+      prof: profile(draft, data.champions),
+      warns: warnings(draft, data.champions),
+      needs: picks.length ? teamNeeds(picks) : [],
+      recs: Object.fromEntries(Object.entries(fits).map(([r, list]) => [r, list!.slice(0, REC_LIMIT)])) as typeof fits,
+      similar: similarProDrafts(draft, data.proDrafts),
+      shells: similarShells(draft, data.shells),
+    };
+  }, [draft, enemy, data, sources]);
+  const proCtx: ProCtx = useMemo(() => ({ drafts: data.proDrafts, sources, enemy: enemyDraft, names }), [data.proDrafts, sources, enemyDraft, names]);
   const open = ROLES.filter((r) => !draft[r]);
   const lockedCount = ROLES.length - open.length;
   const started = lockedCount > 0 || enemyIds.length > 0;
@@ -225,7 +245,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
           <div className="team-label">My team</div>
           <div className="draft-slots">
             {ROLES.map((role) => (
-              <DraftSlot key={role} side="ally" role={role} value={draft[role]} active={role === active} mine={role === myRole} builds={role === myRole ? myHref : undefined} preview={role === active ? hover : undefined}
+              <DraftSlot key={role} side="ally" role={role} value={draft[role]} fresh={fresh === `ally:${role}`} active={role === active} mine={role === myRole} builds={role === myRole ? myHref : undefined} preview={role === active ? hover : undefined}
                 onActivate={() => setFocus(role)} onLock={(id) => lock(role, id)} suggested={recs[role]} {...slotProps} />
             ))}
           </div>
@@ -234,7 +254,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
           <div className="team-label">Enemy</div>
           <div className="draft-slots">
             {ROLES.map((role, i) => (
-              <DraftSlot key={role} side="enemy" role={role} value={enemy[i]} onLock={(v) => lockEnemy(i, v)} {...slotProps} />
+              <DraftSlot key={role} side="enemy" role={role} value={enemy[i]} fresh={fresh === `enemy:${role}`} onLock={(v) => lockEnemy(i, v)} {...slotProps} />
             ))}
           </div>
         </div>
@@ -250,11 +270,11 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
           <section className="recs" aria-label="Recommended Picks">
             {!open.length ? <p className="rec-empty">All five roles are locked.</p> : (
               <>
-                <div className="role-tabs" role="tablist" aria-label="Role to pick">
+                <div className="role-tabs" role="tablist" aria-label="Role to pick" onKeyDown={(e) => rovingKeys(e)}>
                   {open.map((r) => {
                     const top = unified[r]?.[0];
                     return (
-                      <button key={r} role="tab" aria-selected={r === active} className={`role-tab role-${r} ${r === active ? "active" : ""}`} onClick={() => setFocus(r)}>
+                      <button key={r} role="tab" aria-selected={r === active} tabIndex={rovingIndex(r === active)} className={`role-tab role-${r} ${r === active ? "active" : ""}`} onClick={() => setFocus(r)}>
                         <span className="role-name">{ROLE_LABEL[r]}</span>
                         {top && r !== active && <span className="tab-top"><ChampIcon id={top.champion} name={names[top.champion]} size="xs" />{names[top.champion]}</span>}
                       </button>
@@ -293,7 +313,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                       : visibleRows.length
                         ? visibleRows.map((c) => (
                           <FitRow key={c.champion} c={c} bot={draft.BOT ? names[draft.BOT] ?? draft.BOT : undefined} names={names} proCtx={proCtx} hovered={hover === c.champion}
-                            onHover={(h) => setHover(h ? c.champion : undefined)} onPick={() => lock(active, c.champion)} onOpen={() => setDrawer({ id: c.champion, role: active })} />
+                            onHover={(h) => preview(h ? c.champion : undefined)} onPick={() => lock(active, c.champion)} onOpen={() => setDrawer({ id: c.champion, role: active })} />
                         ))
                         : <p className="rec-empty">{filter === "all" ? "Nothing stands out yet." : filter === "counter" && activeCounters?.counters.length === 0 ? "No counters to show." : "No candidate has this signal yet."}</p>}
                     {visibleRows.length < shownRows.length && (
@@ -373,7 +393,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
       </div>
 
       {hoverCard.card && !drawer && (
-        <ChampionHoverCard key={`${hoverCard.card.t.id}-${hoverCard.card.t.role}`} target={hoverCard.card.t} anchor={hoverCard.card.el} data={drawerData} index={drawerIndex}
+        <ChampionHoverCard key={`${hoverCard.card.t.id}-${hoverCard.card.t.role}`} target={hoverCard.card.t} anchor={hoverCard.card.el} swap={hoverCard.card.swap} data={drawerData} index={drawerIndex}
           onEnter={hoverCard.keep} onLeave={hoverCard.unhover} />
       )}
       {drawer && <ChampionDrawer target={drawer} data={drawerData} index={drawerIndex} onClose={() => setDrawer(undefined)} onSelect={setDrawer} />}
@@ -530,8 +550,8 @@ type SlotShared = {
   onHover: (t: DrawerTarget, el: HTMLElement) => void; onUnhover: () => void;
 };
 
-function DraftSlot({ side, role, value, active = false, mine = false, builds, preview, onActivate, onLock, suggested = [], names, byName, champions, taken, onOpen, onHover, onUnhover }: SlotShared & {
-  side: "ally" | "enemy"; role: Role; value?: string; active?: boolean; mine?: boolean; builds?: string; preview?: string;
+function DraftSlot({ side, role, value, fresh = false, active = false, mine = false, builds, preview, onActivate, onLock, suggested = [], names, byName, champions, taken, onOpen, onHover, onUnhover }: SlotShared & {
+  side: "ally" | "enemy"; role: Role; value?: string; fresh?: boolean; active?: boolean; mine?: boolean; builds?: string; preview?: string;
   onActivate?: () => void; onLock: (id: string | undefined) => void; suggested?: Recommendation[];
 }) {
   const [text, setText] = useState("");
@@ -549,7 +569,7 @@ function DraftSlot({ side, role, value, active = false, mine = false, builds, pr
     const el = slot.current, row = el?.parentElement;
     if (!active || !el || !row || row.scrollWidth <= row.clientWidth) return;
     const left = el.offsetLeft - row.offsetLeft;
-    if (left < row.scrollLeft || left + el.offsetWidth > row.scrollLeft + row.clientWidth) row.scrollTo({ left: Math.max(0, left - 8), behavior: "smooth" });
+    if (left < row.scrollLeft || left + el.offsetWidth > row.scrollLeft + row.clientWidth) row.scrollTo({ left: Math.max(0, left - 8), behavior: scrollBehavior() });
   }, [active]);
   const ally = side === "ally";
   const listId = ally ? `champs-${role}` : `champs-enemy-${role}`;
@@ -583,17 +603,30 @@ function DraftSlot({ side, role, value, active = false, mine = false, builds, pr
     const r = input.current?.getBoundingClientRect();
     if (r) { const below = window.innerHeight - r.bottom, above = r.top; setUp(below < 260 && above > below); }
   };
+  // A keyboard lock or Escape ends on the slot's champion, so focus never drops to the page (and Tab carries on from here).
+  const refocus = useRef(false);
+  useEffect(() => {
+    if (!refocus.current) return;
+    refocus.current = false;
+    slot.current?.querySelector<HTMLElement>(value && !editing ? ".slot-body" : "input")?.focus({ preventScroll: true });
+  }, [value, editing]);
   const pick = (id: string | undefined) => { if (id) { onLock(id); setText(""); setOpen(false); setHi(0); setEditing(false); } };
   const remove = () => { onLock(undefined); setText(""); setOpen(false); setEditing(false); };
   const onKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "ArrowDown") { e.preventDefault(); keyed.current = true; setOpen(true); setHi((i) => Math.min(i + 1, matches.length - 1)); }
     else if (e.key === "ArrowUp") { e.preventDefault(); keyed.current = true; setHi((i) => Math.max(i - 1, 0)); }
     else if (e.key === "PageDown" || e.key === "PageUp") { e.preventDefault(); keyed.current = true; setHi((i) => Math.max(0, Math.min(matches.length - 1, i + (e.key === "PageDown" ? 7 : -7)))); }
-    else if (e.key === "Enter") { e.preventDefault(); pick(byName.get(q) ?? matches[hi]?.id); }
-    else if (e.key === "Escape") { setOpen(false); input.current?.blur(); }
+    // An exact name locks that champion only while it is free; a pick already on either team is never locked twice.
+    else if (e.key === "Enter") { e.preventDefault(); const exact = byName.get(q), id = exact && !taken.includes(exact) ? exact : matches[hi]?.id; refocus.current = !!id; pick(id); }
+    // Escape closes the list first and keeps the field; a second Escape (or the first while changing a pick) leaves it.
+    else if (e.key === "Escape") {
+      if (open && !editing) { e.preventDefault(); setOpen(false); }
+      else if (editing && value) { e.preventDefault(); refocus.current = true; setOpen(false); setEditing(false); setText(""); }
+      else input.current?.blur();
+    }
     else if (editing && !text && (e.key === "Delete" || e.key === "Backspace")) { e.preventDefault(); remove(); }
   };
-  const cls = `draft-slot ${ally ? `role-${role}` : "enemy"} ${value ? "locked" : "open"} ${active ? "active" : ""} ${mine ? "mine" : ""}`;
+  const cls = `draft-slot ${ally ? `role-${role}` : "enemy"} ${value ? "locked" : "open"} ${active ? "active" : ""} ${mine ? "mine" : ""} ${fresh ? "fresh" : ""}`;
   const roleTag = <span className={`role-tag role-${role}`}>{role}{mine && <span className="slot-you">You</span>}</span>;
 
   if (value && !editing) {

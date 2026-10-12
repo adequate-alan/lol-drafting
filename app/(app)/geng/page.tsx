@@ -6,6 +6,9 @@ import { getDrawerData, getGenG, getMeta, getProDrafts } from "@/lib/data";
 import { nameMap, sourceMap } from "@/lib/lookup";
 import { ROLES, type GenGPattern } from "@/lib/schema";
 
+// Each section names itself in the tab and in history, so a route change is announced (layout template adds the site).
+export const metadata = { title: "Gen.G" };
+
 const KINDS: { kind: GenGPattern["kind"]; title: string }[] = [
   { kind: "context", title: "Tournament context" },
   { kind: "recurring-pick", title: "Recurring picks" },

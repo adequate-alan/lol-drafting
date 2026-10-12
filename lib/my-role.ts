@@ -58,3 +58,10 @@ export function opensBuilds({ myRole, auto, role, champion, previous, hasBuilds 
 }): boolean {
   return auto && !!myRole && role === myRole && !!champion && champion !== previous && hasBuilds;
 }
+
+// The query string Draft Room wrote itself (history.replaceState on every lock), so the page can tell its own URL
+// updates from a navigation that brings a new board. Compared as parsed parameters, whatever the comma encoding.
+let written: string | undefined;
+const norm = (q: string) => { const p = new URLSearchParams(q); p.sort(); return p.toString(); };
+export const markOwnQuery = (q: string) => { written = norm(q); };
+export const ownQuery = (q: string) => written !== undefined && norm(q) === written;

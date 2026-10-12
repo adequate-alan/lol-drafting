@@ -1,5 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
+import { useRef } from "react";
+import { ownQuery } from "@/lib/my-role";
 import { DraftRoom } from "@/components/DraftRoom";
 import { parseEnemy } from "@/lib/counters";
 import type { DraftData, DrawerData } from "@/lib/data";
@@ -27,8 +29,14 @@ export function DraftRoomView({ data, sources, drawerData, metaPicks }: {
   const focus = parseRole(q.get("focus"));
   const initialFocus = focus && !initial[focus] ? focus : undefined;
   const initialFilter = FILTERS.find((f) => f === q.get("filter"));
+  // A new board from outside (a link, Back to Draft Room, Use in Draft Room) starts a fresh room. The room's own URL
+  // writes (every lock replaces the query so the draft can be shared) must not: Next.js echoes them through
+  // useSearchParams, and re-keying there rebuilt the room on every lock, dropping the tab, filter, open rows, focus
+  // and the Clear draft undo.
+  const key = useRef<string>(undefined);
+  if (key.current === undefined || !ownQuery(q.toString())) key.current = JSON.stringify(initial) + JSON.stringify(initialEnemy);
   return (
-    <DraftRoom key={JSON.stringify(initial) + JSON.stringify(initialEnemy)} data={data} sources={sources} drawerData={drawerData}
+    <DraftRoom key={key.current} data={data} sources={sources} drawerData={drawerData}
       initial={initial} initialEnemy={initialEnemy} initialFocus={initialFocus} initialFilter={initialFilter} metaPicks={metaPicks} />
   );
 }

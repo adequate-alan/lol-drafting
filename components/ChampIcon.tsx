@@ -13,14 +13,16 @@ export function champInitials(name: string) {
 
 /** Square champion icon (Data Dragon) on a fixed-size tile, so a missing image never changes the layout. */
 export function ChampIcon({ id, name, role, size = "sm" }: { id?: string; name: string; role?: Role; size?: IconSize }) {
-  const [failed, setFailed] = useState(false);
+  // The id whose image failed: a tile reused for another champion (next game, next hover) tries its own image.
+  const [failedId, setFailedId] = useState<string>();
+  const failed = !!id && failedId === id;
   const img = useRef<HTMLImageElement>(null);
   // An image that failed before hydration never fires onError for React; catch it here.
-  useEffect(() => { if (img.current?.complete && img.current.naturalWidth === 0) setFailed(true); }, [id]);
+  useEffect(() => { if (img.current?.complete && img.current.naturalWidth === 0) setFailedId(id); }, [id]);
   return (
     <span className={`champ ${size} ${role ? `role-${role}` : ""}`} aria-hidden="true" data-icon={!id ? undefined : failed ? "failed" : "image"} data-champ={id}>
       <span className="mono">{champInitials(name)}</span>
-      {id && !failed && <img ref={img} src={championIconUrl(id, name)} alt="" loading="lazy" decoding="async" draggable={false} onError={() => setFailed(true)} />}
+      {id && !failed && <img key={id} ref={img} src={championIconUrl(id, name)} alt="" loading="lazy" decoding="async" draggable={false} onError={() => setFailedId(id)} />}
     </span>
   );
 }
