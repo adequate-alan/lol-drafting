@@ -1,0 +1,1097 @@
+[
+  {
+    "id": 3421,
+    "name": "Clear",
+    "team": "BNK FearX",
+    "role": "TOP",
+    "date": "2026-10-04",
+    "candidates": []
+  },
+  {
+    "id": 1971,
+    "name": "Kellin",
+    "team": "BNK FearX",
+    "role": "SUPPORT",
+    "date": "2026-10-04",
+    "candidates": []
+  },
+  {
+    "id": 4233,
+    "name": "Raptor",
+    "team": "BNK FearX",
+    "role": "JUNGLE",
+    "date": "2026-10-04",
+    "candidates": []
+  },
+  {
+    "id": 3424,
+    "name": "Taeyoon",
+    "team": "BNK FearX",
+    "role": "BOT",
+    "date": "2026-10-04",
+    "candidates": []
+  },
+  {
+    "id": 3326,
+    "name": "Vicla",
+    "team": "BNK FearX",
+    "role": "MID",
+    "date": "2026-10-04",
+    "candidates": [
+      {
+        "wikidata": "Q105706144",
+        "label": "VicLa",
+        "description": "South Korean pro gamer",
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "id": 5204,
+    "name": "Career",
+    "team": "Dplus KIA",
+    "role": "SUPPORT",
+    "date": "2026-09-06",
+    "candidates": []
+  },
+  {
+    "id": 3895,
+    "name": "Lucid",
+    "team": "Dplus KIA",
+    "role": "JUNGLE",
+    "date": "2026-09-06",
+    "candidates": []
+  },
+  {
+    "id": 1250,
+    "name": "ShowMaker",
+    "team": "Dplus KIA",
+    "role": "MID",
+    "date": "2026-09-06",
+    "candidates": [
+      {
+        "wikidata": "Q97199208",
+        "label": "Heo Su",
+        "description": "South Korean professional League of Legends player",
+        "aliases": [
+          "Showmaker",
+          "ShowMaker",
+          "Heo \"ShowMaker\" Su"
+        ],
+        "image": "Showmaker, fomos esports 2019.png",
+        "file": "File:Showmaker, fomos esports 2019.png",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Showmaker%2C_fomos_esports_2019.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "thumb": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Showmaker%2C_fomos_esports_2019.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "width": 491,
+        "height": 682,
+        "mime": "image/png",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+        "artist": "fomos esports",
+        "credit": "YouTube: https://www.youtube.com/watch?v=2Z7ymal02sg – View/save archived versions on archive.org",
+        "descriptionText": "Heo \"Showmaker\" Su in an interview with fomos esports in 2019.",
+        "dateTaken": "2019-10-09",
+        "categories": [
+          "Category:CC-BY-3.0",
+          "Category:Files from external sources with reviewed licenses",
+          "Category:Images from YouTube",
+          "Category:Photographic images in inappropriate PNG format",
+          "Category:Showmaker",
+          "Category:Still images of YouTube videos"
+        ],
+        "descriptionUrl": "https://commons.wikimedia.org/wiki/File:Showmaker,_fomos_esports_2019.png"
+      }
+    ]
+  },
+  {
+    "id": 5392,
+    "name": "Siwoo",
+    "team": "Dplus KIA",
+    "role": "TOP",
+    "date": "2026-09-06",
+    "candidates": [
+      {
+        "wikidata": "Q131547847",
+        "label": "Siwoo",
+        "description": "South Korean pro gamer",
+        "aliases": [
+          "Jeon Si-woo"
+        ]
+      }
+    ]
+  },
+  {
+    "id": 4940,
+    "name": "Smash",
+    "team": "Dplus KIA",
+    "role": "BOT",
+    "date": "2026-09-06",
+    "candidates": []
+  },
+  {
+    "id": 6344,
+    "name": "Cryogen",
+    "team": "FlyQuest",
+    "role": "SUPPORT",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 5456,
+    "name": "Gakgos",
+    "team": "FlyQuest",
+    "role": "TOP",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 4612,
+    "name": "Gryffinn",
+    "team": "FlyQuest",
+    "role": "JUNGLE",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 4885,
+    "name": "Massu",
+    "team": "FlyQuest",
+    "role": "BOT",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 2648,
+    "name": "Quad",
+    "team": "FlyQuest",
+    "role": "MID",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 2078,
+    "name": "Artemis",
+    "team": "GAM Esports",
+    "role": "BOT",
+    "date": "2026-10-07",
+    "candidates": []
+  },
+  {
+    "id": 1104,
+    "name": "Gloryy",
+    "team": "GAM Esports",
+    "role": "MID",
+    "date": "2026-10-07",
+    "candidates": []
+  },
+  {
+    "id": 1671,
+    "name": "Kiaya",
+    "team": "GAM Esports",
+    "role": "TOP",
+    "date": "2026-10-07",
+    "candidates": []
+  },
+  {
+    "id": 3550,
+    "name": "Taki",
+    "team": "GAM Esports",
+    "role": "SUPPORT",
+    "date": "2026-10-07",
+    "candidates": []
+  },
+  {
+    "id": 6169,
+    "name": "tiphat",
+    "team": "GAM Esports",
+    "role": "JUNGLE",
+    "date": "2026-10-07",
+    "candidates": []
+  },
+  {
+    "id": 1909,
+    "name": "Canyon",
+    "team": "Gen.G",
+    "role": "JUNGLE",
+    "date": "2026-09-13",
+    "candidates": []
+  },
+  {
+    "id": 1629,
+    "name": "Chovy",
+    "team": "Gen.G",
+    "role": "MID",
+    "date": "2026-09-13",
+    "candidates": [
+      {
+        "wikidata": "Q97198587",
+        "label": "Jung Ji-hun",
+        "description": "South Korean League of Legends player",
+        "aliases": [
+          "Chovy",
+          "Jeong Ji-hun",
+          "Jung \"Chovy\" Ji-hoon"
+        ],
+        "enwiki": "Chovy (gamer)",
+        "image": "Chovy Season Kickoff 2023.jpg",
+        "file": "File:Chovy Season Kickoff 2023.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Chovy_Season_Kickoff_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/Chovy_Season_Kickoff_2023.jpg/500px-Chovy_Season_Kickoff_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "width": 885,
+        "height": 885,
+        "mime": "image/jpeg",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+        "artist": "E레기",
+        "credit": "YouTube: https://www.youtube.com/watch?v=1PAfHVf3RaA&amp;t=99s – View/save archived versions on archive.org",
+        "descriptionText": "Interview with Chovy by E레기 after LCK Season Kickoff in 2023",
+        "dateTaken": "2023-01-11",
+        "categories": [
+          "Category:CC-BY-3.0",
+          "Category:Chovy",
+          "Category:Files from external sources with reviewed licenses",
+          "Category:Gen.G",
+          "Category:Media from YouTube"
+        ],
+        "descriptionUrl": "https://commons.wikimedia.org/wiki/File:Chovy_Season_Kickoff_2023.jpg"
+      }
+    ]
+  },
+  {
+    "id": 4259,
+    "name": "Duro",
+    "team": "Gen.G",
+    "role": "SUPPORT",
+    "date": "2026-09-13",
+    "candidates": [
+      {
+        "wikidata": "Q131547848",
+        "label": "Duro",
+        "description": "South Korean pro gamer",
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "id": 1115,
+    "name": "Kiin",
+    "team": "Gen.G",
+    "role": "TOP",
+    "date": "2026-09-13",
+    "candidates": [
+      {
+        "wikidata": "Q97477978",
+        "label": "Kim Ki-in",
+        "description": "South Korean League of Legends pro gamer",
+        "aliases": [
+          "Kiin"
+        ]
+      }
+    ]
+  },
+  {
+    "id": 685,
+    "name": "Ruler",
+    "team": "Gen.G",
+    "role": "BOT",
+    "date": "2026-09-13",
+    "candidates": []
+  },
+  {
+    "id": 4925,
+    "name": "Casting",
+    "team": "HANJIN BRION",
+    "role": "TOP",
+    "date": "2026-10-06",
+    "candidates": [
+      {
+        "wikidata": "Q131547801",
+        "label": "Casting",
+        "description": "South Korean pro gamer",
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "id": 3327,
+    "name": "GIDEON",
+    "team": "HANJIN BRION",
+    "role": "JUNGLE",
+    "date": "2026-10-06",
+    "candidates": []
+  },
+  {
+    "id": 5382,
+    "name": "Namgung",
+    "team": "HANJIN BRION",
+    "role": "SUPPORT",
+    "date": "2026-10-06",
+    "candidates": []
+  },
+  {
+    "id": 3436,
+    "name": "Roamer",
+    "team": "HANJIN BRION",
+    "role": "MID",
+    "date": "2026-10-06",
+    "candidates": [
+      {
+        "wikidata": "Q105706564",
+        "label": "Jo Woo-jin",
+        "description": "South Korean professional gamer",
+        "aliases": [
+          "Roamer"
+        ]
+      }
+    ]
+  },
+  {
+    "id": 799,
+    "name": "Teddy",
+    "team": "HANJIN BRION",
+    "role": "BOT",
+    "date": "2026-10-06",
+    "candidates": []
+  },
+  {
+    "id": 3411,
+    "name": "Delight",
+    "team": "Hanwha Life Esports",
+    "role": "SUPPORT",
+    "date": "2026-09-13",
+    "candidates": []
+  },
+  {
+    "id": 3247,
+    "name": "Gumayusi",
+    "team": "Hanwha Life Esports",
+    "role": "BOT",
+    "date": "2026-09-13",
+    "candidates": [
+      {
+        "wikidata": "Q97206273",
+        "label": "Lee Min-hyung",
+        "description": "South Korean League of Legends player",
+        "aliases": [
+          "Gumayusi"
+        ],
+        "enwiki": "Gumayusi",
+        "image": "T1 Gumayusi Lee Min-hyeong in an interview, 2026.png",
+        "file": "File:T1 Gumayusi Lee Min-hyeong in an interview, 2026.png",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/5/54/T1_Gumayusi_Lee_Min-hyeong_in_an_interview%2C_2026.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/54/T1_Gumayusi_Lee_Min-hyeong_in_an_interview%2C_2026.png/500px-T1_Gumayusi_Lee_Min-hyeong_in_an_interview%2C_2026.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "width": 594,
+        "height": 828,
+        "mime": "image/png",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "artist": "Marie Claire",
+        "credit": "https://www.youtube.com/watch?v=73El1ZBsf1s",
+        "descriptionText": "Gumayusi in an interview, 2026",
+        "dateTaken": "2026-07-31",
+        "categories": [
+          "Category:CC-BY-4.0",
+          "Category:Creative Commons Attribution 4.0 missing SDC copyright license",
+          "Category:Creative Commons Attribution missing SDC copyright status",
+          "Category:Gumayusi",
+          "Category:Still images of YouTube videos"
+        ],
+        "descriptionUrl": "https://commons.wikimedia.org/wiki/File:T1_Gumayusi_Lee_Min-hyeong_in_an_interview,_2026.png"
+      }
+    ]
+  },
+  {
+    "id": 2360,
+    "name": "Kanavi",
+    "team": "Hanwha Life Esports",
+    "role": "JUNGLE",
+    "date": "2026-09-13",
+    "candidates": [
+      {
+        "wikidata": "Q97194967",
+        "label": "Seo Jin-hyeok",
+        "description": "South Korean League of Legends pro gamer",
+        "aliases": [
+          "Kanavi"
+        ],
+        "enwiki": "Kanavi (gamer)",
+        "image": "Kanavi 2020 interview.jpg",
+        "file": "File:Kanavi 2020 interview.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Kanavi_2020_interview.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "thumb": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Kanavi_2020_interview.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "width": 462,
+        "height": 556,
+        "mime": "image/jpeg",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+        "artist": "E레기",
+        "credit": "YouTube: https://www.youtube.com/watch?v=aoigpnKvedQ – View/save archived versions on archive.org",
+        "descriptionText": "Kanavi 2020 interview",
+        "dateTaken": "2020-08-20",
+        "categories": [
+          "Category:CC-BY-3.0",
+          "Category:Kanavi (gamer)",
+          "Category:Media from YouTube"
+        ],
+        "descriptionUrl": "https://commons.wikimedia.org/wiki/File:Kanavi_2020_interview.jpg"
+      }
+    ]
+  },
+  {
+    "id": 2906,
+    "name": "Zeka",
+    "team": "Hanwha Life Esports",
+    "role": "MID",
+    "date": "2026-09-13",
+    "candidates": []
+  },
+  {
+    "id": 3658,
+    "name": "Zeus",
+    "team": "Hanwha Life Esports",
+    "role": "TOP",
+    "date": "2026-09-13",
+    "candidates": []
+  },
+  {
+    "id": 1708,
+    "name": "Angel",
+    "team": "JD Gaming",
+    "role": "MID",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 1931,
+    "name": "GALA",
+    "team": "JD Gaming",
+    "role": "BOT",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 5359,
+    "name": "Vampire",
+    "team": "JD Gaming",
+    "role": "SUPPORT",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 5360,
+    "name": "xiaofang",
+    "team": "JD Gaming",
+    "role": "JUNGLE",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 4918,
+    "name": "Xiaoxu",
+    "team": "JD Gaming",
+    "role": "TOP",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 650,
+    "name": "Bdd",
+    "team": "KT Rolster",
+    "role": "MID",
+    "date": "2026-10-04",
+    "candidates": [
+      {
+        "wikidata": "Q60734665",
+        "label": "Bdd",
+        "description": "South Korean esports player",
+        "aliases": [
+          "Gwak Bo-seong"
+        ],
+        "enwiki": "Bdd (gamer)",
+        "image": "BDD interview 2021.jpg",
+        "file": "File:BDD interview 2021.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/1/1c/BDD_interview_2021.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/BDD_interview_2021.jpg/500px-BDD_interview_2021.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "width": 636,
+        "height": 794,
+        "mime": "image/jpeg",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+        "artist": "fomos esports",
+        "credit": "YouTube: https://www.youtube.com/watch?v=Mf_Fww6MFls – View/save archived versions on archive.org (3:32)",
+        "descriptionText": "BDD interview 2021 with fomos esports",
+        "dateTaken": "2021-06-16",
+        "categories": [
+          "Category:Bdd (gamer)",
+          "Category:CC-BY-3.0",
+          "Category:License review needed",
+          "Category:Media from YouTube"
+        ],
+        "descriptionUrl": "https://commons.wikimedia.org/wiki/File:BDD_interview_2021.jpg"
+      }
+    ]
+  },
+  {
+    "id": 983,
+    "name": "Cuzz",
+    "team": "KT Rolster",
+    "role": "JUNGLE",
+    "date": "2026-10-04",
+    "candidates": [
+      {
+        "wikidata": "Q97338755",
+        "label": "Cuzz",
+        "description": "South Korean professional League of Legends player",
+        "aliases": [
+          "Moon Woo-chan"
+        ],
+        "image": "커즈 문우찬.jpg",
+        "file": "File:커즈 문우찬.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/09/%EC%BB%A4%EC%A6%88_%EB%AC%B8%EC%9A%B0%EC%B0%AC.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/09/%EC%BB%A4%EC%A6%88_%EB%AC%B8%EC%9A%B0%EC%B0%AC.jpg/500px-%EC%BB%A4%EC%A6%88_%EB%AC%B8%EC%9A%B0%EC%B0%AC.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "width": 732,
+        "height": 858,
+        "mime": "image/jpeg",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+        "artist": "fomos esports",
+        "credit": "YouTube: '커즈' 문우찬 \"'피넛' 한왕호 넘고 싶다\" – View/save archived versions on archive.org",
+        "descriptionText": "커즈 문우찬",
+        "dateTaken": "2017-06-02",
+        "categories": [
+          "Category:CC-BY-3.0",
+          "Category:Cuzz",
+          "Category:Images from YouTube",
+          "Category:Still images of YouTube videos"
+        ],
+        "descriptionUrl": "https://commons.wikimedia.org/wiki/File:%EC%BB%A4%EC%A6%88_%EB%AC%B8%EC%9A%B0%EC%B0%AC.jpg"
+      }
+    ]
+  },
+  {
+    "id": 1265,
+    "name": "Effort",
+    "team": "KT Rolster",
+    "role": "SUPPORT",
+    "date": "2026-10-04",
+    "candidates": [
+      {
+        "wikidata": "Q16178621",
+        "label": "EffOrt",
+        "description": "South Korean pro gamer",
+        "aliases": [
+          "Kim Jung Woo"
+        ],
+        "image": "CJ EffOrt.JPG",
+        "file": "File:CJ EffOrt.JPG",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/21/CJ_EffOrt.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/CJ_EffOrt.JPG/500px-CJ_EffOrt.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "width": 592,
+        "height": 568,
+        "mime": "image/jpeg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "artist": "acrofan.com",
+        "credit": "http://www.acrofan.com/ko-kr/life/content/20100523/0502030102",
+        "descriptionText": "Korean Progammer. CJ EffOrt. Kim Jeong-woo",
+        "dateTaken": "2010-05-22 22:30:23",
+        "categories": [
+          "Category:2010 Korean Air OSL",
+          "Category:CC-BY-SA-3.0",
+          "Category:CJ Entus players",
+          "Category:Effort (gamer, born 1991)",
+          "Category:Images from acrofan.com",
+          "Category:Items with VRTS permission confirmed"
+        ],
+        "descriptionUrl": "https://commons.wikimedia.org/wiki/File:CJ_EffOrt.JPG"
+      },
+      {
+        "wikidata": "Q66978744",
+        "label": "Effort",
+        "description": "South Korean esports player",
+        "aliases": [
+          "Lee Sang-ho"
+        ],
+        "enwiki": "Effort (gamer)",
+        "image": "Effort 2019.jpg",
+        "file": "File:Effort 2019.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Effort_2019.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Effort_2019.jpg/500px-Effort_2019.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "width": 535,
+        "height": 559,
+        "mime": "image/jpeg",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+        "artist": "E레기",
+        "credit": "YouTube: https://www.youtube.com/watch?v=VoxtqR1XKrQ – View/save archived versions on archive.org",
+        "descriptionText": "League of Legends pro \"Effort\" in 2019",
+        "dateTaken": "2019-10-07",
+        "categories": [
+          "Category:CC-BY-3.0",
+          "Category:Effort (gamer, born 2000)",
+          "Category:License review needed",
+          "Category:Media from YouTube"
+        ],
+        "descriptionUrl": "https://commons.wikimedia.org/wiki/File:Effort_2019.jpg"
+      }
+    ]
+  },
+  {
+    "id": 4755,
+    "name": "Jiwoo",
+    "team": "KT Rolster",
+    "role": "BOT",
+    "date": "2026-10-04",
+    "candidates": []
+  },
+  {
+    "id": 5122,
+    "name": "PerfecT",
+    "team": "KT Rolster",
+    "role": "TOP",
+    "date": "2026-10-04",
+    "candidates": []
+  },
+  {
+    "id": 4119,
+    "name": "Burdol",
+    "team": "LGD Gaming",
+    "role": "TOP",
+    "date": "2026-10-06",
+    "candidates": [
+      {
+        "wikidata": "Q105705350",
+        "label": "Burdol",
+        "description": "South Korean pro gamer",
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "id": 1169,
+    "name": "Crisp",
+    "team": "LGD Gaming",
+    "role": "SUPPORT",
+    "date": "2026-10-06",
+    "candidates": []
+  },
+  {
+    "id": 3350,
+    "name": "Heng",
+    "team": "LGD Gaming",
+    "role": "JUNGLE",
+    "date": "2026-10-06",
+    "candidates": []
+  },
+  {
+    "id": 5368,
+    "name": "Shaoye",
+    "team": "LGD Gaming",
+    "role": "BOT",
+    "date": "2026-10-06",
+    "candidates": []
+  },
+  {
+    "id": 4919,
+    "name": "Tangyuan",
+    "team": "LGD Gaming",
+    "role": "MID",
+    "date": "2026-10-06",
+    "candidates": []
+  },
+  {
+    "id": 3706,
+    "name": "Maynter",
+    "team": "Natus Vincere",
+    "role": "TOP",
+    "date": "2026-10-08",
+    "candidates": [
+      {
+        "wikidata": "Q138818761",
+        "label": "Maynter",
+        "description": "professional League of Legends player",
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "id": 4455,
+    "name": "Parus",
+    "team": "Natus Vincere",
+    "role": "SUPPORT",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 4561,
+    "name": "Poby",
+    "team": "Natus Vincere",
+    "role": "MID",
+    "date": "2026-10-08",
+    "candidates": [
+      {
+        "wikidata": "Q138818764",
+        "label": "Poby",
+        "description": "professional League of Legends player",
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "id": 4439,
+    "name": "Rhilech",
+    "team": "Natus Vincere",
+    "role": "JUNGLE",
+    "date": "2026-10-08",
+    "candidates": [
+      {
+        "wikidata": "Q138818763",
+        "label": "Rhilech",
+        "description": "professional League of Legends player",
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "id": 3047,
+    "name": "SamD",
+    "team": "Natus Vincere",
+    "role": "BOT",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 3115,
+    "name": "Aegis",
+    "team": "RED Canids",
+    "role": "JUNGLE",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 4765,
+    "name": "Fuuu",
+    "team": "RED Canids",
+    "role": "MID",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 5137,
+    "name": "Manel",
+    "team": "RED Canids",
+    "role": "SUPPORT",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 4758,
+    "name": "Morttheus",
+    "team": "RED Canids",
+    "role": "BOT",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 5599,
+    "name": "zynts",
+    "team": "RED Canids",
+    "role": "TOP",
+    "date": "2026-10-08",
+    "candidates": []
+  },
+  {
+    "id": 2085,
+    "name": "Bvoy",
+    "team": "Shopify Rebellion",
+    "role": "BOT",
+    "date": "2026-10-07",
+    "candidates": [
+      {
+        "wikidata": "Q105706587",
+        "label": "Bvoy",
+        "description": "South Korean pro gamer",
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "id": 733,
+    "name": "Contractz",
+    "team": "Shopify Rebellion",
+    "role": "JUNGLE",
+    "date": "2026-10-07",
+    "candidates": []
+  },
+  {
+    "id": 2359,
+    "name": "Fudge",
+    "team": "Shopify Rebellion",
+    "role": "TOP",
+    "date": "2026-10-07",
+    "candidates": []
+  },
+  {
+    "id": 854,
+    "name": "Zeyzal",
+    "team": "Shopify Rebellion",
+    "role": "SUPPORT",
+    "date": "2026-10-07",
+    "candidates": []
+  },
+  {
+    "id": 5566,
+    "name": "Zinie",
+    "team": "Shopify Rebellion",
+    "role": "MID",
+    "date": "2026-10-07",
+    "candidates": [
+      {
+        "wikidata": "Q131547800",
+        "label": "Zinie",
+        "description": "South Korean pro gamer",
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "id": 1242,
+    "name": "Doran",
+    "team": "T1",
+    "role": "TOP",
+    "date": "2026-09-12",
+    "candidates": [
+      {
+        "wikidata": "Q97338120",
+        "label": "Doran",
+        "description": "South Korean League of Legends player",
+        "aliases": [
+          "Choi Hyeon-joon"
+        ],
+        "enwiki": "Doran (gamer)",
+        "image": "Doran 2025.jpg",
+        "file": "File:Doran 2025.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/f/fd/Doran_2025.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fd/Doran_2025.jpg/500px-Doran_2025.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "width": 675,
+        "height": 776,
+        "mime": "image/jpeg",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+        "artist": "Fomos Esports",
+        "credit": "YouTube: https://www.youtube.com/watch?v=C9XYzn9uBys – View/save archived versions on archive.org (0:44)",
+        "descriptionText": "Doran in the 2025 League of Legends post-match interview",
+        "dateTaken": "2025-11-09",
+        "categories": [
+          "Category:2025 League of Legends World Championship",
+          "Category:CC-BY-3.0",
+          "Category:Doran (gamer)",
+          "Category:Media from YouTube"
+        ],
+        "descriptionUrl": "https://commons.wikimedia.org/wiki/File:Doran_2025.jpg"
+      }
+    ]
+  },
+  {
+    "id": 48,
+    "name": "Faker",
+    "team": "T1",
+    "role": "MID",
+    "date": "2026-09-12",
+    "candidates": [
+      {
+        "wikidata": "Q15618298",
+        "label": "Faker",
+        "description": "South Korean League of Legends player (born 1996)",
+        "aliases": [
+          "Lee Sang-hyeok"
+        ],
+        "enwiki": "Faker (gamer)",
+        "image": "T1 Faker Lee Sang-Hyeok in a 2026 Interview.png",
+        "file": "File:T1 Faker Lee Sang-Hyeok in a 2026 Interview.png",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/5/5c/T1_Faker_Lee_Sang-Hyeok_in_a_2026_Interview.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5c/T1_Faker_Lee_Sang-Hyeok_in_a_2026_Interview.png/500px-T1_Faker_Lee_Sang-Hyeok_in_a_2026_Interview.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "width": 594,
+        "height": 828,
+        "mime": "image/png",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "artist": "Marie Claire",
+        "credit": "https://www.youtube.com/watch?v=73El1ZBsf1s",
+        "descriptionText": "Head-and-shoulders portrait of South Korean professional League of Legends player Faker (Lee Sang-hyeok), captured during an interview published by Marie Claire on 31 July 2026. Faker is shown facing the camera, looking slightly away. He is wearing round eyeglasses, a dark jacket and a white shirt, against a plain white background.",
+        "dateTaken": "2026-07-31",
+        "categories": [
+          "Category:CC-BY-4.0",
+          "Category:Faker in 2026",
+          "Category:Still images of YouTube videos",
+          "Category:Valued images missing SDC Commons quality assessment",
+          "Category:Valued images missing SDC creator",
+          "Category:Valued images promoted 2026-09",
+          "Category:Valued images sorted by promotion date"
+        ],
+        "descriptionUrl": "https://commons.wikimedia.org/wiki/File:T1_Faker_Lee_Sang-Hyeok_in_a_2026_Interview.png"
+      }
+    ]
+  },
+  {
+    "id": 1258,
+    "name": "Keria",
+    "team": "T1",
+    "role": "SUPPORT",
+    "date": "2026-09-12",
+    "candidates": []
+  },
+  {
+    "id": 3741,
+    "name": "Oner",
+    "team": "T1",
+    "role": "JUNGLE",
+    "date": "2026-09-12",
+    "candidates": []
+  },
+  {
+    "id": 4247,
+    "name": "Peyz",
+    "team": "T1",
+    "role": "BOT",
+    "date": "2026-09-12",
+    "candidates": [
+      {
+        "wikidata": "Q122945574",
+        "label": "Kim Soo-hwan",
+        "description": "South Korean League of Legends player",
+        "aliases": [
+          "Peyz"
+        ],
+        "image": "GEN Peyz 2023.jpg",
+        "file": "File:GEN Peyz 2023.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/9/9a/GEN_Peyz_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/GEN_Peyz_2023.jpg/500px-GEN_Peyz_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "width": 1080,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+        "artist": "E레기",
+        "credit": "https://youtube.com/watch?v=LFJmqasL8hs&amp;t=43",
+        "descriptionText": "Interview with Peyz by E레기 in 2023",
+        "dateTaken": "2023-02-02",
+        "categories": [
+          "Category:CC-BY-3.0",
+          "Category:Files from external sources with reviewed licenses",
+          "Category:Media from YouTube",
+          "Category:Peyz"
+        ],
+        "descriptionUrl": "https://commons.wikimedia.org/wiki/File:GEN_Peyz_2023.jpg"
+      }
+    ]
+  },
+  {
+    "id": 1584,
+    "name": "Carzzy",
+    "team": "Team Vitality",
+    "role": "BOT",
+    "date": "2026-10-06",
+    "candidates": [
+      {
+        "wikidata": "Q138818785",
+        "label": "Carzzy",
+        "description": "professional League of Legends player",
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "id": 3439,
+    "name": "FIESTA",
+    "team": "Team Vitality",
+    "role": "MID",
+    "date": "2026-10-06",
+    "candidates": []
+  },
+  {
+    "id": 4411,
+    "name": "Fleshy",
+    "team": "Team Vitality",
+    "role": "SUPPORT",
+    "date": "2026-10-06",
+    "candidates": [
+      {
+        "wikidata": "Q138818786",
+        "label": "Fleshy",
+        "description": "professional League of Legends player",
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "id": 3482,
+    "name": "Lyncas",
+    "team": "Team Vitality",
+    "role": "JUNGLE",
+    "date": "2026-10-06",
+    "candidates": [
+      {
+        "wikidata": "Q138818784",
+        "label": "Lyncas",
+        "description": "professional League of Legends player",
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "id": 4427,
+    "name": "Naak Nako",
+    "team": "Team Vitality",
+    "role": "TOP",
+    "date": "2026-10-06",
+    "candidates": [
+      {
+        "wikidata": "Q138818783",
+        "label": "Naak Nako",
+        "description": "professional League of Legends player",
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "id": 5923,
+    "name": "About",
+    "team": "Team WE",
+    "role": "BOT",
+    "date": "2026-10-04",
+    "candidates": []
+  },
+  {
+    "id": 564,
+    "name": "Cube",
+    "team": "Team WE",
+    "role": "TOP",
+    "date": "2026-10-04",
+    "candidates": []
+  },
+  {
+    "id": 6335,
+    "name": "Erha",
+    "team": "Team WE",
+    "role": "SUPPORT",
+    "date": "2026-10-04",
+    "candidates": []
+  },
+  {
+    "id": 3324,
+    "name": "Karis",
+    "team": "Team WE",
+    "role": "MID",
+    "date": "2026-10-04",
+    "candidates": []
+  },
+  {
+    "id": 5358,
+    "name": "Monki",
+    "team": "Team WE",
+    "role": "JUNGLE",
+    "date": "2026-10-04",
+    "candidates": []
+  }
+]
