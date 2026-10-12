@@ -16,6 +16,7 @@ import {
   itemName, runeName, spellName, treeName,
 } from "@/components/BuildParts";
 import { ChampionProvider } from "@/components/ChampionInteraction";
+import { PinIcon, PlayerPicker, usePins } from "@/components/PlayerPicker";
 import { InteractiveChampion } from "@/components/InteractiveChampion";
 import { Select } from "@/components/Select";
 import { ChampIcon, PageHeader, Panel } from "@/components/ui";
@@ -67,14 +68,18 @@ export function ProBuildsView({ index, names, events, drawerData }: {
   const [query, setQuery] = useState("");
   const [railRole, setRailRole] = useState<Role | "">("");
   const q = query.trim().toLowerCase();
-  const railed = index.filter((e) => (!railRole || e.role === railRole) && (!q || name(e.champion).toLowerCase().includes(q)))
+  // The search also finds players: typing a name lists the champions they played (pinned players' champions first).
+  const { pins } = usePins();
+  const playerHit = (e: ChampionBuilds) => (q ? e.names.find((p) => p.toLowerCase().includes(q)) : undefined);
+  const railed = index.filter((e) => (!railRole || e.role === railRole) && (!q || name(e.champion).toLowerCase().includes(q) || playerHit(e)))
     .sort((a, b) => name(a.champion).localeCompare(name(b.champion)) || ROLES.indexOf(a.role) - ROLES.indexOf(b.role));
   const rail = useRef<HTMLUListElement>(null);
   useEffect(() => {
     const ul = rail.current, el = ul?.querySelector<HTMLElement>("li button.active");
     if (ul && el && (el.offsetTop < ul.scrollTop || el.offsetTop + el.offsetHeight > ul.scrollTop + ul.clientHeight)) ul.scrollTop = el.offsetTop - ul.clientHeight / 3;
   }, [champion, role]);
-  const choose = (e: ChampionBuilds) => update({ champion: e.champion, role: e.role, game: undefined, a: undefined, b: undefined, event: undefined, patch: undefined, team: undefined, player: undefined });
+  // Picking a champion found by a player's name keeps that player selected.
+  const choose = (e: ChampionBuilds, player?: string) => update({ champion: e.champion, role: e.role, game: undefined, a: undefined, b: undefined, event: undefined, patch: undefined, team: undefined, player });
 
   // Scope
   const mine = useMemo(() => (all && champion && role ? inScope(all, { champion, role }) : []), [all, champion, role]);
@@ -100,7 +105,7 @@ export function ProBuildsView({ index, names, events, drawerData }: {
       <div className="split builds-split">
         <nav className="pick-rail" aria-label="Champions with recorded builds">
           <div className="rail-tools">
-            <input type="search" placeholder="Search" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search champions" />
+            <input type="search" placeholder="Champ or player" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search champions or players" />
             <Select label="Role" value={railRole} onChange={(v) => setRailRole(v as Role | "")}
               options={[{ value: "", label: "All roles" }, ...ROLES.map((r) => ({ value: r, label: ROLE_NAME[r] }))]} />
           </div>
@@ -109,15 +114,22 @@ export function ProBuildsView({ index, names, events, drawerData }: {
               const on = e.champion === champion && e.role === role;
               return (
                 <li key={`${e.champion}-${e.role}`}>
-                  <button type="button" className={on ? "active" : undefined} aria-current={on ? "true" : undefined} onClick={() => choose(e)}>
+                  <button type="button" className={on ? "active" : undefined} aria-current={on ? "true" : undefined}
+                    onClick={() => choose(e, name(e.champion).toLowerCase().includes(q) ? undefined : playerHit(e))}>
                     <ChampIcon id={e.champion} name={name(e.champion)} role={e.role} size="md" />
                     <span className="rail-text"><span className="rail-name">{name(e.champion)}</span>
-                      <span className="rail-sub">{e.role} · {e.games} game{e.games > 1 ? "s" : ""} · {patchLabel(e.latest)}</span></span>
+                      <span className="rail-sub">{e.role} · {e.games} game{e.games > 1 ? "s" : ""} · {patchLabel(e.latest)}</span>
+                      {(() => {
+                        const hit = !name(e.champion).toLowerCase().includes(q) && playerHit(e);
+                        const pinned = e.names.filter((p) => pins.includes(p));
+                        return hit ? <span className="rail-sub rail-player">{hit}</span>
+                          : pinned.length > 0 ? <span className="rail-sub rail-player" title="Pinned players with recorded builds on this champion"><PinIcon on /> {pinned.join(", ")}</span> : null;
+                      })()}</span>
                   </button>
                 </li>
               );
             })}
-            {!railed.length && <li className="rail-empty">No recorded builds match “{query}”.</li>}
+            {!railed.length && <li className="rail-empty">No champion or player matches “{query}”.</li>}
           </ul>
         </nav>
 
@@ -137,11 +149,13 @@ export function ProBuildsView({ index, names, events, drawerData }: {
             </div>
 
             <div className="builds-tools">
-              {filters.map((x) => (
+              {filters.filter((x) => x.k !== "player").map((x) => (
                 <Select key={x.k} label={x.label} value={x.k === "patch" && get("patch") ? patchKey(get("patch")!) : get(x.k) ?? ""}
                   options={[{ value: "", label: x.all }, ...x.opts.map(([value, label]) => ({ value, label }))]}
                   onChange={(v) => update({ [x.k]: v || undefined, game: undefined, a: undefined, b: undefined })} />
               ))}
+              <PlayerPicker value={get("player") ?? ""} players={filters.find((x) => x.k === "player")!.opts.map(([v]) => v)}
+                onChange={(v) => update({ player: v || undefined, game: undefined, a: undefined, b: undefined })} />
               {active.length > 0 && <button type="button" className="btn sm ghost" onClick={() => update(Object.fromEntries([...active, "game", "a", "b"].map((k) => [k, undefined])))}>Clear filters</button>}
               <div className="seg push" role="tablist" aria-label="View">
                 {MODES.map(([m, l]) => <button key={m} type="button" role="tab" aria-selected={mode === m} className={mode === m ? "active" : undefined} onClick={() => update({ mode: m === "games" ? undefined : m })}>{l}</button>)}
@@ -165,6 +179,7 @@ export function ProBuildsView({ index, names, events, drawerData }: {
 function GamesView({ rows, current, name, evName, onPick }: {
   rows: BuildRow[]; current?: string; name: (id: string) => string; evName: (r: BuildRow) => string; onPick: (game: number) => void;
 }) {
+  const { isPinned } = usePins();
   const r = rows.find((x) => String(x.game.id) === current) ?? rows[0];
   return (
     <>
@@ -172,7 +187,7 @@ function GamesView({ rows, current, name, evName, onPick }: {
         {rows.map((x) => (
           <button key={x.key} type="button" role="option" aria-selected={x === r} className={`build-pick side-${x.side} ${x === r ? "active" : ""}`} onClick={() => onPick(x.game.id)}
             title={`${x.build.player} (${x.team}) vs ${x.opponentTeam}\n${evName(x)} · ${patchLabel(x.game.patch)} · ${shortDate(x.game.date)} · ${x.side} side · ${x.won ? "win" : "loss"}`}>
-            <span className="small nowrap"><b>{x.build.player}</b> <span className="muted">{x.team}</span></span>
+            <span className="small nowrap">{isPinned(x.build.player) && <PinIcon on />}<b>{x.build.player}</b> <span className="muted">{x.team}</span></span>
             <span className="xs muted nowrap">{x.opponent && <>vs {name(x.opponent.champion)} · </>}{shortDate(x.game.date)} <span className={x.won ? "win" : "loss"}>{x.won ? "W" : "L"}</span></span>
           </button>
         ))}
