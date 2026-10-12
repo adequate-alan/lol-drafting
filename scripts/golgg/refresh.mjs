@@ -200,9 +200,10 @@ async function refreshBuilds(data, get, today, maxBuildGames) {
         const role = ROLES.find((r) => g[side].picks[r] === champion);
         if (!champion || !role) { problems.push(`${side} side: ${p.champion} is not one of the recorded picks`); continue; }
         const who = { game: g.id, side, role, champion, player: p.player, playerId: p.playerId };
+        // A failed request stops the run (nothing written); an answer that is not JSON is a missing build.
+        const body = await get(buildUrl, { method: "POST", body: `game_id=${g.id}&player_id=${p.playerId}` });
         let answer;
-        try { answer = JSON.parse(await get(buildUrl, { method: "POST", body: `game_id=${g.id}&player_id=${p.playerId}` })); }
-        catch (e) { if (/challenge|HTTP 4\d\d/.test(String(e?.message))) throw e; answer = undefined; }
+        try { answer = JSON.parse(body); } catch { answer = undefined; }
         const built = buildFromAnswer(answer, who);
         fresh.push(built.build ?? { ...who, missing: ["build"] });
       }
