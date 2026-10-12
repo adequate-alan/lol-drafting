@@ -1,4 +1,6 @@
-import type { BotPairing, ObservedBotShape, ObservedPairing, Role, Source } from "@/lib/schema";
+import Link from "next/link";
+import { ROLES, type BotPairing, type CompShell, type ObservedBotShape, type ObservedPairing, type Role, type Source } from "@/lib/schema";
+import { Disclosure } from "./Disclosure";
 import { PARTNER_ROLE, type ProGame } from "@/lib/pool-stats";
 import type { ProposedLink } from "@/lib/proposed";
 import { ProposedGroups, ProposedTag, type ProCount } from "./ProposedSynergy";
@@ -145,6 +147,32 @@ function ProposedSection({ links, names, proCount, noteFor }: { links: ProposedL
   );
 }
 
+/** Comp Library shells built around this pick in this role (exact slot first, then as a listed swap). Top and Support
+ *  pages only (alan, 2026-10-12: comp shells for top, comp styles for support). Shells are the Comp Library's own data. */
+function CompShells({ shells, id, role, names }: { shells: CompShell[]; id: string; role: Role; names: Names }) {
+  const rows = shells.map((shell) => ({ shell, exact: shell.slots[role].champion === id, swap: shell.slots[role].swaps.includes(id) }))
+    .filter((x) => x.exact || x.swap).sort((a, b) => Number(b.exact) - Number(a.exact));
+  if (!rows.length) return null;
+  return (
+    <Section layer="logic" title={role === "TOP" ? "Comp shells" : "Comp styles"}>
+      <Disclosure summary={`${rows.length} comp${rows.length === 1 ? "" : "s"} with ${names[id]} at ${role === "TOP" ? "top" : "support"}`}>
+        <div className="shell-list">
+          {rows.map(({ shell, exact }) => (
+            <div key={shell.id} className="shell-line">
+              <div className="row">
+                <Link href={`/comps#${shell.id}`}><b>{shell.name}</b></Link>
+                <span className="xs faint">{shell.kind === "observed" ? "pro" : "template"}</span>
+                <span className="xs muted">{exact ? "in the shell" : "listed swap"}</span>
+              </div>
+              <p className="xs muted">{ROLES.map((r) => names[shell.slots[r].champion]).join(" · ")} · {shell.winCondition}</p>
+            </div>
+          ))}
+        </div>
+      </Disclosure>
+    </Section>
+  );
+}
+
 /** Recorded pro games with this champion in this role (evidence only; a proposal never depends on them). */
 function GameList({ games, role, names }: { games: ProGame[]; role: Role; names: Names }) {
   if (!games.length) return <p className="muted xs">No recorded pro game has this pick in this role. That says nothing about its synergy, only about pro evidence.</p>;
@@ -170,9 +198,9 @@ function GameList({ games, role, names }: { games: ProGame[]; role: Role; names:
   );
 }
 
-export function ScoutingReport({ item, names, sources, events, draftLabels, proposed = [], proCount, games = [], bot = [] }: {
+export function ScoutingReport({ item, names, sources, events, draftLabels, proposed = [], proCount, games = [], bot = [], shells = [] }: {
   item: CardRecord; names: Names; sources: Sources; events: EventMap; draftLabels?: Record<string, string>;
-  proposed?: ProposedLink[]; proCount?: ProCount; games?: ProGame[]; bot?: BotPairing[];
+  proposed?: ProposedLink[]; proCount?: ProCount; games?: ProGame[]; bot?: BotPairing[]; shells?: CompShell[];
 }) {
   // A proposed bot for a support that the bot's own saved record does not list says so: the bot's record decides.
   const noteFor = (l: ProposedLink) => {
@@ -193,6 +221,7 @@ export function ScoutingReport({ item, names, sources, events, draftLabels, prop
           {item.identity && <p className="prop-identity">{item.identity}</p>}
           <ProposedGroups links={item.links} names={names} proCount={proCount} noteFor={noteFor} />
         </Section>
+        {(item.role === "TOP" || item.role === "SUPPORT") && <CompShells shells={shells} id={item.id} role={item.role} names={names} />}
         <Section layer="pro" title="Pro Pairings">
           <GameList games={games} role={item.role} names={names} />
         </Section>
@@ -238,9 +267,11 @@ export function ScoutingReport({ item, names, sources, events, draftLabels, prop
             <Group title={`Preferred ${otherName}`}><ChipList ids={r.clashDefault} names={names} role={other} strong /></Group>
             <Group title="Alternatives"><ChipList ids={r.alternatives} names={names} role={other} notes={r.alternativeNotes} /></Group>
           </SBox>
-          <SBox support>
-            <Group title="Bot shape"><Shapes list={r.botShapes} names={names} /></Group>
-          </SBox>
+          {r.botShapes.length > 0 && (
+            <SBox support>
+              <Group title="Compatible bot shapes"><Shapes list={r.botShapes} names={names} /></Group>
+            </SBox>
+          )}
         </Section>
         <ProposedSection links={proposed} names={names} proCount={proCount} />
         <Section layer="pro" title="Pro Pairings">
@@ -269,10 +300,11 @@ export function ScoutingReport({ item, names, sources, events, draftLabels, prop
         <SBox>
           <Group title="Best jungle partners"><ChipList ids={r.surrounding.jungle} names={names} role="JUNGLE" /></Group>
           <Group title="Best mids"><ChipList ids={r.surrounding.mid} names={names} role="MID" /></Group>
-          <Group title="Bot shape"><Shapes list={r.surrounding.botShapes} names={names} /></Group>
+          {r.surrounding.botShapes.length > 0 && <Group title="Bot shapes"><Shapes list={r.surrounding.botShapes} names={names} /></Group>}
         </SBox>
       </Section>
       <ProposedSection links={proposed} names={names} proCount={proCount} />
+      <CompShells shells={shells} id={r.champion} role="TOP" names={names} />
       <Section layer="pro" title="Pro Pairings"
         end={s && <span className="tnum">{s.picks} playoff picks · {Math.round(s.winRate * 100)}% WR{s.lowSample ? " · low sample" : ""}</span>}>
         <ProTable list={r.observedProPairings} names={names} sources={sources} events={events} role="JUNGLE" partnerLabel="Jungle" draftLabels={draftLabels} />
