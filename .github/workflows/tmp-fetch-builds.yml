@@ -20,22 +20,18 @@ jobs:
           mkdir -p tmp-fetch
           UA="lol-drafting-refresh/1.0 (+https://github.com/adequate-alan/lol-drafting; daily, a few pages)"
           g() { curl -sS -A "$UA" -o "tmp-fetch/$1" -w "$1 %{http_code} %{size_download}\n" "$2"; sleep 3; }
-          g game-83452-builds.html https://gol.gg/game/stats/83452/page-builds/
-          g game-83452-timeline.html https://gol.gg/game/stats/83452/page-timeline/
-          g game-83540-builds.html https://gol.gg/game/stats/83540/page-builds/
-          V=16.18.1
-          d() { curl -sS -o "tmp-fetch/$1" -w "$1 %{http_code} %{size_download}\n" "$2"; }
-          d versions.json https://ddragon.leagueoflegends.com/api/versions.json
-          d item.json https://ddragon.leagueoflegends.com/cdn/$V/data/en_US/item.json
-          d runesReforged.json https://ddragon.leagueoflegends.com/cdn/$V/data/en_US/runesReforged.json
-          d summoner.json https://ddragon.leagueoflegends.com/cdn/$V/data/en_US/summoner.json
-          d championFull.json https://ddragon.leagueoflegends.com/cdn/$V/data/en_US/championFull.json
-          d cdragon-perks.json https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perks.json
+          curl -sS -A "$UA" -o tmp-fetch/robots.txt https://gol.gg/robots.txt; sleep 3
+          p() { curl -sS -A "$UA" -X POST -H "Content-Type: application/x-www-form-urlencoded" -H "X-Requested-With: XMLHttpRequest" -e "https://gol.gg/game/stats/$2/page-builds/" --data "game_id=$2&player_id=$3" -o "tmp-fetch/$1" -w "$1 %{http_code} %{size_download}\n" "$4"; sleep 3; }
+          p build-83452-4918-a.json 83452 4918 https://gol.gg/game/stats/83452/page-builds/ajax.build.php
+          p build-83452-4918-b.json 83452 4918 https://gol.gg/game/ajax.build.php
+          p build-83452-4925.json 83452 4925 https://gol.gg/game/stats/83452/page-builds/ajax.build.php
+          p build-83452-799.json 83452 799 https://gol.gg/game/stats/83452/page-builds/ajax.build.php
           ls -la tmp-fetch
       - name: Commit
         run: |
           git config user.name "adequate-alan"
           git config user.email "54249725+adequate-alan@users.noreply.github.com"
           git add tmp-fetch
+          git rm -q --cached tmp-fetch/championFull.json tmp-fetch/item.json 2>/dev/null || true
           git commit -m "Temporary: Gol.gg build pages and Data Dragon reference for inspection"
           git push origin HEAD:${GITHUB_REF_NAME}
