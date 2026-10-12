@@ -396,7 +396,8 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
         <ChampionHoverCard key={`${hoverCard.card.t.id}-${hoverCard.card.t.role}`} target={hoverCard.card.t} anchor={hoverCard.card.el} swap={hoverCard.card.swap} data={drawerData} index={drawerIndex}
           onEnter={hoverCard.keep} onLeave={hoverCard.unhover} />
       )}
-      {drawer && <ChampionDrawer target={drawer} data={drawerData} index={drawerIndex} onClose={() => setDrawer(undefined)} onSelect={setDrawer} />}
+      {drawer && <ChampionDrawer target={drawer} data={drawerData} index={drawerIndex} onClose={() => setDrawer(undefined)} onSelect={setDrawer}
+        context={{ page: "draft", locked: [...Object.values(draft), ...enemy].filter((x): x is string => !!x), from: draftQuery({ draft, vs: enemyParam(enemyDraft), focus, filter }) }} />}
     </div>
   );
 }

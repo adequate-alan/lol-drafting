@@ -7,7 +7,7 @@
 // champion relates to it, one line per layer (Synergy / Pro / Logic), never merged.
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ChampionDrawer, compLinks, poolTier, useDrawerIndex, type CompContext, type DrawerIndex, type DrawerTarget } from "@/components/ChampionDrawer";
+import { ChampionDrawer, compLinks, poolTier, useDrawerIndex, type CompContext, type DrawerContext, type DrawerIndex, type DrawerTarget } from "@/components/ChampionDrawer";
 import { ChampIcon } from "@/components/ChampIcon";
 import { ChampionCtx } from "@/components/InteractiveChampion";
 import { HIDE_MS, place, SHOW_MS, SWITCH_MS } from "@/components/Popover";
@@ -51,7 +51,8 @@ export function useHoverIntent() {
   return { card, hover, unhover, hide, keep: clear };
 }
 
-export function ChampionProvider({ data, focus, children }: { data: DrawerData; focus?: Focus; children: React.ReactNode }) {
+/** `context` says where the drawer opens (lib/drawer.ts DrawerContext), which decides its bottom actions. */
+export function ChampionProvider({ data, focus, context, children }: { data: DrawerData; focus?: Focus; context?: DrawerContext; children: React.ReactNode }) {
   const index = useDrawerIndex(data);
   const [drawer, setDrawer] = useState<DrawerTarget>();
   const { card, hover, unhover, hide, keep } = useHoverIntent();
@@ -63,7 +64,7 @@ export function ChampionProvider({ data, focus, children }: { data: DrawerData; 
       {card && !drawer && (
         <ChampionHoverCard key={`${card.t.id}-${card.t.role}`} target={card.t} anchor={card.el} swap={card.swap} data={data} index={index} focus={focus} onEnter={keep} onLeave={unhover} />
       )}
-      {drawer && <ChampionDrawer target={drawer} data={data} index={index} onClose={() => setDrawer(undefined)} onSelect={setDrawer} />}
+      {drawer && <ChampionDrawer target={drawer} data={data} index={index} context={context} onClose={() => setDrawer(undefined)} onSelect={setDrawer} />}
     </ChampionCtx.Provider>
   );
 }

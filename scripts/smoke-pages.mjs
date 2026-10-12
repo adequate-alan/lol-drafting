@@ -344,7 +344,8 @@ await page.locator(".theme-toggle").click();
   await open("/meta/");
   await page.locator(".priority-table .champ-link").first().click();
   const drawer = await page.locator(".drawer").textContent().catch(() => "");
-  check("meta: champion drawer keeps my pool apart from pro evidence, with priority by patch", /Synergy/.test(drawer) && /Pool/.test(drawer) && /Pro evidence/i.test(drawer) && /Pro priority by patch/.test(drawer) && /View in Champion Pool/.test(drawer), drawer.slice(0, 80));
+  check("meta: champion drawer opens on Overview with Synergy, Pro evidence, Pro builds, Patch and Logic apart", /Synergy/.test(drawer) && /Pro evidence/i.test(drawer) && /Pro builds/.test(drawer) && /Patch/.test(drawer) && /Logic/.test(drawer) && /Use in Draft Room/.test(drawer), drawer.slice(0, 80));
+  check("meta: the drawer has five tabs with counts", (await page.locator(".drawer-tab").allTextContents()).join("|").replace(/\d+/g, "").trim() === "Overview|Synergies|Pro|Builds|Patch", (await page.locator(".drawer-tab").allTextContents()).join("|"));
   await page.keyboard.press("Escape");
   await open("/synergies/bot/?champ=ezreal");
   const karmaRow = await page.locator(".pro-table tr", { hasText: "Karma" }).first().innerText().catch(() => "");
@@ -392,8 +393,8 @@ await page.locator(".theme-toggle").click();
   await drawer.waitFor({ timeout: 5000 }).catch(() => {});
   const marks = await page.locator("#mage-bot-siege .lu-slot.has-saved .lu-name").allTextContents();
   check("comps: clicking Nautilus opens the drawer and marks Ziggs as Synergy", (await drawer.locator("h2").textContent()) === "Nautilus" && marks.includes("Ziggs"), marks.join(", "));
-  const layers = await drawer.locator(".layer").evaluateAll((els) => els.map((e) => e.className));
-  check("comps: drawer keeps Synergy, Pro and Logic separate", /^layer clash,(layer clash proposed,)?layer pro,layer pro,layer logic$/.test(layers.join()), layers.join(" | "));
+  const layers = await drawer.locator(".layer").evaluateAll((els) => els.map((e) => e.className.replace("dw-section ", "")));
+  check("comps: drawer keeps Synergy, Pro and Logic separate", /^layer clash,layer pro,layer pro,layer logic,layer logic$/.test(layers.join()), layers.join(" | "));
   await drawer.locator("[aria-label='Next champion']").click();
   check("comps: next moves through the comp in place", (await drawer.locator("h2").textContent()) === "Gnar" && page.url().endsWith("/comps/?kind=all"), page.url());
   await page.keyboard.press("Escape");
@@ -647,11 +648,12 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
 {
   await open("/meta/?role=TOP");
   await page.locator(".hub-table .champ-link").first().click();
-  const link = page.locator(".drawer .drawer-builds a");
+  await page.locator(".drawer-tab", { hasText: "Builds" }).click();
+  const link = page.locator(".drawer .drawer-panel a", { hasText: "View Pro Builds" });
   await link.waitFor({ timeout: 5000 }).catch(() => {});
   const champ = await page.locator(".drawer h2").first().textContent().catch(() => "");
   const href = await link.getAttribute("href").catch(() => null);
-  check("builds: the drawer shows a build count and links to the page with champion and role", !!href && /\/pro-builds\/\?champion=[\w-]+&role=TOP/.test(href) && /recorded build/.test(await page.locator(".drawer .drawer-builds").innerText()), href ?? "no link");
+  check("builds: the drawer's Builds tab counts builds, names recent players and links to the page with champion and role", !!href && /\/pro-builds\/\?champion=[\w-]+&role=TOP/.test(href) && /build/.test(await page.locator(".drawer .drawer-panel").innerText()) && (await page.locator(".drawer .dw-build").count()) >= 1, href ?? "no link");
   if (href) {
     await link.click();
     await page.waitForURL(/\/pro-builds\//, { timeout: 8000 }).catch(() => {});
@@ -856,10 +858,19 @@ await open("/patch-notes/");
   check("patch notes: compare lists changed champions since the first patch", (await page.locator(".pn-compare tbody tr").count()) > 10, "");
   await open("/pool/?role=SUPPORT&champ=nautilus");
   await page.locator("#pool-SUPPORT-nautilus .champ-btn").first().click();
-  await page.locator(".drawer-patch summary").click();
-  await page.locator(".drawer-patch .disclosure-body a[href*='patch-notes']").first().waitFor({ timeout: 5000 }).catch(() => {});
-  const dp = await text(".drawer-patch");
-  check("drawer: patch changes with a link to the patch notes", /since 26\.16/.test(dp) && (await page.locator(".drawer-patch a[href*='patch-notes']").count()) > 0, dp.slice(0, 120));
+  await page.locator(".drawer-tab", { hasText: "Patch" }).click();
+  await page.locator(".drawer .dw-change .dw-row").first().click();
+  await page.locator(".drawer .dw-change.open a[href*='patch-notes']").first().waitFor({ timeout: 5000 }).catch(() => {});
+  const dp = await text(".drawer .drawer-panel");
+  check("drawer: Patch tab expands a change to Riot's values with a link to the patch notes", /since 26\.16/.test(dp) && /→/.test(dp) && (await page.locator(".drawer .dw-change.open a[href*='patch-notes']").count()) > 0, dp.slice(0, 120));
+  // Nested pairing: a partner opens inside the drawer, Back returns to the champion without closing it
+  await page.locator(".drawer-tab", { hasText: "Synergies" }).click();
+  await page.locator(".drawer .dw-partner").first().click();
+  await page.locator(".drawer .dw-pairing").waitFor({ timeout: 3000 }).catch(() => {});
+  const pairTitle = await text(".drawer .dw-pair-title");
+  await page.goBack();
+  await page.waitForTimeout(300);
+  check("drawer: a partner opens its pairing in place and Back returns to Nautilus", /Nautilus \+ /.test(pairTitle) && (await page.locator(".drawer").count()) === 1 && (await page.locator(".drawer .dw-pairing").count()) === 0 && (await text(".drawer h2")) === "Nautilus", pairTitle);
   await page.keyboard.press("Escape");
 }
 // One patch label (alan, 2026-10-12): the site writes Riot's 26.xx; Gol.gg's 16.xx stays in data and source URLs only.
@@ -958,6 +969,12 @@ if (shots) {
   await page.locator(".drawer").waitFor({ state: "detached", timeout: 1000 }).catch(() => {});
   const back = await page.evaluate(() => !!document.activeElement?.closest(".draft-slot.locked"));
   check("drawer: opens with drawer-in, exits, and returns focus to its opener", entering === "drawer-in" && /closing|gone/.test(closingCls) && back && (await page.locator(".drawer").count()) === 0, `${entering} · ${closingCls} · focus back ${back}`);
+  await opener.click();
+  await page.locator(".drawer").waitFor();
+  const roomActions = await page.locator(".drawer-foot a").allTextContents();
+  check("drawer: inside the Draft Room the actions never offer Use in Draft Room", roomActions.length > 0 && !roomActions.includes("Use in Draft Room"), roomActions.join("|"));
+  await page.keyboard.press("Escape");
+  await page.locator(".drawer").waitFor({ state: "detached", timeout: 1000 }).catch(() => {});
   // Motion tokens: one system, reduced motion drops movement but keeps the fade
   const tokens = await page.evaluate(() => { const c = getComputedStyle(document.documentElement); return ["--dur-hover", "--dur-select", "--dur-pop", "--dur-panel"].map((t) => { const v = c.getPropertyValue(t).trim(); return Math.round(parseFloat(v) * (v.endsWith("ms") ? 1 : 1000)); }); });
   check("motion: shared duration tokens are in place", tokens.join() === "100,140,140,220", tokens.join());

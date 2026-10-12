@@ -31,7 +31,7 @@ export default function GenG() {
   // Gen.G players with recorded builds (their latest recorded team), each opening their Pro Builds profile.
   const players = getTeamPlayers("Gen.G");
   return (
-    <ChampionProvider data={getDrawerData()}>
+    <ChampionProvider data={getDrawerData()} context={{ page: "geng" }}>
       <div className="brand-band">
         <div className="band-text">
           <h1>Gen.G</h1>

@@ -373,6 +373,21 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   picked fills the row) and every locked slot keeps its own Change button.
   Risk tags use the caution amber; oxblood is enemy and Counters only. No eyebrow labels, hero-metric strips or side
   stripes thicker than 1px (Impeccable craft floor), except the Pro Drafts draft-side strip below.
+- **Champion drawer** (alan, 2026-10-12, "interactive scouting panel"; `components/ChampionDrawer.tsx`, tabs in
+  `components/drawer/`, helpers in `lib/drawer.ts`, `tests/champion-drawer.test.ts`): one shared drawer for every page.
+  Sticky header (portrait, name, role, pool tier, role switches, expand control), tabs Overview | Synergies | Pro |
+  Builds | Patch (the last tab is remembered for the next open), 440px on desktop (`.drawer.wide` 720px, localStorage
+  `drawer:wide`), full-width sheet on phones. Less visible at once, more on demand: a partner row opens the pairing in
+  place (`PairingView`: saved status or proposed reason, alan's read when it names the partner, draft logic from
+  attributes, tradeoffs, the recorded games with both, "View <partner>", "Draft this pair" outside the room) with its
+  own history entry, so browser Back and "Back to <champion>" return to the champion; a recorded game expands into its
+  compact detail (both drafts when recorded, side, result, bans, Pro Drafts and the player's build); a patch bar or
+  patch button shows that patch's exact statistics and sample; an observed pairing shows the games behind it; a patch
+  change expands to every Riot line and reason. The footer is context-aware (`drawerActions`, `DrawerContext` passed by
+  each page through `ChampionProvider`): never "Use in Draft Room" inside the Draft Room (locking stays the row's own
+  action; Pro Builds links carry `from`), Pro Drafts leads with "Inspect this game's build" for the open game, and no
+  page links to itself. Never a second build renderer: the Builds tab is a gateway (counts, latest patch, recent
+  players, exact-game links). Every tab keeps the three layers in separate blocks.
 - **Pro Drafts side strips** (alan, 2026-10-11): each row has a 3px strip on its far left, `--team-blue` / `--team-red`
   for the side recorded for that game (`ProDraft.side`, from the Gol.gg game page via `data/pro-games.json`; stored LCK
   drafts inherit it from their game source's `sides`, backfilled once on 2026-10-11 by `scripts/backfill-lck-sides.mjs`,

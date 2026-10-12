@@ -33,8 +33,9 @@ export interface Change {
   category?: ChangeCategory;
   categories?: NonNullable<PatchEntry["categories"]>;
   reviewed: boolean; // a champion's buff / nerf call was checked by a person, not only read from Riot's wording
-  lines: ChangeLine[]; // the first few lines, values exactly as Riot wrote them
+  lines: ChangeLine[]; // values exactly as Riot wrote them: every line for a champion entry, the first few otherwise
   more: number; // lines not included
+  context?: string; // Riot's stated reason, verbatim (champion entries; the drawer's Patch tab shows it)
   affects?: string[];
   midPatch?: string;
   /** "system": a system change or bug fix that names this champion, rather than an entry of its own. */
@@ -52,10 +53,13 @@ export function buildPatchIndex(notes: PatchNotes): PatchIndex {
     patches: patches.map((p) => ({ patch: p.patch, short: p.short, published: p.published, url: p.url, midPatch: p.midPatch.map((m) => m.title) })),
     changes: patches.flatMap((p) => p.entries.map((e) => {
       const all = e.groups.flatMap((g) => g.changes.map((c) => ({ ...c, label: g.title && c.label ? `${abilityKey(g.title)}${c.label}` : c.label ?? g.title })));
-      const lines = all.slice(0, LINES).map(({ label, before, after, text }) => (before || after ? { label, before, after } : { label, text }));
+      // A champion entry keeps every line and Riot's reason: the champion drawer's Patch tab expands them in place.
+      const kept = e.kind === "champion" ? all : all.slice(0, LINES);
+      const lines = kept.map(({ label, before, after, text }) => (before || after ? { label, before, after } : { label, text }));
       return {
         patch: p.patch, id: e.id, kind: e.kind, subject: e.subject, ref: e.ref, itemId: e.itemId, category: e.category, categories: e.categories,
-        reviewed: e.categoryBasis === "reviewed", lines, more: Math.max(0, all.length - LINES), affects: e.affects, midPatch: e.midPatch?.title,
+        reviewed: e.categoryBasis === "reviewed", lines, more: all.length - kept.length, affects: e.affects, midPatch: e.midPatch?.title,
+        ...(e.kind === "champion" && e.context ? { context: e.context } : {}),
       };
     })),
   };
