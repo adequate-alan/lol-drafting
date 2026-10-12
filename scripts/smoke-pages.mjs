@@ -661,6 +661,27 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
     check("builds: a shared URL reopens the same game", (await page.locator(".build-pick.active").count()) === 1 && (await page.locator(".build-pick").nth(1).getAttribute("aria-selected")) === "true", "");
   }
+  // Player filter: type to find a player, pin them (saved in this browser), pinned players first
+  {
+    const picker = page.locator(".player-picker input");
+    const first = await page.locator(".build-pick b").first().textContent();
+    await picker.fill(first.slice(0, 3));
+    const opts = await page.locator(".player-menu [role=option]").allTextContents();
+    check("builds: typing in the player filter lists matching players", opts.length > 0 && opts.every((o) => o.toLowerCase().includes(first.slice(0, 3).toLowerCase())), opts.join(", "));
+    const last = page.locator(".player-menu [role=option]").last();
+    const pinned = (await last.textContent()).trim();
+    await last.locator(".pin-btn").click();
+    await page.keyboard.press("Escape");
+    await picker.click();
+    const firstOpt = (await page.locator(".player-menu [role=option]").nth(1).textContent()).trim();
+    const saved = await page.evaluate(() => localStorage.getItem("pro-builds:pinned-players"));
+    check("builds: a pinned player is saved and listed first", firstOpt === pinned && (saved ?? "").includes(pinned), `${pinned} · first: ${firstOpt} · saved ${saved}`);
+    await page.locator(".player-menu [role=option]").nth(1).click();
+    await page.waitForTimeout(200);
+    check("builds: choosing a player filters the games to that player", (await page.locator(".build-pick b").allTextContents()).every((p) => p === pinned) && page.url().includes("player="), page.url());
+    await page.evaluate(() => localStorage.removeItem("pro-builds:pinned-players"));
+    await page.locator(".builds-tools button", { hasText: "Clear filters" }).click();
+  }
   await page.locator(".builds-tools [role=tab]", { hasText: "Common build" }).click();
   await page.waitForTimeout(200);
   check("builds: common build counts games with its sample, rune setups from complete pages, item frequencies", /recorded game/.test(await page.locator(".common-scope").innerText().catch(() => "")) && (await page.locator(".rune-setups li").count()) > 0 && (await page.locator(".item-freq li").count()) > 0, "");

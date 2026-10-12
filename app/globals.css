@@ -700,6 +700,23 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 
 /* ===== Pro Builds page (/pro-builds/, components/views/ProBuildsView.tsx + components/BuildParts.tsx): rail + one
    champion; recorded games in the Pro layer's styling; icons from Data Dragon at the game's patch ===== */
+/* Player picker (components/PlayerPicker.tsx): typeable, with pins saved in this browser */
+.player-picker { position: relative; }
+.player-picker .select-trigger { cursor: text; min-width: 150px; }
+.player-picker input { flex: 1; min-width: 0; width: 100%; padding: 0; border: 0; background: transparent; color: var(--text); font: inherit; outline: none; box-shadow: none; height: auto; }
+.player-picker input::placeholder { color: var(--text-muted); }
+.player-picker .select-trigger.is-set input::placeholder { color: var(--text); }
+.player-picker .select-trigger:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-subtle); }
+.player-menu { position: absolute; top: calc(100% + 4px); left: 0; min-width: 100%; width: max-content; max-width: 280px; max-height: 300px; overflow-y: auto; z-index: 70; }
+.player-menu .select-option { justify-content: space-between; }
+.player-menu .select-option.last-pinned { border-bottom: 1px solid var(--border); border-radius: 0; }
+.player-menu .select-option.empty { color: var(--text-faint); cursor: default; }
+.pin-btn { all: unset; display: inline-flex; padding: 2px; border-radius: var(--r-sm); cursor: pointer; }
+.pin-btn:hover .pin-icon { fill: var(--accent-subtle); stroke: var(--accent-text); }
+.pin-btn:focus-visible { box-shadow: var(--focus-ring); }
+.pin-icon { flex: none; width: 12px; height: 12px; fill: none; stroke: var(--text-faint); stroke-width: 1.1; stroke-linejoin: round; vertical-align: -1px; margin-right: 3px; }
+.pin-icon.on { fill: var(--accent); stroke: var(--accent); }
+.rail-player { color: var(--text); }
 .game-builds { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s4); }
 .drawer-builds { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2) var(--s4); margin: 0; }
 .rail-tools { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s3); flex: none; }

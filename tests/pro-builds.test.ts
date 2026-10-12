@@ -226,7 +226,12 @@ describe("Pro Builds page scope and provenance", () => {
     const builds = (Files["pro-builds.json"].parse(raw("pro-builds.json")) as ProBuilds).builds;
     const idx = championIndex(builds, Files["pro-games.json"].parse(raw("pro-games.json")).games);
     expect(idx.reduce((n, e) => n + e.games, 0)).toBe(builds.length);
-    for (const e of idx) expect(e.games).toBe(rowsFor(all, e.champion, e.role).length);
+    for (const e of idx) {
+      expect(e.games).toBe(rowsFor(all, e.champion, e.role).length);
+      // Player names for the rail's player search: exactly the players with a build on this champion and role.
+      expect(e.names).toEqual([...new Set(rowsFor(all, e.champion, e.role).map((r) => r.build.player))].sort());
+      expect(e.players).toBe(e.names.length);
+    }
     expect(buildsHref("jarvan-iv", "JUNGLE", 83447)).toBe("/pro-builds/?champion=jarvan-iv&role=JUNGLE&game=83447");
   });
 });

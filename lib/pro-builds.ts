@@ -63,7 +63,7 @@ export const inScope = (r: BuildRow, s: BuildScope) =>
 export const scoped = (rows: BuildRow[], s: BuildScope) => rows.filter((r) => inScope(r, s));
 
 /** One entry per champion and role with recorded builds: game count, players and the newest patch. */
-export interface ChampionBuilds { champion: string; role: Role; games: number; players: number; latest: string; lastPlayed: string }
+export interface ChampionBuilds { champion: string; role: Role; games: number; players: number; names: string[]; latest: string; lastPlayed: string }
 export function championIndex(builds: Pick<ProBuild, "champion" | "role" | "player" | "game">[], games: Pick<ProGame, "id" | "patch" | "date">[]): ChampionBuilds[] {
   const byGame = new Map(games.map((g) => [g.id, g]));
   const m = new Map<string, { champion: string; role: Role; games: number; players: Set<string>; latest: string; lastPlayed: string }>();
@@ -77,7 +77,7 @@ export function championIndex(builds: Pick<ProBuild, "champion" | "role" | "play
     if (g.date > e.lastPlayed) e.lastPlayed = g.date;
     m.set(k, e);
   }
-  return [...m.values()].map((e) => ({ ...e, players: e.players.size })).sort((a, b) => b.games - a.games || a.champion.localeCompare(b.champion));
+  return [...m.values()].map((e) => ({ ...e, players: e.players.size, names: [...e.players].sort() })).sort((a, b) => b.games - a.games || a.champion.localeCompare(b.champion));
 }
 
 // ---------- icons (Riot Data Dragon, the game patch's version) ----------
