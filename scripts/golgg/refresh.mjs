@@ -5,7 +5,7 @@
 // Only tracked tournaments are ever requested, by their exact Gol.gg names. A finished tournament is not requested again.
 // Saved pairings, pool tiers and proposed synergy are not inputs and cannot change here.
 import { parseChampionTable, parseFullstats, parseGamePage, parseMatchlist } from "./parse.mjs";
-import { buildAggregates, buildGame, championResolver, gameUrl, isComplete, seriesProblems, GOLGG } from "./normalize.mjs";
+import { buildAggregates, buildGame, championResolver, gameUrl, isComplete, pickOrderFor, seriesProblems, GOLGG } from "./normalize.mjs";
 
 const enc = encodeURIComponent;
 export const urls = {
@@ -75,6 +75,18 @@ export async function refresh(data, get, { now = new Date() } = {}) {
     proGames.games.push(...added);
     proGames.games.sort((a, b) => a.event.localeCompare(b.event) || a.date.localeCompare(b.date) || a.seriesId - b.seriesId || a.game - b.game);
     if (added.length) report.push(`${t.label}: ${added.length} new game${added.length > 1 ? "s" : ""} recorded.`);
+
+    // Pick order for games stored before it was recorded: their game page is re-read once. A page that no longer shows
+    // the stored teams, picks and bans leaves the game as it is.
+    let ordered = 0;
+    for (const g of proGames.games.filter((x) => x.event === t.event && (!x.blue.pickOrder || !x.red.pickOrder))) {
+      const got = pickOrderFor(g, parseGamePage(await get(gameUrl(g.id))), resolve);
+      if (got.problems) { rejected.push(`${g.series} game ${g.game} (${gameUrl(g.id)}): pick order not stored, ${got.problems.join("; ")}`); continue; }
+      g.blue.pickOrder = got.blue;
+      g.red.pickOrder = got.red;
+      ordered += 1;
+    }
+    if (ordered) report.push(`${t.label}: pick order stored for ${ordered} earlier game${ordered > 1 ? "s" : ""}.`);
 
     // The event the site shows; created the first time a tracked tournament has games.
     let event = meta.events.find((e) => e.id === t.event);

@@ -6,6 +6,8 @@
 //   Fit      - comp fit: synergy with the locked picks, team needs, matchups and risks (lib/recommend.ts parts minus
 //              the saved and proposed bonuses). "Best fit" marks the top three, "Best fix" the comp engine's pick.
 //   Counter  - a DPM matchup counter into the lane opponent (lib/counters.ts).
+//   Priority - pro pick/ban presence on the newest patch (lib/pro-priority.ts), shown when the champion has recorded
+//              picks in this role. A label only: never a reason to list a champion, never a signal in the tie-break.
 //
 // A champion qualifies through any one signal. Order is transparent rather than an invented aggregate:
 //   1. alan's preferred saved pairing first (his explicit preference is never outranked by evidence);
@@ -19,9 +21,10 @@ import type { Draft } from "./evaluate";
 import { recommend, savedSupports, type RecommendData, type Recommendation, type Recommendations } from "./recommend";
 import { ROLES, type MetaEvent, type Role, type Source } from "./schema";
 import { proSuggestions, type ProByRole, type ProSuggestion } from "./suggest";
+import { markFor, type PriorityMark } from "./pro-priority";
 
 export type SignalKey = "synergy" | "pro" | "fit" | "counter";
-export type Filter = "all" | SignalKey;
+export type Filter = "all" | SignalKey | "priority";
 
 export interface Candidate {
   champion: string;
@@ -30,6 +33,7 @@ export interface Candidate {
   compFit: number; // draft fit without the saved / proposed bonuses
   pro: ProSuggestion | null;
   counter: Counter | null;
+  priority: PriorityMark | null; // label only (see above)
   bestFit: boolean; // top BEST_FIT on comp fit among eligible candidates
   theoretical: boolean; // a support outside the locked bot's saved supports with no pro games: counter reference only
   signals: SignalKey[]; // independent signals: a pro-derived alternative counts as Pro, not twice
@@ -48,9 +52,10 @@ const blank = (champion: string, role: Role, eligible: boolean): Recommendation 
 });
 
 export const hasSignal = (c: Candidate, f: Filter) =>
-  f === "all" || (f === "synergy" ? !!(c.fit.saved || c.fit.proposed) : f === "fit" ? c.bestFit || c.fit.bestFix : f === "pro" ? !!c.pro : !!c.counter);
+  f === "all" || (f === "priority" ? !!c.priority : (f === "synergy" ? !!(c.fit.saved || c.fit.proposed) : f === "fit" ? c.bestFit || c.fit.bestFix : f === "pro" ? !!c.pro : !!c.counter));
 
-export function unifiedCandidates(fits: Recommendations, pro: ProByRole, counters: Partial<Record<Role, RoleCounters>>): Partial<Record<Role, Candidate[]>> {
+export function unifiedCandidates(fits: Recommendations, pro: ProByRole, counters: Partial<Record<Role, RoleCounters>>,
+  priority?: Record<string, PriorityMark>): Partial<Record<Role, Candidate[]>> {
   const out: Partial<Record<Role, Candidate[]>> = {};
   for (const role of ROLES) {
     const list = fits[role];
@@ -80,7 +85,7 @@ export function unifiedCandidates(fits: Recommendations, pro: ProByRole, counter
       if (p) signals.push("pro");
       if (bestFit || fit.bestFix) signals.push("fit");
       if (counter) signals.push("counter");
-      return { champion: id, role, fit, compFit: compFitOf(fit), pro: p, counter, bestFit, theoretical: !fit.eligible && !p, signals };
+      return { champion: id, role, fit, compFit: compFitOf(fit), pro: p, counter, priority: markFor(priority, id, role) ?? null, bestFit, theoretical: !fit.eligible && !p, signals };
     });
     const preferred = (c: Candidate) => Number(c.fit.eligible && c.fit.saved === "default");
     out[role] = rows.sort((a, b) =>
@@ -97,7 +102,7 @@ export function unifiedCandidates(fits: Recommendations, pro: ProByRole, counter
 export const proIncludes = (pro: ProByRole): Partial<Record<Role, string[]>> =>
   Object.fromEntries(Object.entries(pro).map(([r, l]) => [r, (l ?? []).map((s) => s.champion)]));
 
-export type CandidateData = RecommendData & CounterInput & { events?: MetaEvent[] };
+export type CandidateData = RecommendData & CounterInput & { events?: MetaEvent[]; priority?: Record<string, PriorityMark> };
 
 /**
  * Everything the Draft Room list needs for a draft: pro pairings (enemy picks left out), the draft-fit read for every
@@ -119,5 +124,5 @@ export function draftCandidates(draft: Draft, enemy: EnemyDraft, data: Candidate
   const wide = recommend(draft, enemyIds, data, Infinity, { include: proIncludes(pro) });
   const fits = Object.fromEntries(Object.entries(wide).map(([r, list]) => [r, list!.filter((x) => x.eligible)])) as Recommendations;
   const counters = counterPicks(draft, enemy, data, fits);
-  return { pro, fits, counters, unified: unifiedCandidates(wide, pro, counters) };
+  return { pro, fits, counters, unified: unifiedCandidates(wide, pro, counters, data.priority) };
 }

@@ -6,6 +6,7 @@ import { buildLibrary, type Library } from "./comp-library";
 import { withProAlternatives } from "./pro-alternatives";
 import { withGameSides } from "./draft-side";
 import { draftsFromGames, freshness, resultsFromGames, sourcesFromGames } from "./pro-games";
+import { priorityData, priorityMarks, type PriorityData } from "./pro-priority";
 import { withoutConfirmed } from "./proposed";
 import { Files } from "./schema";
 
@@ -46,6 +47,9 @@ export const getPool = () => load("pool.json");
 export const getMeta = () => load("meta.json");
 export const getGenG = () => load("geng.json");
 export const getRules = () => load("rules.json");
+// Pro Priority: per-patch pick/ban presence from complete game records or single-patch tournament tables (lib/pro-priority.ts).
+let priority: PriorityData | undefined;
+export const getPriority = () => (priority ??= priorityData(getMeta(), getProGames(), load("pro-drafts.json")));
 export const getCounters = () => (counters ??= ((c) => ({ ...c, proResults: [...c.proResults, ...resultsFromGames(getProGames().games, c.proResults)] }))(load("counters.json")));
 // Synergy · Proposed: Claude's kit-based partners, minus every pairing alan already confirmed (lib/proposed.ts).
 let proposed: Parsed<"proposed-synergy.json"> | undefined;
@@ -64,6 +68,7 @@ export function getDraftData() {
     events: getMeta().events,
     counters: getCounters(),
     proposed: getProposed().records,
+    priority: priorityMarks(getPriority()), // a label on rows, never read by the ranking
   };
 }
 export type DraftData = ReturnType<typeof getDraftData>;
@@ -80,6 +85,7 @@ export function getDrawerData() {
     meta: getMeta(),
     sources: Object.fromEntries(getSources().map((s) => [s.id, s])),
     proposed: getProposed().records,
+    priority: getPriority(),
   };
 }
 export type DrawerData = ReturnType<typeof getDrawerData>;

@@ -10,13 +10,15 @@ import { useEffect, useId, useMemo, useRef } from "react";
 import { ChampIcon, LayerBlock, SourceLinks, pct } from "@/components/ui";
 import { observedFor, proLinks, recordFor, savedLinks, type Slots } from "@/lib/comp-links";
 import type { DrawerData } from "@/lib/data";
-import { comparePatchDesc, describeLine, fresher, groupObserved, shortDate, type EventMap } from "@/lib/evidence";
-import { PARTNER_ROLE, TIERS, eventStats, listsRole, presenceOf, proGames, roleShare, type ProGame, type Tier } from "@/lib/pool-stats";
+import { comparePatchDesc, describeLine, groupObserved, shortDate, type EventMap } from "@/lib/evidence";
+import { PARTNER_ROLE, TIERS, eventStats, proGames, type ProGame, type Tier } from "@/lib/pool-stats";
 import { handAlts } from "@/lib/pro-alternatives";
 import { shownPartners } from "@/lib/proposed";
 import { ProposedGroups, ProposedTag } from "@/components/ProposedSynergy";
 import { synergyParts, teamNeeds } from "@/lib/recommend";
 import { ROLES, type Champion, type Role } from "@/lib/schema";
+import { bucket, championHistory, patchLabel, teamsFor } from "@/lib/pro-priority";
+import { PriorityHistory } from "@/components/ProPriority";
 
 export interface DrawerTarget { id: string; role?: Role } // no role: the role the champion was played in most
 export interface CompContext {
@@ -125,8 +127,6 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
   const tier = poolTier(id, role, data);
   const draftHref = `/?${role.toLowerCase()}=${id}`;
   const poolHref = `/pool/?role=${role}&champ=${id}`;
-  const stats = index.stats.filter((s) => s.stat.champion === id && (listsRole(s, role) || !s.roles.length))
-    .sort((a, b) => fresher(a.event, b.event));
   const games = index.games.filter((g) => g.picks[role] === id);
   const observed = groupObserved(observedFor(id, role, data), index.events, data.sources);
   const links = comp ? compLinks({ id, role }, comp, data, index) : undefined;
@@ -135,6 +135,14 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
   const record = recordFor(id, role, data);
   const saved = savedPartners(id, role, data);
   const proposed = shownPartners(data.proposed, id, role, data.botPairings).filter((l) => !comp || l.tier === "preferred" || Object.values(comp.slots).includes(l.id));
+  const history = championHistory(data.priority, id);
+  const latestPoint = [...history].reverse().find((p) => p.row?.picks);
+  const latestTeams = latestPoint ? teamsFor(bucket(data.priority, { patch: latestPoint.patch }), id) : [];
+  const latestOrder = latestPoint?.row?.order;
+  const metaHref = `/meta/?role=${role}${latestPoint && latestPoint.patch !== history.at(-1)?.patch ? `&patch=${patchLabel(latestPoint.patch)}` : ""}`;
+  const eventsOn = (patch: string) => data.priority.contributions.filter((c) => c.patch === patch)
+    .map((c) => `${data.priority.tournaments.find((t) => t.id === c.event)?.short ?? c.event} ${c.games} games${c.kind === "table" ? " (Gol.gg table)" : ""}`).join(" · ");
+  const ongoingOn = (patch: string) => data.priority.contributions.some((c) => c.patch === patch && data.priority.tournaments.find((t) => t.id === c.event)?.status === "ongoing");
   const patches = new Map<string, number>();
   for (const g of games) if (g.patch) patches.set(g.patch, (patches.get(g.patch) ?? 0) + 1);
   const step = (d: 1 | -1) => comp && onSelect?.({ id: comp.slots[ROLES[(ROLES.indexOf(role) + d + 5) % 5]], role: ROLES[(ROLES.indexOf(role) + d + 5) % 5] });
@@ -227,31 +235,38 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
             </>
           )}
 
-          <div className="xs muted detail-label" title="Gol.gg tournament totals, not counted from the games stored here. Picks, bans, win rate and presence are champion-wide; presence is computed as (picks + bans) / games.">Tournament stats · all roles</div>
-          {stats.length ? (
-            <table className="mini">
-              <thead><tr><th>Event</th><th className="num">Patch</th><th className="num">Picks</th><th className="num">Bans</th><th className="num">Pres.</th><th className="num">WR</th><th>Roles</th></tr></thead>
-              <tbody>
-                {stats.map((x) => { const { event: e, stat: s } = x, pres = presenceOf(x); return (
-                  <tr key={e.id}>
-                    <td className="nowrap">{e.short}{e.status === "ongoing" && <span className="badge pro ongoing" title="Event still running; numbers are not final">Ongoing</span>}</td>
-                    <td className="num">{e.patch}</td>
-                    <td className="num">{s.picks}{s.lowSample && <span className="low" title="Fewer than 5 picks">*</span>}</td>
-                    <td className="num">{s.bans ?? "—"}</td>
-                    <td className="num">{pres != null ? pct(pres) : "—"}</td>
-                    <td className="num">{s.winRate != null ? pct(s.winRate) : "—"}</td>
-                    <td className="xs nowrap">{roleShare(s) ?? (x.roles.join(" / ") || "not shown")}</td>
-                  </tr>
-                ); })}
-              </tbody>
-            </table>
-          ) : <p className="xs muted">No tournament stats for {name(id)} {role.toLowerCase()}.</p>}
+          <div className="xs muted detail-label" title="Per patch, never combined: picks and bans from complete Gol.gg game records, or from a tournament table when the whole tournament was one patch. Bans and presence are champion-wide.">Pro priority by patch · all roles</div>
+          {history.some((p) => p.row) ? (
+            <>
+              {history.length > 1 && <PriorityHistory points={history} />}
+              <table className="mini">
+                <thead><tr><th className="num">Patch</th><th className="num">Games</th><th className="num">Picks</th><th className="num">Bans</th><th className="num">Pres.</th><th className="num">WR</th><th>Roles</th><th className="num" title="Blue / red picks">B / R</th></tr></thead>
+                <tbody>
+                  {[...history].reverse().map((p) => { const r = p.row; return (
+                    <tr key={p.patch} title={eventsOn(p.patch)}>
+                      <td className="num">{patchLabel(p.patch)}{ongoingOn(p.patch) && <span className="badge pro ongoing" title="A tournament on this patch is still running">Ongoing</span>}</td>
+                      <td className="num">{p.games}</td>
+                      <td className="num">{r?.picks ?? 0}{r?.low && <span className="low" title="Fewer than 5 picks">*</span>}</td>
+                      <td className="num">{r?.bans ?? 0}</td>
+                      <td className="num">{p.presence != null ? pct(p.presence) : "—"}</td>
+                      <td className="num">{r?.winRate != null ? pct(r.winRate) : "—"}</td>
+                      <td className="xs nowrap">{r && r.picks ? (r.roleVerified ? ROLES.filter((x) => r.rolePicks[x]).map((x) => `${x} ${r.rolePicks[x]}`).join(" · ") : r.namedRoles.join(" / ") || "not recorded") : "—"}</td>
+                      <td className="num nowrap">{r && r.picks && r.sideKnown ? `${r.blue} / ${r.red}` : "—"}</td>
+                    </tr>
+                  ); })}
+                </tbody>
+              </table>
+              {latestTeams.length > 0 && <p className="xs muted">Picked by {latestTeams.slice(0, 5).map((t) => `${t.team} ${t.picks}`).join(", ")} on {patchLabel(latestPoint!.patch)}</p>}
+              {latestOrder && latestOrder.known > 0 && <p className="xs muted tnum">Pick order on {patchLabel(latestPoint!.patch)}: first rotation {latestOrder.firstRotation} of {latestOrder.known} ordered picks · second phase {latestOrder.phase2}</p>}
+              <Link className="xs" href={metaHref} data-to={metaHref}>Open in Pro priority</Link>
+            </>
+          ) : <p className="xs muted">Not picked or banned in any recorded patch.</p>}
 
           <div className="xs muted detail-label" title="Drafts and game pages stored in this repo">Recorded games{games.length ? ` · ${games.length}` : ""}</div>
           {games.length ? games.slice(0, 5).map((g) => <GameRow key={g.key} g={g} role={role} names={names} data={data} comp={comp} />)
             : <p className="xs muted">No recorded games in this role.</p>}
           {games.length > 5 && <p className="xs faint">+{games.length - 5} older</p>}
-          {patches.size > 1 && <p className="xs muted tnum">Patches: {[...patches.entries()].sort((a, b) => comparePatchDesc(a[0], b[0])).map(([p, n]) => `${p} ×${n}`).join(" · ")}</p>}
+          {patches.size > 1 && <p className="xs muted tnum">Patches: {[...patches.entries()].sort((a, b) => comparePatchDesc(a[0], b[0])).map(([p, n]) => `${patchLabel(p)} ×${n}`).join(" · ")}</p>}
 
           {observed.length > 0 && (
             <>
@@ -298,7 +313,7 @@ function Mate({ id, role, names, inComp }: { id: string; role: Role; names: Reco
 
 function freshest(games: ProGame[]) {
   const g = games[0]; // proGames is newest first
-  return [g.eventName, g.patch, shortDate(g.date)].filter(Boolean).join(" · ");
+  return [g.eventName, g.patch && patchLabel(g.patch), shortDate(g.date)].filter(Boolean).join(" · ");
 }
 
 function GameRow({ g, role, names, data, comp }: { g: ProGame; role: Role; names: Record<string, string>; data: DrawerData; comp?: CompContext }) {
@@ -307,7 +322,7 @@ function GameRow({ g, role, names, data, comp }: { g: ProGame; role: Role; names
   return (
     <div className="obs-row">
       <span className="small nowrap">{g.label}</span>
-      <span className="badge pro tnum">{[g.eventName, g.patch, shortDate(g.date)].filter(Boolean).join(" · ")}</span>
+      <span className="badge pro tnum">{[g.eventName, g.patch && patchLabel(g.patch), shortDate(g.date)].filter(Boolean).join(" · ")}</span>
       {p && <span className="ctx">with {names[p] ?? p}</span>}
       {shared > 0 && <span className="xs muted" title="Comp-mates from this shell in the same game">+{shared} from this comp</span>}
       {g.pending && <span className="badge plain">pending refresh</span>}

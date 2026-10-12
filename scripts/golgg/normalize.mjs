@@ -54,7 +54,7 @@ export function buildGame(id, page, stats, expect, resolve, checkedOn) {
     const bans = (p.bans ?? []).map((b) => ({ b, id: resolve(b) }));
     for (const x of bans) need(!!x.id, `unknown banned champion "${x.b}"`);
     need(bans.length <= 5, `${color} side: ${bans.length} bans`);
-    sides[color] = { team: p.team, picks, bans: bans.map((x) => x.id).filter(Boolean), result: p.result };
+    sides[color] = { team: p.team, picks, bans: bans.map((x) => x.id).filter(Boolean), pickOrder: drafted, result: p.result };
   }
   if (sides.blue && sides.red) {
     need(sides.blue.team !== sides.red.team, "both sides name the same team");
@@ -67,7 +67,7 @@ export function buildGame(id, page, stats, expect, resolve, checkedOn) {
       `teams ${sides.blue.team} / ${sides.red.team} do not match the match list (${expect.teams.join(" / ")})`);
   }
   if (problems.length) return { problems };
-  const side = (s) => ({ team: s.team, picks: s.picks, bans: s.bans });
+  const side = (s) => ({ team: s.team, picks: s.picks, bans: s.bans, pickOrder: s.pickOrder });
   return {
     game: {
       id, event: expect.event, tournament: page.tournament, seriesId: expect.seriesId, series: page.series, game: page.game,
@@ -146,4 +146,24 @@ export function isComplete(series, today) {
   if (series.some((s) => /^(grand )?finals?$/i.test(s.stage))) return true;
   const last = series.map((s) => s.date).filter(Boolean).sort().at(-1);
   return !!last && (Date.parse(today) - Date.parse(last)) / 86400000 >= 7;
+}
+
+/**
+ * The pick order of an already stored game, from its re-read game page: each side's picks as the page lists them (that
+ * team's draft order). Returns { blue, red } or { problems } when the page does not show the same teams, picks and bans.
+ */
+export function pickOrderFor(game, page, resolve) {
+  const problems = [];
+  const out = {};
+  for (const color of ["blue", "red"]) {
+    const p = page[color], g = game[color];
+    if (!p || p.team !== g.team) { problems.push(`${color} side is ${p?.team ?? "missing"}, stored ${g.team}`); continue; }
+    const drafted = (p.picks ?? []).map(resolve);
+    const stored = Object.values(g.picks);
+    if (drafted.length !== 5 || !drafted.every(Boolean) || [...drafted].sort().join() !== [...stored].sort().join()) { problems.push(`${color} side picks differ from the stored game`); continue; }
+    const bans = (p.bans ?? []).map(resolve);
+    if (bans.join() !== g.bans.join()) { problems.push(`${color} side bans differ from the stored game`); continue; }
+    out[color] = drafted;
+  }
+  return problems.length ? { problems } : out;
 }

@@ -12,3 +12,5 @@ export function seriesProblems(series: Series, games: ProGame[]): string[];
 export function buildAggregates(table: { rows: ChampionRow[] } | undefined, totalGames: number, games: ProGame[], resolve: (name?: string) => string | undefined,
   sourceIds: string[], previous?: unknown[]): { stats: Record<string, unknown>[]; rolesVerified: boolean; problems?: undefined } | { problems: string[] };
 export function isComplete(series: Series[], today: string): boolean;
+export function pickOrderFor(game: ProGame, page: GamePage, resolve: (name?: string) => string | undefined):
+  { blue: string[]; red: string[]; problems?: undefined } | { problems: string[] };
