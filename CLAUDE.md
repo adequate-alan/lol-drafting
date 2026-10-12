@@ -389,6 +389,19 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   row's team (`carryBuild`); a stale `build` leaves the URL. A game with no recorded builds (LCK finals G3, 82964) says
   "No builds recorded for this game" with the buttons disabled; a missing player build says so, never filled in. The
   build rows load as their own chunk on first use. Never a second build UI.
+- **Identity-first headers** (alan, 2026-10-12, DPM.LOL as the hierarchy reference, never its branding or layout): a
+  player or champion page leads with the subject, on one surface, not a card: a large portrait or champion icon, a
+  large Space Grotesk name (`--fs-4xl` for a player profile, `--fs-3xl` elsewhere), team and role in medium weight
+  under it, metadata smaller and muted, numbers in JetBrains Mono. The Pinned Players profile is the reference
+  (`.player-head`, 170–220px on desktop with the `hero` 144px avatar; `xl` on phones): name, pin, "Team · Role",
+  one quiet line of recorded totals (`.player-facts`: games, W–L, win rate from 3 games and flagged under 5,
+  champions, latest appearance), then one view at a time, Overview | Champions | Match history | Builds (`?view=`,
+  `.tabs` buttons with roving focus; a link naming a champion opens on Champions). The same `ChampionTable` and
+  `MatchTable` render in every view; a column that repeats one value on every row (team, role) is left out. The
+  same principles reached Pro Builds (`.builds-head`, `GameHeader` with the `lg` avatar), the Synergies scouting
+  header, the Pro Drafts open-game head (`.game-panel-head`) and the Gen.G roster strip (`xl` portraits). Team logos
+  are not shown (no permitted source; trademarks) and real names are not shown (no verified source): never type
+  either from memory. Comp Library and the champion drawer were left alone.
 - **Champion Synergies** (`/synergies/<tab>/`, sidebar "Synergies"; alan renamed it from First Pick on 2026-10-10) is
   the champion synergy and pairing reference: rail, role tabs, saved / proposed partners, pro pairings, "Open in Draft
   Room". One tab per role, Top | Jungle | Mid | Bot | Support (alan, 2026-10-12; `components/views/synergy-tabs.ts`,

@@ -171,7 +171,7 @@ export function ProBuildsView({ index, names, events, drawerData }: {
             </div>
           ) : !entry || !champion || !role ? <p className="muted">No recorded pro builds yet.</p> : <>
             <div className="builds-head">
-              <ChampIcon id={champion} name={name(champion)} role={role} size="lg" />
+              <ChampIcon id={champion} name={name(champion)} role={role} size="xxl" />
               <div className="builds-title">
                 <h2>{name(champion)}</h2>
                 <span className="small muted tnum">{entry.games} recorded game{entry.games > 1 ? "s" : ""} · {entry.players} player{entry.players > 1 ? "s" : ""} · latest {patchLabel(entry.latest)}</span>
@@ -180,7 +180,7 @@ export function ProBuildsView({ index, names, events, drawerData }: {
                 // One player chosen: their portrait and a link to their profile, in every mode (Games, Common, Compare).
                 const r = get("player") && rows[0];
                 return r ? <Link className="builds-player player-chip small" href={profileHref(String(r.build.playerId))} title={`${r.build.player}'s recorded games, champions and builds`}>
-                  <PlayerAvatar id={r.build.playerId} name={r.build.player} size="md" /><span><b>{r.build.player}</b><span className="muted"> · {r.team}</span></span></Link> : null;
+                  <PlayerAvatar id={r.build.playerId} name={r.build.player} size="lg" /><span className="builds-player-text"><b>{r.build.player}</b><span className="muted">{r.team}</span></span></Link> : null;
               })()}
               {roles.length > 1 && (
                 <div className="seg" role="group" aria-label="Role">

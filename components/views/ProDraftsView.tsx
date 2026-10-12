@@ -98,9 +98,11 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
 
       {selected && view && (
         <section className="panel game-panel" aria-label={`${selected.team} vs ${selected.opponent}, ${selected.seriesGame}`}>
-          <div className="panel-head">
-            <h2>{selected.team} vs {selected.opponent} · {selected.seriesGame}</h2>
-            <span className="xs muted">{meta(selected)}</span>
+          <div className="panel-head game-panel-head">
+            <div className="game-id">
+              <h2>{selected.team} <span className="faint">vs</span> {selected.opponent}</h2>
+              <span className="small muted">{selected.seriesGame} · {meta(selected)}</span>
+            </div>
             <div className="end">
               <Link className="btn sm primary" href={`/?${new URLSearchParams(Object.fromEntries(ROLES.map((r) => [r.toLowerCase(), selected.picks[r]])))}`}>Open in Draft Room</Link>
               <Link className="btn sm ghost" href={closeHref} aria-label="Close game">×</Link>

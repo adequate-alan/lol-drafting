@@ -714,9 +714,22 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     await page.locator(".pinned-table tbody tr").first().click();
     await page.locator(".match-history tbody tr").first().waitFor({ timeout: 8000 }).catch(() => {});
     check("pinned: a profile shows facts, champions and the match history", page.url().includes(`player=${ids[0]}`) && (await page.locator(".player-facts").count()) === 1 && (await page.locator(".champ-history tbody tr").count()) > 0 && (await page.locator(".match-history tbody tr").count()) > 0, page.url());
+    // Identity first (alan, 2026-10-12): portrait, a large name, team and role, totals in one line, in a 170-220px header
+    const head = await page.$eval(".player-head", (h) => ({ height: Math.round(h.getBoundingClientRect().height), name: parseFloat(getComputedStyle(h.querySelector(".player-name")).fontSize), line: h.querySelector(".player-line")?.textContent, facts: h.querySelectorAll(".player-facts dt").length, avatar: Math.round(h.querySelector(".player-avatar").getBoundingClientRect().width) }));
+    check("pinned: the profile header leads with the portrait and a large name, team and role, five totals, 170-220px tall", head.height >= 170 && head.height <= 220 && head.name >= 30 && /·/.test(head.line ?? "") && head.facts === 5 && head.avatar >= 120, JSON.stringify(head));
+    const tabs = page.locator(".player-views [role=tab]");
+    check("pinned: Overview | Champions | Match history | Builds tabs, Overview first", (await tabs.allInnerTexts()).map((t) => t.replace(/\s*\d+$/, "")).join("|") === "Overview|Champions|Match history|Builds" && (await tabs.first().getAttribute("aria-selected")) === "true", "");
+    await tabs.nth(2).click();
+    await page.waitForTimeout(150);
+    check("pinned: Match history keeps the player and lists every recorded game with its filters", page.url().includes(`player=${ids[0]}`) && /view=matches/.test(page.url()) && (await page.locator(".match-history tbody tr.match-row").count()) >= 5 && (await page.locator(".builds-tools.inner .select-trigger").count()) === 2, page.url());
+    await tabs.nth(3).click();
+    await page.waitForTimeout(150);
+    check("pinned: Builds opens the most played champion's build lines", /view=builds/.test(page.url()) && (await page.locator(".build-lines li").count()) > 0, page.url());
+    await tabs.first().click();
+    await page.waitForTimeout(150);
     await page.locator(".champ-history tbody tr").first().click();
     await page.waitForTimeout(200);
-    check("pinned: picking a champion lists that champion's builds and filters the history", (await page.locator(".build-lines li").count()) > 0 && page.url().includes("champion="), page.url());
+    check("pinned: picking a champion opens Champions with that champion's builds and games", (await page.locator(".build-lines li").count()) > 0 && page.url().includes("champion=") && /view=champions/.test(page.url()) && (await page.locator(".match-history tbody tr.match-row").count()) > 0, page.url());
     // A match expands in place into the same build view as Pro Builds (runes, skill grid, item progression), keyed by game id
     const matchRows = page.locator(".match-history tr.match-row");
     const matchCount = await matchRows.count();

@@ -32,7 +32,7 @@
   --font: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: var(--font-grotesk), "Space Grotesk", var(--font);
   --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --fs-2xs: 10px; --fs-xs: 11px; --fs-sm: 12px; --fs: 13px; --fs-md: 14px; --fs-lg: 15px; --fs-xl: 18px; --fs-2xl: 22px; --fs-3xl: 30px;
+  --fs-2xs: 10px; --fs-xs: 11px; --fs-sm: 12px; --fs: 13px; --fs-md: 14px; --fs-lg: 15px; --fs-xl: 18px; --fs-2xl: 22px; --fs-3xl: 30px; --fs-4xl: 36px;
   --lh: 1.4;
   /* Weights: 700 page titles only, 600 names / headings / labels / active states, 500 controls, 400 reading. */
   --w-title: 700; --w-strong: 600; --w-control: 500;
@@ -52,7 +52,7 @@
   --control-h-sm: 24px;
   --mini-h: 50px;
   --icon-xs: 20px; --icon-sm: 24px; --icon-md: 32px; --icon-ml: 36px; --icon-lg: 48px; --icon-xl: 52px; --icon-xxl: 60px;
-  --avatar-xl: 104px; --r-avatar: 6px; /* a player's portrait in their profile header; smaller avatars use the icon sizes */
+  --avatar-xl: 104px; --avatar-hero: 144px; --r-avatar: 6px; /* a player's portrait in their profile header; smaller avatars use the icon sizes */
 
   /* Motion (alan, 2026-10-12): one system for the whole site. Smooth is not the same as animated: hover, selection and
      filter feedback is near-instant colour; only surfaces that arrive (dropdowns, popovers, drawers, sheets) move, a
@@ -767,34 +767,73 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .player-avatar.md { --size: var(--icon-ml); }
 .player-avatar.lg { --size: var(--icon-lg); }
 .player-avatar.xl { --size: var(--avatar-xl); }
+.player-avatar.hero { --size: var(--avatar-hero); border-radius: calc(var(--r-avatar) + 2px); }
 .player-avatar.initials::before { content: attr(data-initials); }
 .player-avatar.initials { color: var(--text-muted); font-family: var(--font-display); font-weight: var(--w-strong); font-size: calc(var(--size) * .36); letter-spacing: .02em; line-height: 1; user-select: none; }
 .player-avatar.xs.initials { font-size: 8px; }
 .player-chip { display: inline-flex; align-items: center; gap: var(--s3); }
-.team-players { display: flex; flex-wrap: wrap; gap: var(--s3) var(--s6); margin: 0 0 var(--s5); padding: 0; list-style: none; }
+.team-players { display: flex; flex-wrap: wrap; gap: var(--s4) var(--s7); margin: 0 0 var(--s6); padding: 0; list-style: none; }
+.team-players .player-chip { gap: var(--s4); }
+.team-players .player-chip b { font-family: var(--font-display); font-size: var(--fs-xl); font-weight: var(--w-strong); line-height: 1.1; }
+.team-player-text { display: grid; gap: 1px; line-height: 1.3; }
+@media (max-width: 760px) { .team-players .player-avatar.xl { --size: var(--icon-xxl); } .team-players .player-chip b { font-size: var(--fs-md); } }
 .team-players a { color: var(--text); }
 .team-players a:hover { text-decoration: none; }
 .team-players a:hover b { color: var(--accent-text); }
-.team-player-text { display: grid; line-height: 1.3; }
-/* Three levels on a profile (alan, 2026-10-12 polish): the Overview head, then Champions, then Match history, told apart
-   by spacing and one rule each rather than cards. Secondary text one step larger than the site's smallest, rows no taller. */
-.player-profile { display: grid; gap: var(--s6); }
-.player-profile .profile-section { background: transparent; border: 0; border-radius: 0; }
-.player-profile .profile-section > .panel-head { min-height: 0; padding: 0 0 var(--s3); border-bottom: 1px solid var(--border-strong); }
+/* A player profile (alan, 2026-10-12, DPM.LOL-inspired hierarchy): identity first, on one continuous surface. The
+   portrait and a large name lead, team and role sit under it in medium weight, the recorded totals read as one quiet
+   line, and the views below are told apart by one underline tab bar and spacing, never by cards. */
+.player-profile { display: grid; gap: var(--s5); }
+.player-head { display: flex; align-items: center; gap: var(--s6); min-height: var(--avatar-hero); padding: var(--s5) 0 var(--s7); border-bottom: 1px solid var(--border-strong); }
+.player-head-text { display: grid; gap: var(--s2); min-width: 0; }
+.player-name { display: flex; align-items: center; gap: var(--s3); font-size: var(--fs-4xl); font-weight: var(--w-title); line-height: 1; letter-spacing: -.01em; }
+.player-name .pin-btn { padding: 4px; }
+.player-name .pin-icon { width: 16px; height: 16px; margin: 0; }
+.player-line { margin: 0; font-family: var(--font-display); font-size: var(--fs-lg); font-weight: var(--w-control); color: var(--text); }
+.player-also { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s4); margin: 0; }
+.player-facts { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s6); margin: var(--s3) 0 0; }
+.player-facts div { display: grid; gap: 1px; }
+.player-facts dd { margin: 0; font-family: var(--font-mono); font-size: var(--fs-lg); line-height: 1.2; color: var(--text); }
+.player-facts dd a { color: inherit; }
+.player-facts dt { font-size: var(--fs-xs); color: var(--text-muted); }
+.player-form { margin: 0; }
+.player-form .form { font-size: var(--fs-md); gap: var(--s2); }
+.player-views { gap: var(--s5); margin: 0; }
+.tabs button { all: unset; box-sizing: border-box; cursor: pointer; }
+.tabs a, .tabs button {
+  display: inline-flex; align-items: center; height: 32px; margin-bottom: -1px; font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--w-control);
+  color: var(--text-muted); white-space: nowrap; border-bottom: 2px solid transparent; transition: color var(--t-fast), border-color var(--t-fast);
+}
+.tabs button:hover { color: var(--text); border-color: var(--border-strong); }
+.tabs button.active { color: var(--text); border-color: var(--accent); }
+.tabs button:focus-visible { box-shadow: var(--focus-ring); border-radius: var(--r-sm); }
+.tabs .count { margin-left: var(--s1); color: var(--text-faint); font-family: var(--font-mono); font-size: var(--fs-xs); }
+.player-profile .profile-section { display: grid; gap: var(--s3); background: transparent; border: 0; border-radius: 0; }
+.player-profile .section-title { display: flex; align-items: baseline; gap: var(--s3); margin: 0; font-size: var(--fs-md); font-weight: var(--w-strong); }
+.player-profile .section-title .muted { font-family: var(--font); font-size: var(--fs-xs); font-weight: 400; }
+.player-profile .section-title .link.end { margin-left: auto; font-family: var(--font); font-size: var(--fs-xs); font-weight: 400; }
+button.link { all: unset; cursor: pointer; color: var(--link); }
+button.link:hover { text-decoration: underline; }
+button.link:focus-visible { box-shadow: var(--focus-ring); border-radius: var(--r-sm); }
+@media (max-width: 760px) {
+  .player-head { gap: var(--s4); min-height: 0; padding-top: 0; }
+  .player-head .player-avatar.hero { --size: var(--avatar-xl); }
+  .player-name { font-size: var(--fs-2xl); }
+  .player-line { font-size: var(--fs-md); }
+  .player-facts { gap: var(--s2) var(--s5); }
+  .player-facts dd { font-size: var(--fs-md); }
+}
+.player-profile .profile-section > .panel-head { min-height: 0; padding: 0 0 var(--s2); border-bottom: 1px solid var(--border); }
 .player-profile .profile-section > .panel-head h2 { font-size: var(--fs-md); }
-.player-profile .profile-section > .panel-body { padding: var(--s3) 0 0; }
-.player-profile .profile-section.sub > .panel-head { border-bottom-color: var(--border); }
+.player-profile .profile-section > .panel-body { padding: var(--s2) 0 0; }
 .player-profile table.mini { font-size: var(--fs-sm); }
-.player-profile table.mini th { font-size: var(--fs-xs); }
+.player-profile table.mini th { font-size: var(--fs-xs); font-weight: var(--w-control); color: var(--text-muted); }
+.player-profile table.mini td { height: 36px; }
 .player-profile .builds-tools.inner { border-bottom: 0; }
 .player-profile .xs.muted { font-size: var(--fs-sm); }
-.champ-history .cell-champ { font-size: var(--fs); }
+.champ-history .cell-champ, .match-history .cell-champ { font-family: var(--font-display); font-size: var(--fs); font-weight: var(--w-control); }
 .champ-history tr.selected .cell-champ { color: var(--accent-text); }
 .rate { display: inline-block; min-width: 4.2em; font-family: var(--font); font-size: var(--fs-xs); text-align: left; } /* keeps the W–L column aligned beside it */
-.player-head { display: flex; align-items: flex-start; gap: var(--s5); padding-bottom: var(--s5); border-bottom: 1px solid var(--border-strong); }
-.player-head .builds-title h2 { font-size: var(--fs-2xl); line-height: 1.1; }
-.player-head .builds-title > .small { font-size: var(--fs); }
-.player-head-text { display: grid; gap: var(--s4); min-width: 0; }
 .photo-credits ul { margin: 0; padding-left: var(--s5); display: grid; gap: var(--s1); }
 .select-option .player-avatar { margin-right: var(--s1); }
 /* Pinned Players (/pro-builds/pinned/, components/views/PinnedPlayersView.tsx): rail of pinned players, overview table,
@@ -806,9 +845,10 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .pinned-rail .rail-tools { padding: var(--s3); }
 .pinned-rail .rail-tools .select-trigger, .pinned-rail .rail-tools .player-picker { width: 100%; }
 .pinned-rail ul { padding: var(--s2); }
-.pinned-rail li button.active { box-shadow: inset 2px 0 0 var(--accent); }
-.pinned-rail li button.active .player-avatar { box-shadow: 0 0 0 1px var(--accent); }
-.pinned-rail li button .rail-sub { font-size: var(--fs-sm); }
+.pinned-rail li button { padding: var(--s2) var(--s3); }
+.pinned-rail li button.active { background: var(--accent-subtle); box-shadow: inset 2px 0 0 var(--accent); }
+.pinned-rail li button .rail-name { font-family: var(--font-display); font-weight: var(--w-control); }
+.pinned-rail li button .rail-sub { font-size: var(--fs-xs); }
 .pinned-rail li button .player-avatar { flex: none; }
 .rail-player-row { display: flex; align-items: center; gap: var(--s1); }
 .pick-rail li.rail-player-row > button:first-child { flex: 1; min-width: 0; }
@@ -819,11 +859,6 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .pinned-table td .pin-btn .pin-icon { margin: 0; }
 .champ-strip { display: inline-flex; align-items: center; gap: 2px; }
 .form { display: inline-flex; gap: 3px; font-family: var(--font-mono); font-size: var(--fs-xs); }
-.player-facts { display: flex; flex-wrap: wrap; gap: var(--s3) var(--s6); margin: 0; }
-.player-facts div { display: grid; gap: 1px; }
-.player-facts dt { color: var(--text-muted); font-size: var(--fs-sm); }
-.player-facts dd { font-size: var(--fs); }
-.player-facts dd { margin: 0; }
 .builds-tools.inner { padding-bottom: var(--s3); }
 .table-wrap.flat { border: 0; border-radius: 0; background: transparent; }
 .builds-links { display: inline-flex; gap: var(--s4); }
@@ -864,7 +899,12 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .builds-empty { display: grid; gap: var(--s3); align-content: start; }
 .builds-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s4) var(--s5); }
 .builds-title { display: grid; gap: 2px; margin-right: auto; }
-.builds-title h2 { font-size: var(--fs-xl); }
+.builds-title h2 { font-size: var(--fs-3xl); line-height: 1; letter-spacing: -.01em; }
+.builds-title > .small { font-size: var(--fs-sm); }
+.builds-player { gap: var(--s3); font-size: var(--fs-md); }
+.builds-player-text { display: grid; line-height: 1.25; font-family: var(--font-display); }
+.builds-player-text b { font-weight: var(--w-control); }
+.builds-player-text .muted { font-size: var(--fs-xs); font-family: var(--font); }
 .builds-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); padding-bottom: var(--s4); border-bottom: 1px solid var(--border); }
 .builds-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s5); align-items: start; }
 .builds-main .panel-body { display: grid; gap: var(--s4); }
@@ -888,7 +928,7 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .game-detail { display: grid; gap: var(--s5); min-width: 0; }
 .game-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s2) var(--s5); align-items: center; }
 .game-who { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2) var(--s4); }
-.game-player { display: inline-flex; align-items: center; gap: var(--s3); font-family: var(--font-display); font-size: var(--fs-lg); }
+.game-player { display: inline-flex; align-items: center; gap: var(--s3); font-family: var(--font-display); font-size: var(--fs-xl); }
 .game-player b { font-weight: var(--w-strong); }
 .game-vs { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
 .game-vs .champ-btn { display: inline-flex; align-items: center; gap: var(--s2); }
@@ -1391,7 +1431,7 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 }
 .scout .scout-head { display: flex; align-items: center; gap: var(--s5); padding: var(--s5) var(--s6) var(--s4); }
 .scout .scout-id { display: flex; flex-direction: column; gap: var(--s2); min-width: 0; }
-.scout .scout-id h2 { font-size: var(--fs-2xl); line-height: 1.1; }
+.scout .scout-id h2 { font-size: var(--fs-3xl); line-height: 1; letter-spacing: -.01em; }
 .scout .scout-meta { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s2) var(--s5); font-size: var(--fs-xs); color: var(--text-muted); }
 .scout .scout-tags { display: flex; flex-wrap: wrap; gap: 2px var(--s3); font-size: var(--fs-xs); color: var(--text-muted); }
 .scout .scout-tags span + span::before { content: "·"; margin-right: var(--s3); color: var(--text-faint); }
@@ -1640,6 +1680,10 @@ tr.side-none td:first-child { box-shadow: inset 3px 0 0 var(--border-strong); }
 tbody tr.pair-a:hover td, tbody tr.pair-b:hover td { background: var(--surface-hover); }
 tr.pair-a.selected td, tr.pair-b.selected td { background: var(--accent-subtle); }
 .game-panel { margin-bottom: var(--s5); }
+.game-panel-head { align-items: center; min-height: 0; padding: var(--s4) var(--pad-card); }
+.game-panel-head .game-id { display: grid; gap: 2px; min-width: 0; }
+.game-panel-head h2 { font-size: var(--fs-2xl); line-height: 1.05; letter-spacing: -.01em; }
+.game-panel-head h2 .faint { font-weight: 400; }
 /* The open game (alan, 2026-10-12): both teams, each a side-stripped block of five champion buttons; the chosen champion's
    exact build opens below in the same panel (components/GameBuild.tsx), swapping in place between champions. */
 .game-panel .panel-body { display: grid; gap: var(--s4); }

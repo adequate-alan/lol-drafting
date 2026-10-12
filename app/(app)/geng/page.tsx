@@ -6,7 +6,9 @@ import { ChampionRow, SectionHeader, SourceLinks } from "@/components/ui";
 import { getDrawerData, getGenG, getMeta, getProDrafts, getTeamPlayers } from "@/lib/data";
 import { profileHref } from "@/lib/pinned-players";
 import { nameMap, sourceMap } from "@/lib/lookup";
-import { ROLES, type GenGPattern } from "@/lib/schema";
+import { ROLES, type GenGPattern, type Role } from "@/lib/schema";
+
+const ROLE_NAME: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
 
 // Each section names itself in the tab and in history, so a route change is announced (layout template adds the site).
 export const metadata = { title: "Gen.G" };
@@ -42,8 +44,8 @@ export default function GenG() {
           {players.map((p) => (
             <li key={p.id}>
               <Link className="player-chip" href={profileHref(String(p.id))} title={`${p.name}'s recorded games, champions and builds`}>
-                <PlayerAvatar id={p.id} name={p.name} size="lg" />
-                <span className="team-player-text"><b>{p.name}</b><span className="xs muted">{p.role} · {p.games} recorded game{p.games === 1 ? "" : "s"}</span></span>
+                <PlayerAvatar id={p.id} name={p.name} size="xl" />
+                <span className="team-player-text"><b>{p.name}</b><span className="small muted">{ROLE_NAME[p.role]}</span><span className="xs faint tnum">{p.games} recorded game{p.games === 1 ? "" : "s"}</span></span>
               </Link>
             </li>
           ))}
