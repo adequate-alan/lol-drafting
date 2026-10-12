@@ -78,7 +78,7 @@ export function PinnedPlayersView({ names, events, drawerData }: { names: Record
       <div className="split builds-split">
         <nav className="pick-rail pinned-rail" aria-label="Pinned players">
           <div className="rail-tools one">
-            <PinPicker kind="player" value="" options={directory.map((p) => [p.id, p.label])} onChange={(id) => id && open(id)} />
+            <PinPicker kind="player" value="" placeholder="Find a player" options={directory.map((p) => [p.id, p.label])} onChange={(id) => id && open(id)} />
           </div>
           <ul>
             <li>
@@ -217,7 +217,7 @@ function Profile({ rows, id, fallbackName, filter, champion, result, pinned, onP
         <Panel title="Champions" meta={`${p.champions.length} played · most games first · click one for its builds`}>
           <div className="table-wrap flat">
             <table className="mini champ-history">
-              <thead><tr><th>Champion</th><th>Role</th><th className="num">Games</th><th className="num">W–L</th><th className="num">Win rate</th><th className="num">Latest patch</th><th className="num">Last game</th></tr></thead>
+              <thead><tr><th>Champion</th><th className="hide-phone">Role</th><th className="num">Games</th><th className="num">W–L</th><th className="num">Win rate</th><th className="num">Latest patch</th><th className="num hide-phone">Last game</th></tr></thead>
               <tbody>
                 {p.champions.map((c) => {
                   const on = c.champion === champion;
@@ -225,12 +225,12 @@ function Profile({ rows, id, fallbackName, filter, champion, result, pinned, onP
                     <tr key={`${c.champion}-${c.role}`} className={`click-row ${on ? "selected" : ""}`} aria-selected={on}
                       onClick={() => update({ champion: on ? undefined : c.champion })} title={on ? "Show every champion" : `Show ${p.name}'s ${name(c.champion)} games and builds`}>
                       <td><span className="cell-champ"><InteractiveChampion id={c.champion} role={c.role}><ChampIcon id={c.champion} name={name(c.champion)} size="xs" /></InteractiveChampion>{name(c.champion)}</span></td>
-                      <td>{ROLE_NAME[c.role]}</td>
+                      <td className="hide-phone">{ROLE_NAME[c.role]}</td>
                       <td className="num tnum">{c.games}</td>
                       <td className="num tnum">{c.wins}–{c.losses}</td>
                       <td className="num tnum">{pct(c.wins, c.games)}{c.games < 5 && <span className="low" title="Fewer than 5 recorded games">*</span>}</td>
                       <td className="num tnum">{patchLabel(c.latestPatch)}</td>
-                      <td className="num tnum">{shortDate(c.last.game.date)}</td>
+                      <td className="num tnum hide-phone">{shortDate(c.last.game.date)}</td>
                     </tr>
                   );
                 })}

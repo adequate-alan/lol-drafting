@@ -79,7 +79,9 @@ const NOUN: Record<PinKind, [string, string]> = { player: ["Player", "players"],
  * A typeable, pinnable filter: "" means all. `options` are [value, label] in the current scope (a tournament is pinned
  * by its event id and shown by its name).
  */
-export function PinPicker({ kind, value, options: entries, onChange }: { kind: PinKind; value: string; options: [string, string][]; onChange: (v: string) => void }) {
+export function PinPicker({ kind, value, options: entries, onChange, placeholder }: {
+  kind: PinKind; value: string; options: [string, string][]; onChange: (v: string) => void; placeholder?: string;
+}) {
   const id = useId();
   const { isPinned, toggle } = usePins(kind);
   const [noun, plural] = NOUN[kind];
@@ -124,7 +126,7 @@ export function PinPicker({ kind, value, options: entries, onChange }: { kind: P
         {value && !query && isPinned(value) && <PinIcon on />}
         <input ref={input} type="text" role="combobox" aria-label={noun} aria-autocomplete="list" aria-expanded={open} aria-controls={listId}
           aria-activedescendant={open && options.length ? `${id}-${active}` : undefined}
-          placeholder={label(value)} value={query} spellCheck={false} autoComplete="off"
+          placeholder={!value && placeholder ? placeholder : label(value)} value={query} spellCheck={false} autoComplete="off"
           onFocus={() => { setOpen(true); setActive(Math.max(0, options.indexOf(value))); }}
           onChange={(e) => { setQuery(e.target.value); setOpen(true); setActive(0); }} onKeyDown={onKey} />
         <svg className="select-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>

@@ -728,8 +728,9 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .builds-views .count { color: var(--text-faint); font-family: var(--font-mono); font-size: var(--fs-xs); }
 .rail-tools.one { grid-template-columns: minmax(0, 1fr); }
 .rail-player-row { display: flex; align-items: center; gap: var(--s1); }
-.rail-player-row > button:first-child { flex: 1; min-width: 0; }
-.rail-player-row .pin-btn { margin-right: var(--s2); }
+.pick-rail li.rail-player-row > button:first-child { flex: 1; min-width: 0; }
+.pick-rail li.rail-player-row > button.pin-btn { flex: none; width: auto; padding: var(--s2); margin-right: var(--s2); }
+.pick-rail li.rail-player-row > button.pin-btn .pin-icon { margin: 0; }
 .champ.empty-icon { border: 1px dashed var(--border); background: transparent; }
 .pinned-empty { display: grid; gap: var(--s2); padding: var(--s5); border: 1px dashed var(--border-strong); border-radius: var(--r-lg); }
 .pinned-table td .pin-btn .pin-icon { margin: 0; }

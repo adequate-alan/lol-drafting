@@ -675,12 +675,34 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     await picker.click();
     const firstOpt = (await page.locator(".player-menu [role=option]").nth(1).textContent()).trim();
     const saved = await page.evaluate(() => localStorage.getItem("pro-builds:pinned-players"));
-    check("builds: a pinned player is saved and listed first", firstOpt === pinned && (saved ?? "").includes(pinned), `${pinned} · first: ${firstOpt} · saved ${saved}`);
+    check("builds: a pinned player is saved by player id and listed first", firstOpt === pinned && /^\["\d+"\]$/.test(saved ?? ""), `${pinned} · first: ${firstOpt} · saved ${saved}`);
     await page.locator(".player-menu [role=option]").nth(1).click();
     await page.waitForTimeout(200);
     check("builds: choosing a player filters the games to that player", (await page.locator(".build-pick b").allTextContents()).every((p) => p === pinned) && page.url().includes("player="), page.url());
+    // Pinned Players hub: the pinned player is listed, their profile shows champions and match history, a game opens
+    // the exact Pro Builds view, and the pin survives a reload.
+    const ids = JSON.parse(saved ?? "[]");
+    await open("/pro-builds/pinned/");
+    await page.locator(".pinned-table tbody tr").first().waitFor({ timeout: 8000 }).catch(() => {});
+    check("pinned: the hub lists the pinned player with recorded games", (await page.locator(".pinned-table tbody tr").count()) === 1 && (await page.locator(".pinned-table tbody tr").first().innerText()).includes(pinned), "");
+    await page.locator(".pinned-table tbody tr").first().click();
+    await page.locator(".match-history tbody tr").first().waitFor({ timeout: 8000 }).catch(() => {});
+    check("pinned: a profile shows facts, champions and the match history", page.url().includes(`player=${ids[0]}`) && (await page.locator(".player-facts").count()) === 1 && (await page.locator(".champ-history tbody tr").count()) > 0 && (await page.locator(".match-history tbody tr").count()) > 0, page.url());
+    await page.locator(".champ-history tbody tr").first().click();
+    await page.waitForTimeout(200);
+    check("pinned: picking a champion lists that champion's builds and filters the history", (await page.locator(".build-lines li").count()) > 0 && page.url().includes("champion="), page.url());
+    await page.locator(".match-history tbody tr").first().click();
+    await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
+    check("pinned: a match opens the exact Pro Builds game for that player", /\/pro-builds\/\?champion=.+&game=\d+&player=\d+/.test(page.url()) && (await page.locator(".build-pick").count()) >= 1 && (await page.locator(".game-player").innerText()).includes(pinned), page.url());
+    await page.goBack();
+    await page.waitForTimeout(400);
+    check("pinned: Back returns to the profile, pin kept", page.url().includes("/pro-builds/pinned/") && (await page.evaluate(() => localStorage.getItem("pro-builds:pinned-players"))) === saved, page.url());
     await page.evaluate(() => localStorage.removeItem("pro-builds:pinned-players"));
-    await page.locator(".builds-tools button", { hasText: "Clear filters" }).click();
+    await open("/pro-builds/pinned/");
+    await page.waitForTimeout(300);
+    check("pinned: with no pins the hub explains how to pin", /No pinned players yet/.test(await page.locator(".builds-main").innerText()), "");
+    await open("/pro-builds/");
+    await page.locator(".build-pick").first().waitFor({ timeout: 8000 }).catch(() => {});
     // Teams and tournaments pin the same way (one list each, saved in this browser); a pinned team is starred in the strip.
     const teamPicker = page.locator(".player-picker input[aria-label='Team']");
     await teamPicker.click();
