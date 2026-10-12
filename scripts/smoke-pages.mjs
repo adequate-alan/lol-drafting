@@ -753,7 +753,7 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     const portraits = await page.$$eval(".team-players .player-avatar img", (xs) => xs.map((i) => ({ alt: i.alt, ok: i.complete && i.naturalWidth > 0, title: i.parentElement.title })));
     const named = (n) => portraits.find((p) => p.alt.includes(n));
     check("portraits: Chovy and Ruler load with a photo credit", ["Chovy", "Ruler"].every((n) => named(n)?.ok && /Photo: .+ via Wikimedia Commons/.test(named(n).title)), JSON.stringify(portraits.map((p) => [p.alt, p.ok])));
-    const initials = await page.$$eval(".team-players .player-avatar.initials", (xs) => xs.map((x) => x.textContent.trim()));
+    const initials = await page.$$eval(".team-players .player-avatar.initials", (xs) => xs.map((x) => x.dataset.initials));
     check("portraits: players without a photo show initials", initials.length > 0 && initials.every((t) => /^[A-Z0-9]{1,2}$/i.test(t)), initials.join(","));
     await open("/pro-builds/");
     await page.locator(".build-pick").first().waitFor({ timeout: 8000 }).catch(() => {});

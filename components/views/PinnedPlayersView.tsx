@@ -279,7 +279,7 @@ function Profile({ rows, id, fallbackName, filter, champion, result, game, pinne
                           <td><span className="cell-champ"><ChampIcon id={r.build.champion} name={name(r.build.champion)} size="xs" />{name(r.build.champion)}</span></td>
                           <td className="hide-phone">{ROLE_NAME[r.build.role]}</td>
                           <td className="hide-phone nowrap">{r.team}</td>
-                          <td className="nowrap">{r.opponentTeam}{r.opponent && <span className="muted"> · {name(r.opponent.champion)}</span>}</td>
+                          <td className="match-opp">{r.opponentTeam}{r.opponent && <span className="muted nowrap"> · {name(r.opponent.champion)}</span>}</td>
                           <td className={`hide-phone side-${r.side}`}><span className="side-tag">{r.side === "blue" ? "Blue" : "Red"}</span></td>
                           <td><span className={r.won ? "win" : "loss"}>{r.won ? "Win" : "Loss"}</span></td>
                           <td className="num tnum hide-phone">G{r.game.game}</td>

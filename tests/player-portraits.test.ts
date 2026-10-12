@@ -55,7 +55,7 @@ describe("avatars", () => {
     expect(portraitOf(999999999)).toBeUndefined();
     const html = renderToStaticMarkup(createElement(PlayerAvatar, { id: 999999999, name: "Ruler" }));
     expect(html).toContain("initials");
-    expect(html).toContain(">RU<");
+    expect(html).toContain('data-initials="RU"');
     expect(html).not.toMatch(/<img|ddragon|champion/);
   });
 
