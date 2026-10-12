@@ -240,6 +240,60 @@ export const ProGames = z.object({
 });
 export type ProGames = z.infer<typeof ProGames>;
 
+// ---------- pro-builds.json + build-assets.json (Observed only; written by scripts/refresh-pro-data.mjs) ----------
+// One player's setup in one recorded game (data/pro-games.json id), read from Gol.gg's build answer for that game and
+// player: summoner spells, the final inventory, the rune page, the order of ability points and the purchase log in
+// game seconds. A field Gol.gg did not give is absent and named in `missing`; nothing is filled in.
+const ItemId = z.number().int().nonnegative();
+export const ProBuild = z.object({
+  game: z.number().int().positive(),
+  side: z.enum(["blue", "red"]),
+  role: z.enum(ROLES),
+  champion: ChampionId,
+  player: z.string().min(1),
+  playerId: z.number().int().positive(),
+  spells: z.tuple([z.number().int().positive(), z.number().int().positive()]).optional(),
+  spellCasts: z.tuple([z.number().int(), z.number().int()]).optional(),
+  final: z.array(ItemId).length(6).optional(), // inventory slots at the end of the game, 0 = empty slot
+  trinket: z.number().int().positive().optional(),
+  runes: z.object({
+    primary: z.number().int(), keystone: z.number().int(), primaryRunes: z.array(z.number().int()).length(3),
+    secondary: z.number().int(), secondaryRunes: z.array(z.number().int()).length(2),
+    shards: z.array(z.number().int()).length(3).optional(),
+  }).optional(),
+  // The ability given each point, in order: one per champion level for most champions; some (Viktor, Aphelios) record
+  // more points than levels, so this is the order of points, not a level number.
+  skills: z.string().regex(/^[QWER]{1,30}$/).optional(),
+  skillCasts: z.tuple([z.number().int(), z.number().int(), z.number().int(), z.number().int()]).optional(),
+  purchases: z.array(z.tuple([z.number().int().nonnegative(), z.number().int().positive(), z.enum(["buy", "sell"])])).optional(),
+  missing: z.array(z.string()).optional(),
+  checkedOn: Day,
+});
+export type ProBuild = z.infer<typeof ProBuild>;
+export const ProBuilds = z.object({
+  builds: z.array(ProBuild),
+  unavailable: z.array(z.object({ game: z.number().int().positive(), checkedOn: Day, reason: z.string() })),
+});
+export type ProBuilds = z.infer<typeof ProBuilds>;
+// Names, icons and short stats from the game patch's Data Dragon files, for exactly the ids the builds use.
+const Named = { name: z.string().min(1), icon: z.string().min(1) };
+export const PatchAssets = z.object({
+  ddragon: z.string().regex(/^\d+\.\d+\.\d+$/),
+  items: z.record(z.object({
+    name: z.string().min(1), gold: z.number(), stats: z.array(z.string()).optional(), text: z.string().optional(),
+    from: z.array(z.number().int()).optional(), kind: z.enum(["completed", "boots", "component", "starter-or-component", "consumable", "trinket"]),
+  })),
+  runes: z.record(z.object({ ...Named, short: z.string(), shard: z.boolean().optional() })),
+  trees: z.record(z.object({ ...Named, rows: z.array(z.array(z.number().int())) })),
+  spells: z.record(z.object({ ...Named, cooldown: z.string().optional() })),
+  abilities: z.record(z.object(Object.fromEntries(["Q", "W", "E", "R"].map((k) => [k, z.object({ ...Named, maxrank: z.number().int().positive() })])) as
+    Record<"Q" | "W" | "E" | "R", z.ZodObject<{ name: z.ZodString; icon: z.ZodString; maxrank: z.ZodNumber }>>)),
+  unnamed: z.array(z.string()).optional(), // ids this patch's files do not name: shown by id, not asked for again
+});
+export type PatchAssets = z.infer<typeof PatchAssets>;
+export const BuildAssets = z.object({ patches: z.record(PatchAssets) });
+export type BuildAssets = z.infer<typeof BuildAssets>;
+
 // ---------- comp-shells.json ----------
 export const CompShell = z.object({
   id: id,
@@ -463,6 +517,8 @@ export const Files = {
   "top.json": z.array(TopPick),
   "pro-drafts.json": z.array(ProDraft),
   "pro-games.json": ProGames,
+  "pro-builds.json": ProBuilds,
+  "build-assets.json": BuildAssets,
   "comp-shells.json": z.array(CompShell),
   "discovered-comps.json": DiscoveredComps,
   "pool.json": z.array(PoolEntry),

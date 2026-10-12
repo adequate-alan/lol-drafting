@@ -117,10 +117,31 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   miss a field or contradict their series are rejected and reported as run warnings, never filled in.
 - Tournament totals are replaced only when the champion table sums to 10 picks per match-list game and, with every game
   recorded, agrees champion by champion; then `rolePicks` comes from the game pages. Never across patches.
-- The updater writes only `pro-games.json`, `meta.json` and `sources.json`; imported games add no pro-derived
+- The updater writes only `pro-games.json`, `meta.json`, `sources.json`, `pro-builds.json` and `build-assets.json`; imported games add no pro-derived
   alternatives (alan: new pro pairings stay Pro Evidence). It commits as adequate-alan only when verified data changed,
   after test/typecheck/build, then starts `pages.yml`. A supplied game link becomes verified only when its game shows the claim.
 - Tests that check fixed Demacia numbers are scoped to the known events; new imports must never be able to break them.
+
+## Pro Builds (alan, 2026-10-12)
+
+- Items, runes, summoner spells and skill order from recorded games, in the shared champion drawer
+  (`components/ProBuilds.tsx`, so every page that opens a champion has it; tabs Builds | Runes | Skills | Games, a game
+  strip to switch players, filters for tournament, patch, team and player). Observed Pro Evidence only: it never scores
+  and never touches saved pairings, rankings, Comp Check or pool tiers.
+- `data/pro-builds.json`: one record per player per game (Gol.gg game id, side, role, player and Gol.gg player id,
+  spells, final inventory slots, rune page, `skills` as one letter per ability point, purchase log `[seconds, item, buy|sell]`,
+  `missing` for anything Gol.gg did not give). Read by the daily refresh from the game page (player ids) and Gol.gg's
+  build answer (`POST /game/ajax.build.php`, the request the Builds tab makes; not disallowed by robots.txt), at most 45
+  games a run (`scripts/golgg/builds.mjs`). A game with no builds yet goes in `unavailable` and is asked again after 3 days.
+- `data/build-assets.json`: names, icons, item stats and ability max ranks per game patch, from that patch's Data Dragon
+  files (CommunityDragon for stat shard names), only for ids the builds use; ids a patch does not name are `unnamed`.
+  Icons load from Data Dragon's CDN at the game's version, like champion icons; nothing is stored in the repo.
+- One game shows exactly that player's setup; Start / Boots / Core / Later are read in order from its purchase log and
+  labelled as such; Final is the end-of-game inventory, never the purchase history. "Common" counts games in the chosen
+  scope (keystones, items, boots, max orders, spell pairs) and names the scope; it is never one player's build and never
+  "optimal". The skill grid shows only recorded levels; max order uses Data Dragon max ranks.
+- The data loads as its own browser chunk when a drawer opens (`lib/pro-builds-bundle.ts`), not in every page.
+  `tests/pro-builds.test.ts` holds parsing, mapping, integrity and the refresh step.
 
 ## Patch Notes (alan, 2026-10-12)
 

@@ -365,7 +365,7 @@ await page.locator(".theme-toggle").click();
   const marks = await page.locator("#mage-bot-siege .lu-slot.has-saved .lu-name").allTextContents();
   check("comps: clicking Nautilus opens the drawer and marks Ziggs as Synergy", (await drawer.locator("h2").textContent()) === "Nautilus" && marks.includes("Ziggs"), marks.join(", "));
   const layers = await drawer.locator(".layer").evaluateAll((els) => els.map((e) => e.className));
-  check("comps: drawer keeps Synergy, Pro and Logic separate", /^layer clash,(layer clash proposed,)?layer pro,layer logic$/.test(layers.join()), layers.join(" | "));
+  check("comps: drawer keeps Synergy, Pro and Logic separate", /^layer clash,(layer clash proposed,)?layer pro,layer pro builds,layer logic$/.test(layers.join()), layers.join(" | "));
   await drawer.locator("[aria-label='Next champion']").click();
   check("comps: next moves through the comp in place", (await drawer.locator("h2").textContent()) === "Gnar" && page.url().endsWith("/comps/?kind=all"), page.url());
   await page.keyboard.press("Escape");
@@ -597,6 +597,35 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   const one = await page.$$eval(".table-wrap tbody tr[data-side]", (rs) => rs.map((r) => r.dataset.side));
   check("pro drafts: a one-sided view shows no pairs and keeps each row's side", (await page.locator("tr.pair-a, tr.pair-b").count()) === 0 && one.includes("blue") && one.includes("red"), `${team}: ${one.join(",")}`);
 }
+// Pro Builds in the shared champion drawer (components/ProBuilds.tsx): one recorded game, then each tab
+{
+  await open("/meta/?role=TOP");
+  await page.locator(".hub-table .champ-link").first().click();
+  const b = page.locator(".drawer .builds");
+  await b.locator(".build-pick").first().waitFor({ timeout: 8000 }).catch(() => {});
+  const picks = await b.locator(".build-pick:not(.common)").count();
+  check("builds: the drawer lists recorded pro builds for the champion", picks > 0, `${picks} games`);
+  if (picks > 0) {
+    await b.locator(".build-pick:not(.common)").first().click();
+    const ctx = await b.locator(".build-context").innerText().catch(() => "");
+    check("builds: a game names the player, the lane opponent, event, patch, date and result", /\bvs\b/.test(ctx) && /\d+\.\d+/.test(ctx) && /Win|Loss/.test(ctx), ctx.replace(/\s+/g, " "));
+    const kv = await b.locator(".build-kv").innerText().catch(() => "");
+    const tips = await b.locator(".build-kv .bicon[title]").evaluateAll((els) => els.map((e) => e.getAttribute("title")));
+    check("builds: spells, purchase-order summary and final inventory, items named with cost", /Spells/.test(kv) && /Final/.test(kv) && tips.some((t) => / gold\n/.test(t ?? "")), kv.replace(/\s+/g, " ").slice(0, 120));
+    await page.waitForTimeout(800);
+    const loaded = await b.locator(".bicon img").evaluateAll((els) => els.filter((e) => e.complete && e.naturalWidth > 0).length);
+    check("builds: item and spell icons load from Data Dragon", loaded > 3, `${loaded} icons`);
+    await b.locator("[role=tab]", { hasText: "Runes" }).click();
+    const lit = await b.locator(".rune-row.keystone .bicon:not(.dim)").count(), dim = await b.locator(".rune-row .bicon.dim").count();
+    check("builds: runes show the chosen keystone with the other options dimmed", lit === 1 && dim > 5, `${lit} lit, ${dim} dimmed`);
+    await b.locator("[role=tab]", { hasText: "Skills" }).click();
+    const cols = await b.locator(".skill-grid thead th").count(), ups = await b.locator(".skill-grid td.up").count();
+    check("builds: skill grid marks exactly one ability per recorded point", cols > 1 && ups === cols - 1, `${cols - 1} levels, ${ups} marks`);
+    await b.locator("[role=tab]", { hasText: "Games" }).click();
+    check("builds: games tab lists every game in scope", (await b.locator(".build-games tbody tr").count()) === picks, "");
+  }
+  await page.keyboard.press("Escape");
+}
 // Patch Notes: Riot's official values, patch navigation, filters, anchors, compare, and the drawer link.
 await open("/patch-notes/");
 {
@@ -648,6 +677,21 @@ if (shots) {
       await page.locator(".lu-champ").first().click();
       await page.waitForTimeout(400);
       await page.screenshot({ path: `${shots}/review-drawer-${tag}-${theme}.png` });
+      await page.keyboard.press("Escape");
+      await open("/meta/?role=TOP");
+      await page.locator(".hub-table .champ-link").first().click();
+      await page.locator(".drawer .builds .build-pick").first().waitFor({ timeout: 8000 }).catch(() => {});
+      await page.locator(".drawer .builds .build-pick:not(.common)").first().click().catch(() => {});
+      await page.locator(".drawer .builds").scrollIntoViewIfNeeded().catch(() => {});
+      await page.waitForTimeout(600);
+      await page.screenshot({ path: `${shots}/review-builds-${tag}-${theme}.png` });
+      await page.locator(".drawer [role=tab]", { hasText: "Runes" }).click().catch(() => {});
+      await page.waitForTimeout(400);
+      await page.screenshot({ path: `${shots}/review-runes-${tag}-${theme}.png` });
+      await page.locator(".drawer [role=tab]", { hasText: "Skills" }).click().catch(() => {});
+      await page.waitForTimeout(400);
+      await page.screenshot({ path: `${shots}/review-skills-${tag}-${theme}.png` });
+      await page.keyboard.press("Escape");
       await open("/pool/?event=demacia-cup-2026");
       await page.locator("[role=combobox][aria-label='Tournament']").click();
       await page.waitForTimeout(200);

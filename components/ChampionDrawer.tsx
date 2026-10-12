@@ -1,7 +1,8 @@
 "use client";
 // Champion drawer: one champion in one role, opened from the Comp Library and the Meta page without leaving it.
 // Right-side panel on desktop, bottom sheet on mobile. The three layers keep separate blocks:
-//   Synergy (alan's pool tier and saved pairings) · Pro evidence (stats, games, observed pairings) · Logic (attributes).
+//   Synergy (alan's pool tier and saved pairings) · Pro evidence (stats, games, observed pairings) · Pro builds (items,
+//   runes, skills and spells from recorded games, components/ProBuilds.tsx) · Logic (attributes).
 // Pass `comp` to read the champion inside a five-man shell: saved and pro links to each comp-mate, the slot's job,
 // and prev / next through the five slots.
 import Link from "next/link";
@@ -15,6 +16,7 @@ import { PARTNER_ROLE, TIERS, eventStats, listsRole, presenceOf, proGames, roleS
 import { handAlts } from "@/lib/pro-alternatives";
 import { shownPartners } from "@/lib/proposed";
 import { ProposedGroups, ProposedTag } from "@/components/ProposedSynergy";
+import { ProBuilds } from "@/components/ProBuilds";
 import { PatchChanges } from "@/components/ChangedSince";
 import { synergyParts, teamNeeds } from "@/lib/recommend";
 import { ROLES, type Champion, type Role } from "@/lib/schema";
@@ -266,6 +268,8 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
             </>
           )}
         </LayerBlock>
+
+        <ProBuilds champion={id} role={role} names={names} events={index.events} />
 
         <LayerBlock layer="logic" title="Logic">
           {champ ? (
