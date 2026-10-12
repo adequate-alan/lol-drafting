@@ -193,7 +193,7 @@ export function ScoutingReport({ item, names, sources, events, draftLabels, prop
           {item.identity && <p className="prop-identity">{item.identity}</p>}
           <ProposedGroups links={item.links} names={names} proCount={proCount} noteFor={noteFor} />
         </Section>
-        <Section layer="pro" title="Pro Pairings">
+        <Section layer="pro" title="Pro pairings">
           <GameList games={games} role={item.role} names={names} />
         </Section>
       </article>
@@ -215,7 +215,7 @@ export function ScoutingReport({ item, names, sources, events, draftLabels, prop
           </SBox>
         </Section>
         <ProposedSection links={proposed} names={names} proCount={proCount} />
-        <Section layer="pro" title="Pro Pairings">
+        <Section layer="pro" title="Pro pairings">
           <ProTable list={r.observedProPairings} names={names} sources={sources} events={events} role="SUPPORT" partnerLabel="Support" draftLabels={draftLabels} />
           <Read text={r.playoffRead} />
         </Section>
@@ -243,7 +243,7 @@ export function ScoutingReport({ item, names, sources, events, draftLabels, prop
           </SBox>
         </Section>
         <ProposedSection links={proposed} names={names} proCount={proCount} />
-        <Section layer="pro" title="Pro Pairings">
+        <Section layer="pro" title="Pro pairings">
           <ProTable list={r.observedProPairings} names={names} sources={sources} events={events} role={other} partnerLabel={other === "MID" ? "Mid" : "Jungle"} draftLabels={draftLabels} />
           <ProShapes list={r.observedBotShapes} names={names} anchor={r.anchor} draftLabels={draftLabels} />
           <Read text={r.playoffRead} />
@@ -273,7 +273,7 @@ export function ScoutingReport({ item, names, sources, events, draftLabels, prop
         </SBox>
       </Section>
       <ProposedSection links={proposed} names={names} proCount={proCount} />
-      <Section layer="pro" title="Pro Pairings"
+      <Section layer="pro" title="Pro pairings"
         end={s && <span className="tnum">{s.picks} playoff picks · {Math.round(s.winRate * 100)}% WR{s.lowSample ? " · low sample" : ""}</span>}>
         <ProTable list={r.observedProPairings} names={names} sources={sources} events={events} role="JUNGLE" partnerLabel="Jungle" draftLabels={draftLabels} />
         <ProShapes list={r.observedBotShapes} names={names} anchor={r.champion} draftLabels={draftLabels} />

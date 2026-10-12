@@ -348,8 +348,11 @@ function chipsOf(c: Candidate, names: Record<string, string>, bot?: string): Chi
     out.push({ key: "syn proposed", label: "Proposed", title: "Proposed synergy with a locked pick: kit-based synergy that hasn't been added to your saved pairings." });
   }
   if (c.pro) out.push({ key: "pro", label: `Pro · ${plural(c.pro.score, "game")}` }); // rendered as the Pro evidence popover
-  if (r.bestFix) out.push({ key: "fix", label: "Best fix", title: "Covers the most of this role's needs" });
-  if (c.bestFit) out.push({ key: "fit", label: "Best fit", title: "Top three on comp fit: synergy with your picks, team needs, matchups and risks" });
+  // One label when a pick is both, so "Best fix · Best fit" never reads as a typo
+  const FIX = "Covers the most of this role's needs", FIT = "Top three on comp fit: synergy with your picks, team needs, matchups and risks";
+  if (r.bestFix && c.bestFit) out.push({ key: "fix", label: "Best fix and fit", title: `Best fix: ${FIX.toLowerCase()}. Best fit: ${FIT.toLowerCase()}` });
+  else if (r.bestFix) out.push({ key: "fix", label: "Best fix", title: FIX });
+  else if (c.bestFit) out.push({ key: "fit", label: "Best fit", title: FIT });
   if (c.counter) out.push({ key: "counter", label: "Counter" }); // rendered as the Counter popover
   if (c.theoretical) out.push({ key: "theory", label: "Theoretical", title: `Not one of ${bot ?? "the bot"}'s saved supports: theoretical, not recommended` });
   if (r.parts.some((p) => p.kind === "risk")) out.push({ key: "risk", label: "Risk" });
@@ -390,7 +393,7 @@ function FitRow({ c, bot, names, proCtx, hovered, onHover, onPick, onOpen }: {
           {chips.length > 0 && <span className="sig-line">{chips.map((s) => s.key === "pro" && c.pro
             ? <ProEvidenceTrigger key={s.key} pro={c.pro} champion={c.champion} role={c.role} ctx={proCtx} />
             : s.key === "counter" && counter ? <CounterTrigger key={s.key} c={counter} names={names} />
-              : <span key={s.key} className={`sig ${s.key}`} title={s.title} onClick={onPick}>{s.label}</span>)}</span>}
+              : <span key={s.key} className={`sig ${s.key}`} title={s.title}>{s.label}</span>)}</span>}
         </span>
         <span className="fit-reason truncate">{benefit}{drawback && <span className="drawback"> · {drawback}</span>}</span>
       </div>
@@ -538,7 +541,10 @@ function DraftSlot({ side, role, value, active = false, preview, onActivate, onL
           <span className="slot-icon" key={value}><ChampIcon id={value} name={name} role={ally ? role : undefined} size={ally ? "xxl" : "lg"} /></span>
           <span className="slot-text">{roleTag}<span className="slot-name truncate">{name}</span></span>
         </button>
-        <button className="slot-change" onClick={() => setEditing(true)} aria-label={`Change ${label} (${name})`} title={`Pick a different ${ROLE_LABEL[role]}, or remove ${name}`}>Change</button>
+        <button className="slot-change" onClick={() => setEditing(true)} aria-label={`Change ${label} (${name})`} title={`Pick a different ${ROLE_LABEL[role]}, or remove ${name}`}>
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true"><path d="M7.8 2.2 9.8 4.2 4.3 9.7 1.8 10.2 2.3 7.7Z" /></svg>
+          <span className="slot-change-text">Change</span>
+        </button>
       </div>
     );
   }
@@ -561,7 +567,7 @@ function DraftSlot({ side, role, value, active = false, preview, onActivate, onL
               onChange={(e) => { setText(e.target.value); setOpen(true); setHi(0); if (list.current) list.current.scrollTop = 0; }}
               onFocus={() => { place(); setOpen(true); onActivate?.(); }} onBlur={() => { setOpen(false); setEditing(false); setText(""); }} onKeyDown={onKey} />
             {open && (matches.length > 0 || current) && (
-              <ul id={listId} ref={list} role="listbox" className={`picker-list ${up ? "up" : ""}`}>
+              <ul id={listId} ref={list} role="listbox" tabIndex={-1} className={`picker-list ${up ? "up" : ""}`}>
                 {current && (
                   <li className="remove" role="presentation" onMouseDown={(e) => { e.preventDefault(); remove(); }}>
                     <span className="x" aria-hidden="true">×</span><span className="name">Remove {current}</span><span className="roles">Delete</span>
