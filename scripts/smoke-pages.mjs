@@ -394,9 +394,17 @@ await page.locator(".theme-toggle").click();
     (await yp.locator(".lu-top .lu-name").textContent()) === "Ambessa" && (await yp.locator(".shell-preview").count()) === 1 && /top=ambessa&jungle=pantheon/.test(variation ?? ""), variation ?? "");
   await yp.locator(".shell-preview button", { hasText: "Reset" }).click();
   check("comps: Reset restores the original comp", (await yp.locator(".lu-top .lu-name").textContent()) === "Rumble" && (await yp.locator(".shell-preview").count()) === 0, "");
-  await yp.locator(".src-toggle").click();
+  await yp.locator(".src-toggle", { hasText: "Details" }).click();
   check("comps: Details expands the full why plus the exact evidence and refresh status",
     /Gol\.gg game/.test((await yp.locator(".shell-sources").textContent()) ?? "") && /Why it works/.test((await yp.locator(".shell-details").textContent()) ?? ""), "");
+  check("comps: the library shows its last addition", /Last addition: (\w{3} \d{1,2}, \d{4}|—)/.test((await page.locator(".pro-freshness").first().textContent()) ?? ""), "");
+  const vt = page.locator(".var-toggle").first();
+  if (await vt.count()) {
+    await vt.click();
+    const vs = page.locator(".shell-variations").first();
+    check("comps: observed variations expand with their Gol.gg games", (await vs.count()) === 1 && (await vs.locator("a[href*='gol.gg/game/stats/']").count()) > 0, "");
+    await vt.click();
+  }
   check("comps: short job labels on the card, the full job kept in its title",
     (await yp.locator(".lu-top .lu-job").textContent()) === "Zone control" && (await yp.locator(".lu-top .lu-job").getAttribute("title")) === "Zone space and cut off exits", "");
 }
