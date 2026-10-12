@@ -28,6 +28,7 @@ import {
   type BuildRow, type BuildScope, type ChampionBuilds, type Common, type Tally,
 } from "@/lib/pro-builds";
 import { ROLES, type Role } from "@/lib/schema";
+import { cleanFrom, draftHref as backHref } from "@/lib/my-role";
 
 type Mode = "games" | "common" | "compare";
 const MODES: [Mode, string][] = [["games", "Games"], ["common", "Common build"], ["compare", "Compare"]];
@@ -58,10 +59,14 @@ export function ProBuildsView({ index, names, events, drawerData }: {
   const evName = (r: BuildRow) => events[r.game.event] ?? r.game.tournament;
 
   // Selected champion and role: the URL's, else the champion's most played role, else the most recorded entry.
+  // From Draft Room (`from` holds the draft) the asked champion and role are exact: no builds there is an empty state,
+  // never another champion or role shown in its place.
+  const from = cleanFrom(get("from"));
   const askedRole = ROLES.find((r) => r === get("role")?.toUpperCase());
-  const champion = get("champion") && index.some((e) => e.champion === get("champion")) ? get("champion")! : index[0]?.champion;
+  const askedChampion = get("champion");
+  const champion = askedChampion && (from || index.some((e) => e.champion === askedChampion)) ? askedChampion : index[0]?.champion;
   const roles = index.filter((e) => e.champion === champion);
-  const entry = roles.find((e) => e.role === askedRole) ?? roles[0];
+  const entry = roles.find((e) => e.role === askedRole) ?? (from && askedRole ? undefined : roles[0]);
   const role = entry?.role;
 
   // Rail
@@ -78,6 +83,15 @@ export function ProBuildsView({ index, names, events, drawerData }: {
     const ul = rail.current, el = ul?.querySelector<HTMLElement>("li button.active");
     if (ul && el && (el.offsetTop < ul.scrollTop || el.offsetTop + el.offsetHeight > ul.scrollTop + ul.clientHeight)) ul.scrollTop = el.offsetTop - ul.clientHeight / 3;
   }, [champion, role]);
+  // Phones arriving from Draft Room land on the builds, not the champion list above them (alan, 2026-10-12).
+  // Once the builds have loaded (before that the page is too short to scroll).
+  const main = useRef<HTMLDivElement>(null);
+  const landed = useRef(false);
+  useEffect(() => {
+    if (landed.current || !from || (!all && !failed)) return;
+    landed.current = true;
+    if (window.matchMedia("(max-width: 760px)").matches) main.current?.scrollIntoView({ block: "start" });
+  }, [all, failed, from]);
   // Picking a champion found by a player's name keeps that player selected.
   const choose = (e: ChampionBuilds, player?: string) => update({ champion: e.champion, role: e.role, game: undefined, a: undefined, b: undefined, event: undefined, patch: undefined, team: undefined, player });
 
@@ -98,10 +112,12 @@ export function ProBuildsView({ index, names, events, drawerData }: {
   const gameLabel = (r: BuildRow) => `${r.build.player} (${r.team})${r.opponent ? ` vs ${name(r.opponent.champion)}` : ""} · ${patchLabel(r.game.patch)} · ${shortDate(r.game.date)} · ${r.won ? "W" : "L"}`;
 
   const draftHref = champion && role ? `/?${role.toLowerCase()}=${champion}` : undefined;
+  // Arriving from Draft Room: the way back restores that draft (picks, enemy row, role being picked, filter).
+  const back = from ? <Link className="btn sm" href={backHref(from)}>← Back to Draft Room</Link> : undefined;
   return (
     <ChampionProvider data={drawerData}>
       <PageHeader title="Pro Builds" desc="Items, runes, skill order and summoner spells from recorded professional games."
-        actions={draftHref && <Link className="btn sm" href={draftHref}>Open in Draft Room →</Link>} />
+        actions={back ?? (draftHref && <Link className="btn sm" href={draftHref}>Open in Draft Room →</Link>)} />
       <div className="split builds-split">
         <nav className="pick-rail" aria-label="Champions with recorded builds">
           <div className="rail-tools">
@@ -133,8 +149,18 @@ export function ProBuildsView({ index, names, events, drawerData }: {
           </ul>
         </nav>
 
-        <div className="builds-main">
-          {!entry || !champion || !role ? <p className="muted">No recorded pro builds yet.</p> : <>
+        <div className="builds-main" ref={main}>
+          {!entry && from && champion && askedRole ? (
+            <div className="builds-empty">
+              <h2>{name(champion)} · {ROLE_NAME[askedRole]}</h2>
+              <p className="small muted">No recorded professional builds for {name(champion)} as {ROLE_NAME[askedRole]} in the tracked tournaments.</p>
+              <p className="row">
+                {roles.map((e) => <button key={e.role} type="button" className="btn sm" onClick={() => choose(e)}>{ROLE_NAME[e.role]} builds · {e.games}</button>)}
+                {back}
+              </p>
+              <p className="xs muted">Pick another champion from the list to explore other recorded builds.</p>
+            </div>
+          ) : !entry || !champion || !role ? <p className="muted">No recorded pro builds yet.</p> : <>
             <div className="builds-head">
               <ChampIcon id={champion} name={name(champion)} role={role} size="lg" />
               <div className="builds-title">
@@ -164,10 +190,10 @@ export function ProBuildsView({ index, names, events, drawerData }: {
 
             {failed ? <p className="small muted">Build data could not be loaded.</p>
               : !all ? <p className="small faint" aria-busy="true">Loading builds…</p>
-              : !rows.length ? <p className="small muted">No recorded games match these filters.</p>
+              : !rows.length ? <p className="small muted">No recorded games match these filters.{get("patch") && <> <button type="button" className="btn sm ghost" onClick={() => update({ patch: undefined, game: undefined, a: undefined, b: undefined })}>Show every patch</button></>}</p>
               : mode === "common" ? <CommonView c={common(rows)} rows={rows} champion={champion} evName={evName} />
               : mode === "compare" ? <CompareView rows={rows} a={get("a")} b={get("b")} label={gameLabel} name={name} evName={evName} onPick={(k, v) => update({ [k]: v })} />
-              : <GamesView rows={rows} current={get("game")} name={name} evName={evName} onPick={(g) => update({ game: String(g) })} />}
+              : <GamesView rows={rows} current={get("game")} preferPinned={!!from} name={name} evName={evName} onPick={(g) => update({ game: String(g) })} />}
           </>}
         </div>
       </div>
@@ -176,11 +202,12 @@ export function ProBuildsView({ index, names, events, drawerData }: {
 }
 
 // ---------- individual games ----------
-function GamesView({ rows, current, name, evName, onPick }: {
-  rows: BuildRow[]; current?: string; name: (id: string) => string; evName: (r: BuildRow) => string; onPick: (game: number) => void;
+function GamesView({ rows, current, preferPinned, name, evName, onPick }: {
+  rows: BuildRow[]; current?: string; preferPinned?: boolean; name: (id: string) => string; evName: (r: BuildRow) => string; onPick: (game: number) => void;
 }) {
   const { isPinned } = usePins();
-  const r = rows.find((x) => String(x.game.id) === current) ?? rows[0];
+  // From Draft Room, the newest game of a pinned player opens first when there is one.
+  const r = rows.find((x) => String(x.game.id) === current) ?? (preferPinned ? rows.find((x) => isPinned(x.build.player)) : undefined) ?? rows[0];
   return (
     <>
       <div className="build-picks" role="listbox" aria-label="Recorded games">
