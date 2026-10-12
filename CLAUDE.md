@@ -379,6 +379,16 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   which is not part of the daily refresh), neutral `--border-strong` when no side is recorded, with the side named on hover. The side comes from
   each game, never from team identity, listing order or which team is named first (`lib/draft-side.ts`,
   `tests/pro-sides.test.ts`); filters keep each row's side. Both sides of a game pair blue first.
+- **Pro Drafts game inspection** (alan, 2026-10-12; `lib/pro-drafts-game.ts`, `tests/pro-drafts-game.test.ts`): a row
+  click (or its game link) opens the whole game in the panel above the table (`?id=`): both teams blue first, each with
+  side strip, result, bans and five champion buttons (`gameView`; a stored draft whose other side is not stored shows
+  one team and says so). Each champion is a button that opens that player's exact recorded build for that game in the
+  same panel, `?build=<draft id>:<ROLE>` (`buildParam`, `buildFor`: game id + recorded side + role, never row position),
+  rendered by `GameDetail` (one build renderer with Pro Builds and Pinned Players) with "Open full Pro Builds". Another
+  champion swaps the build in place; Enter / Space on the open one closes it; another game row carries the role to that
+  row's team (`carryBuild`); a stale `build` leaves the URL. A game with no recorded builds (LCK finals G3, 82964) says
+  "No builds recorded for this game" with the buttons disabled; a missing player build says so, never filled in. The
+  build rows load as their own chunk on first use. Never a second build UI.
 - **Champion Synergies** (`/synergies/<tab>/`, sidebar "Synergies"; alan renamed it from First Pick on 2026-10-10) is
   the champion synergy and pairing reference: rail, role tabs, saved / proposed partners, pro pairings, "Open in Draft
   Room". One tab per role, Top | Jungle | Mid | Bot | Support (alan, 2026-10-12; `components/views/synergy-tabs.ts`,

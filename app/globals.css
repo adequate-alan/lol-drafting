@@ -1635,11 +1635,39 @@ tr.side-none td:first-child { box-shadow: inset 3px 0 0 var(--border-strong); }
 .drafts-table td:first-child, .drafts-table th:first-child { position: sticky; left: 0; z-index: 1; background: var(--surface); }
 .drafts-table th:first-child { z-index: 3; background: var(--surface-subtle); }
 .drafts-table tbody tr:hover td:first-child { background: var(--surface-hover); }
-.drafts-table tr.selected td:first-child { background: var(--accent-subtle); }
+/* The sticky game cell stays opaque on the selected row (dark mode's accent-subtle is translucent). */
+.drafts-table tr.selected td:first-child { background: linear-gradient(var(--accent-subtle), var(--accent-subtle)), var(--surface); }
 tbody tr.pair-a:hover td, tbody tr.pair-b:hover td { background: var(--surface-hover); }
 tr.pair-a.selected td, tr.pair-b.selected td { background: var(--accent-subtle); }
 .game-panel { margin-bottom: var(--s5); }
-.game-panel .draft-slots { margin-bottom: var(--s4); }
+/* The open game (alan, 2026-10-12): both teams, each a side-stripped block of five champion buttons; the chosen champion's
+   exact build opens below in the same panel (components/GameBuild.tsx), swapping in place between champions. */
+.game-panel .panel-body { display: grid; gap: var(--s4); }
+.game-team { display: grid; gap: var(--s3); padding-left: var(--s4); box-shadow: inset 3px 0 0 var(--border-strong); }
+.game-team.side-blue { box-shadow: inset 3px 0 0 var(--team-blue); }
+.game-team.side-red { box-shadow: inset 3px 0 0 var(--team-red); }
+.game-team-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2) var(--s4); }
+.game-team-name { font-family: var(--font-display); font-size: var(--fs-md); font-weight: var(--w-strong); }
+.game-bans { flex-basis: 100%; }
+.game-panel .win, .game-panel .pe-res.win { color: var(--success); }
+.game-panel .loss { color: var(--danger); }
+.game-panel .pick-btn { padding: var(--s2) var(--s3); border-radius: var(--r-lg); transition: background var(--t-fast), box-shadow var(--t-fast); }
+.game-panel .pick-btn:hover:not(:disabled) { background: var(--surface-hover); }
+.game-panel .pick-btn[aria-pressed="true"] { background: var(--accent-subtle); box-shadow: 0 0 0 1px var(--accent); }
+.game-panel .pick-btn[aria-pressed="true"] .slot-name { color: var(--accent-text); }
+.game-panel .pick-btn:disabled { cursor: default; }
+.game-panel .pick-btn:disabled:hover .slot-name { text-decoration: none; }
+.game-panel .pick-btn:focus-visible { box-shadow: var(--focus-ring); }
+.game-read { margin: 0; }
+.game-hint { margin: 0; }
+.game-build { padding-top: var(--s4); border-top: 1px solid var(--border); animation: pop-in var(--dur-select) var(--ease-out); }
+.game-build .panel { background: transparent; border: 0; border-top: 1px solid var(--border); border-radius: 0; }
+.game-build .panel-head { min-height: 0; padding: var(--s3) 0 var(--s2); border-bottom: 0; }
+.game-build .panel-body { display: block; padding: 0 0 var(--s3); }
+@media (max-width: 760px) {
+  .game-team { padding-left: var(--s3); }
+  .game-panel .draft-slots { margin: 0 calc(-1 * var(--pad-card)) 0 0; padding-right: var(--pad-card); }
+}
 
 /* ===== Gen.G: the most branded page. Ivory band, black display type, champagne rule, GenRang on the rule. ===== */
 .brand-band {

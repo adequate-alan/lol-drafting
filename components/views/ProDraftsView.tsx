@@ -1,18 +1,26 @@
 "use client";
+// Pro Drafts: every recorded team-game, filterable, and one game open at a time for inspection (alan, 2026-10-12): the
+// open game shows both teams, their ten picks and bans, and each champion in it is a button that opens that player's
+// exact recorded build for that game in the same panel (components/GameBuild.tsx, the one build renderer the site has,
+// also used by Pro Builds and Pinned Players). The game is named by its Gol.gg game id and the build by the team row
+// and role (lib/pro-drafts-game.ts), never by a row's position. A build Gol.gg did not give is said to be missing.
 import { ProFreshness } from "@/components/ProFreshness";
 import type { Freshness } from "@/lib/pro-games";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ChampionProvider } from "@/components/ChampionInteraction";
+import { GameDetail } from "@/components/GameBuild";
 import { Select } from "@/components/Select";
 import type { DrawerData } from "@/lib/data";
 import { ChampIcon, ChampionRow, PageHeader, SourceLinks } from "@/components/ui";
 import { ROLES, type ProDraft, type Role, type Source } from "@/lib/schema";
 import { pairRows, SIDE_LABEL } from "@/lib/draft-side";
 import { patchLabel } from "@/lib/patch";
-import { buildsHref } from "@/lib/pro-builds";
+import { buildsHref, type BuildRow } from "@/lib/pro-builds";
+import { buildFor, buildParam, carryBuild, gameView, parseBuildParam } from "@/lib/pro-drafts-game";
 
-type Filters = { team?: string; champion?: string; role?: string; tournament?: string; series?: string; id?: string };
+type Filters = { team?: string; champion?: string; role?: string; tournament?: string; series?: string; id?: string; build?: string };
 
 const seriesOf = (d: ProDraft) => d.seriesGame.replace(/\s*G\d+$/i, "");
 
@@ -27,11 +35,17 @@ function matches(d: ProDraft, f: Filters) {
   return true;
 }
 
-const KEYS = ["team", "champion", "role", "tournament", "series", "id"] as const;
+const KEYS = ["team", "champion", "role", "tournament", "series", "id", "build"] as const;
+const FILTER_KEYS = KEYS.filter((k) => k !== "id" && k !== "build");
 
-export function ProDraftsView({ names, sources, all, freshness, drawerData, buildGames }: {
+// The build rows load as their own chunk the first time a recorded game is opened (lib/pro-builds-bundle.ts).
+let loaded: Promise<BuildRow[]> | undefined;
+const load = () => (loaded ??= import("@/lib/pro-builds-bundle").then((m) => m.rows));
+
+export function ProDraftsView({ names, sources, all, freshness, drawerData, buildGames, events }: {
   names: Record<string, string>; sources: Record<string, Source>; all: ProDraft[]; freshness: Freshness[]; drawerData: DrawerData;
   buildGames: number[]; // recorded games with Pro Builds (data/pro-builds.json)
+  events: Record<string, string>; // meta.json event id -> short name, for the build header
 }) {
   const params = useSearchParams();
   const router = useRouter();
@@ -40,65 +54,105 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
   const selected = f.id ? all.find((d) => d.id === f.id) : undefined;
   const uniq = (xs: string[]) => [...new Set(xs)].sort();
   const champions = uniq(all.flatMap((d) => ROLES.map((r) => d.picks[r]))).sort((a, b) => (names[a] ?? a).localeCompare(names[b] ?? b));
-  const link = (id: string) => `/pro-drafts?${new URLSearchParams({ ...Object.fromEntries(Object.entries(f).filter(([, v]) => v)), id })}`;
-
-  const closeHref = (() => {
-    const q = new URLSearchParams(Object.entries(f).filter(([k, v]) => v && k !== "id") as [string, string][]);
-    return `/pro-drafts${q.size ? `?${q}` : ""}`;
-  })();
-  const setFilter = (key: keyof Filters, value: string) => {
-    const next = { ...f, [key]: value || undefined, id: undefined };
+  const href = (next: Filters) => {
     const q = new URLSearchParams(Object.entries(next).filter(([, v]) => v) as [string, string][]);
-    router.replace(`/pro-drafts${q.size ? `?${q}` : ""}`, { scroll: false });
+    return `/pro-drafts${q.size ? `?${q}` : ""}`;
   };
+  // Opening another game keeps the filters and carries an open build's role to that row's team.
+  const link = (d: ProDraft) => href({ ...f, id: d.id, build: carryBuild(f.build, d) });
+  const closeHref = href({ ...f, id: undefined, build: undefined });
+  const setFilter = (key: keyof Filters, value: string) => router.replace(href({ ...f, [key]: value || undefined, id: undefined, build: undefined }), { scroll: false });
   const sel = (key: keyof Filters, label: string, any: string, options: [string, string][]) => (
     <Select showLabel label={label} value={f[key] ?? ""} onChange={(v) => setFilter(key, v)}
       options={[{ value: "", label: any }, ...options.map(([value, l]) => ({ value, label: l }))]} />
   );
-  const active = KEYS.filter((k) => k !== "id" && f[k]).length;
+  const active = FILTER_KEYS.filter((k) => f[k]).length;
   // Both sides of one game sit together as a two-row block; each row's strip is that game's recorded side.
   const ordered = pairRows(rows);
+
+  // The open game and its open build. Choosing a champion changes only the build target, in place.
+  const view = selected ? gameView(selected, all) : undefined;
+  const hasBuilds = !!view && buildGames.includes(view.gameId);
+  const target = view ? parseBuildParam(f.build, view) : undefined;
+  const setBuild = (value: string | undefined) => router.replace(href({ ...f, build: value }), { scroll: false });
+  useEffect(() => { if (f.build && selected && !target) setBuild(undefined); }, [f.build, selected, target]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const [builds, setBuilds] = useState<BuildRow[]>();
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    if (!hasBuilds || builds) return;
+    let live = true;
+    load().then((r) => live && setBuilds(r), () => live && setFailed(true));
+    return () => { live = false; };
+  }, [hasBuilds, builds]);
+  const openBuild = target && view ? buildFor(builds, view.gameId, target.side, target.role) : undefined;
+  const name = (id: string) => names[id] ?? id;
+  const evName = (r: BuildRow) => events[r.game.event] ?? r.game.tournament;
+
+  const meta = (d: ProDraft) => [d.tournament, !d.seriesGame.startsWith(d.stage) && d.stage, d.patch && `patch ${patchLabel(d.patch)}`, d.date].filter(Boolean).join(" · ");
 
   return (
     <ChampionProvider data={drawerData}>
       <PageHeader title="Pro Drafts" />
       <ProFreshness items={freshness} />
 
-      {selected && (
-        <section className="panel game-panel">
+      {selected && view && (
+        <section className="panel game-panel" aria-label={`${selected.team} vs ${selected.opponent}, ${selected.seriesGame}`}>
           <div className="panel-head">
             <h2>{selected.team} vs {selected.opponent} · {selected.seriesGame}</h2>
-            <span className="xs muted">{[selected.tournament, !selected.seriesGame.startsWith(selected.stage) && selected.stage, selected.patch && `patch ${patchLabel(selected.patch)}`, selected.date, selected.side && `${selected.side} side`, selected.won != null && (selected.won ? "win" : "loss")].filter(Boolean).join(" · ")}</span>
+            <span className="xs muted">{meta(selected)}</span>
             <div className="end">
               <Link className="btn sm primary" href={`/?${new URLSearchParams(Object.fromEntries(ROLES.map((r) => [r.toLowerCase(), selected.picks[r]])))}`}>Open in Draft Room</Link>
               <Link className="btn sm ghost" href={closeHref} aria-label="Close game">×</Link>
             </div>
           </div>
           <div className="panel-body">
-            <div className="draft-slots">
-              {ROLES.map((r) => (
-                <div key={r} className={`draft-slot locked role-${r}`}>
-                  <span className="slot-body">
-                    <span className="slot-icon"><ChampIcon id={selected.picks[r]} name={names[selected.picks[r]] ?? selected.picks[r]} role={r} size="lg" /></span>
-                    <span className="slot-text"><span className={`role-tag role-${r}`}>{r}</span><span className="slot-name truncate">{names[selected.picks[r]] ?? selected.picks[r]}</span></span>
-                  </span>
+            {view.teams.map(({ d, side }) => (
+              <div key={d.id} className={`game-team side-${side}`}>
+                <div className="game-team-head">
+                  <span className="side-tag label" title={SIDE_LABEL[side]}>{side === "none" ? "Side not recorded" : side === "blue" ? "Blue side" : "Red side"}</span>
+                  <b className="game-team-name">{d.team}</b>
+                  {d.won != null && <span className={`xs ${d.won ? "win" : "loss"}`}>{d.won ? "Win" : "Loss"}</span>}
+                  {d.bans?.length ? <span className="xs muted game-bans">Bans: {d.bans.map((b) => names[b] ?? b).join(", ")}</span> : null}
                 </div>
-              ))}
-            </div>
-            {(() => {
-              // Imported games (golgg-<id>-<side>) with recorded builds link each pick to that player's build in this game;
-              // a stored LCK draft names its game through the one Gol.gg game page it cites (golgg-game-<id>).
-              const cited = selected.sources.filter((s) => /^golgg-game-\d+$/.test(s));
-              const game = Number(selected.id.match(/^golgg-(\d+)-/)?.[1] ?? (cited.length === 1 ? cited[0].slice(11) : undefined));
-              return game && buildGames.includes(game) ? (
-                <p className="small game-builds"><span className="muted">Builds in this game:</span>
-                  {ROLES.map((r) => <Link key={r} href={buildsHref(selected.picks[r], r, game)}>{names[selected.picks[r]] ?? selected.picks[r]}</Link>)}</p>
-              ) : null;
-            })()}
-            {selected.read && <p><b>Read:</b> {selected.read}</p>}
-            {selected.bans?.length ? <p className="small muted">Bans: {selected.bans.map((b) => names[b] ?? b).join(", ")}</p> : null}
-            {selected.note && <p className="small muted">{selected.note}</p>}
-            <SourceLinks ids={selected.sources} sources={sources} />
+                <div className="draft-slots" role="group" aria-label={`${d.team} picks`}>
+                  {ROLES.map((r) => {
+                    const on = target?.d.id === d.id && target.role === r;
+                    const champ = names[d.picks[r]] ?? d.picks[r];
+                    return (
+                      <div key={r} className={`draft-slot locked role-${r} ${on ? "active" : ""}`}>
+                        <button type="button" className="slot-body pick-btn" aria-pressed={on} disabled={!hasBuilds}
+                          title={hasBuilds ? `${champ}: this player's build in this game` : `${champ}: no build recorded for this game`}
+                          onClick={() => setBuild(on ? undefined : buildParam(d, r))}>
+                          <span className="slot-icon"><ChampIcon id={d.picks[r]} name={champ} role={r} size="lg" /></span>
+                          <span className="slot-text"><span className={`role-tag role-${r}`}>{r}</span><span className="slot-name truncate">{champ}</span></span>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+                {d.read && <p className="small game-read"><b>Read:</b> {d.read}</p>}
+                {d.note && <p className="small muted">{d.note}</p>}
+              </div>
+            ))}
+            {view.teams.length === 1 && <p className="xs muted">The other team's draft for this game is not stored.</p>}
+            {hasBuilds ? (
+              target ? (
+                <div className="game-build" aria-live="polite">
+                  {openBuild ? (
+                    <GameDetail r={openBuild} name={name} evName={evName}
+                      end={<Link href={buildsHref(openBuild.build.champion, openBuild.build.role, openBuild.game.id)}>Open full Pro Builds →</Link>} />
+                  ) : failed ? (
+                    <p className="small caution-text">The build data could not be loaded. Reload the page to try again.</p>
+                  ) : builds ? (
+                    <p className="small muted">No build recorded for {names[target.d.picks[target.role]] ?? target.d.picks[target.role]} ({target.d.team}) in this game.</p>
+                  ) : (
+                    <p className="small muted">Loading the recorded build…</p>
+                  )}
+                </div>
+              ) : <p className="xs muted game-hint">Select a champion to see that player's exact build in this game: runes, items, skill order and summoner spells.</p>
+            ) : <p className="xs muted game-hint">No builds recorded for this game.</p>}
+            <SourceLinks ids={[...new Set(view.teams.flatMap((t) => t.d.sources))]} sources={sources} />
           </div>
         </section>
       )}
@@ -118,8 +172,9 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
           <thead><tr><th>Game</th><th>Team</th><th>vs</th>{ROLES.map((r) => <th key={r}><span className={`role-tag role-${r}`}>{r}</span></th>)}<th>Read</th><th>Source</th></tr></thead>
           <tbody>
             {ordered.map(({ d, pair, side }) => (
-              <tr key={d.id} className={`clickable side-${side} ${pair} ${d.id === f.id ? "selected" : ""}`.replace(/\s+/g, " ").trim()} title={SIDE_LABEL[side]} data-side={side}>
-                <td><Link className="cell-link nowrap" href={link(d.id)}>{d.seriesGame}</Link></td>
+              <tr key={d.id} className={`clickable side-${side} ${pair} ${d.id === f.id ? "selected" : ""}`.replace(/\s+/g, " ").trim()} title={SIDE_LABEL[side]} data-side={side} aria-selected={d.id === f.id}
+                onClick={(e) => { if ((e.target as HTMLElement).closest("a, button")) return; router.push(link(d)); }}>
+                <td><Link className="cell-link nowrap" href={link(d)}>{d.seriesGame}</Link></td>
                 <td className="nowrap">{d.team}{d.won != null && <span className="xs muted" title={d.won ? "Won" : "Lost"}> {d.won ? "W" : "L"}</span>}</td>
                 <td className="muted nowrap">{d.opponent}</td>
                 {ROLES.map((r) => <td key={r}><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={d.picks[r] === f.champion} /></td>)}

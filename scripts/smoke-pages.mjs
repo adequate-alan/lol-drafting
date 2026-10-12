@@ -788,12 +788,33 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await page.locator(".builds-tools [role=tab]", { hasText: "Compare" }).click();
   await page.waitForTimeout(200);
   check("builds: compare shows two games side by side with their differences", games < 2 || ((await page.locator(".compare-col").count()) === 2 && (await page.locator(".diff").count()) === 1), "");
-  // Pro Drafts: a recorded game links each pick to that player's build
+  // Pro Drafts (alan, 2026-10-12): a row opens the whole game, both teams with picks and bans; each champion is a button
+  // that opens that player's exact build for that game in the panel, named by team row and role in the URL.
   await open("/pro-drafts/?tournament=" + encodeURIComponent("Demacia Cup Global Invitational 2026"));
-  await page.locator(".table-wrap tbody tr[data-side] .cell-link").first().click();
-  await page.locator(".game-builds").waitFor({ timeout: 5000 }).catch(() => {});
-  const blinks = await page.locator(".game-builds a").evaluateAll((els) => els.map((e) => e.getAttribute("href")));
-  check("pro drafts: a recorded game links its five picks to their builds", blinks.length === 5 && blinks.every((h) => /\/pro-builds\/\?champion=.+&role=.+&game=\d+/.test(h ?? "")), blinks.join(" ").slice(0, 120));
+  await page.locator(".table-wrap tbody tr[data-side] td:nth-child(3)").first().click();
+  await page.locator(".game-panel .game-team").first().waitFor({ timeout: 5000 }).catch(() => {});
+  const teams = await page.$$eval(".game-panel .game-team", (ts) => ts.map((t) => ({ side: t.className.match(/side-(\w+)/)?.[1], name: t.querySelector(".game-team-name")?.textContent, picks: t.querySelectorAll(".pick-btn:not(:disabled)").length, bans: /Bans:/.test(t.textContent) })));
+  check("pro drafts: the open game shows both teams, blue first, five pick buttons and bans each", teams.length === 2 && teams[0].side === "blue" && teams[1].side === "red" && teams.every((t) => t.picks === 5 && t.bans && t.name), JSON.stringify(teams));
+  const pick = page.locator(".game-panel .game-team").nth(1).locator(".pick-btn").nth(3);
+  const pickName = (await pick.locator(".slot-name").textContent()) ?? "";
+  await pick.click();
+  await page.locator(".game-build .game-detail").waitFor({ timeout: 8000 }).catch(() => {});
+  const bu = new URL(page.url()).searchParams.get("build") ?? "";
+  const bhead = await page.locator(".game-build .game-meta").innerText().catch(() => "");
+  const pressed = await page.locator(".game-panel .pick-btn[aria-pressed='true']").count();
+  check("pro drafts: a champion opens that player's build for this game in the panel (red side, BOT)", /^golgg-\d+-red:BOT$/.test(bu) && pressed === 1 && /Red side/.test(bhead) && (await page.locator(".game-build .rune-page, .game-build .skill-grid").count()) > 0, `${bu} | ${bhead.slice(0, 80)}`);
+  check("pro drafts: the build header names the champion's opponent and links Gol.gg and the full Pro Builds view", /Gol\.gg source/.test(bhead) && /\/pro-builds\/\?champion=.+&role=BOT&game=\d+/.test(await page.locator(".game-build .game-meta a:last-child").getAttribute("href") ?? ""), bhead.slice(0, 80));
+  const champHead = await page.locator(".game-build .game-player").innerText().catch(() => "");
+  await page.locator(".game-panel .game-team").nth(0).locator(".pick-btn").nth(2).click();
+  await page.waitForTimeout(250);
+  const bu2 = new URL(page.url()).searchParams.get("build") ?? "";
+  check("pro drafts: another champion swaps only the build, the game stays open", /^golgg-\d+-blue:MID$/.test(bu2) && (await page.locator(".game-build").count()) === 1 && (await page.locator(".game-panel h2").count()) === 1 && (await page.locator(".game-build .game-player").innerText()) !== champHead, `${bu2} ${pickName}`);
+  await page.locator(".game-panel .pick-btn[aria-pressed='true']").focus();
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(200);
+  check("pro drafts: Enter on the open champion closes its build", !new URL(page.url()).searchParams.get("build") && (await page.locator(".game-build").count()) === 0, page.url());
+  await open("/pro-drafts/?id=lck26po-finals-g3-geng");
+  check("pro drafts: a game without recorded builds says so and offers no build buttons", (await page.locator(".game-panel .game-team").count()) === 2 && (await page.locator(".game-panel .pick-btn:disabled").count()) === 10 && /No builds recorded/.test(await page.locator(".game-hint").textContent().catch(() => "")), "");
 }
 // Patch Notes: Riot's official values, patch navigation, filters, anchors, compare, and the drawer link.
 await open("/patch-notes/");
