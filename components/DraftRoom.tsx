@@ -6,6 +6,7 @@ import { teamNeeds, type Need, type Recommendation } from "@/lib/recommend";
 import { draftCandidates, hasSignal, type Candidate, type Filter } from "@/lib/candidates";
 import { ROLES, type Attr, type Role, type Source } from "@/lib/schema";
 import { describeLine } from "@/lib/evidence";
+import { patchLabel } from "@/lib/pro-priority";
 import { describeEvidence, describePro, enemyParam, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
 import { similarProDrafts, similarShells, type ProSuggestion, type SuggestData } from "@/lib/suggest";
 import type { DraftData, DrawerData } from "@/lib/data";
@@ -36,10 +37,10 @@ const STATUS = { default: "Preferred", alt: "Alt", fits: "Fits" } as const;
 const REC_LIMIT = 8; // picker and role-tab hints: the top of the draft-fit list
 const ROW_LIMIT = 12; // unified list rows shown before "Show all"
 const FILTERS: { key: Filter; label: string }[] = [
-  { key: "all", label: "All" }, { key: "synergy", label: "Synergy" }, { key: "pro", label: "Pro" }, { key: "fit", label: "Best fit" }, { key: "counter", label: "Counters" },
+  { key: "all", label: "All" }, { key: "synergy", label: "Synergy" }, { key: "pro", label: "Pro" }, { key: "fit", label: "Best fit" }, { key: "counter", label: "Counters" }, { key: "priority", label: "Priority" },
 ];
 const ORDER_NOTE = "Order: your preferred pairing first, then comp fit (synergy with your picks, team needs, matchups and risks). "
-  + "Synergy, Pro and Counter are labels on each row; pro game counts and counters never move a row. Ties go to the row with more signals.";
+  + "Synergy, Pro, Counter and Pro priority are labels on each row; pro game counts, counters and presence never move a row. Ties go to the row with more signals.";
 
 export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, metaPicks }: {
   data: DraftData;
@@ -354,10 +355,17 @@ function chipsOf(c: Candidate, names: Record<string, string>, bot?: string): Chi
   else if (r.bestFix) out.push({ key: "fix", label: "Best fix", title: FIX });
   else if (c.bestFit) out.push({ key: "fit", label: "Best fit", title: FIT });
   if (c.counter) out.push({ key: "counter", label: "Counter" }); // rendered as the Counter popover
+  if (c.priority) out.push({ key: "prio", label: `Pro priority · ${Math.round(c.priority.presence * 100)}%`, title: priorityTitle(c) });
   if (c.theoretical) out.push({ key: "theory", label: "Theoretical", title: `Not one of ${bot ?? "the bot"}'s saved supports: theoretical, not recommended` });
   if (r.parts.some((p) => p.kind === "risk")) out.push({ key: "risk", label: "Risk" });
   return out;
 }
+
+const priorityTitle = (c: Candidate) => {
+  const p = c.priority!;
+  const n = p.rolePicks[c.role] ?? 0;
+  return `Patch ${patchLabel(p.patch)}: picked or banned in ${Math.round(p.presence * 100)}% of ${p.games} pro games (${p.picks} picks, ${n} as ${c.role.toLowerCase()}; ${p.bans} bans, champion-wide). Pro meta context only: it does not change the order or the fit.`;
+};
 
 /** Main benefit and potential drawback, one line. */
 function reasonOf(c: Candidate): { benefit: string; drawback?: string } {
@@ -423,6 +431,12 @@ function FitRow({ c, bot, names, proCtx, hovered, onHover, onPick, onOpen }: {
           <div className="fit-counter">
             <span className="k">Counter</span>
             <span className="t">{counterLine(counter, names)} · Pool: {tierLabel(counter.tier)}{counter.fitRank ? ` · draft fit #${counter.fitRank}` : ""}{counter.cautions.length ? ` · ${counter.cautions.join("; ")}` : ""}</span>
+          </div>
+        )}
+        {c.priority && (
+          <div className="fit-pro">
+            <span className="k">Priority</span>
+            <span className="t">{priorityTitle(c)}</span>
           </div>
         )}
         {!rec.eligible && c.pro && <p className="fit-note xs muted">Not one of {bot ?? "the bot"}&apos;s saved supports: a pro pairing, not a saved one.</p>}

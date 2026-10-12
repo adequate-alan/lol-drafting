@@ -207,7 +207,10 @@ export type ProDraft = z.infer<typeof ProDraft>;
 // date) and full-stats page (roles). The one dataset that Pro Drafts, Meta, Pool, Synergies, the Draft Room and counter
 // corroboration read imported games from (lib/pro-games.ts turns it into drafts, sources and results at load).
 const Picks = z.object({ TOP: ChampionId, JUNGLE: ChampionId, MID: ChampionId, BOT: ChampionId, SUPPORT: ChampionId });
-const GameSide = z.object({ team: z.string().min(1), picks: Picks, bans: z.array(ChampionId).max(5) });
+// pickOrder: the side's five picks in the order the Gol.gg game page lists them, which is that team's draft order.
+// Absent on games stored before 2026-10-12 until the daily refresh re-reads their page. Never derived from the lineup.
+const GameSide = z.object({ team: z.string().min(1), picks: Picks, bans: z.array(ChampionId).max(5), pickOrder: z.array(ChampionId).length(5).optional() })
+  .refine((s) => !s.pickOrder || [...s.pickOrder].sort().join() === Object.values(s.picks).sort().join(), "pickOrder must be the same five champions as picks");
 export const ProGame = z.object({
   id: z.number().int().positive(), // Gol.gg game id: the stable key, so a game is never stored twice
   event: id, // meta.json events id

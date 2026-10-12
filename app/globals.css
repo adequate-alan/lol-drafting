@@ -922,9 +922,10 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .sig.counter { color: var(--counter); }
 .sig.theory { color: var(--text-faint); }
 .sig.risk { color: var(--caution); }
+.sig.prio { color: var(--pro); opacity: .85; }
 .fit-reason .drawback { color: var(--caution); }
 .fit-row.ref .name { color: var(--text-muted); }
-.fit-filters { flex: none; }
+.fit-filters { flex: 0 1 auto; min-width: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
 .fit-filters button:disabled { cursor: default; opacity: .5; }
 .fit-filters button:disabled:hover { background: transparent; color: var(--text-muted); }
 .fit-filters .n { font-family: var(--font-mono); font-size: var(--fs-2xs); color: var(--text-faint); }
@@ -1309,15 +1310,43 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .hub-table.mid { max-height: 420px; }
 .hub-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5); align-items: start; }
 .hub-scope + .hub-scope { margin-top: var(--s3); }
-.trend-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5); }
-.trend-grid > div { display: grid; gap: 2px; align-content: start; }
+/* Pro priority: presence bar in the cell, coverage line, patch history (picks + bans stacked) */
+.priority > .section-header { margin-top: var(--s6); }
+.priority-coverage { margin: var(--s3) 0 var(--s4); line-height: 1.5; }
+.priority-coverage b { color: var(--text); }
+.priority-coverage .caution-text { color: var(--caution); }
+.pbar { display: inline-flex; align-items: center; justify-content: flex-end; gap: var(--s3); }
+.pbar-track { width: 48px; height: 4px; overflow: hidden; background: var(--surface-sunken); border-radius: var(--r-sm); }
+.pbar-fill { display: block; height: 100%; background: var(--pro-line); }
+.priority-table td.up, .priority-changes td.up { color: var(--text); font-weight: var(--w-strong); }
+.priority-changes td.down { color: var(--text-muted); }
+.priority-changes { gap: var(--s5); }
+.priority-changes .badge { margin-left: var(--s3); }
+.ptags { display: inline-flex; flex-wrap: wrap; gap: 0 var(--s3); }
+.ptag { font-size: var(--fs-xs); white-space: nowrap; color: var(--text-muted); text-decoration: underline; text-decoration-color: var(--border-strong); text-underline-offset: 2px; }
+.ptag:hover { color: var(--text); }
+.phist { margin: var(--s3) 0 0; }
+.phist svg { display: block; max-width: 100%; height: auto; overflow: visible; }
+.phist-base { stroke: var(--border-strong); stroke-width: 1; }
+.phist-pick { fill: var(--pro); }
+.phist-ban { fill: var(--pro-line); opacity: .55; }
+.phist-hit { fill: transparent; }
+.phist-col.click { cursor: pointer; }
+.phist-col:hover .phist-pick, .phist-col:hover .phist-ban { filter: brightness(1.1); }
+.phist-label { font: var(--w-control) var(--fs-2xs) var(--font-mono); fill: var(--text-muted); }
+.phist-value { font: var(--w-strong) var(--fs-2xs) var(--font-mono); fill: var(--text); }
+.phist figcaption { margin-top: var(--s2); }
+.phist-key { display: inline-block; width: 8px; height: 8px; margin: 0 var(--s1) 0 var(--s3); border-radius: 2px; vertical-align: baseline; }
+.phist-key:first-child { margin-left: 0; }
+.phist-key.pick { background: var(--pro); }
+.phist-key.ban { background: var(--pro-line); opacity: .55; }
 .draft-icons { display: inline-flex; gap: 2px; margin-right: var(--s5); vertical-align: middle; }
 .rule-line { display: flex; align-items: baseline; gap: var(--s3); margin: 0 0 var(--s3); font-size: var(--fs-sm); }
 @media (max-width: 900px) {
   .hub-detail-grid { position: sticky; left: var(--s3); grid-template-columns: minmax(0, 1fr); max-width: calc(100vw - 4 * var(--s5)); }
   .hub-tools .select-trigger { min-width: 0; width: 100%; }
   .hub-tools .select-field { flex: 1; min-width: 0; }
-  .trend-grid { grid-template-columns: minmax(0, 1fr); }
+  .priority-changes { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* ===== Pro Drafts: both sides of one game read as a block (real same-game pairs only, never zebra striping).

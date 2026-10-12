@@ -38,11 +38,24 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   recorded games (stored drafts and game pages, `proGames` in `lib/pool-stats.ts`) are two datasets (alan, 2026-10-10).
   Never compute one from the other. Presence = (picks + bans) / tournament games (`presenceOf`), never stored. Bans are
   champion-wide. Without an aggregate, picks / bans / presence / WR show "—". "Recorded" labels stored-game counts. Meta
-  defaults to the newest tournament; "All tournaments" is explicit and names each row's tournament.
+  is scoped by patch (Pro Priority below): newest patch by default, "All patches" explicit; the tournament filter
+  defaults to all tournaments because the patch already keeps samples apart.
   Aggregates are Gol.gg's full tournament tables (`scripts/import-golgg-tournament.mjs`, LCK 41 games, Demacia 39 as of
   2026-10-10). They are champion-wide: a stat sits under a role only when its source names the role or a recorded game
   shows it (`EventStat.roles`), never from the roster; otherwise it is marked "all roles" (Pool, drawer) or listed only on
   the Meta ALL tab. Aggregates never create Synergy records or touch saved pairings.
+- **Pro Priority** (alan, 2026-10-12; `lib/pro-priority.ts`, `components/ProPriority.tsx`, `tests/pro-priority.test.ts`):
+  the main Meta / Research view. Per patch, never combined by default: picks, bans, presence, pick / ban / win rate,
+  role picks, blue / red picks, latest game, first rotation; role tabs All | Top | Jungle | Mid | Bot | Support with
+  champion-wide bans and presence marked "all"; Priority changes against the previous patch with 10+ games, in
+  percentage points (absent = 0%, small samples flagged). Denominator = unique games on the patch; presence and ban
+  rate only over games with all ten bans recorded. A tournament counts from its game records only when every game is
+  recorded; otherwise from its Gol.gg table only when the whole tournament was one patch (no sides, dates or order);
+  otherwise it is withheld and named in the coverage line. Pick order is each team's order as the Gol.gg game page lists
+  it (`pickOrder`, stored by the daily refresh, backfilled once per game), never rebuilt from the lineup; first rotation
+  = B1, R1, R2. Patches show Riot's 26.xx (`patchLabel`; data keeps Gol.gg's 16.xx). Shown in the champion drawer
+  (history chart, per-patch table) and as a "Pro priority · N%" label in the Draft Room when presence ≥ 30% on the
+  newest patch and the champion has picks in that role: a label and a filter only, never a score, never an order.
 - A low-sample champion can only be in a pool's `core` tier with a written `coreReasons` entry.
 - The draft-fit score (alan, 2026-10-10) lives in `lib/recommend.ts` and
   `tests/recommend.test.ts`. Every champion who plays the open role is a candidate. The score adds saved pairings
