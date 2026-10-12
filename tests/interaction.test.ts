@@ -60,6 +60,10 @@ describe("visual stability", () => {
     expect(css).toMatch(/\.drawer-body \{[^}]*grid-template-columns: minmax\(0, 1fr\)/);
     expect(css).toMatch(/\.drawer\.closing \{ animation: drawer-out/);
   });
+  it("the drawer's per-patch table scrolls inside its own box, so wider fonts never push the sheet sideways", () => {
+    const drawer = tsx.find(([f]) => f.endsWith("ChampionDrawer.tsx"))![1];
+    expect(drawer).toMatch(/<div className="table-wrap flat">\s*<table className="mini">/);
+  });
   it("wide screens reserve the scrollbar gutter so short and long pages line up", () => {
     expect(css).toMatch(/@media \(min-width: 961px\) \{ html \{ scrollbar-gutter: stable; \} \}/);
   });

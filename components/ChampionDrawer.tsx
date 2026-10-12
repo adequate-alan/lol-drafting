@@ -272,6 +272,8 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
             <>
               {history.length > 1 && <PriorityHistory points={history} />}
               {history.length > 1 && <p className="xs muted">Patch notes {patchLabel(history[0].patch)}–{patchLabel(history.at(-1)!.patch)}: <PatchTags id={id} index={data.patches} from={history[0].patch} to={history.at(-1)!.patch} empty="no official change" /></p>}
+              {/* Its own scroll box: a font that runs wider on another machine scrolls the table, never the sheet. */}
+              <div className="table-wrap flat">
               <table className="mini">
                 <thead><tr><th className="num">Patch</th><th className="num">Games</th><th className="num">Picks</th><th className="num">Bans</th><th className="num">Pres.</th><th className="num">WR</th><th>Roles</th><th className="num" title="Blue / red picks">B / R</th></tr></thead>
                 <tbody>
@@ -289,6 +291,7 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
                   ); })}
                 </tbody>
               </table>
+              </div>
               {latestTeams.length > 0 && <p className="xs muted">Picked by {latestTeams.slice(0, 5).map((t) => `${t.team} ${t.picks}`).join(", ")} on {patchLabel(latestPoint!.patch)}</p>}
               {latestOrder && latestOrder.known > 0 && <p className="xs muted tnum">Pick order on {patchLabel(latestPoint!.patch)}: first rotation {latestOrder.firstRotation} of {latestOrder.known} ordered picks · second phase {latestOrder.phase2}</p>}
               <Link className="xs" href={metaHref} data-to={metaHref}>Open in Pro priority</Link>
