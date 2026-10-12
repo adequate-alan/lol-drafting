@@ -1,0 +1,23 @@
+name: Temporary portrait discovery
+# One-off: report Wikidata / Commons portrait candidates and their licenses (the cloud env can't reach Wikimedia). Removed before merge.
+on:
+  push:
+    branches: [claude/project-thread-50uza9]
+    paths: [.github/workflows/tmp-portraits.yml, scripts/find-player-portraits.mjs]
+permissions:
+  contents: write
+jobs:
+  find:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/find-player-portraits.mjs
+      - if: always()
+        run: |
+          git add -f reports/player-portrait-candidates.json || exit 0
+          git diff --cached --quiet && exit 0
+          git -c user.name="adequate-alan" -c user.email="54249725+adequate-alan@users.noreply.github.com" commit -m "Portrait candidates report (temporary)" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>" --trailer "Claude-Session: https://claude.ai/code/session_01JJeBPV7WTDh9Y2qHpui2kf"
+          git push
