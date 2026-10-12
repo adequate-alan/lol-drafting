@@ -10,6 +10,7 @@ import { ChampIcon, ChampionRow, PageHeader, SourceLinks } from "@/components/ui
 import { ROLES, type ProDraft, type Role, type Source } from "@/lib/schema";
 import { pairRows, SIDE_LABEL } from "@/lib/draft-side";
 import { patchLabel } from "@/lib/patch";
+import { buildsHref } from "@/lib/pro-builds";
 
 type Filters = { team?: string; champion?: string; role?: string; tournament?: string; series?: string; id?: string };
 
@@ -28,8 +29,9 @@ function matches(d: ProDraft, f: Filters) {
 
 const KEYS = ["team", "champion", "role", "tournament", "series", "id"] as const;
 
-export function ProDraftsView({ names, sources, all, freshness, drawerData }: {
+export function ProDraftsView({ names, sources, all, freshness, drawerData, buildGames }: {
   names: Record<string, string>; sources: Record<string, Source>; all: ProDraft[]; freshness: Freshness[]; drawerData: DrawerData;
+  buildGames: number[]; // recorded games with Pro Builds (data/pro-builds.json)
 }) {
   const params = useSearchParams();
   const router = useRouter();
@@ -83,6 +85,14 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData }: {
                 </div>
               ))}
             </div>
+            {(() => {
+              // Imported games (golgg-<id>-<side>) with recorded builds link each pick to that player's build in this game.
+              const game = Number(selected.id.match(/^golgg-(\d+)-/)?.[1]);
+              return game && buildGames.includes(game) ? (
+                <p className="small game-builds"><span className="muted">Builds in this game:</span>
+                  {ROLES.map((r) => <Link key={r} href={buildsHref(selected.picks[r], r, game)}>{names[selected.picks[r]] ?? selected.picks[r]}</Link>)}</p>
+              ) : null;
+            })()}
             {selected.read && <p><b>Read:</b> {selected.read}</p>}
             {selected.bans?.length ? <p className="small muted">Bans: {selected.bans.map((b) => names[b] ?? b).join(", ")}</p> : null}
             {selected.note && <p className="small muted">{selected.note}</p>}

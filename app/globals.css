@@ -698,58 +698,147 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
   .drawer-foot .btn { flex: 1; justify-content: center; }
 }
 
-/* Pro builds inside the drawer (components/ProBuilds.tsx): Pro evidence styling, compact tabs, icons from Data Dragon */
-.builds { display: grid; gap: var(--s4); }
-.builds p { margin: 0; }
-.build-filters { display: flex; flex-wrap: wrap; gap: var(--s3); }
+/* ===== Pro Builds page (/pro-builds/, components/views/ProBuildsView.tsx + components/BuildParts.tsx): rail + one
+   champion; recorded games in the Pro layer's styling; icons from Data Dragon at the game's patch ===== */
+.game-builds { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s4); }
+.drawer-builds { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2) var(--s4); margin: 0; }
+.rail-tools { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s3); flex: none; }
+.pick-rail li button {
+  all: unset; box-sizing: border-box; display: flex; align-items: center; gap: var(--s4); width: 100%; padding: var(--s3) var(--s4);
+  border-radius: var(--r); color: var(--text); cursor: pointer; transition: background var(--t-fast);
+}
+.pick-rail li button:hover { background: var(--surface-hover); }
+.pick-rail li button:focus-visible { box-shadow: var(--focus-ring); }
+.pick-rail li button.active { background: var(--accent-subtle); box-shadow: inset 1px 0 0 var(--accent); }
+.pick-rail button.active .champ { box-shadow: 0 0 0 1px var(--accent); }
+.pick-rail button.active .rail-name { color: var(--accent-text); }
+.builds-main { display: grid; gap: var(--s5); min-width: 0; }
+.builds-main p { margin: 0; }
+.builds-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s4) var(--s5); }
+.builds-title { display: grid; gap: 2px; margin-right: auto; }
+.builds-title h2 { font-size: var(--fs-xl); }
+.builds-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); padding-bottom: var(--s4); border-bottom: 1px solid var(--border); }
+.builds-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s5); align-items: start; }
+.builds-main .panel-body { display: grid; gap: var(--s4); }
+.build-sub { margin: var(--s2) 0 0; }
+.builds-main .win { color: var(--success); }
+.builds-main .loss { color: var(--danger); }
+
+/* Recorded games strip: one button per game, the 1px top rule is the side that player's team had */
 .build-picks { display: flex; gap: var(--s2); overflow-x: auto; scrollbar-width: thin; padding-bottom: var(--s1); }
 .build-pick {
   all: unset; box-sizing: border-box; flex: none; display: grid; gap: 1px; padding: var(--s2) var(--s4); cursor: pointer;
   border: 1px solid var(--border); border-radius: var(--r); background: var(--surface);
 }
+.build-pick.side-blue { border-top-color: var(--team-blue); }
+.build-pick.side-red { border-top-color: var(--team-red); }
 .build-pick:hover { background: var(--surface-hover); }
 .build-pick.active { box-shadow: inset 0 0 0 1px var(--accent); border-color: var(--accent); }
-.build-pick.common { border-style: dashed; }
-.build-pick:focus-visible, .link-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-.build-context { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s4); }
-.build-context .champ { vertical-align: middle; }
-.build-tabs { justify-self: start; }
-.build-panel { display: grid; gap: var(--s4); min-width: 0; }
-.build-kv { grid-template-columns: 52px minmax(0, 1fr); }
+.build-pick:focus-visible { box-shadow: var(--focus-ring); }
+
+/* One game: who, against whom, where, and the summoner spells */
+.game-detail { display: grid; gap: var(--s5); min-width: 0; }
+.game-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s2) var(--s5); align-items: center; }
+.game-who { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2) var(--s4); }
+.game-player { font-family: var(--font-display); font-size: var(--fs-lg); }
+.game-player b { font-weight: var(--w-strong); }
+.game-vs { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
+.game-vs .champ-btn { display: inline-flex; align-items: center; gap: var(--s2); }
+.game-meta { grid-column: 1; display: flex; flex-wrap: wrap; gap: var(--s1) var(--s4); }
+.game-spells { grid-column: 2; grid-row: 1 / span 2; display: flex; gap: var(--s5); }
+.game-missing { grid-column: 1 / -1; }
+.side-tag { display: inline-flex; align-items: center; gap: var(--s2); }
+.side-tag::before { content: ""; width: 8px; height: 8px; border-radius: 1px; background: var(--border-strong); }
+.side-blue .side-tag::before { background: var(--team-blue); }
+.side-red .side-tag::before { background: var(--team-red); }
+.game-head.compact { grid-template-columns: minmax(0, 1fr); }
+.game-head.compact .game-spells { grid-column: 1; grid-row: auto; }
+.build-spell { display: inline-flex; align-items: center; gap: var(--s3); }
+.build-spell-text { display: grid; line-height: 1.25; }
+
+/* Icons */
 .build-row-items, .build-counts { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); }
+.build-row-items.tight { gap: 2px; }
 .build-counts { gap: var(--s3) var(--s5); }
-.spell { display: inline-flex; align-items: center; gap: var(--s2); }
+.count-item { display: inline-flex; align-items: center; gap: var(--s2); }
 .bicon { position: relative; display: inline-flex; flex: none; width: var(--icon-md); height: var(--icon-md); border: 1px solid var(--border-strong); border-radius: var(--r); overflow: hidden; background: var(--surface-sunken); }
+.bicon.xs { width: var(--icon-xs); height: var(--icon-xs); }
 .bicon.sm { width: var(--icon-sm); height: var(--icon-sm); }
+.bicon.lg { width: var(--icon-lg); height: var(--icon-lg); }
 .bicon img { width: 100%; height: 100%; display: block; }
-.bicon.dim { opacity: .28; filter: grayscale(1); border-color: var(--border); }
+.bicon.empty { border-style: dashed; border-color: var(--border); background: transparent; }
+.bicon.dim { opacity: .3; filter: grayscale(1); border-color: var(--border); }
+.bicon.chosen { border-color: var(--pro-line); }
+.bicon.completed { border-color: var(--accent); }
 .bicon.struck img { opacity: .55; }
 .bicon.struck::after { content: ""; position: absolute; left: -20%; right: -20%; top: calc(50% - 1px); height: 2px; background: var(--danger); transform: rotate(-45deg); }
-.bicon-fallback { margin: auto; font-size: var(--fs-3xs); color: var(--text-faint); font-family: var(--font-mono); }
+.bicon-fallback { margin: auto; font-size: var(--fs-xs); color: var(--text-faint); font-family: var(--font-mono); }
+
+/* Rune page: primary tree | secondary tree + shards, chosen bright, the rest subdued */
+.rune-page { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s4) var(--s6); }
+.rune-tree, .rune-side { display: grid; gap: var(--s3); align-content: start; }
+.rune-tree-head { display: flex; align-items: center; gap: var(--s3); }
+.rune-row { display: flex; gap: var(--s3); }
+.rune-row.keystone { padding-bottom: var(--s2); }
+.rune-row.keystone .bicon.chosen { border-color: var(--accent); }
+.rune-row .bicon, .rune-shard .bicon { border-radius: 50%; }
+.rune-shards { display: grid; gap: var(--s2); margin-top: var(--s3); }
+.rune-shard { display: inline-flex; align-items: center; gap: var(--s3); }
+.rune-text { grid-column: 1 / -1; }
+.rune-partial { display: grid; gap: var(--s3); }
+.rune-keystone-line { display: inline-flex; align-items: center; gap: var(--s3); }
+.rune-setups { display: grid; gap: var(--s2); margin: 0; padding: 0; list-style: none; }
+.rune-setups li { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); padding: var(--s2) 0; border-bottom: 1px solid var(--border); }
+.rune-setups li:last-child { border-bottom: 0; }
+.rune-setups .bicon { border-radius: 50%; }
+
+/* Level-up grid: levels 1–18 by Q / W / E / R; scrolls inside itself on narrow screens */
+.skill-summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s1) var(--s5); }
+.skill-grid-wrap { overflow-x: auto; scrollbar-width: thin; }
+.skill-grid { width: 100%; border-collapse: collapse; font-size: var(--fs-xs); }
+.skill-grid th, .skill-grid td { min-width: 19px; height: 26px; padding: 0; text-align: center; border: 1px solid var(--border); }
+.skill-grid thead th { height: 18px; color: var(--text-faint); font-weight: var(--w-control); border-top: 0; }
+.skill-grid th[scope="row"] { width: 1%; white-space: nowrap; padding-right: var(--s3); border-left: 0; text-align: left; }
+.skill-key { display: inline-flex; align-items: center; gap: var(--s2); font-family: var(--font-display); font-weight: var(--w-strong); font-size: var(--fs-xs); }
+.skill-grid td.up { background: var(--pro-subtle); color: var(--pro); font-weight: var(--w-strong); box-shadow: inset 0 0 0 1px var(--pro-line); }
+.skill-grid .unreached { background: var(--surface-sunken); }
+.skill-grid thead th.unreached { background: transparent; color: var(--border-strong); }
+
+/* Item progression: overview steps, then the purchase timeline (scrolls inside itself) */
+.build-flow { display: flex; flex-wrap: wrap; gap: var(--s4) var(--s6); }
+.flow-step { display: grid; gap: var(--s2); align-content: start; }
+.flow-step.final { flex-basis: 100%; padding-top: var(--s3); border-top: 1px solid var(--border); }
+.flow-item { display: inline-grid; justify-items: center; gap: 1px; }
+.bicon.trinket { align-self: center; }
 .build-timeline { display: flex; gap: var(--s3); margin: 0; padding: 0 0 var(--s2); list-style: none; overflow-x: auto; scrollbar-width: thin; }
 .build-timeline li { flex: none; display: grid; gap: var(--s1); align-content: start; padding: var(--s2) var(--s3); border-left: 1px solid var(--border); }
 .build-timeline li:first-child { border-left: 0; padding-left: 0; }
 .build-timeline .build-row-items { flex-wrap: nowrap; gap: 2px; }
-.rune-page { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5); }
-.rune-tree { display: grid; gap: var(--s3); }
-.rune-tree-head { display: flex; align-items: center; gap: var(--s3); }
-.rune-row { display: flex; gap: var(--s3); }
-.rune-row.keystone .bicon:not(.dim) { border-color: var(--accent); }
-.rune-shards { display: grid; gap: var(--s2); margin-top: var(--s4); }
-.skill-grid-wrap { overflow-x: auto; scrollbar-width: thin; }
-.skill-grid { border-collapse: collapse; font-size: var(--fs-2xs); }
-.skill-grid th, .skill-grid td { width: 17px; min-width: 17px; height: 20px; padding: 0; text-align: center; border: 1px solid var(--border); }
-.skill-grid thead th { color: var(--text-faint); font-weight: var(--w-control); border-top: 0; }
-.skill-grid th[scope="row"] { width: auto; padding-right: var(--s3); border-left: 0; text-align: left; }
-.skill-key { display: inline-flex; align-items: center; gap: var(--s2); font-family: var(--font-display); font-weight: var(--w-strong); font-size: var(--fs-xs); }
-.skill-grid td.up { background: var(--pro-subtle); color: var(--pro); font-weight: var(--w-strong); box-shadow: inset 0 0 0 1px var(--pro-line); }
-.build-games tr.active td { background: var(--surface-hover); }
-.builds .win { color: var(--success); }
-.builds .loss { color: var(--danger); }
-.link-btn { all: unset; cursor: pointer; color: var(--text); font-weight: var(--w-strong); }
-.link-btn:hover { color: var(--accent-text); text-decoration: underline; }
+
+/* Common build */
+.common-build { display: grid; gap: var(--s5); }
+.build-kv { grid-template-columns: 84px minmax(0, 1fr); }
+.item-freq { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--s2) var(--s5); margin: 0; padding: 0; list-style: none; }
+.item-freq li { display: grid; grid-template-columns: auto minmax(0, 1fr) 48px auto; align-items: center; gap: var(--s3); }
+.item-freq li .small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.freq-bar { height: 3px; background: var(--surface-sunken); border-radius: 1px; }
+.freq-bar span { display: block; width: var(--w); height: 100%; background: var(--pro); border-radius: 1px; }
+
+/* Compare two games */
+.compare { display: grid; gap: var(--s5); }
+.compare-pick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5); }
+.compare-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5); align-items: start; }
+.compare-col { display: grid; gap: var(--s4); min-width: 0; }
+.diff-pair { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--s3); }
+
+@media (max-width: 1180px) {
+  .builds-cols, .compare-cols { grid-template-columns: minmax(0, 1fr); }
+}
 @media (max-width: 620px) {
-  .rune-page { grid-template-columns: minmax(0, 1fr); }
+  .rune-page, .compare-pick { grid-template-columns: minmax(0, 1fr); }
+  .game-head { grid-template-columns: minmax(0, 1fr); }
+  .game-spells { grid-column: 1; grid-row: auto; }
+  .builds-tools .seg.push { margin-left: 0; }
 }
 
 /* Champion picker in open draft slots: scrolls inside itself, flips above when space below is short */

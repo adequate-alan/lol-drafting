@@ -8,6 +8,7 @@ import { newestGameFirst, withGameSides } from "./draft-side";
 import { draftsFromGames, freshness, resultsFromGames, sourcesFromGames } from "./pro-games";
 import { priorityData, priorityMarks, type PriorityData } from "./pro-priority";
 import { buildPatchIndex } from "./patch-changes";
+import { championIndex, type ChampionBuilds } from "./pro-builds";
 import { withoutConfirmed } from "./proposed";
 import { Files } from "./schema";
 
@@ -62,6 +63,12 @@ export const getPatchNotes = () => load("patch-notes.json");
 let patchIndex: ReturnType<typeof buildPatchIndex> | undefined;
 export const getPatchIndex = () => (patchIndex ??= buildPatchIndex(getPatchNotes()));
 
+// Pro Builds: the full records load in the browser on /pro-builds/ (lib/pro-builds-bundle.ts); pages get only the
+// per-champion summary (games, players, newest patch) the drawer shows beside its "View Pro Builds" link.
+let buildIndex: ChampionBuilds[] | undefined;
+export const getBuildGames = () => [...new Set(load("pro-builds.json").builds.map((b) => b.game))];
+export const getBuildIndex = () => (buildIndex ??= championIndex(load("pro-builds.json").builds, getProGames().games));
+
 // Everything the interactive Draft Room needs in the browser.
 export function getDraftData() {
   return {
@@ -94,6 +101,7 @@ export function getDrawerData() {
     proposed: getProposed().records,
     priority: getPriority(),
     patches: getPatchIndex(),
+    builds: getBuildIndex(),
   };
 }
 export type DrawerData = ReturnType<typeof getDrawerData>;

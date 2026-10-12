@@ -1,5 +1,5 @@
-// The Pro Builds data as one browser chunk: components/ProBuilds.tsx imports this module dynamically when a champion
-// drawer first opens, so the player builds (data/pro-builds.json), their Data Dragon names and icons
+// The Pro Builds data as one browser chunk: components/views/ProBuildsView.tsx imports this module dynamically when
+// /pro-builds/ opens, so the player builds (data/pro-builds.json), their Data Dragon names and icons
 // (data/build-assets.json) and the games they belong to are not embedded in every page. Read at build time like every
 // other data file; tests/pro-builds.test.ts validates the same files with the zod schemas.
 import assets from "@/data/build-assets.json";

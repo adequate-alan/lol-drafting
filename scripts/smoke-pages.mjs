@@ -29,7 +29,7 @@ async function h1() { return (await page.locator("main h1").first().textContent(
 
 // Sections, direct loads and refreshes
 const sections = [["/", "Draft Room"], ...["top", "jungle", "mid", "bot", "support"].map((t) => [`/synergies/${t}/`, "Champion Synergies"]),
-  ["/comps/", "Comp Library"], ["/pool/", "Champion Pool"], ["/pro-drafts/", "Pro Drafts"], ["/geng/", "Gen.G"], ["/meta/", "Meta / Research"], ["/patch-notes/", "Patch Notes"]];
+  ["/comps/", "Comp Library"], ["/pool/", "Champion Pool"], ["/pro-drafts/", "Pro Drafts"], ["/pro-builds/", "Pro Builds"], ["/geng/", "Gen.G"], ["/meta/", "Meta / Research"], ["/patch-notes/", "Patch Notes"]];
 for (const [path, title] of sections) {
   const res = await open(path);
   const t = await h1();
@@ -369,7 +369,7 @@ await page.locator(".theme-toggle").click();
   const marks = await page.locator("#mage-bot-siege .lu-slot.has-saved .lu-name").allTextContents();
   check("comps: clicking Nautilus opens the drawer and marks Ziggs as Synergy", (await drawer.locator("h2").textContent()) === "Nautilus" && marks.includes("Ziggs"), marks.join(", "));
   const layers = await drawer.locator(".layer").evaluateAll((els) => els.map((e) => e.className));
-  check("comps: drawer keeps Synergy, Pro and Logic separate", /^layer clash,(layer clash proposed,)?layer pro,layer pro builds,layer logic$/.test(layers.join()), layers.join(" | "));
+  check("comps: drawer keeps Synergy, Pro and Logic separate", /^layer clash,(layer clash proposed,)?layer pro,layer pro,layer logic$/.test(layers.join()), layers.join(" | "));
   await drawer.locator("[aria-label='Next champion']").click();
   check("comps: next moves through the comp in place", (await drawer.locator("h2").textContent()) === "Gnar" && page.url().endsWith("/comps/?kind=all"), page.url());
   await page.keyboard.press("Escape");
@@ -617,34 +617,62 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   const one = await page.$$eval(".table-wrap tbody tr[data-side]", (rs) => rs.map((r) => r.dataset.side));
   check("pro drafts: a one-sided view shows no pairs and keeps each row's side", (await page.locator("tr.pair-a, tr.pair-b").count()) === 0 && one.includes("blue") && one.includes("red"), `${team}: ${one.join(",")}`);
 }
-// Pro Builds in the shared champion drawer (components/ProBuilds.tsx): one recorded game, then each tab
+// Pro Builds page (/pro-builds/, components/views/ProBuildsView.tsx) and the links into it
 {
   await open("/meta/?role=TOP");
   await page.locator(".hub-table .champ-link").first().click();
-  const b = page.locator(".drawer .builds");
-  await b.locator(".build-pick").first().waitFor({ timeout: 8000 }).catch(() => {});
-  const picks = await b.locator(".build-pick:not(.common)").count();
-  check("builds: the drawer lists recorded pro builds for the champion", picks > 0, `${picks} games`);
-  if (picks > 0) {
-    await b.locator(".build-pick:not(.common)").first().click();
-    const ctx = await b.locator(".build-context").innerText().catch(() => "");
-    check("builds: a game names the player, the lane opponent, event, patch, date and result", /\bvs\b/.test(ctx) && /\d+\.\d+/.test(ctx) && /Win|Loss/.test(ctx), ctx.replace(/\s+/g, " "));
-    const kv = await b.locator(".build-kv").innerText().catch(() => "");
-    const tips = await b.locator(".build-kv .bicon[title]").evaluateAll((els) => els.map((e) => e.getAttribute("title")));
-    check("builds: spells, purchase-order summary and final inventory, items named with cost", /Spells/.test(kv) && /Final/.test(kv) && tips.some((t) => / gold\n/.test(t ?? "")), kv.replace(/\s+/g, " ").slice(0, 120));
-    await page.waitForTimeout(800);
-    const loaded = await b.locator(".bicon img").evaluateAll((els) => els.filter((e) => e.complete && e.naturalWidth > 0).length);
-    check("builds: item and spell icons load from Data Dragon", loaded > 3, `${loaded} icons`);
-    await b.locator("[role=tab]", { hasText: "Runes" }).click();
-    const lit = await b.locator(".rune-row.keystone .bicon:not(.dim)").count(), dim = await b.locator(".rune-row .bicon.dim").count();
-    check("builds: runes show the chosen keystone with the other options dimmed", lit === 1 && dim > 5, `${lit} lit, ${dim} dimmed`);
-    await b.locator("[role=tab]", { hasText: "Skills" }).click();
-    const cols = await b.locator(".skill-grid thead th").count(), ups = await b.locator(".skill-grid td.up").count();
-    check("builds: skill grid marks exactly one ability per recorded point", cols > 1 && ups === cols - 1, `${cols - 1} levels, ${ups} marks`);
-    await b.locator("[role=tab]", { hasText: "Games" }).click();
-    check("builds: games tab lists every game in scope", (await b.locator(".build-games tbody tr").count()) === picks, "");
+  const link = page.locator(".drawer .drawer-builds a");
+  await link.waitFor({ timeout: 5000 }).catch(() => {});
+  const champ = await page.locator(".drawer h2").first().textContent().catch(() => "");
+  const href = await link.getAttribute("href").catch(() => null);
+  check("builds: the drawer shows a build count and links to the page with champion and role", !!href && /\/pro-builds\/\?champion=[\w-]+&role=TOP/.test(href) && /recorded build/.test(await page.locator(".drawer .drawer-builds").innerText()), href ?? "no link");
+  if (href) {
+    await link.click();
+    await page.waitForURL(/\/pro-builds\//, { timeout: 8000 }).catch(() => {});
+    await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
+    check("builds: the drawer link opens that champion in that role", (await h1()) === "Pro Builds" && (await page.locator(".builds-title h2").textContent()) === champ && /TOP/.test(await page.locator(".pick-rail li button.active").innerText()), `${champ} → ${await page.locator(".builds-title h2").textContent().catch(() => "")}`);
   }
-  await page.keyboard.press("Escape");
+  await open("/pro-builds/");
+  await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
+  check("builds: the rail lists every champion and role with recorded builds", (await page.locator(".pick-rail li button").count()) > 30, `${await page.locator(".pick-rail li button").count()} entries`);
+  const games = await page.locator(".build-pick").count();
+  const head = await page.locator(".game-head").innerText().catch(() => "");
+  const src = await page.locator(".game-head a[href*='gol.gg/game/stats/']").getAttribute("href").catch(() => null);
+  check("builds: a game names player, opponent, tournament, patch, date, side, result and its Gol.gg source", games > 0 && /\bvs\b/.test(head) && /26\.\d+/.test(head) && /(Blue|Red) side/.test(head) && /Win|Loss/.test(head) && !!src, head.replace(/\s+/g, " ").slice(0, 160));
+  check("builds: two summoner spells with names and casts", (await page.locator(".game-spells .build-spell").count()) === 2 && /casts/.test(await page.locator(".game-spells").innerText()), "");
+  const chosen = await page.locator(".rune-page .rune-row .bicon.chosen").count(), dim = await page.locator(".rune-page .rune-row .bicon.dim").count();
+  check("builds: full rune page, keystone + 3 + 2 chosen, the rest dimmed, 3 shards", chosen === 6 && dim > 8 && (await page.locator(".rune-page .rune-row.keystone .bicon.chosen").count()) === 1 && (await page.locator(".rune-shard").count()) === 3, `${chosen} chosen, ${dim} dimmed`);
+  const runeTips = await page.locator(".rune-page .rune-row .bicon").evaluateAll((els) => els.filter((e) => (e.getAttribute("title") ?? "").includes("\n")).length);
+  check("builds: every rune has a name and description tip", runeTips === chosen + dim, `${runeTips} tips`);
+  const cols = await page.locator(".skill-grid thead th").count(), ups = await page.locator(".skill-grid td.up").count(), unreached = await page.locator(".skill-grid thead th.unreached").count();
+  check("builds: level grid shows 18 levels, one mark per recorded point, unreached levels empty", cols - 1 >= 18 && ups === cols - 1 - unreached, `${cols - 1} columns, ${ups} marks, ${unreached} not reached`);
+  const flow = await page.locator(".build-flow").innerText().catch(() => "");
+  check("builds: overview shows start, first item, boots, core, situational and final", ["Start", "First item", "Boots", "Core", "Situational", "Final"].every((l) => flow.includes(l)), flow.replace(/\s+/g, " ").slice(0, 120));
+  check("builds: purchase timeline lists shop visits in order", (await page.locator(".build-timeline li").count()) > 2, "");
+  await page.waitForTimeout(800);
+  const loaded = await page.locator(".game-detail .bicon img").evaluateAll((els) => els.filter((e) => e.complete && e.naturalWidth > 0).length);
+  check("builds: item, rune, spell and ability icons load from Data Dragon", loaded > 20, `${loaded} icons`);
+  if (games > 1) {
+    await page.locator(".build-pick").nth(1).click();
+    await page.waitForTimeout(200);
+    check("builds: picking another game updates the whole setup and the URL", (await page.locator(".game-head").innerText()) !== head && /[?&]game=\d+/.test(page.url()), page.url());
+    const shared = page.url();
+    await open(shared.replace(base, ""));
+    await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
+    check("builds: a shared URL reopens the same game", (await page.locator(".build-pick.active").count()) === 1 && (await page.locator(".build-pick").nth(1).getAttribute("aria-selected")) === "true", "");
+  }
+  await page.locator(".builds-tools [role=tab]", { hasText: "Common build" }).click();
+  await page.waitForTimeout(200);
+  check("builds: common build counts games with its sample, rune setups from complete pages, item frequencies", /recorded game/.test(await page.locator(".common-scope").innerText().catch(() => "")) && (await page.locator(".rune-setups li").count()) > 0 && (await page.locator(".item-freq li").count()) > 0, "");
+  await page.locator(".builds-tools [role=tab]", { hasText: "Compare" }).click();
+  await page.waitForTimeout(200);
+  check("builds: compare shows two games side by side with their differences", games < 2 || ((await page.locator(".compare-col").count()) === 2 && (await page.locator(".diff").count()) === 1), "");
+  // Pro Drafts: a recorded game links each pick to that player's build
+  await open("/pro-drafts/?tournament=" + encodeURIComponent("Demacia Cup Global Invitational 2026"));
+  await page.locator(".table-wrap tbody tr[data-side] .cell-link").first().click();
+  await page.locator(".game-builds").waitFor({ timeout: 5000 }).catch(() => {});
+  const blinks = await page.locator(".game-builds a").evaluateAll((els) => els.map((e) => e.getAttribute("href")));
+  check("pro drafts: a recorded game links its five picks to their builds", blinks.length === 5 && blinks.every((h) => /\/pro-builds\/\?champion=.+&role=.+&game=\d+/.test(h ?? "")), blinks.join(" ").slice(0, 120));
 }
 // Patch Notes: Riot's official values, patch navigation, filters, anchors, compare, and the drawer link.
 await open("/patch-notes/");
@@ -680,7 +708,7 @@ await open("/patch-notes/");
   await page.keyboard.press("Escape");
 }
 // One patch label (alan, 2026-10-12): the site writes Riot's 26.xx; Gol.gg's 16.xx stays in data and source URLs only.
-for (const path of ["/", "/pool/", "/meta/", "/pro-drafts/", "/comps/", "/synergies/bot/", "/patch-notes/"]) {
+for (const path of ["/", "/pool/", "/meta/", "/pro-drafts/", "/pro-builds/", "/comps/", "/synergies/bot/", "/patch-notes/"]) {
   await open(path);
   const shown = await page.evaluate(() => [document.body.innerText, ...[...document.querySelectorAll("[title],[aria-label]")].map((e) => `${e.getAttribute("title") ?? ""} ${e.getAttribute("aria-label") ?? ""}`)].join("\n"));
   const hit = shown.match(/(^|[^\d.\/])1[56]\.\d{1,2}(?![\d.])/);
@@ -706,20 +734,12 @@ if (shots) {
       await page.waitForTimeout(400);
       await page.screenshot({ path: `${shots}/review-drawer-${tag}-${theme}.png` });
       await page.keyboard.press("Escape");
-      await open("/meta/?role=TOP");
-      await page.locator(".hub-table .champ-link").first().click();
-      await page.locator(".drawer .builds .build-pick").first().waitFor({ timeout: 8000 }).catch(() => {});
-      await page.locator(".drawer .builds .build-pick:not(.common)").first().click().catch(() => {});
-      await page.locator(".drawer .builds").scrollIntoViewIfNeeded().catch(() => {});
-      await page.waitForTimeout(600);
-      await page.screenshot({ path: `${shots}/review-builds-${tag}-${theme}.png` });
-      await page.locator(".drawer [role=tab]", { hasText: "Runes" }).click().catch(() => {});
-      await page.waitForTimeout(400);
-      await page.screenshot({ path: `${shots}/review-runes-${tag}-${theme}.png` });
-      await page.locator(".drawer [role=tab]", { hasText: "Skills" }).click().catch(() => {});
-      await page.waitForTimeout(400);
-      await page.screenshot({ path: `${shots}/review-skills-${tag}-${theme}.png` });
-      await page.keyboard.press("Escape");
+      for (const [q, name] of [["?champion=jarvan-iv&role=JUNGLE", "builds"], ["?champion=jarvan-iv&role=JUNGLE&mode=common", "builds-common"], ["?champion=jarvan-iv&role=JUNGLE&mode=compare", "builds-compare"]]) {
+        await open(`/pro-builds/${q}`);
+        await page.locator(".game-head, .common-build").first().waitFor({ timeout: 8000 }).catch(() => {});
+        await page.waitForTimeout(700);
+        await page.screenshot({ path: `${shots}/review-${name}-${tag}-${theme}.png`, fullPage: true });
+      }
       await open("/pool/?event=demacia-cup-2026");
       await page.locator("[role=combobox][aria-label='Tournament']").click();
       await page.waitForTimeout(200);
