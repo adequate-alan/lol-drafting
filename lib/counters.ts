@@ -13,6 +13,7 @@
 // averaged in. Nothing here changes the draft-fit score: a counter is shown beside the overall ranking, never above it.
 import type { Draft } from "./evaluate";
 import { comparePatchDesc } from "./evidence";
+import { patchLabel } from "./patch";
 import { TIERS, type Tier } from "./pool-stats";
 import { savedSupports, type Recommendation, type Recommendations } from "./recommend";
 import { ROLES, type BotPairing, type Champion, type Counters, type PoolEntry, type ProDraft, type Role } from "./schema";
@@ -313,13 +314,13 @@ export function counterPicks(draft: Draft, enemy: EnemyDraft, input: CounterInpu
   return out;
 }
 
-/** "DPM · 55.2% matchup · +2.1 · 4,120 games · 16.18" */
+/** "DPM · 55.2% matchup · +2.1 · 4,120 games · 26.18" */
 export function describeEvidence(e: CounterEvidence): string {
   return ["DPM", `${(e.winRate * 100).toFixed(1)}% matchup`, e.delta !== undefined ? `${e.delta > 0 ? "+" : ""}${e.delta.toFixed(1)}` : undefined,
-    `${e.games.toLocaleString("en-US")} games`, e.patch].filter(Boolean).join(" · ");
+    `${e.games.toLocaleString("en-US")} games`, e.patch && patchLabel(e.patch)].filter(Boolean).join(" · ");
 }
 
-/** "Pro · 3 games · 3–0 · 16.18 · agrees" */
+/** "Pro · 3 games · 3–0 · 26.18 · agrees" */
 export function describePro(p: ProSample): string {
-  return ["Pro", `${p.games} games`, `${p.wins}–${p.games - p.wins}`, p.patch, p.verdict].filter(Boolean).join(" · ");
+  return ["Pro", `${p.games} games`, `${p.wins}–${p.games - p.wins}`, p.patch && patchLabel(p.patch), p.verdict].filter(Boolean).join(" · ");
 }

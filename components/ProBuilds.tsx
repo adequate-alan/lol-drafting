@@ -13,6 +13,7 @@ import {
   type BuildRow, type Common, type Skill,
 } from "@/lib/pro-builds";
 import type { PatchAssets, Role } from "@/lib/schema";
+import { patchLabel } from "@/lib/patch";
 
 type Tab = "builds" | "runes" | "skills" | "games";
 const TABS: [Tab, string][] = [["builds", "Builds"], ["runes", "Runes"], ["skills", "Skills"], ["games", "Games"]];
@@ -47,7 +48,7 @@ export function ProBuilds({ champion, role, names, events }: {
   const uniq = (xs: [string, string][]) => [...new Map(xs).entries()];
   const filters = [
     { k: "event" as const, label: "Tournament", all: "All tournaments", opts: uniq(mine.map((r) => [r.game.event, evName(r)])) },
-    { k: "patch" as const, label: "Patch", all: "All patches", opts: uniq(mine.map((r) => [r.game.patch, r.game.patch])) },
+    { k: "patch" as const, label: "Patch", all: "All patches", opts: uniq(mine.map((r) => [r.game.patch, patchLabel(r.game.patch)])) },
     { k: "team" as const, label: "Team", all: "All teams", opts: uniq(mine.map((r) => [r.team, r.team])) },
     { k: "player" as const, label: "Player", all: "All players", opts: uniq(mine.map((r) => [r.build.player, r.build.player])) },
   ].filter((x) => x.opts.length > 1);
@@ -57,7 +58,7 @@ export function ProBuilds({ champion, role, names, events }: {
   if (!all) return <section className="layer pro builds" aria-busy="true">{head}<p className="xs faint">Loading builds…</p></section>;
   if (!mine.length) return <section className="layer pro builds">{head}<p className="xs muted">No recorded pro builds for {name(champion)} {role.toLowerCase()}.</p></section>;
 
-  const scope = [role.charAt(0) + role.slice(1).toLowerCase(), ...new Set(scoped.map(evName)), ...new Set(scoped.map((r) => r.game.patch))];
+  const scope = [role.charAt(0) + role.slice(1).toLowerCase(), ...new Set(scoped.map(evName)), ...new Set(scoped.map((r) => patchLabel(r.game.patch)))];
   return (
     <section className="layer pro builds">
       {head}
@@ -76,7 +77,7 @@ export function ProBuilds({ champion, role, names, events }: {
         )}
         {scoped.map((r) => (
           <button key={r.key} type="button" role="option" aria-selected={view?.key === r.key} className={`build-pick ${view?.key === r.key ? "active" : ""}`}
-            onClick={() => setPick(r.key)} title={`${r.build.player} (${r.team}) vs ${r.opponent ? name(r.opponent.champion) : "?"} · ${evName(r)} ${r.game.patch} · ${shortDate(r.game.date)} · ${r.won ? "win" : "loss"}`}>
+            onClick={() => setPick(r.key)} title={`${r.build.player} (${r.team}) vs ${r.opponent ? name(r.opponent.champion) : "?"} · ${evName(r)} ${patchLabel(r.game.patch)} · ${shortDate(r.game.date)} · ${r.won ? "win" : "loss"}`}>
             <span className="small nowrap">{r.build.player}</span>
             <span className="xs muted nowrap">{r.opponent && <>vs {name(r.opponent.champion)} </>}<span className={r.won ? "win" : "loss"}>{r.won ? "W" : "L"}</span></span>
           </button>
@@ -105,7 +106,7 @@ function GameContext({ r, name, evName }: { r: BuildRow; name: (id: string) => s
       <ChampIcon id={r.build.champion} name={name(r.build.champion)} size="xs" />
       <span className="small"><b>{r.build.player}</b> <span className="muted">{r.team}</span></span>
       {r.opponent && <span className="small"><span className="faint">vs</span> <ChampIcon id={r.opponent.champion} name={name(r.opponent.champion)} size="xs" /> {name(r.opponent.champion)}{r.opponent.player && <span className="muted"> · {r.opponent.player}</span>} <span className="muted">({r.opponentTeam})</span></span>}
-      <span className="xs muted tnum">{evName} · {r.game.patch} · {shortDate(r.game.date)} · <span className={r.won ? "win" : "loss"}>{r.won ? "Win" : "Loss"}</span>
+      <span className="xs muted tnum">{evName} · {patchLabel(r.game.patch)} · {shortDate(r.game.date)} · <span className={r.won ? "win" : "loss"}>{r.won ? "Win" : "Loss"}</span>
         {" · "}<a href={`https://gol.gg/game/stats/${r.game.id}/page-builds/`} target="_blank" rel="noopener noreferrer"
           title={`${r.game.series} game ${r.game.game}\nGol.gg builds page, read ${r.build.checkedOn}`}>Gol.gg</a></span>
       {r.build.missing && <span className="xs faint">Not recorded for this game: {r.build.missing.join(", ")}.</span>}
@@ -254,7 +255,7 @@ function GamesList({ rows, name, evName, current, onPick }: { rows: BuildRow[]; 
             <td><button type="button" className="link-btn small" onClick={() => onPick(r.key)}>{r.build.player}</button><span className="xs muted"> {r.team}</span></td>
             <td className="small">{r.opponent ? <>{name(r.opponent.champion)}{r.opponent.player && <span className="xs muted"> {r.opponent.player}</span>}</> : "—"}</td>
             <td className={`num small ${r.won ? "win" : "loss"}`}>{r.won ? "Win" : "Loss"}</td>
-            <td className="xs muted nowrap tnum">{evName(r)} {r.game.patch} · {shortDate(r.game.date)}</td>
+            <td className="xs muted nowrap tnum">{evName(r)} {patchLabel(r.game.patch)} · {shortDate(r.game.date)}</td>
           </tr>
         ))}
       </tbody>

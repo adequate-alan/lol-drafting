@@ -1,5 +1,6 @@
 // Freshness for Observed Pro Evidence: which event, patch and date a pairing comes from, so a 16.18 game reads as newer
 // than a 16.16 one. Display only; nothing here feeds the draft-fit score or touches saved pairings.
+import { patchLabel } from "./patch";
 import type { MetaEvent, ObservedPairing, Source } from "./schema";
 
 export type EventMap = Record<string, MetaEvent>;
@@ -44,9 +45,9 @@ export function evidenceLine(o: ObservedPairing, events: EventMap, sources: Reco
   return { pairing: o, games, label: ev?.short ?? o.context, patch: ev?.patch ?? cited.find((s) => s.patch)?.patch, date, ongoing: ev?.status === "ongoing" };
 }
 
-/** "1 game · Demacia Cup · 16.18 · Oct 3" */
+/** "1 game · Demacia Cup · 26.18 · Oct 3" (Riot's patch label) */
 export function describeLine(l: Pick<EvidenceLine, "games" | "label" | "patch" | "date">): string {
-  return [l.games ? `${l.games} game${l.games > 1 ? "s" : ""}` : undefined, l.label, l.patch, shortDate(l.date)].filter(Boolean).join(" · ");
+  return [l.games ? `${l.games} game${l.games > 1 ? "s" : ""}` : undefined, l.label, l.patch && patchLabel(l.patch), shortDate(l.date)].filter(Boolean).join(" · ");
 }
 
 /** One group per partner champion, freshest evidence first; groups ordered by their freshest line, then game count. */

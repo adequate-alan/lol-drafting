@@ -137,7 +137,6 @@ function PatchLine({ p }: { p: PatchNote }) {
   return (
     <span className="pn-meta">
       <b>Patch {p.patch}</b>
-      <span title={`Pro data and Gol.gg write this patch ${p.short}`}>{p.short} in pro data</span>
       {p.published && <span>Released {fullDate(p.published)}</span>}
       <span>{p.midPatch.length ? <>Mid-patch: {p.midPatch.map((m) => `${m.title}${m.date ? ` (${shortDate(m.date)})` : ""}`).join("; ")}</> : "No mid-patch updates"}</span>
       <a href={p.url} target="_blank" rel="noopener noreferrer">Riot&apos;s notes</a>

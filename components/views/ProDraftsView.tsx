@@ -9,6 +9,7 @@ import type { DrawerData } from "@/lib/data";
 import { ChampIcon, ChampionRow, PageHeader, SourceLinks } from "@/components/ui";
 import { ROLES, type ProDraft, type Role, type Source } from "@/lib/schema";
 import { pairRows, SIDE_LABEL } from "@/lib/draft-side";
+import { patchLabel } from "@/lib/patch";
 
 type Filters = { team?: string; champion?: string; role?: string; tournament?: string; series?: string; id?: string };
 
@@ -65,7 +66,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData }: {
         <section className="panel game-panel">
           <div className="panel-head">
             <h2>{selected.team} vs {selected.opponent} · {selected.seriesGame}</h2>
-            <span className="xs muted">{[selected.tournament, !selected.seriesGame.startsWith(selected.stage) && selected.stage, selected.patch && `patch ${selected.patch}`, selected.date, selected.side && `${selected.side} side`, selected.won != null && (selected.won ? "win" : "loss")].filter(Boolean).join(" · ")}</span>
+            <span className="xs muted">{[selected.tournament, !selected.seriesGame.startsWith(selected.stage) && selected.stage, selected.patch && `patch ${patchLabel(selected.patch)}`, selected.date, selected.side && `${selected.side} side`, selected.won != null && (selected.won ? "win" : "loss")].filter(Boolean).join(" · ")}</span>
             <div className="end">
               <Link className="btn sm primary" href={`/?${new URLSearchParams(Object.fromEntries(ROLES.map((r) => [r.toLowerCase(), selected.picks[r]])))}`}>Open in Draft Room</Link>
               <Link className="btn sm ghost" href={closeHref} aria-label="Close game">×</Link>

@@ -19,6 +19,7 @@ import { draftHref, shellDraft, variationDiff } from "@/lib/comp-preview";
 import type { DrawerData } from "@/lib/data";
 import { shortDate } from "@/lib/evidence";
 import { ROLES, type CompShell, type ProDraft, type Role, type Source } from "@/lib/schema";
+import { patchLabel } from "@/lib/patch";
 
 type Slot = { shell: string; role: Role };
 type Swaps = Partial<Record<Role, string>>;
@@ -154,7 +155,7 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
                   </span>
                 </div>
                 <span className="shell-tags xs muted">
-                  {s.kind === "observed" && <span className="shell-by">{read && d ? `${d.team} vs ${d.opponent} · ${d.patch}` : `${s.observedBy}${d ? ` · ${d.seriesGame} vs ${d.opponent}` : ""}`}</span>}
+                  {s.kind === "observed" && <span className="shell-by">{read && d ? `${d.team} vs ${d.opponent} · ${d.patch ? patchLabel(d.patch) : ""}` : `${s.observedBy}${d ? ` · ${d.seriesGame} vs ${d.opponent}` : ""}`}</span>}
                   {s.identities.map((i) => <span key={i} className="shell-tag">{tag(i)}</span>)}
                 </span>
               </header>
@@ -340,7 +341,7 @@ function GameLink({ g }: { g: ObservedGame }) {
     <span className="var-game">
       <a href={g.url} target="_blank" rel="noopener noreferrer">{g.team} vs {g.opponent}</a>
       <span className={g.won ? "var-w" : "var-l"}>{g.won ? "W" : "L"}</span>
-      <span className="faint">{shortDate(g.date)} · {g.patch}</span>
+      <span className="faint">{shortDate(g.date)} · {patchLabel(g.patch)}</span>
     </span>
   );
 }
@@ -384,7 +385,7 @@ function SourceList({ list }: { list: Source[] }) {
       {list.map((s) => (
         <li key={s.id}>
           <a href={s.url} target="_blank" rel="noopener noreferrer">Gol.gg {TYPE_LABEL[s.type]}{s.seriesGame ? ` ${s.seriesGame}` : ""}</a>
-          <span className="muted">{[s.tournament, s.team && s.opponent ? `${s.team} vs ${s.opponent}` : s.team, s.patch && `patch ${s.patch}`, s.date && shortDate(s.date)].filter(Boolean).join(" · ")}</span>
+          <span className="muted">{[s.tournament, s.team && s.opponent ? `${s.team} vs ${s.opponent}` : s.team, s.patch && `patch ${patchLabel(s.patch)}`, s.date && shortDate(s.date)].filter(Boolean).join(" · ")}</span>
           <span className="faint">{s.pendingClaim ? `externally provided ${s.pendingClaim.providedOn}, pending refresh`
             : s.refreshStatus === "verified" && s.lastChecked ? `verified ${s.lastChecked}` : "not refreshed"}</span>
         </li>

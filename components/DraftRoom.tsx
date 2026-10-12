@@ -136,7 +136,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
   const shownRows = activeRows.filter((c) => hasSignal(c, filter));
   const visibleRows = filter === "all" && !showAll ? shownRows.slice(0, ROW_LIMIT) : shownRows;
   const proIds = active ? (proAll[active] ?? []).map((s) => s.champion) : [];
-  const proSourceLine = `Recorded Gol.gg games next to your picks: ${(data.events ?? []).map((e) => `${e.short} ${e.patch}${e.status === "ongoing" ? " (ongoing)" : ""}`).join(" · ")}. Evidence, never part of the order.`;
+  const proSourceLine = `Recorded Gol.gg games next to your picks: ${(data.events ?? []).map((e) => `${e.short} ${patchLabel(e.patch)}${e.status === "ongoing" ? " (ongoing)" : ""}`).join(" · ")}. Evidence, never part of the order.`;
   const laneFoes = active ? LANE[active].map((r) => enemy[ROLES.indexOf(r)]).filter((e): e is string => !!e) : [];
 
   const cards: CardRecord[] = ROLES.flatMap((role): CardRecord[] => {

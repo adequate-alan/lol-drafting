@@ -259,7 +259,7 @@ await page.locator(".theme-toggle").click();
   check("pool: tournament filter shows Demacia marked ongoing", r.length > 0 && r.every((x) => /Demacia Cup/.test(x[8]) && /ongoing/i.test(x[8])), `${r.length} rows`);
   await open("/pool/?patch=16.16");
   r = (await rows()).filter((x) => x[9] !== "—");
-  check("pool: patch filter", r.length > 0 && r.every((x) => x[9] === "16.16"), `${r.length} rows`);
+  check("pool: patch filter (old 16.16 link shows 26.16)", r.length > 0 && r.every((x) => x[9] === "26.16"), `${r.length} rows`);
   await open("/pool/");
   await page.fill("input[type=search]", "locke"); r = await rows();
   check("pool: search", r.length === 1 && r[0][0].endsWith("Locke"), r.map((x) => x[0]).join(", "));
@@ -324,7 +324,7 @@ await page.locator(".theme-toggle").click();
   await page.keyboard.press("Escape");
   await open("/synergies/bot/?champ=ezreal");
   const karmaRow = await page.locator(".pro-table tr", { hasText: "Karma" }).first().innerText().catch(() => "");
-  check("pro pairings show games, event, patch and date (Ezreal + Karma)", /1\s+Demacia Cup.*\s+16\.18\s+Oct 3/.test(karmaRow), karmaRow.replace(/\s+/g, " "));
+  check("pro pairings show games, event, patch and date (Ezreal + Karma)", /1\s+Demacia Cup.*\s+26\.18\s+Oct 3/.test(karmaRow), karmaRow.replace(/\s+/g, " "));
 }
 // Comp Library champion drawer
 {
@@ -650,7 +650,7 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
 await open("/patch-notes/");
 {
   const desc = await text("main .page-header .desc");
-  check("patch notes: latest patch by default, with the pro-data spelling and release date", /Patch 26\.\d+/.test(desc) && /16\.\d+ in pro data/.test(desc) && /Released/.test(desc), desc.slice(0, 120));
+  check("patch notes: latest patch by default in Riot's spelling only, with release date", /Patch 26\.\d+/.test(desc) && !/\b16\.\d+/.test(desc) && /Released/.test(desc), desc.slice(0, 120));
   const shown = async () => (await text(".pn-meta b")).replace("Patch ", "");
   const latest = await shown();
   await page.locator(".pn-step button[aria-label='Previous patch']").click();
@@ -678,6 +678,13 @@ await open("/patch-notes/");
   const dp = await text(".drawer-patch");
   check("drawer: patch changes with a link to the patch notes", /since 26\.16/.test(dp) && (await page.locator(".drawer-patch a[href*='patch-notes']").count()) > 0, dp.slice(0, 120));
   await page.keyboard.press("Escape");
+}
+// One patch label (alan, 2026-10-12): the site writes Riot's 26.xx; Gol.gg's 16.xx stays in data and source URLs only.
+for (const path of ["/", "/pool/", "/meta/", "/pro-drafts/", "/comps/", "/synergies/bot/", "/patch-notes/"]) {
+  await open(path);
+  const shown = await page.evaluate(() => [document.body.innerText, ...[...document.querySelectorAll("[title],[aria-label]")].map((e) => `${e.getAttribute("title") ?? ""} ${e.getAttribute("aria-label") ?? ""}`)].join("\n"));
+  const hit = shown.match(/(^|[^\d.\/])1[56]\.\d{1,2}(?![\d.])/);
+  check(`patch labels: ${path} shows Riot's 26.xx only`, !hit, hit?.[0] ?? "");
 }
 await open("/geng/");
 check("GenRang on the Gen.G page", (await page.locator(".brand-band img.genrang").count()) === 1 && await mascotOk(), "");
