@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { picksOf, profile, RULES, warnings, type Draft, type DraftWarning } from "@/lib/evaluate";
 import { teamNeeds, type Need, type Recommendation } from "@/lib/recommend";
@@ -19,6 +20,7 @@ import { proposedCard } from "@/lib/proposed";
 import { Disclosure } from "./Disclosure";
 import { CounterTrigger, ProEvidenceTrigger, type ProCtx } from "./EvidenceCards";
 import { Popover } from "./Popover";
+import { AUTO_BUILDS_KEY, MY_ROLE_KEY, buildsEntry, draftQuery, myBuildsHref, opensBuilds, parseRole } from "@/lib/my-role";
 import { ChampIcon, ChampionRow, WarningBadge, type Severity } from "./ui";
 
 const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
@@ -42,22 +44,32 @@ const FILTERS: { key: Filter; label: string }[] = [
 const ORDER_NOTE = "Order: your preferred pairing first, then comp fit (synergy with your picks, team needs, matchups and risks). "
   + "Synergy, Pro, Counter and Pro priority are labels on each row; pro game counts, counters and presence never move a row. Ties go to the row with more signals.";
 
-export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, metaPicks }: {
+export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, initialFocus, initialFilter = "all", metaPicks }: {
   data: DraftData;
   sources: Record<string, Source>;
   drawerData: DrawerData;
   initial: Draft;
   initialEnemy: EnemyDraft; // roles from ?vs=top:aatrox, or detected for bare ids
+  initialFocus?: Role; initialFilter?: Filter; // restored on the way back from Pro Builds
   metaPicks: Record<string, { picks: number; winRate: number; lowSample: boolean }>;
 }) {
   const [draft, setDraft] = useState<Draft>(initial);
   // One enemy slot per role, in ROLES order.
   const [enemy, setEnemy] = useState<(string | undefined)[]>(() => ROLES.map((r) => initialEnemy[r]));
-  const [focus, setFocus] = useState<Role>();
+  const [focus, setFocus] = useState<Role | undefined>(initialFocus);
   const [hover, setHover] = useState<string>();
   const [drawer, setDrawer] = useState<DrawerTarget>();
   const [pinned, setPinned] = useState(false);
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>(initialFilter);
+  // My Role: the role I play, kept in this browser. Separate from the role being picked below.
+  const [myRole, setMyRoleState] = useState<Role>();
+  const [autoBuilds, setAutoBuildsState] = useState(false);
+  useEffect(() => {
+    try { setMyRoleState(parseRole(localStorage.getItem(MY_ROLE_KEY))); setAutoBuildsState(localStorage.getItem(AUTO_BUILDS_KEY) === "1"); }
+    catch { /* storage blocked: the preference lasts for this page only */ }
+  }, []);
+  const store = (k: string, v: string | undefined) => { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch { /* see above */ } };
+  const router = useRouter();
   const [showAll, setShowAll] = useState(false);
   // Clear draft keeps the last board for a few seconds so one misclick in champion select is recoverable.
   const [cleared, setCleared] = useState<{ draft: Draft; enemy: (string | undefined)[] }>();
@@ -98,7 +110,14 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
     // window.location keeps the GitHub Pages base path; usePathname() would drop it.
     window.history.replaceState(null, "", `${window.location.pathname}${q.size ? `?${q.toString().replace(/%2C/g, ",")}` : ""}`);
   };
-  const lock = (role: Role, id: string | undefined) => { setHover(undefined); update({ ...draft, [role]: id }); };
+  const lock = (role: Role, id: string | undefined) => {
+    setHover(undefined);
+    const next = { ...draft, [role]: id };
+    update(next);
+    // Only a confirmed lock of my own role opens Pro Builds, and only with the preference on (alan, 2026-10-12).
+    if (opensBuilds({ myRole, auto: autoBuilds, role, champion: id, previous: draft[role], hasBuilds: !!id && !!buildsEntry(drawerData.builds, id, role) }))
+      router.push(myBuildsHref(drawerData.builds, id!, role, draftQuery({ draft: next, vs: enemyParam(enemyDraftOf(enemy)), focus, filter })));
+  };
   const lockEnemy = (i: number, id: string | undefined) => update(draft, enemy.map((e, j) => (j === i ? id : e)));
 
   const enemyIds = enemy.filter((e): e is string => !!e);
@@ -153,6 +172,13 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
     ? [{ id: c.record.champion, text: c.record.logic.warning }]
     : c.kind === "top" ? [{ id: c.record.champion, text: `avoid ${c.record.logic.avoid}` }] : []);
 
+  // My champion's Pro Builds link carries the whole draft back (lib/my-role.ts).
+  const setMyRole = (r: Role | undefined) => { setMyRoleState(r); store(MY_ROLE_KEY, r); if (r && !draft[r]) setFocus(r); };
+  const setAutoBuilds = (on: boolean) => { setAutoBuildsState(on); store(AUTO_BUILDS_KEY, on ? "1" : undefined); };
+  const mine = myRole ? draft[myRole] : undefined;
+  const myEntry = mine && myRole ? buildsEntry(drawerData.builds, mine, myRole) : undefined;
+  const myHref = mine && myRole ? myBuildsHref(drawerData.builds, mine, myRole, draftQuery({ draft, vs: enemyParam(enemyDraft), focus, filter })) : undefined;
+
   const slotProps = { names, byName, champions: data.champions, taken, onOpen: (id: string, role?: Role) => { hoverCard.hide(); setDrawer({ id, role }); },
     onHover: hoverCard.hover, onUnhover: hoverCard.unhover };
 
@@ -171,12 +197,35 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
         </div>
       </header>
 
+      <div className="my-role">
+        <span className="label" id="my-role-label">I&apos;m playing</span>
+        <div className="seg" role="group" aria-labelledby="my-role-label">
+          {ROLES.map((r) => (
+            <button key={r} type="button" className={r === myRole ? "active" : undefined} aria-pressed={r === myRole}
+              title={r === myRole ? "Your role. Click again to clear it." : `You play ${ROLE_LABEL[r]}: your slot is marked and its champion links to Pro Builds`}
+              onClick={() => setMyRole(r === myRole ? undefined : r)}>{ROLE_LABEL[r]}</button>
+          ))}
+        </div>
+        {myRole && (
+          <label className="check xs" title="Only a confirmed lock in your own role opens Pro Builds; your draft is kept for the way back">
+            <input type="checkbox" checked={autoBuilds} onChange={(e) => setAutoBuilds(e.target.checked)} /> Open Pro Builds when I lock
+          </label>
+        )}
+        {mine && myRole && myHref && (
+          <span className="my-builds">
+            <ChampIcon id={mine} name={names[mine] ?? mine} role={myRole} size="xs" />
+            <span className="xs muted tnum"><b className="my-name">{names[mine] ?? mine}</b> · {myEntry ? `${myEntry.games} recorded build${myEntry.games > 1 ? "s" : ""} · latest ${patchLabel(myEntry.latest)}` : "No recorded builds in this role"}</span>
+            <Link className="btn sm" href={myHref}>View Pro Builds →</Link>
+          </span>
+        )}
+      </div>
+
       <div className="board" ref={board}>
         <div className="team-row ally">
           <div className="team-label">My team</div>
           <div className="draft-slots">
             {ROLES.map((role) => (
-              <DraftSlot key={role} side="ally" role={role} value={draft[role]} active={role === active} preview={role === active ? hover : undefined}
+              <DraftSlot key={role} side="ally" role={role} value={draft[role]} active={role === active} mine={role === myRole} builds={role === myRole ? myHref : undefined} preview={role === active ? hover : undefined}
                 onActivate={() => setFocus(role)} onLock={(id) => lock(role, id)} suggested={recs[role]} {...slotProps} />
             ))}
           </div>
@@ -481,8 +530,8 @@ type SlotShared = {
   onHover: (t: DrawerTarget, el: HTMLElement) => void; onUnhover: () => void;
 };
 
-function DraftSlot({ side, role, value, active = false, preview, onActivate, onLock, suggested = [], names, byName, champions, taken, onOpen, onHover, onUnhover }: SlotShared & {
-  side: "ally" | "enemy"; role: Role; value?: string; active?: boolean; preview?: string;
+function DraftSlot({ side, role, value, active = false, mine = false, builds, preview, onActivate, onLock, suggested = [], names, byName, champions, taken, onOpen, onHover, onUnhover }: SlotShared & {
+  side: "ally" | "enemy"; role: Role; value?: string; active?: boolean; mine?: boolean; builds?: string; preview?: string;
   onActivate?: () => void; onLock: (id: string | undefined) => void; suggested?: Recommendation[];
 }) {
   const [text, setText] = useState("");
@@ -544,8 +593,8 @@ function DraftSlot({ side, role, value, active = false, preview, onActivate, onL
     else if (e.key === "Escape") { setOpen(false); input.current?.blur(); }
     else if (editing && !text && (e.key === "Delete" || e.key === "Backspace")) { e.preventDefault(); remove(); }
   };
-  const cls = `draft-slot ${ally ? `role-${role}` : "enemy"} ${value ? "locked" : "open"} ${active ? "active" : ""}`;
-  const roleTag = <span className={`role-tag role-${role}`}>{role}</span>;
+  const cls = `draft-slot ${ally ? `role-${role}` : "enemy"} ${value ? "locked" : "open"} ${active ? "active" : ""} ${mine ? "mine" : ""}`;
+  const roleTag = <span className={`role-tag role-${role}`}>{role}{mine && <span className="slot-you">You</span>}</span>;
 
   if (value && !editing) {
     const name = names[value] ?? value;
@@ -562,6 +611,7 @@ function DraftSlot({ side, role, value, active = false, preview, onActivate, onL
           <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true"><path d="M7.8 2.2 9.8 4.2 4.3 9.7 1.8 10.2 2.3 7.7Z" /></svg>
           <span className="slot-change-text">Change</span>
         </button>
+        {builds && <Link className="slot-builds" href={builds} title={`${name}'s recorded pro builds in this role`}>Pro Builds →</Link>}
       </div>
     );
   }

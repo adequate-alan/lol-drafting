@@ -217,6 +217,30 @@ await page.locator(".draft-slot.role-JUNGLE .slot-change").click();
 await page.locator(".picker-list li.remove").click();
 await page.waitForTimeout(200);
 check("Change keeps the pick on Escape; Remove clears it", /Cho'Gath/.test(kept) && (await page.locator(".draft-slot.role-JUNGLE .slot-name").count()) === 0 && !page.url().includes("jungle="), page.url());
+// My Role (alan, 2026-10-12): marks my slot, a teammate's lock stays put, my lock opens Pro Builds and the way back
+// restores the draft. The preference is cleared afterwards.
+await open("/?top=aatrox&vs=mid:ahri");
+await page.locator(".my-role .seg button", { hasText: "Bot" }).click();
+await page.locator(".my-role .check input").check();
+await page.locator('input[aria-label="SUPPORT champion"]').fill("Bard");
+await page.keyboard.press("Enter");
+await page.waitForTimeout(500);
+check("My Role: a teammate's lock stays in Draft Room", !page.url().includes("pro-builds") && (await page.locator(".draft-slot.mine.role-BOT").count()) === 1, page.url());
+await page.locator(".draft-slot.role-BOT").click();
+await page.locator('input[aria-label="BOT champion"]').fill("Jhin");
+await page.keyboard.press("Enter");
+await page.waitForURL(/pro-builds/, { timeout: 15000 }).catch(() => {});
+const arrived = new URL(page.url());
+await page.locator(".game-head").first().waitFor({ timeout: 15000 }).catch(() => {});
+check("My Role: locking my champion opens its Pro Builds on the newest patch", arrived.pathname.endsWith("/pro-builds/")
+  && arrived.searchParams.get("champion") === "jhin" && arrived.searchParams.get("role") === "BOT" && /^26\./.test(arrived.searchParams.get("patch") ?? "")
+  && (await text(".builds-head h2")) === "Jhin", page.url());
+await page.locator("a", { hasText: "Back to Draft Room" }).first().click();
+await page.locator(".my-role").waitFor();
+await page.waitForTimeout(400);
+const backNames = (await page.locator(".team-row.ally .slot-name").allInnerTexts()).join(",");
+check("My Role: Back to Draft Room restores the draft", backNames === "Aatrox,Jhin,Bard" && page.url().includes("vs=mid:ahri"), `${backNames} ${page.url()}`);
+await page.evaluate(() => { localStorage.removeItem("draft-room:my-role"); localStorage.removeItem("draft-room:auto-builds"); });
 // Champion icons load from Data Dragon in both themes; a failed icon falls back to initials
 for (const theme of ["light", "dark"]) {
   await page.evaluate((t) => localStorage.setItem("theme", t), theme);

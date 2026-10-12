@@ -167,6 +167,12 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   pairings, rankings, Comp Check or pool tiers.
 - A rune page with only the keystone (`missing: ["full rune page"]`) shows the keystone and says the full page is
   unavailable; never fill in the rest.
+- **My Role** (alan, 2026-10-12; `lib/my-role.ts`, `tests/my-role.test.ts`): Draft Room's "I'm playing" selector is the
+  user's own role, saved in localStorage, never the role being picked. My slot gets a gold name and a "You" tag; when
+  its champion is locked, the bar and the slot link to Pro Builds with champion, role, the newest patch with recorded
+  builds and `from` (the whole draft, enemy row, picked role and filter), which "Back to Draft Room" restores. "Open Pro
+  Builds when I lock" (localStorage, off by default) navigates only on a confirmed lock of a new champion in my role that
+  has recorded builds. From Draft Room, a champion and role without builds is an empty state, never another entry.
 - `data/pro-builds.json`: one record per player per game (Gol.gg game id, side, role, player and Gol.gg player id,
   spells, final inventory slots, rune page, `skills` as one letter per ability point, purchase log `[seconds, item, buy|sell]`,
   `missing` for anything Gol.gg did not give). Read by the daily refresh from the game page (player ids) and Gol.gg's

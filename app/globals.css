@@ -486,6 +486,10 @@ input, select {
 input::placeholder { color: var(--text-faint); }
 input:hover { border-color: var(--text-faint); }
 input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-subtle); border-radius: var(--r); }
+/* Checkbox with its label: native box in the accent colour, no text-input chrome */
+.check { display: inline-flex; align-items: center; gap: var(--s3); color: var(--text-muted); cursor: pointer; }
+.check input { width: 14px; height: 14px; margin: 0; padding: 0; accent-color: var(--accent); cursor: pointer; }
+.check:hover { color: var(--text); }
 .btn {
   display: inline-flex; align-items: center; gap: var(--s3); height: var(--control-h); padding: 0 var(--s5);
   font: inherit; color: var(--text); white-space: nowrap; cursor: pointer;
@@ -762,8 +766,9 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .pick-rail li button.active { background: var(--accent-subtle); box-shadow: inset 1px 0 0 var(--accent); }
 .pick-rail button.active .champ { box-shadow: 0 0 0 1px var(--accent); }
 .pick-rail button.active .rail-name { color: var(--accent-text); }
-.builds-main { display: grid; gap: var(--s5); min-width: 0; }
+.builds-main { display: grid; gap: var(--s5); min-width: 0; scroll-margin-top: 60px; }
 .builds-main p { margin: 0; }
+.builds-empty { display: grid; gap: var(--s3); align-content: start; }
 .builds-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s4) var(--s5); }
 .builds-title { display: grid; gap: 2px; margin-right: auto; }
 .builds-title h2 { font-size: var(--fs-xl); }
@@ -983,6 +988,17 @@ button.slot-body:hover .slot-name { text-decoration: underline; text-decoration-
 .draft-slot:hover .slot-change, .slot-change:focus-visible { opacity: 1; }
 .slot-change:hover { color: var(--text); border-color: var(--border-strong); }
 @media (hover: none) { .slot-change { opacity: .8; } }
+/* My Role (alan, 2026-10-12): the role I play. A thin bar above the board; my slot gets a gold name and a "You" tag,
+   never the picked-role outline, so it can't be mistaken for the role being picked. */
+.my-role { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3) var(--s5); margin: calc(-1 * var(--s2)) 0 var(--s4); }
+.my-role .seg button { padding-inline: var(--s4); }
+.my-builds { display: inline-flex; align-items: center; gap: var(--s3); margin-left: auto; min-width: 0; }
+.my-name { color: var(--text); font-family: var(--font-display); font-weight: var(--w-control); }
+.slot-you { margin-left: var(--s2); color: var(--accent-text); }
+.draft-slot.mine .slot-name { color: var(--accent-text); }
+.draft-slot.mine.open:not(.active):not(.editing) { border-color: var(--accent); }
+.slot-builds { position: absolute; right: var(--s3); bottom: var(--s2); font-family: var(--font-display); font-size: var(--fs-2xs); color: var(--text-muted); }
+.slot-builds:hover { color: var(--accent-text); }
 /* Draft slots shown inside a panel (Pro Drafts): flat, no card-in-card, no ally gold */
 .panel .draft-slot, .panel .draft-slot.locked:not(.enemy) { min-height: 0; padding: 0; background: transparent; border-color: transparent; box-shadow: none; }
 
@@ -1235,6 +1251,10 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
   .draft-slot.locked .role-tag { display: none; }
   .draft-slot.locked .slot-name, .draft-slot.enemy.locked .slot-name { max-width: 52px; font-size: var(--fs-2xs); text-align: center; }
   .draft-slot.locked .champ.xxl, .draft-slot.locked .champ.lg { --size: 34px; }
+  /* My slot's builds shortcut moves to the My Role bar, a full-size tap target that covers no slot */
+  .slot-builds { display: none; }
+  .my-builds { flex-basis: 100%; margin-left: 0; }
+  .my-builds .btn { margin-left: auto; }
   /* Open slots other than the one being picked shrink to their role initial; tapping one widens it again */
   .draft-slot.open:not(.active):not(.editing):not(:focus-within) { flex: 0 0 52px; padding: var(--s2) 2px; justify-content: center; }
   .draft-slot.open:not(.active):not(.editing):not(:focus-within) .slot-body { justify-content: center; }
