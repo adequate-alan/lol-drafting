@@ -4,25 +4,14 @@ on:
     branches: [claude/project-thread-uk3kvg]
     paths: [.github/workflows/probe-riot.yml]
 permissions:
-  contents: write
+  contents: read
 jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          mkdir -p tmp-riot
-          UA="Mozilla/5.0 (compatible; lol-drafting patch-notes check; +https://github.com/adequate-alan/lol-drafting)"
-          true || curl -w "index %{http_code}\n" https://www.leagueoflegends.com/en-us/news/tags/patch-notes/ || true
-          true || curl -w "robots %{http_code}\n" https://www.leagueoflegends.com/robots.txt || true
-          true
-          cat tmp-riot/links.txt
-          for n in 16 17 18 19 20; do
-            curl -sS -A "$UA" -L -o tmp-riot/patch-26-$n.html -w "26.$n %{http_code}\n" "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-$n-notes/" || true
-          done
-          ls -la tmp-riot
-      - run: |
-          git config user.name "adequate-alan"
-          git config user.email "54249725+adequate-alan@users.noreply.github.com"
-          git add -f tmp-riot
-          git commit -m "Temporary: raw Riot patch notes probe" && git push origin HEAD:${GITHUB_REF_NAME}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # The real daily check, read-only: every tracked patch re-read, nothing written.
+      - run: node scripts/refresh-patch-notes.mjs --dry-run --force

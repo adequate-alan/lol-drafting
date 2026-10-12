@@ -122,6 +122,36 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   after test/typecheck/build, then starts `pages.yml`. A supplied game link becomes verified only when its game shows the claim.
 - Tests that check fixed Demacia numbers are scoped to the known events; new imports must never be able to break them.
 
+## Patch Notes (alan, 2026-10-12)
+
+- `/patch-notes/` (sidebar "Patch Notes", under Meta / Research): Riot's official League of Legends patch notes from
+  26.16 on, Summoner's Rift drafting content only (champions, items, runes, systems, mid-patch updates, gameplay bug
+  fixes). TFT, ARAM / ARAM Mayhem, Arena, League Classic, skins, events, esports and client sections stay out and are
+  listed per patch (`excluded`). Latest patch by default, prev / next, search, kind and champion filters (a champion
+  shows its whole history), Compare patches (changes after `from` through `to`) and "What's changed since 26.16?".
+- `data/patch-notes.json` (`PatchNotes` in `lib/schema.ts`) holds Riot's facts only: every line keeps Riot's full
+  `text` and the exact `before` / `after` around its "⇒"; a value Riot didn't write is left out, never filled in or
+  computed. Riot's reason is `context`. Champion buff / nerf / adjustment / rework follows Riot's stated intent:
+  `categoryBasis: "reviewed"` once a person checked it (26.16–26.20 on 2026-10-12), `"riot-wording"` when the daily
+  check classified it from first-person wording (unclear wording stays "adjustment").
+- **One patch, two spellings**: Riot writes 26.16, the client / Data Dragon / Gol.gg write 16.16. `lib/patch.ts`
+  (`parsePatch`, `patchKey`, `comparePatch`, `samePatch`, `shortPatch`) is the one normalizer; the site shows Riot's
+  label. Pro data keeps its own spelling.
+- Draft implications (`lib/patch-implications.ts`) are analysis, labelled as such and folded under each champion
+  change, apart from Riot's facts: saved pairings, pool tiers, recorded pro games before / after the patch and tournament
+  presence by event patch. **A patch never changes saved pairings, pool tiers, recommendations or any score.**
+- Shared lookups (`lib/patch-changes.ts`, compact index `getPatchIndex()`, also `DrawerData.patches`): `changesFor`,
+  `changedSince`, `patchHref`. The champion drawer's "Patch changes" block and the hover card's latest-patch line use
+  them; `components/ChangedSince.tsx` (`ChangedSince`, `PatchTag`) is the "Changed since this game" control for Pro
+  Builds. It never calls an old build current or optimal.
+- Daily check: `.github/workflows/refresh-patch-notes.yml`, 8:30 AM Eastern (same offset gate as the pro refresh) and
+  `workflow_dispatch` (dry run, force). `scripts/refresh-patch-notes.mjs` reads Riot's patch-notes tag page and each
+  tracked patch page from the runner (leagueoflegends.com is unreachable from Claude's environments; robots.txt allows
+  it), re-reads a patch only when it is new or its article revision changed, and writes `data/patch-notes.json` only
+  when Summoner's Rift facts changed (an edited entry gets `corrected: true`). It stops on any refusal or challenge and
+  never removes an archived patch. Commits as adequate-alan after test / typecheck / build, then starts `pages.yml`.
+  Parser fixtures: `tests/fixtures/riot`, tests: `tests/patch-notes.test.ts`.
+
 ## Locked saved pairings (enforced by `tests/locked-conclusions.test.ts`)
 
 Change these only when alan explicitly says so, then update the test in the same commit.
