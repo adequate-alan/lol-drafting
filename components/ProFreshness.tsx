@@ -5,36 +5,41 @@ import type { Freshness } from "@/lib/pro-games";
 // The daily pro-data refresh (.github/workflows/refresh-pro-data.yml) commits only when verified data changes, so the
 // build knows when data last changed but not when it was last checked. The latest successful scheduled check comes from
 // GitHub's public Actions API when it answers; otherwise the check stored with the data is shown.
-const RUNS = "https://api.github.com/repos/adequate-alan/lol-drafting/actions/workflows/refresh-pro-data.yml/runs?status=success&branch=main&per_page=1";
+const runsUrl = (workflow: string) => `https://api.github.com/repos/adequate-alan/lol-drafting/actions/workflows/${workflow}/runs?status=success&branch=main&per_page=1`;
 
-const day = (iso: string | null) => iso ? new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "America/New_York" }) : undefined;
+export const day = (iso: string | null) => iso ? new Date(iso.length === 10 ? `${iso}T12:00:00Z` : iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "America/New_York" }) : undefined;
 const latest = (xs: (string | null | undefined)[]) => xs.filter((x): x is string => !!x).sort().at(-1) ?? null;
 
 // Unauthenticated API calls are limited to 60 an hour per IP, so one answer (or failure) is reused for an hour across pages.
-const CACHE = "pro-freshness-check";
 const TTL = 60 * 60 * 1000;
 type Cached = { at: number; value: string | null };
-const readCache = (): Cached | undefined => {
-  try { const c = JSON.parse(localStorage.getItem(CACHE) ?? "null") as Cached | null; return c && Date.now() - c.at < TTL ? c : undefined; } catch { return undefined; }
+const readCache = (key: string): Cached | undefined => {
+  try { const c = JSON.parse(localStorage.getItem(key) ?? "null") as Cached | null; return c && Date.now() - c.at < TTL ? c : undefined; } catch { return undefined; }
 };
-const writeCache = (value: string | null) => { try { localStorage.setItem(CACHE, JSON.stringify({ at: Date.now(), value })); } catch { /* storage blocked */ } };
+const writeCache = (key: string, value: string | null) => { try { localStorage.setItem(key, JSON.stringify({ at: Date.now(), value })); } catch { /* storage blocked */ } };
 
-export function ProFreshness({ items }: { items: Freshness[] }) {
-  const [checked, setChecked] = useState<string | null>(null);
+/** When a workflow last finished successfully on main, from GitHub's public Actions API; null until (or unless) it answers. */
+export function useLastRun(workflow: string, cacheKey: string) {
+  const [value, setValue] = useState<string | null>(null);
   useEffect(() => {
-    const cached = readCache();
-    if (cached) { setChecked(cached.value); return; }
+    const cached = readCache(cacheKey);
+    if (cached) { setValue(cached.value); return; }
     let live = true;
-    fetch(RUNS, { headers: { Accept: "application/vnd.github+json" } })
+    fetch(runsUrl(workflow), { headers: { Accept: "application/vnd.github+json" } })
       .then((r) => (r.ok ? r.json() : undefined))
       .then((j: { workflow_runs?: { updated_at?: string }[] } | undefined) => {
-        const value = j?.workflow_runs?.[0]?.updated_at ?? null;
-        writeCache(value);
-        if (live) setChecked(value);
+        const v = j?.workflow_runs?.[0]?.updated_at ?? null;
+        writeCache(cacheKey, v);
+        if (live) setValue(v);
       })
-      .catch(() => writeCache(null) /* offline or rate-limited: the stored check stays */);
+      .catch(() => writeCache(cacheKey, null) /* offline or rate-limited: the stored date stays */);
     return () => { live = false; };
-  }, []);
+  }, [workflow, cacheKey]);
+  return value;
+}
+
+export function ProFreshness({ items }: { items: Freshness[] }) {
+  const checked = useLastRun("refresh-pro-data.yml", "pro-freshness-check");
   const updated = latest(items.map((i) => i.lastUpdate));
   const check = latest([...items.map((i) => i.lastCheck), checked]);
   const status = (i: Freshness) => !i.listed ? "not on Gol.gg yet" : i.status === "complete" ? "Completed" : "Ongoing";
