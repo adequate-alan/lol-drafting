@@ -4,7 +4,7 @@ import { join } from "node:path";
 import type { z } from "zod";
 import { buildLibrary, type Library } from "./comp-library";
 import { withProAlternatives } from "./pro-alternatives";
-import { withGameSides } from "./draft-side";
+import { newestGameFirst, withGameSides } from "./draft-side";
 import { draftsFromGames, freshness, resultsFromGames, sourcesFromGames } from "./pro-games";
 import { priorityData, priorityMarks, type PriorityData } from "./pro-priority";
 import { buildPatchIndex } from "./patch-changes";
@@ -36,10 +36,11 @@ let bots: Parsed<"bot-pairings.json"> | undefined, midJungle: Parsed<"mid-jungle
 export const getBotPairings = () => (bots ??= load("bot-pairings.json").map(withProAlternatives));
 export const getMidJungle = () => (midJungle ??= load("mid-jungle.json").map(withProAlternatives));
 export const getTopPicks = () => load("top.json");
+// Newest game first everywhere drafts are listed (Pro Drafts, Gen.G).
 export const getProDrafts = () => (drafts ??= [
   ...withGameSides(load("pro-drafts.json"), Object.fromEntries(getSources().map((s) => [s.id, s]))),
   ...draftsFromGames(getProGames().games),
-]);
+].sort(newestGameFirst));
 export const getCompShells = () => load("comp-shells.json");
 // Comp Library: the hand-written shells plus the weekly discovery's Observed Pro Comps and observed variations.
 let library: Library | undefined;

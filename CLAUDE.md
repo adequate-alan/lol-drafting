@@ -117,14 +117,16 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 - If Gol.gg or the web is unavailable: say the research could not be refreshed, keep the last verified data, leave
   `refreshStatus: "not-refreshed"`, and **never invent tournament data or pretend a refresh happened**.
 
-## Daily pro-data refresh (alan, 2026-10-11)
+## Daily pro-data refresh (alan, 2026-10-11; twice a day since 2026-10-12)
 
-- `.github/workflows/refresh-pro-data.yml` runs daily at 8 AM Eastern (cron 12:00 and 13:00 UTC, a gate keeps the one
-  matching New York's offset) and on `workflow_dispatch`. It reads Gol.gg with plain requests from the GitHub runner
+- `.github/workflows/refresh-pro-data.yml` runs twice a day, 8 AM and 8 PM Eastern (alan, 2026-10-12; crons 12:00 / 13:00
+  and 00:00 / 01:00 UTC, a gate keeps the one matching New York's offset) and on `workflow_dispatch`. It reads Gol.gg with plain requests from the GitHub runner
   (it answers there; robots.txt allows these pages) and stops, writing nothing, on any refusal or challenge. Never bypass one.
 - Only the tournaments in `data/pro-games.json` `tracked` are requested, by exact Gol.gg name: Demacia Cup Global
   Invitational 2026 and Worlds 2026 (main event and play-in names). The LCK playoffs are a frozen archive. Adding a
   tournament (2027 or any other) needs alan's approval. A tournament marked `complete` is not requested again.
+- Pro drafts load newest game first (`newestGameFirst` in `lib/draft-side.ts`: date, then Gol.gg game id; alan,
+  2026-10-12), so every match list puts the latest game at the top.
 - `data/pro-games.json` is the one game-level dataset (Gol.gg game id is the key; sides, winner, picks by role from the
   full-stats page, bans, patch, date, URL). `lib/pro-games.ts` derives drafts, sources and results at load. Games that
   miss a field or contradict their series are rejected and reported as run warnings, never filled in.
