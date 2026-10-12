@@ -135,6 +135,13 @@ function PinButton({ on, name, onClick }: { on: boolean; name: string; onClick: 
   );
 }
 
+// A win rate with its sample in view: one game is "1 game", not a bold 100%; fewer than five games stay quiet.
+function Rate({ wins, games }: { wins: number; games: number }) {
+  if (!games) return null;
+  if (games < 3) return <span className="faint rate" title={`${wins} of ${games} recorded game${games === 1 ? "" : "s"}; too few for a rate`}>{games === 1 ? "1 game" : `${games} games`}</span>;
+  return <span className={`rate ${games < 5 ? "faint" : "muted"}`} title={`${wins} of ${games} recorded games${games < 5 ? "; small sample" : ""}`}>{pct(wins, games)}</span>;
+}
+
 function Results({ recent }: { recent: boolean[] }) {
   if (!recent.length) return <span className="faint">—</span>;
   return <span className="form tnum" title="Last recorded results in these filters, newest first">{recent.map((w, i) => <span key={i} className={w ? "win" : "loss"}>{w ? "W" : "L"}</span>)}</span>;
@@ -204,8 +211,10 @@ function Profile({ rows, id, fallbackName, filter, champion, result, game, pinne
   const pick = champion ? p.champions.find((c) => c.champion === champion) : undefined;
   const champOpts = p.champions.map((c) => ({ value: c.champion, label: name(c.champion) }));
 
+  // Role column only when the player's champions span more than one role (repeating "Mid" ten times says nothing).
+  const roles = new Set(p.champions.map((c) => c.role));
   return (
-    <>
+    <div className="player-profile">
       <div className="player-head">
         <PlayerAvatar id={p.id} name={p.name} size="xl" />
         <div className="player-head-text">
@@ -217,7 +226,7 @@ function Profile({ rows, id, fallbackName, filter, champion, result, game, pinne
           </div>
           <dl className="player-facts small">
             <div><dt>Recorded games</dt><dd className="tnum">{p.games}</dd></div>
-            <div><dt>Record</dt><dd className="tnum">{p.games ? <>{p.wins}–{p.losses} <span className="muted">({pct(p.wins, p.games)})</span></> : "—"}</dd></div>
+            <div><dt>Record</dt><dd className="tnum">{p.games ? <>{p.wins}–{p.losses} <Rate wins={p.wins} games={p.games} /></> : "—"}</dd></div>
             <div><dt>Last 5</dt><dd><Results recent={p.recent} /></dd></div>
             <div><dt>Tournaments</dt><dd>{p.events.length ? [...new Set(scope.map(evName))].join(", ") : "—"}</dd></div>
             <div><dt>Latest</dt><dd>{p.last ? <Link href={gameHref(p.last)}><span className="tnum">{shortDate(p.last.game.date)}</span> · {name(p.last.build.champion)} vs {p.last.opponentTeam}</Link> : "—"}</dd></div>
@@ -225,10 +234,10 @@ function Profile({ rows, id, fallbackName, filter, champion, result, game, pinne
         </div>
       </div>
       {!p.games ? <p className="small muted">No recorded games for {p.name} in these filters. Clear the filters to see every recorded game.</p> : <>
-        <Panel title="Champions" meta={`${p.champions.length} played · most games first · click one for its builds`}>
+        <Panel title="Champions" meta={`${p.champions.length} played · most games first · click one for its builds`} className="profile-section">
           <div className="table-wrap flat">
             <table className="mini champ-history">
-              <thead><tr><th>Champion</th><th className="hide-phone">Role</th><th className="num">Games</th><th className="num">W–L</th><th className="num">Win rate</th><th className="num">Latest patch</th><th className="num hide-phone">Last game</th></tr></thead>
+              <thead><tr><th>Champion</th>{roles.size > 1 && <th className="hide-phone">Role</th>}<th className="num">Games</th><th className="num">Record</th><th className="num">Latest patch</th><th className="num hide-phone">Last game</th></tr></thead>
               <tbody>
                 {p.champions.map((c) => {
                   const on = c.champion === champion;
@@ -237,10 +246,9 @@ function Profile({ rows, id, fallbackName, filter, champion, result, game, pinne
                       onClick={() => update({ champion: on ? undefined : c.champion })}
                       tabIndex={0} onKeyDown={(e) => { if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); update({ champion: on ? undefined : c.champion }); } }} title={on ? "Show every champion" : `Show ${p.name}'s ${name(c.champion)} games and builds`}>
                       <td><span className="cell-champ"><InteractiveChampion id={c.champion} role={c.role}><ChampIcon id={c.champion} name={name(c.champion)} size="xs" /></InteractiveChampion>{name(c.champion)}</span></td>
-                      <td className="hide-phone">{ROLE_NAME[c.role]}</td>
+                      {roles.size > 1 && <td className="hide-phone">{ROLE_NAME[c.role]}</td>}
                       <td className="num tnum">{c.games}</td>
-                      <td className="num tnum">{c.wins}–{c.losses}</td>
-                      <td className="num tnum">{pct(c.wins, c.games)}{c.games < 5 && <span className="low" title="Fewer than 5 recorded games">*</span>}</td>
+                      <td className="num tnum nowrap">{c.wins}–{c.losses} <Rate wins={c.wins} games={c.games} /></td>
                       <td className="num tnum">{patchLabel(c.latestPatch)}</td>
                       <td className="num tnum hide-phone">{shortDate(c.last.game.date)}</td>
                     </tr>
@@ -253,7 +261,7 @@ function Profile({ rows, id, fallbackName, filter, champion, result, game, pinne
 
         {pick && <ChampionBuilds rows={scope.filter((r) => r.build.champion === pick.champion && r.build.role === pick.role)} id={id} player={p.name} champion={pick.champion} role={pick.role} name={name} />}
 
-        <Panel title="Match history" meta={`${history.length} recorded game${history.length === 1 ? "" : "s"}`}>
+        <Panel title="Match history" meta={`${history.length} recorded game${history.length === 1 ? "" : "s"}`} className="profile-section">
           <div className="builds-tools inner">
             <Select label="Champion" value={champion ?? ""} options={[{ value: "", label: "All champions" }, ...champOpts]} onChange={(v) => update({ champion: v || undefined })} />
             <Select label="Result" value={result ?? ""} options={[{ value: "", label: "All results" }, { value: "win", label: "Wins" }, { value: "loss", label: "Losses" }]} onChange={(v) => update({ result: v || undefined })} />
@@ -301,7 +309,7 @@ function Profile({ rows, id, fallbackName, filter, champion, result, game, pinne
           )}
         </Panel>
       </>}
-    </>
+    </div>
   );
 }
 
@@ -311,7 +319,7 @@ function ChampionBuilds({ rows, id, player, champion, role, name }: {
   rows: BuildRow[]; id: string; player: string; champion: string; role: Role; name: (id: string) => string;
 }) {
   return (
-    <Panel title={`${player} on ${name(champion)}`} meta={`${rows.length} recorded game${rows.length === 1 ? "" : "s"}`}
+    <Panel title={`${player} on ${name(champion)}`} meta={`${rows.length} recorded game${rows.length === 1 ? "" : "s"}`} className="profile-section sub"
       end={<span className="small builds-links">
         <Link href={championBuildsHref(id, champion, role)}>Games</Link>
         <Link href={championBuildsHref(id, champion, role, "common")}>Common build</Link>

@@ -161,7 +161,11 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   exact build under it (`components/GameBuild.tsx` `GameDetail`, the same component Pro Builds renders: context line,
   spells, rune page, skill grid, item progression and timeline, Gol.gg source, "Open full Pro Builds"); one game at a
   time, named by Gol.gg game id in `?game=` and the profile's player id (`expandedRow`), never by row position, and a
-  game the filters stop showing folds and leaves the URL. Never a second build renderer. Players are keyed by Gol.gg player id (pins and the `player=` filter; old name pins migrate once, an old name
+  game the filters stop showing folds and leaves the URL. Never a second build renderer. Profile polish (alan,
+  2026-10-12): three levels by spacing and one rule each (`.player-profile`, `.profile-section`), never cards; the
+  champion table shows W–L with its sample beside it (`Rate`: "1 game" / "2 games" under 3 games, a faint rate under 5)
+  and drops the Role column when every champion shares the role; secondary text is one step larger there than the
+  site's smallest; the player browser is one box (search above the list) with a 2px gold selected bar. Players are keyed by Gol.gg player id (pins and the `player=` filter; old name pins migrate once, an old name
   link still matches by name), so same-name players stay apart and a team change keeps one profile.
   LCK 2026 Season Playoffs builds were backfilled once (`scripts/backfill-lck-builds.mjs`, alan 2026-10-12); their game
   records live in `pro-builds.json` `games`, read by Pro Builds only, never by drafts, priority or totals. The daily

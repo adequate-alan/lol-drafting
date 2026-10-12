@@ -776,7 +776,24 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .team-players a:hover { text-decoration: none; }
 .team-players a:hover b { color: var(--accent-text); }
 .team-player-text { display: grid; line-height: 1.3; }
-.player-head { display: flex; align-items: flex-start; gap: var(--s5); }
+/* Three levels on a profile (alan, 2026-10-12 polish): the Overview head, then Champions, then Match history, told apart
+   by spacing and one rule each rather than cards. Secondary text one step larger than the site's smallest, rows no taller. */
+.player-profile { display: grid; gap: var(--s6); }
+.player-profile .profile-section { background: transparent; border: 0; border-radius: 0; }
+.player-profile .profile-section > .panel-head { min-height: 0; padding: 0 0 var(--s3); border-bottom: 1px solid var(--border-strong); }
+.player-profile .profile-section > .panel-head h2 { font-size: var(--fs-md); }
+.player-profile .profile-section > .panel-body { padding: var(--s3) 0 0; }
+.player-profile .profile-section.sub > .panel-head { border-bottom-color: var(--border); }
+.player-profile table.mini { font-size: var(--fs-sm); }
+.player-profile table.mini th { font-size: var(--fs-xs); }
+.player-profile .builds-tools.inner { border-bottom: 0; }
+.player-profile .xs.muted { font-size: var(--fs-sm); }
+.champ-history .cell-champ { font-size: var(--fs); }
+.champ-history tr.selected .cell-champ { color: var(--accent-text); }
+.rate { display: inline-block; min-width: 4.2em; font-family: var(--font); font-size: var(--fs-xs); text-align: left; } /* keeps the W–L column aligned beside it */
+.player-head { display: flex; align-items: flex-start; gap: var(--s5); padding-bottom: var(--s5); border-bottom: 1px solid var(--border-strong); }
+.player-head .builds-title h2 { font-size: var(--fs-2xl); line-height: 1.1; }
+.player-head .builds-title > .small { font-size: var(--fs); }
 .player-head-text { display: grid; gap: var(--s4); min-width: 0; }
 .photo-credits ul { margin: 0; padding-left: var(--s5); display: grid; gap: var(--s1); }
 .select-option .player-avatar { margin-right: var(--s1); }
@@ -785,6 +802,14 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .builds-views { font-size: var(--fs-sm); }
 .builds-views .count { color: var(--text-faint); font-family: var(--font-mono); font-size: var(--fs-xs); }
 .rail-tools.one { grid-template-columns: minmax(0, 1fr); }
+.pinned-rail { gap: 0; border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface); }
+.pinned-rail .rail-tools { padding: var(--s3); }
+.pinned-rail .rail-tools .select-trigger, .pinned-rail .rail-tools .player-picker { width: 100%; }
+.pinned-rail ul { padding: var(--s2); }
+.pinned-rail li button.active { box-shadow: inset 2px 0 0 var(--accent); }
+.pinned-rail li button.active .player-avatar { box-shadow: 0 0 0 1px var(--accent); }
+.pinned-rail li button .rail-sub { font-size: var(--fs-sm); }
+.pinned-rail li button .player-avatar { flex: none; }
 .rail-player-row { display: flex; align-items: center; gap: var(--s1); }
 .pick-rail li.rail-player-row > button:first-child { flex: 1; min-width: 0; }
 .pick-rail li.rail-player-row > button.pin-btn { flex: none; width: auto; padding: var(--s2); margin-right: var(--s2); }
@@ -796,7 +821,8 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .form { display: inline-flex; gap: 3px; font-family: var(--font-mono); font-size: var(--fs-xs); }
 .player-facts { display: flex; flex-wrap: wrap; gap: var(--s3) var(--s6); margin: 0; }
 .player-facts div { display: grid; gap: 1px; }
-.player-facts dt { color: var(--text-muted); font-size: var(--fs-xs); }
+.player-facts dt { color: var(--text-muted); font-size: var(--fs-sm); }
+.player-facts dd { font-size: var(--fs); }
 .player-facts dd { margin: 0; }
 .builds-tools.inner { padding-bottom: var(--s3); }
 .table-wrap.flat { border: 0; border-radius: 0; background: transparent; }
