@@ -152,6 +152,27 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   never removes an archived patch. Commits as adequate-alan after test / typecheck / build, then starts `pages.yml`.
   Parser fixtures: `tests/fixtures/riot`, tests: `tests/patch-notes.test.ts`.
 
+## Weekly Comp Library discovery (alan, 2026-10-12)
+
+- `.github/workflows/discover-comps.yml` runs Sundays at 9 AM Eastern (cron 13:00 and 14:00 UTC, same New York gate as
+  the daily refresh) and on `workflow_dispatch`. It downloads nothing: `scripts/discover-comps.ts` reads the lineups the
+  daily refresh stored for the tracked tournaments (`data/pro-games.json`), runs `lib/comp-discovery.ts` and writes only
+  `data/discovered-comps.json` and `reports/comp-discovery.md`, committing (after test/typecheck/build) only when the
+  library data changed, then starting `pages.yml`. The report is also the run summary and an artifact.
+- Deterministic and idempotent, no model calls; every threshold is in `DISCOVERY`. Each lineup joins the closest
+  observed shell or discovered comp: five same champions = existing (a replay), same primary identity with 3+ shared
+  champions, or same primary + secondary with 4+ roles doing the same job and 2+ shared champions = an observed
+  variation, otherwise a new group. Templates never take observed lineups. A new group becomes an Observed Pro Comp only
+  when the comp check reads all five champions (Locke / Zaahen lineups go to the report), finds an identity and no major
+  weak point, the identities don't clash, and it has 2+ games from 2+ teams or a primary identity no observed library
+  comp has. Everything else is "Proposed comps for review" in the report. Win/loss never decides. Additions are sticky
+  (a comp that later fails is listed in the report, never removed).
+- Discovered comps render as Pro cards in Comp Library (`lib/comp-library.ts`); their identity, jobs, win condition,
+  strengths, weak points and difficulty are the comp check's read (General Draft Logic, labelled "Comp check read" in
+  Details). Observed variations of any comp sit behind "N observed variations". The page shows "Library reviewed" (last
+  successful run, GitHub's public Actions API) and "Last addition" (stored `lastAddition`). Never hand-edit
+  `discovered-comps.json`; tests in `tests/comp-discovery.test.ts`.
+
 ## Locked saved pairings (enforced by `tests/locked-conclusions.test.ts`)
 
 Change these only when alan explicitly says so, then update the test in the same commit.
@@ -244,6 +265,10 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   Uppercase only for page titles (h1) and role codes; every other label shares the sentence-case `.label` style. Source
   links carry their refresh status in the tooltip; only a pending external claim is marked inline ("· pending").
   Every page that shows champions wraps them in `ChampionProvider`, so hover card, drawer and mobile sheet match.
+  Contrast (Impeccable pass, 2026-10-12): every text token, `--text-faint` included, is at least 4.5:1 on the page
+  surfaces in both themes, and the light focus ring is deep champagne (3:1 minimum); express a quieter state with a token
+  colour, never by stacking opacity on faint text. On phones each team row fits 390px without scrolling (the slot being
+  picked fills the row) and every locked slot keeps its own Change button.
   Risk tags use the caution amber; oxblood is enemy and Counters only. No eyebrow labels, hero-metric strips or side
   stripes thicker than 1px (Impeccable craft floor), except the Pro Drafts draft-side strip below.
 - **Pro Drafts side strips** (alan, 2026-10-11): each row has a 3px strip on its far left, `--team-blue` / `--team-red`

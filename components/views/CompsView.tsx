@@ -4,13 +4,17 @@
 // win condition, one supporting line, actions, and the full "why" plus sources behind Details. Swaps hide behind a
 // "N swaps" control; picking one previews that variation in place (never saved, never pro evidence: swaps are
 // General Draft Logic, even on an observed pro comp) and compares it with the original on the comp check.
+// Observed Pro Comps the weekly discovery added (lib/comp-discovery.ts) use the same card; observed variations of any
+// comp (other lineups pro teams played under it, each with its game) sit behind an "N observed variations" control.
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ChampionDrawer, compLinks, useDrawerIndex, type CompContext, type DrawerTarget } from "@/components/ChampionDrawer";
 import { ChampionHoverCard, useHoverIntent } from "@/components/ChampionInteraction";
+import { CompFreshness } from "@/components/CompFreshness";
 import { ChampIcon, PageHeader, SourceBadge } from "@/components/ui";
 import { jobLabel, WHY_LINE } from "@/lib/comp-copy";
+import type { LibraryExtra, ObservedGame } from "@/lib/comp-library";
 import { draftHref, shellDraft, variationDiff } from "@/lib/comp-preview";
 import type { DrawerData } from "@/lib/data";
 import { shortDate } from "@/lib/evidence";
@@ -35,8 +39,9 @@ const LEVEL_LABEL: Record<Level, string> = { easy: "Easy", medium: "Medium", har
 const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
 const tag = (s: string) => { const t = s.replace(/-/g, " "); return t.charAt(0).toUpperCase() + t.slice(1); };
 
-export function CompsView({ names, sources, drafts, allShells, data }: {
-  names: Record<string, string>; sources: Record<string, Source>; drafts: Record<string, ProDraft>; allShells: CompShell[]; data: DrawerData;
+export function CompsView({ names, sources, drafts, allShells, extras, lastAddition, data }: {
+  names: Record<string, string>; sources: Record<string, Source>; drafts: Record<string, ProDraft>; allShells: CompShell[];
+  extras: Record<string, LibraryExtra>; lastAddition: string | null; data: DrawerData;
 }) {
   const index = useDrawerIndex(data);
   const [open, setOpen] = useState<Slot | undefined>(undefined);
@@ -44,6 +49,7 @@ export function CompsView({ names, sources, drafts, allShells, data }: {
   const [menu, setMenu] = useState<Slot | undefined>(undefined);
   const [previews, setPreviews] = useState<Record<string, Swaps>>({});
   const [shownSources, setShownSources] = useState<Record<string, boolean>>({});
+  const [shownVariations, setShownVariations] = useState<Record<string, boolean>>({});
   const opener = useRef<HTMLElement | null>(null);
   const openShell = open && allShells.find((s) => s.id === open.shell);
   const swapsOf = (id: string) => previews[id] ?? {};
@@ -78,14 +84,20 @@ export function CompsView({ names, sources, drafts, allShells, data }: {
   // Highlights follow the hovered or focused champion, else the open one.
   const active = hover ?? open;
   const params = useSearchParams();
-  const kind = params.get("kind") || undefined;
+  // Pro comps by default (alan, 2026-10-12); "all" and "generalized" (Template) are one click away.
+  const rawKind = params.get("kind");
+  const kind = rawKind === "all" ? undefined : rawKind === "generalized" ? "generalized" : "observed";
   const rawDiff = params.get("difficulty") || undefined;
   const level = rawDiff && rawDiff in LEVEL ? LEVEL[rawDiff as CompShell["difficulty"]] : undefined;
   // The cards render in the browser, after the browser's own jump to #shell-id has already run.
+  // A link to a card the default Pro filter hides (a template) opens on All instead.
   useEffect(() => {
     const id = decodeURIComponent(window.location.hash.slice(1));
-    if (id) document.getElementById(id)?.scrollIntoView();
-  }, []);
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView();
+    else if (!rawKind && allShells.some((s) => s.id === id)) window.location.replace(`${window.location.pathname}?kind=all#${id}`);
+  }, [rawKind, allShells]);
   // An open swap list closes on Escape or a press anywhere outside its slot.
   useEffect(() => {
     if (!menu) return;
@@ -100,17 +112,18 @@ export function CompsView({ names, sources, drafts, allShells, data }: {
     .filter((s) => !level || LEVEL[s.difficulty] === level)
     .sort((a, b) => DIFF_ORDER.indexOf(a.difficulty) - DIFF_ORDER.indexOf(b.difficulty));
   const href = (o: Record<string, string | undefined>) => {
-    const q = new URLSearchParams(Object.entries({ kind, difficulty: level, ...o }).filter(([, v]) => v) as [string, string][]);
+    const q = new URLSearchParams(Object.entries({ kind: kind ?? "all", difficulty: level, ...o }).filter(([k, v]) => v && !(k === "kind" && v === "observed")) as [string, string][]);
     return `/comps${q.size ? `?${q}` : ""}`;
   };
-  const KINDS: [string | undefined, string][] = [[undefined, "All"], ["observed", "Pro"], ["generalized", "Template"]];
+  const KINDS: [string | undefined, string][] = [["all", "All"], ["observed", "Pro"], ["generalized", "Template"]];
   const LEVELS: [Level | undefined, string][] = [[undefined, "All"], ["easy", "Easy"], ["medium", "Medium"], ["hard", "Hard"]];
   return (
     <>
       <PageHeader title="Comp Library" />
+      <CompFreshness lastAddition={lastAddition} />
       <div className="filters">
         <span className="filter-group"><span className="filter-label">Type</span>
-          <nav className="seg" aria-label="Type">{KINDS.map(([k, l]) => <Link key={l} href={href({ kind: k })} className={kind === k ? "active" : undefined}>{l}</Link>)}</nav>
+          <nav className="seg" aria-label="Type">{KINDS.map(([k, l]) => <Link key={l} href={href({ kind: k })} className={(kind ?? "all") === k ? "active" : undefined}>{l}</Link>)}</nav>
         </span>
         <span className="filter-group"><span className="filter-label">Difficulty</span>
           <nav className="seg" aria-label="Difficulty">{LEVELS.map(([d, l]) => <Link key={l} href={href({ difficulty: d })} className={level === d ? "active" : undefined}>{l}</Link>)}</nav>
@@ -125,7 +138,11 @@ export function CompsView({ names, sources, drafts, allShells, data }: {
           const srcs = [...new Set(s.sources)].map((id) => sources[id]).filter(Boolean);
           const showSrc = !!shownSources[s.id];
           const whyLine = WHY_LINE[s.id] ?? s.why;
-          const hasDetails = srcs.length > 0 || whyLine !== s.why;
+          const x = extras[s.id];
+          const read = x?.discovered;
+          const hasDetails = srcs.length > 0 || whyLine !== s.why || !!read;
+          const nVar = x?.variations.length ?? 0, nGames = x?.games.length ?? 0;
+          const showVar = !!shownVariations[s.id];
           return (
             <article key={s.id} id={s.id} className={`panel shell ${s.kind} ${swapped.length ? "previewing" : ""}`}>
               <header className="shell-head">
@@ -137,7 +154,7 @@ export function CompsView({ names, sources, drafts, allShells, data }: {
                   </span>
                 </div>
                 <span className="shell-tags xs muted">
-                  {s.kind === "observed" && <span className="shell-by">{s.observedBy}{d ? ` · ${d.seriesGame} vs ${d.opponent}` : ""}</span>}
+                  {s.kind === "observed" && <span className="shell-by">{read && d ? `${d.team} vs ${d.opponent} · ${d.patch}` : `${s.observedBy}${d ? ` · ${d.seriesGame} vs ${d.opponent}` : ""}`}</span>}
                   {s.identities.map((i) => <span key={i} className="shell-tag">{tag(i)}</span>)}
                 </span>
               </header>
@@ -152,18 +169,28 @@ export function CompsView({ names, sources, drafts, allShells, data }: {
                 <p className="wc">{s.winCondition}</p>
                 <p className="why">{whyLine}</p>
                 <div className="row between shell-actions">
-                  {hasDetails
-                    ? <button type="button" className="src-toggle" aria-expanded={showSrc} onClick={() => setShownSources((x) => ({ ...x, [s.id]: !showSrc }))}>
+                  <span className="row shell-toggles">
+                    {hasDetails && (
+                      <button type="button" className="src-toggle" aria-expanded={showSrc} onClick={() => setShownSources((x) => ({ ...x, [s.id]: !showSrc }))}>
                         Details{srcs.length > 0 && <span className="faint"> · {srcs.length} source{srcs.length > 1 ? "s" : ""}</span>} <span aria-hidden="true">{showSrc ? "▴" : "▾"}</span>
                       </button>
-                    : <span />}
+                    )}
+                    {(nVar > 0 || nGames > 0) && (
+                      <button type="button" className="src-toggle var-toggle" aria-expanded={showVar} onClick={() => setShownVariations((v) => ({ ...v, [s.id]: !showVar }))}>
+                        {nVar > 0 ? `${nVar} observed variation${nVar > 1 ? "s" : ""}` : `${nGames} more game${nGames > 1 ? "s" : ""}`}
+                        {nVar > 0 && nGames > 0 && <span className="faint"> · {nGames} more game{nGames > 1 ? "s" : ""}</span>} <span aria-hidden="true">{showVar ? "▴" : "▾"}</span>
+                      </button>
+                    )}
+                  </span>
                   {swapped.length
                     ? <Link className="btn sm primary" href={draftHref(shellDraft(s, swaps))}>Use variation in Draft Room →</Link>
                     : <Link className="btn sm" href={`/?shell=${s.id}`}>Use in Draft Room →</Link>}
                 </div>
+                {showVar && x && <Variations shell={s} extra={x} names={names} />}
                 {showSrc && (
                   <div className="shell-details">
                     {whyLine !== s.why && <p className="shell-why-full"><span className="faint">Why it works</span> {s.why}</p>}
+                    {read && <ReadDetails read={read} />}
                     {srcs.length > 0 && <SourceList list={srcs} />}
                   </div>
                 )}
@@ -291,6 +318,59 @@ function Preview({ shell: s, swaps, names, data, onReset }: {
         {diff.cleared.map((w) => <span key={w.id} className="pv-ok" title={w.rule}>Clears: {w.label}</span>)}
       </p>
     </section>
+  );
+}
+
+const SEV_LABEL = { major: "Major", moderate: "Moderate", minor: "Minor" } as const;
+
+/** A discovered comp's read: the comp check's view of the lineup (General Draft Logic), apart from the game evidence. */
+function ReadDetails({ read }: { read: NonNullable<LibraryExtra["discovered"]> }) {
+  return (
+    <div className="shell-read">
+      <span className="pv-title"><span className="ldot" /><b>Comp check read</b> <span className="faint">· general draft logic, added {shortDate(read.addedOn)}</span></span>
+      {read.strengths.length > 0 && <p><span className="faint">Strengths</span> {read.strengths.join("; ")}</p>}
+      <p><span className="faint">Weak points</span> {read.weaknesses.length ? read.weaknesses.map((w) => `${w.label} (${SEV_LABEL[w.severity].toLowerCase()})`).join("; ") : "none found"}</p>
+      {read.timing && <p><span className="faint">Timing</span> {read.timing}</p>}
+    </div>
+  );
+}
+
+function GameLink({ g }: { g: ObservedGame }) {
+  return (
+    <span className="var-game">
+      <a href={g.url} target="_blank" rel="noopener noreferrer">{g.team} vs {g.opponent}</a>
+      <span className={g.won ? "var-w" : "var-l"}>{g.won ? "W" : "L"}</span>
+      <span className="faint">{shortDate(g.date)} · {g.patch}</span>
+    </span>
+  );
+}
+
+/** Observed variations: other lineups pro teams played under this comp, and replays of its own lineup. Pro evidence. */
+function Variations({ shell: s, extra, names }: { shell: CompShell; extra: LibraryExtra; names: Record<string, string> }) {
+  return (
+    <ul className="shell-variations" aria-label={`Observed lineups for ${s.name}`}>
+      {extra.games.length > 0 && (
+        <li className="var-row">
+          <span className="var-what">Same lineup</span>
+          <span className="var-games">{extra.games.map((g) => <GameLink key={`${g.game}-${g.side}`} g={g} />)}</span>
+        </li>
+      )}
+      {extra.variations.map((v) => {
+        const changed = ROLES.filter((r) => v.picks[r] !== s.slots[r].champion);
+        return (
+          <li key={ROLES.map((r) => v.picks[r]).join("|")} className="var-row">
+            <span className="var-lineup" aria-label={ROLES.map((r) => names[v.picks[r]]).join(", ")}>
+              {ROLES.map((r) => <span key={r} className={changed.includes(r) ? "var-pick diff" : "var-pick"}><ChampIcon id={v.picks[r]} name={names[v.picks[r]]} role={r} size="xs" /></span>)}
+            </span>
+            <span className="var-what">{changed.map((r) => `${names[v.picks[r]]} for ${names[s.slots[r].champion]}`).join(", ")}</span>
+            <span className="var-games">
+              {v.games.map((g) => <GameLink key={`${g.game}-${g.side}`} g={g} />)}
+              <Link className="var-draft" href={draftHref(v.picks)}>Draft Room →</Link>
+            </span>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 

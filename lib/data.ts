@@ -2,6 +2,7 @@ import "server-only";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { z } from "zod";
+import { buildLibrary, type Library } from "./comp-library";
 import { withProAlternatives } from "./pro-alternatives";
 import { withGameSides } from "./draft-side";
 import { draftsFromGames, freshness, resultsFromGames, sourcesFromGames } from "./pro-games";
@@ -39,6 +40,9 @@ export const getProDrafts = () => (drafts ??= [
   ...draftsFromGames(getProGames().games),
 ]);
 export const getCompShells = () => load("comp-shells.json");
+// Comp Library: the hand-written shells plus the weekly discovery's Observed Pro Comps and observed variations.
+let library: Library | undefined;
+export const getLibrary = () => (library ??= buildLibrary(getCompShells(), load("discovered-comps.json"), getProGames().games));
 export const getPool = () => load("pool.json");
 export const getMeta = () => load("meta.json");
 export const getGenG = () => load("geng.json");
@@ -61,7 +65,7 @@ export function getDraftData() {
     midJungle: getMidJungle(),
     topPicks: getTopPicks(),
     proDrafts: getProDrafts(),
-    shells: getCompShells(),
+    shells: getLibrary().shells,
     pool: getPool(),
     events: getMeta().events,
     counters: getCounters(),

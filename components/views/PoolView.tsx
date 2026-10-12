@@ -63,7 +63,7 @@ export function PoolView({ names, data, bot, midJungle, top, proposed, freshness
       <PageHeader title="Champion Pool" />
       <ProFreshness items={freshness} />
       <div className="toolbar">
-        <nav className="seg" aria-label="Role">
+        <nav className="seg scroll" aria-label="Role">
           <button className={!role ? "active" : undefined} onClick={() => set("role", undefined)}>All</button>
           {ROLES.map((r) => <button key={r} className={role === r ? "active" : undefined} onClick={() => set("role", r)}><span className={`role-tag role-${r}`}>{r}</span></button>)}
         </nav>

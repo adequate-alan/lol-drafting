@@ -1,0 +1,696 @@
+{
+  "lastAddition": "2026-10-12",
+  "comps": [
+    {
+      "id": "pro-83448-blue",
+      "name": "Split + Front-to-back · Ryze",
+      "addedOn": "2026-10-12",
+      "primary": "split",
+      "secondary": "front-to-back",
+      "tags": [
+        "split-pressure",
+        "front-to-back",
+        "hybrid"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "rumble",
+          "job": "Melee damage"
+        },
+        "JUNGLE": {
+          "champion": "trundle",
+          "job": "Catch + damage"
+        },
+        "MID": {
+          "champion": "ryze",
+          "job": "Side-lane carry"
+        },
+        "BOT": {
+          "champion": "senna",
+          "job": "Catch + damage"
+        },
+        "SUPPORT": {
+          "champion": "nautilus",
+          "job": "Hard engage"
+        }
+      },
+      "winCondition": "Create side-lane pressure with Trundle and Ryze, then use Rumble, Senna and Nautilus to punish rotations.",
+      "why": "Trundle and Ryze can hold a side lane alone; Senna can join a fight from anywhere; Trundle and Nautilus in front, Senna dealing damage from range.",
+      "timing": "Even across the game; no clear power spike.",
+      "strengths": [
+        "Fight start: Nautilus",
+        "Frontline: Trundle and Nautilus",
+        "Side lane: Trundle and Ryze",
+        "Tank damage: Trundle",
+        "Mixed damage (36% physical)"
+      ],
+      "weaknesses": [
+        {
+          "label": "Short range",
+          "severity": "moderate"
+        }
+      ],
+      "difficulty": "easy",
+      "games": [
+        {
+          "game": 83448,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "id": "pro-83450-red",
+      "name": "Protect + Front-to-back · Yunara",
+      "addedOn": "2026-10-12",
+      "primary": "protect",
+      "secondary": "front-to-back",
+      "tags": [
+        "protect-the-carry",
+        "front-to-back",
+        "hybrid"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "ksante",
+          "job": "Catch"
+        },
+        "JUNGLE": {
+          "champion": "naafiri",
+          "job": "Backline dive"
+        },
+        "MID": {
+          "champion": "anivia",
+          "job": "Ranged DPS"
+        },
+        "BOT": {
+          "champion": "yunara",
+          "job": "Ranged DPS"
+        },
+        "SUPPORT": {
+          "champion": "lulu",
+          "job": "Peel"
+        }
+      },
+      "winCondition": "Play around Anivia: K'Sante and Lulu stay with Anivia and let the enemy dive into you.",
+      "why": "K'Sante and Lulu protect Anivia; K'Sante in front, Anivia and Yunara dealing damage from range.",
+      "timing": "Weak before first items. Strongest around two to three items.",
+      "strengths": [
+        "Catch: K'Sante",
+        "Peel and disengage: K'Sante, Anivia and Lulu",
+        "Mixed damage (58% physical)",
+        "Scales into the late game"
+      ],
+      "weaknesses": [
+        {
+          "label": "No on-demand engage",
+          "severity": "moderate"
+        }
+      ],
+      "difficulty": "easy",
+      "games": [
+        {
+          "game": 83450,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "id": "pro-83457-red",
+      "name": "Wombo + Front-to-back · Corki",
+      "addedOn": "2026-10-12",
+      "primary": "wombo",
+      "secondary": "front-to-back",
+      "tags": [
+        "wombo",
+        "front-to-back",
+        "hybrid",
+        "objective-control"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "rumble",
+          "job": "Melee damage"
+        },
+        "JUNGLE": {
+          "champion": "wukong",
+          "job": "Engage + damage"
+        },
+        "MID": {
+          "champion": "orianna",
+          "job": "AoE damage"
+        },
+        "BOT": {
+          "champion": "corki",
+          "job": "Poke"
+        },
+        "SUPPORT": {
+          "champion": "rakan",
+          "job": "Engage"
+        }
+      },
+      "winCondition": "Fight in choke points and around objectives where Wukong, Orianna and Rakan can land their crowd control on the same targets.",
+      "why": "Wukong, Orianna and Rakan stack AoE crowd control; Wukong in front, Orianna and Corki dealing damage from range.",
+      "timing": "Weak before first items. Strongest around two to three items.",
+      "strengths": [
+        "Fight start: Wukong and Rakan",
+        "Peel and disengage: Orianna and Rakan",
+        "Scales into the late game"
+      ],
+      "weaknesses": [
+        {
+          "label": "Thin frontline",
+          "severity": "minor"
+        }
+      ],
+      "difficulty": "medium",
+      "games": [
+        {
+          "game": 83457,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "id": "pro-83459-blue",
+      "name": "Front-to-back · Viktor",
+      "addedOn": "2026-10-12",
+      "primary": "front-to-back",
+      "secondary": null,
+      "tags": [
+        "front-to-back",
+        "objective-control"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "rumble",
+          "job": "Melee damage"
+        },
+        "JUNGLE": {
+          "champion": "skarner",
+          "job": "Hard engage"
+        },
+        "MID": {
+          "champion": "viktor",
+          "job": "AoE damage"
+        },
+        "BOT": {
+          "champion": "ezreal",
+          "job": "Poke"
+        },
+        "SUPPORT": {
+          "champion": "alistar",
+          "job": "Hard engage"
+        }
+      },
+      "winCondition": "Set up first around objectives, let Skarner and Alistar start fights, and play front-to-back through Viktor and Ezreal.",
+      "why": "Skarner and Alistar in front, Viktor and Ezreal dealing damage from range.",
+      "timing": "Strongest around two to three items.",
+      "strengths": [
+        "Fight start: Skarner and Alistar",
+        "Frontline: Skarner and Alistar"
+      ],
+      "weaknesses": [
+        {
+          "label": "Little tank damage",
+          "severity": "moderate"
+        }
+      ],
+      "difficulty": "easy",
+      "games": [
+        {
+          "game": 83459,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "id": "pro-83469-blue",
+      "name": "Dive · Kalista",
+      "addedOn": "2026-10-12",
+      "primary": "dive",
+      "secondary": null,
+      "tags": [
+        "dive"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "renekton",
+          "job": "Backline dive"
+        },
+        "JUNGLE": {
+          "champion": "skarner",
+          "job": "Hard engage"
+        },
+        "MID": {
+          "champion": "akali",
+          "job": "Backline dive"
+        },
+        "BOT": {
+          "champion": "kalista",
+          "job": "Ranged DPS"
+        },
+        "SUPPORT": {
+          "champion": "renata-glasc",
+          "job": "Peel"
+        }
+      },
+      "winCondition": "Go in together: Renekton, Skarner and Akali reach the enemy carries at the same time instead of one by one.",
+      "why": "Renekton, Skarner and Akali can all reach the backline.",
+      "timing": "Falls off late. Strongest around two to three items.",
+      "strengths": [
+        "Fight start: Skarner",
+        "Frontline: Renekton and Skarner",
+        "Side lane: Akali",
+        "Mixed damage (62% physical)",
+        "Strong before first items"
+      ],
+      "weaknesses": [],
+      "difficulty": "easy",
+      "games": [
+        {
+          "game": 83469,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "id": "pro-83521-blue",
+      "name": "Protect · Yunara",
+      "addedOn": "2026-10-12",
+      "primary": "protect",
+      "secondary": null,
+      "tags": [
+        "protect-the-carry"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "olaf",
+          "job": "Backline dive"
+        },
+        "JUNGLE": {
+          "champion": "xin-zhao",
+          "job": "Catch + damage"
+        },
+        "MID": {
+          "champion": "orianna",
+          "job": "AoE damage"
+        },
+        "BOT": {
+          "champion": "yunara",
+          "job": "Ranged DPS"
+        },
+        "SUPPORT": {
+          "champion": "lulu",
+          "job": "Peel"
+        }
+      },
+      "winCondition": "Play around Yunara: Orianna and Lulu stay with Yunara and let the enemy dive into you.",
+      "why": "Orianna and Lulu protect Yunara.",
+      "timing": "Even across the game; no clear power spike.",
+      "strengths": [
+        "Catch: Xin Zhao",
+        "Peel and disengage: Orianna and Lulu",
+        "Tank damage: Olaf",
+        "Mixed damage (53% physical)"
+      ],
+      "weaknesses": [
+        {
+          "label": "No on-demand engage",
+          "severity": "moderate"
+        },
+        {
+          "label": "Thin frontline",
+          "severity": "minor"
+        }
+      ],
+      "difficulty": "easy",
+      "games": [
+        {
+          "game": 83521,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "id": "pro-83521-red",
+      "name": "Skirmish + Front-to-back · Jax",
+      "addedOn": "2026-10-12",
+      "primary": "skirmish",
+      "secondary": "front-to-back",
+      "tags": [
+        "skirmish",
+        "front-to-back",
+        "hybrid"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "jax",
+          "job": "Backline dive"
+        },
+        "JUNGLE": {
+          "champion": "wukong",
+          "job": "Engage + damage"
+        },
+        "MID": {
+          "champion": "viktor",
+          "job": "AoE damage"
+        },
+        "BOT": {
+          "champion": "lucian",
+          "job": "Melee damage"
+        },
+        "SUPPORT": {
+          "champion": "milio",
+          "job": "Peel"
+        }
+      },
+      "winCondition": "Fight short 2v2s and 3v3s around the jungle before items stack up, and snowball the leads into objectives.",
+      "why": "Jax, Wukong and Lucian win short fights before items; Wukong in front, Viktor dealing damage from range.",
+      "timing": "Strongest around two to three items.",
+      "strengths": [
+        "Fight start: Wukong",
+        "Side lane: Jax",
+        "Tank damage: Jax",
+        "Mixed damage (62% physical)",
+        "Scales into the late game"
+      ],
+      "weaknesses": [
+        {
+          "label": "Short range",
+          "severity": "moderate"
+        },
+        {
+          "label": "Thin frontline",
+          "severity": "minor"
+        }
+      ],
+      "difficulty": "easy",
+      "games": [
+        {
+          "game": 83521,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "id": "pro-83529-red",
+      "name": "Skirmish + Pick · Ryze",
+      "addedOn": "2026-10-12",
+      "primary": "skirmish",
+      "secondary": "pick",
+      "tags": [
+        "skirmish",
+        "pick-catch",
+        "hybrid"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "olaf",
+          "job": "Backline dive"
+        },
+        "JUNGLE": {
+          "champion": "qiyana",
+          "job": "Catch + damage"
+        },
+        "MID": {
+          "champion": "ryze",
+          "job": "Side-lane carry"
+        },
+        "BOT": {
+          "champion": "ashe",
+          "job": "Catch + damage"
+        },
+        "SUPPORT": {
+          "champion": "seraphine",
+          "job": "Peel"
+        }
+      },
+      "winCondition": "Fight short 2v2s and 3v3s around the jungle before items stack up, and snowball the leads into objectives. Between objectives, look for catches with Qiyana and Ashe.",
+      "why": "Olaf and Qiyana win short fights before items; catch from Qiyana and Ashe.",
+      "timing": "Even across the game; no clear power spike.",
+      "strengths": [
+        "Catch: Qiyana and Ashe",
+        "Side lane: Ryze",
+        "Tank damage: Olaf",
+        "Mixed damage (58% physical)"
+      ],
+      "weaknesses": [
+        {
+          "label": "Short range",
+          "severity": "moderate"
+        },
+        {
+          "label": "Thin frontline",
+          "severity": "minor"
+        }
+      ],
+      "difficulty": "easy",
+      "games": [
+        {
+          "game": 83529,
+          "side": "red"
+        }
+      ]
+    }
+  ],
+  "variations": [
+    {
+      "of": "objective-zone",
+      "picks": {
+        "TOP": "ksante",
+        "JUNGLE": "jarvan-iv",
+        "MID": "cassiopeia",
+        "BOT": "lucian",
+        "SUPPORT": "milio"
+      },
+      "addedOn": "2026-10-12",
+      "games": [
+        {
+          "game": 83447,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "objective-zone",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "wukong",
+        "MID": "syndra",
+        "BOT": "lucian",
+        "SUPPORT": "milio"
+      },
+      "addedOn": "2026-10-12",
+      "games": [
+        {
+          "game": 83465,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "objective-zone",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "naafiri",
+        "MID": "ryze",
+        "BOT": "lucian",
+        "SUPPORT": "milio"
+      },
+      "addedOn": "2026-10-12",
+      "games": [
+        {
+          "game": 83468,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "objective-zone",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "xin-zhao",
+        "MID": "ryze",
+        "BOT": "lucian",
+        "SUPPORT": "milio"
+      },
+      "addedOn": "2026-10-12",
+      "games": [
+        {
+          "game": 83534,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "objective-zone",
+      "picks": {
+        "TOP": "ksante",
+        "JUNGLE": "jarvan-iv",
+        "MID": "ryze",
+        "BOT": "lucian",
+        "SUPPORT": "milio"
+      },
+      "addedOn": "2026-10-12",
+      "games": [
+        {
+          "game": 83538,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "poke-catch",
+      "picks": {
+        "TOP": "ksante",
+        "JUNGLE": "qiyana",
+        "MID": "ryze",
+        "BOT": "jhin",
+        "SUPPORT": "leona"
+      },
+      "addedOn": "2026-10-12",
+      "games": [
+        {
+          "game": 83449,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "poke-catch",
+      "picks": {
+        "TOP": "galio",
+        "JUNGLE": "qiyana",
+        "MID": "syndra",
+        "BOT": "jhin",
+        "SUPPORT": "alistar"
+      },
+      "addedOn": "2026-10-12",
+      "games": [
+        {
+          "game": 83457,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "pro-83450-red",
+      "picks": {
+        "TOP": "ksante",
+        "JUNGLE": "vi",
+        "MID": "viktor",
+        "BOT": "yunara",
+        "SUPPORT": "lulu"
+      },
+      "addedOn": "2026-10-12",
+      "games": [
+        {
+          "game": 83527,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "pro-83457-red",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "wukong",
+        "MID": "orianna",
+        "BOT": "xayah",
+        "SUPPORT": "rakan"
+      },
+      "addedOn": "2026-10-12",
+      "games": [
+        {
+          "game": 83537,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "pro-83459-blue",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "skarner",
+        "MID": "ryze",
+        "BOT": "ezreal",
+        "SUPPORT": "seraphine"
+      },
+      "addedOn": "2026-10-12",
+      "games": [
+        {
+          "game": 83520,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "pro-83521-blue",
+      "picks": {
+        "TOP": "olaf",
+        "JUNGLE": "jarvan-iv",
+        "MID": "orianna",
+        "BOT": "yunara",
+        "SUPPORT": "lulu"
+      },
+      "addedOn": "2026-10-12",
+      "games": [
+        {
+          "game": 83524,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "pro-83521-blue",
+      "picks": {
+        "TOP": "renekton",
+        "JUNGLE": "lee-sin",
+        "MID": "orianna",
+        "BOT": "yunara",
+        "SUPPORT": "lulu"
+      },
+      "addedOn": "2026-10-12",
+      "games": [
+        {
+          "game": 83541,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "pro-83521-red",
+      "picks": {
+        "TOP": "vayne",
+        "JUNGLE": "wukong",
+        "MID": "viktor",
+        "BOT": "lucian",
+        "SUPPORT": "milio"
+      },
+      "addedOn": "2026-10-12",
+      "games": [
+        {
+          "game": 83524,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "pro-83529-red",
+      "picks": {
+        "TOP": "olaf",
+        "JUNGLE": "naafiri",
+        "MID": "aurora",
+        "BOT": "ashe",
+        "SUPPORT": "seraphine"
+      },
+      "addedOn": "2026-10-12",
+      "games": [
+        {
+          "game": 83538,
+          "side": "red"
+        }
+      ]
+    }
+  ]
+}

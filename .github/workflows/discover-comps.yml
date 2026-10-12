@@ -1,0 +1,96 @@
+name: Discover comps
+
+# Weekly Comp Library review. Reads the pro games already stored by the daily refresh (data/pro-games.json: the tracked
+# tournaments only, Demacia Cup Global Invitational 2026 and Worlds 2026 with its Play-In; the LCK playoffs are a frozen
+# archive used for comparison). Nothing is downloaded. scripts/discover-comps.ts compares every recorded lineup with the
+# Comp Library, adds Observed Pro Comps and observed variations that pass its fixed rules, and writes a report of the
+# rest. Deterministic, no model calls. Tests, typecheck and build run, and it commits and deploys only when the library
+# data changed. Saved synergy, pool tiers and proposed synergy are never touched.
+#
+# Sunday 9 AM Eastern all year: cron is UTC, so both 13:00 UTC (9 AM EDT) and 14:00 UTC (9 AM EST) are scheduled and the
+# gate step lets through only the one that matches New York's current offset. GitHub may start scheduled runs late.
+on:
+  schedule:
+    - cron: "0 13 * * 0"
+    - cron: "0 14 * * 0"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Review and report only; write and commit nothing"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write # commit library changes
+  actions: write # start the Pages deploy (a push made with GITHUB_TOKEN does not trigger workflows)
+
+concurrency:
+  group: discover-comps
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - id: gate
+        name: Run at 9 AM Eastern only
+        run: |
+          offset=$(TZ=America/New_York date +%z)
+          run=true
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            if [ "${{ github.event.schedule }}" = "0 13 * * 0" ] && [ "$offset" != "-0400" ]; then run=false; fi
+            if [ "${{ github.event.schedule }}" = "0 14 * * 0" ] && [ "$offset" != "-0500" ]; then run=false; fi
+          fi
+          echo "New York offset $offset; run=$run"
+          echo "run=$run" >> "$GITHUB_OUTPUT"
+
+      - if: steps.gate.outputs.run == 'true'
+        uses: actions/checkout@v4
+      - if: steps.gate.outputs.run == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - if: steps.gate.outputs.run == 'true'
+        run: npm ci
+
+      - id: discover
+        if: steps.gate.outputs.run == 'true'
+        name: Review recorded lineups against the Comp Library
+        run: npx tsx scripts/discover-comps.ts ${{ inputs.dry_run && '--dry-run' || '' }}
+
+      - if: steps.gate.outputs.run == 'true'
+        name: Keep the weekly report
+        uses: actions/upload-artifact@v4
+        with:
+          name: comp-discovery-report
+          path: reports/comp-discovery.md
+          if-no-files-found: ignore
+
+      - if: steps.discover.outputs.changed == 'true' && !inputs.dry_run
+        run: npm test
+      - if: steps.discover.outputs.changed == 'true' && !inputs.dry_run
+        run: npm run typecheck
+      - if: steps.discover.outputs.changed == 'true' && !inputs.dry_run
+        run: npm run build
+
+      - id: commit
+        if: steps.discover.outputs.changed == 'true' && !inputs.dry_run
+        name: Commit library changes
+        run: |
+          git config user.name "adequate-alan"
+          git config user.email "54249725+adequate-alan@users.noreply.github.com"
+          git add data/discovered-comps.json reports/comp-discovery.md
+          git diff --cached --quiet && { echo "Nothing staged."; exit 0; }
+          git commit -m "Comp Library: weekly discovery $(TZ=America/New_York date +%Y-%m-%d)" -m "$(node -e 'const f=require("./data/discovered-comps.json");console.log(`${f.comps.length} observed pro comps, ${f.variations.length} observed variation lineups; last addition ${f.lastAddition}. Report: reports/comp-discovery.md`)')"
+          for i in 1 2 3; do
+            git push origin "HEAD:${GITHUB_REF_NAME}" && { echo "pushed=true" >> "$GITHUB_OUTPUT"; exit 0; }
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+          done
+          exit 1
+
+      - if: steps.commit.outputs.pushed == 'true' && github.ref_name == 'main'
+        name: Deploy to GitHub Pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main

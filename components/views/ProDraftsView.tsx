@@ -100,7 +100,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData }: {
         {active > 0 && <Link className="btn sm ghost" href="/pro-drafts">Clear {active} filter{active > 1 ? "s" : ""}</Link>}
         <span className="count">{rows.length} of {all.length} team-games</span>
       </form>
-      <div className="table-wrap tall">
+      <div className="table-wrap tall drafts-table">
         <table>
           <thead><tr><th>Game</th><th>Team</th><th>vs</th>{ROLES.map((r) => <th key={r}><span className={`role-tag role-${r}`}>{r}</span></th>)}<th>Read</th><th>Source</th></tr></thead>
           <tbody>

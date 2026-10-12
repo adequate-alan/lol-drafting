@@ -24,7 +24,7 @@ export async function refresh(data, get, { now = new Date().toISOString(), force
     const built = buildPatch(item.patch, article, data.champions, { now, previous: stored });
     warnings.push(...built.warnings);
     const next = { ...built.patch, updatedAt: now };
-    if (stored && facts(stored) === facts(next)) { report.push(`${item.patch}: page revision changed, no Summoner's Rift change.`); continue; }
+    if (stored && facts(stored) === facts(next)) { report.push(`${item.patch}: ${stored.rev === item.rev ? "re-read" : "page revision changed"}, no Summoner's Rift change.`); continue; }
     if (!next.entries.length) { warnings.push(`${item.patch}: no Summoner's Rift changes could be read; not stored.`); continue; }
     if (stored) notes.patches[i] = next; else notes.patches.push(next);
     const corrected = next.entries.filter((e) => e.corrected && !stored?.entries.find((x) => x.id === e.id)?.corrected).length;
