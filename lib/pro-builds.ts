@@ -64,22 +64,30 @@ export const inScope = (r: BuildRow, s: BuildScope) =>
 export const samePlayer = (r: BuildRow, player: string) => (/^\d+$/.test(player) ? String(r.build.playerId) === player : r.build.player === player);
 export const scoped = (rows: BuildRow[], s: BuildScope) => rows.filter((r) => inScope(r, s));
 
-/** One entry per champion and role with recorded builds: game count, players and the newest patch. */
-export interface ChampionBuilds { champion: string; role: Role; games: number; players: number; names: string[]; latest: string; lastPlayed: string }
-export function championIndex(builds: Pick<ProBuild, "champion" | "role" | "player" | "game">[], games: Pick<ProGame, "id" | "patch" | "date">[]): ChampionBuilds[] {
+/** One entry per champion and role with recorded builds: game count, players, the newest patch and the latest games
+ *  (newest first, at most RECENT), so the champion drawer can name who played it last and open that exact build. */
+export interface RecentBuild { game: number; date: string; patch: string; player: string; playerId: number; team?: string; won?: boolean }
+export interface ChampionBuilds { champion: string; role: Role; games: number; players: number; names: string[]; latest: string; lastPlayed: string; recent: RecentBuild[] }
+export const RECENT = 3;
+export function championIndex(builds: Pick<ProBuild, "champion" | "role" | "player" | "playerId" | "game" | "side">[],
+  games: (Pick<ProGame, "id" | "patch" | "date"> & Partial<Pick<ProGame, "blue" | "red" | "winner">>)[]): ChampionBuilds[] {
   const byGame = new Map(games.map((g) => [g.id, g]));
-  const m = new Map<string, { champion: string; role: Role; games: number; players: Set<string>; latest: string; lastPlayed: string }>();
+  const m = new Map<string, { champion: string; role: Role; games: number; players: Set<string>; latest: string; lastPlayed: string; recent: RecentBuild[] }>();
   for (const b of builds) {
     const g = byGame.get(b.game);
     if (!g) continue;
     const k = `${b.champion}|${b.role}`;
-    const e = m.get(k) ?? { champion: b.champion, role: b.role, games: 0, players: new Set<string>(), latest: g.patch, lastPlayed: g.date };
+    const e = m.get(k) ?? { champion: b.champion, role: b.role, games: 0, players: new Set<string>(), latest: g.patch, lastPlayed: g.date, recent: [] };
     e.games += 1; e.players.add(b.player);
     if (comparePatch(g.patch, e.latest) > 0) e.latest = g.patch;
     if (g.date > e.lastPlayed) e.lastPlayed = g.date;
+    e.recent.push({ game: g.id, date: g.date, patch: g.patch, player: b.player, playerId: b.playerId, team: g[b.side]?.team, won: g.winner ? g.winner === b.side : undefined });
     m.set(k, e);
   }
-  return [...m.values()].map((e) => ({ ...e, players: e.players.size, names: [...e.players].sort() })).sort((a, b) => b.games - a.games || a.champion.localeCompare(b.champion));
+  return [...m.values()].map((e) => ({
+    ...e, players: e.players.size, names: [...e.players].sort(),
+    recent: e.recent.sort((a, b) => b.date.localeCompare(a.date) || b.game - a.game).slice(0, RECENT),
+  })).sort((a, b) => b.games - a.games || a.champion.localeCompare(b.champion));
 }
 
 // ---------- icons (Riot Data Dragon, the game patch's version) ----------

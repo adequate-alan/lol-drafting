@@ -5,6 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { Fragment, useMemo, useState } from "react";
 import type { DrawerData } from "@/lib/data";
 import { ChampionProvider, InteractiveChampion } from "@/components/ChampionInteraction";
+import type { DrawerContext } from "@/lib/drawer";
+const META: DrawerContext = { page: "meta" };
 import { Disclosure } from "@/components/Disclosure";
 import { ChampIcon, PageHeader, SectionHeader, SourceBadge, SourceLinks, pct } from "@/components/ui";
 import { shortDate } from "@/lib/evidence";
@@ -57,7 +59,7 @@ export function MetaView({ names, sources, input, rules, drawerData, freshness }
     </InteractiveChampion>
   );
   return (
-    <ChampionProvider data={drawerData}>
+    <ChampionProvider data={drawerData} context={META}>
     <div className="meta-hub">
       <PageHeader title="Meta / Research" />
       <ProFreshness items={freshness} />

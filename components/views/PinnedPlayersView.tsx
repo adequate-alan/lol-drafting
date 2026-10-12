@@ -11,6 +11,8 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import { BuildsTabs } from "@/components/BuildsTabs";
 import { Icon, Item, Rune } from "@/components/BuildParts";
 import { ChampionProvider } from "@/components/ChampionInteraction";
+import type { DrawerContext } from "@/lib/drawer";
+const PINNED: DrawerContext = { page: "pinned" };
 import { InteractiveChampion } from "@/components/InteractiveChampion";
 import { Disclosure } from "@/components/Disclosure";
 import { GameDetail } from "@/components/GameBuild";
@@ -76,7 +78,7 @@ export function PinnedPlayersView({ names, events, drawerData }: { names: Record
   const openProfile = player && !pins.includes(player) && all ? playerProfile(all, player, filter) : undefined;
 
   return (
-    <ChampionProvider data={drawerData}>
+    <ChampionProvider data={drawerData} context={PINNED}>
       <PageHeader title="Pro Builds" badges={<BuildsTabs current="pinned" />}
         desc="Players you follow: every recorded game, champion and build. Pins are saved in this browser only and do not sync across devices." />
       <div className="split builds-split">

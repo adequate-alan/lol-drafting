@@ -684,7 +684,7 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 
 /* Champion drawer (components/ChampionDrawer.tsx): side panel on desktop, bottom sheet on phones */
 .drawer {
-  position: fixed; top: 0; right: 0; bottom: 0; z-index: 50; width: min(420px, 100vw); display: flex; flex-direction: column;
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 50; width: min(440px, 100vw); display: flex; flex-direction: column;
   background: var(--surface-raised); border-left: 1px solid var(--border-strong); box-shadow: var(--shadow-pop);
   outline: none; animation: drawer-in var(--dur-panel) var(--ease-out);
 }
@@ -719,12 +719,121 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .drawer-logic { display: grid; gap: var(--s2); margin: 0; padding: 0; list-style: none; }
 .drawer-logic li::before { content: "·"; margin-right: var(--s3); color: var(--text-faint); }
 .drawer .obs-row.in-comp b { color: var(--pro); }
-.drawer-foot { display: flex; gap: var(--s3); padding: var(--s4) var(--pad-card); border-top: 1px solid var(--border); }
+.drawer-foot { display: flex; flex-wrap: wrap; gap: var(--s3); padding: var(--s4) var(--pad-card); border-top: 1px solid var(--border); }
+/* Scouting panel (2026-10-12): the expand control widens the panel for research; the header and tabs stay put while the
+   body scrolls; tabs switch instantly (no panel animation on a tab change). */
+.drawer.wide { width: min(720px, 100vw); }
+.drawer-head .champ.lg { flex: none; }
+.dw-trail { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: var(--s2); max-width: 90px; font-family: var(--font-display); font-size: var(--fs-xs); font-weight: var(--w-control); color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dw-trail:hover { color: var(--text); }
+.dw-trail:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--r-sm); }
+.dw-tier .tier { font-size: inherit; }
+.drawer-tabs { display: flex; gap: var(--s5); padding: 0 var(--pad-card); border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; flex: none; }
+.drawer-tab {
+  all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: var(--s2); height: 34px; margin-bottom: -1px; font-family: var(--font-display);
+  font-size: var(--fs-sm); font-weight: var(--w-control); color: var(--text-muted); white-space: nowrap; border-bottom: 2px solid transparent;
+  transition: color var(--t-fast), border-color var(--t-fast);
+}
+.drawer-tab:hover { color: var(--text); border-color: var(--border-strong); }
+.drawer-tab.active { color: var(--text); font-weight: var(--w-strong); border-color: var(--accent); }
+.drawer-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: var(--r-sm); }
+.drawer-tab .count { font-size: var(--fs-2xs); color: var(--text-faint); }
+.drawer-tab.active .count { color: var(--text-muted); }
+.drawer-panel, .dw-pairing { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; }
+.drawer-body > .drawer-panel > .layer, .dw-pairing > .layer { padding-top: var(--s5); padding-bottom: var(--s5); border-bottom: 1px solid var(--border); }
+.dw-section .layer-label .push a, .dw-more-link { color: var(--accent-text); font-weight: var(--w-control); }
+.dw-more-link { all: unset; cursor: pointer; font-family: var(--font-display); font-size: var(--fs-xs); font-weight: var(--w-control); color: var(--accent-text); white-space: nowrap; }
+.dw-more-link:hover, .dw-link:hover { color: var(--text); }
+.dw-more-link:focus-visible, .dw-link:focus-visible, .dw-back:focus-visible, .dw-cell-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--r-sm); }
+.dw-link, .dw-cell-btn { all: unset; cursor: pointer; font: inherit; color: var(--accent-text); }
+.dw-cell-btn { color: inherit; font-family: var(--font-mono); text-decoration: underline; text-decoration-color: var(--border-strong); text-underline-offset: 2px; }
+.dw-sub { margin: var(--s3) 0 var(--s2); }
+.dw-group + .dw-group { margin-top: var(--s4); }
+.dw-rows { display: grid; gap: 1px; }
+.dw-note { margin: var(--s3) 0 0; }
+.dw-tier-reason { margin: 0 0 var(--s3); }
+/* Rows: a partner, a game, a change. One line of name, one of detail, a chevron; the whole row is the control. */
+.dw-row {
+  all: unset; box-sizing: border-box; display: flex; align-items: center; gap: var(--s4); width: 100%; min-height: 36px; padding: var(--s2) var(--s3); margin: 0 calc(-1 * var(--s3));
+  width: calc(100% + 2 * var(--s3)); border-radius: var(--r-sm); color: var(--text); cursor: pointer; text-align: left; font: inherit;
+  transition: background var(--t-fast);
+}
+.dw-row:hover { background: var(--surface-hover); text-decoration: none; }
+.dw-row:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.dw-row .champ, .dw-row .avatar { flex: none; }
+.dw-row-main { display: grid; gap: 1px; min-width: 0; flex: 1 1 auto; }
+.dw-row-name { font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--w-control); color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dw-row-sub { font-size: var(--fs-xs); color: var(--text-muted); line-height: 1.35; overflow-wrap: anywhere; }
+.dw-partner.proposed .dw-row-name { color: var(--text); }
+.dw-partner.proposed .champ { outline: 1px dashed var(--clash-line); outline-offset: 1px; }
+.dw-row-end { flex: none; }
+.dw-chevron { flex: none; width: 12px; text-align: center; color: var(--text-faint); font-size: var(--fs-sm); }
+.dw-row:hover .dw-chevron { color: var(--text); }
+.dw-result { margin-left: var(--s2); font-family: var(--font-mono); font-size: var(--fs-2xs); font-weight: var(--w-strong); }
+.dw-result.win, .dw-draft-team .win { color: var(--success); }
+.dw-result.loss, .dw-draft-team .loss { color: var(--text-faint); }
+.dw-game, .dw-obs, .dw-change { position: relative; }
+.dw-game.open, .dw-obs.open, .dw-change.open { background: var(--surface-subtle); border-radius: var(--r-sm); margin: 0 calc(-1 * var(--s3)); padding: 0 var(--s3); }
+.dw-game.open .dw-row, .dw-obs.open .dw-row, .dw-change.open .dw-row { margin: 0; width: 100%; }
+.dw-detail { display: grid; gap: var(--s3); padding: var(--s2) var(--s3) var(--s4); font-size: var(--fs-sm); }
+.dw-detail p { margin: 0; }
+.dw-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s5); margin: 0; }
+.dw-actions .source-links { font-size: inherit; }
+.dw-kv { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: var(--s2) var(--s4); margin: 0; font-size: var(--fs-xs); }
+.dw-kv > dt { margin: 0; color: var(--text-muted); }
+.dw-kv > dd { margin: 0; min-width: 0; color: var(--text); overflow-wrap: anywhere; }
+.dw-kv.stats { grid-template-columns: 84px minmax(0, 1fr); margin-top: var(--s3); }
+.dw-lines { display: grid; gap: var(--s2); margin: 0; padding: 0; list-style: none; }
+.dw-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2) var(--s4); margin: 0; }
+/* A recorded draft in miniature: five portraits with the game's side; each portrait switches the drawer. */
+.dw-draft { display: grid; gap: 2px; padding-left: var(--s3); border-left: 3px solid var(--border-strong); }
+.dw-draft.side-blue { border-left-color: var(--team-blue); }
+.dw-draft.side-red { border-left-color: var(--team-red); }
+.dw-draft-team { color: var(--text-muted); }
+.dw-draft-picks { display: flex; gap: var(--s2); }
+.dw-pick { all: unset; cursor: pointer; display: inline-grid; border-radius: var(--r-sm); }
+.dw-pick:disabled { cursor: default; }
+.dw-pick:hover .champ, .dw-pick:focus-visible .champ { outline: 2px solid var(--accent); outline-offset: 1px; }
+.dw-pick.mark .champ { outline: 2px solid var(--pro); outline-offset: 1px; }
+.dw-pick.me .champ { outline: 2px solid var(--accent); outline-offset: 1px; }
+/* Pro tab: statistics for the selected patch, and the patch strip under the chart */
+.dw-patches { margin: var(--s3) 0; }
+.dw-patches button { font-family: var(--font-mono); font-size: var(--fs-xs); }
+.dw-patch-stats { padding: var(--s3) 0 0; }
+.dw-games .dw-more { margin-top: var(--s2); }
+.drawer table.mini tr.selected td { background: var(--surface-subtle); }
+/* Pairing view */
+.dw-pair-head { display: grid; gap: var(--s3); padding: var(--s4) var(--pad-card); border-bottom: 1px solid var(--border); }
+.dw-back { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: var(--s2); font-family: var(--font-display); font-size: var(--fs-xs); font-weight: var(--w-control); color: var(--text-muted); }
+.dw-back:hover { color: var(--text); }
+.dw-pair-title { display: flex; align-items: center; gap: var(--s4); margin: 0; font-size: var(--fs-md); outline: none; }
+.dw-pair-title > span:last-child { display: grid; gap: 1px; }
+.dw-pair-roles { font-family: var(--font); font-weight: 400; }
+.dw-pair-icons { display: inline-flex; gap: 2px; flex: none; }
+.dw-pair-actions { padding: var(--s4) var(--pad-card); }
+.dw-read { margin: var(--s3) 0 0; }
+.dw-context { margin: 0; line-height: 1.4; }
+.dw-toolbar { display: flex; align-items: center; gap: var(--s4); margin-bottom: var(--s3); }
+.dw-stat-line { all: unset; cursor: pointer; display: grid; gap: 1px; width: 100%; padding: var(--s2) var(--s3); margin: 0 calc(-1 * var(--s3)); width: calc(100% + 2 * var(--s3)); border-radius: var(--r-sm); box-sizing: border-box; transition: background var(--t-fast); }
+.dw-stat-line:hover { background: var(--surface-hover); }
+.dw-stat-line:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.dw-duos { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5); }
+.dw-duo { display: inline-flex; align-items: center; gap: 3px; }
+.dw-duo-half { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 3px; padding: 0 2px; border-radius: var(--r-sm); font-size: var(--fs-sm); color: var(--text); }
+.dw-duo-half:hover, .dw-duo-half:focus-visible { background: var(--surface-hover); }
+.dw-duo-half .plus { color: var(--text-faint); font-size: var(--fs-xs); margin-right: 2px; }
+.dw-shell-picks { display: inline-flex; gap: 2px; }
+.dw-mate { all: unset; cursor: pointer; font: inherit; }
+.dw-mate:hover { color: var(--accent-text); }
+.dw-mate:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--r-sm); }
 @media (max-width: 620px) {
   .drawer {
-    top: auto; left: 0; width: 100%; max-height: 78vh; border-left: 0; border-top: 1px solid var(--border-strong);
+    top: auto; left: 0; width: 100%; max-height: 86vh; border-left: 0; border-top: 1px solid var(--border-strong);
     border-radius: var(--r-lg) var(--r-lg) 0 0; animation-name: sheet-in;
   }
+  .drawer.wide { width: 100%; }
+  .dw-expand { display: none; }
+  .dw-trail { max-width: 70px; }
   .drawer.closing { animation-name: sheet-out; }
   .drawer-scrim { display: block; position: fixed; inset: 0; z-index: 49; background: var(--scrim); animation: fade-in var(--dur-panel) var(--ease-out); }
   .drawer-scrim.closing { animation: fade-out var(--dur-panel-out) var(--ease-in) forwards; }

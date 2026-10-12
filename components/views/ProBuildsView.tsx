@@ -15,6 +15,8 @@ import {
   BuildOverview, Icon, Item, Rune, RunePage, SkillGrid, SkillSummaryLine, Tree, itemName, runeName, spellName, treeName,
 } from "@/components/BuildParts";
 import { ChampionProvider } from "@/components/ChampionInteraction";
+import type { DrawerContext } from "@/lib/drawer";
+const PRO_BUILDS: DrawerContext = { page: "pro-builds" };
 import { BuildsTabs } from "@/components/BuildsTabs";
 import { GameDetail, GameHeader } from "@/components/GameBuild";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
@@ -124,7 +126,7 @@ export function ProBuildsView({ index, names, events, drawerData }: {
   // Arriving from Draft Room: the way back restores that draft (picks, enemy row, role being picked, filter).
   const back = from ? <Link className="btn sm" href={backHref(from)}>← Back to Draft Room</Link> : undefined;
   return (
-    <ChampionProvider data={drawerData}>
+    <ChampionProvider data={drawerData} context={PRO_BUILDS}>
       <PageHeader title="Pro Builds" badges={<BuildsTabs current="champions" />} desc="Items, runes, skill order and summoner spells from recorded professional games."
         actions={back ?? (draftHref && <Link className="btn sm" href={draftHref}>Open in Draft Room →</Link>)} />
       <div className="split builds-split">

@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { ChampionProvider } from "@/components/ChampionInteraction";
+import type { DrawerContext } from "@/lib/drawer";
+const PATCH_NOTES: DrawerContext = { page: "patch-notes" };
 import { Disclosure } from "@/components/Disclosure";
 import { InteractiveChampion } from "@/components/InteractiveChampion";
 import { Select } from "@/components/Select";
@@ -72,7 +74,7 @@ export function PatchNotesView({ notes, names, implications, drawerData }: {
   const counts = Object.fromEntries(KINDS.map(([k]) => [k, current.entries.filter((e) => e.kind === k && (!q || lineText(e).includes(q))).length]));
 
   return (
-    <ChampionProvider data={drawerData}>
+    <ChampionProvider data={drawerData} context={PATCH_NOTES}>
       <PageHeader title="Patch Notes" desc={view === "compare" ? <>Riot&apos;s official Summoner&apos;s Rift changes, compared across patches.</>
         : champion ? <>Every recorded change to {names[champion] ?? champion} since {notes.firstPatch}.</>
         : <PatchLine p={current} />} />

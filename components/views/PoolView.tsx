@@ -4,6 +4,8 @@ import type { Freshness } from "@/lib/pro-games";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { ChampionProvider } from "@/components/ChampionInteraction";
+import type { DrawerContext } from "@/lib/drawer";
+const POOL: DrawerContext = { page: "pool" };
 import { Disclosure } from "@/components/Disclosure";
 import { Select } from "@/components/Select";
 import type { DrawerData } from "@/lib/data";
@@ -62,7 +64,7 @@ export function PoolView({ names, data, bot, midJungle, top, proposed, freshness
   );
 
   return (
-    <ChampionProvider data={drawerData}>
+    <ChampionProvider data={drawerData} context={POOL}>
       <PageHeader title="Champion Pool" />
       <ProFreshness items={freshness} />
       <div className="toolbar">

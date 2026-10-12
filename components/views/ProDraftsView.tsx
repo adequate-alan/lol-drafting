@@ -10,6 +10,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ChampionProvider } from "@/components/ChampionInteraction";
+import type { DrawerContext } from "@/lib/drawer";
+const PRO_DRAFTS: DrawerContext = { page: "pro-drafts" };
 import { GameDetail } from "@/components/GameBuild";
 import { Select } from "@/components/Select";
 import type { DrawerData } from "@/lib/data";
@@ -92,7 +94,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
   const meta = (d: ProDraft) => [d.tournament, !d.seriesGame.startsWith(d.stage) && d.stage, d.patch && `patch ${patchLabel(d.patch)}`, d.date].filter(Boolean).join(" · ");
 
   return (
-    <ChampionProvider data={drawerData}>
+    <ChampionProvider data={drawerData} context={view?.gameId ? { page: "pro-drafts", game: view.gameId } : PRO_DRAFTS}>
       <PageHeader title="Pro Drafts" />
       <ProFreshness items={freshness} />
 

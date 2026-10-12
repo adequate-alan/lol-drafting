@@ -9,7 +9,8 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ChampionDrawer, compLinks, useDrawerIndex, type CompContext, type DrawerTarget } from "@/components/ChampionDrawer";
+import { ChampionDrawer, compLinks, useDrawerIndex, type CompContext, type DrawerContext, type DrawerTarget } from "@/components/ChampionDrawer";
+const COMPS: DrawerContext = { page: "comps" };
 import { ChampionHoverCard, useHoverIntent } from "@/components/ChampionInteraction";
 import { CompFreshness } from "@/components/CompFreshness";
 import { ChampIcon, PageHeader, SourceBadge } from "@/components/ui";
@@ -208,7 +209,7 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
       )}
       {open && openShell && (
         <ChampionDrawer target={{ id: shellDraft(openShell, swapsOf(openShell.id))[open.role], role: open.role }} comp={compOf(openShell, swapsOf(openShell.id))}
-          data={data} index={index} onClose={close} onSelect={(t: DrawerTarget) => t.role && setOpen({ shell: open.shell, role: t.role })} />
+          data={data} index={index} context={COMPS} onClose={close} onSelect={(t: DrawerTarget) => t.role && setOpen({ shell: open.shell, role: t.role })} />
       )}
     </>
   );

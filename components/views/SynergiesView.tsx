@@ -6,6 +6,8 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChampIcon } from "@/components/ChampIcon";
 import { ChampionProvider } from "@/components/ChampionInteraction";
+import type { DrawerContext } from "@/lib/drawer";
+const SYNERGIES: DrawerContext = { page: "synergies" };
 import type { CardRecord } from "@/components/PairingCard";
 import { ScoutingReport } from "@/components/ScoutingReport";
 import type { DrawerData } from "@/lib/data";
@@ -128,7 +130,7 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
         <div>
           {selected && selectedId && (
             // Champions in the report: hover for the quick card (relation to the selected pick), click for the drawer.
-            <ChampionProvider data={drawerData} focus={{ id: selectedId, role: selectedRole! }}>
+            <ChampionProvider data={drawerData} focus={{ id: selectedId, role: selectedRole! }} context={SYNERGIES}>
               <ScoutingReport item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels}
                 proposed={extra} proCount={proCount} games={myGames} bot={bot} shells={shells} />
             </ChampionProvider>

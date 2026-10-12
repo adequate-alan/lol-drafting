@@ -117,6 +117,8 @@ export function getDrawerData() {
     priority: getPriority(),
     patches: getPatchIndex(),
     builds: getBuildIndex(),
+    buildGames: getBuildGames(), // games with recorded builds, so a recorded game can offer its builds
+    shells: getLibrary().shells.map((s) => ({ id: s.id, name: s.name, kind: s.kind, slots: Object.fromEntries(ROLES.map((r) => [r, s.slots[r].champion])) as Record<Role, string> })),
   };
 }
 export type DrawerData = ReturnType<typeof getDrawerData>;
