@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { assetsFor, buildFromAnswer, buildUrl, compactJson, ddragonVersionFor, parsePlayers, referencedIds } from "@/scripts/golgg/builds.mjs";
 import { championResolver } from "@/scripts/golgg/normalize.mjs";
-import { CDRAGON_PERKS, refresh, type Get } from "@/scripts/golgg/refresh.mjs";
+import { CDRAGON_PERKS, refresh, refreshBuilds, type Get } from "@/scripts/golgg/refresh.mjs";
 import { buildRows, buildsHref, championIndex, common, fullRunes, itemTip, overview, rowsFor, scoped, shopVisits, skillSummary } from "@/lib/pro-builds";
 import { Files, ProBuild, type BuildAssets, type ProBuilds, type ProGames } from "@/lib/schema";
 
@@ -195,7 +195,9 @@ describe("item chronology and skill levels", () => {
 });
 
 describe("Pro Builds page scope and provenance", () => {
-  const all = buildRows((Files["pro-builds.json"].parse(raw("pro-builds.json")) as ProBuilds).builds, Files["pro-games.json"].parse(raw("pro-games.json")).games,
+  const stored = Files["pro-builds.json"].parse(raw("pro-builds.json")) as ProBuilds;
+  const games = [...Files["pro-games.json"].parse(raw("pro-games.json")).games, ...(stored.games ?? [])]; // tracked + LCK archive
+  const all = buildRows(stored.builds, games,
     (Files["build-assets.json"].parse(raw("build-assets.json")) as BuildAssets).patches);
 
   it("filters by role and by patch in either notation", () => {
@@ -223,8 +225,8 @@ describe("Pro Builds page scope and provenance", () => {
   });
 
   it("the drawer index counts builds per champion and role, with the newest patch", () => {
-    const builds = (Files["pro-builds.json"].parse(raw("pro-builds.json")) as ProBuilds).builds;
-    const idx = championIndex(builds, Files["pro-games.json"].parse(raw("pro-games.json")).games);
+    const builds = stored.builds;
+    const idx = championIndex(builds, games);
     expect(idx.reduce((n, e) => n + e.games, 0)).toBe(builds.length);
     for (const e of idx) {
       expect(e.games).toBe(rowsFor(all, e.champion, e.role).length);
@@ -240,18 +242,30 @@ describe("stored builds", () => {
   const builds = Files["pro-builds.json"].parse(raw("pro-builds.json")) as ProBuilds;
   const assetFile = Files["build-assets.json"].parse(raw("build-assets.json")) as BuildAssets;
   const games = Files["pro-games.json"].parse(raw("pro-games.json")) as ProGames;
-  const byId = new Map(games.games.map((g) => [g.id, g]));
+  const archive = builds.games ?? [];
+  const byId = new Map([...games.games, ...archive].map((g) => [g.id, g]));
   const tracked = new Set(games.tracked.map((t) => t.event));
+  const archived = new Set(["lck-2026-playoffs"]); // backfilled once, scripts/backfill-lck-builds.mjs
 
-  it("every build belongs to a recorded game of a tracked tournament, on the side and in the role the game shows", () => {
+  it("every build belongs to a recorded game of a tracked tournament or the LCK archive, on the side and in the role the game shows", () => {
     for (const b of builds.builds) {
       const g = byId.get(b.game);
       expect(g, `${b.game}`).toBeTruthy();
-      expect(tracked.has(g!.event)).toBe(true);
+      expect(tracked.has(g!.event) || archived.has(g!.event), `${b.game} ${g!.event}`).toBe(true);
       expect(g![b.side].picks[b.role], `${b.game} ${b.side} ${b.role}`).toBe(b.champion);
     }
     const keys = builds.builds.map((b) => `${b.game}-${b.side}-${b.role}`);
     expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  it("archive game records stay apart from the tracked games: never tracked, never in pro-games.json, each with builds", () => {
+    const ids = new Set(games.games.map((g) => g.id));
+    const withBuilds = new Set(builds.builds.map((b) => b.game));
+    for (const g of archive) {
+      expect(tracked.has(g.event), g.event).toBe(false);
+      expect(ids.has(g.id), `${g.id}`).toBe(false);
+      expect(withBuilds.has(g.id), `${g.id}`).toBe(true);
+    }
   });
 
   it("every id a stored build uses has a name in its patch's Data Dragon files", () => {
@@ -311,6 +325,21 @@ describe("refresh step", () => {
     const second = await refresh({ ...data(), proBuilds: out.proBuilds, buildAssets: out.buildAssets }, again.get, { now: new Date("2026-10-13T12:00:00Z"), buildsOnly: true });
     expect(second.changed).toEqual([]);
     expect(again.asked).toEqual([]);
+  });
+
+  it("an archive game gets builds only through the one-off backfill, and the daily refresh leaves it alone", async () => {
+    const lck = { ...structuredClone(proGames.games[0]), event: "lck-2026-playoffs", tournament: "LCK 2026 Season Playoffs" };
+    const d = { ...data(), proGames: { ...structuredClone(proGames), games: [] } };
+    const r = recorder();
+    const out = await refreshBuilds({ ...d, proBuilds: { builds: [], unavailable: [], games: [lck] } }, r.get, "2026-10-12", Infinity, { only: [lck] });
+    expect(out.proBuilds.builds).toHaveLength(10);
+    expect(out.buildAssets.patches["16.18"]).toBeTruthy();
+    // The daily refresh (tracked games only) asks nothing about it and keeps its builds, record and assets.
+    const daily = recorder();
+    const next = await refresh({ ...d, proBuilds: out.proBuilds, buildAssets: out.buildAssets }, daily.get, { now: new Date("2026-10-13T12:00:00Z"), buildsOnly: true });
+    expect(daily.asked).toEqual([]);
+    expect(next.changed).toEqual([]);
+    expect(next.proBuilds.games).toEqual([lck]);
   });
 
   it("a game with no builds yet is noted and asked again only after a few days", async () => {

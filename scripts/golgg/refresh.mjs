@@ -188,7 +188,11 @@ export const MAX_BUILD_GAMES = 45;
 const RETRY_DAYS = 3;
 const daysBetween = (a, b) => (Date.parse(b) - Date.parse(a)) / 86400000;
 
-async function refreshBuilds(data, get, today, maxBuildGames) {
+/**
+ * `only`: fetch builds for exactly these game records instead of the tracked tournaments' games (a one-off archive
+ * backfill, scripts/backfill-lck-builds.mjs). Archive games stored in `proBuilds.games` keep their order and assets.
+ */
+export async function refreshBuilds(data, get, today, maxBuildGames, { only } = {}) {
   const proBuilds = clone(data.proBuilds ?? { builds: [], unavailable: [] });
   const buildAssets = clone(data.buildAssets ?? { patches: {} });
   const report = [], rejected = [], changed = new Set();
@@ -196,7 +200,8 @@ async function refreshBuilds(data, get, today, maxBuildGames) {
   const tracked = new Set(data.proGames.tracked.map((t) => t.event));
   const have = new Set(proBuilds.builds.map((b) => b.game));
   const waiting = new Map(proBuilds.unavailable.map((u) => [u.game, u]));
-  const todo = data.proGames.games.filter((g) => tracked.has(g.event) && !have.has(g.id)
+  const allGames = [...data.proGames.games, ...(proBuilds.games ?? [])];
+  const todo = (only ?? data.proGames.games.filter((g) => tracked.has(g.event))).filter((g) => !have.has(g.id)
     && !(waiting.has(g.id) && daysBetween(waiting.get(g.id).checkedOn, today) < RETRY_DAYS));
   const batch = todo.slice(0, maxBuildGames);
 
@@ -230,7 +235,7 @@ async function refreshBuilds(data, get, today, maxBuildGames) {
     proBuilds.builds.push(...fresh);
     added += 1;
   }
-  const order = new Map(data.proGames.games.map((g, i) => [g.id, i]));
+  const order = new Map(allGames.map((g, i) => [g.id, i]));
   proBuilds.builds.sort((a, b) => (order.get(a.game) ?? 0) - (order.get(b.game) ?? 0) || a.side.localeCompare(b.side) || ROLES.indexOf(a.role) - ROLES.indexOf(b.role));
   proBuilds.unavailable = [...waiting.values()].sort((a, b) => a.game - b.game);
   if (added) { report.push(`Pro builds: ${added} game${added > 1 ? "s" : ""} added (${proBuilds.builds.length} player builds stored).`); changed.add("pro-builds"); }
@@ -238,7 +243,7 @@ async function refreshBuilds(data, get, today, maxBuildGames) {
   if (!same(proBuilds.unavailable, data.proBuilds?.unavailable ?? [])) changed.add("pro-builds");
 
   // Names and icons for every id the stored builds use, per game patch, from that patch's Data Dragon files.
-  const patchOf = new Map(data.proGames.games.map((g) => [g.id, g.patch]));
+  const patchOf = new Map(allGames.map((g) => [g.id, g.patch]));
   const byPatch = new Map();
   for (const b of proBuilds.builds) { const p = patchOf.get(b.game); if (p) byPatch.set(p, [...(byPatch.get(p) ?? []), b]); }
   let versions;
