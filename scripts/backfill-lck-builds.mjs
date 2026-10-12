@@ -33,10 +33,21 @@ async function get(url, { method = "GET", body } = {}) {
   if (wait > 0) await new Promise((r) => setTimeout(r, wait));
   last = Date.now();
   requests += 1;
-  const res = await fetch(url, {
-    method, body, signal: AbortSignal.timeout(30000),
-    headers: { "User-Agent": UA, ...(body ? { "Content-Type": "application/x-www-form-urlencoded" } : {}) },
-  });
+  // A connection that never opens (timeout, reset) is retried twice after a pause; an answer, any answer, is not retried.
+  let res;
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      res = await fetch(url, {
+        method, body, signal: AbortSignal.timeout(30000),
+        headers: { "User-Agent": UA, ...(body ? { "Content-Type": "application/x-www-form-urlencoded" } : {}) },
+      });
+      break;
+    } catch (e) {
+      if (attempt >= 2) throw e;
+      console.log(`${url}: ${e.cause?.code ?? e.message}; trying again in ${30 * (attempt + 1)}s.`);
+      await new Promise((r) => setTimeout(r, 30000 * (attempt + 1)));
+    }
+  }
   const text = await res.text();
   if (res.headers.get("cf-mitigated") || /challenge-platform|cf-chl|<title>Just a moment/i.test(text))
     throw new Error(`${url}: the site answered with a bot challenge. Not bypassed; nothing written.`);
@@ -83,7 +94,16 @@ games.sort((a, b) => a.date.localeCompare(b.date) || a.seriesId - b.seriesId || 
 const byId = new Map((proBuilds.games ?? []).map((g) => [g.id, g]));
 for (const g of games) byId.set(g.id, g);
 const archive = [...byId.values()].sort((a, b) => a.date.localeCompare(b.date) || a.seriesId - b.seriesId || a.game - b.game);
-const out = await refreshBuilds({ proGames, champions, proBuilds: { ...proBuilds, games: archive }, buildAssets }, get, today, Infinity, { only: archive });
+// A few games at a time, so a run that stops part way (a refused request, a lost connection) still writes every game it
+// finished; the next run skips games that already have builds.
+let out = { proBuilds: { ...proBuilds, games: archive }, buildAssets, report: [], rejected: [] };
+let stopped;
+for (let i = 0; i < archive.length; i += 5) {
+  try {
+    const step = await refreshBuilds({ proGames, champions, proBuilds: out.proBuilds, buildAssets: out.buildAssets }, get, today, Infinity, { only: archive.slice(i, i + 5) });
+    out = { ...step, report: [...out.report, ...step.report], rejected: [...out.rejected, ...step.rejected] };
+  } catch (e) { stopped = e; break; }
+}
 
 const lckBuilds = out.proBuilds.builds.filter((b) => byId.has(b.game));
 const withBuilds = new Set(lckBuilds.map((b) => b.game));
@@ -91,7 +111,8 @@ const lines = [
   `LCK builds backfill, ${new Date().toISOString()}, ${requests} requests.`,
   `${TOURNAMENT}: ${played.length} series, ${totalGames} games on the match list; ${games.length} game records verified${known.size ? ` (${known.size} stored before)` : ""}.`,
   `Builds: ${withBuilds.size} games, ${lckBuilds.length} player builds (${lckBuilds.filter((b) => b.missing?.length).length} with a missing part).`,
-  ...out.report,
+  ...out.report.filter((l) => !/player builds stored/.test(l)),
+  ...(stopped ? ["", `Stopped early: ${stopped.message}${stopped.cause?.code ? ` (${stopped.cause.code})` : ""}. Finished games are written; run again to continue.`] : []),
   ...([...rejected, ...out.rejected].length ? ["", "Not imported:", ...[...rejected, ...out.rejected].map((r) => `- ${r}`)] : []),
 ];
 console.log(lines.join("\n"));
@@ -102,3 +123,4 @@ if (!dry && withBuilds.size) {
   writeFileSync(join(dataDir, "pro-builds.json"), compactJson(out.proBuilds));
   writeFileSync(join(dataDir, "build-assets.json"), compactJson(out.buildAssets));
 }
+if (stopped) process.exit(1);

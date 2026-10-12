@@ -16,7 +16,9 @@ import {
   itemName, runeName, spellName, treeName,
 } from "@/components/BuildParts";
 import { ChampionProvider } from "@/components/ChampionInteraction";
-import { PinIcon, PinPicker, usePins } from "@/components/PlayerPicker";
+import { BuildsTabs } from "@/components/BuildsTabs";
+import { PinIcon, PinPicker, useMigratePlayerPins, usePins } from "@/components/PlayerPicker";
+import { playerDirectory, profileHref } from "@/lib/pinned-players";
 import { InteractiveChampion } from "@/components/InteractiveChampion";
 import { Select } from "@/components/Select";
 import { ChampIcon, PageHeader, Panel } from "@/components/ui";
@@ -69,7 +71,9 @@ export function ProBuildsView({ index, names, events, drawerData }: {
   const [railRole, setRailRole] = useState<Role | "">("");
   const q = query.trim().toLowerCase();
   // The search also finds players: typing a name lists the champions they played (pinned players' champions first).
-  const { pins } = usePins();
+  const { pins, names: pinNames } = usePins();
+  useMigratePlayerPins(all);
+  const pinnedNames = new Set(pins.map((id) => pinNames[id] ?? id));
   const playerHit = (e: ChampionBuilds) => (q ? e.names.find((p) => p.toLowerCase().includes(q)) : undefined);
   const railed = index.filter((e) => (!railRole || e.role === railRole) && (!q || name(e.champion).toLowerCase().includes(q) || playerHit(e)))
     .sort((a, b) => name(a.champion).localeCompare(name(b.champion)) || ROLES.indexOf(a.role) - ROLES.indexOf(b.role));
@@ -79,7 +83,11 @@ export function ProBuildsView({ index, names, events, drawerData }: {
     if (ul && el && (el.offsetTop < ul.scrollTop || el.offsetTop + el.offsetHeight > ul.scrollTop + ul.clientHeight)) ul.scrollTop = el.offsetTop - ul.clientHeight / 3;
   }, [champion, role]);
   // Picking a champion found by a player's name keeps that player selected.
-  const choose = (e: ChampionBuilds, player?: string) => update({ champion: e.champion, role: e.role, game: undefined, a: undefined, b: undefined, event: undefined, patch: undefined, team: undefined, player });
+  const choose = (e: ChampionBuilds, player?: string) => {
+    // A player found by name is selected by id when the build data is in (a name shared by two players picks the one on this champion).
+    const hit = player && all?.find((r) => r.build.player === player && r.build.champion === e.champion && r.build.role === e.role);
+    update({ champion: e.champion, role: e.role, game: undefined, a: undefined, b: undefined, event: undefined, patch: undefined, team: undefined, player: hit ? String(hit.build.playerId) : player });
+  };
 
   // Scope
   const mine = useMemo(() => (all && champion && role ? inScope(all, { champion, role }) : []), [all, champion, role]);
@@ -92,7 +100,7 @@ export function ProBuildsView({ index, names, events, drawerData }: {
     { k: "event" as const, label: "Tournament", all: "All tournaments", opts: uniq(mine.map((r) => [r.game.event, evName(r)])) },
     { k: "patch" as const, label: "Patch", all: "All patches", opts: uniq(mine.map((r) => [patchKey(r.game.patch), patchLabel(r.game.patch)])).sort((a, b) => comparePatch(b[0], a[0])) },
     { k: "team" as const, label: "Team", all: "All teams", opts: uniq(mine.map((r) => [r.team, r.team])).sort((a, b) => a[1].localeCompare(b[1])) },
-    { k: "player" as const, label: "Player", all: "All players", opts: uniq(mine.map((r) => [r.build.player, r.build.player])).sort((a, b) => a[1].localeCompare(b[1])) },
+    { k: "player" as const, label: "Player", all: "All players", opts: playerDirectory(mine).map((p): [string, string] => [p.id, p.label]) },
   ];
   const active = FILTERS.filter((k) => get(k));
   const gameLabel = (r: BuildRow) => `${r.build.player} (${r.team})${r.opponent ? ` vs ${name(r.opponent.champion)}` : ""} · ${patchLabel(r.game.patch)} · ${shortDate(r.game.date)} · ${r.won ? "W" : "L"}`;
@@ -100,7 +108,7 @@ export function ProBuildsView({ index, names, events, drawerData }: {
   const draftHref = champion && role ? `/?${role.toLowerCase()}=${champion}` : undefined;
   return (
     <ChampionProvider data={drawerData}>
-      <PageHeader title="Pro Builds" desc="Items, runes, skill order and summoner spells from recorded professional games."
+      <PageHeader title="Pro Builds" badges={<BuildsTabs current="champions" />} desc="Items, runes, skill order and summoner spells from recorded professional games."
         actions={draftHref && <Link className="btn sm" href={draftHref}>Open in Draft Room →</Link>} />
       <div className="split builds-split">
         <nav className="pick-rail" aria-label="Champions with recorded builds">
@@ -121,7 +129,7 @@ export function ProBuildsView({ index, names, events, drawerData }: {
                       <span className="rail-sub">{e.role} · {e.games} game{e.games > 1 ? "s" : ""} · {patchLabel(e.latest)}</span>
                       {(() => {
                         const hit = !name(e.champion).toLowerCase().includes(q) && playerHit(e);
-                        const pinned = e.names.filter((p) => pins.includes(p));
+                        const pinned = e.names.filter((p) => pinnedNames.has(p));
                         return hit ? <span className="rail-sub rail-player">{hit}</span>
                           : pinned.length > 0 ? <span className="rail-sub rail-player" title="Pinned players with recorded builds on this champion"><PinIcon on /> {pinned.join(", ")}</span> : null;
                       })()}</span>
@@ -190,7 +198,7 @@ function GamesView({ rows, current, name, evName, onPick }: {
         {rows.map((x) => (
           <button key={x.key} type="button" role="option" aria-selected={x === r} className={`build-pick side-${x.side} ${x === r ? "active" : ""}`} onClick={() => onPick(x.game.id)}
             title={`${x.build.player} (${x.team}) vs ${x.opponentTeam}\n${evName(x)} · ${patchLabel(x.game.patch)} · ${shortDate(x.game.date)} · ${x.side} side · ${x.won ? "win" : "loss"}`}>
-            <span className="small nowrap">{isPinned(x.build.player) && <PinIcon on />}<b>{x.build.player}</b> <span className="muted">{team.isPinned(x.team) && <PinIcon on />}{x.team}</span></span>
+            <span className="small nowrap">{isPinned(String(x.build.playerId)) && <PinIcon on />}<b>{x.build.player}</b> <span className="muted">{team.isPinned(x.team) && <PinIcon on />}{x.team}</span></span>
             <span className="xs muted nowrap">{x.opponent && <>vs {name(x.opponent.champion)} · </>}{shortDate(x.game.date)} <span className={x.won ? "win" : "loss"}>{x.won ? "W" : "L"}</span></span>
           </button>
         ))}
@@ -205,7 +213,7 @@ function GameHeader({ r, name, evName, compact }: { r: BuildRow; name: (id: stri
   return (
     <div className={`game-head side-${r.side} ${compact ? "compact" : ""}`}>
       <div className="game-who">
-        <span className="game-player"><b>{b.player}</b> <span className="muted">{r.team}</span></span>
+        <span className="game-player"><Link href={profileHref(String(b.playerId))} title={`${b.player}'s recorded games, champions and builds`}><b>{b.player}</b></Link> <span className="muted">{r.team}</span></span>
         {r.opponent && (
           <span className="small game-vs"><span className="faint">vs</span>
             <InteractiveChampion id={r.opponent.champion} role={b.role}><ChampIcon id={r.opponent.champion} name={name(r.opponent.champion)} size="xs" /> {name(r.opponent.champion)}</InteractiveChampion>

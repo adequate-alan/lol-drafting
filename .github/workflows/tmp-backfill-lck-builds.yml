@@ -16,6 +16,7 @@ jobs:
           node-version: 22
       - run: node scripts/backfill-lck-builds.mjs
       - name: Commit data
+        if: always()
         run: |
           git add data/pro-builds.json data/build-assets.json
           git diff --cached --quiet && { echo "nothing to commit"; exit 0; }

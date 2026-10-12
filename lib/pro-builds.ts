@@ -59,7 +59,9 @@ export const buildsHref = (champion: string, role: Role, game?: number) =>
 export interface BuildScope { champion?: string; role?: Role; event?: string; patch?: string; team?: string; player?: string }
 export const inScope = (r: BuildRow, s: BuildScope) =>
   (!s.champion || r.build.champion === s.champion) && (!s.role || r.build.role === s.role) && (!s.event || r.game.event === s.event)
-  && (!s.patch || samePatch(r.game.patch, s.patch)) && (!s.team || r.team === s.team) && (!s.player || r.build.player === s.player);
+  && (!s.patch || samePatch(r.game.patch, s.patch)) && (!s.team || r.team === s.team) && (!s.player || samePlayer(r, s.player));
+/** `player` is Gol.gg's player id; a name (links made before ids, 2026-10-12) still matches by name. */
+export const samePlayer = (r: BuildRow, player: string) => (/^\d+$/.test(player) ? String(r.build.playerId) === player : r.build.player === player);
 export const scoped = (rows: BuildRow[], s: BuildScope) => rows.filter((r) => inScope(r, s));
 
 /** One entry per champion and role with recorded builds: game count, players and the newest patch. */
