@@ -1,19 +1,22 @@
 #!/usr/bin/env node
 // Daily pro-data refresh (run by .github/workflows/refresh-pro-data.yml, or by hand):
 //
-//   node scripts/refresh-pro-data.mjs [--dry-run]
+//   node scripts/refresh-pro-data.mjs [--dry-run] [--builds-only]
 //
 // Reads Gol.gg with plain GET/POST requests a few seconds apart, as a browser would load the same public pages. A
 // refused request (403, 429, a challenge page) stops the run with an error: it is never retried around, and nothing is
-// written. Writes data/pro-games.json, data/meta.json and data/sources.json only when verified data changed, and
+// written. Writes data/pro-games.json, data/meta.json, data/sources.json, data/pro-builds.json and data/build-assets.json
+// (player builds and their Data Dragon names and icons) only when verified data changed, and
 // reports `changed=true|false` to GitHub Actions.
-import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { refresh } from "./golgg/refresh.mjs";
+import { compactJson } from "./golgg/builds.mjs";
 
 const dry = process.argv.includes("--dry-run");
+const buildsOnly = process.argv.includes("--builds-only"); // backfill player builds for games already recorded; nothing else
 const dataDir = join(process.cwd(), "data");
-const read = (f) => JSON.parse(readFileSync(join(dataDir, f), "utf8"));
+const read = (f, fallback) => (fallback && !existsSync(join(dataDir, f)) ? fallback : JSON.parse(readFileSync(join(dataDir, f), "utf8")));
 const write = (f, v) => writeFileSync(join(dataDir, f), JSON.stringify(v, null, 2) + "\n");
 
 const UA = "lol-drafting-refresh/1.0 (+https://github.com/adequate-alan/lol-drafting; daily, a few pages)";
@@ -36,8 +39,9 @@ async function get(url, { method = "GET", body } = {}) {
   return text;
 }
 
-const data = { proGames: read("pro-games.json"), meta: read("meta.json"), sources: read("sources.json"), champions: read("champions.json"), botPairings: read("bot-pairings.json") };
-const out = await refresh(data, get);
+const data = { proGames: read("pro-games.json"), meta: read("meta.json"), sources: read("sources.json"), champions: read("champions.json"), botPairings: read("bot-pairings.json"),
+  proBuilds: read("pro-builds.json", { builds: [], unavailable: [] }), buildAssets: read("build-assets.json", { patches: {} }) };
+const out = await refresh(data, get, { buildsOnly });
 
 const lines = [
   `Checked ${new Date().toISOString()} with ${requests} request${requests === 1 ? "" : "s"}.`,
@@ -54,4 +58,6 @@ if (out.changed.length && !dry) {
   write("pro-games.json", out.proGames);
   write("meta.json", out.meta);
   write("sources.json", out.sources);
+  writeFileSync(join(dataDir, "pro-builds.json"), compactJson(out.proBuilds));
+  writeFileSync(join(dataDir, "build-assets.json"), compactJson(out.buildAssets));
 }

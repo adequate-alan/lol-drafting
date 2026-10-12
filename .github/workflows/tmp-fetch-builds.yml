@@ -1,7 +1,7 @@
-name: Temporary fetch (Pro Builds research)
+name: Temporary fetch (Pro Builds backfill)
 
-# One-off: reads two Gol.gg build pages and Data Dragon reference files from a GitHub runner (the cloud dev environment
-# cannot reach either) and commits them to this branch for inspection. Removed before merge.
+# One-off: backfills player builds for the recorded games from a GitHub runner (the cloud dev environment cannot reach
+# Gol.gg or Data Dragon) and commits them to this branch. Removed before merge.
 on:
   push:
     branches: [claude/project-thread-50uza9]
@@ -15,23 +15,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Fetch
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check icon paths
         run: |
-          mkdir -p tmp-fetch
-          UA="lol-drafting-refresh/1.0 (+https://github.com/adequate-alan/lol-drafting; daily, a few pages)"
-          g() { curl -sS -A "$UA" -o "tmp-fetch/$1" -w "$1 %{http_code} %{size_download}\n" "$2"; sleep 3; }
-          curl -sS -A "$UA" -o tmp-fetch/robots.txt https://gol.gg/robots.txt; sleep 3
-          p() { curl -sS -A "$UA" -X POST -H "Content-Type: application/x-www-form-urlencoded" -H "X-Requested-With: XMLHttpRequest" -e "https://gol.gg/game/stats/$2/page-builds/" --data "game_id=$2&player_id=$3" -o "tmp-fetch/$1" -w "$1 %{http_code} %{size_download}\n" "$4"; sleep 3; }
-          p build-83452-4918-a.json 83452 4918 https://gol.gg/game/stats/83452/page-builds/ajax.build.php
-          p build-83452-4918-b.json 83452 4918 https://gol.gg/game/ajax.build.php
-          p build-83452-4925.json 83452 4925 https://gol.gg/game/stats/83452/page-builds/ajax.build.php
-          p build-83452-799.json 83452 799 https://gol.gg/game/stats/83452/page-builds/ajax.build.php
-          ls -la tmp-fetch
+          for u in https://ddragon.leagueoflegends.com/cdn/img/perk-images/StatMods/StatModsAttackSpeedIcon.png \
+                   https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/7204_Resolve.png \
+                   https://ddragon.leagueoflegends.com/cdn/16.18.1/img/spell/YorickQ.png \
+                   https://ddragon.leagueoflegends.com/cdn/16.18.1/img/item/6665.png; do
+            curl -sS -o /dev/null -w "%{http_code} $u\n" "$u"; done | tee tmp-icons.txt
+      - name: Backfill builds
+        run: node scripts/refresh-pro-data.mjs --builds-only
       - name: Commit
         run: |
           git config user.name "adequate-alan"
           git config user.email "54249725+adequate-alan@users.noreply.github.com"
-          git add tmp-fetch
-          git rm -q --cached tmp-fetch/championFull.json tmp-fetch/item.json 2>/dev/null || true
-          git commit -m "Temporary: Gol.gg build pages and Data Dragon reference for inspection"
+          rm -rf tmp-fetch
+          git add -A tmp-fetch data/pro-builds.json data/build-assets.json tmp-icons.txt
+          git commit -m "Pro builds: backfill player builds for recorded games from Gol.gg"
           git push origin HEAD:${GITHUB_REF_NAME}
