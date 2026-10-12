@@ -224,7 +224,10 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   `tests/pro-sides.test.ts`); filters keep each row's side. Both sides of a game pair blue first.
 - **Champion Synergies** (`/synergies/<tab>/`, sidebar "Synergies"; alan renamed it from First Pick on 2026-10-10) is
   the champion synergy and pairing reference: rail, role tabs, saved / proposed partners, pro pairings, "Open in Draft
-  Room". Old `/first-pick/…` URLs forward there with their query (`components/Forward.tsx`). The name **First Pick** is
+  Room". One tab per role, Top | Jungle | Mid | Bot | Support (alan, 2026-10-12; `components/views/synergy-tabs.ts`,
+  `tests/synergy-tabs.test.ts`); each role's records stay on their own tab. Top and Support also list the Comp Library
+  shells that hold the pick (folded). Old `/first-pick/…` URLs forward there with their query, and the retired
+  `/synergies/mid-jungle/` forwards to Mid or Jungle by `?role=` or the champion (`components/Forward.tsx`). The name **First Pick** is
   reserved for a future blind-pick feature (blind-pick safety, counterpick vulnerability, flexibility, draft priority);
   don't reuse it for synergy content.
 - Gen.G ivory + champagne gold + black design system (alan, 2026-10-10: no navy; light mode is the strongest Gen.G look,
