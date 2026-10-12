@@ -324,7 +324,7 @@ await page.locator(".theme-toggle").click();
 }
 // Comp Library champion drawer
 {
-  await open("/comps/");
+  await open("/comps/?kind=all");
   await page.evaluate(() => window.scrollTo(0, 400));
   const naut = page.locator("#mage-bot-siege .lu-champ", { hasText: "Nautilus" });
   await naut.scrollIntoViewIfNeeded();
@@ -367,20 +367,20 @@ await page.locator(".theme-toggle").click();
   const layers = await drawer.locator(".layer").evaluateAll((els) => els.map((e) => e.className));
   check("comps: drawer keeps Synergy, Pro and Logic separate", /^layer clash,(layer clash proposed,)?layer pro,layer logic$/.test(layers.join()), layers.join(" | "));
   await drawer.locator("[aria-label='Next champion']").click();
-  check("comps: next moves through the comp in place", (await drawer.locator("h2").textContent()) === "Gnar" && page.url().endsWith("/comps/"), page.url());
+  check("comps: next moves through the comp in place", (await drawer.locator("h2").textContent()) === "Gnar" && page.url().endsWith("/comps/?kind=all"), page.url());
   await page.keyboard.press("Escape");
   const escDrawers = await drawer.count(), escY = await page.evaluate(() => scrollY);
   check("comps: Escape closes and keeps the scroll position", escDrawers === 0 && escY === y, `${escDrawers} drawer, scrollY ${escY} vs ${y}`);
   await naut.click();
   await page.goBack();
   await page.waitForTimeout(400);
-  check("comps: Back closes the drawer without leaving the page", (await drawer.count()) === 0 && page.url().endsWith("/comps/"), page.url());
+  check("comps: Back closes the drawer without leaving the page", (await drawer.count()) === 0 && page.url().endsWith("/comps/?kind=all"), page.url());
   await naut.click();
   await drawer.locator("a", { hasText: "Use in Draft Room" }).click();
   await page.waitForURL(/\?support=nautilus/, { timeout: 8000 }).catch(() => {});
   await page.waitForTimeout(500);
   check("comps: Use in Draft Room loads the champion in its role", /\/lol-drafting\/\?support=nautilus$/.test(page.url()) && /Nautilus/.test(await page.locator(".draft-slots").first().textContent()), page.url());
-  await open("/comps/");
+  await open("/comps/?kind=all");
   await page.locator("#mage-bot-siege .lu-champ", { hasText: "Nautilus" }).click();
   await page.locator(".drawer a", { hasText: "View in Champion Pool" }).click();
   await page.waitForURL(/champ=nautilus/, { timeout: 8000 }).catch(() => {});
@@ -389,6 +389,8 @@ await page.locator(".theme-toggle").click();
   // Draft-board cards: swaps stay hidden until asked for; a swap previews in place and resets.
   await open("/comps/");
   const yp = page.locator("#yunara-protect");
+  check("comps: opens on Pro comps, with All and Template one click away",
+    (await page.locator("nav[aria-label='Type'] a.active").textContent()) === "Pro" && (await page.locator(".shell.generalized").count()) === 0, "");
   check("comps: filters read Type All/Pro/Template and Difficulty All/Easy/Medium/Hard",
     (await page.locator("nav[aria-label='Type'] a").allTextContents()).join() === "All,Pro,Template"
     && (await page.locator("nav[aria-label='Difficulty'] a").allTextContents()).join() === "All,Easy,Medium,Hard", "");
