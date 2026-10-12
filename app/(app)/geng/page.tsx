@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { ChampionProvider } from "@/components/ChampionInteraction";
 import { GenRang } from "@/components/GenRang";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { ChampionRow, SectionHeader, SourceLinks } from "@/components/ui";
-import { getDrawerData, getGenG, getMeta, getProDrafts } from "@/lib/data";
+import { getDrawerData, getGenG, getMeta, getProDrafts, getTeamPlayers } from "@/lib/data";
+import { profileHref } from "@/lib/pinned-players";
 import { nameMap, sourceMap } from "@/lib/lookup";
 import { ROLES, type GenGPattern } from "@/lib/schema";
 
@@ -24,6 +26,8 @@ export default function GenG() {
   const drafts = getProDrafts().filter((d) => d.team === "Gen.G" && d.tournament === getMeta().tournament.name);
   const label = Object.fromEntries(drafts.map((d) => [d.id, d.seriesGame]));
   const current = patterns.filter((p) => p.era !== "earlier-2026").length;
+  // Gen.G players with recorded builds (their latest recorded team), each opening their Pro Builds profile.
+  const players = getTeamPlayers("Gen.G");
   return (
     <ChampionProvider data={getDrawerData()}>
       <div className="brand-band">
@@ -33,6 +37,18 @@ export default function GenG() {
         </div>
         <GenRang variant="full" size={84} className="band-mascot" />
       </div>
+      {players.length > 0 && (
+        <ul className="team-players" aria-label="Gen.G players with recorded builds">
+          {players.map((p) => (
+            <li key={p.id}>
+              <Link className="player-chip" href={profileHref(String(p.id))} title={`${p.name}'s recorded games, champions and builds`}>
+                <PlayerAvatar id={p.id} name={p.name} size="lg" />
+                <span className="team-player-text"><b>{p.name}</b><span className="xs muted">{p.role} · {p.games} recorded game{p.games === 1 ? "" : "s"}</span></span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
       <div className="patterns">
         {KINDS.map(({ kind, title }) => {
           const list = patterns.filter((p) => p.kind === kind);

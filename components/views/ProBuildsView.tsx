@@ -12,14 +12,14 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  BuildOverview, Icon, Item, PurchaseTimeline, Rune, RunePage, SkillGrid, SkillNotes, SkillSummaryLine, Spell, Tree,
-  itemName, runeName, spellName, treeName,
+  BuildOverview, Icon, Item, Rune, RunePage, SkillGrid, SkillSummaryLine, Tree, itemName, runeName, spellName, treeName,
 } from "@/components/BuildParts";
 import { ChampionProvider } from "@/components/ChampionInteraction";
 import { BuildsTabs } from "@/components/BuildsTabs";
+import { GameDetail, GameHeader } from "@/components/GameBuild";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { PinIcon, PinPicker, useMigratePlayerPins, usePins } from "@/components/PlayerPicker";
 import { playerDirectory, profileHref } from "@/lib/pinned-players";
-import { InteractiveChampion } from "@/components/InteractiveChampion";
 import { Select } from "@/components/Select";
 import { ChampIcon, PageHeader, Panel } from "@/components/ui";
 import type { DrawerData } from "@/lib/data";
@@ -176,6 +176,12 @@ export function ProBuildsView({ index, names, events, drawerData }: {
                 <h2>{name(champion)}</h2>
                 <span className="small muted tnum">{entry.games} recorded game{entry.games > 1 ? "s" : ""} · {entry.players} player{entry.players > 1 ? "s" : ""} · latest {patchLabel(entry.latest)}</span>
               </div>
+              {(() => {
+                // One player chosen: their portrait and a link to their profile, in every mode (Games, Common, Compare).
+                const r = get("player") && rows[0];
+                return r ? <Link className="builds-player player-chip small" href={profileHref(String(r.build.playerId))} title={`${r.build.player}'s recorded games, champions and builds`}>
+                  <PlayerAvatar id={r.build.playerId} name={r.build.player} size="md" /><span><b>{r.build.player}</b><span className="muted"> · {r.team}</span></span></Link> : null;
+              })()}
               {roles.length > 1 && (
                 <div className="seg" role="group" aria-label="Role">
                   {roles.map((e) => <button key={e.role} type="button" className={e.role === role ? "active" : undefined} aria-pressed={e.role === role} onClick={() => choose(e)}>{ROLE_NAME[e.role]} <span className="tnum muted">{e.games}</span></button>)}
@@ -226,59 +232,13 @@ function GamesView({ rows, current, preferPinned, name, evName, onPick }: {
         {rows.map((x) => (
           <button key={x.key} type="button" role="option" aria-selected={x === r} tabIndex={rovingIndex(x === r)} className={`build-pick side-${x.side} ${x === r ? "active" : ""}`} onClick={() => onPick(x.game.id)}
             title={`${x.build.player} (${x.team}) vs ${x.opponentTeam}\n${evName(x)} · ${patchLabel(x.game.patch)} · ${shortDate(x.game.date)} · ${x.side} side · ${x.won ? "win" : "loss"}`}>
-            <span className="small nowrap">{isPinned(String(x.build.playerId)) && <PinIcon on />}<b>{x.build.player}</b> <span className="muted">{team.isPinned(x.team) && <PinIcon on />}{x.team}</span></span>
+            <span className="small nowrap"><PlayerAvatar id={x.build.playerId} name={x.build.player} size="xs" /> {isPinned(String(x.build.playerId)) && <PinIcon on />}<b>{x.build.player}</b> <span className="muted">{team.isPinned(x.team) && <PinIcon on />}{x.team}</span></span>
             <span className="xs muted nowrap">{x.opponent && <>vs {name(x.opponent.champion)} · </>}{shortDate(x.game.date)} <span className={x.won ? "win" : "loss"}>{x.won ? "W" : "L"}</span></span>
           </button>
         ))}
       </div>
       <GameDetail r={r} name={name} evName={evName} />
     </>
-  );
-}
-
-function GameHeader({ r, name, evName, compact }: { r: BuildRow; name: (id: string) => string; evName: (r: BuildRow) => string; compact?: boolean }) {
-  const b = r.build;
-  return (
-    <div className={`game-head side-${r.side} ${compact ? "compact" : ""}`}>
-      <div className="game-who">
-        <span className="game-player"><Link href={profileHref(String(b.playerId))} title={`${b.player}'s recorded games, champions and builds`}><b>{b.player}</b></Link> <span className="muted">{r.team}</span></span>
-        {r.opponent && (
-          <span className="small game-vs"><span className="faint">vs</span>
-            <InteractiveChampion id={r.opponent.champion} role={b.role}><ChampIcon id={r.opponent.champion} name={name(r.opponent.champion)} size="xs" /> {name(r.opponent.champion)}</InteractiveChampion>
-            {r.opponent.player && <span className="muted">{r.opponent.player}</span>}<span className="muted">{r.opponentTeam}</span></span>
-        )}
-      </div>
-      <div className="game-meta xs muted tnum">
-        <span>{evName(r)}{r.game.stage ? ` · ${r.game.stage.charAt(0) + r.game.stage.slice(1).toLowerCase().replace(/(\d)/, " $1")}` : ""}</span>
-        <span>{r.game.series} · game {r.game.game}</span>
-        <span>{patchLabel(r.game.patch)} · {shortDate(r.game.date)}</span>
-        <span className="side-tag" title={`${r.team} played on the ${r.side} side in this game`}>{r.side === "blue" ? "Blue" : "Red"} side</span>
-        <span className={r.won ? "win" : "loss"}>{r.won ? "Win" : "Loss"}</span>
-        <a href={`https://gol.gg/game/stats/${r.game.id}/page-builds/`} target="_blank" rel="noopener noreferrer"
-          title={`Gol.gg builds page for this game\nRead ${b.checkedOn}`}>Gol.gg source ↗</a>
-      </div>
-      {b.spells ? (
-        <div className="game-spells">{b.spells.map((s, i) => <Spell key={s} a={r.assets} id={s} casts={b.spellCasts?.[i]} size={compact ? "sm" : "md"} />)}</div>
-      ) : <span className="xs muted">Summoner spells not recorded</span>}
-      {b.missing && <p className="xs caution-text game-missing">Partial record: {b.missing.join(", ")} not given by the source for this game.</p>}
-    </div>
-  );
-}
-
-function GameDetail({ r, name, evName }: { r: BuildRow; name: (id: string) => string; evName: (r: BuildRow) => string }) {
-  return (
-    <div className="game-detail">
-      <GameHeader r={r} name={name} evName={evName} />
-      <div className="builds-cols">
-        <Panel title="Runes">{<RunePage r={r} />}</Panel>
-        <Panel title="Skill order"><SkillSummaryLine r={r} /><SkillGrid r={r} /><SkillNotes r={r} /></Panel>
-      </div>
-      <Panel title="Item progression">
-        <BuildOverview r={r} />
-        <h3 className="build-sub label">Purchase timeline</h3>
-        <PurchaseTimeline r={r} />
-      </Panel>
-    </div>
   );
 }
 

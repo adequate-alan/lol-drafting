@@ -157,7 +157,11 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   scouting hub per pinned player: overview list (kept with an empty state when filters leave no game), profile with
   facts, champion history, that champion's builds and the full match history; each game opens the exact Pro Builds view
   (`gameHref`, `player=<id>`). Derived from the build rows only, so newly recorded games appear on their own; never a
-  career. Players are keyed by Gol.gg player id (pins and the `player=` filter; old name pins migrate once, an old name
+  career. **Match History rows expand in place** (alan, 2026-10-12): a click, Enter or Space on a row opens that game's
+  exact build under it (`components/GameBuild.tsx` `GameDetail`, the same component Pro Builds renders: context line,
+  spells, rune page, skill grid, item progression and timeline, Gol.gg source, "Open full Pro Builds"); one game at a
+  time, named by Gol.gg game id in `?game=` and the profile's player id (`expandedRow`), never by row position, and a
+  game the filters stop showing folds and leaves the URL. Never a second build renderer. Players are keyed by Gol.gg player id (pins and the `player=` filter; old name pins migrate once, an old name
   link still matches by name), so same-name players stay apart and a team change keeps one profile.
   LCK 2026 Season Playoffs builds were backfilled once (`scripts/backfill-lck-builds.mjs`, alan 2026-10-12); their game
   records live in `pro-builds.json` `games`, read by Pro Builds only, never by drafts, priority or totals. The daily
@@ -187,6 +191,29 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   "optimal". The skill grid shows only recorded levels; max order uses Data Dragon max ranks.
 - The data loads as its own browser chunk when a drawer opens (`lib/pro-builds-bundle.ts`), not in every page.
   `tests/pro-builds.test.ts` holds parsing, mapping, integrity and the refresh step.
+
+## Player portraits (alan, 2026-10-12)
+
+- Professional players show a photograph in Pinned Players (rail, list, profile header), Pro Builds (player filter
+  options and trigger, game strip, game header, the chosen player's chip in every mode) and the Gen.G roster list,
+  through one component, `components/PlayerAvatar.tsx` (`xs` 20 / `sm` 24 / `md` 36 / `lg` 48 / `xl` 104 px, the
+  `--avatar-*` tokens; width and height fixed in markup, so nothing shifts while it loads). Without a checked photo it
+  shows the player's initials: never a champion icon, never a generated image, never another player's photo.
+- `data/player-portraits.json` (`PlayerPortraits` in `lib/schema.ts`) is the one library, keyed by Gol.gg player id:
+  name, team, `file` (`assets/players/<id>.webp`), Commons file page (`source`), `original` URL and width, license,
+  author, photo context, the crop in original pixels and `checkedOn`. Only Wikimedia Commons files under a free
+  license (CC BY / CC BY-SA / CC0 / public domain) are used; the credit ("Photo: author, license, via Wikimedia
+  Commons") is in the avatar tooltip and in the Pinned Players "Photo credits" Disclosure. Photos from DPM.LOL, Gol.gg,
+  team sites or social media are not reused: they carry no reuse license. No team logos (trademarks).
+- A portrait is added by hand and only when the photo is the same person: `scripts/find-player-portraits.mjs`
+  (separate from the match refresh, never run by it; a missing photo never fails an import) matches each recorded
+  player to a Wikidata League of Legends player item by exact handle, reads the Commons license metadata and writes
+  candidates to `reports/` (ignored by git) for review; a handle two players share (Effort) is left out.
+  `scripts/build-player-portraits.mjs [--from dir]` crops and resizes each listed file to a 208px webp and regenerates
+  `lib/player-portrait-images.ts` (static imports, so the files are hashed under the base path). Never commit an
+  unlisted file. Runs on a GitHub runner or alan's Mac (Commons is unreachable from Claude's cloud environments).
+- `tests/player-portraits.test.ts`: every entry names a recorded player id, license and source checks, files and image
+  map agree and stay small, the fallback has no image, the rendered avatar has fixed size and a credit.
 
 ## Patch Notes (alan, 2026-10-12)
 

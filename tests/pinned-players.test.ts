@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
-  championBuildsHref, gameHref, migratePins, playerDirectory, playerProfile, profileHref, rowsOfPlayer, togglePin,
+  championBuildsHref, expandedRow, gameHref, inPlayerScope, migratePins, playerDirectory, playerProfile, profileHref, rowsOfPlayer, togglePin,
 } from "@/lib/pinned-players";
 import { buildRows, scoped, type BuildRow } from "@/lib/pro-builds";
 import { Files, type BuildAssets, type ProBuild, type ProBuilds, type ProGame, type ProGames } from "@/lib/schema";
@@ -78,6 +78,23 @@ describe("player profiles", () => {
   it("a player filter by id never mixes two players with one name; an old name link still works", () => {
     expect(scoped(rows, { player: "30" }).every((r: BuildRow) => r.build.playerId === 30)).toBe(true);
     expect(scoped(rows, { player: "Artemis" })).toHaveLength(4);
+  });
+});
+
+describe("expanded match", () => {
+  const mine = rowsOfPlayer(rows, "10");
+  it("is named by the game id among the rows the filters show, never by position", () => {
+    expect(expandedRow(mine, "3")?.game.id).toBe(3);
+    expect(expandedRow(mine, "3")?.build.playerId).toBe(10);
+    expect(expandedRow(mine.filter((r) => inPlayerScope(r, { champion: "ashe" })), "3")).toBeUndefined(); // filtered out: collapsed
+    expect(expandedRow(mine.filter((r) => inPlayerScope(r, { champion: "aphelios" })), "3")?.game.id).toBe(3);
+    expect(expandedRow(mine, undefined)).toBeUndefined();
+    expect(expandedRow(mine, "4")).toBeUndefined(); // game 4 is the other Artemis's
+  });
+  it("stays on the same game when rows reorder or another game is added", () => {
+    const g5 = game(5, "2026-10-09", "16.18", "worlds-2026", "GAM", "HLE", "blue", "varus");
+    const more = rowsOfPlayer(buildRows([build(g5, "Artemis", 10), ...builds], [g5, g1, g2, g3, g4], {}), "10");
+    expect(expandedRow(more, "3")?.key).toBe(expandedRow(mine, "3")?.key);
   });
 });
 

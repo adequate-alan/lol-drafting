@@ -6,6 +6,7 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
 import { menuPlace, type MenuPos } from "@/components/Select";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { isLegacyPin, migratePins, togglePin } from "@/lib/pinned-players";
 import type { BuildRow } from "@/lib/pro-builds";
 
@@ -84,6 +85,8 @@ const NOUN: Record<PinKind, [string, string]> = { player: ["Player", "players"],
 export function PinPicker({ kind, value, options: entries, onChange, placeholder }: {
   kind: PinKind; value: string; options: [string, string][]; onChange: (v: string) => void; placeholder?: string;
 }) {
+  // Players show their portrait (or initials) beside the name; teams and tournaments show text only.
+  const avatar = (v: string) => (kind === "player" && v ? <PlayerAvatar id={v} name={labelOf.get(v) ?? v} size="xs" /> : null);
   const id = useId();
   const { isPinned, toggle } = usePins(kind);
   const [noun, plural] = NOUN[kind];
@@ -150,6 +153,7 @@ export function PinPicker({ kind, value, options: entries, onChange, placeholder
   return (
     <div ref={box} className="player-picker">
       <div className={`select-trigger ${value ? "is-set" : ""}`} aria-expanded={open || undefined} onClick={() => { setOpen(true); input.current?.focus(); }}>
+        {value && !query && avatar(value)}
         {value && !query && isPinned(value) && <PinIcon on />}
         <input ref={input} type="text" role="combobox" aria-label={noun} aria-autocomplete="list" aria-expanded={open} aria-controls={listId}
           aria-activedescendant={open && options.length ? `${id}-${active}` : undefined}
@@ -173,7 +177,7 @@ export function PinPicker({ kind, value, options: entries, onChange, placeholder
             <li key={p || "all"} id={`${id}-${i}`} role="option" aria-selected={p === value} data-value={p}
               className={`select-option ${i === active ? "is-active" : ""} ${p && first(p) && !first(options[i + 1] ?? "") && options[i + 1] ? "last-pinned" : ""}`.trim()}
               onMouseDown={(e) => e.preventDefault()} onMouseMove={() => i !== active && setActive(i)} onClick={() => pick(p)}>
-              <span className="select-label">{label(p)}</span>
+              <span className="select-label player-chip">{avatar(p)}{label(p)}</span>
               {p && (
                 <button type="button" className="pin-btn" aria-pressed={isPinned(p)} aria-label={`${isPinned(p) ? "Unpin" : "Pin"} ${label(p)}`}
                   title={isPinned(p) ? "Pinned: listed first, saved in this browser" : `Pin this ${noun.toLowerCase()}`}

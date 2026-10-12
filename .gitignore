@@ -10,3 +10,7 @@ next-env.d.ts
 .vercel/
 .DS_Store
 ~$*.xlsx
+
+# Portrait discovery output (scripts/find-player-portraits.mjs), reviewed by hand, never committed
+reports/player-portrait-candidates.json
+reports/portrait-candidates/

@@ -10,7 +10,7 @@ import { priorityData, priorityMarks, type PriorityData } from "./pro-priority";
 import { buildPatchIndex } from "./patch-changes";
 import { championIndex, type ChampionBuilds } from "./pro-builds";
 import { withoutConfirmed } from "./proposed";
-import { Files } from "./schema";
+import { Files, ROLES, type Role } from "./schema";
 
 // Data lives in /data and is read at build time; the static export embeds what each page renders.
 type FileName = keyof typeof Files;
@@ -69,6 +69,19 @@ let buildIndex: ChampionBuilds[] | undefined;
 export const getBuildGames = () => [...new Set(load("pro-builds.json").builds.map((b) => b.game))];
 /** Every game a stored build belongs to: the tracked games plus the archive records kept with the builds (LCK playoffs). */
 export const getBuildGameRecords = () => [...getProGames().games, ...(load("pro-builds.json").games ?? [])];
+/** Players of one team in the recorded builds (latest team per player id), by role, with their recorded game count. */
+export function getTeamPlayers(team: string) {
+  const games = new Map(getBuildGameRecords().map((g) => [g.id, g]));
+  const latest = new Map<number, { id: number; name: string; role: Role; team: string; date: string; games: number }>();
+  for (const b of load("pro-builds.json").builds) {
+    const g = games.get(b.game);
+    if (!g) continue;
+    const cur = latest.get(b.playerId);
+    const next = !cur || g.date >= cur.date ? { id: b.playerId, name: b.player, role: b.role, team: g[b.side].team, date: g.date, games: (cur?.games ?? 0) + 1 } : { ...cur, games: cur.games + 1 };
+    latest.set(b.playerId, next);
+  }
+  return [...latest.values()].filter((p) => p.team === team).sort((a, b) => ROLES.indexOf(a.role) - ROLES.indexOf(b.role) || b.games - a.games);
+}
 export const getBuildIndex = () => (buildIndex ??= championIndex(load("pro-builds.json").builds, getBuildGameRecords()));
 
 // Everything the interactive Draft Room needs in the browser.

@@ -78,6 +78,13 @@ export const championBuildsHref = (id: PlayerId, champion: string, role: Role, m
   `${buildsHref(champion, role)}&player=${id}${mode ? `&mode=${mode}` : ""}`;
 export const profileHref = (id: PlayerId) => `/pro-builds/pinned/?player=${id}`;
 
+/**
+ * The Match History row whose build is expanded in place (alan, 2026-10-12): the game named in the URL (`game=`, the
+ * Gol.gg game id) among the rows the current filters show for this player. One player has one row per game, so the
+ * game id and the player id name it, never the row's position. A game the filters no longer show is not expanded.
+ */
+export const expandedRow = (shown: BuildRow[], game?: string) => (game ? shown.find((r) => String(r.game.id) === game) : undefined);
+
 // ---------- pins ----------
 // Pins are a list of player ids in this browser's localStorage. Pins saved before ids (player names, 2026-10-12) are
 // moved to the id of the most recent recorded player with that name, once the build data is loaded.
