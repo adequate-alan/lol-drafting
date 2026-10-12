@@ -130,10 +130,61 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   miss a field or contradict their series are rejected and reported as run warnings, never filled in.
 - Tournament totals are replaced only when the champion table sums to 10 picks per match-list game and, with every game
   recorded, agrees champion by champion; then `rolePicks` comes from the game pages. Never across patches.
-- The updater writes only `pro-games.json`, `meta.json` and `sources.json`; imported games add no pro-derived
+- The updater writes only `pro-games.json`, `meta.json`, `sources.json`, `pro-builds.json` and `build-assets.json`; imported games add no pro-derived
   alternatives (alan: new pro pairings stay Pro Evidence). It commits as adequate-alan only when verified data changed,
   after test/typecheck/build, then starts `pages.yml`. A supplied game link becomes verified only when its game shows the claim.
 - Tests that check fixed Demacia numbers are scoped to the known events; new imports must never be able to break them.
+
+## Pro Builds (alan, 2026-10-12)
+
+- Items, runes, summoner spells and skill order from recorded games, in the shared champion drawer
+  (`components/ProBuilds.tsx`, so every page that opens a champion has it; tabs Builds | Runes | Skills | Games, a game
+  strip to switch players, filters for tournament, patch, team and player). Observed Pro Evidence only: it never scores
+  and never touches saved pairings, rankings, Comp Check or pool tiers.
+- `data/pro-builds.json`: one record per player per game (Gol.gg game id, side, role, player and Gol.gg player id,
+  spells, final inventory slots, rune page, `skills` as one letter per ability point, purchase log `[seconds, item, buy|sell]`,
+  `missing` for anything Gol.gg did not give). Read by the daily refresh from the game page (player ids) and Gol.gg's
+  build answer (`POST /game/ajax.build.php`, the request the Builds tab makes; not disallowed by robots.txt), at most 45
+  games a run (`scripts/golgg/builds.mjs`). A game with no builds yet goes in `unavailable` and is asked again after 3 days.
+- `data/build-assets.json`: names, icons, item stats and ability max ranks per game patch, from that patch's Data Dragon
+  files (CommunityDragon for stat shard names), only for ids the builds use; ids a patch does not name are `unnamed`.
+  Icons load from Data Dragon's CDN at the game's version, like champion icons; nothing is stored in the repo.
+- One game shows exactly that player's setup; Start / Boots / Core / Later are read in order from its purchase log and
+  labelled as such; Final is the end-of-game inventory, never the purchase history. "Common" counts games in the chosen
+  scope (keystones, items, boots, max orders, spell pairs) and names the scope; it is never one player's build and never
+  "optimal". The skill grid shows only recorded levels; max order uses Data Dragon max ranks.
+- The data loads as its own browser chunk when a drawer opens (`lib/pro-builds-bundle.ts`), not in every page.
+  `tests/pro-builds.test.ts` holds parsing, mapping, integrity and the refresh step.
+
+## Patch Notes (alan, 2026-10-12)
+
+- `/patch-notes/` (sidebar "Patch Notes", under Meta / Research): Riot's official League of Legends patch notes from
+  26.16 on, Summoner's Rift drafting content only (champions, items, runes, systems, mid-patch updates, gameplay bug
+  fixes). TFT, ARAM / ARAM Mayhem, Arena, League Classic, skins, events, esports and client sections stay out and are
+  listed per patch (`excluded`). Latest patch by default, prev / next, search, kind and champion filters (a champion
+  shows its whole history), Compare patches (changes after `from` through `to`) and "What's changed since 26.16?".
+- `data/patch-notes.json` (`PatchNotes` in `lib/schema.ts`) holds Riot's facts only: every line keeps Riot's full
+  `text` and the exact `before` / `after` around its "⇒"; a value Riot didn't write is left out, never filled in or
+  computed. Riot's reason is `context`. Champion buff / nerf / adjustment / rework follows Riot's stated intent:
+  `categoryBasis: "reviewed"` once a person checked it (26.16–26.20 on 2026-10-12), `"riot-wording"` when the daily
+  check classified it from first-person wording (unclear wording stays "adjustment").
+- **One patch, two spellings**: Riot writes 26.16, the client / Data Dragon / Gol.gg write 16.16. `lib/patch.ts`
+  (`parsePatch`, `patchKey`, `comparePatch`, `samePatch`, `shortPatch`) is the one normalizer; the site shows Riot's
+  label. Pro data keeps its own spelling.
+- Draft implications (`lib/patch-implications.ts`) are analysis, labelled as such and folded under each champion
+  change, apart from Riot's facts: saved pairings, pool tiers, recorded pro games before / after the patch and tournament
+  presence by event patch. **A patch never changes saved pairings, pool tiers, recommendations or any score.**
+- Shared lookups (`lib/patch-changes.ts`, compact index `getPatchIndex()`, also `DrawerData.patches`): `changesFor`,
+  `changedSince`, `patchHref`. The champion drawer's "Patch changes" block and the hover card's latest-patch line use
+  them; `components/ChangedSince.tsx` (`ChangedSince`, `PatchTag`) is the "Changed since this game" control for Pro
+  Builds. It never calls an old build current or optimal.
+- Daily check: `.github/workflows/refresh-patch-notes.yml`, 8:30 AM Eastern (same offset gate as the pro refresh) and
+  `workflow_dispatch` (dry run, force). `scripts/refresh-patch-notes.mjs` reads Riot's patch-notes tag page and each
+  tracked patch page from the runner (leagueoflegends.com is unreachable from Claude's environments; robots.txt allows
+  it), re-reads a patch only when it is new or its article revision changed, and writes `data/patch-notes.json` only
+  when Summoner's Rift facts changed (an edited entry gets `corrected: true`). It stops on any refusal or challenge and
+  never removes an archived patch. Commits as adequate-alan after test / typecheck / build, then starts `pages.yml`.
+  Parser fixtures: `tests/fixtures/riot`, tests: `tests/patch-notes.test.ts`.
 
 ## Weekly Comp Library discovery (alan, 2026-10-12)
 
@@ -248,6 +299,10 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   Uppercase only for page titles (h1) and role codes; every other label shares the sentence-case `.label` style. Source
   links carry their refresh status in the tooltip; only a pending external claim is marked inline ("· pending").
   Every page that shows champions wraps them in `ChampionProvider`, so hover card, drawer and mobile sheet match.
+  Contrast (Impeccable pass, 2026-10-12): every text token, `--text-faint` included, is at least 4.5:1 on the page
+  surfaces in both themes, and the light focus ring is deep champagne (3:1 minimum); express a quieter state with a token
+  colour, never by stacking opacity on faint text. On phones each team row fits 390px without scrolling (the slot being
+  picked fills the row) and every locked slot keeps its own Change button.
   Risk tags use the caution amber; oxblood is enemy and Counters only. No eyebrow labels, hero-metric strips or side
   stripes thicker than 1px (Impeccable craft floor), except the Pro Drafts draft-side strip below.
 - **Pro Drafts side strips** (alan, 2026-10-11): each row has a 3px strip on its far left, `--team-blue` / `--team-red`

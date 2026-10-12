@@ -2,7 +2,9 @@
 // Pro Priority (Meta / Research): which champions pros pick and ban on one patch, by role, with patch-over-patch
 // changes and each champion's history. Observed Pro Evidence only; numbers come from lib/pro-priority.ts and are never
 // combined across patches unless "All patches" is picked.
+import Link from "next/link";
 import { Fragment, useMemo, useState } from "react";
+import { CATEGORY_LABEL, changesFor, patchHref, type PatchIndex } from "@/lib/patch-changes";
 import { InteractiveChampion } from "@/components/ChampionInteraction";
 import { Disclosure } from "@/components/Disclosure";
 import { Select } from "@/components/Select";
@@ -33,8 +35,8 @@ function tournamentOptions(d: PriorityData) {
   return [...groups.entries()].filter(([, g]) => g.games).map(([value, g]) => ({ value, label: `${g.label} · ${g.games} games${g.ongoing ? " · ongoing" : ""}` }));
 }
 
-export function ProPrioritySection({ data, names, sources, params, Champ }: {
-  data: PriorityData; names: Record<string, string>; sources: Record<string, Source>; params: Params;
+export function ProPrioritySection({ data, patchIndex, names, sources, params, Champ }: {
+  data: PriorityData; patchIndex?: PatchIndex; names: Record<string, string>; sources: Record<string, Source>; params: Params;
   Champ: (p: { id: string; r?: Role; size?: "xs" | "sm" | "md" }) => React.ReactNode;
 }) {
   const { get, set } = params;
@@ -86,7 +88,7 @@ export function ProPrioritySection({ data, names, sources, params, Champ }: {
       <Coverage b={b} data={data} tournaments={tournaments} sources={sources} />
 
       {view === "changes" && patch && older ? (
-        <Changes data={data} patch={patch} older={older} tournaments={tournaments} role={role} setRole={(r) => set("role", r === "ALL" ? undefined : r)} Champ={Champ} />
+        <Changes data={data} patchIndex={patchIndex} patch={patch} older={older} tournaments={tournaments} role={role} setRole={(r) => set("role", r === "ALL" ? undefined : r)} Champ={Champ} />
       ) : (
         <>
           <div className="toolbar">
@@ -135,7 +137,7 @@ export function ProPrioritySection({ data, names, sources, params, Champ }: {
                         {allPatches && <td className="hide-sm nowrap tnum">{r.patches.map(patchLabel).join(", ")}</td>}
                         <td className="num nowrap">{r.latest ? <span title={r.latest.picked ? "Last picked" : "Last banned"}>{shortDate(r.latest.date)}</span> : DASH}</td>
                       </tr>
-                      {open && <tr className="hub-detail"><td colSpan={cols}><PriorityDetail r={r} b={b} data={data} tournaments={tournaments} names={names} sources={sources} /></td></tr>}
+                      {open && <tr className="hub-detail"><td colSpan={cols}><PriorityDetail r={r} b={b} data={data} patchIndex={patchIndex} tournaments={tournaments} names={names} sources={sources} /></td></tr>}
                     </Fragment>
                   );
                 })}
@@ -194,8 +196,8 @@ function Coverage({ b, data, tournaments, sources }: { b: Bucket; data: Priority
   );
 }
 
-function Changes({ data, patch, older, tournaments, role, setRole, Champ }: {
-  data: PriorityData; patch: string; older: string; tournaments?: string[]; role: RoleTab; setRole: (r: RoleTab) => void;
+function Changes({ data, patch, older, tournaments, role, setRole, Champ, patchIndex }: {
+  data: PriorityData; patchIndex?: PatchIndex; patch: string; older: string; tournaments?: string[]; role: RoleTab; setRole: (r: RoleTab) => void;
   Champ: (p: { id: string; r?: Role; size?: "xs" | "sm" | "md" }) => React.ReactNode;
 }) {
   const c = priorityChanges(data, patch, older, tournaments, role);
@@ -205,7 +207,8 @@ function Changes({ data, patch, older, tournaments, role, setRole, Champ }: {
     <div className="table-wrap hub-table mid">
       <table>
         <thead><tr><th>{title}</th><th className="num" title={`Presence on ${patchLabel(older)} → ${patchLabel(patch)}`}>Presence</th><th className="num" title="Difference in percentage points (not a relative change)">Change</th>
-          <th className="num hide-sm">Pick rate</th><th className="num hide-sm">Ban rate</th></tr></thead>
+          <th className="num hide-sm">Pick rate</th><th className="num hide-sm">Ban rate</th>
+          <th className="hide-sm" title={`Official changes to the champion after ${patchLabel(older)}, up to ${patchLabel(patch)}. Listed for context, not as the cause.`}>Patch notes</th></tr></thead>
         <tbody>
           {moves.map((m) => {
             const r = role === "ALL" ? rolesOf((m.to ?? m.from)!)[0] : role;
@@ -216,10 +219,11 @@ function Changes({ data, patch, older, tournaments, role, setRole, Champ }: {
                 <td className={`num nowrap ${m.change > 0 ? "up" : "down"}`}>{pp(m.change)}</td>
                 <td className="num hide-sm nowrap">{pct(m.pickRate[0])} → {pct(m.pickRate[1])}</td>
                 <td className="num hide-sm nowrap">{pct(m.banRate[0])} → {pct(m.banRate[1])}</td>
+                <td className="hide-sm"><PatchTags id={m.id} index={patchIndex} from={older} to={patch} empty="—" /></td>
               </tr>
             );
           })}
-          {!moves.length && <tr><td colSpan={5} className="xs muted">No move of 10 points or more.</td></tr>}
+          {!moves.length && <tr><td colSpan={6} className="xs muted">No move of 10 points or more.</td></tr>}
         </tbody>
       </table>
     </div>
@@ -235,6 +239,7 @@ function Changes({ data, patch, older, tournaments, role, setRole, Champ }: {
         {!sameField && " Different tournaments on each patch, so teams and regions differ as well as the patch."}
         {c.small && " Small sample: read these as movement, not a trend."}
         {role !== "ALL" && " Presence is champion-wide; the tab lists champions with picks in this role on either patch."}
+        {" Patch notes list official changes between the two patches; a change is not shown as the cause of a move."}
       </p>
       <div className="grid cols-2 priority-changes">
         <List title="Rising" moves={c.rising} />
@@ -245,8 +250,8 @@ function Changes({ data, patch, older, tournaments, role, setRole, Champ }: {
 }
 
 /** Row detail: the formula with its counts, draft order where stored, and the exact games behind the numbers. */
-function PriorityDetail({ r, b, data, tournaments, names, sources }: {
-  r: PriorityRow; b: Bucket; data: PriorityData; tournaments?: string[]; names: Record<string, string>; sources: Record<string, Source>;
+function PriorityDetail({ r, b, data, patchIndex, tournaments, names, sources }: {
+  r: PriorityRow; b: Bucket; data: PriorityData; patchIndex?: PatchIndex; tournaments?: string[]; names: Record<string, string>; sources: Record<string, Source>;
 }) {
   const games = supportingGames(b, r.id);
   const teams = teamsFor(b, r.id);
@@ -263,6 +268,7 @@ function PriorityDetail({ r, b, data, tournaments, names, sources }: {
             {read && <> · {read === "early" ? "usually an early pick" : read === "late" ? "usually saved for later" : "taken early and late"}</>}</p>
         )}
         {history.length > 1 && <PriorityHistory points={history} />}
+        {history.length > 1 && <p className="xs muted">Patch notes {patchLabel(history[0].patch)}–{patchLabel(history.at(-1)!.patch)}: <PatchTags id={r.id} index={patchIndex} from={history[0].patch} to={history.at(-1)!.patch} empty="no official change" /></p>}
         {tableSources.length > 0 && <p className="xs muted">Includes a Gol.gg tournament table (no per-game records): <SourceLinks ids={tableSources} sources={sources} /></p>}
       </LayerBlock>
       <LayerBlock layer="pro" title={`Recorded games · ${games.length}`}>
@@ -278,6 +284,25 @@ function PriorityDetail({ r, b, data, tournaments, names, sources }: {
         {games.length > 12 && <p className="xs faint">+{games.length - 12} older</p>}
       </LayerBlock>
     </div>
+  );
+}
+
+/**
+ * Official changes to a champion in patches after `from` up to `to`, as links into Patch Notes. Listed beside a priority
+ * move, never offered as its cause.
+ */
+export function PatchTags({ id, index, from, to, empty }: { id: string; index?: PatchIndex; from?: string; to?: string; empty?: string }) {
+  const list = index ? changesFor(index, { kind: "champion", ref: id }, from && patchLabel(from), to && patchLabel(to)).filter((c) => !c.via) : [];
+  if (!list.length) return empty ? <span className="xs faint">{empty}</span> : null;
+  return (
+    <span className="ptags">
+      {list.map((c) => (
+        <Link key={`${c.patch}/${c.id}`} className={`ptag ${c.category ?? "adjustment"}`} href={patchHref(c.patch, c.id)} data-to={patchHref(c.patch, c.id)}
+          title={`${c.subject} in patch ${c.patch}: ${c.lines.map((l) => l.text ?? [l.label, l.before && `${l.before} → ${l.after}`].filter(Boolean).join(" ")).join("; ")}${c.more ? ` (+${c.more} more)` : ""}`}>
+          {CATEGORY_LABEL[c.category ?? "adjustment"]} {c.patch}
+        </Link>
+      ))}
+    </span>
   );
 }
 

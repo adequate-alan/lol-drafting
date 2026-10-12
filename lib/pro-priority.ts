@@ -14,21 +14,13 @@
 // bans recorded; pick rate = picks / games; ban rate = games banned / games with bans recorded; win rate = wins / picks.
 // Bans are champion-wide. Role picks come from the role each game page records, or from a table's verified role picks.
 import { comparePatchDesc } from "./evidence";
+import { patchLabel, shortPatch } from "./patch";
 import { ROLES, type Meta, type MetaStat, type ProDraft, type ProGame, type ProGames, type Role } from "./schema";
 
 // ---------- patches ----------
-// Gol.gg writes the game version ("16.18"); Riot's patch notes call the same patch "26.18". Data stays keyed by Gol.gg's
-// form; the site shows Riot's. These two are stand-ins for lib/patch.ts (Patch Notes) until it is on main.
-export function patchKey(p: string): string {
-  const m = p.trim().replace(/^v/i, "").match(/^(\d+)\.(\d+)/);
-  if (!m) return p.trim();
-  const major = Number(m[1]);
-  return `${major >= 25 ? major - 10 : major}.${Number(m[2])}`;
-}
-export function patchLabel(p: string): string {
-  const [major, minor] = patchKey(p).split(".");
-  return minor === undefined ? p : `${Number(major) + 10}.${minor}`;
-}
+// Data stays keyed by Gol.gg's "16.18"; the site shows Riot's "26.18" (lib/patch.ts).
+export const patchKey = (p: string) => shortPatch(p.trim());
+export { patchLabel };
 
 // ---------- contributions ----------
 

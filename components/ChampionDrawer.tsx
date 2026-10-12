@@ -1,7 +1,8 @@
 "use client";
 // Champion drawer: one champion in one role, opened from the Comp Library and the Meta page without leaving it.
 // Right-side panel on desktop, bottom sheet on mobile. The three layers keep separate blocks:
-//   Synergy (alan's pool tier and saved pairings) · Pro evidence (stats, games, observed pairings) · Logic (attributes).
+//   Synergy (alan's pool tier and saved pairings) · Pro evidence (stats, games, observed pairings) · Pro builds (items,
+//   runes, skills and spells from recorded games, components/ProBuilds.tsx) · Logic (attributes).
 // Pass `comp` to read the champion inside a five-man shell: saved and pro links to each comp-mate, the slot's job,
 // and prev / next through the five slots.
 import Link from "next/link";
@@ -15,10 +16,12 @@ import { PARTNER_ROLE, TIERS, eventStats, proGames, type ProGame, type Tier } fr
 import { handAlts } from "@/lib/pro-alternatives";
 import { shownPartners } from "@/lib/proposed";
 import { ProposedGroups, ProposedTag } from "@/components/ProposedSynergy";
+import { ProBuilds } from "@/components/ProBuilds";
+import { PatchChanges } from "@/components/ChangedSince";
 import { synergyParts, teamNeeds } from "@/lib/recommend";
 import { ROLES, type Champion, type Role } from "@/lib/schema";
 import { bucket, championHistory, patchLabel, teamsFor } from "@/lib/pro-priority";
-import { PriorityHistory } from "@/components/ProPriority";
+import { PatchTags, PriorityHistory } from "@/components/ProPriority";
 
 export interface DrawerTarget { id: string; role?: Role } // no role: the role the champion was played in most
 export interface CompContext {
@@ -239,6 +242,7 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
           {history.some((p) => p.row) ? (
             <>
               {history.length > 1 && <PriorityHistory points={history} />}
+              {history.length > 1 && <p className="xs muted">Patch notes {patchLabel(history[0].patch)}–{patchLabel(history.at(-1)!.patch)}: <PatchTags id={id} index={data.patches} from={history[0].patch} to={history.at(-1)!.patch} empty="no official change" /></p>}
               <table className="mini">
                 <thead><tr><th className="num">Patch</th><th className="num">Games</th><th className="num">Picks</th><th className="num">Bans</th><th className="num">Pres.</th><th className="num">WR</th><th>Roles</th><th className="num" title="Blue / red picks">B / R</th></tr></thead>
                 <tbody>
@@ -281,6 +285,8 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
           )}
         </LayerBlock>
 
+        <ProBuilds champion={id} role={role} names={names} events={index.events} />
+
         <LayerBlock layer="logic" title="Logic">
           {champ ? (
             <ul className="drawer-logic">
@@ -292,6 +298,8 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
             </ul>
           ) : <p className="xs muted">No attribute record.</p>}
         </LayerBlock>
+
+        <PatchChanges id={id} index={data.patches} />
       </div>
 
       <footer className="drawer-foot">

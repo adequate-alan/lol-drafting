@@ -84,14 +84,20 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
   // Highlights follow the hovered or focused champion, else the open one.
   const active = hover ?? open;
   const params = useSearchParams();
-  const kind = params.get("kind") || undefined;
+  // Pro comps by default (alan, 2026-10-12); "all" and "generalized" (Template) are one click away.
+  const rawKind = params.get("kind");
+  const kind = rawKind === "all" ? undefined : rawKind === "generalized" ? "generalized" : "observed";
   const rawDiff = params.get("difficulty") || undefined;
   const level = rawDiff && rawDiff in LEVEL ? LEVEL[rawDiff as CompShell["difficulty"]] : undefined;
   // The cards render in the browser, after the browser's own jump to #shell-id has already run.
+  // A link to a card the default Pro filter hides (a template) opens on All instead.
   useEffect(() => {
     const id = decodeURIComponent(window.location.hash.slice(1));
-    if (id) document.getElementById(id)?.scrollIntoView();
-  }, []);
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView();
+    else if (!rawKind && allShells.some((s) => s.id === id)) window.location.replace(`${window.location.pathname}?kind=all#${id}`);
+  }, [rawKind, allShells]);
   // An open swap list closes on Escape or a press anywhere outside its slot.
   useEffect(() => {
     if (!menu) return;
@@ -106,10 +112,10 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
     .filter((s) => !level || LEVEL[s.difficulty] === level)
     .sort((a, b) => DIFF_ORDER.indexOf(a.difficulty) - DIFF_ORDER.indexOf(b.difficulty));
   const href = (o: Record<string, string | undefined>) => {
-    const q = new URLSearchParams(Object.entries({ kind, difficulty: level, ...o }).filter(([, v]) => v) as [string, string][]);
+    const q = new URLSearchParams(Object.entries({ kind: kind ?? "all", difficulty: level, ...o }).filter(([k, v]) => v && !(k === "kind" && v === "observed")) as [string, string][]);
     return `/comps${q.size ? `?${q}` : ""}`;
   };
-  const KINDS: [string | undefined, string][] = [[undefined, "All"], ["observed", "Pro"], ["generalized", "Template"]];
+  const KINDS: [string | undefined, string][] = [["all", "All"], ["observed", "Pro"], ["generalized", "Template"]];
   const LEVELS: [Level | undefined, string][] = [[undefined, "All"], ["easy", "Easy"], ["medium", "Medium"], ["hard", "Hard"]];
   return (
     <>
@@ -117,7 +123,7 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
       <CompFreshness lastAddition={lastAddition} />
       <div className="filters">
         <span className="filter-group"><span className="filter-label">Type</span>
-          <nav className="seg" aria-label="Type">{KINDS.map(([k, l]) => <Link key={l} href={href({ kind: k })} className={kind === k ? "active" : undefined}>{l}</Link>)}</nav>
+          <nav className="seg" aria-label="Type">{KINDS.map(([k, l]) => <Link key={l} href={href({ kind: k })} className={(kind ?? "all") === k ? "active" : undefined}>{l}</Link>)}</nav>
         </span>
         <span className="filter-group"><span className="filter-label">Difficulty</span>
           <nav className="seg" aria-label="Difficulty">{LEVELS.map(([d, l]) => <Link key={l} href={href({ difficulty: d })} className={level === d ? "active" : undefined}>{l}</Link>)}</nav>

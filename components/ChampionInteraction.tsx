@@ -17,6 +17,7 @@ import { fresher, shortDate } from "@/lib/evidence";
 import { TIERS, listsRole, type ProGame, type Tier } from "@/lib/pool-stats";
 import { proposedLink } from "@/lib/proposed";
 import { synergyParts } from "@/lib/recommend";
+import { CATEGORY_LABEL, changesFor } from "@/lib/patch-changes";
 import { ROLES, type Attr, type Role } from "@/lib/schema";
 export { InteractiveChampion } from "@/components/InteractiveChampion";
 
@@ -142,6 +143,8 @@ export function ChampionHoverCard({ target, anchor, data, index, focus, comp, si
   const lines = relationLines({ id: target.id, role }, data, index, focus, comp);
   const about = comp ? "this comp" : focus ? index.names[focus.id] ?? focus.id : undefined;
   const job = comp && comp.slots[role] === target.id ? comp.jobs?.[role] : undefined;
+  // The latest official patch change, one line; the drawer lists them all.
+  const patch = changesFor(data.patches, { kind: "champion", ref: target.id }).find((c) => !c.via);
   const latest = games[0] ? [games[0].eventName, games[0].patch, shortDate(games[0].date)].filter(Boolean).join(" · ") : "";
 
   return createPortal(
@@ -162,6 +165,7 @@ export function ChampionHoverCard({ target, anchor, data, index, focus, comp, si
           {!lines.length && <p className="xs muted">No recorded link with {about}.</p>}
         </div>
       )}
+      {patch && <p className="hc-patch xs"><span className="muted">Patch {patch.patch}</span> <span className={`pn-verdict v-${patch.category}`}>{CATEGORY_LABEL[patch.category ?? "adjustment"]}</span></p>}
       <div className="hc-foot xs muted">
         {stat ? <span className="tnum">{stat.event.short} {stat.event.patch} · {stat.stat.picks} picks{stat.stat.lowSample ? "*" : ""}{listsRole(stat, role) && stat.roles.length < 2 ? "" : " (all roles)"} · {stat.stat.winRate != null ? `${Math.round(stat.stat.winRate * 100)}% WR` : "banned only"}</span>
           : games.length ? <span className="tnum">{games.length} pro game{games.length > 1 ? "s" : ""} as {role.toLowerCase()} · {latest}</span> : "No pro data in this role"}

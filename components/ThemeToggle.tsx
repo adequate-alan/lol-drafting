@@ -17,7 +17,7 @@ export function ThemeToggle() {
     setTheme(next);
   };
   return (
-    <button type="button" className="theme-toggle" onClick={flip} aria-label={`Switch to ${next} theme`} title={`Switch to ${next} theme`}>
+    <button type="button" className="theme-toggle" onClick={flip} aria-label={theme ? `${theme === "dark" ? "Dark" : "Light"} theme: switch to ${next}` : undefined} title={`Switch to ${next} theme`}>
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
         {theme === "dark"
           ? <path d="M13 9.5A5.5 5.5 0 0 1 6.5 3a5.5 5.5 0 1 0 6.5 6.5z" />

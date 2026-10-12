@@ -243,6 +243,60 @@ export const ProGames = z.object({
 });
 export type ProGames = z.infer<typeof ProGames>;
 
+// ---------- pro-builds.json + build-assets.json (Observed only; written by scripts/refresh-pro-data.mjs) ----------
+// One player's setup in one recorded game (data/pro-games.json id), read from Gol.gg's build answer for that game and
+// player: summoner spells, the final inventory, the rune page, the order of ability points and the purchase log in
+// game seconds. A field Gol.gg did not give is absent and named in `missing`; nothing is filled in.
+const ItemId = z.number().int().nonnegative();
+export const ProBuild = z.object({
+  game: z.number().int().positive(),
+  side: z.enum(["blue", "red"]),
+  role: z.enum(ROLES),
+  champion: ChampionId,
+  player: z.string().min(1),
+  playerId: z.number().int().positive(),
+  spells: z.tuple([z.number().int().positive(), z.number().int().positive()]).optional(),
+  spellCasts: z.tuple([z.number().int(), z.number().int()]).optional(),
+  final: z.array(ItemId).length(6).optional(), // inventory slots at the end of the game, 0 = empty slot
+  trinket: z.number().int().positive().optional(),
+  runes: z.object({
+    primary: z.number().int(), keystone: z.number().int(), primaryRunes: z.array(z.number().int()).length(3),
+    secondary: z.number().int(), secondaryRunes: z.array(z.number().int()).length(2),
+    shards: z.array(z.number().int()).length(3).optional(),
+  }).optional(),
+  // The ability given each point, in order: one per champion level for most champions; some (Viktor, Aphelios) record
+  // more points than levels, so this is the order of points, not a level number.
+  skills: z.string().regex(/^[QWER]{1,30}$/).optional(),
+  skillCasts: z.tuple([z.number().int(), z.number().int(), z.number().int(), z.number().int()]).optional(),
+  purchases: z.array(z.tuple([z.number().int().nonnegative(), z.number().int().positive(), z.enum(["buy", "sell"])])).optional(),
+  missing: z.array(z.string()).optional(),
+  checkedOn: Day,
+});
+export type ProBuild = z.infer<typeof ProBuild>;
+export const ProBuilds = z.object({
+  builds: z.array(ProBuild),
+  unavailable: z.array(z.object({ game: z.number().int().positive(), checkedOn: Day, reason: z.string() })),
+});
+export type ProBuilds = z.infer<typeof ProBuilds>;
+// Names, icons and short stats from the game patch's Data Dragon files, for exactly the ids the builds use.
+const Named = { name: z.string().min(1), icon: z.string().min(1) };
+export const PatchAssets = z.object({
+  ddragon: z.string().regex(/^\d+\.\d+\.\d+$/),
+  items: z.record(z.object({
+    name: z.string().min(1), gold: z.number(), stats: z.array(z.string()).optional(), text: z.string().optional(),
+    from: z.array(z.number().int()).optional(), kind: z.enum(["completed", "boots", "component", "starter-or-component", "consumable", "trinket"]),
+  })),
+  runes: z.record(z.object({ ...Named, short: z.string(), shard: z.boolean().optional() })),
+  trees: z.record(z.object({ ...Named, rows: z.array(z.array(z.number().int())) })),
+  spells: z.record(z.object({ ...Named, cooldown: z.string().optional() })),
+  abilities: z.record(z.object(Object.fromEntries(["Q", "W", "E", "R"].map((k) => [k, z.object({ ...Named, maxrank: z.number().int().positive() })])) as
+    Record<"Q" | "W" | "E" | "R", z.ZodObject<{ name: z.ZodString; icon: z.ZodString; maxrank: z.ZodNumber }>>)),
+  unnamed: z.array(z.string()).optional(), // ids this patch's files do not name: shown by id, not asked for again
+});
+export type PatchAssets = z.infer<typeof PatchAssets>;
+export const BuildAssets = z.object({ patches: z.record(PatchAssets) });
+export type BuildAssets = z.infer<typeof BuildAssets>;
+
 // ---------- comp-shells.json ----------
 export const CompShell = z.object({
   id: id,
@@ -405,6 +459,59 @@ export const Counters = z.object({
 });
 export type Counters = z.infer<typeof Counters>;
 
+
+// ---------- patch-notes.json (official facts from Riot's patch notes) ----------
+// Riot's own record of what changed, read by scripts/refresh-patch-notes.mjs (daily, .github/workflows/
+// refresh-patch-notes.yml) from leagueoflegends.com. Summoner's Rift content only. Every value is copied from the page:
+// `before` / `after` are the two sides of Riot's "⇒" and `text` is the whole line as Riot wrote it; a missing value is
+// left out, never filled in. Draft implications are analysis and live in lib/patch-changes.ts, never in this file.
+const PatchLabel = z.string().regex(/^2\d\.\d{1,2}$/); // Riot's label, "26.16"; the pro-data spelling is `short`, "16.16"
+export const PatchChangeLine = z.object({
+  text: z.string().min(1),
+  label: z.string().optional(),
+  before: z.string().optional(),
+  after: z.string().optional(),
+  value: z.string().optional(), // a labelled line without an arrow ("Bug Fix: …", "Affected Champions: …")
+  tag: z.enum(["new", "removed", "updated"]).optional(),
+});
+export const PatchEntry = z.object({
+  id: z.string().regex(/^[a-z0-9-]+$/),
+  kind: z.enum(["champion", "item", "rune", "system"]),
+  subject: z.string(), // Riot's name for the champion / item / rune / system heading
+  ref: z.string().optional(), // champion id (champions.json), item or rune name slug
+  itemId: z.string().optional(), // Data Dragon item id, when the page's icon carries it
+  anchor: z.string().optional(), // the heading's id on Riot's page
+  icon: z.string().url().optional(),
+  category: z.enum(["buff", "nerf", "adjustment", "rework", "keystone", "minor", "shard",
+    "jungle", "objectives", "minions", "turrets", "summoners", "role-quests", "map-economy", "other", "bugfix"]).optional(),
+  categories: z.array(z.enum(["new", "removed", "stats", "cost", "effect"])).optional(), // items
+  // Champions: "riot-wording" when read from Riot's note by the daily check, "reviewed" once a person checked it.
+  categoryBasis: z.enum(["riot-wording", "reviewed"]).optional(),
+  context: z.string().optional(), // Riot's stated reason, verbatim
+  affects: z.array(ChampionId).optional(), // champions a system change or bug fix names
+  groups: z.array(z.object({ title: z.string().optional(), icon: z.string().url().optional(), changes: z.array(PatchChangeLine).min(1) })).min(1),
+  midPatch: z.object({ title: z.string(), date: Day.nullable() }).optional(),
+  corrected: z.boolean().optional(), // Riot edited this entry after it was first stored
+  updatedAt: z.string().datetime(),
+});
+export type PatchEntry = z.infer<typeof PatchEntry>;
+export const PatchNote = z.object({
+  patch: PatchLabel,
+  short: z.string().regex(/^1\d\.\d{1,2}$/),
+  title: z.string(),
+  url: z.string().url(),
+  published: Day.nullable(),
+  rev: z.string().nullable(),
+  midPatch: z.array(z.object({ title: z.string(), date: Day.nullable() })),
+  excluded: z.array(z.string()), // section headings left out (other modes, skins, client)
+  bugfixesLeftOut: z.number().int().optional(),
+  entries: z.array(PatchEntry),
+  updatedAt: z.string().datetime(),
+});
+export type PatchNote = z.infer<typeof PatchNote>;
+export const PatchNotes = z.object({ firstPatch: PatchLabel, source: z.string().url(), patches: z.array(PatchNote) });
+export type PatchNotes = z.infer<typeof PatchNotes>;
+
 export const Files = {
   "champions.json": z.array(Champion),
   "sources.json": z.array(Source),
@@ -413,6 +520,8 @@ export const Files = {
   "top.json": z.array(TopPick),
   "pro-drafts.json": z.array(ProDraft),
   "pro-games.json": ProGames,
+  "pro-builds.json": ProBuilds,
+  "build-assets.json": BuildAssets,
   "comp-shells.json": z.array(CompShell),
   "discovered-comps.json": DiscoveredComps,
   "pool.json": z.array(PoolEntry),
@@ -421,4 +530,5 @@ export const Files = {
   "rules.json": z.array(Rule),
   "counters.json": Counters,
   "proposed-synergy.json": ProposedSynergy,
+  "patch-notes.json": PatchNotes,
 } as const;

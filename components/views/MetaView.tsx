@@ -63,7 +63,7 @@ export function MetaView({ names, sources, input, rules, drawerData, freshness }
       <ProFreshness items={freshness} />
 
       {/* 1. Pro priority: the page's main view */}
-      <ProPrioritySection data={priority} names={names} sources={sources} params={{ get, set }} Champ={Champ} />
+      <ProPrioritySection data={priority} patchIndex={drawerData.patches} names={names} sources={sources} params={{ get, set }} Champ={Champ} />
 
       {/* 2. Tournaments */}
       <SectionHeader title="Tournaments" meta={`${hub.events.length} recorded`} />

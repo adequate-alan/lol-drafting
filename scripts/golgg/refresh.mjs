@@ -5,7 +5,8 @@
 // Only tracked tournaments are ever requested, by their exact Gol.gg names. A finished tournament is not requested again.
 // Saved pairings, pool tiers and proposed synergy are not inputs and cannot change here.
 import { parseChampionTable, parseFullstats, parseGamePage, parseMatchlist } from "./parse.mjs";
-import { buildAggregates, buildGame, championResolver, gameUrl, isComplete, pickOrderFor, seriesProblems, GOLGG } from "./normalize.mjs";
+import { buildAggregates, buildGame, championResolver, gameUrl, isComplete, pickOrderFor, seriesProblems, GOLGG, ROLES } from "./normalize.mjs";
+import { assetsFor, buildFromAnswer, buildUrl, ddragonVersionFor, DDRAGON, parsePlayers, referencedIds } from "./builds.mjs";
 
 const enc = encodeURIComponent;
 export const urls = {
@@ -19,11 +20,19 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const clone = (x) => JSON.parse(JSON.stringify(x));
 
 /**
- * @param data { proGames, meta, sources, champions, botPairings }  parsed data files (not modified)
+ * @param data { proGames, meta, sources, champions, botPairings, proBuilds?, buildAssets? }  parsed data files (not modified)
  * @param get  async (url, { method?, body? }) => string   throws on a network or HTTP error
- * @returns { proGames, meta, sources, changed: string[], report: string[], rejected: string[] }
+ * @returns { proGames, meta, sources, proBuilds, buildAssets, changed: string[], report: string[], rejected: string[] }
  */
-export async function refresh(data, get, { now = new Date() } = {}) {
+export async function refresh(data, get, opts = {}) {
+  // buildsOnly: leave games and tournament totals alone (a one-off builds backfill).
+  const out = opts.buildsOnly ? { proGames: data.proGames, meta: data.meta, sources: data.sources, changed: [], report: [], rejected: [] } : await refreshGames(data, get, opts);
+  const { now = new Date(), maxBuildGames = MAX_BUILD_GAMES } = opts;
+  const builds = await refreshBuilds({ ...data, proGames: out.proGames }, get, now.toISOString().slice(0, 10), maxBuildGames);
+  return { ...out, ...builds, changed: [...out.changed, ...builds.changed], report: [...out.report, ...builds.report], rejected: [...out.rejected, ...builds.rejected] };
+}
+
+async function refreshGames(data, get, { now = new Date() } = {}) {
   const today = now.toISOString().slice(0, 10);
   const proGames = clone(data.proGames), meta = clone(data.meta), sources = clone(data.sources);
   const resolve = championResolver(data.champions);
@@ -170,3 +179,93 @@ function confirmClaims(sources, game, botPairings, today, rejected) {
   delete s.pendingClaim;
   Object.assign(s, { patch: game.patch, date: game.date, lastChecked: today, refreshStatus: "verified", origin: "golgg-refresh" });
 }
+
+// ---------- Pro Builds ----------
+// Each recorded game of a tracked tournament gets every player's build once (11 requests: the game page for player
+// ids, then one build answer per player). A run takes at most `maxBuildGames` games so a backfill spreads over days.
+// A game Gol.gg has no builds for is noted in `unavailable` and asked again after RETRY_DAYS.
+export const MAX_BUILD_GAMES = 45;
+const RETRY_DAYS = 3;
+const daysBetween = (a, b) => (Date.parse(b) - Date.parse(a)) / 86400000;
+
+async function refreshBuilds(data, get, today, maxBuildGames) {
+  const proBuilds = clone(data.proBuilds ?? { builds: [], unavailable: [] });
+  const buildAssets = clone(data.buildAssets ?? { patches: {} });
+  const report = [], rejected = [], changed = new Set();
+  const resolve = championResolver(data.champions);
+  const tracked = new Set(data.proGames.tracked.map((t) => t.event));
+  const have = new Set(proBuilds.builds.map((b) => b.game));
+  const waiting = new Map(proBuilds.unavailable.map((u) => [u.game, u]));
+  const todo = data.proGames.games.filter((g) => tracked.has(g.event) && !have.has(g.id)
+    && !(waiting.has(g.id) && daysBetween(waiting.get(g.id).checkedOn, today) < RETRY_DAYS));
+  const batch = todo.slice(0, maxBuildGames);
+
+  let added = 0;
+  for (const g of batch) {
+    const players = parsePlayers(await get(gameUrl(g.id)));
+    const fresh = [], problems = [];
+    for (const side of ["blue", "red"]) {
+      const list = players?.[side] ?? [];
+      if (list.length !== 5) { problems.push(`${side} side: ${list.length} players on the game page`); continue; }
+      for (const p of list) {
+        const champion = resolve(p.champion);
+        const role = ROLES.find((r) => g[side].picks[r] === champion);
+        if (!champion || !role) { problems.push(`${side} side: ${p.champion} is not one of the recorded picks`); continue; }
+        const who = { game: g.id, side, role, champion, player: p.player, playerId: p.playerId };
+        // A failed request stops the run (nothing written); an answer that is not JSON is a missing build.
+        const body = await get(buildUrl, { method: "POST", body: `game_id=${g.id}&player_id=${p.playerId}` });
+        let answer;
+        try { answer = JSON.parse(body); } catch { answer = undefined; }
+        const built = buildFromAnswer(answer, who);
+        fresh.push(built.build ?? { ...who, missing: ["build"] });
+      }
+    }
+    if (problems.length || !fresh.some((b) => !b.missing?.includes("build"))) {
+      rejected.push(`Builds for ${g.series} game ${g.game} (${gameUrl(g.id, "page-builds")}): ${problems.join("; ") || "no build data on Gol.gg yet"}`);
+      waiting.set(g.id, { game: g.id, checkedOn: today, reason: problems.join("; ") || "no build data yet" });
+      continue;
+    }
+    waiting.delete(g.id);
+    for (const b of fresh) b.checkedOn = today;
+    proBuilds.builds.push(...fresh);
+    added += 1;
+  }
+  const order = new Map(data.proGames.games.map((g, i) => [g.id, i]));
+  proBuilds.builds.sort((a, b) => (order.get(a.game) ?? 0) - (order.get(b.game) ?? 0) || a.side.localeCompare(b.side) || ROLES.indexOf(a.role) - ROLES.indexOf(b.role));
+  proBuilds.unavailable = [...waiting.values()].sort((a, b) => a.game - b.game);
+  if (added) { report.push(`Pro builds: ${added} game${added > 1 ? "s" : ""} added (${proBuilds.builds.length} player builds stored).`); changed.add("pro-builds"); }
+  if (todo.length > batch.length) report.push(`Pro builds: ${todo.length - batch.length} more game${todo.length - batch.length > 1 ? "s" : ""} left for the next run.`);
+  if (!same(proBuilds.unavailable, data.proBuilds?.unavailable ?? [])) changed.add("pro-builds");
+
+  // Names and icons for every id the stored builds use, per game patch, from that patch's Data Dragon files.
+  const patchOf = new Map(data.proGames.games.map((g) => [g.id, g.patch]));
+  const byPatch = new Map();
+  for (const b of proBuilds.builds) { const p = patchOf.get(b.game); if (p) byPatch.set(p, [...(byPatch.get(p) ?? []), b]); }
+  let versions;
+  for (const [patch, list] of [...byPatch.entries()].sort()) {
+    const ref = referencedIds(list), cur = buildAssets.patches[patch];
+    // Ids that patch's files did not name are listed in `unnamed` and not asked for again.
+    const no = new Set(cur?.unnamed ?? []);
+    const covered = cur && [...ref.items].every((i) => cur.items[i] || no.has(`item ${i}`)) && [...ref.runes].every((r) => cur.runes[r] || no.has(`rune ${r}`))
+      && [...ref.trees].every((t) => cur.trees[t] || no.has(`rune tree ${t}`)) && [...ref.spells].every((x) => cur.spells[x] || no.has(`summoner spell ${x}`))
+      && [...ref.champions].every((c) => cur.abilities[c] || no.has(`abilities for ${c}`));
+    if (covered) continue;
+    versions ??= JSON.parse(await get(`${DDRAGON}/api/versions.json`));
+    const version = ddragonVersionFor(patch, versions);
+    if (!version) { rejected.push(`Pro builds: Data Dragon has no files for patch ${patch}; names and icons not updated.`); continue; }
+    const base = `${DDRAGON}/cdn/${version}/data/en_US`;
+    const files = {
+      item: JSON.parse(await get(`${base}/item.json`)), runesReforged: JSON.parse(await get(`${base}/runesReforged.json`)),
+      summoner: JSON.parse(await get(`${base}/summoner.json`)), championFull: JSON.parse(await get(`${base}/championFull.json`)),
+      cdragonPerks: JSON.parse(await get(CDRAGON_PERKS)),
+    };
+    const { assets, unknown } = assetsFor(ref, version, files, resolve);
+    if (unknown.length) assets.unnamed = unknown;
+    if (unknown.length) rejected.push(`Pro builds ${patch}: Data Dragon ${version} does not name ${unknown.join(", ")}; shown by id only.`);
+    if (!same(assets, cur)) { buildAssets.patches[patch] = assets; changed.add("build-assets"); report.push(`Pro builds: names and icons for patch ${patch} from Data Dragon ${version}.`); }
+  }
+  return { proBuilds, buildAssets, changed: [...changed], report, rejected };
+}
+
+// Stat shard names (Data Dragon's rune trees leave the shards out). CommunityDragon serves Riot's own game data files.
+export const CDRAGON_PERKS = "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perks.json";

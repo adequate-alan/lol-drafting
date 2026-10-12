@@ -42,12 +42,15 @@ export function ProFreshness({ items }: { items: Freshness[] }) {
   const checked = useLastRun("refresh-pro-data.yml", "pro-freshness-check");
   const updated = latest(items.map((i) => i.lastUpdate));
   const check = latest([...items.map((i) => i.lastCheck), checked]);
-  const status = (i: Freshness) => !i.listed ? "not on Gol.gg yet" : i.status === "complete" ? "Completed" : "Ongoing";
+  const status = (i: Freshness) => i.status === "complete" ? "Completed" : "Ongoing";
+  // Tracked events Gol.gg hasn't listed yet share one item instead of one "not on Gol.gg yet" each.
+  const waiting = items.filter((i) => !i.listed);
   return (
     <p className="pro-freshness xs muted">
       <span>Last updated: {day(updated) ?? "—"}</span>
       {check && <span title={new Date(check).toLocaleString("en-US", { timeZone: "America/New_York", timeZoneName: "short" })}>Last checked: {day(check)}</span>}
-      {items.map((i) => <span key={i.event}>{i.label} {status(i)}{i.listed && i.games != null ? ` · ${i.recorded}/${i.games} games recorded` : ""}</span>)}
+      {items.filter((i) => i.listed).map((i) => <span key={i.event}>{i.label} {status(i)}{i.games != null ? ` · ${i.recorded}/${i.games} games recorded` : ""}</span>)}
+      {waiting.length > 0 && <span title="Tracked by the daily refresh; Gol.gg hasn't listed these yet">Not on Gol.gg yet: {waiting.map((i) => i.label).join(", ")}</span>}
     </p>
   );
 }

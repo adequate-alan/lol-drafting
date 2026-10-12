@@ -133,7 +133,7 @@ describe("game records", () => {
 describe("daily refresh", () => {
   it("imports new completed games from tracked tournaments only", async () => {
     const { get, asked } = recorder();
-    const out = await refresh(baseData(), get, { now: NOW });
+    const out = await refresh(baseData(), get, { now: NOW, maxBuildGames: 0 });
     expect(out.proGames.games.map((g) => g.id)).toEqual([83452]);
     expect(out.changed).toEqual(["demacia-cup-2026"]);
     expect(out.report.join("\n")).toMatch(/Worlds 2026: not listed on Gol.gg yet/);
@@ -147,7 +147,7 @@ describe("daily refresh", () => {
 
   it("never computes tournament totals from a partial sample", async () => {
     const before = baseData();
-    const out = await refresh(before, recorder().get, { now: NOW });
+    const out = await refresh(before, recorder().get, { now: NOW, maxBuildGames: 0 });
     // The saved champion table covers 39 games, the shortened match list 1: the totals are refused and kept as they were.
     expect(out.rejected.join()).toMatch(/tournament totals not updated/);
     const ev = (m: typeof before.meta) => m.events.find((e) => e.id === "demacia-cup-2026")!;
@@ -156,16 +156,16 @@ describe("daily refresh", () => {
   });
 
   it("is idempotent: a second run finds nothing new, requests no game pages and changes nothing", async () => {
-    const first = await refresh(baseData(), recorder().get, { now: NOW });
+    const first = await refresh(baseData(), recorder().get, { now: NOW, maxBuildGames: 0 });
     const { get, asked } = recorder();
-    const second = await refresh({ ...baseData(), proGames: first.proGames, meta: first.meta, sources: first.sources }, get, { now: new Date("2026-10-12T12:00:00Z") });
+    const second = await refresh({ ...baseData(), proGames: first.proGames, meta: first.meta, sources: first.sources }, get, { now: new Date("2026-10-12T12:00:00Z"), maxBuildGames: 0 });
     expect(second.changed).toEqual([]);
     expect(second.proGames).toEqual(first.proGames); // the check time is stored only with a data change
     expect(asked.filter((u) => u.includes("/game/stats/"))).toEqual([]);
   });
 
   it("confirms a supplied game link only when the recorded game shows the claimed duo", async () => {
-    const out = await refresh(baseData(), recorder().get, { now: NOW });
+    const out = await refresh(baseData(), recorder().get, { now: NOW, maxBuildGames: 0 });
     const s = out.sources.find((x) => x.id === "golgg-game-83452")!;
     expect(s.pendingClaim).toBeUndefined();
     expect(s).toMatchObject({ refreshStatus: "verified", origin: "golgg-refresh", lastChecked: "2026-10-11" });
@@ -175,7 +175,7 @@ describe("daily refresh", () => {
 
   it("stops on a refused request and returns nothing to write", async () => {
     const get: Get = async () => { throw new Error("HTTP 403"); };
-    await expect(refresh(baseData(), get, { now: NOW })).rejects.toThrow(/403/);
+    await expect(refresh(baseData(), get, { now: NOW, maxBuildGames: 0 })).rejects.toThrow(/403/);
   });
 
   it("does not request a finished tournament again", async () => {
@@ -183,7 +183,7 @@ describe("daily refresh", () => {
     data.proGames.tournaments = data.proGames.tracked.map((t) => ({ event: t.event, golgg: t.names[0], status: "complete" as const, series: 1, seriesPlayed: 1, games: 1, recorded: 1,
       matchlist: urls.matchlist(t.names[0]), lastUpdate: null, lastCheck: null }));
     const { get, asked } = recorder();
-    const out = await refresh(data, get, { now: NOW });
+    const out = await refresh(data, get, { now: NOW, maxBuildGames: 0 });
     expect(asked).toEqual([]);
     expect(out.changed).toEqual([]);
   });
@@ -198,10 +198,10 @@ describe("daily refresh", () => {
 
   it("only ever writes pro-evidence files", () => {
     const src = readFileSync(join(process.cwd(), "scripts/refresh-pro-data.mjs"), "utf8");
-    const written = [...src.matchAll(/write\("([^"]+)"/g)].map((m) => m[1]).sort();
-    expect(written).toEqual(["meta.json", "pro-games.json", "sources.json"]);
+    const written = [...src.matchAll(/write\("([^"]+)"|join\(dataDir, "([^"]+)"\), compactJson/g)].map((m) => m[1] ?? m[2]).sort();
+    expect(written).toEqual(["build-assets.json", "meta.json", "pro-builds.json", "pro-games.json", "sources.json"]);
     const wf = readFileSync(join(process.cwd(), ".github/workflows/refresh-pro-data.yml"), "utf8");
-    expect(wf).toMatch(/git add data\/pro-games\.json data\/meta\.json data\/sources\.json\n/);
+    expect(wf).toMatch(/git add data\/pro-games\.json data\/meta\.json data\/sources\.json data\/pro-builds\.json data\/build-assets\.json\n/);
   });
 
   it("follows only Demacia Cup 2026 and Worlds 2026", () => {
