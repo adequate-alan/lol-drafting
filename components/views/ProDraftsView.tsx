@@ -86,8 +86,10 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
               ))}
             </div>
             {(() => {
-              // Imported games (golgg-<id>-<side>) with recorded builds link each pick to that player's build in this game.
-              const game = Number(selected.id.match(/^golgg-(\d+)-/)?.[1]);
+              // Imported games (golgg-<id>-<side>) with recorded builds link each pick to that player's build in this game;
+              // a stored LCK draft names its game through the one Gol.gg game page it cites (golgg-game-<id>).
+              const cited = selected.sources.filter((s) => /^golgg-game-\d+$/.test(s));
+              const game = Number(selected.id.match(/^golgg-(\d+)-/)?.[1] ?? (cited.length === 1 ? cited[0].slice(11) : undefined));
               return game && buildGames.includes(game) ? (
                 <p className="small game-builds"><span className="muted">Builds in this game:</span>
                   {ROLES.map((r) => <Link key={r} href={buildsHref(selected.picks[r], r, game)}>{names[selected.picks[r]] ?? selected.picks[r]}</Link>)}</p>

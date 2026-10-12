@@ -67,7 +67,9 @@ export const getPatchIndex = () => (patchIndex ??= buildPatchIndex(getPatchNotes
 // per-champion summary (games, players, newest patch) the drawer shows beside its "View Pro Builds" link.
 let buildIndex: ChampionBuilds[] | undefined;
 export const getBuildGames = () => [...new Set(load("pro-builds.json").builds.map((b) => b.game))];
-export const getBuildIndex = () => (buildIndex ??= championIndex(load("pro-builds.json").builds, getProGames().games));
+/** Every game a stored build belongs to: the tracked games plus the archive records kept with the builds (LCK playoffs). */
+export const getBuildGameRecords = () => [...getProGames().games, ...(load("pro-builds.json").games ?? [])];
+export const getBuildIndex = () => (buildIndex ??= championIndex(load("pro-builds.json").builds, getBuildGameRecords()));
 
 // Everything the interactive Draft Room needs in the browser.
 export function getDraftData() {

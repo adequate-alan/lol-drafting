@@ -721,6 +721,39 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .pin-icon { flex: none; width: 12px; height: 12px; fill: none; stroke: var(--text-faint); stroke-width: 1.1; stroke-linejoin: round; vertical-align: -1px; margin-right: 3px; }
 .pin-icon.on { fill: var(--accent); stroke: var(--accent); }
 .rail-player { color: var(--text); }
+.player-options { margin: 0; padding: 0; list-style: none; }
+.pinned-only { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: var(--s2); width: 100%; min-height: 26px; padding: 0 var(--s3); margin-bottom: var(--s1);
+  border-bottom: 1px solid var(--border); font-size: var(--fs-xs); color: var(--text-muted); cursor: pointer; }
+.pinned-only:hover, .pinned-only.on { color: var(--text); }
+.pinned-only:focus-visible { box-shadow: var(--focus-ring); }
+/* Pinned Players (/pro-builds/pinned/, components/views/PinnedPlayersView.tsx): rail of pinned players, overview table,
+   one profile with champions, that champion's builds and the match history */
+.builds-views { font-size: var(--fs-sm); }
+.builds-views .count { color: var(--text-faint); font-family: var(--font-mono); font-size: var(--fs-xs); }
+.rail-tools.one { grid-template-columns: minmax(0, 1fr); }
+.rail-player-row { display: flex; align-items: center; gap: var(--s1); }
+.pick-rail li.rail-player-row > button:first-child { flex: 1; min-width: 0; }
+.pick-rail li.rail-player-row > button.pin-btn { flex: none; width: auto; padding: var(--s2); margin-right: var(--s2); }
+.pick-rail li.rail-player-row > button.pin-btn .pin-icon { margin: 0; }
+.champ.empty-icon { border: 1px dashed var(--border); background: transparent; }
+.pinned-empty { display: grid; gap: var(--s2); padding: var(--s5); border: 1px dashed var(--border-strong); border-radius: var(--r-lg); }
+.pinned-table td .pin-btn .pin-icon { margin: 0; }
+.champ-strip { display: inline-flex; align-items: center; gap: 2px; }
+.form { display: inline-flex; gap: 3px; font-family: var(--font-mono); font-size: var(--fs-xs); }
+.player-facts { display: flex; flex-wrap: wrap; gap: var(--s3) var(--s6); margin: 0; }
+.player-facts div { display: grid; gap: 1px; }
+.player-facts dt { color: var(--text-muted); font-size: var(--fs-xs); }
+.player-facts dd { margin: 0; }
+.builds-tools.inner { padding-bottom: var(--s3); }
+.table-wrap.flat { border: 0; border-radius: 0; background: transparent; }
+.builds-links { display: inline-flex; gap: var(--s4); }
+.build-lines { display: grid; margin: 0; padding: 0; list-style: none; }
+.build-lines li + li { border-top: 1px solid var(--border); }
+.build-line { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s5); padding: var(--s3) var(--s2); color: var(--text); border-radius: var(--r-sm); }
+.build-line:hover { background: var(--surface-hover); text-decoration: none; }
+.build-line-when { display: inline-grid; grid-template-columns: auto auto auto; gap: var(--s3); min-width: 110px; }
+.build-line-part { display: inline-flex; align-items: center; gap: 2px; }
+@media (max-width: 760px) { .hide-phone { display: none; } }
 .game-builds { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s4); }
 .drawer-builds { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2) var(--s4); margin: 0; }
 .rail-tools { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s3); flex: none; }

@@ -278,6 +278,10 @@ export type ProBuild = z.infer<typeof ProBuild>;
 export const ProBuilds = z.object({
   builds: z.array(ProBuild),
   unavailable: z.array(z.object({ game: z.number().int().positive(), checkedOn: Day, reason: z.string() })),
+  // Game records for builds from an archive tournament the daily refresh does not track (the LCK 2026 Season Playoffs,
+  // backfilled once by scripts/backfill-lck-builds.mjs, alan 2026-10-12). Read by Pro Builds only: they are not in
+  // pro-games.json, so they never feed Pro Drafts, Pro Priority, tournament totals or saved pairings.
+  games: z.array(ProGame).optional(),
 });
 export type ProBuilds = z.infer<typeof ProBuilds>;
 // Names, icons and short stats from the game patch's Data Dragon files, for exactly the ids the builds use.
