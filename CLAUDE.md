@@ -149,8 +149,12 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   timeline, spells with casts, side, result, Gol.gg source), Common build (counts per field against the games that
   recorded it; full rune pages only from complete pages) and Compare (two games side by side with their differences).
   Every selection is in the URL (`champion`, `role`, `game`, `mode`, `a`, `b`, filters); `buildsHref` builds links.
-  The rail search also finds players; the player filter is typeable (`components/PlayerPicker.tsx`) and players can be
-  pinned (alan, 2026-10-12): pins live in this browser's localStorage only, list first and are starred in the game strip.
+  The rail search also finds players; the tournament, team and player filters are typeable (`PinPicker` in
+  `components/PlayerPicker.tsx`) and each can be pinned (alan, 2026-10-12): pins live in this browser's localStorage
+  only, one list per kind, list first, and pinned players and teams are starred in the game strip.
+  LCK 2026 Season Playoffs builds were backfilled once (`scripts/backfill-lck-builds.mjs`, alan 2026-10-12); their game
+  records live in `pro-builds.json` `games`, read by Pro Builds only, never by drafts, priority or totals. The daily
+  refresh never requests them.
   The drawer shows only a count, players, latest patch and "View Pro Builds →" (`getBuildIndex`); Synergies and Pro
   Drafts (each pick of a recorded game) link in too. Observed Pro Evidence only: it never scores and never touches saved
   pairings, rankings, Comp Check or pool tiers.

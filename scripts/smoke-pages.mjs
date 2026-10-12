@@ -663,7 +663,7 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   }
   // Player filter: type to find a player, pin them (saved in this browser), pinned players first
   {
-    const picker = page.locator(".player-picker input");
+    const picker = page.locator(".player-picker input[aria-label='Player']");
     const first = await page.locator(".build-pick b").first().textContent();
     await picker.fill(first.slice(0, 3));
     const opts = await page.locator(".player-menu [role=option]").allTextContents();
@@ -681,6 +681,25 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     check("builds: choosing a player filters the games to that player", (await page.locator(".build-pick b").allTextContents()).every((p) => p === pinned) && page.url().includes("player="), page.url());
     await page.evaluate(() => localStorage.removeItem("pro-builds:pinned-players"));
     await page.locator(".builds-tools button", { hasText: "Clear filters" }).click();
+    // Teams and tournaments pin the same way (one list each, saved in this browser); a pinned team is starred in the strip.
+    const teamPicker = page.locator(".player-picker input[aria-label='Team']");
+    await teamPicker.click();
+    const teamOpt = page.locator(".player-menu [role=option]").last();
+    const team = (await teamOpt.textContent()).trim();
+    await teamOpt.locator(".pin-btn").click();
+    await page.keyboard.press("Escape");
+    await teamPicker.click();
+    const firstTeam = (await page.locator(".player-menu [role=option]").nth(1).textContent()).trim();
+    await page.keyboard.press("Escape");
+    const savedTeams = await page.evaluate(() => localStorage.getItem("pro-builds:pinned-teams"));
+    check("builds: a pinned team is saved and listed first", firstTeam === team && (savedTeams ?? "").includes(team), `${team} · first: ${firstTeam}`);
+    const eventPicker = page.locator(".player-picker input[aria-label='Tournament']");
+    await eventPicker.click();
+    await page.locator(".player-menu [role=option]").last().locator(".pin-btn").click();
+    await page.keyboard.press("Escape");
+    const savedEvents = await page.evaluate(() => localStorage.getItem("pro-builds:pinned-tournaments"));
+    check("builds: a tournament can be pinned", (JSON.parse(savedEvents ?? "[]")).length === 1, savedEvents ?? "none");
+    await page.evaluate(() => { localStorage.removeItem("pro-builds:pinned-teams"); localStorage.removeItem("pro-builds:pinned-tournaments"); });
   }
   await page.locator(".builds-tools [role=tab]", { hasText: "Common build" }).click();
   await page.waitForTimeout(200);

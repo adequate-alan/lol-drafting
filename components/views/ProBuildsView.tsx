@@ -16,7 +16,7 @@ import {
   itemName, runeName, spellName, treeName,
 } from "@/components/BuildParts";
 import { ChampionProvider } from "@/components/ChampionInteraction";
-import { PinIcon, PlayerPicker, usePins } from "@/components/PlayerPicker";
+import { PinIcon, PinPicker, usePins } from "@/components/PlayerPicker";
 import { InteractiveChampion } from "@/components/InteractiveChampion";
 import { Select } from "@/components/Select";
 import { ChampIcon, PageHeader, Panel } from "@/components/ui";
@@ -149,13 +149,15 @@ export function ProBuildsView({ index, names, events, drawerData }: {
             </div>
 
             <div className="builds-tools">
-              {filters.filter((x) => x.k !== "player").map((x) => (
-                <Select key={x.k} label={x.label} value={x.k === "patch" && get("patch") ? patchKey(get("patch")!) : get(x.k) ?? ""}
+              {filters.map((x) => x.k === "patch" ? (
+                <Select key={x.k} label={x.label} value={get("patch") ? patchKey(get("patch")!) : ""}
                   options={[{ value: "", label: x.all }, ...x.opts.map(([value, label]) => ({ value, label }))]}
+                  onChange={(v) => update({ patch: v || undefined, game: undefined, a: undefined, b: undefined })} />
+              ) : (
+                // Tournament, team and player are typeable and pinnable (alan, 2026-10-12).
+                <PinPicker key={x.k} kind={x.k} value={get(x.k) ?? ""} options={x.opts}
                   onChange={(v) => update({ [x.k]: v || undefined, game: undefined, a: undefined, b: undefined })} />
               ))}
-              <PlayerPicker value={get("player") ?? ""} players={filters.find((x) => x.k === "player")!.opts.map(([v]) => v)}
-                onChange={(v) => update({ player: v || undefined, game: undefined, a: undefined, b: undefined })} />
               {active.length > 0 && <button type="button" className="btn sm ghost" onClick={() => update(Object.fromEntries([...active, "game", "a", "b"].map((k) => [k, undefined])))}>Clear filters</button>}
               <div className="seg push" role="tablist" aria-label="View">
                 {MODES.map(([m, l]) => <button key={m} type="button" role="tab" aria-selected={mode === m} className={mode === m ? "active" : undefined} onClick={() => update({ mode: m === "games" ? undefined : m })}>{l}</button>)}
@@ -180,6 +182,7 @@ function GamesView({ rows, current, name, evName, onPick }: {
   rows: BuildRow[]; current?: string; name: (id: string) => string; evName: (r: BuildRow) => string; onPick: (game: number) => void;
 }) {
   const { isPinned } = usePins();
+  const team = usePins("team");
   const r = rows.find((x) => String(x.game.id) === current) ?? rows[0];
   return (
     <>
@@ -187,7 +190,7 @@ function GamesView({ rows, current, name, evName, onPick }: {
         {rows.map((x) => (
           <button key={x.key} type="button" role="option" aria-selected={x === r} className={`build-pick side-${x.side} ${x === r ? "active" : ""}`} onClick={() => onPick(x.game.id)}
             title={`${x.build.player} (${x.team}) vs ${x.opponentTeam}\n${evName(x)} · ${patchLabel(x.game.patch)} · ${shortDate(x.game.date)} · ${x.side} side · ${x.won ? "win" : "loss"}`}>
-            <span className="small nowrap">{isPinned(x.build.player) && <PinIcon on />}<b>{x.build.player}</b> <span className="muted">{x.team}</span></span>
+            <span className="small nowrap">{isPinned(x.build.player) && <PinIcon on />}<b>{x.build.player}</b> <span className="muted">{team.isPinned(x.team) && <PinIcon on />}{x.team}</span></span>
             <span className="xs muted nowrap">{x.opponent && <>vs {name(x.opponent.champion)} · </>}{shortDate(x.game.date)} <span className={x.won ? "win" : "loss"}>{x.won ? "W" : "L"}</span></span>
           </button>
         ))}

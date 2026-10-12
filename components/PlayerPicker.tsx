@@ -1,30 +1,33 @@
 "use client";
-// Player filter for the Pro Builds page (alan, 2026-10-12): type to find a player, and pin the players you follow.
-// Pins are a per-browser convenience kept in localStorage (the site has no accounts); pinned players are listed first
-// and marked in the game strip. Reuses the shared dropdown's surface (.select-trigger / .select-menu).
+// Typeable filters for the Pro Builds page (alan, 2026-10-12): type to find a player, team or tournament, and pin the
+// ones you follow. Pins are a per-browser convenience kept in localStorage (the site has no accounts), one list per kind;
+// pinned entries are listed first and marked in the game strip. Reuses the shared dropdown's surface
+// (.select-trigger / .select-menu).
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 
-const KEY = "pro-builds:pinned-players";
+export type PinKind = "player" | "team" | "event";
+const KEYS: Record<PinKind, string> = { player: "pro-builds:pinned-players", team: "pro-builds:pinned-teams", event: "pro-builds:pinned-tournaments" };
 const EVENT = "pro-builds:pins";
 
-const readPins = (): string[] => {
-  try { const v = JSON.parse(localStorage.getItem(KEY) ?? "[]"); return Array.isArray(v) ? v.filter((x) => typeof x === "string") : []; }
+const readPins = (kind: PinKind): string[] => {
+  try { const v = JSON.parse(localStorage.getItem(KEYS[kind]) ?? "[]"); return Array.isArray(v) ? v.filter((x) => typeof x === "string") : []; }
   catch { return []; }
 };
 
-/** Pinned player names, saved in this browser and shared by every picker on the page. */
-export function usePins() {
+/** Pinned players (or teams, or tournament ids), saved in this browser and shared by every picker on the page. */
+export function usePins(kind: PinKind = "player") {
   const [pins, setPins] = useState<string[]>([]);
   useEffect(() => {
-    const sync = () => setPins(readPins());
+    const sync = () => setPins(readPins(kind));
     sync();
     window.addEventListener("storage", sync);
     window.addEventListener(EVENT, sync);
     return () => { window.removeEventListener("storage", sync); window.removeEventListener(EVENT, sync); };
-  }, []);
+  }, [kind]);
   const toggle = (name: string) => {
-    const next = readPins().includes(name) ? readPins().filter((p) => p !== name) : [...readPins(), name];
-    try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* private mode: pins last for this page only */ }
+    const now = readPins(kind);
+    const next = now.includes(name) ? now.filter((p) => p !== name) : [...now, name];
+    try { localStorage.setItem(KEYS[kind], JSON.stringify(next)); } catch { /* private mode: pins last for this page only */ }
     setPins(next);
     window.dispatchEvent(new Event(EVENT));
   };
@@ -39,10 +42,19 @@ export function PinIcon({ on }: { on: boolean }) {
   );
 }
 
-/** A typeable player filter: "" means all players. `players` are the names in the current scope. */
-export function PlayerPicker({ value, players, onChange }: { value: string; players: string[]; onChange: (v: string) => void }) {
+const NOUN: Record<PinKind, [string, string]> = { player: ["Player", "players"], team: ["Team", "teams"], event: ["Tournament", "tournaments"] };
+
+/**
+ * A typeable, pinnable filter: "" means all. `options` are [value, label] in the current scope (a tournament is pinned
+ * by its event id and shown by its name).
+ */
+export function PinPicker({ kind, value, options: entries, onChange }: { kind: PinKind; value: string; options: [string, string][]; onChange: (v: string) => void }) {
   const id = useId();
-  const { isPinned, toggle } = usePins();
+  const { isPinned, toggle } = usePins(kind);
+  const [noun, plural] = NOUN[kind];
+  const labelOf = new Map(entries);
+  const label = (v: string) => (v ? labelOf.get(v) ?? v : `All ${plural}`);
+  const players = entries.map(([v]) => v);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
@@ -51,9 +63,9 @@ export function PlayerPicker({ value, players, onChange }: { value: string; play
   const list = useRef<HTMLUListElement>(null);
 
   const q = query.trim().toLowerCase();
-  const sorted = [...players].sort((a, b) => Number(isPinned(b)) - Number(isPinned(a)) || a.localeCompare(b));
-  const shown = q ? sorted.filter((p) => p.toLowerCase().includes(q)) : sorted;
-  const options = q ? shown : ["", ...shown]; // "" = all players
+  const sorted = [...players].sort((a, b) => Number(isPinned(b)) - Number(isPinned(a)) || label(a).localeCompare(label(b)));
+  const shown = q ? sorted.filter((p) => label(p).toLowerCase().includes(q)) : sorted;
+  const options = q ? shown : ["", ...shown]; // "" = all
 
   useEffect(() => {
     if (!open) return;
@@ -78,32 +90,37 @@ export function PlayerPicker({ value, players, onChange }: { value: string; play
     <div ref={box} className="player-picker">
       <div className={`select-trigger ${value ? "is-set" : ""}`} onClick={() => { setOpen(true); input.current?.focus(); }}>
         {value && !query && isPinned(value) && <PinIcon on />}
-        <input ref={input} type="text" role="combobox" aria-label="Player" aria-autocomplete="list" aria-expanded={open} aria-controls={listId}
+        <input ref={input} type="text" role="combobox" aria-label={noun} aria-autocomplete="list" aria-expanded={open} aria-controls={listId}
           aria-activedescendant={open && options.length ? `${id}-${active}` : undefined}
-          placeholder={value || "All players"} value={query} spellCheck={false} autoComplete="off"
+          placeholder={label(value)} value={query} spellCheck={false} autoComplete="off"
           onFocus={() => { setOpen(true); setActive(Math.max(0, options.indexOf(value))); }}
           onChange={(e) => { setQuery(e.target.value); setOpen(true); setActive(0); }} onKeyDown={onKey} />
         <svg className="select-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </div>
       {open && (
-        <ul ref={list} id={listId} role="listbox" aria-label="Players" className="select-menu player-menu">
+        <ul ref={list} id={listId} role="listbox" aria-label={plural} className="select-menu player-menu">
           {options.map((p, i) => (
             <li key={p || "all"} id={`${id}-${i}`} role="option" aria-selected={p === value} data-value={p}
               className={`select-option ${i === active ? "is-active" : ""} ${p && isPinned(p) && !isPinned(options[i + 1] ?? "") && options[i + 1] ? "last-pinned" : ""}`.trim()}
               onMouseDown={(e) => e.preventDefault()} onMouseMove={() => i !== active && setActive(i)} onClick={() => pick(p)}>
-              <span className="select-label">{p || "All players"}</span>
+              <span className="select-label">{label(p)}</span>
               {p && (
-                <button type="button" className="pin-btn" aria-pressed={isPinned(p)} aria-label={`${isPinned(p) ? "Unpin" : "Pin"} ${p}`}
-                  title={isPinned(p) ? "Pinned: listed first, saved in this browser" : "Pin this player"}
+                <button type="button" className="pin-btn" aria-pressed={isPinned(p)} aria-label={`${isPinned(p) ? "Unpin" : "Pin"} ${label(p)}`}
+                  title={isPinned(p) ? "Pinned: listed first, saved in this browser" : `Pin this ${noun.toLowerCase()}`}
                   onMouseDown={(e) => e.preventDefault()} onClick={(e) => { e.stopPropagation(); toggle(p); }}>
                   <PinIcon on={isPinned(p)} />
                 </button>
               )}
             </li>
           ))}
-          {!options.length && <li className="select-option empty">No player matches “{query}”</li>}
+          {!options.length && <li className="select-option empty">No {noun.toLowerCase()} matches “{query}”</li>}
         </ul>
       )}
     </div>
   );
+}
+
+/** The player filter (kept for its callers): a PinPicker over player names. */
+export function PlayerPicker({ value, players, onChange }: { value: string; players: string[]; onChange: (v: string) => void }) {
+  return <PinPicker kind="player" value={value} options={players.map((p) => [p, p])} onChange={onChange} />;
 }
