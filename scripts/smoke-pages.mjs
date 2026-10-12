@@ -654,6 +654,7 @@ await open("/patch-notes/");
   await open("/pool/?role=SUPPORT&champ=nautilus");
   await page.locator("#pool-SUPPORT-nautilus .champ-btn").first().click();
   await page.locator(".drawer-patch summary").click();
+  await page.locator(".drawer-patch .disclosure-body a[href*='patch-notes']").first().waitFor({ timeout: 5000 }).catch(() => {});
   const dp = await text(".drawer-patch");
   check("drawer: patch changes with a link to the patch notes", /since 26\.16/.test(dp) && (await page.locator(".drawer-patch a[href*='patch-notes']").count()) > 0, dp.slice(0, 120));
   await page.keyboard.press("Escape");
