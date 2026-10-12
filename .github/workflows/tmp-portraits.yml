@@ -17,7 +17,7 @@ jobs:
       - run: node scripts/find-player-portraits.mjs
       - if: always()
         run: |
-          git add -f reports/player-portrait-candidates.json || exit 0
+          git add -f reports/player-portrait-candidates.json reports/portrait-candidates || exit 0
           git diff --cached --quiet && exit 0
           git -c user.name="adequate-alan" -c user.email="54249725+adequate-alan@users.noreply.github.com" commit -m "Portrait candidates report (temporary)" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>" --trailer "Claude-Session: https://claude.ai/code/session_01JJeBPV7WTDh9Y2qHpui2kf"
           git push

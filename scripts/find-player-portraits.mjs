@@ -19,7 +19,6 @@ const get = async (url) => {
   if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`);
   return res.json();
 };
-const LOL = /league of legends|lol\b|esports|e-sports|pro(fessional)? gamer|video game player/i;
 
 const builds = read("pro-builds.json");
 const games = new Map([...read("pro-games.json").games, ...(builds.games ?? [])].map((g) => [g.id, g]));
@@ -29,33 +28,57 @@ for (const b of builds.builds) {
   if (!players.has(b.playerId) || g.date > players.get(b.playerId).date) players.set(b.playerId, { id: b.playerId, name: b.player, team: g[b.side].team, role: b.role, date: g.date });
 }
 
+// Every person on Wikidata who plays League of Legends (Q223341) or is a professional gamer described as one, with
+// labels, aliases, teams and image. A player matches only an item whose label or alias is exactly their name.
+const SPARQL = `SELECT ?item ?itemLabel ?itemDescription ?image
+  (GROUP_CONCAT(DISTINCT ?alias; separator="|") AS ?aliases) (GROUP_CONCAT(DISTINCT ?teamLabel; separator="|") AS ?teams) WHERE {
+  ?item wdt:P31 wd:Q5 .
+  { ?item wdt:P2416 wd:Q223341 } UNION { ?item wdt:P641 wd:Q223341 } UNION { ?item wdt:P106 wd:Q4379701 . ?item schema:description ?d . FILTER(LANG(?d) = "en" && CONTAINS(LCASE(?d), "league of legends")) }
+  OPTIONAL { ?item wdt:P18 ?image }
+  OPTIONAL { ?item skos:altLabel ?alias . FILTER(LANG(?alias) IN ("en", "ko", "mul")) }
+  OPTIONAL { ?item wdt:P54 ?team . ?team rdfs:label ?teamLabel . FILTER(LANG(?teamLabel) = "en") }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en,mul,ko". }
+} GROUP BY ?item ?itemLabel ?itemDescription ?image`;
+const sparql = await get(`https://query.wikidata.org/sparql?format=json&query=${encodeURIComponent(SPARQL)}`);
+const people = new Map();
+for (const b of sparql.results.bindings) {
+  const id = b.item.value.split("/").pop();
+  const e = people.get(id) ?? { wikidata: id, label: b.itemLabel?.value, description: b.itemDescription?.value, aliases: new Set(), teams: new Set(), images: new Set() };
+  for (const a of (b.aliases?.value ?? "").split("|").filter(Boolean)) e.aliases.add(a);
+  for (const t of (b.teams?.value ?? "").split("|").filter(Boolean)) e.teams.add(t);
+  if (b.image) e.images.add(decodeURIComponent(b.image.value.split("/").pop()).replace(/_/g, " "));
+  people.set(id, e);
+}
+console.log(`${people.size} League of Legends players on Wikidata.`);
+const norm = (x) => x.toLowerCase().replace(/[^a-z0-9가-힣]/g, "");
+
 const out = [];
+mkdirSync("reports/portrait-candidates", { recursive: true });
 for (const p of [...players.values()].sort((a, b) => a.team.localeCompare(b.team) || a.name.localeCompare(b.name))) {
   const row = { ...p, candidates: [] };
   try {
-    const s = await get(`https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(p.name)}&language=en&type=item&limit=10&format=json`);
-    const hits = (s.search ?? []).filter((h) => LOL.test(h.description ?? ""));
-    if (hits.length) {
-      const ents = await get(`https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${hits.map((h) => h.id).join("|")}&props=claims|labels|aliases|descriptions|sitelinks&languages=en|ko&format=json`);
-      for (const h of hits) {
-        const e = ents.entities[h.id];
-        const image = e.claims?.P18?.[0]?.mainsnak?.datavalue?.value;
-        const c = { wikidata: h.id, label: e.labels?.en?.value, description: e.descriptions?.en?.value, aliases: (e.aliases?.en ?? []).map((a) => a.value),
-          enwiki: e.sitelinks?.enwiki?.title, image };
-        if (image) {
-          const info = await get(`https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(`File:${image}`)}&prop=imageinfo|categories&iiprop=url|size|extmetadata|mime&iiurlwidth=480&format=json`);
-          const page = Object.values(info.query.pages)[0], ii = page.imageinfo?.[0], m = ii?.extmetadata ?? {};
-          const v = (k) => m[k]?.value?.replace(/<[^>]+>/g, "").trim();
-          Object.assign(c, { file: page.title, url: ii?.url, thumb: ii?.thumburl, width: ii?.width, height: ii?.height, mime: ii?.mime,
-            license: v("LicenseShortName"), licenseUrl: v("LicenseUrl"), artist: v("Artist"), credit: v("Credit"), descriptionText: v("ImageDescription"),
-            dateTaken: v("DateTimeOriginal"), categories: (page.categories ?? []).map((x) => x.title), descriptionUrl: ii?.descriptionurl });
+    const hits = [...people.values()].filter((e) => [e.label, ...e.aliases].some((n) => n && norm(n) === norm(p.name)));
+    for (const e of hits) {
+      const c = { wikidata: e.wikidata, label: e.label, description: e.description, aliases: [...e.aliases], teams: [...e.teams], images: [] };
+      for (const image of e.images) {
+        const info = await get(`https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(`File:${image}`)}&prop=imageinfo|categories&iiprop=url|size|extmetadata|mime&iiurlwidth=800&format=json`);
+        const page = Object.values(info.query.pages)[0], ii = page.imageinfo?.[0], m = ii?.extmetadata ?? {};
+        const v = (k) => m[k]?.value?.replace(/<[^>]+>/g, "").trim();
+        const img = { file: page.title, url: ii?.url, thumb: ii?.thumburl, thumbWidth: ii?.thumbwidth, thumbHeight: ii?.thumbheight, width: ii?.width, height: ii?.height,
+          license: v("LicenseShortName"), licenseUrl: v("LicenseUrl"), usageTerms: v("UsageTerms"), artist: v("Artist"), credit: v("Credit"),
+          descriptionText: v("ImageDescription"), dateTaken: v("DateTimeOriginal"), categories: (page.categories ?? []).map((x) => x.title), descriptionUrl: ii?.descriptionurl };
+        // A copy of the 800px Commons thumbnail, for checking the person and choosing the crop.
+        if (img.thumb) {
+          const res = await fetch(img.thumb, { headers: { "User-Agent": UA } });
+          if (res.ok) { img.local = `reports/portrait-candidates/${p.id}-${e.wikidata}.${img.thumb.split(".").pop().toLowerCase().slice(0, 4)}`; writeFileSync(img.local, Buffer.from(await res.arrayBuffer())); }
         }
-        row.candidates.push(c);
+        c.images.push(img);
       }
+      row.candidates.push(c);
     }
   } catch (e) { row.error = String(e.message ?? e); }
   out.push(row);
-  console.log(`${p.name} (${p.team}): ${row.candidates.length} candidate${row.candidates.length === 1 ? "" : "s"}${row.candidates.some((c) => c.image) ? ", with image" : ""}${row.error ? ` [${row.error}]` : ""}`);
+  console.log(`${p.name} (${p.team}): ${row.candidates.map((c) => `${c.wikidata} ${c.label} [${c.teams.join(", ")}] ${c.images.length} image(s)`).join("; ") || "no match"}${row.error ? ` [${row.error}]` : ""}`);
 }
 mkdirSync("reports", { recursive: true });
 writeFileSync("reports/player-portrait-candidates.json", JSON.stringify(out, null, 2) + "\n");
