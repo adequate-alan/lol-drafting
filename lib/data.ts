@@ -83,3 +83,12 @@ export function getDrawerData() {
   };
 }
 export type DrawerData = ReturnType<typeof getDrawerData>;
+
+// Champions whose only mid/jungle profile is a jungle one: where an old combined Mid / Jungle link without a role goes.
+export const jungleOnlyIds = () => {
+  const mj = getMidJungle();
+  const plays = (id: string, role: "MID" | "JUNGLE") => mj.some((r) => r.anchor === id && r.role === role)
+    || getChampions().some((c) => c.id === id && !c.rosterOnly && c.roles.includes(role));
+  const ids = new Set([...mj.map((r) => r.anchor), ...getChampions().filter((c) => c.roles.includes("JUNGLE")).map((c) => c.id)]);
+  return [...ids].filter((id) => plays(id, "JUNGLE") && !plays(id, "MID")).sort();
+};

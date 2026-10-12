@@ -28,7 +28,7 @@ async function choose(trigger, value) {
 async function h1() { return (await page.locator("main h1").first().textContent())?.trim(); }
 
 // Sections, direct loads and refreshes
-const sections = [["/", "Draft Room"], ["/synergies/bot/", "Champion Synergies"], ["/synergies/support/", "Champion Synergies"], ["/synergies/mid-jungle/", "Champion Synergies"], ["/synergies/top/", "Champion Synergies"],
+const sections = [["/", "Draft Room"], ...["top", "jungle", "mid", "bot", "support"].map((t) => [`/synergies/${t}/`, "Champion Synergies"]),
   ["/comps/", "Comp Library"], ["/pool/", "Champion Pool"], ["/pro-drafts/", "Pro Drafts"], ["/geng/", "Gen.G"], ["/meta/", "Meta / Research"]];
 for (const [path, title] of sections) {
   const res = await open(path);
@@ -42,15 +42,29 @@ for (const path of ["/pool", "/meta", "/synergies/bot"]) {
   const res = await open(path);
   check(`no-slash URL ${path}`, res.status() === 200 && !!(await h1()), `${res.status()} -> ${page.url()}`);
 }
-// Champion Synergies (First Pick until 2026-10-10): the index forwards to Bot; old /first-pick/ links keep working, query included
+// Champion Synergies (First Pick until 2026-10-10): the index forwards to Bot; old /first-pick/ links keep working, query included.
+// The combined Mid / Jungle tab (until 2026-10-12) forwards to the champion's own role tab.
 for (const [from, to] of [["/synergies/", "/synergies/bot/"], ["/first-pick/", "/synergies/bot/"], ["/first-pick/support/", "/synergies/support/"],
-  ["/first-pick/mid-jungle/?champ=fizz&role=MID", "/synergies/mid-jungle/?champ=fizz&role=MID"]]) {
+  ["/first-pick/mid-jungle/?champ=fizz&role=MID", "/synergies/mid/?champ=fizz&role=MID"], ["/synergies/mid-jungle/?champ=vi&role=JUNGLE", "/synergies/jungle/?champ=vi&role=JUNGLE"],
+  ["/synergies/mid-jungle/?champ=sejuani", "/synergies/jungle/?champ=sejuani"], ["/synergies/mid-jungle/", "/synergies/mid/"]]) {
   await open(from);
-  await page.waitForURL((u) => u.pathname.includes("/synergies/") && u.pathname.endsWith("/") && !u.pathname.endsWith("/synergies/"), { timeout: 5000 }).catch(() => {});
+  await page.waitForURL((u) => u.pathname.includes("/synergies/") && u.pathname.endsWith("/") && !u.pathname.endsWith("/synergies/") && !u.pathname.includes("mid-jungle"), { timeout: 5000 }).catch(() => {});
   const u = new URL(page.url());
   check(`${from} forwards to ${to}`, u.pathname + u.search === new URL(base).pathname + to && (await h1()) === "Champion Synergies", page.url());
 }
-check("Champion Synergies page title", (await page.title()) === "Champion Synergies · Draft Assistant", await page.title());
+check("Champion Synergies page title names the role", (await page.title()) === "Mid · Champion Synergies · Draft Assistant", await page.title());
+// One tab per role, in draft order, and each role's rail holds only that role's records
+{
+  await open("/synergies/jungle/");
+  const tabs = await page.locator("nav.tabs a").allTextContents();
+  check("synergies: tabs read Top | Jungle | Mid | Bot | Support", tabs.join("|") === "Top|Jungle|Mid|Bot|Support", tabs.join("|"));
+  const jungle = await page.locator(".pick-rail .rail-name").allTextContents();
+  check("synergies: Jungle rail lists Jarvan IV, not Akali", jungle.includes("Jarvan IV") && !jungle.includes("Akali"), `${jungle.length} rows`);
+  await open("/synergies/mid/?champ=akali");
+  const mid = await page.locator(".pick-rail .rail-name").allTextContents();
+  check("synergies: Mid rail lists Akali, not Jarvan IV, with jungle partners", mid.includes("Akali") && !mid.includes("Jarvan IV")
+    && /Preferred jungle/.test((await page.locator(".scout .layer.clash").first().textContent()) ?? ""), `${mid.length} rows`);
+}
 
 // CSS applied (dark navy nav)
 await open("/");
@@ -410,7 +424,7 @@ await page.locator(".theme-toggle").click();
 }
 // Champion Synergies: a champion with no saved record gets a Proposed profile (alan, 2026-10-10), notes inside their column
 {
-  await open("/synergies/mid-jungle/?champ=fizz&role=MID");
+  await open("/synergies/mid/?champ=fizz");
   const prop = page.locator(".scout .layer.clash.proposed");
   const text = (await prop.first().textContent().catch(() => "")) ?? "";
   check("synergies: Fizz mid gets proposed jungle partners, labelled Proposed · kit-based", (await page.locator(".pick-rail a.active .rail-name").textContent().catch(() => "")) === "Fizz"

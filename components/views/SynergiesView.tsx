@@ -11,24 +11,23 @@ import { ScoutingReport } from "@/components/ScoutingReport";
 import type { DrawerData } from "@/lib/data";
 import { PageHeader } from "@/components/ui";
 import type { EventMap } from "@/lib/evidence";
-import { TABS, type Tab } from "./synergy-tabs";
+import { TAB_ROLE, TABS, type Tab } from "./synergy-tabs";
 import { poolTierRank, sortBotPicks, sortMidJunglePicks } from "@/lib/synergy-order";
 import { proGames } from "@/lib/pool-stats";
 import { proposedCard, proposedPartners, shownPartners } from "@/lib/proposed";
-import type { BotPairing, MetaStat, MidJunglePairing, PoolEntry, Role, Source, TopPick } from "@/lib/schema";
+import type { BotPairing, CompShell, MetaStat, MidJunglePairing, PoolEntry, Role, Source, TopPick } from "@/lib/schema";
 
 const GRADE_ORDER = ["A", "A-", "B+", "B", "B-", "C+", "C"];
 
-export function SynergiesView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top, pool, drawerData, freshness }: {
+export function SynergiesView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top, pool, drawerData, freshness, shells }: {
   drawerData: DrawerData; tab: Tab; names: Record<string, string>; sources: Record<string, Source>; events: EventMap; stats: Record<string, MetaStat & { winRate: number }>;
-  draftLabels: Record<string, string>; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; pool: PoolEntry[]; freshness: Freshness[];
+  draftLabels: Record<string, string>; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; pool: PoolEntry[]; freshness: Freshness[]; shells: CompShell[];
 }) {
   const params = useSearchParams();
   const champ = params.get("champ") || undefined;
-  const role = params.get("role") || undefined;
   const [query, setQuery] = useState("");
   const rail = useRef<HTMLUListElement>(null);
-  let list: { id: string; label: string; sub: string; role?: string; proposed?: boolean }[] = [];
+  let list: { id: string; label: string; sub: string; proposed?: boolean }[] = [];
   let selected: CardRecord | undefined;
   const records = drawerData.proposed;
   // Every champion who plays the tab's role and has no saved record gets a profile from the proposed layer (alan,
@@ -40,7 +39,7 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
     .map((c) => {
       const pref = proposedPartners(records, c.id, role).filter((l) => !l.reverse && l.tier === "preferred");
       const first = pref.filter((l) => l.role === pref[0]?.role);
-      return { id: c.id, role, label: names[c.id], proposed: true, sub: `${tab === "mid-jungle" ? `${role === "MID" ? "Mid" : "Jungle"} · ` : ""}Proposed${first.length ? ` · ${first.map((l) => names[l.id]).join(" / ")}` : ""}` };
+      return { id: c.id, label: names[c.id], proposed: true, sub: `Proposed${first.length ? ` · ${first.map((l) => names[l.id]).join(" / ")}` : ""}` };
     });
   const profile = (id: string, role: Role): CardRecord => proposedCard(id, role, records, drawerData);
   if (tab === "bot") {
@@ -58,17 +57,16 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
     });
     const id = champ ?? list[0].id;
     if (list.some((x) => x.id === id)) selected = profile(id, "SUPPORT");
-  } else if (tab === "mid-jungle") {
-    const rows = sortMidJunglePicks(midJungle, pool, names);
-    list = [...rows.map((r) => ({ id: r.anchor, role: r.role, label: names[r.anchor], sub: `${r.role === "MID" ? "Mid" : "Jungle"} · ${r.clashDefault.map((s) => names[s]).join(" / ")}${r.status === "downgraded" ? " · downgraded" : ""}` })),
-      ...(["MID", "JUNGLE"] as const).flatMap((role) => proposedRows(role, (id) => rows.some((r) => r.anchor === id && r.role === role)))];
+  } else if (tab === "mid" || tab === "jungle") {
+    // Each role keeps its own records: a mid's profile lists jungle partners and the reverse (alan, 2026-10-12).
+    const tabRole = TAB_ROLE[tab];
+    const rows = sortMidJunglePicks(midJungle, pool, names).filter((r) => r.role === tabRole);
+    list = [...rows.map((r) => ({ id: r.anchor, label: names[r.anchor], sub: `${r.clashDefault.map((s) => names[s]).join(" / ")}${r.status === "downgraded" ? " · downgraded" : ""}` })),
+      ...proposedRows(tabRole, (id) => rows.some((r) => r.anchor === id))];
     const id = champ ?? list[0].id;
-    const r = rows.find((x) => x.anchor === id && (!role || x.role === role));
+    const r = rows.find((x) => x.anchor === id);
     if (r) selected = { kind: "mid-jungle", record: r };
-    else {
-      const p = list.find((x) => x.id === id && (!role || x.role === role));
-      if (p) selected = profile(id, p.role as Role);
-    }
+    else if (list.some((x) => x.id === id)) selected = profile(id, tabRole);
   } else {
     const rows = [...top].sort((a, b) => GRADE_ORDER.indexOf(a.blindGrade) - GRADE_ORDER.indexOf(b.blindGrade));
     list = [...rows.map((r) => ({ id: r.champion, label: names[r.champion], sub: `Blind ${r.blindGrade}${stats[r.champion] ? ` · ${stats[r.champion].picks} picks` : ""}` })),
@@ -80,9 +78,8 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
   }
   const selectedId = selected ? (selected.kind === "proposed" ? selected.id : "champion" in selected.record ? selected.record.champion : selected.record.anchor) : undefined;
 
-  const selectedRole: Role | undefined = selected && (selected.kind === "proposed" ? selected.role : selected.kind === "bot" ? "BOT" : selected.kind === "top" ? "TOP" : selected.record.role);
-  const listRole = (x: { role?: string }): Role => (tab === "bot" ? "BOT" : tab === "top" ? "TOP" : tab === "support" ? "SUPPORT" : (x.role as Role));
-  const isSelected = (x: { id: string; role?: string }) => x.id === selectedId && (tab !== "mid-jungle" || listRole(x) === selectedRole);
+  const selectedRole: Role | undefined = selected && TAB_ROLE[tab];
+  const isSelected = (x: { id: string }) => x.id === selectedId;
   // Proposed partners shown under a saved record too (a jungler's top partners, for example), and pro games for the
   // proposed pairs (evidence only).
   const extra = selected && selected.kind !== "proposed" && selectedId && selectedRole ? shownPartners(records, selectedId, selectedRole, bot) : [];
@@ -102,8 +99,8 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
       <PageHeader title="Champion Synergies"
         actions={draftHref && <Link className="btn primary sm" href={draftHref}>Open in Draft Room →</Link>} />
       <ProFreshness items={freshness} />
-      <nav className="tabs">
-        {(Object.keys(TABS) as Tab[]).map((t) => <Link key={t} href={`/synergies/${t}`} className={t === tab ? "active" : undefined}>{TABS[t]}</Link>)}
+      <nav className="tabs" aria-label="Roles">
+        {(Object.keys(TABS) as Tab[]).map((t) => <Link key={t} href={`/synergies/${t}`} className={t === tab ? "active" : undefined} aria-current={t === tab ? "page" : undefined}>{TABS[t]}</Link>)}
       </nav>
       <div className="split">
         <nav className="pick-rail" aria-label={`${TABS[tab]} champions`}>
@@ -112,9 +109,9 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
             {shown.map((x) => {
               const active = isSelected(x);
               return (
-                <li key={x.id + (x.role ?? "")} className={x.proposed ? "proposed" : undefined}>
-                  <Link href={`/synergies/${tab}?champ=${x.id}${x.role ? `&role=${x.role}` : ""}`} className={active ? "active" : undefined} aria-current={active ? "page" : undefined}>
-                    <ChampIcon id={x.id} name={x.label} role={listRole(x)} size="md" />
+                <li key={x.id} className={x.proposed ? "proposed" : undefined}>
+                  <Link href={`/synergies/${tab}?champ=${x.id}`} className={active ? "active" : undefined} aria-current={active ? "page" : undefined}>
+                    <ChampIcon id={x.id} name={x.label} role={TAB_ROLE[tab]} size="md" />
                     <span className="rail-text"><span className="rail-name">{x.label}</span><span className="rail-sub">{x.sub}</span></span>
                   </Link>
                 </li>
@@ -128,7 +125,7 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
             // Champions in the report: hover for the quick card (relation to the selected pick), click for the drawer.
             <ChampionProvider data={drawerData} focus={{ id: selectedId, role: selectedRole! }}>
               <ScoutingReport item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels}
-                proposed={extra} proCount={proCount} games={myGames} bot={bot} />
+                proposed={extra} proCount={proCount} games={myGames} bot={bot} shells={shells} />
             </ChampionProvider>
           )}
         </div>
