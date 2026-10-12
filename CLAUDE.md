@@ -107,6 +107,9 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 ## Gol.gg research rules
 
 - Gol.gg is the primary external source for pro drafts, picks, bans and team stats.
+- Gol.gg's patch 16.xx is Riot's 26.xx (alan, 2026-10-12). Every Gol.gg pull (daily refresh, Pro Builds, comp discovery,
+  `import-golgg-tournament`, any new importer) stores Gol.gg's spelling and compares through `lib/patch.ts` (`patchKey`,
+  `samePatch`), never by string; anything a person reads (site, reports, notes) says 26.xx via `patchLabel`.
 - Every source records: URL, type, tournament, team, opponent, series/game, patch, `lastChecked`, `refreshStatus`.
 - When a page is re-checked, set `lastChecked` to the date and `refreshStatus: "verified"`, `origin: "golgg-refresh"`.
 - A link and claim supplied during review gets `origin: "externally-provided"` (new sources) and a `pendingClaim`
