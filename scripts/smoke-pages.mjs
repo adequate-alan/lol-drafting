@@ -727,6 +727,14 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     await open("/pro-builds/pinned/");
     await page.waitForTimeout(300);
     check("pinned: with no pins the hub explains how to pin", /No pinned players yet/.test(await page.locator(".builds-main").innerText()), "");
+    // Player portraits: credited Commons photos load for Chovy and Ruler; a player without one shows initials, never a champion icon
+    await open("/geng/");
+    await page.waitForTimeout(500);
+    const portraits = await page.$$eval(".team-players .player-avatar img", (xs) => xs.map((i) => ({ alt: i.alt, ok: i.complete && i.naturalWidth > 0, title: i.parentElement.title })));
+    const named = (n) => portraits.find((p) => p.alt.includes(n));
+    check("portraits: Chovy and Ruler load with a photo credit", ["Chovy", "Ruler"].every((n) => named(n)?.ok && /Photo: .+ via Wikimedia Commons/.test(named(n).title)), JSON.stringify(portraits.map((p) => [p.alt, p.ok])));
+    const initials = await page.$$eval(".team-players .player-avatar.initials", (xs) => xs.map((x) => x.textContent.trim()));
+    check("portraits: players without a photo show initials", initials.length > 0 && initials.every((t) => /^[A-Z0-9]{1,2}$/i.test(t)), initials.join(","));
     await open("/pro-builds/");
     await page.locator(".build-pick").first().waitFor({ timeout: 8000 }).catch(() => {});
     // Teams and tournaments pin the same way (one list each, saved in this browser); a pinned team is starred in the strip.

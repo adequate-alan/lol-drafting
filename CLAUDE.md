@@ -188,6 +188,29 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 - The data loads as its own browser chunk when a drawer opens (`lib/pro-builds-bundle.ts`), not in every page.
   `tests/pro-builds.test.ts` holds parsing, mapping, integrity and the refresh step.
 
+## Player portraits (alan, 2026-10-12)
+
+- Professional players show a photograph in Pinned Players (rail, list, profile header), Pro Builds (player filter
+  options and trigger, game strip, game header, the chosen player's chip in every mode) and the Gen.G roster list,
+  through one component, `components/PlayerAvatar.tsx` (`xs` 20 / `sm` 24 / `md` 36 / `lg` 48 / `xl` 104 px, the
+  `--avatar-*` tokens; width and height fixed in markup, so nothing shifts while it loads). Without a checked photo it
+  shows the player's initials: never a champion icon, never a generated image, never another player's photo.
+- `data/player-portraits.json` (`PlayerPortraits` in `lib/schema.ts`) is the one library, keyed by Gol.gg player id:
+  name, team, `file` (`assets/players/<id>.webp`), Commons file page (`source`), `original` URL and width, license,
+  author, photo context, the crop in original pixels and `checkedOn`. Only Wikimedia Commons files under a free
+  license (CC BY / CC BY-SA / CC0 / public domain) are used; the credit ("Photo: author, license, via Wikimedia
+  Commons") is in the avatar tooltip and in the Pinned Players "Photo credits" Disclosure. Photos from DPM.LOL, Gol.gg,
+  team sites or social media are not reused: they carry no reuse license. No team logos (trademarks).
+- A portrait is added by hand and only when the photo is the same person: `scripts/find-player-portraits.mjs`
+  (separate from the match refresh, never run by it; a missing photo never fails an import) matches each recorded
+  player to a Wikidata League of Legends player item by exact handle, reads the Commons license metadata and writes
+  candidates to `reports/` (ignored by git) for review; a handle two players share (Effort) is left out.
+  `scripts/build-player-portraits.mjs [--from dir]` crops and resizes each listed file to a 208px webp and regenerates
+  `lib/player-portrait-images.ts` (static imports, so the files are hashed under the base path). Never commit an
+  unlisted file. Runs on a GitHub runner or alan's Mac (Commons is unreachable from Claude's cloud environments).
+- `tests/player-portraits.test.ts`: every entry names a recorded player id, license and source checks, files and image
+  map agree and stay small, the fallback has no image, the rendered avatar has fixed size and a credit.
+
 ## Patch Notes (alan, 2026-10-12)
 
 - `/patch-notes/` (sidebar "Patch Notes", under Meta / Research): Riot's official League of Legends patch notes from
