@@ -1,0 +1,152 @@
+PASS  load + refresh /  [200 "Draft Room" / after refresh "Draft Room"]
+PASS  load + refresh /synergies/top/  [200 "Champion Synergies" / after refresh "Champion Synergies"]
+PASS  load + refresh /synergies/jungle/  [200 "Champion Synergies" / after refresh "Champion Synergies"]
+PASS  load + refresh /synergies/mid/  [200 "Champion Synergies" / after refresh "Champion Synergies"]
+PASS  load + refresh /synergies/bot/  [200 "Champion Synergies" / after refresh "Champion Synergies"]
+PASS  load + refresh /synergies/support/  [200 "Champion Synergies" / after refresh "Champion Synergies"]
+PASS  load + refresh /comps/  [200 "Comp Library" / after refresh "Comp Library"]
+PASS  load + refresh /pool/  [200 "Champion Pool" / after refresh "Champion Pool"]
+PASS  load + refresh /pro-drafts/  [200 "Pro Drafts" / after refresh "Pro Drafts"]
+PASS  load + refresh /geng/  [200 "Gen.G" / after refresh "Gen.G"]
+PASS  load + refresh /meta/  [200 "Meta / Research" / after refresh "Meta / Research"]
+PASS  no-slash URL /pool  [200 -> http://localhost:8080/lol-drafting/pool/]
+PASS  no-slash URL /meta  [200 -> http://localhost:8080/lol-drafting/meta/]
+PASS  no-slash URL /synergies/bot  [200 -> http://localhost:8080/lol-drafting/synergies/bot/]
+PASS  /synergies/ forwards to /synergies/bot/  [http://localhost:8080/lol-drafting/synergies/bot/]
+PASS  /first-pick/ forwards to /synergies/bot/  [http://localhost:8080/lol-drafting/synergies/bot/]
+PASS  /first-pick/support/ forwards to /synergies/support/  [http://localhost:8080/lol-drafting/synergies/support/]
+PASS  /first-pick/mid-jungle/?champ=fizz&role=MID forwards to /synergies/mid/?champ=fizz&role=MID  [http://localhost:8080/lol-drafting/synergies/mid/?champ=fizz&role=MID]
+PASS  /synergies/mid-jungle/?champ=vi&role=JUNGLE forwards to /synergies/jungle/?champ=vi&role=JUNGLE  [http://localhost:8080/lol-drafting/synergies/jungle/?champ=vi&role=JUNGLE]
+PASS  /synergies/mid-jungle/?champ=sejuani forwards to /synergies/jungle/?champ=sejuani  [http://localhost:8080/lol-drafting/synergies/jungle/?champ=sejuani]
+PASS  /synergies/mid-jungle/ forwards to /synergies/mid/  [http://localhost:8080/lol-drafting/synergies/mid/]
+PASS  Champion Synergies page title names the role  [Mid · Champion Synergies · Draft Assistant]
+PASS  synergies: tabs read Top | Jungle | Mid | Bot | Support  [Top|Jungle|Mid|Bot|Support]
+PASS  synergies: Jungle rail lists Jarvan IV, not Akali  [53 rows]
+PASS  synergies: Mid rail lists Akali, not Jarvan IV, with jungle partners  [54 rows]
+PASS  CSS loads under base path  [rgb(9, 9, 9)]
+PASS  nav click Synergies  [http://localhost:8080/lol-drafting/synergies/bot/]
+PASS  nav click Comp Library  [http://localhost:8080/lol-drafting/comps/]
+PASS  nav click Champion Pool  [http://localhost:8080/lol-drafting/pool/]
+PASS  nav click Pro Drafts  [http://localhost:8080/lol-drafting/pro-drafts/]
+PASS  nav click Gen.G  [http://localhost:8080/lol-drafting/geng/]
+PASS  nav click Meta / Research  [http://localhost:8080/lol-drafting/meta/]
+PASS  nav click Draft Room  [http://localhost:8080/lol-drafting/]
+PASS  Pro Drafts filter + selected game from URL  [Gen.G vs HLE · Finals G1]
+PASS  Champion Synergies ?champ=ziggs selects Ziggs
+PASS  sivir → Lulu first (Recommended Picks)  [Lulu, Rakan, Bard, Karma, Seraphine]
+PASS  ezreal → Karma first (Recommended Picks)  [Karma, Nautilus, Seraphine, Neeko, Alistar, Amumu, Bard, Milio]
+PASS  corki → Nami first (Recommended Picks)  [Nami, Alistar, Bard, Karma, Milio, Rakan, Rell]
+PASS  Ziggs: Nautilus / Leona lead the recommendations  [Leona, Nautilus, Camille, Alistar, Pyke]
+PASS  Pyke / Camille still shown as pro evidence for Ziggs  [Pro pairingsPyPyke1 game · LCK Playoffs · 16.16 · Sep 5pen | efreshGol.gg game Round 4 G3 · pendingCaCamille1 game · LCK Playoffs · 16.16pending ref]
+PASS  recommendations explain why  [SavedSaved pairing: preferred support for ZiggsNeedFixes fight starter: no primary engage yet+1.5Kit synergyStrong 2v2 lane pressure with Ziggs+1 SavedSaved pai]
+PASS  no separate Pro Pairings list under the recommendations
+PASS  Jhin: Nautilus shows its pro games  [Synergy · PreferredPro · 2 gamesBest fix and fit Synergy · PreferredPro · 2 games Synergy · AltPro · 2 gamesBest fit Synergy · AltBest fit Pro · 1 game Pro · 1 game Synergy · Alt (pro)Pro · 1 game Synergy · AltPro · 2 games Synergy · Alt (pro)Pro · 1 game]
+PASS  Jhin: pro-only supports are full rows without a Synergy label  [Leona, Camille]
+PASS  Pro filter shows only rows with pro games  [8 rows]
+PASS  Pro evidence card lists the counted games (up to 3) with teams, result or none, and a Gol.gg link  [2 of 2 · Pro evidence2 gamesNautilus on the same team as Jhin.Demacia Cup 16.18 · ongoingNatus Vincere vs JD GamingWinOct 8 · Rou]
+PASS  Pro evidence card says it is observed, never part of the order
+PASS  Pro evidence card stays open while the pointer moves into it
+PASS  Escape closes the Pro evidence card
+PASS  title hints render as the themed tip  [Your saved pairing with a locked pick]
+PASS  enemy picks from ?vs= load and add matchup reasons  [Ornn Jarvan IV]
+PASS  enemy roles detected from ?vs= (Ornn top, Jarvan IV jungle)  [Ornn / Jarvan IV]
+PASS  open role is linked to its lane opponent (Top vs Ornn)  [vs Ornn]
+PASS  Counters filter reads the lane opponent and never invents a counter  [No reliable counter data for Ornn.]
+PASS  Counters show stored DPM matchups (Top vs Aatrox)  [4 counters]
+PASS  no Clash wording on the Draft Room
+PASS  Bot locked: Support is the active role  [Support]
+PASS  Support recommendations read vs the enemy bot lane  [vs Ezreal + Karma]
+PASS  each champion appears once in the recommendation list  [Lulu, Rakan, Bard, Seraphine, Alistar, Braum, Leona, Nautilus, Rell, Tahm Kench]
+PASS  desktop: Comp Check is a right rail beside the recommendations  [{"recBox":{"x":220,"y":205,"width":714,"height":558.390625},"ccBox":{"x":954,"y":205,"width":306,"height":268.96875}}]
+PASS  scrolled: condensed draft bar stays visible
+PASS  no repeated layer-explainer line
+PASS  UI lock writes ?bot= under base path and survives refresh  [http://localhost:8080/lol-drafting/?bot=sivir]
+PASS  TOP picker scrolls internally (max height, page stays put)  [{"h":418,"sh":1864,"top":300}]
+PASS  picker keeps the highlighted option visible
+PASS  Change keeps the pick on Escape; Remove clears it  [http://localhost:8080/lol-drafting/?bot=ziggs]
+PASS  champion icons load (light)  [13/13 loaded]
+PASS  icons that fail show initials (light)  [0/0 fell back]
+PASS  champion icons load (dark)  [13/13 loaded]
+PASS  icons that fail show initials (dark)  [0/0 fell back]
+PASS  theme toggle switches and persists  [light -> dark, after reload dark]
+PASS  pool: default sort is pool tier  [87 rows]
+PASS  pool: role filter  [18 MID rows]
+PASS  pool: tier filter  [6 rows]
+PASS  pool: tournament filter shows Demacia marked ongoing  [69 rows]
+PASS  pool: patch filter  [85 rows]
+PASS  pool: search  [LoLocke]
+PASS  pool: sort by Picks  [17, 16, 14, 14]
+PASS  pool: sort by Bans  [36, 30, 29, 23]
+PASS  pool: sort by Presence  [97, 90, 87, 82]
+PASS  pool: sort by Win rate  [100, 100, 100, 100]
+PASS  pool: no verified stats shows —  [BrBraum | SUPPORT | Prepared / flex | — | — | — | — | — | No verified data | — | — | —]
+PASS  pool: a total placed in a role by its source is not marked all roles (Ahri MID)  [AhAhri | MID | Depth | 3* | 1 | 10% | 67% | 3 | Demacia CupOngoing | 16.18 | Oct 5 | Qiyana 2×]
+PASS  pool: role-specific rows stay separate (Galio top / mid)  [MID, TOP]
+PASS  pool: row detail keeps my pool apart from pro evidence
+PASS  pool: tournament stats, recorded games and observed pairings render apart
+PASS  meta: tournaments listed newest first, Demacia Cup ongoing  [Demacia Cup Demacia Cup Global Invitatio | LCK Playoffs LCK 2026 Season Playoffs16.]
+PASS  meta: role tabs switch the table  [16 BOT rows]
+PASS  meta: defaults to the current tournament (fewer duos than All tournaments)  [31 duos, 41 across all]
+PASS  meta: Games is renamed Recorded, with a Role share column  [Champion, Picks, Bans, Presence ↓, Win rate, Recorded, Role share, Latest, Patch, Last played]
+PASS  meta: Gol.gg totals and recorded count stay apart (Demacia Karma: picks, bans, presence, win rate, recorded ≤ picks)  [KaKarma | 7 | 5 | 31% | 43% | 7 | 7 SUP | Demacia CupOngoing | 16.18 | Oct 7]
+PASS  meta: ALL places a champion by its verified role picks (Demacia Wukong, JUNGLE)  [WuWukong | JUNGLE | 8 | 5 | 33% | 63% | 8 | 8 JG | Demacia CupOngoing | 16.18 | Oct 8]
+PASS  meta: tournament stats and recorded count stay apart (LCK Renata 8 / 1 / 22% / 63%, 2 recorded)  [RGRenata Glasc | 8 | 1 | 22% | 63% | 2 | — | LCK Playoffs | 16.16 | Sep 13]
+PASS  meta: All tournaments is an explicit choice  [http://localhost:8080/lol-drafting/meta/?role=SUPPORT&event=all]
+PASS  meta: champion drawer keeps my pool apart from pro evidence  [LuLuluSUPPORT×SynergyPoolCorePreferred withSiSivirYuYunaraAsAsheJiJinxApAphelios]
+PASS  pro pairings show games, event, patch and date (Ezreal + Karma)  [Ka Karma 1 Demacia Cup · ongoing 16.18 Oct 3 not in recorded drafts]
+PASS  comps: hover card opens clear of the lineup, inside the viewport  [{"x":533,"y":220.53125,"width":288,"height":192.171875}]
+PASS  comps: hovering champions never moves the lineup
+PASS  comps: cursor on a slot boundary never flickers the card  [0,0,0,0,0,0]
+PASS  comps: scrolling closes an open hover card
+PASS  comps: clicking Nautilus opens the drawer and marks Ziggs as Synergy  [Ziggs]
+PASS  comps: drawer keeps Synergy, Pro and Logic separate  [layer clash | layer clash proposed | layer pro | layer logic]
+PASS  comps: next moves through the comp in place  [http://localhost:8080/lol-drafting/comps/]
+PASS  comps: Escape closes and keeps the scroll position  [0 drawer, scrollY 400 vs 400]
+PASS  comps: Back closes the drawer without leaving the page  [http://localhost:8080/lol-drafting/comps/]
+PASS  comps: Use in Draft Room loads the champion in its role  [http://localhost:8080/lol-drafting/?support=nautilus]
+PASS  comps: View in Champion Pool opens that row  [http://localhost:8080/lol-drafting/pool/?role=SUPPORT&champ=nautilus]
+PASS  comps: filters read Type All/Pro/Template and Difficulty All/Easy/Medium/Hard
+PASS  comps: five champions across, no swap lists or source links shown by default
+PASS  comps: action rows line up across each grid row  [[[409],[725],[1040],[1338],[1668],[1985],[2301],[2617],[2915],[3226],[3556]]]
+PASS  comps: picking a swap previews it with its own Draft Room link  [/lol-drafting/?top=ambessa&jungle=pantheon&mid=syndra&bot=yunara&support=lulu]
+PASS  comps: Reset restores the original comp
+PASS  comps: Details expands the full why plus the exact evidence and refresh status
+PASS  comps: the library shows its last addition
+PASS  comps: observed variations expand with their Gol.gg games
+PASS  comps: short job labels on the card, the full job kept in its title
+PASS  synergies: Fizz mid gets proposed jungle partners, labelled Proposed · kit-based  [Proposed synergyProposed · kit-basedRoaming burst assassin: shoves, roams to side lanes, dives one backliner with Playfu]
+PASS  synergies: proposed reasons wrap inside their column  [0 overflowing]
+PASS  synergies: Support tab keeps Saved synergy (Nami with Corki) apart from Proposed  [Saved synergyfrom your saved recordsPreferred withCoCorkiAlternative forLuLucian]
+PASS  synergies: rail marks the selected pick
+PASS  synergies: sources start collapsed
+PASS  synergies: rail search matches partners (nami -> Corki)  [Corki]
+PASS  synergies: hovering Lulu shows Synergy · Default with Sivir  [LuLulu · SupportPool Core · Peel 3 · Scaling 2Synergy · Default Lulu is the preferred support for SivirDemacia Cup 16.18]
+PASS  synergies: clicking a champion opens the drawer
+PASS  mobile menu opens and navigates  [sidebar hidden -> http://localhost:8080/lol-drafting/meta/]
+PASS  no horizontal page scroll at 390px  [0px]
+PASS  pool at 390px with a row open: any scroll stays inside the table  [0px]
+PASS  draft room at 390px: slots scroll inside their rows, no page overflow  [0px]
+PASS  synergies at 390px: a tap opens the drawer directly
+PASS  comps at 390px: drawer is a bottom sheet with no page overflow  [{"x":0,"y":185.6875,"width":390,"height":658.3125}]
+PASS  Space Grotesk is self-hosted, preloaded and used for titles; Inter for body  [{"family":"grotesk","h1":"grotesk, \"grotesk Fallback\", \"Inter Variable\", system-ui, sans-serif, \"Space Grotesk\", \"Inter Variable\", Inter, system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif","body":"\"Inter Variable\", Inter, system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"]
+PASS  refresh prompt only appears after a new deploy  [version.json 200, prompt before false, after true]
+PASS  sidebar brand is the custom Draft Assistant mark
+PASS  fan-project notice in the footer
+PASS  Gen.G trademark line in the footer
+PASS  GenRang loads in the sidebar under the base path
+PASS  dropdowns: no native <select> on filter pages  [0 native]
+PASS  dropdowns: arrows + Enter choose an option, focus stays on the trigger  [{"opened":true,"activeId":true,"picked":"BNK FearX","focused":true,"menuOpen":0}]
+PASS  dropdowns: menu uses the display font, tinted selected row with a check, labelled for screen readers  [{"font":"grotesk, \"grotesk Fallback\", \"Inter Variable\", system-ui, sans-serif, \"Space Grotesk\", \"Inter Variable\", Inter, system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif","selBg":"rgb(246, 236, 214)","check":"visible","label":"_r_0_-label"}]
+PASS  dropdowns: Escape closes without changing the value
+PASS  dropdowns: clicking outside closes the menu
+PASS  dropdowns: menu flips above the trigger near the bottom and scrolls inside  [{"top":8,"bottom":78.484375,"vh":166,"scrolls":true}]
+PASS  dropdowns at 390px: menu stays inside the viewport  [{"x":29,"y":185.265625,"width":332,"height":84}]
+PASS  pro drafts: both sides of a game are paired  [51 pairs of 108 rows]
+PASS  pro drafts: a recorded game shows one blue row then one red row  [51 sided pairs]
+PASS  pro drafts: blue and red side strips are 3px and differ  [rgb(63, 111, 163) 3px 0px 0px 0px inset | rgb(176, 74, 64) 3px 0px 0px 0px inset]
+PASS  pro drafts: side named on hover
+PASS  pro drafts: a one-sided view shows no pairs and keeps each row's side  [Gen.G: blue,red,red,blue,blue,blue,red,blue,red,blue]
+PASS  GenRang on the Gen.G page
+PASS  no failed requests / console errors
+
+150/150 passed

@@ -1,0 +1,2 @@
+light phone picker open: page 25px too wide
+dark phone picker open: page 25px too wide
