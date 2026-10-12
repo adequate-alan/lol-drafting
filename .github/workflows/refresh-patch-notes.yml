@@ -1,0 +1,90 @@
+name: Refresh patch notes
+
+# Daily check of Riot's official League of Legends patch notes (leagueoflegends.com) for new patches from 26.16 on, for
+# corrections to a published patch (the article's revision changed) and for mid-patch updates. Summoner's Rift content
+# only. Commits data/patch-notes.json and deploys only when that content changed; a refused or failed request writes
+# nothing. Earlier patches stay in the archive. Saved pairings, pool tiers and recommendations are never touched.
+#
+# 8:30 AM Eastern all year, half an hour after the pro-data refresh: both 12:30 and 13:30 UTC are scheduled and the gate
+# step lets through only the one matching New York's current offset. GitHub may start scheduled runs late.
+on:
+  schedule:
+    - cron: "30 12 * * *"
+    - cron: "30 13 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Check and report only; write and commit nothing"
+        type: boolean
+        default: false
+      force:
+        description: "Re-read every tracked patch even when its revision is unchanged"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write # commit refreshed patch notes
+  actions: write # start the Pages deploy (a push made with GITHUB_TOKEN does not trigger workflows)
+
+concurrency:
+  group: refresh-patch-notes
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - id: gate
+        name: Run at 8:30 AM Eastern only
+        run: |
+          offset=$(TZ=America/New_York date +%z)
+          run=true
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            if [ "${{ github.event.schedule }}" = "30 12 * * *" ] && [ "$offset" != "-0400" ]; then run=false; fi
+            if [ "${{ github.event.schedule }}" = "30 13 * * *" ] && [ "$offset" != "-0500" ]; then run=false; fi
+          fi
+          echo "New York offset $offset; run=$run"
+          echo "run=$run" >> "$GITHUB_OUTPUT"
+
+      - if: steps.gate.outputs.run == 'true'
+        uses: actions/checkout@v4
+      - if: steps.gate.outputs.run == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - id: refresh
+        if: steps.gate.outputs.run == 'true'
+        name: Check Riot's patch notes
+        run: node scripts/refresh-patch-notes.mjs ${{ inputs.dry_run && '--dry-run' || '' }} ${{ inputs.force && '--force' || '' }}
+
+      - if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
+        run: npm ci
+      - if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
+        run: npm test
+      - if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
+        run: npm run typecheck
+      - if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
+        run: npm run build
+
+      - id: commit
+        if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
+        name: Commit refreshed patch notes
+        run: |
+          git config user.name "adequate-alan"
+          git config user.email "54249725+adequate-alan@users.noreply.github.com"
+          git add data/patch-notes.json
+          git diff --cached --quiet && { echo "Nothing staged."; exit 0; }
+          git commit -m "Patch notes: daily Riot check $(date -u +%Y-%m-%d)" -m "$(node -e 'const p=require("./data/patch-notes.json");console.log(p.patches.slice(0,3).map(x=>`${x.patch} (${x.short}): ${x.entries.length} entries${x.midPatch.length?`, mid-patch ${x.midPatch.length}`:""}`).join("\n"))')"
+          for i in 1 2 3; do
+            git push origin "HEAD:${GITHUB_REF_NAME}" && { echo "pushed=true" >> "$GITHUB_OUTPUT"; exit 0; }
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+          done
+          exit 1
+
+      - if: steps.commit.outputs.pushed == 'true' && github.ref_name == 'main'
+        name: Deploy to GitHub Pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main

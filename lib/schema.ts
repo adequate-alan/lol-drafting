@@ -456,6 +456,59 @@ export const Counters = z.object({
 });
 export type Counters = z.infer<typeof Counters>;
 
+
+// ---------- patch-notes.json (official facts from Riot's patch notes) ----------
+// Riot's own record of what changed, read by scripts/refresh-patch-notes.mjs (daily, .github/workflows/
+// refresh-patch-notes.yml) from leagueoflegends.com. Summoner's Rift content only. Every value is copied from the page:
+// `before` / `after` are the two sides of Riot's "⇒" and `text` is the whole line as Riot wrote it; a missing value is
+// left out, never filled in. Draft implications are analysis and live in lib/patch-changes.ts, never in this file.
+const PatchLabel = z.string().regex(/^2\d\.\d{1,2}$/); // Riot's label, "26.16"; the pro-data spelling is `short`, "16.16"
+export const PatchChangeLine = z.object({
+  text: z.string().min(1),
+  label: z.string().optional(),
+  before: z.string().optional(),
+  after: z.string().optional(),
+  value: z.string().optional(), // a labelled line without an arrow ("Bug Fix: …", "Affected Champions: …")
+  tag: z.enum(["new", "removed", "updated"]).optional(),
+});
+export const PatchEntry = z.object({
+  id: z.string().regex(/^[a-z0-9-]+$/),
+  kind: z.enum(["champion", "item", "rune", "system"]),
+  subject: z.string(), // Riot's name for the champion / item / rune / system heading
+  ref: z.string().optional(), // champion id (champions.json), item or rune name slug
+  itemId: z.string().optional(), // Data Dragon item id, when the page's icon carries it
+  anchor: z.string().optional(), // the heading's id on Riot's page
+  icon: z.string().url().optional(),
+  category: z.enum(["buff", "nerf", "adjustment", "rework", "keystone", "minor", "shard",
+    "jungle", "objectives", "minions", "turrets", "summoners", "role-quests", "map-economy", "other", "bugfix"]).optional(),
+  categories: z.array(z.enum(["new", "removed", "stats", "cost", "effect"])).optional(), // items
+  // Champions: "riot-wording" when read from Riot's note by the daily check, "reviewed" once a person checked it.
+  categoryBasis: z.enum(["riot-wording", "reviewed"]).optional(),
+  context: z.string().optional(), // Riot's stated reason, verbatim
+  affects: z.array(ChampionId).optional(), // champions a system change or bug fix names
+  groups: z.array(z.object({ title: z.string().optional(), icon: z.string().url().optional(), changes: z.array(PatchChangeLine).min(1) })).min(1),
+  midPatch: z.object({ title: z.string(), date: Day.nullable() }).optional(),
+  corrected: z.boolean().optional(), // Riot edited this entry after it was first stored
+  updatedAt: z.string().datetime(),
+});
+export type PatchEntry = z.infer<typeof PatchEntry>;
+export const PatchNote = z.object({
+  patch: PatchLabel,
+  short: z.string().regex(/^1\d\.\d{1,2}$/),
+  title: z.string(),
+  url: z.string().url(),
+  published: Day.nullable(),
+  rev: z.string().nullable(),
+  midPatch: z.array(z.object({ title: z.string(), date: Day.nullable() })),
+  excluded: z.array(z.string()), // section headings left out (other modes, skins, client)
+  bugfixesLeftOut: z.number().int().optional(),
+  entries: z.array(PatchEntry),
+  updatedAt: z.string().datetime(),
+});
+export type PatchNote = z.infer<typeof PatchNote>;
+export const PatchNotes = z.object({ firstPatch: PatchLabel, source: z.string().url(), patches: z.array(PatchNote) });
+export type PatchNotes = z.infer<typeof PatchNotes>;
+
 export const Files = {
   "champions.json": z.array(Champion),
   "sources.json": z.array(Source),
@@ -474,4 +527,5 @@ export const Files = {
   "rules.json": z.array(Rule),
   "counters.json": Counters,
   "proposed-synergy.json": ProposedSynergy,
+  "patch-notes.json": PatchNotes,
 } as const;

@@ -29,7 +29,7 @@ async function h1() { return (await page.locator("main h1").first().textContent(
 
 // Sections, direct loads and refreshes
 const sections = [["/", "Draft Room"], ...["top", "jungle", "mid", "bot", "support"].map((t) => [`/synergies/${t}/`, "Champion Synergies"]),
-  ["/comps/", "Comp Library"], ["/pool/", "Champion Pool"], ["/pro-drafts/", "Pro Drafts"], ["/geng/", "Gen.G"], ["/meta/", "Meta / Research"]];
+  ["/comps/", "Comp Library"], ["/pool/", "Champion Pool"], ["/pro-drafts/", "Pro Drafts"], ["/geng/", "Gen.G"], ["/meta/", "Meta / Research"], ["/patch-notes/", "Patch Notes"]];
 for (const [path, title] of sections) {
   const res = await open(path);
   const t = await h1();
@@ -73,7 +73,7 @@ check("CSS loads under base path", navBg !== "rgba(0, 0, 0, 0)" && navBg !== "rg
 
 // Client navigation through the sidebar keeps the base path
 // Sidebar label, then the page title it opens (Synergies opens Champion Synergies).
-const navTargets = [["Synergies", "Champion Synergies"], "Comp Library", "Champion Pool", "Pro Drafts", "Gen.G", "Meta / Research", "Draft Room"];
+const navTargets = [["Synergies", "Champion Synergies"], "Comp Library", "Champion Pool", "Pro Drafts", "Gen.G", "Meta / Research", "Patch Notes", "Draft Room"];
 for (const target of navTargets) {
   const [label, title] = Array.isArray(target) ? target : [target, target];
   await page.locator(".nav a", { hasText: label }).first().click();
@@ -626,6 +626,38 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   }
   await page.keyboard.press("Escape");
 }
+// Patch Notes: Riot's official values, patch navigation, filters, anchors, compare, and the drawer link.
+await open("/patch-notes/");
+{
+  const desc = await text("main .page-header .desc");
+  check("patch notes: latest patch by default, with the pro-data spelling and release date", /Patch 26\.\d+/.test(desc) && /16\.\d+ in pro data/.test(desc) && /Released/.test(desc), desc.slice(0, 120));
+  const shown = async () => (await text(".pn-meta b")).replace("Patch ", "");
+  const latest = await shown();
+  await page.locator(".pn-step button[aria-label='Previous patch']").click();
+  await page.waitForTimeout(200);
+  const prev = await shown();
+  check("patch notes: previous patch button", !!prev && prev !== latest && new URL(page.url()).searchParams.get("patch") === prev, `${latest} -> ${prev}`);
+  await open("/patch-notes/?patch=16.16");
+  const azir = await text("#champion-azir");
+  check("patch notes: 16.16 reads as 26.16 and Azir's Q shows Riot's exact before and after", (await shown()) === "26.16"
+    && azir.includes("60 / 80 / 100 / 120 / 140 (+35 / 40 / 45 / 50 / 55% AP)") && azir.includes("75 / 95 / 115 / 135 / 155"), azir.slice(0, 160));
+  check("patch notes: champion icons load", (await page.locator(".pn-entry .champ[data-icon='image']").count()) > 0, "");
+  await page.locator(".pn-tools .seg button", { hasText: "Items" }).click();
+  await page.waitForTimeout(150);
+  const kinds = await page.$$eval(".pn-entry", (es) => [...new Set(es.map((e) => e.dataset.kind))]);
+  check("patch notes: Items filter shows items only", kinds.join() === "item", kinds.join());
+  await open("/patch-notes/?patch=26.18#champion-nautilus");
+  await page.waitForTimeout(300);
+  check("patch notes: an entry link scrolls to and marks the entry", (await page.locator("#champion-nautilus.pn-target").count()) === 1 && await page.locator("#champion-nautilus").isVisible(), "");
+  await open("/patch-notes/?view=compare");
+  check("patch notes: compare lists changed champions since the first patch", (await page.locator(".pn-compare tbody tr").count()) > 10, "");
+  await open("/pool/?role=SUPPORT&champ=nautilus");
+  await page.locator("#pool-SUPPORT-nautilus .champ-btn").first().click();
+  await page.locator(".drawer-patch summary").click();
+  const dp = await text(".drawer-patch");
+  check("drawer: patch changes with a link to the patch notes", /since 26\.16/.test(dp) && (await page.locator(".drawer-patch a[href*='patch-notes']").count()) > 0, dp.slice(0, 120));
+  await page.keyboard.press("Escape");
+}
 await open("/geng/");
 check("GenRang on the Gen.G page", (await page.locator(".brand-band img.genrang").count()) === 1 && await mascotOk(), "");
 // Review screenshots: desktop and mobile, light and dark
@@ -634,7 +666,7 @@ if (shots) {
     await page.evaluate((t) => localStorage.setItem("theme", t), theme);
     for (const [w, h, tag] of [[1440, 900, "desk"], [390, 844, "mob"]]) {
       await page.setViewportSize({ width: w, height: h });
-      for (const [path, name] of [["/?top=ambessa&jungle=vi&bot=ziggs&vs=top:renekton,bot:sivir,support:lulu", "draft"], ["/", "empty"], ["/geng/", "geng"], ["/synergies/bot/?champ=sivir", "synergies"], ["/pool/", "pool"], ["/meta/", "meta"], ["/pro-drafts/", "prodrafts"]]) {
+      for (const [path, name] of [["/?top=ambessa&jungle=vi&bot=ziggs&vs=top:renekton,bot:sivir,support:lulu", "draft"], ["/", "empty"], ["/geng/", "geng"], ["/synergies/bot/?champ=sivir", "synergies"], ["/pool/", "pool"], ["/meta/", "meta"], ["/pro-drafts/", "prodrafts"], ["/patch-notes/", "patchnotes"]]) {
         await open(path);
         await page.waitForTimeout(700);
         await page.screenshot({ path: `${shots}/review-${name}-${tag}-${theme}.png` });

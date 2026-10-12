@@ -17,6 +17,7 @@ import { handAlts } from "@/lib/pro-alternatives";
 import { shownPartners } from "@/lib/proposed";
 import { ProposedGroups, ProposedTag } from "@/components/ProposedSynergy";
 import { ProBuilds } from "@/components/ProBuilds";
+import { PatchChanges } from "@/components/ChangedSince";
 import { synergyParts, teamNeeds } from "@/lib/recommend";
 import { ROLES, type Champion, type Role } from "@/lib/schema";
 
@@ -281,6 +282,8 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
             </ul>
           ) : <p className="xs muted">No attribute record.</p>}
         </LayerBlock>
+
+        <PatchChanges id={id} index={data.patches} />
       </div>
 
       <footer className="drawer-foot">
