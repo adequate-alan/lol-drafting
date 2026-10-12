@@ -259,9 +259,11 @@ export const ProBuild = z.object({
   spellCasts: z.tuple([z.number().int(), z.number().int()]).optional(),
   final: z.array(ItemId).length(6).optional(), // inventory slots at the end of the game, 0 = empty slot
   trinket: z.number().int().positive().optional(),
+  // A full page has the three minor primary runes, the secondary tree and its two runes. When the source gives only the
+  // keystone, the rest stays absent ("full rune page" in `missing`) and the site says the full page is unavailable.
   runes: z.object({
-    primary: z.number().int(), keystone: z.number().int(), primaryRunes: z.array(z.number().int()).length(3),
-    secondary: z.number().int(), secondaryRunes: z.array(z.number().int()).length(2),
+    primary: z.number().int(), keystone: z.number().int(), primaryRunes: z.array(z.number().int()).length(3).optional(),
+    secondary: z.number().int().optional(), secondaryRunes: z.array(z.number().int()).length(2).optional(),
     shards: z.array(z.number().int()).length(3).optional(),
   }).optional(),
   // The ability given each point, in order: one per champion level for most champions; some (Viktor, Aphelios) record

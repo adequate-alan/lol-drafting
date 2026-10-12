@@ -15,6 +15,7 @@ import { TAB_ROLE, TABS, type Tab } from "./synergy-tabs";
 import { poolTierRank, sortBotPicks, sortMidJunglePicks } from "@/lib/synergy-order";
 import { proGames } from "@/lib/pool-stats";
 import { proposedCard, proposedPartners, shownPartners } from "@/lib/proposed";
+import { buildsHref } from "@/lib/pro-builds";
 import type { BotPairing, CompShell, MetaStat, MidJunglePairing, PoolEntry, Role, Source, TopPick } from "@/lib/schema";
 
 const GRADE_ORDER = ["A", "A-", "B+", "B", "B-", "C+", "C"];
@@ -92,12 +93,16 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
     const ul = rail.current, el = ul?.querySelector<HTMLElement>("a.active");
     if (ul && el && (el.offsetTop < ul.scrollTop || el.offsetTop + el.offsetHeight > ul.scrollTop + ul.clientHeight)) ul.scrollTop = el.offsetTop - ul.clientHeight / 3;
   }, [selectedId, tab]);
+  const buildsLink = selectedId && selectedRole && drawerData.builds.some((b) => b.champion === selectedId && b.role === selectedRole) ? buildsHref(selectedId, selectedRole) : undefined;
   const draftHref = selectedId && selectedRole ? `/?${selectedRole.toLowerCase()}=${selectedId}` : undefined;
 
   return (
     <>
       <PageHeader title="Champion Synergies"
-        actions={draftHref && <Link className="btn primary sm" href={draftHref}>Open in Draft Room →</Link>} />
+        actions={draftHref && <>
+          {buildsLink && <Link className="btn sm" href={buildsLink}>Pro builds →</Link>}
+          <Link className="btn primary sm" href={draftHref}>Open in Draft Room →</Link>
+        </>} />
       <ProFreshness items={freshness} />
       <nav className="tabs" aria-label="Roles">
         {(Object.keys(TABS) as Tab[]).map((t) => <Link key={t} href={`/synergies/${t}`} className={t === tab ? "active" : undefined} aria-current={t === tab ? "page" : undefined}>{TABS[t]}</Link>)}

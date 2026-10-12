@@ -142,10 +142,18 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 
 ## Pro Builds (alan, 2026-10-12)
 
-- Items, runes, summoner spells and skill order from recorded games, in the shared champion drawer
-  (`components/ProBuilds.tsx`, so every page that opens a champion has it; tabs Builds | Runes | Skills | Games, a game
-  strip to switch players, filters for tournament, patch, team and player). Observed Pro Evidence only: it never scores
-  and never touches saved pairings, rankings, Comp Check or pool tiers.
+- Items, runes, summoner spells and skill order from recorded games on their own page, `/pro-builds/` (sidebar "Pro
+  Builds" under Pro evidence; `components/views/ProBuildsView.tsx`, pieces in `components/BuildParts.tsx`). Champion
+  rail with search and role, filters for tournament, patch, team and player, and three modes: Games (one player's exact
+  setup: full rune page, levels 1–18 grid, overview Start / First item / Boots / Core / Situational / Final, purchase
+  timeline, spells with casts, side, result, Gol.gg source), Common build (counts per field against the games that
+  recorded it; full rune pages only from complete pages) and Compare (two games side by side with their differences).
+  Every selection is in the URL (`champion`, `role`, `game`, `mode`, `a`, `b`, filters); `buildsHref` builds links.
+  The drawer shows only a count, players, latest patch and "View Pro Builds →" (`getBuildIndex`); Synergies and Pro
+  Drafts (each pick of a recorded game) link in too. Observed Pro Evidence only: it never scores and never touches saved
+  pairings, rankings, Comp Check or pool tiers.
+- A rune page with only the keystone (`missing: ["full rune page"]`) shows the keystone and says the full page is
+  unavailable; never fill in the rest.
 - `data/pro-builds.json`: one record per player per game (Gol.gg game id, side, role, player and Gol.gg player id,
   spells, final inventory slots, rune page, `skills` as one letter per ability point, purchase log `[seconds, item, buy|sell]`,
   `missing` for anything Gol.gg did not give). Read by the daily refresh from the game page (player ids) and Gol.gg's

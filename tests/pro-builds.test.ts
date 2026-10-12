@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 import { assetsFor, buildFromAnswer, buildUrl, compactJson, ddragonVersionFor, parsePlayers, referencedIds } from "@/scripts/golgg/builds.mjs";
 import { championResolver } from "@/scripts/golgg/normalize.mjs";
 import { CDRAGON_PERKS, refresh, type Get } from "@/scripts/golgg/refresh.mjs";
-import { buildRows, common, itemTip, overview, rowsFor, shopVisits, skillSummary } from "@/lib/pro-builds";
+import { buildRows, buildsHref, championIndex, common, fullRunes, itemTip, overview, rowsFor, scoped, shopVisits, skillSummary } from "@/lib/pro-builds";
 import { Files, ProBuild, type BuildAssets, type ProBuilds, type ProGames } from "@/lib/schema";
 
 const read = (f: string) => readFileSync(join(process.cwd(), f), "utf8");
@@ -125,10 +125,109 @@ describe("summaries read from one game", () => {
     const c = common(buildRows([yorick, other], games, { "16.18": assets }));
     expect(c.games).toBe(2);
     expect([...c.players].sort()).toEqual(["Someone", "Xiaoxu"]);
-    expect(c.keystones.map((k) => k.games)).toEqual([1, 1]);
-    expect(c.items.find((i) => i.value === 6665)?.games).toBe(2);
-    expect(c.maxOrders).toEqual([{ value: "Q → E → W", games: 2 }]);
-    expect(c.spells).toEqual([{ value: [4, 12], games: 2 }]);
+    expect(c.keystones.counts.map((k) => k.games)).toEqual([1, 1]);
+    expect(c.items.counts.find((i) => i.value === 6665)?.games).toBe(2);
+    expect(c.maxOrders).toEqual({ of: 2, counts: [{ value: "Q → E → W", games: 2 }] });
+    expect(c.spells).toEqual({ of: 2, counts: [{ value: [4, 12], games: 2 }] });
+    expect(c.firstItems.counts[0]).toEqual({ value: 3078, games: 2 });
+  });
+});
+
+describe("missing and partial records", () => {
+  const games = Files["pro-games.json"].parse(raw("pro-games.json")).games;
+
+  it("keeps a keystone-only rune page as just that, and says the full page is missing", () => {
+    const partial = structuredClone(answer);
+    for (const k of ["perk1", "perk2", "perk3", "perk4", "perk5"]) partial[0][0][k] = 0;
+    partial[0][0].perksubstyle = 0;
+    const b = buildFromAnswer(partial, who).build!;
+    expect(b.runes).toEqual({ primary: 8400, keystone: 8437, shards: [5005, 5008, 5011] });
+    expect(b.missing).toEqual(["full rune page"]);
+    expect(ProBuild.parse({ ...b, checkedOn: "2026-10-12" })).toBeTruthy();
+    expect(fullRunes(b.runes)).toBeUndefined();
+    expect(fullRunes(yorick.runes)).toBeTruthy();
+    // Referenced ids skip what the record does not have.
+    expect([...referencedIds([b]).trees]).toEqual([8400]);
+  });
+
+  it("full rune aggregates use only complete pages; keystones count every game that recorded one", () => {
+    const keystoneOnly = { ...yorick, game: 83540, player: "Partial", runes: { primary: 8400, keystone: 8437 }, missing: ["full rune page"] };
+    const noRunes = { ...yorick, game: 83541, player: "None", runes: undefined, missing: ["runes"] };
+    const c = common(buildRows([yorick, keystoneOnly, noRunes].filter((b) => games.some((g) => g.id === b.game)) as ProBuild[], games, { "16.18": assets }));
+    expect(c.runePages.of).toBe(1);
+    expect(c.runePages.counts).toHaveLength(1);
+    expect(c.runePages.counts[0].value.primaryRunes).toEqual([8446, 8444, 8242]);
+    expect(c.keystones.of).toBe(c.games - (games.some((g) => g.id === 83541) ? 1 : 0));
+    expect(c.secondaryTrees.of).toBe(1);
+  });
+
+  it("an incomplete game shows what it has: no purchase log means no overview, the final inventory stays", () => {
+    const noLog = { ...yorick, purchases: undefined, missing: ["purchase timeline"] };
+    const o = overview(noLog, assets);
+    expect(o.complete).toBe(false);
+    expect(o.core).toEqual([]);
+    expect(o.first).toBeUndefined();
+    expect(shopVisits(noLog)).toEqual([]);
+    expect(noLog.final).toEqual(yorick.final);
+  });
+});
+
+describe("item chronology and skill levels", () => {
+  it("the purchase timeline is in game order, with completed items marked", () => {
+    const v = shopVisits(yorick, assets);
+    const times = v.flatMap((x) => x.steps.map((s) => s.at));
+    expect(times).toEqual([...times].sort((a, b) => a - b));
+    for (let i = 1; i < v.length; i++) expect(v[i].at - v[i - 1].steps.at(-1)!.at).toBeGreaterThan(40);
+    expect(v.flatMap((x) => x.steps).find((s) => s.item === 6665)?.kind).toBe("completed");
+    const o = overview(yorick, assets);
+    expect(o.first).toBe(o.core[0]);
+    // The core is the first three completed items in purchase order: each bought no later than the next.
+    const at = (id: number) => yorick.purchases!.find(([, x, e]) => x === id && e === "buy")![0];
+    expect(o.core.map(at)).toEqual([...o.core.map(at)].sort((a, b) => a - b));
+  });
+
+  it("skill levels are exactly the recorded points, never extended to 18", () => {
+    const s = skillSummary("QEWQQRQE", { Q: 5, W: 5, E: 5, R: 3 });
+    expect(s.levels).toBe(8);
+    expect(s.points).toEqual({ Q: 4, W: 1, E: 2, R: 1 });
+    expect(skillSummary(yorick.skills!).levels).toBe(18);
+  });
+});
+
+describe("Pro Builds page scope and provenance", () => {
+  const all = buildRows((Files["pro-builds.json"].parse(raw("pro-builds.json")) as ProBuilds).builds, Files["pro-games.json"].parse(raw("pro-games.json")).games,
+    (Files["build-assets.json"].parse(raw("build-assets.json")) as BuildAssets).patches);
+
+  it("filters by role and by patch in either notation", () => {
+    const one = all[0];
+    const champ = scoped(all, { champion: one.build.champion, role: one.build.role });
+    expect(champ.every((r) => r.build.role === one.build.role && r.build.champion === one.build.champion)).toBe(true);
+    const short = scoped(all, { patch: "16.18" }), riot = scoped(all, { patch: "26.18" });
+    expect(riot.length).toBe(short.length);
+    expect(riot.length).toBeGreaterThan(0);
+    expect(scoped(all, { patch: "26.17" })).toHaveLength(all.filter((r) => r.game.patch === "16.17").length);
+    const other = (["TOP", "JUNGLE", "MID", "BOT", "SUPPORT"] as const).find((x) => x !== one.build.role)!;
+    expect(scoped(all, { champion: one.build.champion, role: other }).every((r) => r.build.role === other)).toBe(true);
+  });
+
+  it("every row carries its game source: Gol.gg URL, tournament, patch, date, side, result and the read date", () => {
+    for (const r of all) {
+      expect(r.game.url).toMatch(/^https:\/\/gol\.gg\/game\/stats\/\d+\//);
+      expect(r.game.url).toContain(String(r.game.id));
+      expect(r.game.tournament && r.game.patch && r.game.date).toBeTruthy();
+      expect(r.side).toBe(r.build.side);
+      expect(typeof r.won).toBe("boolean");
+      expect(r.build.checkedOn).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(r.assets, `assets for ${r.key}`).toBeTruthy();
+    }
+  });
+
+  it("the drawer index counts builds per champion and role, with the newest patch", () => {
+    const builds = (Files["pro-builds.json"].parse(raw("pro-builds.json")) as ProBuilds).builds;
+    const idx = championIndex(builds, Files["pro-games.json"].parse(raw("pro-games.json")).games);
+    expect(idx.reduce((n, e) => n + e.games, 0)).toBe(builds.length);
+    for (const e of idx) expect(e.games).toBe(rowsFor(all, e.champion, e.role).length);
+    expect(buildsHref("jarvan-iv", "JUNGLE", 83447)).toBe("/pro-builds/?champion=jarvan-iv&role=JUNGLE&game=83447");
   });
 });
 

@@ -55,8 +55,12 @@ export function buildFromAnswer(answer, who) {
   const primary = int(s.perkprimarystyle), secondary = int(s.perksubstyle);
   if (primary && secondary && perks.every((x) => x > 0)) {
     build.runes = { primary, keystone: perks[0], primaryRunes: perks.slice(1, 4), secondary, secondaryRunes: perks.slice(4, 6) };
-    if (shards.every((x) => x > 0)) build.runes.shards = shards; else missing.push("stat shards");
+  } else if (primary && perks[0] > 0) {
+    // Only the keystone (and its tree): keep what was given, never fill in the rest of the page.
+    build.runes = { primary, keystone: perks[0] };
+    missing.push("full rune page");
   } else missing.push("runes");
+  if (build.runes) { if (shards.every((x) => x > 0)) build.runes.shards = shards; else missing.push("stat shards"); }
 
   const order = String(s.skillorder ?? "").split(";").filter(Boolean);
   if (order.length && order.every((x) => SKILL[x])) {
@@ -88,8 +92,8 @@ export function referencedIds(builds) {
   for (const b of builds) {
     for (const i of [...(b.final ?? []), b.trinket, ...(b.purchases ?? []).map((p) => p[1])]) if (i) items.add(i);
     if (b.runes) {
-      trees.add(b.runes.primary); trees.add(b.runes.secondary);
-      for (const r of [b.runes.keystone, ...b.runes.primaryRunes, ...b.runes.secondaryRunes, ...(b.runes.shards ?? [])]) runes.add(r);
+      trees.add(b.runes.primary); if (b.runes.secondary) trees.add(b.runes.secondary);
+      for (const r of [b.runes.keystone, ...(b.runes.primaryRunes ?? []), ...(b.runes.secondaryRunes ?? []), ...(b.runes.shards ?? [])]) runes.add(r);
     }
     for (const s of b.spells ?? []) spells.add(s);
     champions.add(b.champion);

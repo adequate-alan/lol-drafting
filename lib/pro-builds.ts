@@ -8,6 +8,7 @@
 //                    called optimal.
 // Summaries below (starting items, boots, core, max order) are read from one game's purchase log and skill order; they
 // are labelled as derived, and say so when the log is incomplete.
+import { comparePatch, samePatch } from "./patch";
 import type { PatchAssets, ProBuild, ProGame, Role } from "./schema";
 
 export type Skill = "Q" | "W" | "E" | "R";
@@ -19,6 +20,7 @@ export interface BuildRow {
   key: string;
   build: ProBuild;
   game: Pick<ProGame, "id" | "event" | "tournament" | "series" | "game" | "stage" | "date" | "patch" | "url">;
+  side: "blue" | "red"; // the side this player's team had in this game (Gol.gg game page)
   team: string;
   opponentTeam: string;
   won: boolean;
@@ -38,7 +40,7 @@ export function buildRows(builds: ProBuild[], games: ProGame[], assets: Record<s
     rows.push({
       key: `${b.game}-${b.side}-${b.role}`, build: b,
       game: { id: g.id, event: g.event, tournament: g.tournament, series: g.series, game: g.game, stage: g.stage, date: g.date, patch: g.patch, url: g.url },
-      team: g[b.side].team, opponentTeam: g[other].team, won: g.winner === b.side,
+      side: b.side, team: g[b.side].team, opponentTeam: g[other].team, won: g.winner === b.side,
       opponent: opp ? { champion: opp, player: byPlayer.get(`${b.game}-${other}-${b.role}`)?.player } : undefined,
       assets: assets[g.patch],
     });
@@ -48,6 +50,35 @@ export function buildRows(builds: ProBuild[], games: ProGame[], assets: Record<s
 }
 
 export const rowsFor = (rows: BuildRow[], champion: string, role: Role) => rows.filter((r) => r.build.champion === champion && r.build.role === role);
+
+/** Link to the Pro Builds page with a champion and role preselected, optionally one recorded game. */
+export const buildsHref = (champion: string, role: Role, game?: number) =>
+  `/pro-builds/?champion=${champion}&role=${role}${game ? `&game=${game}` : ""}`;
+
+/** The filters of the Pro Builds page. Patches compare in either notation (26.18 = 16.18). Empty means any. */
+export interface BuildScope { champion?: string; role?: Role; event?: string; patch?: string; team?: string; player?: string }
+export const inScope = (r: BuildRow, s: BuildScope) =>
+  (!s.champion || r.build.champion === s.champion) && (!s.role || r.build.role === s.role) && (!s.event || r.game.event === s.event)
+  && (!s.patch || samePatch(r.game.patch, s.patch)) && (!s.team || r.team === s.team) && (!s.player || r.build.player === s.player);
+export const scoped = (rows: BuildRow[], s: BuildScope) => rows.filter((r) => inScope(r, s));
+
+/** One entry per champion and role with recorded builds: game count, players and the newest patch. */
+export interface ChampionBuilds { champion: string; role: Role; games: number; players: number; latest: string; lastPlayed: string }
+export function championIndex(builds: Pick<ProBuild, "champion" | "role" | "player" | "game">[], games: Pick<ProGame, "id" | "patch" | "date">[]): ChampionBuilds[] {
+  const byGame = new Map(games.map((g) => [g.id, g]));
+  const m = new Map<string, { champion: string; role: Role; games: number; players: Set<string>; latest: string; lastPlayed: string }>();
+  for (const b of builds) {
+    const g = byGame.get(b.game);
+    if (!g) continue;
+    const k = `${b.champion}|${b.role}`;
+    const e = m.get(k) ?? { champion: b.champion, role: b.role, games: 0, players: new Set<string>(), latest: g.patch, lastPlayed: g.date };
+    e.games += 1; e.players.add(b.player);
+    if (comparePatch(g.patch, e.latest) > 0) e.latest = g.patch;
+    if (g.date > e.lastPlayed) e.lastPlayed = g.date;
+    m.set(k, e);
+  }
+  return [...m.values()].map((e) => ({ ...e, players: e.players.size })).sort((a, b) => b.games - a.games || a.champion.localeCompare(b.champion));
+}
 
 // ---------- icons (Riot Data Dragon, the game patch's version) ----------
 export const itemIcon = (a: PatchAssets, id: number) => `${DDRAGON}/cdn/${a.ddragon}/img/item/${id}.png`;
@@ -96,8 +127,9 @@ export function skillSummary(skills: string, maxrank?: Partial<Record<Skill, num
 export interface Overview {
   starting: number[];
   boots?: number;
+  first?: number; // first completed item
   core: number[]; // first three completed items, in purchase order
-  later: number[]; // completed items after those
+  later: number[]; // completed items after those (shown as situational: what this game called for after the core)
   sold: Set<number>;
   complete: boolean; // false when the purchase log is missing
 }
@@ -112,18 +144,19 @@ export function overview(b: ProBuild, a: PatchAssets | undefined): Overview {
   const bought = log.filter(([, , e]) => e === "buy").map(([, id]) => id);
   const boots = [...bought].reverse().find((id) => kind(id) === "boots" && (a?.items[id]?.gold ?? 0) > 300) ?? bought.find((id) => kind(id) === "boots");
   const completed = [...new Set(bought.filter((id) => kind(id) === "completed"))];
-  return { starting, boots, core: completed.slice(0, 3), later: completed.slice(3), sold: new Set(log.filter(([, , e]) => e === "sell").map(([, id]) => id)), complete: log.length > 0 };
+  return { starting, boots, first: completed[0], core: completed.slice(0, 3), later: completed.slice(3), sold: new Set(log.filter(([, , e]) => e === "sell").map(([, id]) => id)), complete: log.length > 0 };
 }
 
-export interface ShopVisit { at: number; steps: { item: number; sold: boolean; at: number }[] }
+export type ItemKind = PatchAssets["items"][string]["kind"];
+export interface ShopVisit { at: number; steps: { item: number; sold: boolean; at: number; kind?: ItemKind }[] }
 
-/** The purchase log grouped into shop visits: steps less than 40 seconds apart belong to one visit. */
-export function shopVisits(b: ProBuild): ShopVisit[] {
+/** The purchase log grouped into shop visits: steps less than 40 seconds apart belong to one visit, in game order. */
+export function shopVisits(b: ProBuild, a?: PatchAssets): ShopVisit[] {
   const out: ShopVisit[] = [];
   let last = -Infinity;
   for (const [t, item, e] of b.purchases ?? []) {
     if (t - last > 40 || !out.length) out.push({ at: t, steps: [] });
-    out[out.length - 1].steps.push({ item, sold: e === "sell", at: t });
+    out[out.length - 1].steps.push({ item, sold: e === "sell", at: t, kind: a?.items[item]?.kind });
     last = t;
   }
   return out;
@@ -131,16 +164,28 @@ export function shopVisits(b: ProBuild): ShopVisit[] {
 
 // ---------- common build across games (aggregate) ----------
 export interface Count<T> { value: T; games: number }
+/** A full rune page: both trees, keystone, the three minor and two secondary runes, the shards when recorded. */
+export type FullRunes = Required<Pick<NonNullable<ProBuild["runes"]>, "primary" | "keystone" | "primaryRunes" | "secondary" | "secondaryRunes">> & { shards?: number[] };
+export const fullRunes = (r?: ProBuild["runes"]): FullRunes | undefined =>
+  r && r.primaryRunes?.length === 3 && r.secondary != null && r.secondaryRunes?.length === 2 ? (r as FullRunes) : undefined;
+
+/** Each field counts only the games that recorded it; `of` is that field's sample. */
+export interface Tally<T> { of: number; counts: Count<T>[] }
 export interface Common {
   games: number;
   players: string[];
   patches: string[];
   events: string[];
-  keystones: Count<number>[];
-  items: Count<number>[]; // completed items: in how many games each was bought
-  boots: Count<number>[];
-  maxOrders: Count<string>[];
-  spells: Count<[number, number]>[];
+  keystones: Tally<number>; // every game with a keystone recorded
+  runePages: Tally<FullRunes>; // only games with the complete page (trees, keystone, 3 + 2 runes, shards)
+  primaryTrees: Tally<number>;
+  secondaryTrees: Tally<number>; // complete pages only
+  starting: Tally<number[]>;
+  firstItems: Tally<number>;
+  items: Tally<number>; // completed items: in how many games each was bought
+  boots: Tally<number>;
+  maxOrders: Tally<string>;
+  spells: Tally<[number, number]>;
   assets?: PatchAssets; // newest patch in scope, for names and icons
 }
 
@@ -149,24 +194,36 @@ const tally = <T,>(values: T[], key: (v: T) => string = String): Count<T>[] => {
   for (const v of values) { const k = key(v); const c = m.get(k); if (c) c.games += 1; else m.set(k, { value: v, games: 1 }); }
   return [...m.values()].sort((a, b) => b.games - a.games);
 };
+const over = <R, T>(rows: R[], value: (r: R) => T | undefined, key?: (v: T) => string): Tally<T> => {
+  const vs = rows.map(value).filter((v): v is T => v !== undefined);
+  return { of: vs.length, counts: tally(vs, key) };
+};
+export const pageKey = (p: FullRunes) => [p.primary, p.keystone, ...p.primaryRunes, p.secondary, ...p.secondaryRunes, ...(p.shards ?? [])].join(".");
 
 /** Counts across the given games. Each count is "games that showed it", never a share of purchases. */
 export function common(rows: BuildRow[]): Common {
   const kind = (r: BuildRow, id: number) => r.assets?.items[id]?.kind;
-  const withRunes = rows.filter((r) => r.build.runes);
   const withLog = rows.filter((r) => r.build.purchases?.length);
-  const withSkills = rows.filter((r) => r.build.skills);
+  // Full rune aggregates only from games whose page is complete, shards included: a missing field is never assumed.
+  const complete = rows.filter((r) => fullRunes(r.build.runes) && r.build.runes!.shards);
+  const completed = (r: BuildRow) => [...new Set(r.build.purchases!.filter(([, id, e]) => e === "buy" && kind(r, id) === "completed").map(([, id]) => id))];
+  const newest = [...rows].sort((a, b) => comparePatch(b.game.patch, a.game.patch))[0];
   return {
     games: rows.length,
     players: [...new Set(rows.map((r) => r.build.player))],
     patches: [...new Set(rows.map((r) => r.game.patch))],
     events: [...new Set(rows.map((r) => r.game.tournament))],
-    keystones: tally(withRunes.map((r) => r.build.runes!.keystone)),
-    items: tally(withLog.flatMap((r) => [...new Set(r.build.purchases!.filter(([, id, e]) => e === "buy" && kind(r, id) === "completed").map(([, id]) => id))])),
-    boots: tally(withLog.map((r) => overview(r.build, r.assets).boots).filter((x): x is number => x != null)),
-    maxOrders: tally(withSkills.map((r) => skillSummary(r.build.skills!, maxRanks(r)).order.join(" → "))),
-    spells: tally(rows.filter((r) => r.build.spells).map((r) => [...r.build.spells!].sort((a, b) => a - b) as [number, number]), (v) => v.join("+")),
-    assets: rows[0]?.assets,
+    keystones: over(rows, (r) => r.build.runes?.keystone),
+    runePages: over(complete, (r) => fullRunes(r.build.runes), pageKey),
+    primaryTrees: over(rows, (r) => r.build.runes?.primary),
+    secondaryTrees: over(complete, (r) => r.build.runes?.secondary),
+    starting: over(withLog, (r) => overview(r.build, r.assets).starting.slice().sort((a, b) => a - b), (v) => v.join("+")),
+    firstItems: over(withLog, (r) => overview(r.build, r.assets).first),
+    items: { of: withLog.length, counts: tally(withLog.flatMap(completed)) },
+    boots: over(withLog, (r) => overview(r.build, r.assets).boots),
+    maxOrders: over(rows, (r) => (r.build.skills ? skillSummary(r.build.skills, maxRanks(r)).order.join(" → ") : undefined)),
+    spells: over(rows, (r) => (r.build.spells ? [...r.build.spells].sort((a, b) => a - b) as [number, number] : undefined), (v) => v.join("+")),
+    assets: newest?.assets,
   };
 }
 

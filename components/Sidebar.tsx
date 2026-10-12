@@ -13,6 +13,7 @@ const I = {
   pro: <path d="M2.5 3.5h11M2.5 6.5h11M2.5 9.5h11M2.5 12.5h7" />,
   geng: <path d="M8 1.75 13.5 4.5v4c0 3-2.4 5.1-5.5 5.75C4.9 13.6 2.5 11.5 2.5 8.5v-4z" />,
   meta: <path d="M2.5 13.5h11M4 11V7.5M7 11V4M10 11V6M13 11V2.5" />,
+  builds: <path d="M3 2.5h4.5v4.5H3zM8.5 2.5H13v4.5H8.5zM3 9h4.5v4.5H3zM10.75 9v4.5M8.5 11.25H13" />,
   patch: <path d="M4 1.75h5.5L12.5 4.75v9.5H4zM9.5 1.75v3h3M6 8h4.5M6 10.5h4.5" />,
 };
 const GROUPS = [
@@ -24,6 +25,7 @@ const GROUPS = [
   ]],
   ["Pro evidence", [
     ["/pro-drafts", "Pro Drafts", I.pro],
+    ["/pro-builds", "Pro Builds", I.builds],
     ["/geng", "Gen.G", I.geng],
     ["/meta", "Meta / Research", I.meta],
     ["/patch-notes", "Patch Notes", I.patch],

@@ -1,8 +1,8 @@
 "use client";
 // Champion drawer: one champion in one role, opened from the Comp Library and the Meta page without leaving it.
 // Right-side panel on desktop, bottom sheet on mobile. The three layers keep separate blocks:
-//   Synergy (alan's pool tier and saved pairings) · Pro evidence (stats, games, observed pairings) · Pro builds (items,
-//   runes, skills and spells from recorded games, components/ProBuilds.tsx) · Logic (attributes).
+//   Synergy (alan's pool tier and saved pairings) · Pro evidence (stats, games, observed pairings) · Pro builds (a count
+//   and a link; the builds themselves are on /pro-builds/) · Logic (attributes).
 // Pass `comp` to read the champion inside a five-man shell: saved and pro links to each comp-mate, the slot's job,
 // and prev / next through the five slots.
 import Link from "next/link";
@@ -16,7 +16,7 @@ import { PARTNER_ROLE, TIERS, eventStats, proGames, type ProGame, type Tier } fr
 import { handAlts } from "@/lib/pro-alternatives";
 import { shownPartners } from "@/lib/proposed";
 import { ProposedGroups, ProposedTag } from "@/components/ProposedSynergy";
-import { ProBuilds } from "@/components/ProBuilds";
+import { buildsHref } from "@/lib/pro-builds";
 import { PatchChanges } from "@/components/ChangedSince";
 import { synergyParts, teamNeeds } from "@/lib/recommend";
 import { ROLES, type Champion, type Role } from "@/lib/schema";
@@ -285,7 +285,7 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
           )}
         </LayerBlock>
 
-        <ProBuilds champion={id} role={role} names={names} events={index.events} />
+        <BuildsSummary id={id} role={role} data={data} />
 
         <LayerBlock layer="logic" title="Logic">
           {champ ? (
@@ -367,4 +367,21 @@ function rolesOf(id: string, index: DrawerIndex): Role[] {
   for (const g of index.games) for (const r of ROLES) if (g.picks[r] === id) n.set(r, (n.get(r) ?? 0) + 1);
   for (const s of index.stats) if (s.stat.champion === id) for (const r of s.roles) if (!n.has(r)) n.set(r, 0);
   return [...n.entries()].sort((a, b) => b[1] - a[1] || ROLES.indexOf(a[0]) - ROLES.indexOf(b[0])).map(([r]) => r);
+}
+
+// Pro builds in the drawer are a pointer only (alan, 2026-10-12): how many recorded builds, the newest patch, and a link
+// to the Pro Builds page with this champion and role selected.
+function BuildsSummary({ id, role, data }: { id: string; role: Role; data: DrawerData }) {
+  const b = data.builds.find((x) => x.champion === id && x.role === role);
+  const href = buildsHref(id, role);
+  return (
+    <LayerBlock layer="pro" title="Pro builds">
+      {b ? (
+        <p className="drawer-builds small">
+          <span className="tnum">{b.games} recorded build{b.games > 1 ? "s" : ""} · {b.players} player{b.players > 1 ? "s" : ""} · latest {patchLabel(b.latest)}</span>
+          <Link className="push" href={href} data-to={href}>View Pro Builds →</Link>
+        </p>
+      ) : <p className="xs muted">No recorded pro builds in this role.</p>}
+    </LayerBlock>
+  );
 }
