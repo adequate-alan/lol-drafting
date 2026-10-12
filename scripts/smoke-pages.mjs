@@ -717,6 +717,26 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     await page.locator(".champ-history tbody tr").first().click();
     await page.waitForTimeout(200);
     check("pinned: picking a champion lists that champion's builds and filters the history", (await page.locator(".build-lines li").count()) > 0 && page.url().includes("champion="), page.url());
+    // A match expands in place into the same build view as Pro Builds (runes, skill grid, item progression), keyed by game id
+    const matchRows = page.locator(".match-history tr.match-row");
+    const matchCount = await matchRows.count();
+    await matchRows.first().click();
+    await page.locator(".match-detail .game-detail").waitFor({ timeout: 5000 }).catch(() => {});
+    const expandedOk = (await page.locator(".match-detail .game-detail").count()) === 1 && (await page.locator(".match-detail .rune-page").count()) === 1
+      && (await page.locator(".match-detail .skill-grid").count()) === 1 && (await page.locator(".match-detail .game-player").innerText()).includes(pinned)
+      && (await matchRows.first().getAttribute("aria-expanded")) === "true" && /[?&]game=\d+/.test(page.url());
+    check("pinned: a match row expands into that game's exact build under the row", expandedOk, page.url());
+    const pageWide = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
+    check("pinned: an expanded build never widens the page", pageWide, "");
+    if (matchCount > 1) {
+      await matchRows.nth(1).click();
+      await page.waitForTimeout(200);
+      check("pinned: opening another match switches the one expanded build", (await page.locator(".match-detail").count()) === 1 && (await matchRows.nth(1).getAttribute("aria-expanded")) === "true" && (await matchRows.first().getAttribute("aria-expanded")) === "false", "");
+    }
+    await page.locator(".match-history tr.match-row[aria-expanded='true']").first().focus();
+    await page.keyboard.press("Enter");
+    await page.waitForTimeout(200);
+    check("pinned: Enter on the open row collapses it and clears the game from the URL", (await page.locator(".match-detail").count()) === 0 && !/[?&]game=/.test(page.url()), page.url());
     await page.locator(".match-history tbody tr").first().click();
     await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
     check("pinned: a match opens the exact Pro Builds game for that player", /\/pro-builds\/\?champion=.+&game=\d+&player=\d+/.test(page.url()) && (await page.locator(".build-pick").count()) >= 1 && (await page.locator(".game-player").innerText()).includes(pinned), page.url());

@@ -12,15 +12,14 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  BuildOverview, Icon, Item, PurchaseTimeline, Rune, RunePage, SkillGrid, SkillNotes, SkillSummaryLine, Spell, Tree,
-  itemName, runeName, spellName, treeName,
+  BuildOverview, Icon, Item, Rune, RunePage, SkillGrid, SkillSummaryLine, Tree, itemName, runeName, spellName, treeName,
 } from "@/components/BuildParts";
 import { ChampionProvider } from "@/components/ChampionInteraction";
 import { BuildsTabs } from "@/components/BuildsTabs";
+import { GameDetail, GameHeader } from "@/components/GameBuild";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { PinIcon, PinPicker, useMigratePlayerPins, usePins } from "@/components/PlayerPicker";
 import { playerDirectory, profileHref } from "@/lib/pinned-players";
-import { InteractiveChampion } from "@/components/InteractiveChampion";
 import { Select } from "@/components/Select";
 import { ChampIcon, PageHeader, Panel } from "@/components/ui";
 import type { DrawerData } from "@/lib/data";
@@ -240,52 +239,6 @@ function GamesView({ rows, current, preferPinned, name, evName, onPick }: {
       </div>
       <GameDetail r={r} name={name} evName={evName} />
     </>
-  );
-}
-
-function GameHeader({ r, name, evName, compact }: { r: BuildRow; name: (id: string) => string; evName: (r: BuildRow) => string; compact?: boolean }) {
-  const b = r.build;
-  return (
-    <div className={`game-head side-${r.side} ${compact ? "compact" : ""}`}>
-      <div className="game-who">
-        <span className="game-player"><PlayerAvatar id={b.playerId} name={b.player} size={compact ? "sm" : "md"} /><Link href={profileHref(String(b.playerId))} title={`${b.player}'s recorded games, champions and builds`}><b>{b.player}</b></Link> <span className="muted">{r.team}</span></span>
-        {r.opponent && (
-          <span className="small game-vs"><span className="faint">vs</span>
-            <InteractiveChampion id={r.opponent.champion} role={b.role}><ChampIcon id={r.opponent.champion} name={name(r.opponent.champion)} size="xs" /> {name(r.opponent.champion)}</InteractiveChampion>
-            {r.opponent.player && <span className="muted">{r.opponent.player}</span>}<span className="muted">{r.opponentTeam}</span></span>
-        )}
-      </div>
-      <div className="game-meta xs muted tnum">
-        <span>{evName(r)}{r.game.stage ? ` · ${r.game.stage.charAt(0) + r.game.stage.slice(1).toLowerCase().replace(/(\d)/, " $1")}` : ""}</span>
-        <span>{r.game.series} · game {r.game.game}</span>
-        <span>{patchLabel(r.game.patch)} · {shortDate(r.game.date)}</span>
-        <span className="side-tag" title={`${r.team} played on the ${r.side} side in this game`}>{r.side === "blue" ? "Blue" : "Red"} side</span>
-        <span className={r.won ? "win" : "loss"}>{r.won ? "Win" : "Loss"}</span>
-        <a href={`https://gol.gg/game/stats/${r.game.id}/page-builds/`} target="_blank" rel="noopener noreferrer"
-          title={`Gol.gg builds page for this game\nRead ${b.checkedOn}`}>Gol.gg source ↗</a>
-      </div>
-      {b.spells ? (
-        <div className="game-spells">{b.spells.map((s, i) => <Spell key={s} a={r.assets} id={s} casts={b.spellCasts?.[i]} size={compact ? "sm" : "md"} />)}</div>
-      ) : <span className="xs muted">Summoner spells not recorded</span>}
-      {b.missing && <p className="xs caution-text game-missing">Partial record: {b.missing.join(", ")} not given by the source for this game.</p>}
-    </div>
-  );
-}
-
-function GameDetail({ r, name, evName }: { r: BuildRow; name: (id: string) => string; evName: (r: BuildRow) => string }) {
-  return (
-    <div className="game-detail">
-      <GameHeader r={r} name={name} evName={evName} />
-      <div className="builds-cols">
-        <Panel title="Runes">{<RunePage r={r} />}</Panel>
-        <Panel title="Skill order"><SkillSummaryLine r={r} /><SkillGrid r={r} /><SkillNotes r={r} /></Panel>
-      </div>
-      <Panel title="Item progression">
-        <BuildOverview r={r} />
-        <h3 className="build-sub label">Purchase timeline</h3>
-        <PurchaseTimeline r={r} />
-      </Panel>
-    </div>
   );
 }
 

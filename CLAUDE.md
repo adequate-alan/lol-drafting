@@ -157,7 +157,11 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   scouting hub per pinned player: overview list (kept with an empty state when filters leave no game), profile with
   facts, champion history, that champion's builds and the full match history; each game opens the exact Pro Builds view
   (`gameHref`, `player=<id>`). Derived from the build rows only, so newly recorded games appear on their own; never a
-  career. Players are keyed by Gol.gg player id (pins and the `player=` filter; old name pins migrate once, an old name
+  career. **Match History rows expand in place** (alan, 2026-10-12): a click, Enter or Space on a row opens that game's
+  exact build under it (`components/GameBuild.tsx` `GameDetail`, the same component Pro Builds renders: context line,
+  spells, rune page, skill grid, item progression and timeline, Gol.gg source, "Open full Pro Builds"); one game at a
+  time, named by Gol.gg game id in `?game=` and the profile's player id (`expandedRow`), never by row position, and a
+  game the filters stop showing folds and leaves the URL. Never a second build renderer. Players are keyed by Gol.gg player id (pins and the `player=` filter; old name pins migrate once, an old name
   link still matches by name), so same-name players stay apart and a team change keeps one profile.
   LCK 2026 Season Playoffs builds were backfilled once (`scripts/backfill-lck-builds.mjs`, alan 2026-10-12); their game
   records live in `pro-builds.json` `games`, read by Pro Builds only, never by drafts, priority or totals. The daily

@@ -6,13 +6,14 @@
 // daily refresh records appear here on their own. Observed Pro Evidence only: recorded games, never a career; nothing
 // here scores or touches saved pairings. Pins live in this browser (localStorage), keyed by Gol.gg player id.
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { BuildsTabs } from "@/components/BuildsTabs";
 import { Icon, Item, Rune } from "@/components/BuildParts";
 import { ChampionProvider } from "@/components/ChampionInteraction";
 import { InteractiveChampion } from "@/components/InteractiveChampion";
 import { Disclosure } from "@/components/Disclosure";
+import { GameDetail } from "@/components/GameBuild";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { PinIcon, PinPicker, useMigratePlayerPins, usePins } from "@/components/PlayerPicker";
 import { allPortraits, creditLine } from "@/lib/player-portraits";
@@ -22,7 +23,7 @@ import type { DrawerData } from "@/lib/data";
 import { shortDate } from "@/lib/evidence";
 import { comparePatch, patchKey, patchLabel } from "@/lib/patch";
 import {
-  championBuildsHref, gameHref, inPlayerScope, playerDirectory, playerKey, playerProfile, profileHref, rowsOfPlayer,
+  championBuildsHref, expandedRow, gameHref, inPlayerScope, playerDirectory, playerKey, playerProfile, profileHref, rowsOfPlayer,
   type PlayerFilter, type PlayerProfile,
 } from "@/lib/pinned-players";
 import { fullRunes, overview, skillSummary, maxRanks, spellIcon, type BuildRow } from "@/lib/pro-builds";
@@ -64,7 +65,7 @@ export function PinnedPlayersView({ names, events, drawerData }: { names: Record
   const filter: PlayerFilter = { event: get("event"), patch: get("patch") };
   const directory = useMemo(() => (all ? playerDirectory(all) : []), [all]);
   const profiles = useMemo(() => pins.map((id) => playerProfile(all ?? [], id, filter, pinNames[id])), [all, pins, pinNames, filter.event, filter.patch]);
-  const open = (id?: string) => update({ player: id, champion: undefined, result: undefined }, true);
+  const open = (id?: string) => update({ player: id, champion: undefined, result: undefined, game: undefined }, true);
 
   // Tournament and patch choices: every recorded game of the pinned players (and the open profile).
   const pool = (all ?? []).filter((r) => pins.includes(playerKey(r)) || playerKey(r) === player);
@@ -116,7 +117,7 @@ export function PinnedPlayersView({ names, events, drawerData }: { names: Record
           {failed ? <p className="small muted">Build data could not be loaded.</p>
             : !all ? <p className="small faint" aria-busy="true">Loading recorded games…</p>
             : player ? <Profile rows={all} id={player} fallbackName={pinNames[player]} filter={filter} champion={get("champion")} result={get("result") as PlayerFilter["result"]}
-                pinned={isPinned(player)} onPin={(p) => toggle(p.id, p.name)} name={name} evName={evName} update={update} />
+                game={get("game")} pinned={isPinned(player)} onPin={(p) => toggle(p.id, p.name)} name={name} evName={evName} update={update} />
             : <Overview profiles={profiles} filtered={filtered} name={name} onOpen={open} onUnpin={(p) => toggle(p.id, p.name)} />}
           <PhotoCredits />
         </div>
@@ -180,22 +181,26 @@ function Overview({ profiles, filtered, name, onOpen, onUnpin }: {
 }
 
 // ---------- one player ----------
-function Profile({ rows, id, fallbackName, filter, champion, result, pinned, onPin, name, evName, update }: {
+function Profile({ rows, id, fallbackName, filter, champion, result, game, pinned, onPin, name, evName, update }: {
   rows: BuildRow[]; id: string; fallbackName?: string; filter: PlayerFilter; champion?: string; result?: PlayerFilter["result"];
-  pinned: boolean; onPin: (p: PlayerProfile) => void; name: (id: string) => string; evName: (r: BuildRow) => string;
+  game?: string; pinned: boolean; onPin: (p: PlayerProfile) => void; name: (id: string) => string; evName: (r: BuildRow) => string;
   update: (changes: Record<string, string | undefined>, push?: boolean) => void;
 }) {
-  const router = useRouter();
   const p = playerProfile(rows, id, filter, fallbackName);
   const mine = rowsOfPlayer(rows, id);
+  const scope = mine.filter((r) => inPlayerScope(r, filter));
+  const history = scope.filter((r) => inPlayerScope(r, { champion, result }));
+  // The expanded match is the game named in the URL, only while the filters still show it; otherwise it folds and the
+  // URL forgets it, so a filter change never leaves another game's build open.
+  const expanded = expandedRow(history, game);
+  useEffect(() => { if (game && !expanded) update({ game: undefined }); }, [game, expanded, update]);
+  const toggleGame = (r: BuildRow) => update({ game: expanded?.key === r.key ? undefined : String(r.game.id) });
   if (!mine.length) return (
     <div className="pinned-empty">
       <p><b>{p.name}</b> <PinButton on={pinned} name={p.name} onClick={() => onPin(p)} /></p>
       <p className="small muted">No recorded games for this player in the build data.</p>
     </div>
   );
-  const scope = mine.filter((r) => inPlayerScope(r, filter));
-  const history = scope.filter((r) => inPlayerScope(r, { champion, result }));
   const pick = champion ? p.champions.find((c) => c.champion === champion) : undefined;
   const champOpts = p.champions.map((c) => ({ value: c.champion, label: name(c.champion) }));
 
@@ -252,27 +257,44 @@ function Profile({ rows, id, fallbackName, filter, champion, result, pinned, onP
           <div className="builds-tools inner">
             <Select label="Champion" value={champion ?? ""} options={[{ value: "", label: "All champions" }, ...champOpts]} onChange={(v) => update({ champion: v || undefined })} />
             <Select label="Result" value={result ?? ""} options={[{ value: "", label: "All results" }, { value: "win", label: "Wins" }, { value: "loss", label: "Losses" }]} onChange={(v) => update({ result: v || undefined })} />
-            <span className="xs muted">Recorded games only, newest first. Open a game for its exact runes, items, skills and spells.</span>
+            <span className="xs muted">Recorded games only, newest first. Click a game for its exact runes, items, skills and spells.</span>
           </div>
           {!history.length ? <p className="small muted">No recorded games match these filters.</p> : (
             <div className="table-wrap flat">
               <table className="mini match-history">
-                <thead><tr><th>Date</th><th className="hide-phone">Tournament</th><th className="num">Patch</th><th>Champion</th><th className="hide-phone">Role</th><th className="hide-phone">Team</th><th>Opponent</th><th className="hide-phone">Side</th><th>Result</th><th className="num hide-phone">Game</th></tr></thead>
+                <thead><tr><th aria-label="Expand" /><th>Date</th><th className="hide-phone">Tournament</th><th className="num">Patch</th><th>Champion</th><th className="hide-phone">Role</th><th className="hide-phone">Team</th><th>Opponent</th><th className="hide-phone">Side</th><th>Result</th><th className="num hide-phone">Game</th></tr></thead>
                 <tbody>
-                  {history.map((r) => (
-                    <tr key={r.key} className="click-row" onClick={() => router.push(gameHref(r))}>
-                      <td className="tnum nowrap">{shortDate(r.game.date)}</td>
-                      <td className="hide-phone nowrap">{evName(r)}</td>
-                      <td className="num tnum">{patchLabel(r.game.patch)}</td>
-                      <td><Link className="cell-champ" href={gameHref(r)} onClick={(e) => e.stopPropagation()}><ChampIcon id={r.build.champion} name={name(r.build.champion)} size="xs" />{name(r.build.champion)}</Link></td>
-                      <td className="hide-phone">{ROLE_NAME[r.build.role]}</td>
-                      <td className="hide-phone nowrap">{r.team}</td>
-                      <td className="nowrap">{r.opponentTeam}{r.opponent && <span className="muted"> · {name(r.opponent.champion)}</span>}</td>
-                      <td className={`hide-phone side-${r.side}`}><span className="side-tag">{r.side === "blue" ? "Blue" : "Red"}</span></td>
-                      <td><span className={r.won ? "win" : "loss"}>{r.won ? "Win" : "Loss"}</span></td>
-                      <td className="num tnum hide-phone">G{r.game.game}</td>
-                    </tr>
-                  ))}
+                  {history.map((r) => {
+                    const on = expanded?.key === r.key;
+                    const detailId = `match-${r.game.id}-${r.build.playerId}`;
+                    return (
+                      <Fragment key={r.key}>
+                        <tr className={`click-row match-row ${on ? "open" : ""}`} onClick={() => toggleGame(r)} tabIndex={0} aria-expanded={on} aria-controls={on ? detailId : undefined}
+                          onKeyDown={(e) => { if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggleGame(r); } }}
+                          title={on ? "Collapse this game" : `${p.name}'s exact ${name(r.build.champion)} build in this game`}>
+                          <td className="row-chevron" aria-hidden="true">▸</td>
+                          <td className="tnum nowrap">{shortDate(r.game.date)}</td>
+                          <td className="hide-phone nowrap">{evName(r)}</td>
+                          <td className="num tnum">{patchLabel(r.game.patch)}</td>
+                          <td><span className="cell-champ"><ChampIcon id={r.build.champion} name={name(r.build.champion)} size="xs" />{name(r.build.champion)}</span></td>
+                          <td className="hide-phone">{ROLE_NAME[r.build.role]}</td>
+                          <td className="hide-phone nowrap">{r.team}</td>
+                          <td className="nowrap">{r.opponentTeam}{r.opponent && <span className="muted"> · {name(r.opponent.champion)}</span>}</td>
+                          <td className={`hide-phone side-${r.side}`}><span className="side-tag">{r.side === "blue" ? "Blue" : "Red"}</span></td>
+                          <td><span className={r.won ? "win" : "loss"}>{r.won ? "Win" : "Loss"}</span></td>
+                          <td className="num tnum hide-phone">G{r.game.game}</td>
+                        </tr>
+                        {on && (
+                          <tr className="row-detail match-detail" id={detailId}>
+                            <td colSpan={11}><div className="match-detail-body">
+                              <GameDetail r={r} name={name} evName={evName}
+                                end={<Link href={gameHref(r)} className="nowrap" title="This game on the Pro Builds page, with Common build and Compare">Open full Pro Builds →</Link>} />
+                            </div></td>
+                          </tr>
+                        )}
+                      </Fragment>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
