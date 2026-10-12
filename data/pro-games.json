@@ -36,8 +36,8 @@
       "games": 39,
       "recorded": 39,
       "matchlist": "https://gol.gg/tournament/tournament-matchlist/Demacia%20Cup%20Global%20Invitational%202026/",
-      "lastUpdate": "2026-10-11T14:08:08.116Z",
-      "lastCheck": "2026-10-11T14:08:08.116Z"
+      "lastUpdate": "2026-10-12T09:12:29.844Z",
+      "lastCheck": "2026-10-12T09:12:29.844Z"
     }
   ],
   "games": [
@@ -66,6 +66,13 @@
           "syndra",
           "nautilus",
           "caitlyn"
+        ],
+        "pickOrder": [
+          "jarvan-iv",
+          "cassiopeia",
+          "ksante",
+          "lucian",
+          "milio"
         ]
       },
       "red": {
@@ -83,6 +90,13 @@
           "lee-sin",
           "ezreal",
           "bard"
+        ],
+        "pickOrder": [
+          "rumble",
+          "qiyana",
+          "viktor",
+          "yunara",
+          "lulu"
         ]
       },
       "winner": "blue",
@@ -115,6 +129,13 @@
           "lee-sin",
           "akali",
           "pantheon"
+        ],
+        "pickOrder": [
+          "rumble",
+          "senna",
+          "nautilus",
+          "ryze",
+          "trundle"
         ]
       },
       "red": {
@@ -132,6 +153,13 @@
           "jarvan-iv",
           "vi",
           "qiyana"
+        ],
+        "pickOrder": [
+          "lucian",
+          "milio",
+          "ksante",
+          "shyvana",
+          "anivia"
         ]
       },
       "winner": "red",
@@ -164,6 +192,13 @@
           "jarvan-iv",
           "lucian",
           "kalista"
+        ],
+        "pickOrder": [
+          "qiyana",
+          "ksante",
+          "ryze",
+          "jhin",
+          "leona"
         ]
       },
       "red": {
@@ -181,6 +216,13 @@
           "ezreal",
           "seraphine",
           "caitlyn"
+        ],
+        "pickOrder": [
+          "rumble",
+          "pantheon",
+          "orianna",
+          "varus",
+          "nautilus"
         ]
       },
       "winner": "blue",
@@ -213,6 +255,13 @@
           "rumble",
           "pantheon",
           "qiyana"
+        ],
+        "pickOrder": [
+          "olaf",
+          "vi",
+          "cassiopeia",
+          "caitlyn",
+          "bard"
         ]
       },
       "red": {
@@ -230,6 +279,13 @@
           "lucian",
           "karma",
           "neeko"
+        ],
+        "pickOrder": [
+          "ksante",
+          "naafiri",
+          "anivia",
+          "yunara",
+          "lulu"
         ]
       },
       "winner": "blue",
@@ -262,6 +318,13 @@
           "karma",
           "pantheon",
           "poppy"
+        ],
+        "pickOrder": [
+          "lucian",
+          "milio",
+          "qiyana",
+          "ahri",
+          "galio"
         ]
       },
       "red": {
@@ -279,6 +342,13 @@
           "syndra",
           "annie",
           "twisted-fate"
+        ],
+        "pickOrder": [
+          "ryze",
+          "yunara",
+          "lulu",
+          "rumble",
+          "jarvan-iv"
         ]
       },
       "winner": "blue",
@@ -311,6 +381,13 @@
           "lucian",
           "jhin",
           "kaisa"
+        ],
+        "pickOrder": [
+          "ezreal",
+          "karma",
+          "twisted-fate",
+          "pantheon",
+          "yorick"
         ]
       },
       "red": {
@@ -328,6 +405,13 @@
           "lulu",
           "jarvan-iv",
           "olaf"
+        ],
+        "pickOrder": [
+          "lee-sin",
+          "nautilus",
+          "ryze",
+          "miss-fortune",
+          "jayce"
         ]
       },
       "winner": "red",
@@ -360,6 +444,13 @@
           "ezreal",
           "qiyana",
           "olaf"
+        ],
+        "pickOrder": [
+          "cassiopeia",
+          "yunara",
+          "lulu",
+          "jayce",
+          "poppy"
         ]
       },
       "red": {
@@ -377,6 +468,13 @@
           "caitlyn",
           "wukong",
           "jarvan-iv"
+        ],
+        "pickOrder": [
+          "lucian",
+          "milio",
+          "akali",
+          "pantheon",
+          "yorick"
         ]
       },
       "winner": "blue",
@@ -409,6 +507,13 @@
           "ezreal",
           "ambessa",
           "camille"
+        ],
+        "pickOrder": [
+          "lee-sin",
+          "olaf",
+          "ryze",
+          "caitlyn",
+          "bard"
         ]
       },
       "red": {
@@ -426,6 +531,13 @@
           "seraphine",
           "nautilus",
           "thresh"
+        ],
+        "pickOrder": [
+          "karma",
+          "skarner",
+          "locke",
+          "jax",
+          "aphelios"
         ]
       },
       "winner": "red",
@@ -458,6 +570,13 @@
           "seraphine",
           "galio",
           "annie"
+        ],
+        "pickOrder": [
+          "orianna",
+          "shyvana",
+          "corki",
+          "rell",
+          "ambessa"
         ]
       },
       "red": {
@@ -475,6 +594,13 @@
           "kalista",
           "nautilus",
           "alistar"
+        ],
+        "pickOrder": [
+          "qiyana",
+          "jhin",
+          "camille",
+          "rumble",
+          "sylas"
         ]
       },
       "winner": "red",
@@ -507,6 +633,13 @@
           "nocturne",
           "trundle",
           "syndra"
+        ],
+        "pickOrder": [
+          "ryze",
+          "skarner",
+          "olaf",
+          "yunara",
+          "lulu"
         ]
       },
       "red": {
@@ -524,6 +657,13 @@
           "pantheon",
           "seraphine",
           "nautilus"
+        ],
+        "pickOrder": [
+          "lee-sin",
+          "lucian",
+          "milio",
+          "annie",
+          "ambessa"
         ]
       },
       "winner": "blue",
@@ -556,6 +696,13 @@
           "nocturne",
           "renata-glasc",
           "bard"
+        ],
+        "pickOrder": [
+          "syndra",
+          "qiyana",
+          "galio",
+          "jhin",
+          "alistar"
         ]
       },
       "red": {
@@ -573,6 +720,13 @@
           "ezreal",
           "nautilus",
           "leona"
+        ],
+        "pickOrder": [
+          "orianna",
+          "wukong",
+          "rumble",
+          "rakan",
+          "corki"
         ]
       },
       "winner": "blue",
@@ -605,6 +759,13 @@
           "vi",
           "jhin",
           "caitlyn"
+        ],
+        "pickOrder": [
+          "ezreal",
+          "skarner",
+          "viktor",
+          "rumble",
+          "alistar"
         ]
       },
       "red": {
@@ -622,6 +783,13 @@
           "pantheon",
           "nautilus",
           "ksante"
+        ],
+        "pickOrder": [
+          "lee-sin",
+          "karma",
+          "ryze",
+          "sivir",
+          "olaf"
         ]
       },
       "winner": "blue",
@@ -654,6 +822,13 @@
           "vi",
           "twisted-fate",
           "galio"
+        ],
+        "pickOrder": [
+          "yunara",
+          "lulu",
+          "akali",
+          "sejuani",
+          "yorick"
         ]
       },
       "red": {
@@ -671,6 +846,13 @@
           "pantheon",
           "wukong",
           "xin-zhao"
+        ],
+        "pickOrder": [
+          "jarvan-iv",
+          "ashe",
+          "seraphine",
+          "jayce",
+          "ahri"
         ]
       },
       "winner": "red",
@@ -703,6 +885,13 @@
           "nocturne",
           "nautilus",
           "camille"
+        ],
+        "pickOrder": [
+          "jhin",
+          "naafiri",
+          "bard",
+          "locke",
+          "ornn"
         ]
       },
       "red": {
@@ -720,6 +909,13 @@
           "kalista",
           "syndra",
           "galio"
+        ],
+        "pickOrder": [
+          "pantheon",
+          "orianna",
+          "varus",
+          "renekton",
+          "elise"
         ]
       },
       "winner": "blue",
@@ -752,6 +948,13 @@
           "lulu",
           "seraphine",
           "karma"
+        ],
+        "pickOrder": [
+          "vi",
+          "syndra",
+          "ambessa",
+          "kalista",
+          "renata-glasc"
         ]
       },
       "red": {
@@ -769,6 +972,13 @@
           "qiyana",
           "lucian",
           "ezreal"
+        ],
+        "pickOrder": [
+          "ryze",
+          "lee-sin",
+          "olaf",
+          "bard",
+          "jhin"
         ]
       },
       "winner": "blue",
@@ -801,6 +1011,13 @@
           "jarvan-iv",
           "karma",
           "lulu"
+        ],
+        "pickOrder": [
+          "rumble",
+          "pantheon",
+          "sylas",
+          "xayah",
+          "blitzcrank"
         ]
       },
       "red": {
@@ -818,6 +1035,13 @@
           "ksante",
           "alistar",
           "poppy"
+        ],
+        "pickOrder": [
+          "qiyana",
+          "galio",
+          "ahri",
+          "aphelios",
+          "thresh"
         ]
       },
       "winner": "blue",
@@ -850,6 +1074,13 @@
           "qiyana",
           "naafiri",
           "poppy"
+        ],
+        "pickOrder": [
+          "kalista",
+          "renata-glasc",
+          "vi",
+          "ksante",
+          "akali"
         ]
       },
       "red": {
@@ -867,6 +1098,13 @@
           "ezreal",
           "ambessa",
           "locke"
+        ],
+        "pickOrder": [
+          "rumble",
+          "lucian",
+          "milio",
+          "syndra",
+          "wukong"
         ]
       },
       "winner": "red",
@@ -899,6 +1137,13 @@
           "naafiri",
           "anivia",
           "skarner"
+        ],
+        "pickOrder": [
+          "lee-sin",
+          "ryze",
+          "jayce",
+          "mel",
+          "pyke"
         ]
       },
       "red": {
@@ -916,6 +1161,13 @@
           "ezreal",
           "lulu",
           "nautilus"
+        ],
+        "pickOrder": [
+          "ashe",
+          "seraphine",
+          "yorick",
+          "orianna",
+          "xin-zhao"
         ]
       },
       "winner": "red",
@@ -948,6 +1200,13 @@
           "nocturne",
           "galio",
           "ksante"
+        ],
+        "pickOrder": [
+          "naafiri",
+          "ryze",
+          "rumble",
+          "lucian",
+          "milio"
         ]
       },
       "red": {
@@ -965,6 +1224,13 @@
           "ezreal",
           "nautilus",
           "caitlyn"
+        ],
+        "pickOrder": [
+          "jarvan-iv",
+          "yunara",
+          "lulu",
+          "ornn",
+          "locke"
         ]
       },
       "winner": "blue",
@@ -997,6 +1263,13 @@
           "vi",
           "poppy",
           "wukong"
+        ],
+        "pickOrder": [
+          "kalista",
+          "renata-glasc",
+          "akali",
+          "renekton",
+          "skarner"
         ]
       },
       "red": {
@@ -1014,6 +1287,13 @@
           "seraphine",
           "lee-sin",
           "gnar"
+        ],
+        "pickOrder": [
+          "orianna",
+          "xayah",
+          "rakan",
+          "zaahen",
+          "pantheon"
         ]
       },
       "winner": "blue",
@@ -1046,6 +1326,13 @@
           "cassiopeia",
           "naafiri",
           "lee-sin"
+        ],
+        "pickOrder": [
+          "karma",
+          "jhin",
+          "jarvan-iv",
+          "locke",
+          "ambessa"
         ]
       },
       "red": {
@@ -1063,6 +1350,13 @@
           "syndra",
           "orianna",
           "anivia"
+        ],
+        "pickOrder": [
+          "ezreal",
+          "seraphine",
+          "ryze",
+          "rumble",
+          "skarner"
         ]
       },
       "winner": "red",
@@ -1095,6 +1389,13 @@
           "pantheon",
           "sejuani",
           "ksante"
+        ],
+        "pickOrder": [
+          "orianna",
+          "yunara",
+          "lulu",
+          "olaf",
+          "xin-zhao"
         ]
       },
       "red": {
@@ -1112,6 +1413,13 @@
           "nocturne",
           "jayce",
           "maokai"
+        ],
+        "pickOrder": [
+          "lucian",
+          "milio",
+          "viktor",
+          "wukong",
+          "jax"
         ]
       },
       "winner": "blue",
@@ -1144,6 +1452,13 @@
           "caitlyn",
           "poppy",
           "qiyana"
+        ],
+        "pickOrder": [
+          "kalista",
+          "renata-glasc",
+          "sylas",
+          "lee-sin",
+          "gwen"
         ]
       },
       "red": {
@@ -1161,6 +1476,13 @@
           "varus",
           "sejuani",
           "gnar"
+        ],
+        "pickOrder": [
+          "syndra",
+          "miss-fortune",
+          "neeko",
+          "ksante",
+          "zaahen"
         ]
       },
       "winner": "blue",
@@ -1193,6 +1515,13 @@
           "lucian",
           "nautilus",
           "jhin"
+        ],
+        "pickOrder": [
+          "cassiopeia",
+          "ezreal",
+          "karma",
+          "sion",
+          "sejuani"
         ]
       },
       "red": {
@@ -1210,6 +1539,13 @@
           "olaf",
           "jarvan-iv",
           "ksante"
+        ],
+        "pickOrder": [
+          "qiyana",
+          "syndra",
+          "jayce",
+          "caitlyn",
+          "bard"
         ]
       },
       "winner": "red",
@@ -1242,6 +1578,13 @@
           "lee-sin",
           "ksante",
           "ryze"
+        ],
+        "pickOrder": [
+          "lucian",
+          "milio",
+          "wukong",
+          "viktor",
+          "vayne"
         ]
       },
       "red": {
@@ -1259,6 +1602,13 @@
           "akali",
           "ambessa",
           "camille"
+        ],
+        "pickOrder": [
+          "jarvan-iv",
+          "yunara",
+          "lulu",
+          "olaf",
+          "orianna"
         ]
       },
       "winner": "blue",
@@ -1291,6 +1641,13 @@
           "vi",
           "anivia",
           "galio"
+        ],
+        "pickOrder": [
+          "ryze",
+          "nautilus",
+          "kaisa",
+          "naafiri",
+          "rumble"
         ]
       },
       "red": {
@@ -1308,6 +1665,13 @@
           "nocturne",
           "jarvan-iv",
           "pantheon"
+        ],
+        "pickOrder": [
+          "karma",
+          "lee-sin",
+          "sivir",
+          "syndra",
+          "ornn"
         ]
       },
       "winner": "red",
@@ -1340,6 +1704,13 @@
           "olaf",
           "gnar",
           "galio"
+        ],
+        "pickOrder": [
+          "vi",
+          "yunara",
+          "lulu",
+          "viktor",
+          "ksante"
         ]
       },
       "red": {
@@ -1357,6 +1728,13 @@
           "nocturne",
           "twisted-fate",
           "renekton"
+        ],
+        "pickOrder": [
+          "lucian",
+          "milio",
+          "poppy",
+          "orianna",
+          "varus"
         ]
       },
       "winner": "red",
@@ -1389,6 +1767,13 @@
           "syndra",
           "naafiri",
           "jarvan-iv"
+        ],
+        "pickOrder": [
+          "ezreal",
+          "ksante",
+          "karma",
+          "orianna",
+          "wukong"
         ]
       },
       "red": {
@@ -1406,6 +1791,13 @@
           "cassiopeia",
           "xin-zhao",
           "lee-sin"
+        ],
+        "pickOrder": [
+          "jhin",
+          "rumble",
+          "nautilus",
+          "pantheon",
+          "akali"
         ]
       },
       "winner": "blue",
@@ -1438,6 +1830,13 @@
           "xayah",
           "caitlyn",
           "lucian"
+        ],
+        "pickOrder": [
+          "kalista",
+          "renata-glasc",
+          "kled",
+          "twisted-fate",
+          "chogath"
         ]
       },
       "red": {
@@ -1455,6 +1854,13 @@
           "lee-sin",
           "viktor",
           "anivia"
+        ],
+        "pickOrder": [
+          "qiyana",
+          "ryze",
+          "olaf",
+          "ashe",
+          "seraphine"
         ]
       },
       "winner": "blue",
@@ -1487,6 +1893,13 @@
           "nocturne",
           "lee-sin",
           "xin-zhao"
+        ],
+        "pickOrder": [
+          "lucian",
+          "milio",
+          "viktor",
+          "jarvan-iv",
+          "jayce"
         ]
       },
       "red": {
@@ -1504,6 +1917,13 @@
           "qiyana",
           "olaf",
           "wukong"
+        ],
+        "pickOrder": [
+          "ryze",
+          "yunara",
+          "lulu",
+          "naafiri",
+          "gnar"
         ]
       },
       "winner": "red",
@@ -1536,6 +1956,13 @@
           "ksante",
           "karma",
           "seraphine"
+        ],
+        "pickOrder": [
+          "cassiopeia",
+          "olaf",
+          "ezreal",
+          "amumu",
+          "wukong"
         ]
       },
       "red": {
@@ -1553,6 +1980,13 @@
           "rumble",
           "alistar",
           "nautilus"
+        ],
+        "pickOrder": [
+          "syndra",
+          "pantheon",
+          "sivir",
+          "bard",
+          "jax"
         ]
       },
       "winner": "blue",
@@ -1585,6 +2019,13 @@
           "ezreal",
           "syndra",
           "ksante"
+        ],
+        "pickOrder": [
+          "rumble",
+          "xin-zhao",
+          "ryze",
+          "lucian",
+          "milio"
         ]
       },
       "red": {
@@ -1602,6 +2043,13 @@
           "naafiri",
           "xayah",
           "lulu"
+        ],
+        "pickOrder": [
+          "vi",
+          "kalista",
+          "renata-glasc",
+          "ambessa",
+          "galio"
         ]
       },
       "winner": "red",
@@ -1634,6 +2082,13 @@
           "qiyana",
           "lulu",
           "nautilus"
+        ],
+        "pickOrder": [
+          "ashe",
+          "seraphine",
+          "kled",
+          "hwei",
+          "chogath"
         ]
       },
       "red": {
@@ -1651,6 +2106,13 @@
           "jayce",
           "jarvan-iv",
           "orianna"
+        ],
+        "pickOrder": [
+          "wukong",
+          "olaf",
+          "sylas",
+          "mel",
+          "rakan"
         ]
       },
       "winner": "red",
@@ -1683,6 +2145,13 @@
           "qiyana",
           "orianna",
           "locke"
+        ],
+        "pickOrder": [
+          "lulu",
+          "shyvana",
+          "yunara",
+          "annie",
+          "tristana"
         ]
       },
       "red": {
@@ -1700,6 +2169,13 @@
           "ezreal",
           "viktor",
           "twisted-fate"
+        ],
+        "pickOrder": [
+          "naafiri",
+          "nautilus",
+          "miss-fortune",
+          "gnar",
+          "anivia"
         ]
       },
       "winner": "blue",
@@ -1732,6 +2208,13 @@
           "kalista",
           "ksante",
           "galio"
+        ],
+        "pickOrder": [
+          "orianna",
+          "wukong",
+          "rumble",
+          "rakan",
+          "xayah"
         ]
       },
       "red": {
@@ -1749,6 +2232,13 @@
           "jarvan-iv",
           "jhin",
           "caitlyn"
+        ],
+        "pickOrder": [
+          "nocturne",
+          "yunara",
+          "lulu",
+          "syndra",
+          "ornn"
         ]
       },
       "winner": "red",
@@ -1781,6 +2271,13 @@
           "cassiopeia",
           "xin-zhao",
           "qiyana"
+        ],
+        "pickOrder": [
+          "lucian",
+          "milio",
+          "jarvan-iv",
+          "ryze",
+          "ksante"
         ]
       },
       "red": {
@@ -1798,6 +2295,13 @@
           "kled",
           "ambessa",
           "annie"
+        ],
+        "pickOrder": [
+          "olaf",
+          "ashe",
+          "seraphine",
+          "naafiri",
+          "aurora"
         ]
       },
       "winner": "blue",
@@ -1830,6 +2334,13 @@
           "vi",
           "lucian",
           "lulu"
+        ],
+        "pickOrder": [
+          "ashe",
+          "seraphine",
+          "qiyana",
+          "galio",
+          "locke"
         ]
       },
       "red": {
@@ -1847,6 +2358,13 @@
           "olaf",
           "ksante",
           "ornn"
+        ],
+        "pickOrder": [
+          "ryze",
+          "jarvan-iv",
+          "rumble",
+          "jhin",
+          "nautilus"
         ]
       },
       "winner": "red",
@@ -1879,6 +2397,13 @@
           "cassiopeia",
           "trundle",
           "wukong"
+        ],
+        "pickOrder": [
+          "lucian",
+          "milio",
+          "akali",
+          "xin-zhao",
+          "olaf"
         ]
       },
       "red": {
@@ -1896,6 +2421,13 @@
           "viktor",
           "skarner",
           "gnar"
+        ],
+        "pickOrder": [
+          "orianna",
+          "yunara",
+          "lulu",
+          "renekton",
+          "lee-sin"
         ]
       },
       "winner": "red",
@@ -1928,6 +2460,13 @@
           "vi",
           "trundle",
           "skarner"
+        ],
+        "pickOrder": [
+          "nocturne",
+          "xayah",
+          "rakan",
+          "jax",
+          "taliyah"
         ]
       },
       "red": {
@@ -1945,6 +2484,13 @@
           "cassiopeia",
           "ahri",
           "sylas"
+        ],
+        "pickOrder": [
+          "kalista",
+          "renata-glasc",
+          "viktor",
+          "ambessa",
+          "sejuani"
         ]
       },
       "winner": "blue",
