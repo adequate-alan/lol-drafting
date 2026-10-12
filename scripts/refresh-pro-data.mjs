@@ -19,7 +19,7 @@ const dataDir = join(process.cwd(), "data");
 const read = (f, fallback) => (fallback && !existsSync(join(dataDir, f)) ? fallback : JSON.parse(readFileSync(join(dataDir, f), "utf8")));
 const write = (f, v) => writeFileSync(join(dataDir, f), JSON.stringify(v, null, 2) + "\n");
 
-const UA = "lol-drafting-refresh/1.0 (+https://github.com/adequate-alan/lol-drafting; daily, a few pages)";
+const UA = "lol-drafting-refresh/1.0 (+https://github.com/adequate-alan/lol-drafting; twice daily, a few pages)";
 const PAUSE_MS = Number(process.env.GOLGG_PAUSE_MS ?? 2500);
 let requests = 0, last = 0;
 

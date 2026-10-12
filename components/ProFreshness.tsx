@@ -50,7 +50,7 @@ export function ProFreshness({ items }: { items: Freshness[] }) {
       <span>Last updated: {day(updated) ?? "—"}</span>
       {check && <span title={new Date(check).toLocaleString("en-US", { timeZone: "America/New_York", timeZoneName: "short" })}>Last checked: {day(check)}</span>}
       {items.filter((i) => i.listed).map((i) => <span key={i.event}>{i.label} {status(i)}{i.games != null ? ` · ${i.recorded}/${i.games} games recorded` : ""}</span>)}
-      {waiting.length > 0 && <span title="Tracked by the daily refresh; Gol.gg hasn't listed these yet">Not on Gol.gg yet: {waiting.map((i) => i.label).join(", ")}</span>}
+      {waiting.length > 0 && <span title="Tracked by the pro-data refresh; Gol.gg hasn't listed these yet">Not on Gol.gg yet: {waiting.map((i) => i.label).join(", ")}</span>}
     </p>
   );
 }

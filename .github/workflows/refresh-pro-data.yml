@@ -1,16 +1,20 @@
 name: Refresh pro data
 
-# Daily check of Gol.gg for newly completed games in the tracked tournaments only (data/pro-games.json `tracked`:
+# Twice-daily check of Gol.gg for newly completed games in the tracked tournaments only (data/pro-games.json `tracked`:
 # Demacia Cup Global Invitational 2026 and Worlds 2026; the LCK playoffs are a frozen archive). Imports verified games
 # and tournament totals plus every player's build (items, runes, spells, skill order), runs the full test suite, typecheck and build, and commits and deploys only when verified data
 # changed. A refused or failed request writes nothing. Saved pairings and pool tiers are never touched.
 #
-# 8 AM Eastern all year: cron is UTC, so both 12:00 UTC (8 AM EDT) and 13:00 UTC (8 AM EST) are scheduled and the gate
-# step lets through only the one that matches New York's current offset. GitHub may start scheduled runs late.
+# Twice a day, 8 AM and 8 PM Eastern all year (alan, 2026-10-12: the evening run picks up the day's games without waiting
+# for the next morning). Cron is UTC, so each run is scheduled at both its EDT and its EST hour (8 AM: 12:00 / 13:00 UTC;
+# 8 PM: 00:00 / 01:00 UTC) and the gate step lets through only the one that matches New York's current offset. GitHub
+# may start scheduled runs late.
 on:
   schedule:
     - cron: "0 12 * * *"
     - cron: "0 13 * * *"
+    - cron: "0 0 * * *"
+    - cron: "0 1 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -31,13 +35,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: gate
-        name: Run at 8 AM Eastern only
+        name: Run at 8 AM and 8 PM Eastern only
         run: |
           offset=$(TZ=America/New_York date +%z)
           run=true
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            if [ "${{ github.event.schedule }}" = "0 12 * * *" ] && [ "$offset" != "-0400" ]; then run=false; fi
-            if [ "${{ github.event.schedule }}" = "0 13 * * *" ] && [ "$offset" != "-0500" ]; then run=false; fi
+            case "${{ github.event.schedule }}" in
+              "0 12 * * *"|"0 0 * * *") [ "$offset" = "-0400" ] || run=false ;;
+              "0 13 * * *"|"0 1 * * *") [ "$offset" = "-0500" ] || run=false ;;
+            esac
           fi
           echo "New York offset $offset; run=$run"
           echo "run=$run" >> "$GITHUB_OUTPUT"
