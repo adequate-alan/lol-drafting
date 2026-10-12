@@ -1155,6 +1155,21 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .shell-sources { display: grid; gap: var(--s2); margin: 0; padding: 0; list-style: none; font-size: var(--fs-xs); }
 .shell-sources li { display: flex; flex-wrap: wrap; gap: 2px var(--s4); }
 .shell-sources a { color: var(--pro); }
+/* Observed variations (pro evidence): changed picks at full strength, shared picks dimmed; one row per lineup */
+.shell-toggles { gap: 2px var(--s4); }
+.shell-variations { display: grid; gap: var(--s3); margin: 0; padding: var(--s3) 0 0; list-style: none; border-top: 1px dashed var(--pro-line); font-size: var(--fs-xs); }
+.var-row { display: grid; gap: 3px; }
+.var-lineup { display: inline-flex; gap: 3px; }
+.var-pick { opacity: .45; }
+.var-pick.diff { opacity: 1; }
+.var-what { color: var(--text); }
+.var-games { display: flex; flex-wrap: wrap; gap: 2px var(--s4); color: var(--text-muted); }
+.var-game { display: inline-flex; gap: var(--s2); }
+.var-game a, .var-draft { color: var(--pro); }
+.var-w { color: var(--success); }
+.var-l { color: var(--danger); }
+.shell-read { display: grid; gap: 3px; font-size: var(--fs-xs); line-height: 1.45; color: var(--text-muted); }
+.shell-read p { margin: 0; }
 /* Lineup: five champions across, role above, name and job below; highlights only change colors and rings */
 .lineup { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 0 var(--s3) var(--s3); }
 .lu-slot { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; padding: var(--s3) var(--s2) var(--s2); border-radius: var(--r); text-align: center; transition: background var(--t-fast), opacity var(--t-fast); }

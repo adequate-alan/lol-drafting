@@ -122,6 +122,27 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   after test/typecheck/build, then starts `pages.yml`. A supplied game link becomes verified only when its game shows the claim.
 - Tests that check fixed Demacia numbers are scoped to the known events; new imports must never be able to break them.
 
+## Weekly Comp Library discovery (alan, 2026-10-12)
+
+- `.github/workflows/discover-comps.yml` runs Sundays at 9 AM Eastern (cron 13:00 and 14:00 UTC, same New York gate as
+  the daily refresh) and on `workflow_dispatch`. It downloads nothing: `scripts/discover-comps.ts` reads the lineups the
+  daily refresh stored for the tracked tournaments (`data/pro-games.json`), runs `lib/comp-discovery.ts` and writes only
+  `data/discovered-comps.json` and `reports/comp-discovery.md`, committing (after test/typecheck/build) only when the
+  library data changed, then starting `pages.yml`. The report is also the run summary and an artifact.
+- Deterministic and idempotent, no model calls; every threshold is in `DISCOVERY`. Each lineup joins the closest
+  observed shell or discovered comp: five same champions = existing (a replay), same primary identity with 3+ shared
+  champions, or same primary + secondary with 4+ roles doing the same job and 2+ shared champions = an observed
+  variation, otherwise a new group. Templates never take observed lineups. A new group becomes an Observed Pro Comp only
+  when the comp check reads all five champions (Locke / Zaahen lineups go to the report), finds an identity and no major
+  weak point, the identities don't clash, and it has 2+ games from 2+ teams or a primary identity no observed library
+  comp has. Everything else is "Proposed comps for review" in the report. Win/loss never decides. Additions are sticky
+  (a comp that later fails is listed in the report, never removed).
+- Discovered comps render as Pro cards in Comp Library (`lib/comp-library.ts`); their identity, jobs, win condition,
+  strengths, weak points and difficulty are the comp check's read (General Draft Logic, labelled "Comp check read" in
+  Details). Observed variations of any comp sit behind "N observed variations". The page shows "Library reviewed" (last
+  successful run, GitHub's public Actions API) and "Last addition" (stored `lastAddition`). Never hand-edit
+  `discovered-comps.json`; tests in `tests/comp-discovery.test.ts`.
+
 ## Locked saved pairings (enforced by `tests/locked-conclusions.test.ts`)
 
 Change these only when alan explicitly says so, then update the test in the same commit.
@@ -224,7 +245,10 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   `tests/pro-sides.test.ts`); filters keep each row's side. Both sides of a game pair blue first.
 - **Champion Synergies** (`/synergies/<tab>/`, sidebar "Synergies"; alan renamed it from First Pick on 2026-10-10) is
   the champion synergy and pairing reference: rail, role tabs, saved / proposed partners, pro pairings, "Open in Draft
-  Room". Old `/first-pick/…` URLs forward there with their query (`components/Forward.tsx`). The name **First Pick** is
+  Room". One tab per role, Top | Jungle | Mid | Bot | Support (alan, 2026-10-12; `components/views/synergy-tabs.ts`,
+  `tests/synergy-tabs.test.ts`); each role's records stay on their own tab. Top and Support also list the Comp Library
+  shells that hold the pick (folded). Old `/first-pick/…` URLs forward there with their query, and the retired
+  `/synergies/mid-jungle/` forwards to Mid or Jungle by `?role=` or the champion (`components/Forward.tsx`). The name **First Pick** is
   reserved for a future blind-pick feature (blind-pick safety, counterpick vulnerability, flexibility, draft priority);
   don't reuse it for synergy content.
 - Gen.G ivory + champagne gold + black design system (alan, 2026-10-10: no navy; light mode is the strongest Gen.G look,
