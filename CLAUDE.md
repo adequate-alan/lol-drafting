@@ -383,6 +383,18 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   only when recorded; current enemy picks on the other team are an observed matchup, never a counter; pick order is not
   recorded, so no game is shown as a response), the Counter card and the comp-fit breakdown. Don't build page-specific
   tooltips.
+- **Motion and interaction system** (alan, 2026-10-12, Impeccable interaction pass; `tests/interaction.test.ts`, smoke
+  "Interaction and motion audit"): smooth is not the same as animated. Every duration is a token in `app/globals.css`
+  "Motion": hover 100ms, tabs / selection 140ms, dropdowns / popovers 140ms in and 90ms out, drawers / sheets / mobile nav
+  220ms in and 160ms out, `--ease-out` arrivals and `--ease-in` exits; no literal durations in CSS or components.
+  Selecting, locking and filtering change state instantly (only a fresh lock acknowledges itself); only arriving surfaces
+  move. Reduced motion keeps fades and drops movement (no global kill); JS scrolling uses `scrollBehavior()` from
+  `lib/motion.ts`. The drawer exits before unmounting and returns focus to its opener; on phones it has a scrim and holds
+  the page still. Every dropdown is a fixed portal placed by `menuPlace` (`components/Select.tsx`; PinPicker too), opens
+  on click / typing / arrows, never on focus. Tab lists and option strips use `components/roving.ts` (one Tab stop, arrow
+  keys). Hover cards swap in place between neighbours. Draft Room derives everything from the board in one `useMemo`
+  and never re-keys on its own URL writes (`markOwnQuery`), so a lock keeps the tab, filter, open rows, focus and undo.
+  Coarse pointers get 32-40px controls and invisible hit margins; desktop density is unchanged.
 - **Phone Comp Check line** (alan, 2026-10-12): below 1180px the Draft Room shows one line under the board and in the
   pinned mini board (`CompSummaryLine`, `lib/comp-summary.ts`, `tests/comp-summary.test.ts`): the open role's top needs
   and the worst non-minor weak point, "No major weak points" when clean, "Early read" with two picks, nothing actionable

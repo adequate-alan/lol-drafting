@@ -10,6 +10,7 @@ import { convertKits } from "@/lib/model-v2/kits";
 import type { BotPairing, Champion, Role } from "@/lib/schema";
 import { SourceBadge } from "./ui";
 import { compSummary, summaryText } from "@/lib/comp-summary";
+import { scrollBehavior } from "@/lib/motion";
 
 const SEVERITY = { major: "Major", moderate: "Moderate", minor: "Minor" } as const;
 
@@ -141,7 +142,7 @@ export function CompSummaryLine({ draft, enemyIds, champions, active, className 
   const line = summaryText(s);
   const jump = () => {
     const el = document.getElementById("comp-check");
-    el?.scrollIntoView({ behavior: "smooth", block: "start" });
+    el?.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
     el?.focus({ preventScroll: true });
   };
   return (

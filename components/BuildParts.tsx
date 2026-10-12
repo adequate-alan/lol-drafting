@@ -16,10 +16,11 @@ export const SKILLS: Skill[] = ["Q", "W", "E", "R"];
 export function Icon({ src, label, tip, size = "md", dim, struck, chosen, className = "" }: {
   src?: string; label: string; tip?: string; size?: IconSize; dim?: boolean; struck?: boolean; chosen?: boolean; className?: string;
 }) {
-  const [bad, setBad] = useState(false);
+  // Remember which src failed, not just that one did: switching games reuses this slot for another icon.
+  const [bad, setBad] = useState<string>();
   return (
     <span className={`bicon ${size} ${dim ? "dim" : ""} ${struck ? "struck" : ""} ${chosen ? "chosen" : ""} ${className}`} title={tip ?? label}>
-      {src && !bad ? <img src={src} alt={label} loading="lazy" decoding="async" draggable={false} onError={() => setBad(true)} />
+      {src && bad !== src ? <img key={src} src={src} alt={label} loading="lazy" decoding="async" draggable={false} onError={() => setBad(src)} />
         : <span className="bicon-fallback" aria-label={label}>{label.slice(0, 2)}</span>}
     </span>
   );

@@ -397,6 +397,8 @@ await page.locator(".theme-toggle").click();
   await drawer.locator("[aria-label='Next champion']").click();
   check("comps: next moves through the comp in place", (await drawer.locator("h2").textContent()) === "Gnar" && page.url().endsWith("/comps/?kind=all"), page.url());
   await page.keyboard.press("Escape");
+  // The drawer plays a short exit (--dur-panel-out) before it unmounts.
+  await drawer.waitFor({ state: "detached", timeout: 1000 }).catch(() => {});
   const escDrawers = await drawer.count(), escY = await page.evaluate(() => scrollY);
   check("comps: Escape closes and keeps the scroll position", escDrawers === 0 && escY === y, `${escDrawers} drawer, scrollY ${escY} vs ${y}`);
   await naut.click();
@@ -834,6 +836,104 @@ if (shots) {
   }
   await page.evaluate(() => localStorage.removeItem("theme"));
   await page.setViewportSize({ width: 1440, height: 900 });
+}
+// ---------- Interaction and motion audit (alan, 2026-10-12): regressions for the bugs it found ----------
+{
+  await page.setViewportSize({ width: 1440, height: 900 });
+  // A lock keeps the same room: role tab, filter and focus survive (the room used to rebuild on every lock)
+  await open("/?bot=caitlyn");
+  await page.locator(".role-tab", { hasText: "Mid" }).click();
+  await page.locator(".fit-filters button", { hasText: "Synergy" }).click();
+  await page.evaluate(() => { document.querySelector(".draft-room").dataset.probe = "1"; });
+  const enemyTop = page.locator("input[aria-label='Enemy TOP champion']");
+  await enemyTop.click();
+  await enemyTop.fill("Aatrox");
+  await enemyTop.press("Enter");
+  await page.waitForTimeout(300);
+  const kept = await page.evaluate(() => ({
+    same: document.querySelector(".draft-room")?.dataset.probe === "1",
+    tab: document.querySelector(".role-tab.active .role-name")?.textContent,
+    filter: document.querySelector(".fit-filters button.active")?.textContent ?? "",
+    focus: !!document.activeElement?.closest(".draft-slot.enemy.locked"),
+  }));
+  check("draft room: a lock keeps the room, its tab, filter and keyboard focus", kept.same && kept.tab === "Mid" && kept.filter.startsWith("Synergy") && kept.focus, JSON.stringify(kept));
+  // Clear draft offers its undo, and Undo brings the board back
+  await page.locator("button", { hasText: "Clear draft" }).click();
+  const undo = page.locator("button", { hasText: "Draft cleared · Undo" });
+  const offered = await undo.count();
+  if (offered) await undo.click();
+  await page.waitForTimeout(200);
+  check("draft room: Clear draft offers Undo, which restores the board", offered === 1 && /bot=caitlyn/.test(page.url()) && /vs=top:aatrox/.test(decodeURIComponent(page.url())), page.url());
+  // A champion already on either team is never locked again by typing its exact name
+  await open("/?bot=caitlyn&vs=mid:ahri");
+  const mid = page.locator("input[aria-label='MID champion']");
+  await mid.click();
+  await mid.fill("Ahri");
+  await mid.press("Enter");
+  await page.waitForTimeout(200);
+  check("draft room: typing a taken champion's name never locks it twice", !/[?&]mid=ahri/.test(page.url()), page.url());
+  // Role tabs are one tab stop with arrow keys
+  await open("/?bot=caitlyn");
+  await page.locator(".role-tab.active").focus();
+  const before = await page.locator(".role-tab.active .role-name").textContent();
+  await page.keyboard.press("ArrowRight");
+  const after = await page.evaluate(() => ({ tab: document.querySelector(".role-tab.active .role-name")?.textContent, focused: document.activeElement?.classList.contains("active") }));
+  check("draft room: arrow keys move between role tabs", after.tab !== before && after.focused, `${before} -> ${JSON.stringify(after)}`);
+  // Closing the drawer gives focus back to what opened it, after a short exit
+  await open("/?bot=caitlyn&support=lulu");
+  const opener = page.locator(".draft-slot.locked .slot-body").first();
+  await opener.focus();
+  await page.keyboard.press("Enter");
+  await page.locator(".drawer").waitFor();
+  const entering = await page.locator(".drawer").evaluate((d) => getComputedStyle(d).animationName);
+  await page.keyboard.press("Escape");
+  const closingCls = await page.locator(".drawer").evaluate((d) => d.className).catch(() => "gone");
+  await page.locator(".drawer").waitFor({ state: "detached", timeout: 1000 }).catch(() => {});
+  const back = await page.evaluate(() => !!document.activeElement?.closest(".draft-slot.locked"));
+  check("drawer: opens with drawer-in, exits, and returns focus to its opener", entering === "drawer-in" && /closing|gone/.test(closingCls) && back && (await page.locator(".drawer").count()) === 0, `${entering} · ${closingCls} · focus back ${back}`);
+  // Motion tokens: one system, reduced motion drops movement but keeps the fade
+  const tokens = await page.evaluate(() => { const c = getComputedStyle(document.documentElement); return ["--dur-hover", "--dur-select", "--dur-pop", "--dur-panel"].map((t) => { const v = c.getPropertyValue(t).trim(); return Math.round(parseFloat(v) * (v.endsWith("ms") ? 1 : 1000)); }); });
+  check("motion: shared duration tokens are in place", tokens.join() === "100,140,140,220", tokens.join());
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await opener.click();
+  await page.locator(".drawer").waitFor();
+  const rm = await page.locator(".drawer").evaluate((d) => ({ name: getComputedStyle(d).animationName, dur: getComputedStyle(d).animationDuration }));
+  await page.keyboard.press("Escape");
+  await page.locator(".drawer").waitFor({ state: "detached", timeout: 1000 }).catch(() => {});
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  check("motion: reduced motion keeps a short fade for the drawer", rm.name === "drawer-in" && parseFloat(rm.dur) <= 0.15, JSON.stringify(rm));
+  // Pro Builds: the typeable filters open like the shared dropdown (not on focus) in a portalled, viewport-placed menu
+  await open("/pro-builds/");
+  const player = page.locator("input[aria-label='Player']");
+  await player.focus();
+  await page.waitForTimeout(150);
+  const onFocus = await page.locator(".player-menu").count();
+  await player.click();
+  const menu = await page.locator(".player-menu").evaluate((m) => ({ parent: m.parentElement?.tagName, pos: getComputedStyle(m).position })).catch(() => null);
+  await page.keyboard.press("Escape");
+  check("pro builds: player filter opens on click, not focus, in a fixed portalled menu", onFocus === 0 && menu?.parent === "BODY" && menu?.pos === "fixed", `${onFocus} on focus · ${JSON.stringify(menu)}`);
+  // Game strip: arrow keys move between games and the detail follows
+  const firstGame = page.locator(".build-pick").first();
+  if (await page.locator(".build-pick").count() > 1) {
+    await firstGame.focus();
+    const g0 = await page.locator(".game-head .game-player b").first().textContent();
+    await page.keyboard.press("ArrowRight");
+    await page.waitForTimeout(150);
+    const g1 = await page.evaluate(() => ({ sel: document.activeElement?.getAttribute("aria-selected"), url: location.search }));
+    check("pro builds: arrow keys move through the game strip and select the game", g1.sel === "true" && /game=/.test(g1.url), `${g0} · ${JSON.stringify(g1)}`);
+  }
+  // Phones: the drawer sheet never scrolls sideways and the page behind it holds still
+  await page.setViewportSize({ width: 390, height: 844 });
+  await open("/?bot=caitlyn&support=lulu");
+  await page.locator(".draft-slot.locked .slot-body").first().click();
+  await page.locator(".drawer").waitFor();
+  const sheetX = await page.evaluate(() => { const b = document.querySelector(".drawer-body"); return { over: b.scrollWidth - b.clientWidth, lock: getComputedStyle(document.documentElement).overflow, scrim: getComputedStyle(document.querySelector(".drawer-scrim")).display }; });
+  check("drawer at 390px: no sideways overflow, page locked behind a scrim", sheetX.over <= 0 && sheetX.lock === "hidden" && sheetX.scrim === "block", JSON.stringify(sheetX));
+  await page.keyboard.press("Escape");
+  await page.setViewportSize({ width: 1440, height: 900 });
+  // Every section names itself in the tab
+  await open("/pro-builds/");
+  check("page titles: sections name themselves", (await page.title()) === "Pro Builds · Draft Assistant", await page.title());
 }
 check("no failed requests / console errors", problems.length === 0, problems.slice(0, 10).join(" | "));
 await browser.close();

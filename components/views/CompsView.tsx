@@ -201,7 +201,7 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
         })}
       </div>
       {intent.card && !open && cardShell && intent.card.t.role && (
-        <ChampionHoverCard key={`${cardShell.id}-${intent.card.t.role}-${intent.card.t.id}`} target={intent.card.t} anchor={intent.card.el} data={data} index={index}
+        <ChampionHoverCard key={`${cardShell.id}-${intent.card.t.role}-${intent.card.t.id}`} target={intent.card.t} anchor={intent.card.el} swap={intent.card.swap} data={data} index={index}
           comp={compOf(cardShell, { ...swapsOf(cardShell.id), [intent.card.t.role]: intent.card.t.id })}
           side={intent.card.el.classList.contains("lu-slot") ? "below" : "beside"}
           onEnter={intent.keep} onLeave={intent.unhover} />

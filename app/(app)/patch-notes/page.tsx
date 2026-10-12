@@ -5,6 +5,9 @@ import { getBotPairings, getDrawerData, getMeta, getMidJungle, getPatchNotes, ge
 import { nameMap, sourceMap } from "@/lib/lookup";
 import { implicationContext, implicationsFor, type Implications } from "@/lib/patch-implications";
 
+// Each section names itself in the tab and in history, so a route change is announced (layout template adds the site).
+export const metadata = { title: "Patch Notes" };
+
 export default function PatchNotes() {
   const notes = getPatchNotes();
   const names = nameMap();

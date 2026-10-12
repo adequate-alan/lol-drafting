@@ -4,6 +4,9 @@ import { MetaView } from "@/components/views/MetaView";
 import { getBotPairings, getDrawerData, getMeta, getProDrafts, getProFreshness, getRules } from "@/lib/data";
 import { nameMap, sourceMap } from "@/lib/lookup";
 
+// Each section names itself in the tab and in history, so a route change is announced (layout template adds the site).
+export const metadata = { title: "Meta / Research" };
+
 export default function Meta() {
   const sources = sourceMap();
   const input = { meta: getMeta(), proDrafts: getProDrafts(), botPairings: getBotPairings(), sources };

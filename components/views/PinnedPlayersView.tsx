@@ -223,7 +223,8 @@ function Profile({ rows, id, fallbackName, filter, champion, result, pinned, onP
                   const on = c.champion === champion;
                   return (
                     <tr key={`${c.champion}-${c.role}`} className={`click-row ${on ? "selected" : ""}`} aria-selected={on}
-                      onClick={() => update({ champion: on ? undefined : c.champion })} title={on ? "Show every champion" : `Show ${p.name}'s ${name(c.champion)} games and builds`}>
+                      onClick={() => update({ champion: on ? undefined : c.champion })}
+                      tabIndex={0} onKeyDown={(e) => { if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); update({ champion: on ? undefined : c.champion }); } }} title={on ? "Show every champion" : `Show ${p.name}'s ${name(c.champion)} games and builds`}>
                       <td><span className="cell-champ"><InteractiveChampion id={c.champion} role={c.role}><ChampIcon id={c.champion} name={name(c.champion)} size="xs" /></InteractiveChampion>{name(c.champion)}</span></td>
                       <td className="hide-phone">{ROLE_NAME[c.role]}</td>
                       <td className="num tnum">{c.games}</td>

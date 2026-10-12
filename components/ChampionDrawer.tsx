@@ -7,7 +7,7 @@
 // and prev / next through the five slots.
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useId, useMemo, useRef } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { ChampIcon, LayerBlock, SourceLinks, pct } from "@/components/ui";
 import { observedFor, proLinks, recordFor, savedLinks, type Slots } from "@/lib/comp-links";
 import type { DrawerData } from "@/lib/data";
@@ -81,8 +81,35 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
   const champ = champs[id];
   const ref = useRef<HTMLElement>(null);
   const titleId = useId();
-  const closeRef = useRef(onClose);
-  closeRef.current = onClose;
+  // Closing plays a short exit (.drawer.closing) and then hands back to the page: focus returns to whatever opened the
+  // drawer when it was still inside it, and onClose unmounts it. Every way out (×, Escape, click outside, Back) goes here.
+  const [closing, setClosing] = useState(false);
+  const opener = useRef<Element | null>(null);
+  if (opener.current === null) opener.current = typeof document === "undefined" ? null : document.activeElement;
+  const done = useRef(onClose);
+  done.current = onClose;
+  const finish = useCallback(() => {
+    const el = opener.current, active = document.activeElement;
+    if (el instanceof HTMLElement && el.isConnected && (!active || active === document.body || ref.current?.contains(active))) el.focus({ preventScroll: true });
+    done.current();
+  }, []);
+  const dismiss = useCallback(() => setClosing(true), []);
+  const closeRef = useRef(dismiss);
+  // A champion picked while the exit plays (another row, the next slot) keeps the drawer open on that champion.
+  useEffect(() => setClosing(false), [id, target.role]);
+  // Phones: the drawer is a bottom sheet over the page; the page behind it doesn't scroll while it is open.
+  useEffect(() => {
+    if (!window.matchMedia("(max-width: 620px)").matches) return;
+    const root = document.documentElement, was = root.style.overflow;
+    root.style.overflow = "hidden";
+    return () => { root.style.overflow = was; };
+  }, []);
+  // The exit ends on animationend; the timer covers a browser that skips the animation.
+  useEffect(() => {
+    if (!closing) return;
+    const t = setTimeout(finish, 320);
+    return () => clearTimeout(t);
+  }, [closing, finish]);
   const router = useRouter();
   const routerRef = useRef(router);
   routerRef.current = router;
@@ -156,7 +183,9 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
   const fills = champ && comp ? teamNeeds(others.map((x) => x.champ)).filter((n) => n.fills(champ)) : [];
 
   return (
-    <aside ref={ref} className="drawer" role="dialog" aria-modal="false" aria-labelledby={titleId} tabIndex={-1} data-champ={id} data-role={role}>
+    <>
+    <div className={`drawer-scrim ${closing ? "closing" : ""}`.trim()} aria-hidden="true" />
+    <aside ref={ref} className={`drawer ${closing ? "closing" : ""}`.trim()} onAnimationEnd={(e) => { if (closing && e.target === e.currentTarget) finish(); }} role="dialog" aria-modal="false" aria-labelledby={titleId} tabIndex={-1} data-champ={id} data-role={role}>
       <header className="drawer-head">
         <ChampIcon id={id} name={name(id)} role={role} size="xl" />
         <div className="drawer-title">
@@ -173,7 +202,7 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
             <button className="icon-btn" aria-label="Previous champion" title="Previous" onClick={() => step(-1)}>‹</button>
             <button className="icon-btn" aria-label="Next champion" title="Next" onClick={() => step(1)}>›</button>
           </>}
-          <button className="icon-btn" aria-label="Close" title="Close (Esc)" onClick={onClose}>×</button>
+          <button className="icon-btn" aria-label="Close" title="Close (Esc)" onClick={dismiss}>×</button>
         </div>
       </header>
 
@@ -308,6 +337,7 @@ export function ChampionDrawer({ target, comp, data, index, onClose, onSelect }:
           : <span className="btn sm" aria-disabled="true" title={`Not in my ${role.toLowerCase()} pool`}>View in Champion Pool</span>}
       </footer>
     </aside>
+    </>
   );
 }
 
