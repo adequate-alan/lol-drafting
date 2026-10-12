@@ -11,6 +11,7 @@
 import { analyze, IDENTITY_LABEL, names, slotsOf, type IdentityId, type Slot } from "./model-v2/analyze";
 import type { ChampionKit } from "./model-v2/schema";
 import { ROLES, type CompShell, type ProDraft, type ProGame, type Role } from "./schema";
+import { patchLabel } from "./patch";
 
 export type Picks = Record<Role, string>;
 export type Side = "blue" | "red";
@@ -351,7 +352,7 @@ export function weeklyReport({ result, previous, shells, lck, nameOf, today, tou
   const { file, candidates, unread, kept, observations } = result;
   const obs = new Map(observations.map((o) => [refKey(o), o]));
   const lineup = (p: Picks) => ROLES.map((r) => `${ROLE_SHORT[r]} ${nameOf(p[r])}`).join(" · ");
-  const game = (o: Observation) => `[${o.team} vs ${o.opponent} G${o.gameNo}](${o.url}) (${o.tournament}, ${o.patch}, ${o.date}, ${o.won ? "win" : "loss"})`;
+  const game = (o: Observation) => `[${o.team} vs ${o.opponent} G${o.gameNo}](${o.url}) (${o.tournament}, ${patchLabel(o.patch)}, ${o.date}, ${o.won ? "win" : "loss"})`;
   const short = (o: Observation) => `[${o.team} G${o.gameNo} ${o.won ? "W" : "L"}](${o.url})`;
   const games = (refs: LineupRef[]) => refs.map((r) => obs.get(refKey(r))).filter((o): o is Observation => !!o).map((o) => `  - ${game(o)}`).join("\n");
   const nameOfComp = (id: string) => shells.find((s) => s.id === id)?.name ?? file.comps.find((c) => c.id === id)?.name ?? id;

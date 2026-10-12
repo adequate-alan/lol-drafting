@@ -13,6 +13,7 @@ import { ROLES, type ProDraft, type Role, type Source } from "@/lib/schema";
 import type { ProSuggestion } from "@/lib/suggest";
 import { ChampIcon } from "./ChampIcon";
 import { Popover } from "./Popover";
+import { patchLabel } from "@/lib/patch";
 
 const ROLE_SHORT: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
 const HOVER_GAMES = 3; // games shown before "View all"
@@ -54,7 +55,7 @@ function ProEvidenceBody({ pro, champion, role, ctx, pinned, pin }: {
       <p className="pop-sub">{n(champion)} on the same team as {list(pro.with.map(n))}{games.some((g) => g.pending) ? ", including supplied links not read yet" : ""}.</p>
       {groups.map((grp, i) => (
         <section key={`${grp.event}-${grp.patch}-${i}`} className="pe-event">
-          <h4 className="pe-event-name">{grp.event}{grp.patch && <span className="mono"> {grp.patch}</span>}{ongoing.has(grp.event) && <span className="faint"> · ongoing</span>}</h4>
+          <h4 className="pe-event-name">{grp.event}{grp.patch && <span className="mono"> {patchLabel(grp.patch)}</span>}{ongoing.has(grp.event) && <span className="faint"> · ongoing</span>}</h4>
           <ol className="pe-games">{grp.games.map((g) => <GameItem key={g.key} g={g} champion={champion} role={role} n={n} />)}</ol>
         </section>
       ))}
@@ -136,7 +137,7 @@ export function CounterTrigger({ c, names }: { c: Counter; names: Record<string,
           <header className="pop-head"><span className="pop-title counter">Counter</span><span>{STRENGTH[c.strength]}</span></header>
           <p className="pop-sub">{n(c.champion)} into {list(e.vs.map(n))}{e.with ? ` with ${n(e.with)}` : ""}: a statistically favourable {e.scope === "duo" ? "duo" : "lane"} matchup.</p>
           <dl className="pop-kv">
-            <dt>Matchup</dt><dd><a href={e.url} target="_blank" rel="noopener noreferrer" title={`DPM.LOL, updated ${e.updated}`}>DPM.LOL</a> <span className="mono">{(e.winRate * 100).toFixed(1)}%</span> over <span className="mono">{e.games.toLocaleString("en-US")}</span> games · <span className="mono">{e.patch}</span>{e.rank ? ` · ${e.rank}` : ""}</dd>
+            <dt>Matchup</dt><dd><a href={e.url} target="_blank" rel="noopener noreferrer" title={`DPM.LOL, updated ${e.updated}`}>DPM.LOL</a> <span className="mono">{(e.winRate * 100).toFixed(1)}%</span> over <span className="mono">{e.games.toLocaleString("en-US")}</span> games · <span className="mono">{patchLabel(e.patch)}</span>{e.rank ? ` · ${e.rank}` : ""}</dd>
             {e.note && <><dt>Held back</dt><dd>{e.note}</dd></>}
             <dt>Pro games</dt><dd>{c.pro ? describePro(c.pro).replace(/^Pro · /, "") : "No repeated pro sample; shown separately when there is one, never averaged."}</dd>
             {c.cautions.length > 0 && <><dt>Caution</dt><dd>{c.cautions.join("; ")}</dd></>}

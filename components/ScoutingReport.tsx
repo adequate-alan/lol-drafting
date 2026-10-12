@@ -7,6 +7,7 @@ import { ProposedGroups, ProposedTag, type ProCount } from "./ProposedSynergy";
 import { groupObserved, shortDate, type EventMap } from "@/lib/evidence";
 import type { CardRecord } from "./PairingCard";
 import { ChampIcon, Chip, ChipList, Duo, SourceLinks } from "./ui";
+import { patchLabel } from "@/lib/patch";
 
 // Champion Synergies scouting report: one selected champion, read top to bottom as header, Synergy, Pro Pairings, Warning,
 // Sources. Presentation only; the three layers keep their own sections and colors. The Draft Room keeps PairingCard.
@@ -66,7 +67,7 @@ function ProTable({ list, names, sources, events, role, partnerLabel, draftLabel
                 <td>{i === 0 ? <Chip id={o.champion} name={names[o.champion] ?? o.champion} role={role} /> : <span className="obs-older">older</span>}</td>
                 <td className="num">{l.games || "–"}</td>
                 <td>{l.label}{l.ongoing && <span className="faint" title="Event still running; counts are not final"> · ongoing</span>}</td>
-                <td className="tnum">{l.patch ?? "–"}</td>
+                <td className="tnum">{l.patch ? patchLabel(l.patch) : "–"}</td>
                 <td className="tnum">{shortDate(l.date) ?? "–"}</td>
                 <td className="notes">
                   {o.backedByGame && draftLabels && o.proDraftIds.map((d) => draftLabels[d] ?? d).join(", ")}
@@ -187,7 +188,7 @@ function GameList({ games, role, names }: { games: ProGame[]; role: Role; names:
               <td>{g.label}{g.pending && <span className="faint"> · pending refresh</span>}</td>
               <td>{g.picks[partner] ? <Chip id={g.picks[partner]} name={names[g.picks[partner]!] ?? g.picks[partner]!} role={partner} /> : "–"}</td>
               <td>{g.eventName}</td>
-              <td className="tnum">{g.patch ?? "–"}</td>
+              <td className="tnum">{g.patch ? patchLabel(g.patch) : "–"}</td>
               <td className="tnum">{shortDate(g.date) ?? "–"}</td>
             </tr>
           ))}

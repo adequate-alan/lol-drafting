@@ -3,7 +3,7 @@
   "dpmStatus": {
     "reachable": true,
     "checkedOn": "2026-10-10",
-    "note": "DPM.LOL lane matchups, browser-collected on alan's Mac (built-in browser, normal session, no bot-check bypass) from each pool champion's Build page data for patch 16.20, ranked solo queue, Emerald+, all regions. Each row is the pool champion's win rate against that lane opponent; DPM showed no delta for lane matchups, so delta is omitted. Every lane opponent DPM lists is kept (all map to the 173-champion roster). No duo-vs-duo data was collected."
+    "note": "DPM.LOL lane matchups, browser-collected on alan's Mac (built-in browser, normal session, no bot-check bypass) from each pool champion's Build page data for patch 26.20, ranked solo queue, Emerald+, all regions. Each row is the pool champion's win rate against that lane opponent; DPM showed no delta for lane matchups, so delta is omitted. Every lane opponent DPM lists is kept (all map to the 173-champion roster). No duo-vs-duo data was collected."
   },
   "proResults": [],
   "dpm": [

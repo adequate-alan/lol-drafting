@@ -14,6 +14,7 @@ import { handAlts } from "@/lib/pro-alternatives";
 import { shownPartners } from "@/lib/proposed";
 import { ProposedGroups, ProposedTag } from "@/components/ProposedSynergy";
 import { ROLES, type BotPairing, type MidJunglePairing, type ObservedPairing, type ProposedRecord, type Role, type TopPick } from "@/lib/schema";
+import { comparePatch, patchLabel, samePatch } from "@/lib/patch";
 
 const TIER_LABEL = Object.fromEntries(TIERS) as Record<Tier, string>;
 const DASH = <span className="faint">—</span>;
@@ -34,7 +35,6 @@ export function PoolView({ names, data, bot, midJungle, top, proposed, freshness
   const role = get("role") as Role | undefined;
   const tier = get("tier") as Tier | undefined;
   const event = get("event");
-  const patch = get("patch");
   const q = (get("q") ?? "").toLowerCase();
   const rawSort = get("sort");
   const sort: SortKey = rawSort && rawSort in SORTS ? (rawSort as SortKey) : "tier";
@@ -47,7 +47,10 @@ export function PoolView({ names, data, bot, midJungle, top, proposed, freshness
 
   const events = data.meta.events;
   const eventMap: EventMap = useMemo(() => Object.fromEntries(events.map((e) => [e.id, e])), [events]);
-  const patches = [...new Set(events.map((e) => e.patch))].sort().reverse();
+  const patches = [...new Set(events.map((e) => e.patch))].sort(comparePatch).reverse();
+  // ?patch= takes either spelling (old links say 16.18); the URL writes Riot's 26.18, the data keeps Gol.gg's.
+  const rawPatch = get("patch");
+  const patch = rawPatch ? patches.find((p) => samePatch(p, rawPatch)) ?? rawPatch : undefined;
   const all = useMemo(() => poolRows(data, { event, patch }), [data, event, patch]);
   const rows = sortRows(all.filter((r) => (!role || r.role === role) && (!tier || r.tier === tier)
     && (!q || (names[r.id] ?? r.id).toLowerCase().includes(q))), sort);
@@ -71,8 +74,8 @@ export function PoolView({ names, data, bot, midJungle, top, proposed, freshness
           options={[{ value: "", label: "All tiers" }, ...TIERS.map(([t, l]) => ({ value: t, label: l }))]} />
         <Select label="Tournament" value={event ?? ""} onChange={(v) => set("event", v || undefined)}
           options={[{ value: "", label: "All tournaments" }, ...events.map((e) => ({ value: e.id, label: `${e.short}${e.status === "ongoing" ? " (ongoing)" : ""}` }))]} />
-        <Select label="Patch" value={patch ?? ""} onChange={(v) => set("patch", v || undefined)}
-          options={[{ value: "", label: "All patches" }, ...patches.map((p) => ({ value: p, label: p }))]} />
+        <Select label="Patch" value={patch ?? ""} onChange={(v) => set("patch", v ? patchLabel(v) : undefined)}
+          options={[{ value: "", label: "All patches" }, ...patches.map((p) => ({ value: p, label: patchLabel(p) }))]} />
         <input type="search" placeholder="Search" aria-label="Search champions" value={get("q") ?? ""} onChange={(e) => set("q", e.target.value || undefined)} />
         <span className="count">{rows.length} champions</span>
       </div>
@@ -97,13 +100,13 @@ export function PoolView({ names, data, bot, midJungle, top, proposed, freshness
                     <td><ChampionRow id={r.id} name={names[r.id] ?? r.id} role={r.role} /></td>
                     <td className="hide-sm"><span className={`role-tag role-${r.role}`}>{r.role}</span></td>
                     <td><span className={`tier ${r.tier}`}>{TIER_LABEL[r.tier]}</span></td>
-                    <td className="num" title={r.stat && !event ? `${r.stat.event.short} ${r.stat.event.patch} tournament stats` : undefined}>{s ? <>{s.picks}{s.lowSample && <span className="low" title="Fewer than 5 picks">*</span>}{(roleUnconfirmed(r.stat!, r.role) || allRoles(r.stat!)) && <span className="xs faint" title="Champion-wide tournament total; the source does not split it by role"> all roles</span>}</> : DASH}</td>
+                    <td className="num" title={r.stat && !event ? `${r.stat.event.short} ${patchLabel(r.stat.event.patch)} tournament stats` : undefined}>{s ? <>{s.picks}{s.lowSample && <span className="low" title="Fewer than 5 picks">*</span>}{(roleUnconfirmed(r.stat!, r.role) || allRoles(r.stat!)) && <span className="xs faint" title="Champion-wide tournament total; the source does not split it by role"> all roles</span>}</> : DASH}</td>
                     <td className="num hide-sm">{s?.bans ?? DASH}</td>
                     <td className="num hide-sm">{pres != null ? <span className={`heat ${pres >= 0.3 ? "hi" : ""}`}>{pct(pres)}</span> : DASH}</td>
                     <td className="num">{s?.winRate != null ? pct(s.winRate) : DASH}</td>
                     <td className="num hide-sm">{r.games.length || DASH}</td>
                     <td className="nowrap">{r.latest ? <>{r.latest.eventName}{r.latest.event?.status === "ongoing" && <span className="badge pro ongoing" title="Event still running; numbers are not final">Ongoing</span>}</> : <span className="xs faint">No verified data</span>}</td>
-                    <td className="num hide-sm">{r.latest?.patch ?? DASH}</td>
+                    <td className="num hide-sm">{r.latest?.patch ? patchLabel(r.latest.patch) : DASH}</td>
                     <td className="num hide-sm">{shortDate(r.latest?.date) ?? DASH}</td>
                     <td className="hide-sm">{r.partner ? <span className="nowrap">{names[r.partner.id] ?? r.partner.id} <span className="xs muted tnum">{r.partner.games}×</span></span> : DASH}</td>
                   </tr>
@@ -189,7 +192,7 @@ function Detail({ row: r, names, data, eventMap, bot, midJungle, top, proposed }
               {r.stats.map((x) => { const { event: e, stat: s } = x, pres = presenceOf(x); return (
                 <tr key={e.id}>
                   <td className="nowrap">{e.short}{e.status === "ongoing" && <span className="badge pro ongoing">Ongoing</span>}</td>
-                  <td className="num">{e.patch}</td><td className="num">{e.games ?? "—"}</td><td className="num">{s.picks}</td><td className="num">{s.bans ?? "—"}</td>
+                  <td className="num">{patchLabel(e.patch)}</td><td className="num">{e.games ?? "—"}</td><td className="num">{s.picks}</td><td className="num">{s.bans ?? "—"}</td>
                   <td className="num">{pres != null ? pct(pres) : "—"}</td><td className="num">{pct(s.winRate)}</td>
                   <td className="xs nowrap">{roleShare(s) ?? "—"}</td>
                   <td>{s.sources.length ? <SourceLinks ids={s.sources} sources={data.sources} /> : <span className="xs faint" title={s.note}>provided, no page yet</span>}</td>

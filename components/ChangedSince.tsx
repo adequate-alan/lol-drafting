@@ -3,7 +3,7 @@
 // small "Changed since this game" control listing the official changes to its champions, items and runes since then,
 // each linking to the Patch Notes page. It never calls an old build current or optimal; it only shows what changed.
 //
-//   <PatchTag patch={game.patch} />                                   "Patch 26.18", with the pro-data spelling in the hint
+//   <PatchTag patch={game.patch} />                                   "Patch 26.18"
 //   <ChangedSince index={drawerData.patches} patch={game.patch}
 //     champions={["ahri"]} items={["Luden's Echo", "3020"]} runes={["Electrocute"]} />   nothing when nothing changed
 //   <PatchChanges id="ahri" index={...} />                            the champion drawer's block
@@ -16,7 +16,7 @@ import { CATEGORY_LABEL, changedSince, changesFor, patchHref, type Change, type 
 export function PatchTag({ patch }: { patch?: string | null }) {
   const p = parsePatch(patch);
   if (!p) return null;
-  return <span className="pn-patch tnum" title={`Patch ${p.official} (${p.short} in pro data)`}>Patch {p.official}</span>;
+  return <span className="pn-patch tnum" title={`Patch ${p.official}`}>Patch {p.official}</span>;
 }
 
 /** One change as a compact line: patch, verdict, the first value change, a link to the entry. */
@@ -54,7 +54,7 @@ export function ChangedSince({ index, patch, champions, items, runes, label = "C
     <Popover label={label} triggerClass="pn-since" className="pn-since-card" trigger={<>{label} <span className="count">{changes.length}</span></>}>
       {() => (
         <>
-          <p className="xs muted">Official changes after patch {since} ({parsePatch(since)?.short} in pro data). A build from that patch may not hold now.</p>
+          <p className="xs muted">Official changes after patch {since}. A build from that patch may not hold now.</p>
           <ul className="pn-rows">{changes.map((c) => <ChangeRow key={`${c.patch}/${c.id}/${c.ref}`} c={c} />)}</ul>
         </>
       )}

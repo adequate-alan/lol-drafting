@@ -19,6 +19,7 @@ import { proposedLink } from "@/lib/proposed";
 import { synergyParts } from "@/lib/recommend";
 import { CATEGORY_LABEL, changesFor } from "@/lib/patch-changes";
 import { ROLES, type Attr, type Role } from "@/lib/schema";
+import { patchLabel } from "@/lib/patch";
 export { InteractiveChampion } from "@/components/InteractiveChampion";
 
 type Focus = { id: string; role: Role };
@@ -114,7 +115,7 @@ function relationLines(t: { id: string; role: Role }, data: DrawerData, index: D
   }
   const best = [...pro].sort((a, b) => b.games.length - a.games.length)[0];
   if (best) lines.push({ layer: "pro", label: "Pro", text: best.games.length
-    ? `${best.games.length} game${best.games.length > 1 ? "s" : ""} with ${name(best.mate)} · ${[best.games[0].eventName, best.games[0].patch].filter(Boolean).join(" · ")}`
+    ? `${best.games.length} game${best.games.length > 1 ? "s" : ""} with ${name(best.mate)} · ${[best.games[0].eventName, best.games[0].patch && patchLabel(best.games[0].patch)].filter(Boolean).join(" · ")}`
     : `cited with ${name(best.mate)}, no recorded draft` });
   if (!saved.length && !lines.some((l) => l.layer === "clash") && logic[0]) lines.push({ layer: "logic", label: "Logic", text: logic[0] });
   return lines;
@@ -145,7 +146,7 @@ export function ChampionHoverCard({ target, anchor, data, index, focus, comp, si
   const job = comp && comp.slots[role] === target.id ? comp.jobs?.[role] : undefined;
   // The latest official patch change, one line; the drawer lists them all.
   const patch = changesFor(data.patches, { kind: "champion", ref: target.id }).find((c) => !c.via);
-  const latest = games[0] ? [games[0].eventName, games[0].patch, shortDate(games[0].date)].filter(Boolean).join(" · ") : "";
+  const latest = games[0] ? [games[0].eventName, games[0].patch && patchLabel(games[0].patch), shortDate(games[0].date)].filter(Boolean).join(" · ") : "";
 
   return createPortal(
     <div ref={ref} className="popover hovercard" role="tooltip" onPointerEnter={onEnter} onPointerLeave={onLeave}
@@ -167,7 +168,7 @@ export function ChampionHoverCard({ target, anchor, data, index, focus, comp, si
       )}
       {patch && <p className="hc-patch xs"><span className="muted">Patch {patch.patch}</span> <span className={`pn-verdict v-${patch.category}`}>{CATEGORY_LABEL[patch.category ?? "adjustment"]}</span></p>}
       <div className="hc-foot xs muted">
-        {stat ? <span className="tnum">{stat.event.short} {stat.event.patch} · {stat.stat.picks} picks{stat.stat.lowSample ? "*" : ""}{listsRole(stat, role) && stat.roles.length < 2 ? "" : " (all roles)"} · {stat.stat.winRate != null ? `${Math.round(stat.stat.winRate * 100)}% WR` : "banned only"}</span>
+        {stat ? <span className="tnum">{stat.event.short} {patchLabel(stat.event.patch)} · {stat.stat.picks} picks{stat.stat.lowSample ? "*" : ""}{listsRole(stat, role) && stat.roles.length < 2 ? "" : " (all roles)"} · {stat.stat.winRate != null ? `${Math.round(stat.stat.winRate * 100)}% WR` : "banned only"}</span>
           : games.length ? <span className="tnum">{games.length} pro game{games.length > 1 ? "s" : ""} as {role.toLowerCase()} · {latest}</span> : "No pro data in this role"}
       </div>
     </div>,

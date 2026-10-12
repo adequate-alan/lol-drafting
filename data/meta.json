@@ -528,7 +528,7 @@
       "winRate": 0.6667,
       "lowSample": true,
       "priorityRead": "Rising playoff pick",
-      "note": "Especially relevant with Skarner in late rounds. Still picked at the Demacia Cup on 16.18 (see Current meta).",
+      "note": "Especially relevant with Skarner in late rounds. Still picked at the Demacia Cup on 26.18 (see Current meta).",
       "sources": [
         "golgg-tournament-championlist",
         "golgg-tournament-picksandbans"
@@ -1782,7 +1782,7 @@
           "rolePicks": {
             "MID": 5
           },
-          "priorityRead": "Still picked on 16.18",
+          "priorityRead": "Still picked on 26.18",
           "note": "Gol.gg champion list, 2026-10-10: 5 picks / 4 bans / 2 wins (alan's earlier report was 3 picks / 1 ban).",
           "sources": [
             "golgg-tournament-championlist-demacia-cup-2026",
@@ -2614,7 +2614,7 @@
       "notes": [
         {
           "topic": "Gol.gg tables",
-          "note": "Picks, bans, wins and losses from Gol.gg's tournament champion list (the picks-and-bans page only has them as tooltips; they agree). Gol.gg has no presence column: presence here is computed as (picks + bans) / total games. Bans are champion-level. Gol.gg shows a site-wide 'stats not updated since 4 April' banner, but both tables include this event's games. Total games = 41 (10 series, all on 16.16).",
+          "note": "Picks, bans, wins and losses from Gol.gg's tournament champion list (the picks-and-bans page only has them as tooltips; they agree). Gol.gg has no presence column: presence here is computed as (picks + bans) / total games. Bans are champion-level. Gol.gg shows a site-wide 'stats not updated since 4 April' banner, but both tables include this event's games. Total games = 41 (10 series, all on 26.16).",
           "sources": [
             "golgg-tournament-championlist",
             "golgg-tournament-matchlist"

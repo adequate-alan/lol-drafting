@@ -73,7 +73,7 @@ describe("pro games corroborate, never decide", () => {
     expect(c.evidence).toMatchObject({ source: "dpm", strength: "strong", winRate: 0.55 });
     expect(c.pro).toMatchObject({ games: 3, wins: 3, verdict: "agrees" });
     expect(c.strength).toBe("confirmed");
-    expect(describePro(c.pro!)).toBe("Pro · 3 games · 3–0 · 16.18 · agrees");
+    expect(describePro(c.pro!)).toBe("Pro · 3 games · 3–0 · 26.18 · agrees");
     // A favorable DPM matchup with pro agreement becomes strong.
     const fav = run({}, { TOP: "aatrox" }, input(wins("TOP", "jayce", "aatrox"), { dpm: [dpm("TOP", "aatrox", "jayce", 0.525)] }));
     expect(fav.TOP!.counters[0].strength).toBe("strong");
@@ -147,7 +147,7 @@ describe("source separation", () => {
     const res = run({}, { TOP: "aatrox" }, input(wins("TOP", "jayce", "aatrox"), { dpm: [dpm("TOP", "aatrox", "jayce", 0.6), dpm("TOP", "aatrox", "gnar", 0.553, 4120)] }));
     const byId = Object.fromEntries(res.TOP!.counters.map((c) => [c.champion, c]));
     for (const c of res.TOP!.counters) expect(c.evidence.source).toBe("dpm");
-    expect(describeEvidence(byId.gnar.evidence)).toBe("DPM · 55.3% matchup · 4,120 games · 16.18");
+    expect(describeEvidence(byId.gnar.evidence)).toBe("DPM · 55.3% matchup · 4,120 games · 26.18");
     expect(byId.gnar.pro).toBeNull();
     expect(byId.jayce.pro?.verdict).toBe("agrees");
   });

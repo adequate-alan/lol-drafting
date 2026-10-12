@@ -95,7 +95,7 @@ describe("freshness display", () => {
   it("shows 16.18 evidence above 16.16 for the same duo, with event, patch and date", () => {
     const [karma] = groupObserved(bot("ezreal").observedProPairings, events, sources).filter((g) => g.champion === "karma");
     expect(karma.lines.map((l) => l.patch)).toEqual(["16.18", "16.16"]);
-    expect(describeLine(karma.lines[0])).toBe("1 game · Demacia Cup · 16.18 · Oct 3");
+    expect(describeLine(karma.lines[0])).toBe("1 game · Demacia Cup · 26.18 · Oct 3");
     expect(karma.lines[0].ongoing).toBe(true);
   });
 

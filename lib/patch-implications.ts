@@ -2,7 +2,7 @@
 // only connects the change to what this site already holds (alan's saved pairings and pool tiers, recorded pro games
 // and tournament aggregates by patch) and never changes any of them: a patch never edits a saved pairing, a pool tier
 // or the draft-fit score.
-import { comparePatch, patchKey, shortPatch } from "./patch";
+import { comparePatch, patchKey } from "./patch";
 import { TIERS, eventStats, presenceOf, proGames, type PoolInput } from "./pool-stats";
 import type { BotPairing, MidJunglePairing, TopPick } from "./schema";
 import { handAlts } from "./pro-alternatives";
@@ -48,7 +48,7 @@ export function implicationsFor(id: string, patch: string, ctx: ImplicationConte
   const stats = ctx.stats.filter((s) => s.stat.champion === id).sort((a, b) => comparePatch(a.event.patch, b.event.patch));
   if (stats.length) pro.push(`Tournament presence: ${stats.map((s) => {
     const pres = presenceOf(s);
-    return `${s.event.short} (${shortPatch(s.event.patch)}) ${pres != null ? pct(pres) : "—"}${s.stat.lowSample ? "*" : ""}`;
+    return `${s.event.short} (${patchKey(s.event.patch)}) ${pres != null ? pct(pres) : "—"}${s.stat.lowSample ? "*" : ""}`;
   }).join(" · ")}${stats.some((s) => s.stat.lowSample) ? " (* fewer than 5 picks)" : ""}.`);
   return { saved, pool, pro };
 }

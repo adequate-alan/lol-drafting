@@ -169,8 +169,10 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   `categoryBasis: "reviewed"` once a person checked it (26.16–26.20 on 2026-10-12), `"riot-wording"` when the daily
   check classified it from first-person wording (unclear wording stays "adjustment").
 - **One patch, two spellings**: Riot writes 26.16, the client / Data Dragon / Gol.gg write 16.16. `lib/patch.ts`
-  (`parsePatch`, `patchKey`, `comparePatch`, `samePatch`, `shortPatch`) is the one normalizer; the site shows Riot's
-  label. Pro data keeps its own spelling.
+  (`parsePatch`, `patchKey`, `comparePatch`, `samePatch`, `shortPatch`) is the one normalizer. **One label site-wide**
+  (alan, 2026-10-12): every page, filter, drawer, tooltip, note and report shows Riot's 26.xx (`patchLabel` at display);
+  16.xx never appears in the UI. Pro data, Data Dragon versions and Gol.gg URLs keep their own spelling; `?patch=` takes
+  either and writes 26.xx. The smoke job checks the main pages for a stray 16.xx.
 - Draft implications (`lib/patch-implications.ts`) are analysis, labelled as such and folded under each champion
   change, apart from Riot's facts: saved pairings, pool tiers, recorded pro games before / after the patch and tournament
   presence by event patch. **A patch never changes saved pairings, pool tiers, recommendations or any score.**
