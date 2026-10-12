@@ -1,0 +1,41 @@
+name: Temporary fetch (Pro Builds research)
+
+# One-off: reads two Gol.gg build pages and Data Dragon reference files from a GitHub runner (the cloud dev environment
+# cannot reach either) and commits them to this branch for inspection. Removed before merge.
+on:
+  push:
+    branches: [claude/project-thread-50uza9]
+    paths: [.github/workflows/tmp-fetch-builds.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch
+        run: |
+          mkdir -p tmp-fetch
+          UA="lol-drafting-refresh/1.0 (+https://github.com/adequate-alan/lol-drafting; daily, a few pages)"
+          g() { curl -sS -A "$UA" -o "tmp-fetch/$1" -w "$1 %{http_code} %{size_download}\n" "$2"; sleep 3; }
+          g game-83452-builds.html https://gol.gg/game/stats/83452/page-builds/
+          g game-83452-timeline.html https://gol.gg/game/stats/83452/page-timeline/
+          g game-83540-builds.html https://gol.gg/game/stats/83540/page-builds/
+          V=16.18.1
+          d() { curl -sS -o "tmp-fetch/$1" -w "$1 %{http_code} %{size_download}\n" "$2"; }
+          d versions.json https://ddragon.leagueoflegends.com/api/versions.json
+          d item.json https://ddragon.leagueoflegends.com/cdn/$V/data/en_US/item.json
+          d runesReforged.json https://ddragon.leagueoflegends.com/cdn/$V/data/en_US/runesReforged.json
+          d summoner.json https://ddragon.leagueoflegends.com/cdn/$V/data/en_US/summoner.json
+          d championFull.json https://ddragon.leagueoflegends.com/cdn/$V/data/en_US/championFull.json
+          d cdragon-perks.json https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perks.json
+          ls -la tmp-fetch
+      - name: Commit
+        run: |
+          git config user.name "adequate-alan"
+          git config user.email "54249725+adequate-alan@users.noreply.github.com"
+          git add tmp-fetch
+          git commit -m "Temporary: Gol.gg build pages and Data Dragon reference for inspection"
+          git push origin HEAD:${GITHUB_REF_NAME}
