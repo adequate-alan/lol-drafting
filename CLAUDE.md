@@ -235,6 +235,10 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   Uppercase only for page titles (h1) and role codes; every other label shares the sentence-case `.label` style. Source
   links carry their refresh status in the tooltip; only a pending external claim is marked inline ("· pending").
   Every page that shows champions wraps them in `ChampionProvider`, so hover card, drawer and mobile sheet match.
+  Contrast (Impeccable pass, 2026-10-12): every text token, `--text-faint` included, is at least 4.5:1 on the page
+  surfaces in both themes, and the light focus ring is deep champagne (3:1 minimum); express a quieter state with a token
+  colour, never by stacking opacity on faint text. On phones each team row fits 390px without scrolling (the slot being
+  picked fills the row) and every locked slot keeps its own Change button.
   Risk tags use the caution amber; oxblood is enemy and Counters only. No eyebrow labels, hero-metric strips or side
   stripes thicker than 1px (Impeccable craft floor), except the Pro Drafts draft-side strip below.
 - **Pro Drafts side strips** (alan, 2026-10-11): each row has a 3px strip on its far left, `--team-blue` / `--team-red`
