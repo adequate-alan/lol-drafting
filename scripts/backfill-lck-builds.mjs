@@ -111,7 +111,7 @@ const lines = [
   `LCK builds backfill, ${new Date().toISOString()}, ${requests} requests.`,
   `${TOURNAMENT}: ${played.length} series, ${totalGames} games on the match list; ${games.length} game records verified${known.size ? ` (${known.size} stored before)` : ""}.`,
   `Builds: ${withBuilds.size} games, ${lckBuilds.length} player builds (${lckBuilds.filter((b) => b.missing?.length).length} with a missing part).`,
-  ...out.report.filter((l) => !/player builds stored/.test(l)),
+  ...new Set(out.report.filter((l) => !/player builds stored/.test(l))),
   ...(stopped ? ["", `Stopped early: ${stopped.message}${stopped.cause?.code ? ` (${stopped.cause.code})` : ""}. Finished games are written; run again to continue.`] : []),
   ...([...rejected, ...out.rejected].length ? ["", "Not imported:", ...[...rejected, ...out.rejected].map((r) => `- ${r}`)] : []),
 ];

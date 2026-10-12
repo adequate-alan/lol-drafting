@@ -195,7 +195,9 @@ describe("item chronology and skill levels", () => {
 });
 
 describe("Pro Builds page scope and provenance", () => {
-  const all = buildRows((Files["pro-builds.json"].parse(raw("pro-builds.json")) as ProBuilds).builds, Files["pro-games.json"].parse(raw("pro-games.json")).games,
+  const stored = Files["pro-builds.json"].parse(raw("pro-builds.json")) as ProBuilds;
+  const games = [...Files["pro-games.json"].parse(raw("pro-games.json")).games, ...(stored.games ?? [])]; // tracked + LCK archive
+  const all = buildRows(stored.builds, games,
     (Files["build-assets.json"].parse(raw("build-assets.json")) as BuildAssets).patches);
 
   it("filters by role and by patch in either notation", () => {
@@ -223,8 +225,8 @@ describe("Pro Builds page scope and provenance", () => {
   });
 
   it("the drawer index counts builds per champion and role, with the newest patch", () => {
-    const builds = (Files["pro-builds.json"].parse(raw("pro-builds.json")) as ProBuilds).builds;
-    const idx = championIndex(builds, Files["pro-games.json"].parse(raw("pro-games.json")).games);
+    const builds = stored.builds;
+    const idx = championIndex(builds, games);
     expect(idx.reduce((n, e) => n + e.games, 0)).toBe(builds.length);
     for (const e of idx) {
       expect(e.games).toBe(rowsFor(all, e.champion, e.role).length);
