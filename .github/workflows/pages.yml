@@ -57,9 +57,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install --no-save --no-package-lock playwright@1.56.1
-      - run: npx playwright install --with-deps chromium
+      # Playwright goes into its own folder: installing it inside the project without a lockfile makes npm resolve the
+      # whole package.json, which npm 10 can fail on ("reading 'edgesOut'", 2026-10-12).
+      - run: mkdir -p "$RUNNER_TEMP/pw" && npm install --prefix "$RUNNER_TEMP/pw" --no-save --no-package-lock --no-audit --no-fund playwright@1.56.1
+      - run: '"$RUNNER_TEMP/pw/node_modules/.bin/playwright" install --with-deps chromium'
       - run: mkdir -p smoke-shots && node scripts/smoke-pages.mjs "${{ needs.deploy.outputs.page_url }}" smoke-shots
+        env:
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/pw/node_modules/playwright/index.mjs
       - if: always()
         uses: actions/upload-artifact@v4
         with:

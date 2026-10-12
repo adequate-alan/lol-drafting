@@ -1,6 +1,6 @@
 // Production smoke test for the GitHub Pages build. Runs in CI after each deploy (pages.yml) and locally:
 //   node scripts/smoke-pages.mjs https://adequate-alan.github.io/lol-drafting/ [screenshot-dir]
-// Needs playwright (CI installs it with --no-save; it is not a project dependency).
+// Needs playwright (CI installs it in a separate folder and passes PLAYWRIGHT_MODULE; it is not a project dependency).
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? "playwright");
 const base = process.argv[2].replace(/\/$/, "");
 const shots = process.argv[3];
