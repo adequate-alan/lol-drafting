@@ -1,0 +1,4 @@
+200 https://ddragon.leagueoflegends.com/cdn/img/perk-images/StatMods/StatModsAttackSpeedIcon.png
+200 https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/7204_Resolve.png
+200 https://ddragon.leagueoflegends.com/cdn/16.18.1/img/spell/YorickQ.png
+200 https://ddragon.leagueoflegends.com/cdn/16.18.1/img/item/6665.png
