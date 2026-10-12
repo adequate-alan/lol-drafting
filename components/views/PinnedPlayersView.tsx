@@ -345,19 +345,24 @@ function ChampionBuilds({ rows, id, player, champion, role, name }: {
   );
 }
 
-// Commons licenses ask for attribution: every portrait the site uses, with author, license and source page.
+// Every portrait the site uses with its source page: Commons licenses ask for attribution (author, license), and
+// dpm.lol photos are listed as taken from dpm.lol (alan's decision, 2026-10-12; no license is claimed for them).
 function PhotoCredits() {
   const list = allPortraits();
   if (!list.length) return null;
+  const dpm = list.filter((p) => p.provider === "dpm.lol"), commons = list.filter((p) => p.provider === "commons");
   return (
     <Disclosure summary="Photo credits" meta={list.length} className="photo-credits">
-      <ul className="small">
-        {list.map((p) => (
+      {dpm.length > 0 && <p className="small">Player photos via <a href="https://dpm.lol/" target="_blank" rel="noopener noreferrer">dpm.lol ↗</a> ({dpm.length}): {dpm.map((p, i) => (
+        <span key={p.playerId}>{i > 0 && ", "}<a href={p.source} target="_blank" rel="noopener noreferrer">{p.name}</a></span>
+      ))}. Cropped and resized; dpm.lol states no reuse license for them, and none is claimed here.</p>}
+      {commons.length > 0 && <ul className="small">
+        {commons.map((p) => (
           <li key={p.playerId}><b>{p.name}</b>: {creditLine(p).replace(/, via Wikimedia Commons$/, "")}, <a href={p.source} target="_blank" rel="noopener noreferrer">Wikimedia Commons ↗</a>
             {p.licenseUrl && <> · <a href={p.licenseUrl} target="_blank" rel="noopener noreferrer">license</a></>}. Cropped and resized.</li>
         ))}
-      </ul>
-      <p className="xs muted">Players without a freely licensed photograph show their initials.</p>
+      </ul>}
+      <p className="xs muted">Players without a photograph show their initials.</p>
     </Disclosure>
   );
 }

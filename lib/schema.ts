@@ -288,21 +288,31 @@ export type ProBuilds = z.infer<typeof ProBuilds>;
 // reuse (Wikimedia Commons free licenses), each with its source page, author and license for attribution, checked by a
 // person against the player before it is listed. The image itself is a local crop in assets/players/<playerId>.webp.
 // A player without an entry shows initials, never a champion icon or another player's photo.
-export const PlayerPortrait = z.object({
+// Two providers: a Wikimedia Commons file under a free license (author, license and photo context recorded for the
+// credit), or a dpm.lol profile photo (alan's decision, 2026-10-12: used at his request; dpm.lol states no reuse
+// license, so the credit names dpm.lol and the page it came from and claims nothing more).
+const PortraitBase = {
   playerId: z.number().int().positive(),
   name: z.string().min(1),
   team: z.string().min(1), // team when the portrait was checked (context only)
   file: z.string().regex(/^assets\/players\/\d+\.webp$/),
-  source: z.string().url(), // the Commons file page
-  original: z.string().url(), // the original image file on Commons
+  source: z.string().url(), // the page the photo was taken from (Commons file page, dpm.lol profile)
+  original: z.string().url(), // the image file itself
   originalWidth: z.number().int().positive(), // its width in pixels (the crop is in these pixels)
-  license: z.string().min(1), // e.g. "CC BY-SA 4.0"
-  licenseUrl: z.string().url().optional(),
-  author: z.string().min(1),
-  photo: z.string().optional(), // what the photo shows, from its description (event, year)
   crop: z.object({ left: z.number().int().nonnegative(), top: z.number().int().nonnegative(), size: z.number().int().positive() }), // square, original pixels
   checkedOn: Day,
-});
+};
+export const PlayerPortrait = z.discriminatedUnion("provider", [
+  z.object({
+    ...PortraitBase,
+    provider: z.literal("commons"),
+    license: z.string().min(1), // e.g. "CC BY-SA 4.0"
+    licenseUrl: z.string().url().optional(),
+    author: z.string().min(1),
+    photo: z.string().optional(), // what the photo shows, from its description (event, year)
+  }),
+  z.object({ ...PortraitBase, provider: z.literal("dpm.lol") }),
+]);
 export type PlayerPortrait = z.infer<typeof PlayerPortrait>;
 export const PlayerPortraits = z.object({ portraits: z.array(PlayerPortrait) });
 export type PlayerPortraits = z.infer<typeof PlayerPortraits>;

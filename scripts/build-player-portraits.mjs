@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Makes the portrait crops listed in data/player-portraits.json (assets/players/<playerId>.webp, 208px square: twice
 // the largest size shown) and regenerates lib/player-portrait-images.ts. Each crop comes from the entry's `original`
-// image (a Wikimedia Commons file or its Commons thumbnail) at the entry's square `crop`, in that image's pixels.
+// image (a Wikimedia Commons file or its Commons thumbnail, or a dpm.lol profile photo fetched on alan's Mac) at the
+// entry's square `crop`, in that image's pixels.
 //
 //   node scripts/build-player-portraits.mjs [--from <dir>]
 //
@@ -27,8 +28,9 @@ for (const p of portraits) {
     input = Buffer.from(await res.arrayBuffer());
   }
   // A downloaded copy at another size (a Commons thumbnail) gets the crop scaled to it.
-  const width = (await sharp(input).metadata()).width, k = width / p.originalWidth;
-  const left = Math.round(p.crop.left * k), top = Math.round(p.crop.top * k), size = Math.round(p.crop.size * k);
+  const meta = await sharp(input).metadata();
+  const width = meta.width, k = width / p.originalWidth;
+  const left = Math.round(p.crop.left * k), top = Math.round(p.crop.top * k), size = Math.min(Math.round(p.crop.size * k), width - left, meta.height - top);
   await sharp(input).extract({ left, top, width: size, height: size }).resize(SIZE, SIZE).webp({ quality: 80 }).toFile(p.file);
   console.log(`${p.name}: ${p.file}`);
 }
