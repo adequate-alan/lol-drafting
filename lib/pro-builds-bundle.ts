@@ -8,4 +8,6 @@ import games from "@/data/pro-games.json";
 import { buildRows } from "./pro-builds";
 import type { BuildAssets, ProBuilds, ProGames } from "./schema";
 
-export const rows = buildRows((builds as unknown as ProBuilds).builds, (games as unknown as ProGames).games, (assets as unknown as BuildAssets).patches);
+const stored = builds as unknown as ProBuilds;
+// Archive games (the LCK playoffs) travel with their builds in pro-builds.json; tracked ones are in pro-games.json.
+export const rows = buildRows(stored.builds, [...(games as unknown as ProGames).games, ...(stored.games ?? [])], (assets as unknown as BuildAssets).patches);
