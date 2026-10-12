@@ -12,6 +12,15 @@ export const SIDE_LABEL: Record<DraftSide, string> = { blue: "Blue side", red: "
 export const gameKey = (d: Pick<ProDraft, "tournament" | "seriesGame" | "team" | "opponent">) =>
   `${d.tournament}|${d.seriesGame}|${[d.team, d.opponent].sort().join("|")}`;
 
+/** The Gol.gg game id a draft cites (`golgg-game-<id>`); Gol.gg numbers games in the order it records them. */
+export const golggGameId = (d: Pick<ProDraft, "sources">) =>
+  Math.max(0, ...d.sources.map((s) => Number(/^golgg-game-(\d+)$/.exec(s)?.[1] ?? 0)));
+
+/** Newest game first (alan, 2026-10-12): by date, then by Gol.gg game id, so undated games (the LCK archive) follow by
+ *  id and later games of one day or series come first. Both sides of a game share date and id and stay together. */
+export const newestGameFirst = (a: ProDraft, b: ProDraft) =>
+  (b.date ?? "").localeCompare(a.date ?? "") || golggGameId(b) - golggGameId(a);
+
 export type PairedRow = { d: ProDraft; pair: "" | "pair-a" | "pair-b"; side: DraftSide };
 
 /** Groups the visible rows by game. Both sides of a game form a pair (blue first when sides are recorded); a game with

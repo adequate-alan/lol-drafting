@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { getProDrafts, getProGames, getSources } from "@/lib/data";
-import { gameKey, pairRows, sideOf, withGameSides } from "@/lib/draft-side";
+import { gameKey, golggGameId, pairRows, sideOf, withGameSides } from "@/lib/draft-side";
 import type { ProDraft } from "@/lib/schema";
 
 const drafts = getProDrafts();
@@ -152,5 +152,21 @@ describe("stored drafts inherit their game's side", () => {
     // A draft whose teams are not that game's two sides stays neutral.
     const stranger = { ...rows[0], team: "Not A Team", opponent: rows[0].team };
     expect(withGameSides([stranger], sources)[0].side).toBeUndefined();
+  });
+});
+
+describe("newest games first (alan, 2026-10-12)", () => {
+  it("lists drafts by date, newest at the top, then by Gol.gg game id; undated games follow", () => {
+    for (let i = 1; i < drafts.length; i++) {
+      const [a, b] = [drafts[i - 1], drafts[i]];
+      const order = (b.date ?? "").localeCompare(a.date ?? "");
+      expect(order, `${a.id} before ${b.id}`).toBeLessThanOrEqual(0);
+      if (order === 0) expect(golggGameId(a), `${a.id} before ${b.id}`).toBeGreaterThanOrEqual(golggGameId(b));
+    }
+  });
+
+  it("puts the latest recorded game on the first row of Pro Drafts", () => {
+    const latest = [...games].sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id)[0];
+    expect(golggGameId(pairRows(drafts)[0].d)).toBe(latest.id);
   });
 });
