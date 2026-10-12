@@ -754,8 +754,12 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     const portraits = await page.$$eval(".team-players .player-avatar img", (xs) => xs.map((i) => ({ alt: i.alt, ok: i.complete && i.naturalWidth > 0, title: i.parentElement.title })));
     const named = (n) => portraits.find((p) => p.alt.includes(n));
     check("portraits: Chovy and Ruler load with a photo credit", ["Chovy", "Ruler"].every((n) => named(n)?.ok && /Photo (via dpm\.lol|: .+ via Wikimedia Commons)/.test(named(n).title)), JSON.stringify(portraits.map((p) => [p.alt, p.ok])));
-    const initials = await page.$$eval(".team-players .player-avatar.initials", (xs) => xs.map((x) => x.dataset.initials));
-    check("portraits: players without a photo show initials", initials.length > 0 && initials.every((t) => /^[A-Z0-9]{1,2}$/i.test(t)), initials.join(","));
+    check("portraits: every roster avatar is a loaded photo or initials, never a champion icon", await page.$$eval(".team-players .player-avatar", (xs) => xs.length > 0 && xs.every((x) => x.classList.contains("initials") ? /^[A-Z0-9]{1,2}$/i.test(x.dataset.initials ?? "") : (x.querySelector("img")?.naturalWidth ?? 0) > 0)), "");
+    // A player without a checked photo (Cryogen, FlyQuest: dpm.lol has only its placeholder for him) shows initials
+    await open("/pro-builds/pinned/?player=6344");
+    await page.locator(".player-head .player-avatar").waitFor({ timeout: 8000 }).catch(() => {});
+    const noPhoto = await page.$eval(".player-head .player-avatar", (x) => ({ initials: x.dataset.initials, img: !!x.querySelector("img") })).catch(() => ({}));
+    check("portraits: a player without a photo shows initials, no image", noPhoto.initials === "CR" && !noPhoto.img, JSON.stringify(noPhoto));
     await open("/pro-builds/");
     await page.locator(".build-pick").first().waitFor({ timeout: 8000 }).catch(() => {});
     // Teams and tournaments pin the same way (one list each, saved in this browser); a pinned team is starred in the strip.
