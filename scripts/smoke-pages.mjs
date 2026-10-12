@@ -808,7 +808,7 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await page.locator(".game-panel .game-team").nth(0).locator(".pick-btn").nth(2).click();
   await page.waitForTimeout(250);
   const bu2 = new URL(page.url()).searchParams.get("build") ?? "";
-  check("pro drafts: another champion swaps only the build, the game stays open", /^golgg-\d+-blue:MID$/.test(bu2) && (await page.locator(".game-build").count()) === 1 && (await page.locator(".game-panel h2").count()) === 1 && (await page.locator(".game-build .game-player").innerText()) !== champHead, `${bu2} ${pickName}`);
+  check("pro drafts: another champion swaps only the build, the game stays open", /^golgg-\d+-blue:MID$/.test(bu2) && (await page.locator(".game-build").count()) === 1 && (await page.locator(".game-panel > .panel-head h2").count()) === 1 && (await page.locator(".game-build .game-player").innerText()) !== champHead, `${bu2} ${pickName}`);
   await page.locator(".game-panel .pick-btn[aria-pressed='true']").focus();
   await page.keyboard.press("Enter");
   await page.waitForTimeout(200);
