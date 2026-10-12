@@ -12,7 +12,10 @@ import { BuildsTabs } from "@/components/BuildsTabs";
 import { Icon, Item, Rune } from "@/components/BuildParts";
 import { ChampionProvider } from "@/components/ChampionInteraction";
 import { InteractiveChampion } from "@/components/InteractiveChampion";
+import { Disclosure } from "@/components/Disclosure";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { PinIcon, PinPicker, useMigratePlayerPins, usePins } from "@/components/PlayerPicker";
+import { allPortraits, creditLine } from "@/lib/player-portraits";
 import { Select } from "@/components/Select";
 import { ChampIcon, PageHeader, Panel } from "@/components/ui";
 import type { DrawerData } from "@/lib/data";
@@ -91,7 +94,7 @@ export function PinnedPlayersView({ names, events, drawerData }: { names: Record
               return (
                 <li key={p.id} className="rail-player-row">
                   <button type="button" className={on ? "active" : undefined} aria-current={on ? "true" : undefined} onClick={() => open(p.id)}>
-                    {p.champions[0] ? <ChampIcon id={p.champions[0].champion} name={name(p.champions[0].champion)} role={p.role} size="md" /> : <span className="champ md empty-icon" aria-hidden="true" />}
+                    <PlayerAvatar id={p.id} name={p.name} size="md" />
                     <span className="rail-text"><span className="rail-name">{p.name}</span>
                       <span className="rail-sub">{[p.team, p.role && ROLE_NAME[p.role], `${p.games} game${p.games === 1 ? "" : "s"}`].filter(Boolean).join(" · ")}</span></span>
                   </button>
@@ -115,6 +118,7 @@ export function PinnedPlayersView({ names, events, drawerData }: { names: Record
             : player ? <Profile rows={all} id={player} fallbackName={pinNames[player]} filter={filter} champion={get("champion")} result={get("result") as PlayerFilter["result"]}
                 pinned={isPinned(player)} onPin={(p) => toggle(p.id, p.name)} name={name} evName={evName} update={update} />
             : <Overview profiles={profiles} filtered={filtered} name={name} onOpen={open} onUnpin={(p) => toggle(p.id, p.name)} />}
+          <PhotoCredits />
         </div>
       </div>
     </ChampionProvider>
@@ -156,7 +160,7 @@ function Overview({ profiles, filtered, name, onOpen, onUnpin }: {
           {profiles.map((p) => (
             <tr key={p.id} className="click-row" onClick={() => onOpen(p.id)}>
               <td onClick={(e) => e.stopPropagation()}><PinButton on name={p.name} onClick={() => onUnpin(p)} /></td>
-              <td><a className="cell-link" href={profileHref(p.id)} onClick={(e) => { e.preventDefault(); onOpen(p.id); }}>{p.name}</a></td>
+              <td><a className="cell-link player-chip" href={profileHref(p.id)} onClick={(e) => { e.preventDefault(); onOpen(p.id); }}><PlayerAvatar id={p.id} name={p.name} size="lg" />{p.name}</a></td>
               <td className="nowrap">{p.team ?? "—"}{p.teams.length > 1 && <span className="xs faint" title={`Recorded teams: ${p.teams.join(", ")}`}> +{p.teams.length - 1}</span>}</td>
               <td>{p.role ? ROLE_NAME[p.role] : "—"}</td>
               {p.games ? <>
@@ -197,22 +201,24 @@ function Profile({ rows, id, fallbackName, filter, champion, result, pinned, onP
 
   return (
     <>
-      <div className="builds-head">
-        {p.champions[0] && <ChampIcon id={p.champions[0].champion} name={name(p.champions[0].champion)} role={p.role} size="lg" />}
-        <div className="builds-title">
-          <h2>{p.name} <PinButton on={pinned} name={p.name} onClick={() => onPin(p)} /></h2>
-          <span className="small muted">{[p.team, p.role && ROLE_NAME[p.role]].filter(Boolean).join(" · ")}
-            {p.teams.length > 1 && <span className="faint"> · also recorded for {p.teams.filter((t) => t !== p.team).join(", ")}</span>}
-            {p.names.length > 1 && <span className="faint"> · also listed as {p.names.filter((n) => n !== p.name).join(", ")}</span>}</span>
+      <div className="player-head">
+        <PlayerAvatar id={p.id} name={p.name} size="xl" />
+        <div className="player-head-text">
+          <div className="builds-title">
+            <h2>{p.name} <PinButton on={pinned} name={p.name} onClick={() => onPin(p)} /></h2>
+            <span className="small muted">{[p.team, p.role && ROLE_NAME[p.role]].filter(Boolean).join(" · ")}
+              {p.teams.length > 1 && <span className="faint"> · also recorded for {p.teams.filter((t) => t !== p.team).join(", ")}</span>}
+              {p.names.length > 1 && <span className="faint"> · also listed as {p.names.filter((n) => n !== p.name).join(", ")}</span>}</span>
+          </div>
+          <dl className="player-facts small">
+            <div><dt>Recorded games</dt><dd className="tnum">{p.games}</dd></div>
+            <div><dt>Record</dt><dd className="tnum">{p.games ? <>{p.wins}–{p.losses} <span className="muted">({pct(p.wins, p.games)})</span></> : "—"}</dd></div>
+            <div><dt>Last 5</dt><dd><Results recent={p.recent} /></dd></div>
+            <div><dt>Tournaments</dt><dd>{p.events.length ? [...new Set(scope.map(evName))].join(", ") : "—"}</dd></div>
+            <div><dt>Latest</dt><dd>{p.last ? <Link href={gameHref(p.last)}><span className="tnum">{shortDate(p.last.game.date)}</span> · {name(p.last.build.champion)} vs {p.last.opponentTeam}</Link> : "—"}</dd></div>
+          </dl>
         </div>
       </div>
-      <dl className="player-facts small">
-        <div><dt>Recorded games</dt><dd className="tnum">{p.games}</dd></div>
-        <div><dt>Record</dt><dd className="tnum">{p.games ? <>{p.wins}–{p.losses} <span className="muted">({pct(p.wins, p.games)})</span></> : "—"}</dd></div>
-        <div><dt>Last 5</dt><dd><Results recent={p.recent} /></dd></div>
-        <div><dt>Tournaments</dt><dd>{p.events.length ? [...new Set(scope.map(evName))].join(", ") : "—"}</dd></div>
-        <div><dt>Latest</dt><dd>{p.last ? <Link href={gameHref(p.last)}><span className="tnum">{shortDate(p.last.game.date)}</span> · {name(p.last.build.champion)} vs {p.last.opponentTeam}</Link> : "—"}</dd></div>
-      </dl>
       {!p.games ? <p className="small muted">No recorded games for {p.name} in these filters. Clear the filters to see every recorded game.</p> : <>
         <Panel title="Champions" meta={`${p.champions.length} played · most games first · click one for its builds`}>
           <div className="table-wrap flat">
@@ -314,5 +320,22 @@ function ChampionBuilds({ rows, id, player, champion, role, name }: {
         })}
       </ul>
     </Panel>
+  );
+}
+
+// Commons licenses ask for attribution: every portrait the site uses, with author, license and source page.
+function PhotoCredits() {
+  const list = allPortraits();
+  if (!list.length) return null;
+  return (
+    <Disclosure summary="Photo credits" meta={list.length} className="photo-credits">
+      <ul className="small">
+        {list.map((p) => (
+          <li key={p.playerId}><b>{p.name}</b>: {creditLine(p).replace(/, via Wikimedia Commons$/, "")}, <a href={p.source} target="_blank" rel="noopener noreferrer">Wikimedia Commons ↗</a>
+            {p.licenseUrl && <> · <a href={p.licenseUrl} target="_blank" rel="noopener noreferrer">license</a></>}. Cropped and resized.</li>
+        ))}
+      </ul>
+      <p className="xs muted">Players without a freely licensed photograph show their initials.</p>
+    </Disclosure>
   );
 }

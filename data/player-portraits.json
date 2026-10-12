@@ -1,0 +1,270 @@
+{
+  "portraits": [
+    {
+      "playerId": 48,
+      "name": "Faker",
+      "team": "T1",
+      "file": "assets/players/48.webp",
+      "source": "https://commons.wikimedia.org/wiki/File:T1_Faker_Lee_Sang-Hyeok_in_a_2026_Interview.png",
+      "original": "https://upload.wikimedia.org/wikipedia/commons/5/5c/T1_Faker_Lee_Sang-Hyeok_in_a_2026_Interview.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "author": "Marie Claire",
+      "photo": "interview, 2026",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 594
+      },
+      "checkedOn": "2026-10-12",
+      "originalWidth": 594
+    },
+    {
+      "playerId": 650,
+      "name": "Bdd",
+      "team": "KT Rolster",
+      "file": "assets/players/650.webp",
+      "source": "https://commons.wikimedia.org/wiki/File:BDD_interview_2021.jpg",
+      "original": "https://upload.wikimedia.org/wikipedia/commons/1/1c/BDD_interview_2021.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "author": "fomos esports",
+      "photo": "interview, 2021",
+      "crop": {
+        "left": 14,
+        "top": 3,
+        "size": 582
+      },
+      "checkedOn": "2026-10-12",
+      "originalWidth": 636
+    },
+    {
+      "playerId": 685,
+      "name": "Ruler",
+      "team": "Gen.G",
+      "file": "assets/players/685.webp",
+      "source": "https://commons.wikimedia.org/wiki/File:Ruler_interview_2022.jpg",
+      "original": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Ruler_interview_2022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "author": "fomos esports",
+      "photo": "interview, 2022",
+      "crop": {
+        "left": 53,
+        "top": 29,
+        "size": 571
+      },
+      "checkedOn": "2026-10-12",
+      "originalWidth": 702
+    },
+    {
+      "playerId": 983,
+      "name": "Cuzz",
+      "team": "KT Rolster",
+      "file": "assets/players/983.webp",
+      "source": "https://commons.wikimedia.org/wiki/File:%EC%BB%A4%EC%A6%88_%EB%AC%B8%EC%9A%B0%EC%B0%AC.jpg",
+      "original": "https://upload.wikimedia.org/wikipedia/commons/0/09/%EC%BB%A4%EC%A6%88_%EB%AC%B8%EC%9A%B0%EC%B0%AC.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "author": "fomos esports",
+      "photo": "interview, 2017",
+      "crop": {
+        "left": 53,
+        "top": 31,
+        "size": 598
+      },
+      "checkedOn": "2026-10-12",
+      "originalWidth": 732
+    },
+    {
+      "playerId": 1242,
+      "name": "Doran",
+      "team": "T1",
+      "file": "assets/players/1242.webp",
+      "source": "https://commons.wikimedia.org/wiki/File:Doran_2025.jpg",
+      "original": "https://upload.wikimedia.org/wikipedia/commons/f/fd/Doran_2025.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "author": "Fomos Esports",
+      "photo": "interview, 2025",
+      "crop": {
+        "left": 13,
+        "top": 41,
+        "size": 598
+      },
+      "checkedOn": "2026-10-12",
+      "originalWidth": 675
+    },
+    {
+      "playerId": 1250,
+      "name": "ShowMaker",
+      "team": "Dplus KIA",
+      "file": "assets/players/1250.webp",
+      "source": "https://commons.wikimedia.org/wiki/File:Showmaker,_fomos_esports_2019.png",
+      "original": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Showmaker%2C_fomos_esports_2019.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "author": "fomos esports",
+      "photo": "interview, 2019",
+      "crop": {
+        "left": 0,
+        "top": 18,
+        "size": 491
+      },
+      "checkedOn": "2026-10-12",
+      "originalWidth": 491
+    },
+    {
+      "playerId": 1258,
+      "name": "Keria",
+      "team": "T1",
+      "file": "assets/players/1258.webp",
+      "source": "https://commons.wikimedia.org/wiki/File:Keria,_2023_worlds_winning_team_interview.jpg",
+      "original": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Keria%2C_2023_worlds_winning_team_interview.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "author": "fomos esports",
+      "photo": "interview, 2023",
+      "crop": {
+        "left": 33,
+        "top": 29,
+        "size": 618
+      },
+      "checkedOn": "2026-10-12",
+      "originalWidth": 684
+    },
+    {
+      "playerId": 1629,
+      "name": "Chovy",
+      "team": "Gen.G",
+      "file": "assets/players/1629.webp",
+      "source": "https://commons.wikimedia.org/wiki/File:Chovy_Season_Kickoff_2023.jpg",
+      "original": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Chovy_Season_Kickoff_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "author": "E레기",
+      "photo": "interview, 2023",
+      "crop": {
+        "left": 184,
+        "top": 0,
+        "size": 487
+      },
+      "checkedOn": "2026-10-12",
+      "originalWidth": 885
+    },
+    {
+      "playerId": 1909,
+      "name": "Canyon",
+      "team": "Gen.G",
+      "file": "assets/players/1909.webp",
+      "source": "https://commons.wikimedia.org/wiki/File:Canyon_interview_2019.jpg",
+      "original": "https://upload.wikimedia.org/wikipedia/commons/0/08/Canyon_interview_2019.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "author": "fomos esports",
+      "photo": "interview, 2019",
+      "crop": {
+        "left": 36,
+        "top": 87,
+        "size": 531
+      },
+      "checkedOn": "2026-10-12",
+      "originalWidth": 628
+    },
+    {
+      "playerId": 2360,
+      "name": "Kanavi",
+      "team": "Hanwha Life Esports",
+      "file": "assets/players/2360.webp",
+      "source": "https://commons.wikimedia.org/wiki/File:Kanavi_2020_interview.jpg",
+      "original": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Kanavi_2020_interview.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "author": "E레기",
+      "photo": "interview, 2020",
+      "crop": {
+        "left": 18,
+        "top": 30,
+        "size": 408
+      },
+      "checkedOn": "2026-10-12",
+      "originalWidth": 462
+    },
+    {
+      "playerId": 3247,
+      "name": "Gumayusi",
+      "team": "Hanwha Life Esports",
+      "file": "assets/players/3247.webp",
+      "source": "https://commons.wikimedia.org/wiki/File:T1_Gumayusi_Lee_Min-hyeong_in_an_interview,_2026.png",
+      "original": "https://upload.wikimedia.org/wikipedia/commons/5/54/T1_Gumayusi_Lee_Min-hyeong_in_an_interview%2C_2026.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "author": "Marie Claire",
+      "photo": "interview, 2026",
+      "crop": {
+        "left": 0,
+        "top": 36,
+        "size": 594
+      },
+      "checkedOn": "2026-10-12",
+      "originalWidth": 594
+    },
+    {
+      "playerId": 3658,
+      "name": "Zeus",
+      "team": "Hanwha Life Esports",
+      "file": "assets/players/3658.webp",
+      "source": "https://commons.wikimedia.org/wiki/File:Zeus_2024_post-match_interview.jpg",
+      "original": "https://upload.wikimedia.org/wikipedia/commons/e/e3/Zeus_2024_post-match_interview.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "author": "Fomos Esports",
+      "photo": "interview, 2024",
+      "crop": {
+        "left": 22,
+        "top": 46,
+        "size": 366
+      },
+      "checkedOn": "2026-10-12",
+      "originalWidth": 409
+    },
+    {
+      "playerId": 3741,
+      "name": "Oner",
+      "team": "T1",
+      "file": "assets/players/3741.webp",
+      "source": "https://commons.wikimedia.org/wiki/File:Oner_at_Worlds_2025.jpg",
+      "original": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Oner_at_Worlds_2025.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "author": "LTA Spanish",
+      "photo": "interview, 2025",
+      "crop": {
+        "left": 27,
+        "top": 51,
+        "size": 388
+      },
+      "checkedOn": "2026-10-12",
+      "originalWidth": 462
+    },
+    {
+      "playerId": 4247,
+      "name": "Peyz",
+      "team": "T1",
+      "file": "assets/players/4247.webp",
+      "source": "https://commons.wikimedia.org/wiki/File:GEN_Peyz_2023.jpg",
+      "original": "https://upload.wikimedia.org/wikipedia/commons/9/9a/GEN_Peyz_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "author": "E레기",
+      "photo": "interview, 2023",
+      "crop": {
+        "left": 204,
+        "top": 3,
+        "size": 673
+      },
+      "checkedOn": "2026-10-12",
+      "originalWidth": 1080
+    }
+  ]
+}

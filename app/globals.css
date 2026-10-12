@@ -52,6 +52,7 @@
   --control-h-sm: 24px;
   --mini-h: 50px;
   --icon-xs: 20px; --icon-sm: 24px; --icon-md: 32px; --icon-ml: 36px; --icon-lg: 48px; --icon-xl: 52px; --icon-xxl: 60px;
+  --avatar-xl: 104px; --r-avatar: 6px; /* a player's portrait in their profile header; smaller avatars use the icon sizes */
 
   /* Motion (alan, 2026-10-12): one system for the whole site. Smooth is not the same as animated: hover, selection and
      filter feedback is near-instant colour; only surfaces that arrive (dropdowns, popovers, drawers, sheets) move, a
@@ -755,6 +756,29 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
   border-bottom: 1px solid var(--border); font-size: var(--fs-xs); color: var(--text-muted); cursor: pointer; }
 .pinned-only:hover, .pinned-only.on { color: var(--text); }
 .pinned-only:focus-visible { box-shadow: var(--focus-ring); }
+/* Player portraits (components/PlayerAvatar.tsx): a checked photograph or the player's initials, never a champion icon.
+   Rounded a little more than champion squares so a player never reads as a champion. Fixed size: no shift on load. */
+.player-avatar {
+  --size: var(--icon-sm); flex: none; display: inline-grid; place-items: center; width: var(--size); height: var(--size); overflow: hidden;
+  border-radius: var(--r-avatar); background: var(--surface-sunken); box-shadow: inset 0 0 0 1px var(--border); vertical-align: middle;
+}
+.player-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.player-avatar.xs { --size: var(--icon-xs); border-radius: calc(var(--r-avatar) - 2px); }
+.player-avatar.md { --size: var(--icon-ml); }
+.player-avatar.lg { --size: var(--icon-lg); }
+.player-avatar.xl { --size: var(--avatar-xl); }
+.player-avatar.initials { color: var(--text-muted); font-family: var(--font-display); font-weight: var(--w-strong); font-size: calc(var(--size) * .36); letter-spacing: .02em; line-height: 1; user-select: none; }
+.player-avatar.xs.initials { font-size: 8px; }
+.player-chip { display: inline-flex; align-items: center; gap: var(--s3); }
+.team-players { display: flex; flex-wrap: wrap; gap: var(--s3) var(--s6); margin: 0 0 var(--s5); padding: 0; list-style: none; }
+.team-players a { color: var(--text); }
+.team-players a:hover { text-decoration: none; }
+.team-players a:hover b { color: var(--accent-text); }
+.team-player-text { display: grid; line-height: 1.3; }
+.player-head { display: flex; align-items: flex-start; gap: var(--s5); }
+.player-head-text { display: grid; gap: var(--s4); min-width: 0; }
+.photo-credits ul { margin: 0; padding-left: var(--s5); display: grid; gap: var(--s1); }
+.select-option .player-avatar { margin-right: var(--s1); }
 /* Pinned Players (/pro-builds/pinned/, components/views/PinnedPlayersView.tsx): rail of pinned players, overview table,
    one profile with champions, that champion's builds and the match history */
 .builds-views { font-size: var(--fs-sm); }
@@ -824,7 +848,7 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .game-detail { display: grid; gap: var(--s5); min-width: 0; }
 .game-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s2) var(--s5); align-items: center; }
 .game-who { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2) var(--s4); }
-.game-player { font-family: var(--font-display); font-size: var(--fs-lg); }
+.game-player { display: inline-flex; align-items: center; gap: var(--s3); font-family: var(--font-display); font-size: var(--fs-lg); }
 .game-player b { font-weight: var(--w-strong); }
 .game-vs { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
 .game-vs .champ-btn { display: inline-flex; align-items: center; gap: var(--s2); }

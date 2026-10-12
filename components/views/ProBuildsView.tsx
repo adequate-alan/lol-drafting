@@ -17,6 +17,7 @@ import {
 } from "@/components/BuildParts";
 import { ChampionProvider } from "@/components/ChampionInteraction";
 import { BuildsTabs } from "@/components/BuildsTabs";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { PinIcon, PinPicker, useMigratePlayerPins, usePins } from "@/components/PlayerPicker";
 import { playerDirectory, profileHref } from "@/lib/pinned-players";
 import { InteractiveChampion } from "@/components/InteractiveChampion";
@@ -176,6 +177,12 @@ export function ProBuildsView({ index, names, events, drawerData }: {
                 <h2>{name(champion)}</h2>
                 <span className="small muted tnum">{entry.games} recorded game{entry.games > 1 ? "s" : ""} · {entry.players} player{entry.players > 1 ? "s" : ""} · latest {patchLabel(entry.latest)}</span>
               </div>
+              {(() => {
+                // One player chosen: their portrait and a link to their profile, in every mode (Games, Common, Compare).
+                const r = get("player") && rows[0];
+                return r ? <Link className="builds-player player-chip small" href={profileHref(String(r.build.playerId))} title={`${r.build.player}'s recorded games, champions and builds`}>
+                  <PlayerAvatar id={r.build.playerId} name={r.build.player} size="md" /><span><b>{r.build.player}</b><span className="muted"> · {r.team}</span></span></Link> : null;
+              })()}
               {roles.length > 1 && (
                 <div className="seg" role="group" aria-label="Role">
                   {roles.map((e) => <button key={e.role} type="button" className={e.role === role ? "active" : undefined} aria-pressed={e.role === role} onClick={() => choose(e)}>{ROLE_NAME[e.role]} <span className="tnum muted">{e.games}</span></button>)}
@@ -226,7 +233,7 @@ function GamesView({ rows, current, preferPinned, name, evName, onPick }: {
         {rows.map((x) => (
           <button key={x.key} type="button" role="option" aria-selected={x === r} tabIndex={rovingIndex(x === r)} className={`build-pick side-${x.side} ${x === r ? "active" : ""}`} onClick={() => onPick(x.game.id)}
             title={`${x.build.player} (${x.team}) vs ${x.opponentTeam}\n${evName(x)} · ${patchLabel(x.game.patch)} · ${shortDate(x.game.date)} · ${x.side} side · ${x.won ? "win" : "loss"}`}>
-            <span className="small nowrap">{isPinned(String(x.build.playerId)) && <PinIcon on />}<b>{x.build.player}</b> <span className="muted">{team.isPinned(x.team) && <PinIcon on />}{x.team}</span></span>
+            <span className="small nowrap"><PlayerAvatar id={x.build.playerId} name={x.build.player} size="xs" /> {isPinned(String(x.build.playerId)) && <PinIcon on />}<b>{x.build.player}</b> <span className="muted">{team.isPinned(x.team) && <PinIcon on />}{x.team}</span></span>
             <span className="xs muted nowrap">{x.opponent && <>vs {name(x.opponent.champion)} · </>}{shortDate(x.game.date)} <span className={x.won ? "win" : "loss"}>{x.won ? "W" : "L"}</span></span>
           </button>
         ))}
@@ -241,7 +248,7 @@ function GameHeader({ r, name, evName, compact }: { r: BuildRow; name: (id: stri
   return (
     <div className={`game-head side-${r.side} ${compact ? "compact" : ""}`}>
       <div className="game-who">
-        <span className="game-player"><Link href={profileHref(String(b.playerId))} title={`${b.player}'s recorded games, champions and builds`}><b>{b.player}</b></Link> <span className="muted">{r.team}</span></span>
+        <span className="game-player"><PlayerAvatar id={b.playerId} name={b.player} size={compact ? "sm" : "md"} /><Link href={profileHref(String(b.playerId))} title={`${b.player}'s recorded games, champions and builds`}><b>{b.player}</b></Link> <span className="muted">{r.team}</span></span>
         {r.opponent && (
           <span className="small game-vs"><span className="faint">vs</span>
             <InteractiveChampion id={r.opponent.champion} role={b.role}><ChampIcon id={r.opponent.champion} name={name(r.opponent.champion)} size="xs" /> {name(r.opponent.champion)}</InteractiveChampion>

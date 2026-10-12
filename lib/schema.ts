@@ -284,6 +284,28 @@ export const ProBuilds = z.object({
   games: z.array(ProGame).optional(),
 });
 export type ProBuilds = z.infer<typeof ProBuilds>;
+// Professional player portraits (alan, 2026-10-12), keyed by Gol.gg player id. Only photographs whose license allows
+// reuse (Wikimedia Commons free licenses), each with its source page, author and license for attribution, checked by a
+// person against the player before it is listed. The image itself is a local crop in assets/players/<playerId>.webp.
+// A player without an entry shows initials, never a champion icon or another player's photo.
+export const PlayerPortrait = z.object({
+  playerId: z.number().int().positive(),
+  name: z.string().min(1),
+  team: z.string().min(1), // team when the portrait was checked (context only)
+  file: z.string().regex(/^assets\/players\/\d+\.webp$/),
+  source: z.string().url(), // the Commons file page
+  original: z.string().url(), // the original image file on Commons
+  originalWidth: z.number().int().positive(), // its width in pixels (the crop is in these pixels)
+  license: z.string().min(1), // e.g. "CC BY-SA 4.0"
+  licenseUrl: z.string().url().optional(),
+  author: z.string().min(1),
+  photo: z.string().optional(), // what the photo shows, from its description (event, year)
+  crop: z.object({ left: z.number().int().nonnegative(), top: z.number().int().nonnegative(), size: z.number().int().positive() }), // square, original pixels
+  checkedOn: Day,
+});
+export type PlayerPortrait = z.infer<typeof PlayerPortrait>;
+export const PlayerPortraits = z.object({ portraits: z.array(PlayerPortrait) });
+export type PlayerPortraits = z.infer<typeof PlayerPortraits>;
 // Names, icons and short stats from the game patch's Data Dragon files, for exactly the ids the builds use.
 const Named = { name: z.string().min(1), icon: z.string().min(1) };
 export const PatchAssets = z.object({
@@ -527,6 +549,7 @@ export const Files = {
   "pro-drafts.json": z.array(ProDraft),
   "pro-games.json": ProGames,
   "pro-builds.json": ProBuilds,
+  "player-portraits.json": PlayerPortraits,
   "build-assets.json": BuildAssets,
   "comp-shells.json": z.array(CompShell),
   "discovered-comps.json": DiscoveredComps,
