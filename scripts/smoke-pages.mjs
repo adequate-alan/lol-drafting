@@ -308,6 +308,10 @@ await page.locator(".theme-toggle").click();
   const renata = (await prioRows()).find((c) => c[0].endsWith("Renata Glasc"));
   check("meta: LCK playoffs patch 26.16 from the Gol.gg table (Renata 8 picks, 1 ban, 22%, 63%)", /^8\b/.test(renata?.[2] ?? "") && /^1\b/.test(renata?.[3] ?? "") && renata?.includes("22%") && renata?.includes("63%"), renata?.join(" | "));
   check("meta: a tournament-table patch shows no side split or dates", /Gol\.gg table/.test(await text(".priority-coverage")), "");
+  // Secondary research is folded, each section naming its count; Pro priority stays open
+  await open("/meta/");
+  const folded = await page.$$eval(".meta-hub > details.disclosure.section", (ds) => ds.map((d) => ({ open: d.open, s: d.querySelector("summary").textContent })));
+  check("meta: comparison, pairings, recent drafts and notes are folded with counts", folded.length >= 5 && folded.every((d) => !d.open && /\d/.test(d.s)) && (await page.locator(".priority-table").isVisible()), folded.map((d) => d.s).join(" | "));
   await open("/meta/?view=changes");
   const moves = await text(".priority-changes");
   check("meta: Priority changes compare with the previous patch in percentage points", /pp/.test(moves) && /26\.16.*→.*26\.18/.test(await text(".priority .toolbar .count")), moves.slice(0, 80));
@@ -477,6 +481,22 @@ check("pool at 390px with a row open: any scroll stays inside the table", poolOv
 await open("/?top=ambessa&bot=ziggs&vs=renekton,,,sivir,lulu");
 const draftOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
 check("draft room at 390px: slots scroll inside their rows, no page overflow", draftOverflow <= 0, `${draftOverflow}px`);
+// Phone Comp Check summary: one line naming what the draft is missing, pinned while scrolling, jumps to the full read
+{
+  await open("/?top=ambessa&jungle=skarner&mid=ahri&bot=sivir&vs=renekton,,,ezreal,karma");
+  const line = (await text(".cc-summary-board")).replace(/\s+/g, " ");
+  check("phone Comp Check summary names the open role's needs, never a score", /^Comp Check.*Needs /.test(line) && !/\d+\s*\/\s*\d+/.test(line.replace(/AD \/ AP/, "")), line);
+  await page.evaluate(() => window.scrollTo(0, 900));
+  await page.waitForTimeout(400);
+  const pinned = await page.locator(".draft-mini.show .cc-summary-mini").isVisible();
+  check("phone Comp Check summary stays pinned while scrolling candidates", pinned, "");
+  await page.locator(".draft-mini.show .cc-summary-mini").click();
+  await page.waitForTimeout(900);
+  const cc = await page.locator("#comp-check").boundingBox();
+  check("tapping the summary jumps to the full Comp Check", !!cc && cc.y < 300, JSON.stringify(cc));
+  await open("/?bot=sivir");
+  check("phone Comp Check summary waits for two picks", /Read starts at two picks/.test(await text(".cc-summary-board")), await text(".cc-summary-board"));
+}
 {
   const m = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
   await m.goto(base + "/synergies/bot/?champ=sivir", { waitUntil: "networkidle" });

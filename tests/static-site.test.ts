@@ -66,7 +66,7 @@ describe("static GitHub Pages export", () => {
   });
 
   it("keeps the v2 model out of the site except the Comp Check diagnosis, the needs in the ranking and the weekly comp discovery", () => {
-    const allowed = ["components/CompCheck.tsx", "lib/recommend.ts", "lib/comp-discovery.ts"];
+    const allowed = ["components/CompCheck.tsx", "lib/comp-summary.ts", "lib/recommend.ts", "lib/comp-discovery.ts"]; // comp-summary: the Comp Check line on phones
     for (const f of source.filter((f) => !f.startsWith("lib/model-v2/") && !allowed.includes(f))) expect(read(f), f).not.toMatch(/model-v2/);
   });
 });

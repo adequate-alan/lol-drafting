@@ -11,7 +11,7 @@ import { describeEvidence, describePro, enemyParam, tierLabel, type Counter, typ
 import { similarProDrafts, similarShells, type ProSuggestion, type SuggestData } from "@/lib/suggest";
 import type { DraftData, DrawerData } from "@/lib/data";
 import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
-import { CompCheck, type SiegeCell } from "./CompCheck";
+import { CompCheck, CompSummaryLine, type SiegeCell } from "./CompCheck";
 import { ChampionHoverCard, useHoverIntent } from "./ChampionInteraction";
 import { GenRang } from "./GenRang";
 import { PairingCard, type CardRecord } from "./PairingCard";
@@ -191,7 +191,10 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, me
         </div>
       </div>
 
-      <MiniBoard show={pinned} draft={draft} enemy={enemy} active={active} names={names} onActivate={setFocus} />
+      {/* Narrow screens put Comp Check below the list: one line says what the draft is missing, here and pinned */}
+      <CompSummaryLine draft={draft} enemyIds={enemyIds} champions={data.champions} active={active} className="cc-summary-board" />
+      <MiniBoard show={pinned} draft={draft} enemy={enemy} active={active} names={names} onActivate={setFocus}
+        summary={<CompSummaryLine draft={draft} enemyIds={enemyIds} champions={data.champions} active={active} className="cc-summary-mini" />} />
 
       <div className="draft-layout">
         <div className="draft-main">
@@ -606,8 +609,8 @@ function DraftSlot({ side, role, value, active = false, preview, onActivate, onL
   );
 }
 
-function MiniBoard({ show, draft, enemy, active, names, onActivate }: {
-  show: boolean; draft: Draft; enemy: (string | undefined)[]; active?: Role; names: Record<string, string>; onActivate: (r: Role) => void;
+function MiniBoard({ show, draft, enemy, active, names, onActivate, summary }: {
+  show: boolean; draft: Draft; enemy: (string | undefined)[]; active?: Role; names: Record<string, string>; onActivate: (r: Role) => void; summary?: React.ReactNode;
 }) {
   const cell = (id: string | undefined, role: Role, ally: boolean) => {
     const on = ally && role === active;
@@ -623,6 +626,7 @@ function MiniBoard({ show, draft, enemy, active, names, onActivate }: {
       <span className="mini-vs">vs</span>
       <span className="mini-team enemy">{ROLES.map((r, i) => cell(enemy[i], r, false))}</span>
       {active && <span className="mini-active">Picking <b>{ROLE_LABEL[active]}</b></span>}
+      {summary}
     </div>
   );
 }
