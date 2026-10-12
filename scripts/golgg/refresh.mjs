@@ -231,8 +231,11 @@ async function refreshBuilds(data, get, today, maxBuildGames) {
   let versions;
   for (const [patch, list] of [...byPatch.entries()].sort()) {
     const ref = referencedIds(list), cur = buildAssets.patches[patch];
-    const covered = cur && [...ref.items].every((i) => cur.items[i]) && [...ref.runes].every((r) => cur.runes[r]) && [...ref.trees].every((t) => cur.trees[t])
-      && [...ref.spells].every((x) => cur.spells[x]) && [...ref.champions].every((c) => cur.abilities[c]);
+    // Ids that patch's files did not name are listed in `unnamed` and not asked for again.
+    const no = new Set(cur?.unnamed ?? []);
+    const covered = cur && [...ref.items].every((i) => cur.items[i] || no.has(`item ${i}`)) && [...ref.runes].every((r) => cur.runes[r] || no.has(`rune ${r}`))
+      && [...ref.trees].every((t) => cur.trees[t] || no.has(`rune tree ${t}`)) && [...ref.spells].every((x) => cur.spells[x] || no.has(`summoner spell ${x}`))
+      && [...ref.champions].every((c) => cur.abilities[c] || no.has(`abilities for ${c}`));
     if (covered) continue;
     versions ??= JSON.parse(await get(`${DDRAGON}/api/versions.json`));
     const version = ddragonVersionFor(patch, versions);
@@ -244,6 +247,7 @@ async function refreshBuilds(data, get, today, maxBuildGames) {
       cdragonPerks: JSON.parse(await get(CDRAGON_PERKS)),
     };
     const { assets, unknown } = assetsFor(ref, version, files, resolve);
+    if (unknown.length) assets.unnamed = unknown;
     if (unknown.length) rejected.push(`Pro builds ${patch}: Data Dragon ${version} does not name ${unknown.join(", ")}; shown by id only.`);
     if (!same(assets, cur)) { buildAssets.patches[patch] = assets; changed.add("build-assets"); report.push(`Pro builds: names and icons for patch ${patch} from Data Dragon ${version}.`); }
   }

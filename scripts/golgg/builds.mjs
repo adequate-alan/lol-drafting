@@ -16,14 +16,12 @@ export const DDRAGON = "https://ddragon.leagueoflegends.com";
 
 /** Players on a game page, by side, in Gol.gg's order: { blue: [{ champion, playerId, player }], red: [...] }. */
 export function parsePlayers(html) {
-  const tablesHtml = [...html.matchAll(/<table class='playersInfosLine[\s\S]*?<\/table>/gi)].map((m) => m[0]);
-  if (tablesHtml.length !== 2) return undefined;
-  // One <tr> per player: the champion icon and the player-stats link, whatever markup sits between them.
-  const side = (t) => [...t.matchAll(/<tr[\s\S]*?<\/tr>/gi)].map(([tr]) => {
-    const champ = tr.match(/champions_icon\/([^'"./]+)\.png/i), link = tr.match(/player-stats\/(\d+)\/[^>]*>([^<]*)<\/a>/i);
-    return champ && link ? { champion: decode(champ[1]), playerId: Number(link[1]), player: decode(link[2]).trim() } : undefined;
-  }).filter(Boolean);
-  return { blue: side(tablesHtml[0]), red: side(tablesHtml[1]) };
+  // Each side's table holds nested rune tooltip tables, so the two sides are cut at the table markers, not at </table>.
+  const starts = [...html.matchAll(/<table class='playersInfosLine/gi)].map((m) => m.index);
+  if (starts.length !== 2) return undefined;
+  const side = (from, to) => [...html.slice(from, to).matchAll(/<img class='champion_icon rounded-circle'[^>]*src='[^']*champions_icon\/([^'./]+)\.png'\/><\/a>\s*(?:&nbsp;)?\s*<a class='link-blanc' href='[^']*player-stats\/(\d+)\/[^']*'[^>]*>([^<]*)<\/a>/gi)]
+    .map((m) => ({ champion: decode(m[1]), playerId: Number(m[2]), player: decode(m[3]).trim() }));
+  return { blue: side(starts[0], starts[1]), red: side(starts[1]) };
 }
 
 const SKILL = { 1: "Q", 2: "W", 3: "E", 4: "R" };

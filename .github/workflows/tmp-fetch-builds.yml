@@ -18,16 +18,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Save one live game page
-        run: |
-          mkdir -p tmp-fetch
-          curl -sS -A "lol-drafting-refresh/1.0 (+https://github.com/adequate-alan/lol-drafting; daily, a few pages)" -o tmp-fetch/game-83452-game-live.html https://gol.gg/game/stats/83452/page-game/
       - name: Backfill builds
         run: node scripts/refresh-pro-data.mjs --builds-only
       - name: Commit
         run: |
           git config user.name "adequate-alan"
           git config user.email "54249725+adequate-alan@users.noreply.github.com"
-          git add -A tmp-fetch data/pro-builds.json data/build-assets.json
+          git add data/pro-builds.json data/build-assets.json
           git commit -m "Pro builds: backfill player builds for recorded games from Gol.gg"
           git push origin HEAD:${GITHUB_REF_NAME}
