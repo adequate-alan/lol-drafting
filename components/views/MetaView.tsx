@@ -99,8 +99,9 @@ export function MetaView({ names, sources, input, rules, drawerData, freshness }
         </Disclosure>
       )}
 
-      {/* 4. Tournament comparison */}
-      <SectionHeader title="Tournament comparison" meta={`${tabRole ?? "All roles"} · tournament picks · recorded games`} />
+      {/* 4–8. Research below Pro priority and the tournaments (alan, 2026-10-12): folded, each with its count; the scope
+          and any open row survive a toggle, because the state lives here and in the URL, not in the sections. */}
+      <Disclosure section lazy summary="Tournament comparison" meta={`${compare.length} champions · ${tabRole ?? "All roles"} · all tournaments`}>
       <div className="table-wrap hub-table mid">
         <table>
           <thead><tr><th>Champion</th>{hub.events.map((e) => <th key={e.id} className="num">{e.short} {patchLabel(e.patch)}</th>)}<th>Seen in</th></tr></thead>
@@ -118,13 +119,14 @@ export function MetaView({ names, sources, input, rules, drawerData, freshness }
           </tbody>
         </table>
       </div>
+      </Disclosure>
 
       {/* 5–6. Pairings */}
       <PairingTable title="Bot lane pairings" scope={scopeLabel} a="BOT" b="SUPPORT" list={bot} openKey={openKey} toggle={toggle} Champ={Champ} sources={sources} />
       <PairingTable title="Mid + jungle pairings" scope={scopeLabel} a="MID" b="JUNGLE" list={midJg} openKey={openKey} toggle={toggle} Champ={Champ} sources={sources} />
 
       {/* 7. Recent drafts */}
-      <SectionHeader title="Recent drafts" meta={`${drafts.length} games · ${scopeLabel}`} />
+      <Disclosure section lazy summary="Recent drafts" meta={`${drafts.length} games · ${scopeLabel}`}>
       <div className="table-wrap hub-table mid">
         <table>
           <thead><tr><th>Teams</th><th className="hide-sm">Date</th><th>Tournament</th><th className="num hide-sm">Patch</th><th>Picks</th></tr></thead>
@@ -167,6 +169,9 @@ export function MetaView({ names, sources, input, rules, drawerData, freshness }
         </table>
       </div>
 
+      </Disclosure>
+
+      <Disclosure section summary="Research notes" meta={`${input.meta.changes.length} LCK playoff changes · ${rules.length} rules`}>
       <div className="grid cols-2">
         <section>
           <SectionHeader title="What changed (LCK playoffs)" />
@@ -177,6 +182,7 @@ export function MetaView({ names, sources, input, rules, drawerData, freshness }
           {rules.map((r) => <p key={r.id} className="small rule-line"><SourceBadge layer={r.layer} /> <span>{r.text}</span></p>)}
         </section>
       </div>
+      </Disclosure>
 
     </div>
     </ChampionProvider>
@@ -188,8 +194,7 @@ function PairingTable({ title, scope, a, b, list, openKey, toggle, Champ, source
   Champ: (p: { id: string; r?: Role; size?: "xs" | "sm" | "md" }) => React.ReactNode; sources: Record<string, Source>;
 }) {
   return (
-    <>
-      <SectionHeader title={title} meta={`${list.length} duos · ${scope}`} />
+    <Disclosure section lazy summary={title} meta={`${list.length} duos · ${scope}`}>
       {!list.length ? <p className="xs muted">No recorded game in this scope shows one.</p> : (
       <div className="table-wrap hub-table mid">
         <table>
@@ -227,6 +232,6 @@ function PairingTable({ title, scope, a, b, list, openKey, toggle, Champ, source
         </table>
       </div>
       )}
-    </>
+    </Disclosure>
   );
 }

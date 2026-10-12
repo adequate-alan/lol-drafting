@@ -9,6 +9,7 @@ import type { Draft } from "@/lib/model-v2/analyze";
 import { convertKits } from "@/lib/model-v2/kits";
 import type { BotPairing, Champion, Role } from "@/lib/schema";
 import { SourceBadge } from "./ui";
+import { compSummary, summaryText } from "@/lib/comp-summary";
 
 const SEVERITY = { major: "Major", moderate: "Moderate", minor: "Minor" } as const;
 
@@ -49,7 +50,7 @@ export function CompCheck({ draft, enemyIds, champions, botPairings, active, bes
   const identities = r.identity.all.filter((i) => i.score > 0).sort((a, b) => b.score - a.score);
 
   return (
-    <aside className="comp-check" aria-label="Comp Check">
+    <aside className="comp-check" id="comp-check" aria-label="Comp Check" tabIndex={-1}>
       <div className="cc-head">
         <h2>Comp Check</h2>
         <span className="cc-head-tags">
@@ -125,5 +126,37 @@ export function CompCheck({ draft, enemyIds, champions, botPairings, active, bes
         {children}
       </details>
     </aside>
+  );
+}
+
+/** Narrow screens, where the rail sits below the list: one line naming what the draft is missing; tap to jump to the
+ *  full Comp Check. Same analysis, nothing added. */
+export function CompSummaryLine({ draft, enemyIds, champions, active, className = "" }: {
+  draft: Draft; enemyIds: string[]; champions: Champion[]; active?: Role; className?: string;
+}) {
+  const kits = useMemo(() => convertKits(champions), [champions]);
+  const vs = enemyIds.join(",");
+  const r = useMemo(() => analyze(draft, kits, enemyIds), [draft, kits, vs]);
+  const s = compSummary(r, active);
+  const line = summaryText(s);
+  const jump = () => {
+    const el = document.getElementById("comp-check");
+    el?.scrollIntoView({ behavior: "smooth", block: "start" });
+    el?.focus({ preventScroll: true });
+  };
+  return (
+    <button type="button" className={`cc-summary ${s.state} ${className}`} onClick={jump} title={s.weak ? `${s.weak.label}: ${s.weak.text}` : line}
+      aria-label={`Comp Check: ${line}${s.state === "early" ? " (early read)" : ""}. Open the full Comp Check`}>
+      <span className="cc-sum-k">Comp Check</span>
+      {s.state === "early" && <span className="cc-sum-tag">Early read</span>}
+      <span className="cc-sum-t truncate">
+        {s.state === "none" ? <span className="muted">{line}</span> : s.clean ? <span className="cc-sum-ok">{line}</span> : <>
+          {s.needs.length > 0 && <span>Needs <b>{s.needs.map((n, i) => (i ? n.toLowerCase() : n)).join(" + ")}</b></span>}
+          {s.needs.length > 0 && s.weak && <span className="sep"> · </span>}
+          {s.weak && <span className={`cc-sum-weak ${s.weak.severity}`}>{s.weak.label}</span>}
+        </>}
+      </span>
+      <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M3.5 2 6.5 5 3.5 8" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
+    </button>
   );
 }

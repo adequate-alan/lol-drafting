@@ -349,6 +349,12 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   only when recorded; current enemy picks on the other team are an observed matchup, never a counter; pick order is not
   recorded, so no game is shown as a response), the Counter card and the comp-fit breakdown. Don't build page-specific
   tooltips.
+- **Phone Comp Check line** (alan, 2026-10-12): below 1180px the Draft Room shows one line under the board and in the
+  pinned mini board (`CompSummaryLine`, `lib/comp-summary.ts`, `tests/comp-summary.test.ts`): the open role's top needs
+  and the worst non-minor weak point, "No major weak points" when clean, "Early read" with two picks, nothing actionable
+  before that. Never a score; a tap jumps to the full Comp Check.
+- **Meta / Research folding** (alan, 2026-10-12): Pro priority, its filters and the Tournaments table stay open; Tournament
+  comparison, both pairing tables, Recent drafts and Research notes are folded section Disclosures with counts.
 - Warning severity (critical / caution) in the Draft Room is a display grouping only; the rules are in `lib/evaluate.ts`.
 - Comp Check (`components/CompCheck.tsx`) shows the comp-analysis engine (`lib/model-v2/analyze.ts`, `tests/comp-analysis.test.ts`):
   identity, win condition, ranked weak points, role needs with best fix vs best overall, timing, and the compact grid.
