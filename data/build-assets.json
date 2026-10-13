@@ -343,6 +343,13 @@
           "from": [1052],
           "kind": "component"
         },
+        "2510": {
+          "name": "Dusk and Dawn",
+          "gold": 3100,
+          "stats": ["300 Health", "60 Ability Power", "20 Ability Haste", "20% Attack Speed"],
+          "from": [3057, 1026, 3067, 1042],
+          "kind": "completed"
+        },
         "2512": {
           "name": "Fiendhunter Bolts",
           "gold": 2650,
@@ -985,6 +992,14 @@
           "from": [1037, 2021, 1028],
           "kind": "completed"
         },
+        "3165": {
+          "name": "Morellonomicon",
+          "gold": 2850,
+          "stats": ["75 Ability Power", "350 Health", "15 Ability Haste"],
+          "text": "Increases magic damage",
+          "from": [3916, 1026, 3067],
+          "kind": "completed"
+        },
         "3170": {
           "name": "Swiftmarch",
           "gold": 1000,
@@ -999,6 +1014,14 @@
           "stats": ["20 Ability Haste", "45 Move Speed"],
           "from": [3158],
           "kind": "boots"
+        },
+        "3172": {
+          "name": "Gunmetal Greaves",
+          "gold": 1100,
+          "stats": ["45% Attack Speed", "45 Move Speed", "5% Life Steal"],
+          "text": "Mobility and Tenacity",
+          "from": [3006],
+          "kind": "component"
         },
         "3173": {
           "name": "Chainlaced Crushers",
@@ -1021,6 +1044,13 @@
           "stats": ["60 Attack Damage", "18 Lethality", "15 Ability Haste"],
           "text": "Provides trap and ward detection periodically",
           "from": [3134, 3133],
+          "kind": "completed"
+        },
+        "3181": {
+          "name": "Hullbreaker",
+          "gold": 3000,
+          "stats": ["40 Attack Damage", "500 Health", "4% Move Speed"],
+          "from": [2021, 3066, 1037],
           "kind": "completed"
         },
         "3190": {
@@ -1236,6 +1266,14 @@
           "from": [2021, 3133],
           "kind": "completed"
         },
+        "6616": {
+          "name": "Staff of Flowing Water",
+          "gold": 2250,
+          "stats": ["35 Ability Power", "10% Heal and Shield Power", "125% Base Mana Regen", "10 Ability Haste"],
+          "text": "Your heals and shields reduce crowd control and grant Move Speed",
+          "from": [3108, 3114],
+          "kind": "completed"
+        },
         "6617": {
           "name": "Moonstone Renewer",
           "gold": 2200,
@@ -1250,6 +1288,13 @@
           "stats": ["35 Ability Power", "200 Health", "20 Ability Haste", "125% Base Mana Regen"],
           "text": "Damage low-health enemies to trigger a cursed explosion, dealing damage and slowing nearby foes",
           "from": [3067, 4642],
+          "kind": "completed"
+        },
+        "6621": {
+          "name": "Dawncore",
+          "gold": 2500,
+          "stats": ["45 Ability Power", "16% Heal and Shield Power", "100% Base Mana Regen"],
+          "from": [1026, 3114, 3114],
           "kind": "completed"
         },
         "6631": {
@@ -1858,6 +1903,28 @@
         }
       },
       "abilities": {
+        "aatrox": {
+          "Q": {
+            "name": "The Darkin Blade",
+            "icon": "AatroxQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Infernal Chains",
+            "icon": "AatroxW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Umbral Dash",
+            "icon": "AatroxE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "World Ender",
+            "icon": "AatroxR.png",
+            "maxrank": 3
+          }
+        },
         "ahri": {
           "Q": {
             "name": "Orb of Deception",
@@ -2320,6 +2387,28 @@
             "maxrank": 3
           }
         },
+        "gragas": {
+          "Q": {
+            "name": "Barrel Roll",
+            "icon": "GragasQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Drunken Rage",
+            "icon": "GragasW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Body Slam",
+            "icon": "GragasE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Explosive Cask",
+            "icon": "GragasR.png",
+            "maxrank": 3
+          }
+        },
         "gwen": {
           "Q": {
             "name": "Snip Snip!",
@@ -2361,6 +2450,28 @@
           "R": {
             "name": "Spiraling Despair",
             "icon": "HweiR.png",
+            "maxrank": 3
+          }
+        },
+        "ivern": {
+          "Q": {
+            "name": "Rootcaller",
+            "icon": "IvernQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Brushmaker",
+            "icon": "IvernW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Triggerseed",
+            "icon": "IvernE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Daisy!",
+            "icon": "IvernR.png",
             "maxrank": 3
           }
         },
@@ -2562,6 +2673,28 @@
             "maxrank": 3
           }
         },
+        "leblanc": {
+          "Q": {
+            "name": "Sigil of Malice",
+            "icon": "LeblancQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Distortion",
+            "icon": "LeblancW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Ethereal Chains",
+            "icon": "LeblancE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Mimic",
+            "icon": "LeblancR.png",
+            "maxrank": 3
+          }
+        },
         "lee-sin": {
           "Q": {
             "name": "Sonic Wave / Resonating Strike",
@@ -2669,6 +2802,28 @@
           "R": {
             "name": "Wild Growth",
             "icon": "LuluR.png",
+            "maxrank": 3
+          }
+        },
+        "maokai": {
+          "Q": {
+            "name": "Bramble Smash",
+            "icon": "MaokaiQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Twisted Advance",
+            "icon": "MaokaiW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Sapling Toss",
+            "icon": "MaokaiE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Nature's Grasp",
+            "icon": "MaokaiR.png",
             "maxrank": 3
           }
         },
@@ -2802,6 +2957,28 @@
             "name": "Pop Blossom",
             "icon": "NeekoR.png",
             "maxrank": 3
+          }
+        },
+        "nidalee": {
+          "Q": {
+            "name": "Javelin Toss / Takedown",
+            "icon": "JavelinToss.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Bushwhack / Pounce",
+            "icon": "Bushwhack.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Primal Surge / Swipe",
+            "icon": "PrimalSurge.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Aspect Of The Cougar",
+            "icon": "AspectOfTheCougar.png",
+            "maxrank": 4
           }
         },
         "nocturne": {
@@ -3178,6 +3355,28 @@
             "maxrank": 3
           }
         },
+        "shen": {
+          "Q": {
+            "name": "Twilight Assault",
+            "icon": "ShenQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Spirit's Refuge",
+            "icon": "ShenW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Shadow Dash",
+            "icon": "ShenE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Stand United",
+            "icon": "ShenR.png",
+            "maxrank": 3
+          }
+        },
         "shyvana": {
           "Q": {
             "name": "Emberstrike",
@@ -3464,6 +3663,28 @@
             "maxrank": 3
           }
         },
+        "vex": {
+          "Q": {
+            "name": "Mistral Bolt",
+            "icon": "VexQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Personal Space",
+            "icon": "VexW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Looming Darkness",
+            "icon": "VexE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Shadow Surge",
+            "icon": "VexR.png",
+            "maxrank": 3
+          }
+        },
         "vi": {
           "Q": {
             "name": "Vault Breaker",
@@ -3483,6 +3704,28 @@
           "R": {
             "name": "Cease and Desist",
             "icon": "ViR.png",
+            "maxrank": 3
+          }
+        },
+        "viego": {
+          "Q": {
+            "name": "Blade of the Ruined King",
+            "icon": "ViegoQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Spectral Maw",
+            "icon": "ViegoW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Harrowed Path",
+            "icon": "ViegoE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Heartbreaker",
+            "icon": "ViegoR.png",
             "maxrank": 3
           }
         },
@@ -3637,6 +3880,28 @@
           "R": {
             "name": "Grim Deliverance",
             "icon": "ZaahenR.png",
+            "maxrank": 3
+          }
+        },
+        "ziggs": {
+          "Q": {
+            "name": "Bouncing Bomb",
+            "icon": "ZiggsQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Satchel Charge",
+            "icon": "ZiggsW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Hexplosive Minefield",
+            "icon": "ZiggsE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Mega Inferno Bomb",
+            "icon": "ZiggsR.png",
             "maxrank": 3
           }
         }
