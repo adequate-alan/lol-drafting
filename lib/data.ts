@@ -13,7 +13,8 @@ import { withoutConfirmed } from "./proposed";
 import { Files, ROLES, type Role } from "./schema";
 import { brief, duoSelections, LANE_ROLES, laneSelections, roleBook, topUsageMarks, type LaneRole, type TopDraftBundle, type TopUsageMarks } from "./top-draft";
 import { blindReads } from "./top-blind";
-import { boardTraits, kitMap } from "./jungle-context";
+import { boardTraits, compResponses, type CompResponse, type FactBook } from "./jungle-context";
+import { factBook } from "./jungle-kits";
 import { bucket, patchesOf } from "./pro-priority";
 
 // Data lives in /data and is read at build time; the static export embeds what each page renders.
@@ -104,7 +105,23 @@ export function getDraftData() {
     priority: priorityMarks(getPriority()), // a label on rows, never read by the ranking
     // Lane row labels (Top, Mid, Bot, Support), never read by the ranking.
     laneUsage: Object.fromEntries(LANE_ROLES.map((r) => [r, ((t) => topUsageMarks(t.selections, t.dpm, t.blind, undefined, t.duos))(getLaneDraft(r))])) as Record<LaneRole, TopUsageMarks>,
+    jungleBoard: getJungleBoard(), // Jungle composition responses (a label, General Draft Logic over the enemy board)
   };
+}
+
+let facts: FactBook | undefined;
+const getFactBook = () => (facts ??= factBook(getChampions()));
+
+/** The kit facts the Draft Room reads the enemy board with, and each jungler's observed composition responses (all patches). */
+export function getJungleBoard(): { facts: FactBook; responses: Record<string, CompResponse[]> } {
+  const j = getLaneDraft("JUNGLE");
+  const ordered = j.selections.filter((s) => s.turn);
+  const responses: Record<string, CompResponse[]> = {};
+  for (const id of new Set(ordered.map((s) => s.champion))) {
+    const r = compResponses(ordered.filter((s) => s.champion === id), ordered, j.context ?? {});
+    if (r.length) responses[id] = r;
+  }
+  return { facts: getFactBook(), responses };
 }
 export type DraftData = ReturnType<typeof getDraftData>;
 
@@ -175,7 +192,7 @@ export function getLaneDraft(role: LaneRole): TopDraftBundle {
   // Jungle: what the enemy board showed at each pick (only champions already picked), read from the kits.
   let context: TopDraftBundle["context"];
   if (role === "JUNGLE") {
-    const kits = kitMap(getChampions());
+    const kits = getFactBook();
     const byId = new Map(records.map((g) => [g.id, g]));
     context = Object.fromEntries(selections.filter((s) => s.turn).map((s) => {
       const g = byId.get(s.game)!, them = g[s.side === "blue" ? "red" : "blue"];

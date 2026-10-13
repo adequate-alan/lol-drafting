@@ -530,10 +530,14 @@ export interface TopUsageMark {
   into: Record<string, { games: number; series: number; status: PairStatus }>; // responses into each enemy lane opponent
   /** Bot and Support: duos with this champion completed after both enemy bot laners were known, by `${enemyAdc}+${enemySupport}`. */
   duoInto?: Record<string, { games: number; series: number; wins: number }>;
-  /** Jungle: games with each allied mid, with who was picked first (Observed Pro Evidence, never a saved pairing). */
-  withMid?: Record<string, { games: number; series: number; wins: number; jungleFirst: number; together: number; midFirst: number }>;
 }
-export interface TopUsageMarks { role?: LaneRole; patch?: string; marks: Record<string, TopUsageMark>; blind: Record<string, BlindLine[]> }
+/** Jungle + mid on every patch: who was picked first and the games per patch. `unknown`: no order recorded (no First Pick
+ *  mark or pick order). Observed Pro Evidence, never a saved pairing. */
+export interface MidPair { games: number; series: number; wins: number; jungleFirst: number; together: number; midFirst: number; unknown: number; byPatch: Record<string, number> }
+export interface TopUsageMarks {
+  role?: LaneRole; patch?: string; marks: Record<string, TopUsageMark>; blind: Record<string, BlindLine[]>;
+  withMid?: Record<string, Record<string, MidPair>>; // JUNGLE: by jungler, then mid
+}
 
 /** Per-champion lane usage on one patch (the default: newest with enough classified games), for Draft Room labels. */
 export function topUsageMarks(sel: TopSelection[], dpm: DPMRow[], blind: Record<string, BlindLine[]>, patch = defaultTopPatch(sel), duos?: DuoSelection[]): TopUsageMarks {
@@ -551,10 +555,13 @@ export function topUsageMarks(sel: TopSelection[], dpm: DPMRow[], blind: Record<
       usage: r.usage, blind: r.blind, response: r.response, classified: r.classified, games: r.games, low: r.low,
       into: Object.fromEntries(r.respondedInto.map((p) => [p.into, { games: p.games.length, series: p.series, status: p.status }])),
       ...(duos ? { duoInto } : {}),
-      ...(role === "JUNGLE" ? { withMid: Object.fromEntries(mateRows(r.selections, "MID", { patch }).map((m) => [m.mate, {
-        games: m.games.length, series: m.series, wins: m.wins, jungleFirst: m.order.jungleFirst, together: m.order.together, midFirst: m.order.mateFirst,
-      }])) } : {}),
     };
   }
-  return { role, patch, marks, blind };
+  const withMid = role === "JUNGLE" ? Object.fromEntries([...new Set(sel.map((x) => x.champion))].map((j) => [j, Object.fromEntries(
+    mateRows(sel.filter((x) => x.champion === j), "MID", {}).map((m) => [m.mate, {
+      games: m.games.length, series: m.series, wins: m.wins, jungleFirst: m.order.jungleFirst, together: m.order.together, midFirst: m.order.mateFirst,
+      unknown: m.order.unknown, byPatch: m.games.reduce<Record<string, number>>((o, g) => ({ ...o, [g.patch]: (o[g.patch] ?? 0) + 1 }), {}),
+    } satisfies MidPair])),
+  ])) : undefined;
+  return { role, patch, marks, blind, ...(withMid ? { withMid } : {}) };
 }

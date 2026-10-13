@@ -99,8 +99,12 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   series, saved mids tagged beside them; never a saved pairing. Matchups add "Enemy board at the pick"
   (`lib/jungle-context.ts`, thresholds in `CONTEXT`): kit traits of champions already picked (General Draft Logic,
   unreviewed kits), against the all-jungle base rate, "potential composition responses", never the team's reason. Draft
-  Room: Jungle labels and starting-pick blind counts through `laneUsage`; with an allied mid locked the usage tooltip adds
-  the pair's games and order (`withMid`). Labels only. Findings: `/mnt/project-files/lol-drafting/top-draft/jungle-findings.md`;
+  Room (alan's review, 2026-10-13): Jungle labels and starting-pick blind counts through `laneUsage`; with an allied mid
+  locked, "With <mid> · n games" (`TopUsageMarks.withMid`, every patch, order and games per patch in the tooltip, links to
+  the pair on the Jungle page via `?mate=`); with enemy picks, "Picked vs <trait> · n/m" when a jungler's composition
+  response (`compResponses`: 5+ picks with the trait, half its picks, 1.5x the all-jungle rate) is on the enemy board now
+  (kit facts from `lib/jungle-kits.ts`, the board read in `lib/jungle-context.ts`). Under five classified games a usage
+  label shows its counts ("Blind 3/3 · small sample"), and presence carried by bans (2x picks) says so. Labels only. Findings: `/mnt/project-files/lol-drafting/top-draft/jungle-findings.md`;
   any Jungle-specific counter scoring or ranking change waits on alan.
 - **Synergies patch scope** (alan, 2026-10-13; `lib/synergy-patch.ts`, `tests/synergy-patch.test.ts`): every lane tab
   opens on All patches (historical, labelled with its range), including role switches and Draft Room links without a
