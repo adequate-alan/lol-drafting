@@ -55,7 +55,7 @@ const FILTERS: { key: Filter; label: string }[] = [
 const START_FILTERS: { key: Filter & StartView; label: string }[] = [
   { key: "all", label: "Recommended" }, { key: "rotation", label: "First rotation" }, { key: "blind", label: "Blind picks" }, { key: "priority", label: "Pro priority" },
 ];
-const BLIND_OFF = "No classified blind picks for this role: Jungle is not classified";
+const BLIND_OFF = "No classified blind picks for this role on this patch";
 const START_NOTE = "Before any pick: champions with recorded pro picks in this role on the patch. First rotation = picks within the team's first three. Your pool first (Core, Depth, Prepared / flex), "
   + "then everyone else; each by first-rotation picks, then role picks, then presence. Real counts only, no score. "
   + "Once a pick is locked the list orders by your saved pairings and comp fit, and these stay labels.";
@@ -388,7 +388,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                             {c.champion === firstOut && <p className="fit-divider xs faint">Outside your pool</p>}
                             <FitRow c={c} tier={poolTier(data.pool, c.champion, active)} bot={draft.BOT ? names[draft.BOT] ?? draft.BOT : undefined} names={names} proCtx={proCtx} hovered={hover === c.champion}
                               onHover={(h) => preview(h ? c.champion : undefined)} onPick={() => lock(active, c.champion)} onOpen={() => setDrawer({ id: c.champion, role: active })}
-                              top={isLaneRole(active) ? laneCtx(data.laneUsage[active], c.champion, enemyDraft) : undefined} />
+                              top={isLaneRole(active) ? laneCtx(data.laneUsage[active], c.champion, enemyDraft, draft) : undefined} />
                           </Fragment>
                         ))
                         : <p className="rec-empty">{viewFilter === "all" ? "Nothing stands out yet." : viewFilter === "counter" && activeCounters?.counters.length === 0 ? "No counters to show." : "No candidate has this signal yet."}</p>}
@@ -486,15 +486,16 @@ const proLine = (pro: ProSuggestion) => pro.lines.map((l) => `${describeLine({ .
 const BONUS = new Set(["saved", "proposed"]);
 
 // The row's labels, one per independent signal, each in its own layer colour. Nothing here changes the order.
-type TopCtx = { mark?: TopUsageMark; patch?: string; enemyTop?: string; enemyDuo?: [string, string]; blind?: BlindLine[] };
+type TopCtx = { mark?: TopUsageMark; patch?: string; enemyTop?: string; enemyDuo?: [string, string]; allyMid?: string; blind?: BlindLine[] };
 
 /** The lane usage context for one candidate: its mark, the enemy lane opponent and, for Bot and Support, the whole enemy
  *  bot lane once both are locked. */
-const laneCtx = (u: TopUsageMarks, id: string, enemy: Partial<Record<Role, string>>): TopCtx => ({
+const laneCtx = (u: TopUsageMarks, id: string, enemy: Partial<Record<Role, string>>, ally: Partial<Record<Role, string>>): TopCtx => ({
+  allyMid: u.role === "JUNGLE" ? ally.MID : undefined,
   mark: u.marks[id], patch: u.patch, enemyTop: u.role ? enemy[u.role] : undefined, blind: u.blind[id],
   enemyDuo: (u.role === "BOT" || u.role === "SUPPORT") && enemy.BOT && enemy.SUPPORT ? [enemy.BOT, enemy.SUPPORT] : undefined,
 });
-const LANE_WORD: Record<string, string> = { TOP: "top", MID: "mid", BOT: "ADC", SUPPORT: "support" };
+const LANE_WORD: Record<string, string> = { TOP: "top", JUNGLE: "jungle", MID: "mid", BOT: "ADC", SUPPORT: "support" };
 
 // Lane draft usage (lib/top-draft.ts): when pros picked this champion in the role, and what it was picked into. Observed
 // Pro Evidence: a label and a detail line, never part of the order or the comp fit.
@@ -503,7 +504,9 @@ const topUsageTitle = (c: Candidate, t: TopCtx, names: Record<string, string>) =
   const n = (id: string) => names[id] ?? id;
   const duo = t.enemyDuo ? m.duoInto?.[t.enemyDuo.join("+")] : undefined;
   const into = t.enemyTop ? m.into[t.enemyTop] : undefined;
-  const base = `Patch ${p} pro games at ${lane}: blind ${m.blind}/${m.classified}, response ${m.response}/${m.classified}${m.low ? " (small sample)" : ""}.`;
+  const mid = t.allyMid ? m.withMid?.[t.allyMid] : undefined;
+  const pair = mid ? ` With ${n(t.allyMid!)} at mid in ${mid.games} game${mid.games === 1 ? "" : "s"} (${mid.series} series, won ${mid.wins}): jungler first ${mid.jungleFirst}, same turn ${mid.together}, mid first ${mid.midFirst}; ${mid.series >= 2 ? "a repeated" : "an observed"} pro pairing, not a saved one.` : "";
+  const base = `Patch ${p} pro games at ${lane}: blind ${m.blind}/${m.classified}, response ${m.response}/${m.classified}${m.low ? " (small sample)" : ""}.${pair}`;
   if (duo) return `${base} Its duo was completed after ${n(t.enemyDuo![0])} + ${n(t.enemyDuo![1])} were both known in ${duo.games} game${duo.games === 1 ? "" : "s"} (${duo.series} series, won ${duo.wins}): ${duo.series >= 2 ? "a repeated response" : "an observed response"}, not a counter. Never part of the order or the fit.`;
   if (into) return `${base} Picked after ${n(t.enemyTop!)} was revealed in ${into.games} game${into.games === 1 ? "" : "s"} (${into.series} series): ${PAIR_LABEL[into.status].toLowerCase()}${into.status === "supported" ? "" : ", not a proven counter"}. Never part of the order or the fit.`;
   return `${base} Being blinded often is not proof it is safe to blind. Never part of the order or the fit.`;

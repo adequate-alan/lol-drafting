@@ -582,6 +582,16 @@ await page.locator(".theme-toggle").click();
   const sup = (await page.locator(".fit-row .sig.usage").allTextContents()).join("|");
   check("draft room: with the enemy bot lane locked, SUPPORT rows say which duos were picked into it", /Picked into Lucian \+ Milio · \d+/.test(sup), sup);
 }
+// Jungle: Mid/Jungle order (who was picked first), partners open their games, the enemy board at the pick
+{
+  await open("/synergies/jungle/?champ=jarvan-iv&view=mates");
+  const line = (await page.locator(".mate-table").first().locator("xpath=..").locator("p.small").textContent().catch(() => "")) ?? "";
+  check("jungle: Mid/Jungle says how often the jungler was picked before its mid", /Picked before its mid in \d+\/\d+/.test(line), line.slice(0, 120));
+  await page.locator(".mate-table .duo-btn").first().click();
+  check("jungle: a Mid/Jungle pair opens its games", (await page.locator(".mate-table .duo-open .top-games > li").count()) >= 2, "");
+  await open("/synergies/jungle/?champ=chogath&view=matchups");
+  check("jungle: Matchups lists the enemy board at the pick as composition context", /potential composition responses/.test((await page.locator("main").textContent()) ?? ""), "");
+}
 // Champion Synergies: hover card on desktop, drawer on click
 {
   await open("/synergies/bot/?champ=caitlyn&view=pro");

@@ -254,9 +254,9 @@ describe("pick-order engine (lib/top-draft.ts)", () => {
     expect(reader(unmarked, "blue", "JUNGLE")?.firstOverall).toBeUndefined();
   });
 
-  it("Mid, Bot and Support blind / response come from the same engine; Jungle stays unclassified", () => {
+  it("Jungle, Mid, Bot and Support blind / response come from the same engine", () => {
     const book = roleBook(data.champions, records);
-    for (const role of ["MID", "BOT", "SUPPORT"] as const) {
+    for (const role of ["JUNGLE", "MID", "BOT", "SUPPORT"] as const) {
       const rows = startingPicks(prio, pool, role, PATCH, { reader }).rows;
       const sel = laneSelections(records.filter((g) => g.patch === PATCH), book, role);
       for (const r of rows) {
@@ -266,6 +266,5 @@ describe("pick-order engine (lib/top-draft.ts)", () => {
       }
       expect(rows.some((r) => (r.blind ?? 0) > 0), role).toBe(true);
     }
-    for (const r of startingPicks(prio, pool, "JUNGLE", PATCH, { reader }).rows) expect(r.blind).toBeNull();
   });
 });

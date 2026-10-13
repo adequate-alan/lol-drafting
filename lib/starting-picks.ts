@@ -108,8 +108,8 @@ export function startingPicks(d: PriorityData, pool: PoolEntry[], role: Role, pa
 
 /**
  * The reader built on the pick-order engine (lib/top-draft.ts, Gol.gg's First Pick mark; never the side): first overall
- * for every role from the rebuilt turns, blind / response for Top, Mid, Bot and Support from their classification (alan,
- * 2026-10-13). Jungle stays unclassified.
+ * for every role from the rebuilt turns, blind / response for every lane, Jungle included, from their classification
+ * (alan, 2026-10-13).
  */
 export function engineReader(games: ProGame[], champions: { id: string; roles: Role[] }[]): PickReader {
   const book = roleBook(champions, games);

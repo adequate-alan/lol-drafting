@@ -29,7 +29,7 @@ export default async function Synergies({ params }: { params: Promise<{ tab: str
     <Suspense fallback={<PageLoading title="Champion Synergies" />}>
       <SynergiesView tab={tab as Tab} names={nameMap()} sources={sourceMap()} events={eventMap()} stats={stats} draftLabels={draftLabels}
         bot={getBotPairings()} midJungle={getMidJungle()} top={getTopPicks()} pool={getPool()} drawerData={getDrawerData()} freshness={getProFreshness()} shells={getCompShells()}
-        laneDraft={tab === "jungle" ? undefined : getLaneDraft(TAB_ROLE[tab as Tab] as LaneRole)} />
+        laneDraft={getLaneDraft(TAB_ROLE[tab as Tab] as LaneRole)} />
     </Suspense>
   );
 }
