@@ -624,8 +624,8 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
 // recorded for that game (blue / red, neutral when unrecorded), and it stays when filtering.
 {
   await open("/pro-drafts/");
-  // The team cell may end with a W / L result marker; compare team names without it.
-  const rows = await page.$$eval(".table-wrap tbody tr", (rs) => rs.map((r) => ({ cls: r.className, side: r.dataset.side, title: r.title, game: r.cells[0]?.textContent.trim(), team: r.cells[1]?.textContent.trim().replace(/\s+[WL]$/, ""), vs: r.cells[2]?.textContent.trim() })));
+  // The team cell ends with a W / L result tag; the team name is the cell's own text.
+  const rows = await page.$$eval(".table-wrap tbody tr", (rs) => rs.map((r) => ({ cls: r.className, side: r.dataset.side, title: r.title, game: r.cells[0]?.textContent.trim(), team: [...(r.cells[1]?.childNodes ?? [])].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim(), vs: r.cells[2]?.textContent.trim() })));
   const pairs = rows.flatMap((r, i) => (/pair-a/.test(r.cls) ? [[r, rows[i + 1]]] : []));
   const ok = pairs.length > 0 && pairs.every(([a, b]) => b && /pair-b/.test(b.cls) && a.game === b.game && a.team === b.vs && a.vs === b.team);
   check("pro drafts: both sides of a game are paired", ok, `${pairs.length} pairs of ${rows.length} rows`);
