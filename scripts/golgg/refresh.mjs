@@ -87,15 +87,19 @@ async function refreshGames(data, get, { now = new Date() } = {}) {
 
     // Pick order for games stored before it was recorded: their game page is re-read once. A page that no longer shows
     // the stored teams, picks and bans leaves the game as it is.
+    // The side that picked first is read the same way (stored once; a page without a clear mark leaves it unset).
     let ordered = 0;
-    for (const g of proGames.games.filter((x) => x.event === t.event && (!x.blue.pickOrder || !x.red.pickOrder))) {
+    for (const g of proGames.games.filter((x) => x.event === t.event && (!x.blue.pickOrder || !x.red.pickOrder || !x.firstPick))) {
       const got = pickOrderFor(g, parseGamePage(await get(gameUrl(g.id))), resolve);
       if (got.problems) { rejected.push(`${g.series} game ${g.game} (${gameUrl(g.id)}): pick order not stored, ${got.problems.join("; ")}`); continue; }
+      if (!got.firstPick && !g.firstPick) rejected.push(`${g.series} game ${g.game} (${gameUrl(g.id)}): the page does not mark which side picked first.`);
+      const changed = g.blue.pickOrder?.join() !== got.blue.join() || g.red.pickOrder?.join() !== got.red.join() || (!!got.firstPick && g.firstPick !== got.firstPick);
       g.blue.pickOrder = got.blue;
       g.red.pickOrder = got.red;
-      ordered += 1;
+      if (got.firstPick) g.firstPick = got.firstPick;
+      if (changed) ordered += 1;
     }
-    if (ordered) report.push(`${t.label}: pick order stored for ${ordered} earlier game${ordered > 1 ? "s" : ""}.`);
+    if (ordered) report.push(`${t.label}: pick order and first pick stored for ${ordered} earlier game${ordered > 1 ? "s" : ""}.`);
 
     // The event the site shows; created the first time a tracked tournament has games.
     let event = meta.events.find((e) => e.id === t.event);

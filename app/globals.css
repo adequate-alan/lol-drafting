@@ -1377,6 +1377,7 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 /* Pro meta scope: role, patch and the games behind the counts, one quiet line under the filters. */
 .fit-scope { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s2) var(--s4); padding: var(--s2) var(--s3); border-bottom: 1px solid var(--border); }
 .fit-divider { margin: 0; padding: var(--s3) var(--s3) var(--s1); border-top: 1px solid var(--border); }
+.sig.usage { color: var(--pro); }
 .fit-reason .drawback { color: var(--caution); }
 .fit-row.ref .name { color: var(--text-muted); }
 .fit-filters { flex: 0 1 auto; min-width: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
@@ -1400,15 +1401,15 @@ button.fit-score:hover, button.fit-score.is-open { color: var(--text); }
 .fit-read dt { font-family: var(--font-display); color: var(--text-faint); }
 .fit-read dd { margin: 0; color: var(--text-muted); }
 .fit-why { display: grid; gap: 1px; margin: 0; padding: 0; list-style: none; }
-.fit-why li, .fit-pro, .fit-counter { display: grid; grid-template-columns: 62px minmax(0, 1fr) auto; gap: var(--s3); font-size: var(--fs-xs); color: var(--text-muted); line-height: 1.35; }
-.fit-why .k, .fit-pro .k, .fit-counter .k { font-family: var(--font-display); color: var(--text-faint); }
+.fit-why li, .fit-pro, .fit-counter, .fit-logic { display: grid; grid-template-columns: 62px minmax(0, 1fr) auto; gap: var(--s3); font-size: var(--fs-xs); color: var(--text-muted); line-height: 1.35; }
+.fit-why .k, .fit-pro .k, .fit-counter .k, .fit-logic .k { font-family: var(--font-display); color: var(--text-faint); }
 .fit-why .pts { color: var(--text-faint); }
 .fit-why .k-saved .k, .fit-why .k-synergy .k { color: var(--clash); }
 .fit-why .k-proposed .k { color: var(--clash); opacity: .75; }
 .fit-why .k-need .k { color: var(--logic); }
 .fit-why .k-matchup .k { color: var(--enemy); }
 .fit-why .k-risk .k, .fit-why .k-risk .pts { color: var(--danger); }
-.fit-pro, .fit-counter { padding-top: var(--s2); border-top: 1px dashed var(--border); }
+.fit-pro, .fit-counter, .fit-logic { padding-top: var(--s2); border-top: 1px dashed var(--border); }
 .fit-pro .k, .fit-pro .t { color: var(--pro); }
 .fit-counter .k { color: var(--counter); }
 
@@ -1648,6 +1649,65 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .prop-pro { color: var(--pro); }
 .prop-identity { margin: 0 0 var(--s4); color: var(--text-muted); font-size: var(--fs-sm); }
 .pool-proposed { margin-top: var(--s4); padding-top: var(--s3); border-top: 1px dashed var(--clash-line); }
+
+/* ===== Top Synergies draft usage (alan, 2026-10-13; components/TopDraft.tsx, TopRail.tsx): observed blind / response
+   usage in the Pro layer's gray-teal, the saved grade in the Synergy gold, the kit read in Logic gray. A response is never
+   styled as a counter; only a DPM-supported pair takes the oxblood Counter treatment. ===== */
+.top-use { flex: none; width: 100%; }
+.top-use button { flex: 1 0 auto; }
+.top-tools { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.top-tools .span-2 { grid-column: 1 / -1; }
+.scout .clash-text { color: var(--clash); }
+.scout .pro-text { color: var(--pro); }
+.top-report > .tabs { margin: 0; padding: 0 var(--s6); }
+.usage-tag, .pair-tag { display: inline-flex; align-items: center; height: 18px; padding: 0 var(--s3); border-radius: var(--r-sm); font-size: var(--fs-xs); font-weight: var(--w-control); white-space: nowrap; color: var(--pro); background: var(--pro-subtle); box-shadow: inset 0 0 0 1px var(--pro-line); }
+.usage-tag.uncertain, .pair-tag.observed { color: var(--text-muted); background: transparent; box-shadow: inset 0 0 0 1px var(--border-strong); }
+.pair-tag.supported { color: var(--counter); background: var(--counter-subtle); box-shadow: inset 0 0 0 1px var(--counter-line); }
+.usage-bar { display: flex; gap: 2px; height: 8px; margin: var(--s2) 0 var(--s4); }
+.usage-bar span { min-width: 4px; border-radius: var(--r-sm); }
+.usage-bar .blind { background: var(--pro); }
+.usage-bar .response { background: var(--pro-line); }
+.usage-bar .uncertain { background: var(--border-strong); }
+.usage-facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: var(--s4) var(--s6); margin: 0 0 var(--s4); }
+.usage-facts div { display: grid; gap: var(--s1); }
+.usage-facts dt { font-size: var(--fs-xs); color: var(--text-muted); }
+.usage-facts dd { margin: 0; font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--text); }
+.top-games, .pair-list { margin: 0; padding: 0; list-style: none; }
+.top-games > li, .pair-list > li { border-top: 1px solid var(--border); }
+.top-games > li:first-child, .pair-list > li:first-child { border-top: 0; }
+.top-games > li > button, .pair-list > li > button { all: unset; box-sizing: border-box; display: grid; align-items: center; gap: var(--s4); width: 100%; padding: var(--s3) var(--s2); cursor: pointer; font-size: var(--fs-sm); transition: background var(--t-fast); }
+.top-games > li > button { grid-template-columns: 48px minmax(0, 1.4fr) minmax(0, 1fr) 36px auto auto; }
+.top-games.no-vs > li > button { grid-template-columns: 48px minmax(0, 1fr) 36px auto auto; }
+.pair-list > li > button { grid-template-columns: auto minmax(0, 1fr) auto auto; }
+.top-games > li > button:hover, .pair-list > li > button:hover { background: var(--surface-hover); }
+.top-games > li > button:focus-visible, .pair-list > li > button:focus-visible { box-shadow: var(--focus-ring); }
+.top-games > li.open > button { background: var(--accent-subtle); }
+.top-games .res { margin-left: 0; }
+.tg-team, .tg-vs { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tg-vs { display: inline-flex; align-items: center; gap: var(--s2); }
+.pair-list .top-games { margin: 0 0 var(--s4) var(--s6); }
+.pl-name { font-weight: var(--w-control); }
+.top-game { display: grid; gap: var(--s3); margin: 0 0 var(--s4); padding: var(--s4) var(--s5); background: var(--surface-sunken); border: 1px solid var(--border); border-radius: var(--r); }
+.top-game p { margin: 0; }
+.draft-seq { display: flex; flex-wrap: wrap; gap: var(--s2); margin: 0; padding: 0; list-style: none; }
+.draft-seq li { position: relative; display: grid; justify-items: center; gap: var(--s1); padding: var(--s1) var(--s1) var(--s2); border-bottom: 2px solid var(--border-strong); }
+.draft-seq li.seq-blue { border-color: var(--team-blue); }
+.draft-seq li.seq-red { border-color: var(--team-red); }
+.draft-seq li.top .champ { box-shadow: 0 0 0 1px var(--accent); }
+.draft-seq .seq-n { font-size: var(--fs-2xs); color: var(--text-faint); }
+.top-game-links { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); }
+.blind-read { display: grid; gap: var(--s2); margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
+.blind-read li { padding-left: var(--s5); position: relative; }
+.blind-read li::before { position: absolute; left: 0; color: var(--logic); }
+.blind-read li.plus::before { content: "+"; }
+.blind-read li.minus::before { content: "−"; color: var(--caution); }
+.blind-read li.note::before { content: "·"; }
+.faced { width: 100%; }
+@media (max-width: 760px) {
+  .top-games > li > button, .top-games.no-vs > li > button { grid-template-columns: minmax(0, 1fr) 36px auto auto; }
+  .top-games > li > button .tg-vs, .top-games > li > button .tg-date { display: none; }
+  .top-report > .tabs { padding: 0 var(--s5); }
+}
 
 /* ===== Comp Library (the reference page): three-column draft boards ===== */
 /* Cards in a row share one height; each card's action row sits on its bottom edge. */

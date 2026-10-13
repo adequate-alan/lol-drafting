@@ -224,6 +224,10 @@ export const ProGame = z.object({
   blue: GameSide,
   red: GameSide,
   winner: z.enum(["blue", "red"]),
+  // The side that picked first, read from the "First Pick" mark on the Gol.gg game page. Since 2026 it is not always blue,
+  // so draft order is rebuilt from it, never from the side. Absent until the page has been re-read; such a game's
+  // interleaved order is unknown.
+  firstPick: z.enum(["blue", "red"]).optional(),
   url: z.string().url(),
   rolesUrl: z.string().url(),
   checkedOn: Day,

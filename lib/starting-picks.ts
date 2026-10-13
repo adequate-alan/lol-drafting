@@ -14,6 +14,7 @@ import { tierLabel, poolTier } from "./counters";
 import type { Tier } from "./pool-stats";
 import { bucket, DRAFT_LABEL_MIN, forRole, patchesOf, rolePicksOf, type Bucket, type PriorityData } from "./pro-priority";
 import { ROLES, type PoolEntry, type ProGame, type Role } from "./schema";
+import { roleBook, topSelections, turnOf } from "./top-draft";
 
 export const FIRST_ROTATION = 3; // a team's first three picks
 export { tierLabel };
@@ -96,13 +97,29 @@ export function startingPicks(d: PriorityData, pool: PoolEntry[], role: Role, pa
       later: ordered.filter((g) => g.teamPick! > FIRST_ROTATION).length,
       classified: classified.length,
       firstOverall: firstKnown.length ? firstKnown.filter((g) => g.read!.firstOverall).length : null,
-      blind: reads.length ? classified.filter((g) => g.read!.situation === "blind").length : null,
-      response: reads.length ? classified.filter((g) => g.read!.situation === "response").length : null,
+      blind: classified.length ? classified.filter((g) => g.read!.situation === "blind").length : null,
+      response: classified.length ? classified.filter((g) => g.read!.situation === "response").length : null,
       games,
     };
   });
   const events = [...new Set(b.contributions.map((c) => c.event))];
   return { scope: { patch, tournaments: opts.tournaments, games: b.games, recorded: b.recorded, orderGames: b.orderGames, tableGames: b.tableGames, events }, rows: startingOrder(rows) };
+}
+
+/**
+ * The reader built on the pick-order engine (lib/top-draft.ts, Gol.gg's First Pick mark; never the side): first overall
+ * for every role from the rebuilt turns, blind / response for Top from its classification. Other roles stay unclassified
+ * until the engine classifies them.
+ */
+export function engineReader(games: ProGame[], champions: { id: string; roles: Role[] }[]): PickReader {
+  const top = new Map(topSelections(games, roleBook(champions, games)).map((s) => [`${s.game}:${s.side}`, s]));
+  return (g, side, role) => {
+    const idx = g[side].pickOrder?.indexOf(g[side].picks[role]);
+    const firstOverall = g.firstPick && idx != null && idx >= 0 ? turnOf(idx, g.firstPick === side) === 1 : undefined;
+    const t = role === "TOP" ? top.get(`${g.id}:${side}`) : undefined;
+    if (t) return { situation: t.usage, firstOverall, revealed: t.enemySeen, laneOpponent: t.opponentTop };
+    return firstOverall === undefined ? undefined : { situation: "uncertain", firstOverall };
+  };
 }
 
 // ---------- order and filters (zero locked picks only) ----------

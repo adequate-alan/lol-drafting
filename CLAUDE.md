@@ -53,9 +53,25 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   recorded; otherwise from its Gol.gg table only when the whole tournament was one patch (no sides, dates or order);
   otherwise it is withheld and named in the coverage line. Pick order is each team's order as the Gol.gg game page lists
   it (`pickOrder`, stored by the daily refresh, backfilled once per game), never rebuilt from the lineup; first rotation
-  = B1, R1, R2. Patches show Riot's 26.xx (`patchLabel`; data keeps Gol.gg's 16.xx). Shown in the champion drawer
+  = picks 1–3 of the draft, with the first-picking team read per game (`firstPick`, not always blue since 2026). Patches show Riot's 26.xx (`patchLabel`; data keeps Gol.gg's 16.xx). Shown in the champion drawer
   (history chart, per-patch table) and as a "Pro priority · N%" label in the Draft Room when presence ≥ 30% on the
   newest patch and the champion has picks in that role: a label and a filter only, never a score, never an order.
+- **Top draft usage** (alan, 2026-10-13; `lib/top-draft.ts`, `lib/top-blind.ts`, `components/TopDraft.tsx`,
+  `components/TopRail.tsx`, `tests/top-draft.test.ts`, smoke "top:"): when pros picked each top laner. Since 2026 the
+  first-picking team is not always blue: each game stores `firstPick`, the side Gol.gg marks "First Pick" (accepted only
+  with its 1 | 2 | 2 turns against the other side's 2 | 2 | 1; `firstPickOf`), read by the daily refresh and backfilled
+  once (`scripts/backfill-first-pick.mjs`, Demacia and the LCK archive records in `pro-builds.json` `games`, which this
+  analysis reads; game 83450 has no mark). Draft order F1 S1 S2 F2 F3 S3 | bans | S4 F4 F5 S5 (`turnOf`); never inferred
+  from side, winner or lineup. Each top selection is blind (enemy top not yet picked), response (picked, and every other
+  role it plays visibly filled by a one-role champion) or uncertain. A response is never a counter: "repeated" needs two
+  series, "supported counter" a DPM row clearing the counter thresholds; win / loss never decides. Labels need 3
+  classified games, small sample under 5. Fearless eligibility only when every earlier game of the series is recorded.
+  Default scope is the newest patch with 10+ classified selections. The saved `blindGrade` stays alan's and shows beside
+  observed usage (disagreement is shown, never resolved); the kit read (`blindRead`) is General Draft Logic. Synergies
+  Top tab: rail filters All | Blind | Response | Both | Meta priority, patch, tournament and sort in the URL; report tabs
+  Overview | Draft usage | Matchups | Synergies | Pro evidence (`?view=`); a matchup opens its game in place (who picked
+  first, ten picks in order, Pro Drafts and both tops' builds). Draft Room TOP rows get a label and a detail line only
+  ("Often blinded" with no enemy top, "Picked into X · n" with one); never part of the order or the fit.
 - A low-sample champion can only be in a pool's `core` tier with a written `coreReasons` entry.
 - The draft-fit score (alan, 2026-10-10) lives in `lib/recommend.ts` and
   `tests/recommend.test.ts`. Every champion who plays the open role is a candidate. The score adds saved pairings
@@ -81,8 +97,9 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   Room"): with nothing locked on either team, each role tab lists the champions with recorded pro picks in that role on
   one patch (newest with picks by default, `?patch=` and a patch menu; never combined): pool tier (or "Not in pool"),
   presence, role picks, First rotation (role picks within the team's first three picks, from `pickOrder`, "N of M"),
-  blind / response and first overall only from the pick-order engine's reads (owned by the Top lane analysis thread; until
-  it is wired, "not classified yet" and the Blind filter is disabled). Views Recommended | First rotation | Blind picks |
+  first overall (turn 1 from Gol.gg's First Pick mark) and blind / response only from the pick-order engine
+  (`engineReader` over `lib/top-draft.ts`; Top only so far, other roles show none and the Blind filter is disabled).
+  On Top the engine's usage label ("Often blinded", "Picked into …") replaces the blind count. Views Recommended | First rotation | Blind picks |
   Pro priority. Recommended order is pool first, then first-rotation picks, role picks, presence: real counts, no score
   shown. After any lock the normal order applies; the counts stay labels (First rotation, Blind, Pro priority, with
   filters) and bring in eligible champions who already play the role, never moving another row or passing the saved-bot

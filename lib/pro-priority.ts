@@ -14,6 +14,7 @@
 // bans recorded; pick rate = picks / games; ban rate = games banned / games with bans recorded; win rate = wins / picks.
 // Bans are champion-wide. Role picks come from the role each game page records, or from a table's verified role picks.
 import { comparePatchDesc } from "./evidence";
+import { turnOf } from "./top-draft";
 import { patchLabel, shortPatch } from "./patch";
 import { ROLES, type Meta, type MetaStat, type ProDraft, type ProGame, type ProGames, type Role } from "./schema";
 
@@ -127,7 +128,8 @@ export const LOW_PICKS = 5;
 export const SMALL_SAMPLE = 20; // games: below this a patch is marked as a small sample and no move is called a trend
 
 const fullBans = (g: ProGame) => g.blue.bans.length === 5 && g.red.bans.length === 5;
-const hasOrder = (g: ProGame) => !!g.blue.pickOrder && !!g.red.pickOrder;
+// Order needs both teams' pick order and the side that picked first (not always blue since 2026; lib/top-draft.ts).
+const hasOrder = (g: ProGame) => !!g.blue.pickOrder && !!g.red.pickOrder && !!g.firstPick;
 
 export function inScope(c: Contribution, d: PriorityData, s: Scope): boolean {
   if (s.patch && c.patch !== patchKey(s.patch)) return false;
@@ -199,12 +201,12 @@ export function bucket(d: PriorityData, s: Scope): Bucket {
           if (!r.latest || g.date > r.latest.date || (g.date === r.latest.date && !r.latest.picked)) r.latest = { date: g.date, game: g.id, event: g.event, picked: true };
         }
         if (ordered) g[side].pickOrder!.forEach((id, i) => {
-          const o = row(id).order;
+          const o = row(id).order, turn = turnOf(i, g.firstPick === side);
           o.known += 1;
-          if (side === "blue" && i === 0) o.firstPick += 1;
-          if ((side === "blue" && i === 0) || (side === "red" && i < 2)) o.firstRotation += 1;
-          if (i >= 3) o.phase2 += 1;
-          if (side === "red" && i === 4) o.lastPick += 1;
+          if (turn === 1) o.firstPick += 1;
+          if (turn <= 3) o.firstRotation += 1;
+          if (turn >= 7) o.phase2 += 1;
+          if (turn === 10) o.lastPick += 1;
         });
       }
       if (!bansOk) continue;

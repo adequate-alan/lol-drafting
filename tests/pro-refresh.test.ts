@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parseChampionTable, parseFullstats, parseGamePage, parseMatchlist } from "@/scripts/golgg/parse.mjs";
-import { buildGame, championResolver, isComplete, seriesProblems } from "@/scripts/golgg/normalize.mjs";
+import { buildGame, championResolver, firstPickOf, isComplete, seriesProblems } from "@/scripts/golgg/normalize.mjs";
 import { refresh, urls, type Get } from "@/scripts/golgg/refresh.mjs";
 import { draftsFromGames, freshness, gameSourceId, resultsFromGames, sourcesFromGames, stageLabel } from "@/lib/pro-games";
 import { Files, type ProGames } from "@/lib/schema";
@@ -78,6 +78,23 @@ describe("Gol.gg parsers", () => {
     const played = t.rows.filter((r) => (r.picks ?? 0) + (r.bans ?? 0) > 0);
     expect(played.reduce((n, r) => n + r.picks!, 0)).toBe(390);
     expect(t.rows.find((r) => r.name === "Nocturne")).toMatchObject({ picks: 2, bans: 36, wins: 2, losses: 0 });
+  });
+});
+
+describe("first pick (draft order since 2026)", () => {
+  // Real Gol.gg pages: the "First Pick" mark sits on red in three of these four games, so blue is never assumed.
+  it.each([["83452", "red"], ["83540", "red"], ["83541", "red"], ["83542", "blue"]])("game %s: %s picked first", (id, side) => {
+    const page = parseGamePage(fixture(`game-${id}-game.html`));
+    expect(firstPickOf(page)).toBe(side);
+    const other = side === "blue" ? "red" : "blue";
+    expect(page[side as "blue"]?.pickGroups).toEqual([1, 2, 2]);
+    expect(page[other as "blue"]?.pickGroups).toEqual([2, 2, 1]);
+  });
+  it("is left unset when the mark is missing or the turns do not match the draft", () => {
+    const page = parseGamePage(fixture("game-83542-game.html"));
+    expect(firstPickOf({ ...page, blue: { ...page.blue, firstPick: false } })).toBeUndefined();
+    expect(firstPickOf({ ...page, red: { ...page.red, firstPick: true } })).toBeUndefined();
+    expect(firstPickOf({ ...page, blue: { ...page.blue, pickGroups: [2, 2, 1] } })).toBeUndefined();
   });
 });
 

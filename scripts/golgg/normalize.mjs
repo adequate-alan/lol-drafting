@@ -20,6 +20,20 @@ export function championResolver(champions) {
 }
 
 /**
+ * Which side picked first, from the game page: the side whose Picks row carries Gol.gg's "First Pick" mark. Since 2026 the
+ * team with first pick is not always blue, so it is read per game, never assumed. Accepted only when exactly one side is
+ * marked and the turns Gol.gg draws match the draft (1 | 2 | 2 for the first-picking team, 2 | 2 | 1 for the other).
+ * Returns "blue", "red" or undefined.
+ */
+export function firstPickOf(page) {
+  const marked = ["blue", "red"].filter((c) => page[c]?.firstPick);
+  if (marked.length !== 1) return undefined;
+  const first = marked[0], second = first === "blue" ? "red" : "blue";
+  const turns = (c) => (page[c]?.pickGroups ?? []).join();
+  return turns(first) === "1,2,2" && turns(second) === "2,2,1" ? first : undefined;
+}
+
+/**
  * One game record from a parsed page-game and page-fullstats. Returns { game } or { problems }.
  * `expect` = { tournament, event, seriesId, teams?: [a, b] } from the match list the game was found through.
  */
@@ -56,6 +70,7 @@ export function buildGame(id, page, stats, expect, resolve, checkedOn) {
     need(bans.length <= 5, `${color} side: ${bans.length} bans`);
     sides[color] = { team: p.team, picks, bans: bans.map((x) => x.id).filter(Boolean), pickOrder: drafted, result: p.result };
   }
+  const firstPick = firstPickOf(page);
   if (sides.blue && sides.red) {
     need(sides.blue.team !== sides.red.team, "both sides name the same team");
     need((sides.blue.result === "WIN") !== (sides.red.result === "WIN"), "result is not one win and one loss");
@@ -72,7 +87,7 @@ export function buildGame(id, page, stats, expect, resolve, checkedOn) {
     game: {
       id, event: expect.event, tournament: page.tournament, seriesId: expect.seriesId, series: page.series, game: page.game,
       stage: page.stage, date: page.date, patch: page.patch, blue: side(sides.blue), red: side(sides.red),
-      winner: sides.blue.result === "WIN" ? "blue" : "red", url: gameUrl(id), rolesUrl: gameUrl(id, "page-fullstats"), checkedOn,
+      winner: sides.blue.result === "WIN" ? "blue" : "red", ...(firstPick ? { firstPick } : {}), url: gameUrl(id), rolesUrl: gameUrl(id, "page-fullstats"), checkedOn,
     },
   };
 }
@@ -150,7 +165,8 @@ export function isComplete(series, today) {
 
 /**
  * The pick order of an already stored game, from its re-read game page: each side's picks as the page lists them (that
- * team's draft order). Returns { blue, red } or { problems } when the page does not show the same teams, picks and bans.
+ * team's draft order) and, when the page marks it clearly, which side picked first (`firstPick`). Returns
+ * { blue, red, firstPick? } or { problems } when the page does not show the same teams, picks and bans.
  */
 export function pickOrderFor(game, page, resolve) {
   const problems = [];
@@ -165,5 +181,7 @@ export function pickOrderFor(game, page, resolve) {
     if (bans.join() !== g.bans.join()) { problems.push(`${color} side bans differ from the stored game`); continue; }
     out[color] = drafted;
   }
-  return problems.length ? { problems } : out;
+  if (problems.length) return { problems };
+  const first = firstPickOf(page);
+  return first ? { ...out, firstPick: first } : out;
 }

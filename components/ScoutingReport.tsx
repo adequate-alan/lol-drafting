@@ -199,9 +199,11 @@ function GameList({ games, role, names }: { games: ProGame[]; role: Role; names:
   );
 }
 
-export function ScoutingReport({ item, names, sources, events, draftLabels, proposed = [], proCount, games = [], bot = [], shells = [] }: {
+export function ScoutingReport({ item, names, sources, events, draftLabels, proposed = [], proCount, games = [], bot = [], shells = [], only }: {
   item: CardRecord; names: Names; sources: Sources; events: EventMap; draftLabels?: Record<string, string>;
   proposed?: ProposedLink[]; proCount?: ProCount; games?: ProGame[]; bot?: BotPairing[]; shells?: CompShell[];
+  /** Top tab (components/TopDraft.tsx): one part of a top or proposed report, without its header, inside a report tab. */
+  only?: "synergy" | "pro";
 }) {
   // A proposed bot for a support that the bot's own saved record does not list says so: the bot's record decides.
   const noteFor = (l: ProposedLink) => {
@@ -209,6 +211,26 @@ export function ScoutingReport({ item, names, sources, events, draftLabels, prop
     const rec = bot.find((b) => b.champion === l.id);
     return rec ? `not in ${names[l.id]}'s saved supports` : undefined;
   };
+  if (item.kind === "proposed" && only) {
+    return only === "synergy" ? (
+      <>
+        {item.confirmed.length > 0 && (
+          <Section layer="clash" title="Saved synergy" end={<span className="faint">from your saved records</span>}>
+            <SBox>{item.confirmed.map((g) => <Group key={g.label} title={g.label}><ChipList ids={g.ids} names={names} role={g.role} strong /></Group>)}</SBox>
+          </Section>
+        )}
+        <Section layer="clash" proposed title="Proposed synergy" end={<ProposedTag />}>
+          {item.identity && <p className="prop-identity">{item.identity}</p>}
+          <ProposedGroups links={item.links} names={names} proCount={proCount} noteFor={noteFor} />
+        </Section>
+        <CompShells shells={shells} id={item.id} role={item.role} names={names} />
+      </>
+    ) : (
+      <Section layer="pro" title="Pro pairings">
+        <GameList games={games} role={item.role} names={names} />
+      </Section>
+    );
+  }
   if (item.kind === "proposed") {
     return (
       <article className="panel pick-card scout">
@@ -291,6 +313,29 @@ export function ScoutingReport({ item, names, sources, events, draftLabels, prop
   }
   const r = item.record;
   const s = item.stats;
+  if (only === "synergy") return (
+    <>
+      <Section layer="clash" title="Synergy">
+        <SBox>
+          <Group title="Best jungle partners"><ChipList ids={r.surrounding.jungle} names={names} role="JUNGLE" /></Group>
+          <Group title="Best mids"><ChipList ids={r.surrounding.mid} names={names} role="MID" /></Group>
+          {r.surrounding.botShapes.length > 0 && <Group title="Bot shapes"><Shapes list={r.surrounding.botShapes} names={names} /></Group>}
+        </SBox>
+      </Section>
+      <ProposedSection links={proposed} names={names} proCount={proCount} />
+      <CompShells shells={shells} id={r.champion} role="TOP" names={names} />
+    </>
+  );
+  if (only === "pro") return (
+    <>
+      <Section layer="pro" title="Pro pairings">
+        <ProTable list={r.observedProPairings} names={names} sources={sources} events={events} role="JUNGLE" partnerLabel="Jungle" draftLabels={draftLabels} />
+        <ProShapes list={r.observedBotShapes} names={names} anchor={r.champion} draftLabels={draftLabels} />
+        <Read text={r.playoffRead} />
+      </Section>
+      <SourcesSection ids={allSources(r.sources, r.observedProPairings, r.observedBotShapes)} sources={sources} />
+    </>
+  );
   return (
     <article className="panel pick-card scout">
       <Header role="TOP" id={r.champion} name={names[r.champion]} identities={r.identities}>

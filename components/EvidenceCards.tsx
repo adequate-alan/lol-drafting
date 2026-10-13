@@ -188,9 +188,9 @@ function MetaEvidenceBody({ s, n, pinned, pin }: { s: StartingPick; n: (id: stri
         <dt>First rotation</dt>
         <dd>{s.ordered ? <><span className="mono">{s.firstRotation} of {s.ordered}</span> recorded {role.toLowerCase()} picks were in the team&apos;s first three picks</> : "No pick order recorded"}</dd>
         <dt>First overall</dt>
-        <dd>{s.firstOverall == null ? "Not verifiable yet: needs which side picked first" : <span className="mono">{s.firstOverall} of {s.games.length}</span>}</dd>
+        <dd>{s.firstOverall == null ? "Not verifiable: the game page doesn't mark which team picked first" : <span className="mono">{s.firstOverall} of {s.games.length}</span>}</dd>
         <dt>Blind / response</dt>
-        <dd>{s.blind == null ? "Not classified yet: needs the interleaved draft order"
+        <dd>{s.blind == null ? (s.role === "TOP" ? "No game where it can be told apart (order or role unclear)" : "Only top picks are classified so far")
           : <><span className="mono">{s.blind}</span> blind · <span className="mono">{s.response}</span> response{unclassified ? <> · <span className="mono">{unclassified}</span> unclassified</> : null}</>}</dd>
       </dl>
       {shown.length > 0 && <ol className="pe-games">{shown.map((g) => <MetaGame key={g.draftId} g={g} s={s} n={n} />)}</ol>}

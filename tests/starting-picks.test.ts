@@ -8,8 +8,9 @@ import { poolTier } from "@/lib/counters";
 import { savedSupports } from "@/lib/recommend";
 import { priorityData, priorityMarks } from "@/lib/pro-priority";
 import {
-  defaultPatch, FIRST_ROTATION, hasStart, rotationLabel, sortForView, startingOrder, startingPicks, type PickReader, type StartingPick,
+  defaultPatch, engineReader, FIRST_ROTATION, hasStart, rotationLabel, sortForView, startingOrder, startingPicks, type PickReader, type StartingPick,
 } from "@/lib/starting-picks";
+import { roleBook, topSelections } from "@/lib/top-draft";
 import { ROLES, type ProGame, type ProGames, type Role } from "@/lib/schema";
 
 const prio = getPriority(), pool = getPool(), file = getProGames(), data = getDraftData();
@@ -225,5 +226,35 @@ describe("saved synergy unchanged", () => {
     for (const role of ROLES) startOf(role);
     expect(JSON.stringify([data.botPairings, data.midJungle, data.topPicks, data.pool])).toBe(before);
     expect(data.botPairings.find((b) => b.champion === "corki")!.clashDefault).toEqual(["nami"]);
+  });
+});
+
+describe("pick-order engine (lib/top-draft.ts)", () => {
+  const records = prio.contributions.flatMap((c) => c.records);
+  const reader = engineReader(records, data.champions);
+  it("Top blind / response come from the engine's First Pick reconstruction, never the side", () => {
+    const rows = startingPicks(prio, pool, "TOP", PATCH, { reader }).rows;
+    const sel = topSelections(records.filter((g) => g.patch === PATCH), roleBook(data.champions, records));
+    for (const r of rows) {
+      const mine = sel.filter((s) => s.champion === r.champion);
+      const blind = mine.filter((s) => s.usage === "blind").length, resp = mine.filter((s) => s.usage === "response").length;
+      expect(r.blind ?? 0, r.champion).toBe(blind);
+      expect(r.response ?? 0, r.champion).toBe(resp);
+    }
+    expect(rows.some((r) => (r.blind ?? 0) > 0)).toBe(true);
+  });
+
+  it("first overall is turn 1 of the team marked First Pick, whichever side it is on", () => {
+    const g = records.find((x) => x.firstPick === "red" && x.red.pickOrder)!;
+    const id = g.red.pickOrder![0], role = ROLES.find((r) => g.red.picks[r] === id)!;
+    expect(reader(g, "red", role)!.firstOverall).toBe(true);
+    const blueFirst = ROLES.find((r) => g.blue.picks[r] === g.blue.pickOrder![0])!;
+    expect(reader(g, "blue", blueFirst)!.firstOverall).toBe(false);
+    const unmarked: ProGame = { ...g, firstPick: undefined };
+    expect(reader(unmarked, "blue", "JUNGLE")?.firstOverall).toBeUndefined();
+  });
+
+  it("other roles are not classified blind / response", () => {
+    for (const r of startingPicks(prio, pool, "MID", PATCH, { reader }).rows) expect(r.blind).toBeNull();
   });
 });
