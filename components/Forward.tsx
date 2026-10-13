@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { BASE_PATH } from "@/lib/site";
+import { SYNERGIES_ROLE_KEY, sessionStore, storedSynergiesRole, synergiesNavHref } from "@/lib/synergy-nav";
 
 // A static host can't send a server redirect, so a page forwards itself. The inline script runs as the HTML parses and
 // keeps the query (?champ=, ?role=) and hash; the effect covers client navigation; <noscript> falls back to a refresh.
@@ -33,6 +34,23 @@ export function LegacyMidJungle({ jungleOnly }: { jungleOnly: string[] }) {
       <script dangerouslySetInnerHTML={{ __html: script }} />
       <noscript><meta httpEquiv="refresh" content={`0;url=${BASE_PATH}/synergies/mid/`} /></noscript>
       <p className="small muted">Opening <Link href="/synergies/mid/">Champion Synergies: Mid</Link>…</p>
+    </>
+  );
+}
+
+// /synergies/ (and the old /first-pick/) open the role being researched: Draft Room's highlighted role or the last
+// Synergies tab in this browser tab, Top otherwise (lib/synergy-nav.ts). The query and hash are kept.
+export function ForwardSynergies() {
+  const script = `(function(){var r;try{r=(sessionStorage.getItem(${JSON.stringify(SYNERGIES_ROLE_KEY)})||"").toLowerCase()}catch(e){}`
+    + `var t=["top","jungle","mid","bot","support"].indexOf(r)>=0?r:"top";location.replace(${JSON.stringify(BASE_PATH + "/synergies/")}+t+"/"+location.search+location.hash)})()`;
+  useEffect(() => {
+    window.location.replace(BASE_PATH + synergiesNavHref(storedSynergiesRole(sessionStore())) + window.location.search + window.location.hash);
+  }, []);
+  return (
+    <>
+      <script dangerouslySetInnerHTML={{ __html: script }} />
+      <noscript><meta httpEquiv="refresh" content={`0;url=${BASE_PATH}/synergies/top/`} /></noscript>
+      <p className="small muted">Opening <Link href="/synergies/top/">Champion Synergies</Link>…</p>
     </>
   );
 }

@@ -14,6 +14,7 @@ import type { DrawerData } from "@/lib/data";
 import { PageHeader } from "@/components/ui";
 import type { EventMap } from "@/lib/evidence";
 import { TAB_ROLE, TABS, type Tab } from "./synergy-tabs";
+import { noteSynergiesRole } from "@/lib/synergy-nav";
 import { poolTierRank, sortBotPicks, sortMidJunglePicks } from "@/lib/synergy-order";
 import { proGames } from "@/lib/pool-stats";
 import { proposedCard, proposedPartners, shownPartners } from "@/lib/proposed";
@@ -99,6 +100,8 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
   const extra = selected && selected.kind !== "proposed" && selectedId && selectedRole ? shownPartners(records, selectedId, selectedRole, bot) : [];
   const myGames = selectedId && selectedRole ? games.filter((g) => g.picks[selectedRole] === selectedId) : [];
   const proCount = (partner: string, partnerRole: Role) => myGames.filter((g) => g.picks[partnerRole] === partner).length;
+  // The tab on screen is the role being researched: the sidebar's Synergies link comes back here (lib/synergy-nav.ts).
+  useEffect(() => { noteSynergiesRole(TAB_ROLE[tab]); }, [tab]);
   const q = query.trim().toLowerCase();
   const shown = q ? list.filter((x) => `${x.label} ${x.sub}`.toLowerCase().includes(q)) : list;
   // Keep the selected pick in view inside the rail (without scrolling the page) when arriving from a link.

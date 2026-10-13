@@ -25,6 +25,7 @@ import { CounterTrigger, MetaEvidenceTrigger, ProEvidenceTrigger, type ProCtx } 
 import { Select } from "./Select";
 import { Popover } from "./Popover";
 import { AUTO_BUILDS_KEY, MY_ROLE_KEY, buildsEntry, draftQuery, markOwnQuery, myBuildsHref, opensBuilds, parseRole } from "@/lib/my-role";
+import { noteDraftRole, restoredDraftRole, sessionStore } from "@/lib/synergy-nav";
 import { ChampIcon, ChampionRow, WarningBadge, type Severity } from "./ui";
 import { scrollBehavior } from "@/lib/motion";
 import { rovingIndex, rovingKeys } from "./roving";
@@ -134,11 +135,16 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   const update = (next: Draft, nextEnemy = enemy, nextPatch = chosenPatch) => {
     setDraft(next);
     setEnemy(nextEnemy);
+    writeUrl(next, nextEnemy, nextPatch, focus);
+  };
+  const writeUrl = (next: Draft, nextEnemy: (string | undefined)[], nextPatch: string | undefined, nextFocus: Role | undefined) => {
     const q = new URLSearchParams();
     ROLES.forEach((r) => next[r] && q.set(r.toLowerCase(), next[r]!));
     const vs = enemyParam(enemyDraftOf(nextEnemy));
     if (vs) q.set("vs", vs);
     if (nextPatch) q.set("patch", patchLabel(nextPatch));
+    // The role tab the user chose, so a refresh or Back keeps it (only while that role is open).
+    if (nextFocus && !next[nextFocus]) q.set("focus", nextFocus.toLowerCase());
     // window.location keeps the GitHub Pages base path; usePathname() would drop it. Marked as the room's own write so
     // the page keeps this room (components/views/DraftRoomView.tsx).
     markOwnQuery(q.toString());
@@ -198,6 +204,23 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   const active: Role | undefined = focus && open.includes(focus) ? focus
     : [...(partnered.length ? partnered : open)].sort((a, b) => topScore(b) - topScore(a))[0];
   const activeRows = active ? unified[active] ?? [] : [];
+  // Back on an empty board in this tab (the sidebar's Draft Room link): highlight the role left highlighted (read before
+  // the effect below records this render's role).
+  useEffect(() => {
+    const r = restoredDraftRole(sessionStore(), { urlFocus: initialFocus, emptyBoard: !Object.values(initial).some(Boolean) && !Object.values(initialEnemy).some(Boolean) });
+    if (r && r !== initialFocus) setFocus(r);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  // Synergies navigation follows the highlighted role (lib/synergy-nav.ts), never My Role.
+  useEffect(() => { if (active) noteDraftRole(active); }, [active]);
+  // A chosen tab goes in the room's URL; the first render already matches it.
+  const focusWritten = useRef(focus);
+  useEffect(() => {
+    if (focusWritten.current === focus) return;
+    focusWritten.current = focus;
+    writeUrl(draft, enemy, chosenPatch, focus);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focus]);
   // Nothing locked: only the starting views apply, each in its own order (real counts, lib/starting-picks.ts).
   const startView: StartView = START_FILTERS.some((f) => f.key === filter) ? filter as StartView : "all";
   const viewFilter: Filter = started ? filter : startView;

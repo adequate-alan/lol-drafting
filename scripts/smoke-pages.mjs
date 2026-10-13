@@ -51,9 +51,11 @@ for (const path of ["/pool", "/meta", "/synergies/bot"]) {
   const res = await open(path);
   check(`no-slash URL ${path}`, res.status() === 200 && !!(await h1()), `${res.status()} -> ${page.url()}`);
 }
-// Champion Synergies (First Pick until 2026-10-10): the index forwards to Bot; old /first-pick/ links keep working, query included.
+// Champion Synergies (First Pick until 2026-10-10): the index forwards to the role being researched, Top in a fresh tab
+// session (lib/synergy-nav.ts); old /first-pick/ links keep working, query included.
+await page.evaluate(() => sessionStorage.clear());
 // The combined Mid / Jungle tab (until 2026-10-12) forwards to the champion's own role tab.
-for (const [from, to] of [["/synergies/", "/synergies/bot/"], ["/first-pick/", "/synergies/bot/"], ["/first-pick/support/", "/synergies/support/"],
+for (const [from, to] of [["/synergies/", "/synergies/top/"], ["/first-pick/", "/synergies/top/"], ["/first-pick/support/", "/synergies/support/"],
   ["/first-pick/mid-jungle/?champ=fizz&role=MID", "/synergies/mid/?champ=fizz&role=MID"], ["/synergies/mid-jungle/?champ=vi&role=JUNGLE", "/synergies/jungle/?champ=vi&role=JUNGLE"],
   ["/synergies/mid-jungle/?champ=sejuani", "/synergies/jungle/?champ=sejuani"], ["/synergies/mid-jungle/", "/synergies/mid/"]]) {
   await open(from);
@@ -89,6 +91,35 @@ for (const target of navTargets) {
   await page.waitForFunction((l) => document.querySelector("main h1")?.textContent?.trim() === l, title, { timeout: 8000 }).catch(() => {});
   const u = new URL(page.url());
   check(`nav click ${label}`, u.pathname.startsWith(new URL(base).pathname + "/") && (await h1()) === title, page.url());
+}
+
+// Synergies navigation follows Draft Room's highlighted role, never "I'm playing" (alan, 2026-10-13)
+{
+  await page.evaluate(() => { localStorage.setItem("draft-room:my-role", "BOT"); sessionStorage.clear(); });
+  await open("/?top=aatrox&focus=jungle");
+  const side = () => page.locator(".nav a", { hasText: "Synergies" }).first();
+  await page.waitForFunction(() => document.querySelector(".nav a[href*='/synergies/jungle']"), null, { timeout: 5000 }).catch(() => {});
+  check("synergies nav: highlighted Jungle (playing Bot) links Jungle", /\/synergies\/jungle\/$/.test((await side().getAttribute("href")) ?? ""), await side().getAttribute("href"));
+  await page.locator(".role-tab.role-MID").first().click();
+  await page.waitForFunction(() => document.querySelector(".nav a[href*='/synergies/mid']"), null, { timeout: 5000 }).catch(() => {});
+  check("synergies nav: switching the Draft Room tab to Mid updates the link and the URL", /\/synergies\/mid\/$/.test((await side().getAttribute("href")) ?? "") && page.url().includes("focus=mid"), page.url());
+  await page.reload({ waitUntil: "networkidle" });
+  check("synergies nav: refresh keeps the highlighted Mid tab", (await page.locator(".role-tab.role-MID.active").count()) === 1, page.url());
+  await side().click();
+  await page.waitForURL(/\/synergies\/mid\//, { timeout: 8000 }).catch(() => {});
+  check("synergies nav: the sidebar opens Mid Synergies", new URL(page.url()).pathname.endsWith("/synergies/mid/"), page.url());
+  await page.locator("nav.tabs a", { hasText: "Support" }).click();
+  await page.waitForURL(/\/synergies\/support\//, { timeout: 8000 }).catch(() => {});
+  await page.waitForTimeout(300);
+  check("synergies nav: a manual tab switch is kept", new URL(page.url()).pathname.endsWith("/synergies/support/") && /\/synergies\/support\/$/.test((await side().getAttribute("href")) ?? ""), page.url());
+  await page.locator(".nav a", { hasText: "Draft Room" }).first().click();
+  await page.waitForFunction(() => document.querySelector("main h1")?.textContent?.trim() === "Draft Room", null, { timeout: 8000 }).catch(() => {});
+  await page.waitForFunction(() => document.querySelector(".nav a[href*='/synergies/mid']"), null, { timeout: 5000 }).catch(() => {});
+  check("synergies nav: back in Draft Room the highlighted Mid tab returns and leads the link", (await page.locator(".role-tab.role-MID.active").count()) === 1 && /\/synergies\/mid\/$/.test((await side().getAttribute("href")) ?? ""), page.url());
+  check("synergies nav: My Role is untouched", (await page.evaluate(() => localStorage.getItem("draft-room:my-role"))) === "BOT", "");
+  await open("/synergies/jungle/?champ=vi");
+  check("synergies nav: an explicit role URL is respected", new URL(page.url()).pathname.endsWith("/synergies/jungle/") && (await h1()) === "Champion Synergies", page.url());
+  await page.evaluate(() => { localStorage.removeItem("draft-room:my-role"); sessionStorage.clear(); });
 }
 
 // Filters in the URL
