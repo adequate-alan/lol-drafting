@@ -13,7 +13,7 @@ import { metaHref, patchStats } from "@/lib/drawer";
 import { comparePatchDesc, describeLine, groupObserved } from "@/lib/evidence";
 import { patchLabel } from "@/lib/patch";
 import { PARTNER_ROLE } from "@/lib/pool-stats";
-import { LOW_PICKS, orderRead } from "@/lib/pro-priority";
+import { LOW_PICKS, orderText } from "@/lib/pro-priority";
 import { ROLES } from "@/lib/schema";
 
 export function ProTab({ env }: { env: DrawerEnv }) {
@@ -49,7 +49,7 @@ export function ProTab({ env }: { env: DrawerEnv }) {
                   <dt>Roles</dt><dd className="tnum">{r && r.picks ? (r.roleVerified ? ROLES.filter((x) => r.rolePicks[x]).map((x) => `${roleName(x)} ${r.rolePicks[x]}`).join(" · ") : r.namedRoles.map(roleName).join(" / ") || "not recorded") : "—"}</dd>
                   <dt>Blue / red</dt><dd className="tnum">{r && r.picks && r.sideKnown ? `${r.blue} / ${r.red}` : "—"}</dd>
                   {stats.teams.length > 0 && <><dt>Teams</dt><dd className="tnum">{stats.teams.slice(0, 6).map((t) => `${t.team} ${t.picks}${t.wins ? ` (${t.wins}W)` : ""}`).join(", ")}{stats.teams.length > 6 && ` +${stats.teams.length - 6}`}</dd></>}
-                  {stats.order && <><dt>Pick order</dt><dd className="tnum">first rotation {stats.order.firstRotation} of {stats.order.known} · second phase {stats.order.phase2}{orderRead(stats.order) ? ` · ${orderRead(stats.order)}` : ""}</dd></>}
+                  {stats.order && <><dt>Pick order</dt><dd className="tnum">{orderText(stats.order)}</dd></>}
                   <dt>Sample</dt><dd className="tnum">{stats.events.map((e) => `${e.short} ${e.games} games${e.table ? " (Gol.gg table)" : ""}`).join(" · ")}</dd>
                 </dl>
               </div>

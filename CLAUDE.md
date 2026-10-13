@@ -55,7 +55,9 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   it (`pickOrder`, stored by the daily refresh, backfilled once per game), never rebuilt from the lineup; first rotation
   = each team's first three picks, six per game, before the second ban phase (alan, 2026-10-13, site-wide; Top draft
   usage and Draft Room starting picks use the same definition); first pick, second rotation and last pick read the
-  first-picking team per game (`firstPick`, not always blue since 2026). Patches show Riot's 26.xx (`patchLabel`; data keeps Gol.gg's 16.xx). Shown in the champion drawer
+  first-picking team per game (`firstPick`, not always blue since 2026). The order read ("usually picked early / late") is descriptive: `ORDER_READ` in
+  `lib/pro-priority.ts` (5 ordered picks, early ≥ 80% first rotation, late ≥ 60% second), always shown with its fraction
+  (`orderText`, "8/10 first rotation (80%)"), and never a blind-safety, counter or meta-priority claim. Patches show Riot's 26.xx (`patchLabel`; data keeps Gol.gg's 16.xx). Shown in the champion drawer
   (history chart, per-patch table) and as a "Pro priority · N%" label in the Draft Room when presence ≥ 30% on the
   newest patch and the champion has picks in that role: a label and a filter only, never a score, never an order.
 - **Top draft usage** (alan, 2026-10-13; `lib/top-draft.ts`, `lib/top-blind.ts`, `components/TopDraft.tsx`,

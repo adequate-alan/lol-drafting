@@ -11,7 +11,7 @@ import { Select } from "@/components/Select";
 import { ChampIcon, LayerBlock, SectionHeader, SourceLinks, pct } from "@/components/ui";
 import { shortDate } from "@/lib/evidence";
 import {
-  PRIORITY_SORTS, SMALL_SAMPLE, bucket, championHistory, forRole, orderRead, patchLabel, patchesOf, previousPatch, priorityChanges,
+  PRIORITY_SORTS, SMALL_SAMPLE, bucket, championHistory, forRole, orderText, patchLabel, patchesOf, previousPatch, priorityChanges,
   rolePicksOf, rolesOf, sortRows, supportingGames, teamsFor,
   type Bucket, type HistoryPoint, type Move, type PriorityData, type PriorityRow, type PrioritySort, type RoleTab,
 } from "@/lib/pro-priority";
@@ -255,7 +255,6 @@ function PriorityDetail({ r, b, data, patchIndex, tournaments, names, sources }:
 }) {
   const games = supportingGames(b, r.id);
   const teams = teamsFor(b, r.id);
-  const read = orderRead(r.order);
   const history = championHistory(data, r.id, tournaments);
   const tableSources = b.contributions.filter((c) => c.kind === "table").flatMap((c) => c.sources);
   return (
@@ -264,8 +263,7 @@ function PriorityDetail({ r, b, data, patchIndex, tournaments, names, sources }:
         <p className="small tnum">{r.picks} pick{r.picks === 1 ? "" : "s"} + {r.bans} ban{r.bans === 1 ? "" : "s"} = {r.present} of {b.banGames} games · presence {r.presence != null ? pct(r.presence) : "—"}{r.winRate != null && <> · {r.wins}W {r.picks - r.wins}L</>}</p>
         {teams.length > 0 && <p className="xs muted">Picked by {teams.slice(0, 6).map((t) => `${t.team} ${t.picks}`).join(", ")}{teams.length > 6 ? ` +${teams.length - 6}` : ""}</p>}
         {r.order.known > 0 && (
-          <p className="xs muted tnum">Pick order ({r.order.known} ordered picks): first pick {r.order.firstPick} · first rotation {r.order.firstRotation} · second phase {r.order.phase2} · last pick {r.order.lastPick}
-            {read && <> · {read === "early" ? "usually an early pick" : read === "late" ? "usually saved for later" : "taken early and late"}</>}</p>
+          <p className="xs muted tnum">Pick order: {orderText(r.order)} · first pick {r.order.firstPick} · second rotation {r.order.phase2} · last pick {r.order.lastPick}</p>
         )}
         {history.length > 1 && <PriorityHistory points={history} />}
         {history.length > 1 && <p className="xs muted">Patch notes {patchLabel(history[0].patch)}–{patchLabel(history.at(-1)!.patch)}: <PatchTags id={r.id} index={patchIndex} from={history[0].patch} to={history.at(-1)!.patch} empty="no official change" /></p>}

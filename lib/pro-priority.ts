@@ -284,13 +284,27 @@ export function sortRows(rows: PriorityRow[], key: PrioritySort, role?: Role): P
 
 // ---------- draft order ----------
 
-/** A read of when a champion is taken, from recorded pick order only. Undefined below three ordered picks. */
+/** Thresholds for the pick-order read (alan, 2026-10-13), kept here so they can be revisited as Worlds data grows.
+ *  Six of ten picks are first rotation, so "early" and "late" need a clear lean past that 60 / 40 split, and a read
+ *  needs `minPicks` ordered picks; below that only the counts show. */
+export const ORDER_READ = { minPicks: 5, early: 0.8, late: 0.6 } as const;
+
+/** A descriptive read of when a champion is taken, from recorded pick order only. It says when pros picked it, never
+ *  that it is a safe blind pick, a counter or a meta priority. Undefined below `ORDER_READ.minPicks` ordered picks. */
 export function orderRead(o: OrderStats): "early" | "late" | "mixed" | undefined {
-  if (o.known < 3) return undefined;
-  // Six of ten picks are first rotation, so "early" and "late" need a clear lean past that 60 / 40 split.
-  if (o.firstRotation / o.known >= 0.8) return "early";
-  if (o.phase2 / o.known >= 0.6) return "late";
+  if (o.known < ORDER_READ.minPicks) return undefined;
+  if (o.firstRotation / o.known >= ORDER_READ.early) return "early";
+  if (o.phase2 / o.known >= ORDER_READ.late) return "late";
   return "mixed";
+}
+
+export const ORDER_READ_LABEL = { early: "usually picked early", late: "usually picked late", mixed: "picked early and late" } as const;
+
+/** "8/10 first rotation (80%)", then the read when the sample allows one, so every label shows its fraction. */
+export function orderText(o: OrderStats): string {
+  const read = orderRead(o);
+  const share = `${o.firstRotation}/${o.known} first rotation (${Math.round((o.firstRotation / o.known) * 100)}%)`;
+  return read ? `${share} · ${ORDER_READ_LABEL[read]}` : o.known < ORDER_READ.minPicks ? `${share} · too few picks to read` : share;
 }
 
 // ---------- patch-over-patch ----------
