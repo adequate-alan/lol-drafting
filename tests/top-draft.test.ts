@@ -43,8 +43,10 @@ describe("draft order", () => {
     const page = parseGamePage(fixture("game-83540-game.html"));
     const stored = records.find((g) => g.id === 83540)!;
     const got = pickOrderFor(stored, page, resolve);
-    expect(got.problems).toBeUndefined();
+    if (got.problems) throw new Error(got.problems.join("; "));
+    expect(got.firstPick).toBe("red");
     expect(firstPickOf(page)).toBe("red");
+    expect([stored.blue.pickOrder, stored.red.pickOrder, stored.firstPick]).toEqual([got.blue, got.red, "red"]);
     const g = { ...stored, blue: { ...stored.blue, pickOrder: got.blue }, red: { ...stored.red, pickOrder: got.red }, firstPick: "red" as const };
     const tops = topSelections([g], book);
     const jdg = tops.find((s) => s.team === "JD Gaming")!, navi = tops.find((s) => s.team !== "JD Gaming")!;
