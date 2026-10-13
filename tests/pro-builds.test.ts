@@ -354,4 +354,39 @@ describe("refresh step", () => {
     await refresh({ ...data(), proBuilds: out.proBuilds }, spy, { now: new Date("2026-10-16T12:00:00Z"), buildsOnly: true });
     expect(asked.length).toBeGreaterThan(0);
   });
+
+  it("a partial record (stats before the timeline) is re-read after a few days and replaced only by a fuller answer", async () => {
+    // Gol.gg's answer for a fresh game: the stats without skill order or purchase events.
+    const partial = [answer[0].map((p: Record<string, unknown>) => ({ ...p, skillorder: "" })), []];
+    const serve = (body: unknown): Get => async (url) => (url === buildUrl ? JSON.stringify(body) : url.includes("/page-game/") ? read("tests/fixtures/golgg/game-83452-game.html") : recorder().get(url));
+    const first = await refresh(data(), serve(partial), { now: new Date("2026-10-12T12:00:00Z"), buildsOnly: true });
+    expect(first.proBuilds.builds).toHaveLength(10);
+    const yorick = first.proBuilds.builds.find((b) => b.player === "Xiaoxu")!;
+    expect(yorick.skills).toBeUndefined();
+    expect(yorick.missing).toEqual(["skill order", "purchase timeline"]);
+    expect(first.proBuilds.unavailable).toEqual([]);
+    // The next day nothing is asked.
+    const asked: string[] = [];
+    const spy = (body: unknown): Get => async (url, init) => { asked.push(url); return serve(body)(url, init); };
+    const next = await refresh({ ...data(), proBuilds: first.proBuilds, buildAssets: first.buildAssets }, spy(partial), { now: new Date("2026-10-13T12:00:00Z"), buildsOnly: true });
+    expect(asked).toEqual([]);
+    expect(next.changed).toEqual([]);
+    // Three days on, the same partial answer keeps the stored builds (checked today, so it waits again); nothing is filled in.
+    const still = await refresh({ ...data(), proBuilds: first.proBuilds, buildAssets: first.buildAssets }, spy(partial), { now: new Date("2026-10-15T12:00:00Z"), buildsOnly: true });
+    expect(asked.filter((u) => u === buildUrl)).toHaveLength(10);
+    expect(still.proBuilds.builds.find((b) => b.player === "Xiaoxu")).toMatchObject({ missing: ["skill order", "purchase timeline"], checkedOn: "2026-10-15" });
+    expect(still.report.some((l) => /completed/.test(l))).toBe(false);
+    // Once Gol.gg has the timeline, the fuller answer replaces the partial builds.
+    const full = await refresh({ ...data(), proBuilds: first.proBuilds, buildAssets: first.buildAssets }, serve(answer), { now: new Date("2026-10-15T12:00:00Z"), buildsOnly: true });
+    expect(full.proBuilds.builds).toHaveLength(10);
+    expect(full.proBuilds.builds.find((b) => b.player === "Xiaoxu")).toMatchObject({ skills: "QEWQQRQEQEREEWWRWW", checkedOn: "2026-10-15" });
+    expect(full.proBuilds.builds.find((b) => b.player === "Xiaoxu")!.missing).toBeUndefined();
+    expect(full.changed).toContain("pro-builds");
+    expect(full.report.some((l) => /1 partial game completed/.test(l))).toBe(true);
+    // A game older than three weeks is left as recorded.
+    const old = { ...data(), proBuilds: first.proBuilds, buildAssets: first.buildAssets };
+    asked.length = 0;
+    await refresh(old, spy(answer), { now: new Date("2026-11-20T12:00:00Z"), buildsOnly: true });
+    expect(asked).toEqual([]);
+  });
 });

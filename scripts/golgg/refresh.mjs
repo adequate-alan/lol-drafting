@@ -183,10 +183,15 @@ function confirmClaims(sources, game, botPairings, today, rejected) {
 // ---------- Pro Builds ----------
 // Each recorded game of a tracked tournament gets every player's build once (11 requests: the game page for player
 // ids, then one build answer per player). A run takes at most `maxBuildGames` games so a backfill spreads over days.
-// A game Gol.gg has no builds for is noted in `unavailable` and asked again after RETRY_DAYS.
+// A game Gol.gg has no builds for is noted in `unavailable` and asked again after RETRY_DAYS. Gol.gg also publishes a
+// fresh game's stats before its timeline (skill order, purchases), so a game whose stored builds name a missing field
+// is asked again after RETRY_DAYS, for PARTIAL_WINDOW_DAYS from its date; the stored builds are replaced only when
+// the new answer leaves fewer fields missing. Nothing is ever filled in.
 export const MAX_BUILD_GAMES = 45;
 const RETRY_DAYS = 3;
+const PARTIAL_WINDOW_DAYS = 21;
 const daysBetween = (a, b) => (Date.parse(b) - Date.parse(a)) / 86400000;
+const missingCount = (builds) => builds.reduce((n, b) => n + (b.missing?.length ?? 0), 0);
 
 /**
  * `only`: fetch builds for exactly these game records instead of the tracked tournaments' games (a one-off archive
@@ -198,14 +203,19 @@ export async function refreshBuilds(data, get, today, maxBuildGames, { only } = 
   const report = [], rejected = [], changed = new Set();
   const resolve = championResolver(data.champions);
   const tracked = new Set(data.proGames.tracked.map((t) => t.event));
-  const have = new Set(proBuilds.builds.map((b) => b.game));
+  const stored = new Map();
+  for (const b of proBuilds.builds) stored.set(b.game, [...(stored.get(b.game) ?? []), b]);
+  const have = new Set(stored.keys());
   const waiting = new Map(proBuilds.unavailable.map((u) => [u.game, u]));
   const allGames = [...data.proGames.games, ...(proBuilds.games ?? [])];
-  const todo = (only ?? data.proGames.games.filter((g) => tracked.has(g.event))).filter((g) => !have.has(g.id)
-    && !(waiting.has(g.id) && daysBetween(waiting.get(g.id).checkedOn, today) < RETRY_DAYS));
+  // A recorded game with a missing field is re-read while Gol.gg may still complete it (a game without a date is not).
+  const partial = (g) => have.has(g.id) && missingCount(stored.get(g.id)) > 0 && daysBetween(g.date, today) <= PARTIAL_WINDOW_DAYS
+    && daysBetween(stored.get(g.id).reduce((d, b) => (b.checkedOn > d ? b.checkedOn : d), ""), today) >= RETRY_DAYS;
+  const todo = (only ?? data.proGames.games.filter((g) => tracked.has(g.event))).filter((g) => partial(g) || (!have.has(g.id)
+    && !(waiting.has(g.id) && daysBetween(waiting.get(g.id).checkedOn, today) < RETRY_DAYS)));
   const batch = todo.slice(0, maxBuildGames);
 
-  let added = 0;
+  let added = 0, completed = 0;
   for (const g of batch) {
     const players = parsePlayers(await get(gameUrl(g.id)));
     const fresh = [], problems = [];
@@ -225,6 +235,15 @@ export async function refreshBuilds(data, get, today, maxBuildGames, { only } = 
         fresh.push(built.build ?? { ...who, missing: ["build"] });
       }
     }
+    if (have.has(g.id)) {
+      // Re-read of a partial record: the stored builds stand unless the new answer is more complete; either way the
+      // game was checked today, so it waits RETRY_DAYS before the next read.
+      const old = stored.get(g.id);
+      const better = !problems.length && missingCount(fresh) < missingCount(old);
+      if (better) { proBuilds.builds = proBuilds.builds.filter((b) => b.game !== g.id); proBuilds.builds.push(...fresh); completed += 1; }
+      for (const b of better ? fresh : old) b.checkedOn = today;
+      continue;
+    }
     if (problems.length || !fresh.some((b) => !b.missing?.includes("build"))) {
       rejected.push(`Builds for ${g.series} game ${g.game} (${gameUrl(g.id, "page-builds")}): ${problems.join("; ") || "no build data on Gol.gg yet"}`);
       waiting.set(g.id, { game: g.id, checkedOn: today, reason: problems.join("; ") || "no build data yet" });
@@ -239,6 +258,8 @@ export async function refreshBuilds(data, get, today, maxBuildGames, { only } = 
   proBuilds.builds.sort((a, b) => (order.get(a.game) ?? 0) - (order.get(b.game) ?? 0) || a.side.localeCompare(b.side) || ROLES.indexOf(a.role) - ROLES.indexOf(b.role));
   proBuilds.unavailable = [...waiting.values()].sort((a, b) => a.game - b.game);
   if (added) { report.push(`Pro builds: ${added} game${added > 1 ? "s" : ""} added (${proBuilds.builds.length} player builds stored).`); changed.add("pro-builds"); }
+  if (completed) { report.push(`Pro builds: ${completed} partial game${completed > 1 ? "s" : ""} completed with fields Gol.gg has since published.`); changed.add("pro-builds"); }
+  if (!same(proBuilds.builds, data.proBuilds?.builds ?? [])) changed.add("pro-builds");
   if (todo.length > batch.length) report.push(`Pro builds: ${todo.length - batch.length} more game${todo.length - batch.length > 1 ? "s" : ""} left for the next run.`);
   if (!same(proBuilds.unavailable, data.proBuilds?.unavailable ?? [])) changed.add("pro-builds");
 
