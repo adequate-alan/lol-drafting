@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { getProDrafts, getProGames, getSources } from "@/lib/data";
-import { gameKey, golggGameId, pairRows, sideOf, withGameSides } from "@/lib/draft-side";
+import { gameKey, golggGameId, groupGames, pairRows, sideOf, withGameSides } from "@/lib/draft-side";
 import type { ProDraft } from "@/lib/schema";
 
 const drafts = getProDrafts();
@@ -70,6 +70,23 @@ describe("Pro Drafts rows", () => {
     const team = drafts.find((d) => d.side)!.team;
     const rows = pairRows(drafts.filter((d) => d.team === team));
     expect(rows.every((r) => r.pair === "" && r.side === sideOf(r.d))).toBe(true);
+  });
+
+  // One game is one visual unit (alan, 2026-10-13): two opposing drafts under a shared game label.
+  it("groups both sides of a game into one unit, blue first, and keeps every row's side under a filter", () => {
+    const all = groupGames(drafts);
+    expect(all.length).toBeGreaterThan(0);
+    for (const g of all) {
+      expect(g.rows.length).toBe(g.paired ? 2 : 1);
+      for (const r of g.rows) { expect(gameKey(r.d)).toBe(g.key); expect(r.side).toBe(sideOf(r.d)); }
+      if (g.paired) { expect(g.rows[0].d.opponent).toBe(g.rows[1].d.team); if (g.rows[0].side !== "none") expect(g.rows.map((r) => r.side)).toEqual(["blue", "red"]); }
+    }
+    expect(all.filter((g) => g.paired).length).toBeGreaterThan(0);
+    expect(all.flatMap((g) => g.rows.map((r) => r.d.id))).toEqual(pairRows(drafts).map((r) => r.d.id));
+    const team = drafts.find((d) => d.side === "red")!.team;
+    const one = groupGames(drafts.filter((d) => d.team === team));
+    expect(one.every((g) => !g.paired && g.rows.length === 1 && g.rows[0].d.team === team)).toBe(true);
+    expect(one.some((g) => g.rows[0].side === "red")).toBe(true);
   });
 
   it("the listing order does not decide the side", () => {

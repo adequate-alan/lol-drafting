@@ -51,3 +51,18 @@ export function withGameSides(drafts: ProDraft[], sources: Record<string, Source
     return { ...d, side, won: g.winner === side, date: d.date ?? game?.date };
   });
 }
+
+export type GameGroup = { key: string; rows: PairedRow[]; paired: boolean };
+
+/** The visible rows as games (alan, 2026-10-13: a game is one visual unit holding two opposing drafts). A paired game
+ *  holds its blue row then its red row; a game with one visible side (a team or champion filter) is a one-row group that
+ *  keeps its game identity and its recorded side. Order follows the rows (newest game first). */
+export function groupGames(rows: ProDraft[]): GameGroup[] {
+  const groups: GameGroup[] = [];
+  for (const r of pairRows(rows)) {
+    const last = groups.at(-1);
+    if (r.pair === "pair-b" && last?.rows[0].pair === "pair-a" && last.rows.length === 1) { last.rows.push(r); last.paired = true; continue; }
+    groups.push({ key: gameKey(r.d), rows: [r], paired: false });
+  }
+  return groups;
+}

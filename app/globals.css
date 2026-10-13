@@ -51,7 +51,7 @@
   --control-h: 30px;
   --control-h-sm: 24px;
   --mini-h: 50px;
-  --icon-xs: 20px; --icon-sm: 24px; --icon-md: 32px; --icon-ml: 36px; --icon-lg: 48px; --icon-xl: 52px; --icon-xxl: 60px;
+  --icon-xs: 20px; --icon-sm: 24px; --icon-row: 28px; --icon-md: 32px; --icon-ml: 36px; --icon-lg: 48px; --icon-xl: 52px; --icon-xxl: 60px;
   --avatar-xl: 104px; --avatar-hero: 144px; --r-avatar: 6px; /* a player's portrait in their profile header; smaller avatars use the icon sizes */
 
   /* Motion (alan, 2026-10-12): one system for the whole site. Smooth is not the same as animated: hover, selection and
@@ -355,9 +355,11 @@ h3 { font-size: var(--fs); font-weight: var(--w-strong); letter-spacing: -.005em
 .badge.success { color: var(--success); background: var(--success-subtle); }
 .badge.outline { background: transparent; border-color: var(--border-strong); }
 /* Result tag: the W / L after a team or game. One letter, tinted text on a faint tint, the row height unchanged. */
-.res { display: inline-block; margin-left: var(--s1); padding: 0 4px; border-radius: var(--r-sm); font-family: var(--font-mono); font-size: var(--fs-2xs); font-weight: var(--w-strong); line-height: 16px; vertical-align: 1px; }
-.res.win { color: var(--success); background: var(--success-subtle); }
-.res.loss { color: var(--danger); background: var(--danger-subtle); }
+/* W / L after a team name: muted green / red, readable at one size, a fixed box so results align down a column. */
+.res { display: inline-grid; place-items: center; flex: none; min-width: 18px; height: 18px; margin-left: var(--s2); padding: 0 4px; border-radius: var(--r-sm); font-family: var(--font-mono); font-size: var(--fs-xs); font-weight: var(--w-strong); line-height: 1; vertical-align: 1px; }
+.res.win { color: var(--success); background: var(--success-subtle); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--success) 25%, transparent); }
+.res.loss { color: var(--danger); background: var(--danger-subtle); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--danger) 25%, transparent); }
+.team-line .res { margin-left: 0; }
 /* Pro evidence and "plain" metadata are text, not pills */
 .badge.pro, .badge.plain { height: auto; padding: 0; background: none; border: 0; font-weight: var(--w-control); font-size: var(--fs-xs); }
 .badge.pro { color: var(--pro); }
@@ -1773,22 +1775,75 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
   .priority-changes { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* ===== Pro Drafts: both sides of one game read as a block (real same-game pairs only, never zebra striping).
-   A thin side strip marks each team; a stronger rule closes each pair. Hover and selection still win. ===== */
-tr.pair-a td { background: var(--surface-subtle); border-bottom-color: transparent; }
-tbody tr.pair-b:not(:last-child) td { border-bottom-color: var(--border-strong); }
-/* Recorded draft side: a 3px strip on the row's first cell (box-shadow, so no layout shift); neutral when unrecorded. */
-tr.side-blue td:first-child { box-shadow: inset 3px 0 0 var(--team-blue); }
-tr.side-red td:first-child { box-shadow: inset 3px 0 0 var(--team-red); }
-tr.side-none td:first-child { box-shadow: inset 3px 0 0 var(--border-strong); }
-/* Ten columns outgrow a laptop: the game column stays put while the picks scroll */
-.drafts-table td:first-child, .drafts-table th:first-child { position: sticky; left: 0; z-index: 1; background: var(--surface); }
-.drafts-table th:first-child { z-index: 3; background: var(--surface-subtle); }
-.drafts-table tbody tr:hover td:first-child { background: var(--surface-hover); }
-/* The sticky game cell stays opaque on the selected row (dark mode's accent-subtle is translucent). */
-.drafts-table tr.selected td:first-child { background: linear-gradient(var(--accent-subtle), var(--accent-subtle)), var(--surface); }
-tbody tr.pair-a:hover td, tbody tr.pair-b:hover td { background: var(--surface-hover); }
-tr.pair-a.selected td, tr.pair-b.selected td { background: var(--accent-subtle); }
+/* ===== Pro Drafts match browser (alan, 2026-10-13): one game is one unit. Each <tbody class="game-rows"> holds a
+   game's blue row then its red row under one shared game cell (rowspan); a game shown from one side keeps that cell.
+   Side strips sit on the team cell, W / L after the team name, a stronger rule between games, none inside one. ===== */
+.drafts-table { --row-h: 40px; --drafts-game-col: 164px; --drafts-team-col: 168px; }
+.drafts-table th, .drafts-table td { padding: var(--s2) var(--s4); }
+/* Game and team columns stay put while the five picks scroll on narrow screens. */
+.drafts-table .game-cell, .drafts-table .team-cell { position: sticky; z-index: 1; background: var(--surface); }
+.drafts-table .game-cell { left: 0; width: var(--drafts-game-col); min-width: var(--drafts-game-col); max-width: var(--drafts-game-col); vertical-align: middle; }
+.drafts-table .team-cell { left: var(--drafts-game-col); width: var(--drafts-team-col); min-width: var(--drafts-team-col); max-width: var(--drafts-team-col); }
+.drafts-table th.game-cell, .drafts-table th.team-cell { z-index: 3; background: var(--surface-subtle); }
+.drafts-table .game-cell .cell-link { display: grid; gap: 1px; min-width: 0; white-space: normal; }
+.drafts-table .game-name { font-family: var(--font-display); font-size: var(--fs-sm); line-height: 1.2; }
+.drafts-table .game-meta-line { font-weight: 400; line-height: 1.3; }
+.drafts-table .team-cell { font-family: var(--font-display); font-weight: var(--w-strong); }
+.team-line { display: flex; align-items: center; gap: var(--s3); min-width: 0; }
+.team-line .team-name { flex: 0 1 auto; min-width: 0; }
+.team-vs { display: block; font-family: var(--font); font-weight: 400; line-height: 1.3; }
+/* Recorded draft side: a 3px strip on the team cell (box-shadow, so no layout shift); neutral when unrecorded. */
+.drafts-table tr.side-blue .team-cell { box-shadow: inset 3px 0 0 var(--team-blue); }
+.drafts-table tr.side-red .team-cell { box-shadow: inset 3px 0 0 var(--team-red); }
+.drafts-table tr.side-none .team-cell { box-shadow: inset 3px 0 0 var(--border-strong); }
+/* Picks: the same portrait size and gap in every cell; the role sits in the header, never repeated in rows. */
+.drafts-table .pick-cell { min-width: 150px; }
+.drafts-table .pick-cell .cell-champ { gap: var(--s3); font-size: var(--fs); }
+.drafts-table .pick-cell .champ { --size: var(--icon-row); border-radius: var(--r-sm); }
+/* The two rows of a game connect: no rule between them, a stronger one after the game. */
+.drafts-table tbody.game-rows tr:not(:last-child) td { border-bottom-color: transparent; }
+.drafts-table tbody.game-rows tr:last-child td { border-bottom: 1px solid var(--border-strong); }
+.drafts-table tbody.game-rows:last-of-type tr:last-child td { border-bottom-color: transparent; }
+/* States: the whole game tints on hover, the open game is gold with a 1px rule on its game cell, and the row the
+   panel is named by (the team being inspected) carries the gold text. */
+.drafts-table tbody.game-rows:hover td { background: var(--surface-hover); }
+.drafts-table tbody.game-rows tr:hover .team-cell { background: var(--surface-sunken); }
+.drafts-table tbody.game-rows.selected td, .drafts-table tbody.game-rows.selected tr:hover td { background: linear-gradient(var(--accent-subtle), var(--accent-subtle)), var(--surface); }
+.drafts-table tbody.game-rows.selected .game-cell { box-shadow: inset 1px 0 0 var(--accent); }
+.drafts-table tbody.game-rows.selected tr.selected .team-name { color: var(--accent-text); }
+.drafts-table tr.selected td:first-child { box-shadow: none; }
+.drafts-table tr.selected td { background: transparent; }
+/* Filters: one height and one width for every menu, the game count quiet at the end. */
+.drafts-tools .select-trigger { min-width: 132px; }
+.drafts-tools .count { white-space: nowrap; }
+.pro-freshness.compact { margin-bottom: var(--s4); }
+.game-panel-meta .source-links { display: inline; }
+.game-panel-meta .source-links a { margin-left: var(--s2); }
+.game-team.inspecting .game-team-name { color: var(--accent-text); }
+/* Phones: a compact match view. The header row goes, each game is a block: game line, then each team as a line with
+   its name, result and five portraits (the name is in the hover card, drawer and icon tooltip). */
+@media (max-width: 760px) {
+  .drafts-table table, .drafts-table tbody, .drafts-table tr, .drafts-table td { display: block; }
+  .drafts-table thead { display: none; }
+  .drafts-table tbody.game-rows { padding: var(--s3) var(--s4) var(--s3); border-bottom: 1px solid var(--border-strong); }
+  .drafts-table tbody.game-rows:last-of-type { border-bottom: 0; }
+  .drafts-table tr { display: grid; grid-template-columns: minmax(0, 1fr) repeat(5, auto); align-items: center; gap: 0 var(--s2); }
+  .drafts-table td, .drafts-table th { height: auto; padding: 0; border: 0 !important; background: transparent !important; }
+  .drafts-table .game-cell, .drafts-table .team-cell, .drafts-table .pick-cell { position: static; width: auto; min-width: 0; max-width: none; }
+  .drafts-table .game-cell { grid-column: 1 / -1; padding-bottom: var(--s2); }
+  .drafts-table .game-cell .cell-link { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s1) var(--s3); }
+  .drafts-table .pick-cell .cell-champ { gap: 0; }
+  .drafts-table tr { gap: 0 var(--s3); }
+  .drafts-table .team-cell { padding: var(--s2) var(--s3); box-shadow: inset 3px 0 0 var(--border-strong); }
+  .drafts-table .pick-cell { padding: var(--s1) 0; }
+  .drafts-table .pick-cell .champ { --size: var(--icon-md); }
+  .drafts-table .pick-cell .cell-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .drafts-table tbody.game-rows.selected { background: var(--accent-subtle); box-shadow: inset 1px 0 0 var(--accent); }
+  .drafts-table tbody.game-rows:hover { background: var(--surface-hover); }
+  .drafts-tools .select-field { flex: 1 1 45%; min-width: 0; }
+  .drafts-tools .select-trigger { min-width: 0; width: 100%; }
+}
+
 .game-panel { margin-bottom: var(--s5); }
 .game-panel-head { align-items: center; min-height: 0; padding: var(--s4) var(--pad-card); }
 .game-panel-head .game-id { display: grid; gap: 2px; min-width: 0; }

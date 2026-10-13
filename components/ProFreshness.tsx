@@ -38,13 +38,23 @@ export function useLastRun(workflow: string, cacheKey: string) {
   return value;
 }
 
-export function ProFreshness({ items }: { items: Freshness[] }) {
+export function ProFreshness({ items, compact = false }: { items: Freshness[]; compact?: boolean }) {
   const checked = useLastRun("refresh-pro-data.yml", "pro-freshness-check");
   const updated = latest(items.map((i) => i.lastUpdate));
   const check = latest([...items.map((i) => i.lastCheck), checked]);
   const status = (i: Freshness) => i.status === "complete" ? "Completed" : "Ongoing";
   // Tracked events Gol.gg hasn't listed yet share one item instead of one "not on Gol.gg yet" each.
   const waiting = items.filter((i) => !i.listed);
+  const listed = items.filter((i) => i.listed);
+  const detail = [
+    ...listed.map((i) => `${i.label}: ${status(i).toLowerCase()}${i.games != null ? `, ${i.recorded} of ${i.games} games recorded` : ""}`),
+    ...(waiting.length ? [`Not on Gol.gg yet: ${waiting.map((i) => i.label).join(", ")}`] : []),
+    ...(check ? [`Last checked ${new Date(check).toLocaleString("en-US", { timeZone: "America/New_York", timeZoneName: "short" })}`] : []),
+  ].join("\n");
+  // Compact (Pro Drafts, alan 2026-10-13): one quiet line, with each tournament's status and the exact check in its tooltip.
+  if (compact) return (
+    <p className="pro-freshness compact xs muted"><span title={detail}>Data updated {day(updated) ?? "—"}{check ? ` · checked ${day(check)}` : ""}</span></p>
+  );
   return (
     <p className="pro-freshness xs muted">
       <span>Last updated: {day(updated) ?? "—"}</span>
