@@ -1,5 +1,8 @@
 "use client";
-// Pro Drafts: every recorded team-game, filterable, and one game open at a time for inspection (alan, 2026-10-12): the
+// Pro Drafts: a match browser (alan, 2026-10-13): every recorded game is one visual unit, two opposing drafts under a
+// shared game cell (blue row then red row, each with its own side strip and W / L), filterable, newest game first. A
+// game a filter shows from one side keeps its game cell and its recorded side. Read notes and Gol.gg sources live in
+// the open game, not the table. One game is open at a time for inspection (alan, 2026-10-12): the
 // open game shows both teams, their ten picks and bans, and each champion in it is a button that opens that player's
 // exact recorded build for that game in the same panel (components/GameBuild.tsx, the one build renderer the site has,
 // also used by Pro Builds and Pinned Players). The game is named by its Gol.gg game id and the build by the team row
@@ -17,8 +20,10 @@ import { Select } from "@/components/Select";
 import type { DrawerData } from "@/lib/data";
 import { ChampIcon, ChampionRow, PageHeader, SourceLinks } from "@/components/ui";
 import { ROLES, type ProDraft, type Role, type Source } from "@/lib/schema";
-import { pairRows, SIDE_LABEL } from "@/lib/draft-side";
+import { groupGames, SIDE_LABEL } from "@/lib/draft-side";
 import { patchLabel } from "@/lib/patch";
+import { shortDate } from "@/lib/evidence";
+import { gameKey } from "@/lib/draft-side";
 import { buildsHref, type BuildRow } from "@/lib/pro-builds";
 import { buildFor, buildParam, carryBuild, gameView, parseBuildParam } from "@/lib/pro-drafts-game";
 
@@ -44,10 +49,11 @@ const FILTER_KEYS = KEYS.filter((k) => k !== "id" && k !== "build");
 let loaded: Promise<BuildRow[]> | undefined;
 const load = () => (loaded ??= import("@/lib/pro-builds-bundle").then((m) => m.rows));
 
-export function ProDraftsView({ names, sources, all, freshness, drawerData, buildGames, events }: {
+export function ProDraftsView({ names, sources, all, freshness, drawerData, buildGames, events, shortNames }: {
   names: Record<string, string>; sources: Record<string, Source>; all: ProDraft[]; freshness: Freshness[]; drawerData: DrawerData;
   buildGames: number[]; // recorded games with Pro Builds (data/pro-builds.json)
   events: Record<string, string>; // meta.json event id -> short name, for the build header
+  shortNames: Record<string, string>; // tournament name -> short name, for the game cell
 }) {
   const params = useSearchParams();
   const router = useRouter();
@@ -69,8 +75,9 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
       options={[{ value: "", label: any }, ...options.map(([value, l]) => ({ value, label: l }))]} />
   );
   const active = FILTER_KEYS.filter((k) => f[k]).length;
-  // Both sides of one game sit together as a two-row block; each row's strip is that game's recorded side.
-  const ordered = pairRows(rows);
+  // One game is one unit: its blue row then its red row under a shared game cell; a one-sided view keeps the game cell.
+  const games = groupGames(rows);
+  const gameCount = new Set(all.map(gameKey)).size;
 
   // The open game and its open build. Choosing a champion changes only the build target, in place.
   const view = selected ? gameView(selected, all) : undefined;
@@ -92,18 +99,21 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
   const evName = (r: BuildRow) => events[r.game.event] ?? r.game.tournament;
 
   const meta = (d: ProDraft) => [d.tournament, !d.seriesGame.startsWith(d.stage) && d.stage, d.patch && `patch ${patchLabel(d.patch)}`, d.date].filter(Boolean).join(" · ");
+  // The game cell: stage and game number ("Finals G1", "Round 2 G3"), then tournament, patch and date, each once per game.
+  const gameLabel = (d: ProDraft) => { const n = /G\d+$/i.exec(d.seriesGame)?.[0]; return n && d.stage ? `${d.stage} ${n}` : d.seriesGame; };
+  const gameMeta = (d: ProDraft) => [shortNames[d.tournament] ?? d.tournament, d.patch && patchLabel(d.patch), d.date && shortDate(d.date)].filter(Boolean).join(" · ");
 
   return (
     <ChampionProvider data={drawerData} context={view?.gameId ? { page: "pro-drafts", game: view.gameId } : PRO_DRAFTS}>
       <PageHeader title="Pro Drafts" />
-      <ProFreshness items={freshness} />
+      <ProFreshness items={freshness} compact />
 
       {selected && view && (
         <section className="panel game-panel" aria-label={`${selected.team} vs ${selected.opponent}, ${selected.seriesGame}`}>
           <div className="panel-head game-panel-head">
             <div className="game-id">
               <h2>{selected.team} <span className="faint">vs</span> {selected.opponent}</h2>
-              <span className="small muted">{selected.seriesGame} · {meta(selected)}</span>
+              <span className="small muted game-panel-meta">{selected.seriesGame} · {meta(selected)} <SourceLinks ids={[...new Set(view.teams.flatMap((t) => t.d.sources))]} sources={sources} /></span>
             </div>
             <div className="end">
               <Link className="btn sm primary" href={`/?${new URLSearchParams(Object.fromEntries(ROLES.map((r) => [r.toLowerCase(), selected.picks[r]])))}`}>Open in Draft Room</Link>
@@ -112,7 +122,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
           </div>
           <div className="panel-body">
             {view.teams.map(({ d, side }) => (
-              <div key={d.id} className={`game-team side-${side}`}>
+              <div key={d.id} className={`game-team side-${side} ${target?.d.id === d.id ? "inspecting" : ""}`.trim()}>
                 <div className="game-team-head">
                   <span className="side-tag label" title={SIDE_LABEL[side]}>{side === "none" ? "Side not recorded" : side === "blue" ? "Blue side" : "Red side"}</span>
                   <b className="game-team-name">{d.team}</b>
@@ -156,38 +166,52 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
                 </div>
               ) : <p className="xs muted game-hint">Select a champion to see that player's exact build in this game: runes, items, skill order and summoner spells.</p>
             ) : <p className="xs muted game-hint">No builds recorded for this game.</p>}
-            <SourceLinks ids={[...new Set(view.teams.flatMap((t) => t.d.sources))]} sources={sources} />
           </div>
         </section>
       )}
 
-      <form className="toolbar" method="get">
+      <form className="toolbar drafts-tools" method="get">
         {sel("team", "Team", "All teams", uniq(all.map((d) => d.team)).map((t) => [t, t]))}
         {sel("champion", "Champion", "All champions", champions.map((c) => [c, names[c] ?? c]))}
         {sel("role", "Role", "Any role", ROLES.map((r) => [r, r]))}
-        {sel("tournament", "Tournament", "All", uniq(all.map((d) => d.tournament)).map((t) => [t, t]))}
+        {sel("tournament", "Tournament", "All tournaments", uniq(all.map((d) => d.tournament)).map((t) => [t, shortNames[t] ?? t]))}
         {sel("series", "Series", "All series", uniq(all.map(seriesOf)).map((x) => [x, x]))}
         <noscript><button className="btn primary sm" type="submit">Filter</button></noscript>
         {active > 0 && <Link className="btn sm ghost" href="/pro-drafts">Clear {active} filter{active > 1 ? "s" : ""}</Link>}
-        <span className="count">{rows.length} of {all.length} team-games</span>
+        <span className="count" title={`${rows.length} of ${all.length} team drafts`}>{games.length} of {gameCount} games</span>
       </form>
       <div className="table-wrap tall drafts-table">
         <table>
-          <thead><tr><th>Game</th><th>Team</th><th>vs</th>{ROLES.map((r) => <th key={r}><span className={`role-tag role-${r}`}>{r}</span></th>)}<th>Read</th><th>Source</th></tr></thead>
-          <tbody>
-            {ordered.map(({ d, pair, side }) => (
-              <tr key={d.id} className={`clickable side-${side} ${pair} ${d.id === f.id ? "selected" : ""}`.replace(/\s+/g, " ").trim()} title={SIDE_LABEL[side]} data-side={side} aria-selected={d.id === f.id}
-                onClick={(e) => { if ((e.target as HTMLElement).closest("a, button")) return; router.push(link(d)); }}>
-                <td><Link className="cell-link nowrap" href={link(d)}>{d.seriesGame}</Link></td>
-                <td className="nowrap">{d.team}{d.won != null && <span className={`res ${d.won ? "win" : "loss"}`} title={d.won ? "Won" : "Lost"}>{d.won ? "W" : "L"}</span>}</td>
-                <td className="muted nowrap">{d.opponent}</td>
-                {ROLES.map((r) => <td key={r}><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={d.picks[r] === f.champion} /></td>)}
-                <td className="xs wrap">{d.read}</td>
-                <td><SourceLinks ids={d.sources} sources={sources} /></td>
-              </tr>
-            ))}
-            {!rows.length && <tr><td colSpan={10} className="muted">No recorded game matches these filters.</td></tr>}
-          </tbody>
+          <thead><tr><th className="game-cell">Game</th><th className="team-cell">Team</th>{ROLES.map((r) => <th key={r}><span className={`role-tag role-${r}`}>{r}</span></th>)}</tr></thead>
+          {games.map((g) => {
+            const open = g.rows.some((r) => r.d.id === f.id);
+            return (
+              <tbody key={g.key} className={`game-rows ${open ? "selected" : ""}`.trim()} aria-label={`${g.rows[0].d.team} vs ${g.rows[0].d.opponent}, ${g.rows[0].d.seriesGame}`}>
+                {g.rows.map(({ d, pair, side }, i) => (
+                  <tr key={d.id} className={`clickable side-${side} ${pair} ${d.id === f.id ? "selected" : ""}`.replace(/\s+/g, " ").trim()} title={SIDE_LABEL[side]} data-side={side} aria-selected={d.id === f.id}
+                    onClick={(e) => { if ((e.target as HTMLElement).closest("a, button")) return; router.push(link(d)); }}>
+                    {i === 0 && (
+                      <td className="game-cell" rowSpan={g.rows.length}>
+                        <Link className="cell-link" href={link(d)} title={`${d.team} vs ${d.opponent} · ${d.seriesGame}`}>
+                          <span className="game-name truncate">{gameLabel(d)}</span>
+                          <span className="game-meta-line xs muted">{gameMeta(d)}</span>
+                        </Link>
+                      </td>
+                    )}
+                    <td className="team-cell">
+                      <span className="team-line">
+                        <span className="team-name truncate">{d.team}</span>
+                        {d.won != null && <span className={`res ${d.won ? "win" : "loss"}`} title={d.won ? "Won" : "Lost"}>{d.won ? "W" : "L"}</span>}
+                      </span>
+                      {!g.paired && <span className="team-vs xs muted truncate">vs {d.opponent}</span>}
+                    </td>
+                    {ROLES.map((r) => <td key={r} className="pick-cell"><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={d.picks[r] === f.champion} /></td>)}
+                  </tr>
+                ))}
+              </tbody>
+            );
+          })}
+          {!rows.length && <tbody><tr><td colSpan={7} className="muted">No recorded game matches these filters.</td></tr></tbody>}
         </table>
       </div>
     </ChampionProvider>

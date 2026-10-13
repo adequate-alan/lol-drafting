@@ -395,6 +395,16 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   which is not part of the daily refresh), neutral `--border-strong` when no side is recorded, with the side named on hover. The side comes from
   each game, never from team identity, listing order or which team is named first (`lib/draft-side.ts`,
   `tests/pro-sides.test.ts`); filters keep each row's side. Both sides of a game pair blue first.
+- **Pro Drafts match browser** (alan, 2026-10-13; `groupGames` in `lib/draft-side.ts`, `tests/pro-sides.test.ts`, smoke
+  "pro drafts"): one game is one visual unit. Each game is a `<tbody class="game-rows">` holding its blue row then its
+  red row under one shared game cell (`rowSpan`; stage and game number, then tournament short name, patch and date),
+  then the team cell (side strip, team name, W / L `.res` tag) and the five picks (28px `--icon-row` portraits, role
+  only in the header). No opponent, read or source columns: a game a filter shows from one side keeps its game cell and
+  says "vs Opponent" under the team; read notes and Gol.gg sources live in the open game's panel. A stronger rule
+  separates games, none sits inside one; the whole game tints on hover, the open game is gold, and the inspected
+  team's name is gold in the table and the panel. The toolbar counts games (team drafts in the tooltip) and the
+  freshness line is one compact line (`ProFreshness compact`, details in its tooltip). Below 760px the same markup
+  reflows into a match list (game line, two team lines with portraits only; names in the hover card and drawer).
 - **Pro Drafts game inspection** (alan, 2026-10-12; `lib/pro-drafts-game.ts`, `tests/pro-drafts-game.test.ts`): a row
   click (or its game link) opens the whole game in the panel above the table (`?id=`): both teams blue first, each with
   side strip, result, bans and five champion buttons (`gameView`; a stored draft whose other side is not stored shows
