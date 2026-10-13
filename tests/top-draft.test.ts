@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parseGamePage } from "@/scripts/golgg/parse.mjs";
 import { championResolver, firstPickOf, pickOrderFor } from "@/scripts/golgg/normalize.mjs";
-import { getBuildGameRecords, getChampions } from "@/lib/data";
+import { getBuildGameRecords, getChampions, getDraftData, getTopDraft, getTopPicks } from "@/lib/data";
 import type { ProGame } from "@/lib/schema";
 import {
   defaultTopPatch, dpmCounter, roleBook, rotationOf, topRows, topSelections, turnOf, usageCounts, type DPMRow, type TopSelection,
@@ -161,5 +161,52 @@ describe("per-champion rows", () => {
     const p = defaultTopPatch(all);
     expect(p).toBeDefined();
     for (const s of all) if (s.usage !== "uncertain") expect(s.turn).not.toBe(s.opponentTurn);
+  });
+});
+
+describe("recorded games (fixed Demacia / LCK facts, scoped to those games)", () => {
+  const all = topSelections(records, book);
+  const at = (game: number, team: string) => all.find((s) => s.game === game && s.team === team)!;
+
+  it("BNK FearX vs LGD game 2 (83454): Olaf blind at pick 4, Jax a response at pick 7, not called a counter", () => {
+    expect(at(83454, "BNK FearX")).toMatchObject({ champion: "olaf", usage: "blind", turn: 4, firstPicker: true });
+    expect(at(83454, "LGD Gaming")).toMatchObject({ champion: "jax", usage: "response", turn: 7 });
+    const jax = topRows(all, {}, getTopDraft().dpm).find((r) => r.champion === "jax")!;
+    const pair = jax.respondedInto.find((p) => p.into === "olaf")!;
+    expect(pair.games.map((g) => g.game)).toContain(83454);
+    expect(pair.status).not.toBe("supported");
+  });
+
+  it("keeps the game without a First Pick mark (83450) unclassified", () => {
+    expect(all.filter((s) => s.game === 83450).every((s) => s.usage === "uncertain")).toBe(true);
+  });
+
+  it("every classified selection names its Gol.gg game, both turns and the board it saw", () => {
+    for (const s of all.filter((x) => x.usage !== "uncertain")) {
+      expect(records.some((g) => g.id === s.game)).toBe(true);
+      expect(s.turn && s.opponentTurn).toBeTruthy();
+      expect(s.enemySeen.includes(s.opponentTop)).toBe(s.usage === "response");
+    }
+  });
+});
+
+describe("Draft Room and pages", () => {
+  it("never feeds the ranking: the candidate and recommendation code does not read top usage", () => {
+    for (const f of ["lib/candidates.ts", "lib/recommend.ts", "lib/counters.ts", "lib/evaluate.ts"])
+      expect(readFileSync(join(process.cwd(), f), "utf8")).not.toMatch(/top-draft|topUsage/);
+  });
+
+  it("ships usage marks for the default patch and never edits saved grades", () => {
+    const d = getDraftData();
+    expect(d.topUsage.patch).toBe(defaultTopPatch(topSelections(records, book)));
+    expect(Object.keys(d.topUsage.marks).length).toBeGreaterThan(5);
+    const before = JSON.parse(readFileSync(join(process.cwd(), "data/top.json"), "utf8"));
+    expect(getTopPicks().map((t) => t.blindGrade)).toEqual(before.map((t: { blindGrade: string }) => t.blindGrade));
+  });
+
+  it("keeps the kit read apart from pro evidence", () => {
+    const b = getTopDraft();
+    expect(b.blind.rumble?.length).toBeGreaterThan(0);
+    expect(JSON.stringify(b.blind)).not.toMatch(/pro|game|blinded/i);
   });
 });

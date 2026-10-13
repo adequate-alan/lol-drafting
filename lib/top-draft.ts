@@ -18,6 +18,7 @@ import { DPM_MIN_GAMES, DPM_MIN_WIN_RATE, DPM_STRONG_WIN_RATE } from "./counters
 import { comparePatchDesc } from "./evidence";
 import { patchKey } from "./patch";
 import { ROLES, type ProGame, type Role } from "./schema";
+import type { BlindLine } from "./top-blind";
 
 export type Side = "blue" | "red";
 export type Usage = "blind" | "response" | "uncertain";
@@ -247,3 +248,59 @@ export const responsePairs = (all: TopSelection[], scope: TopScope, dpm: DPMRow[
 /** One-line read of a row's counts, e.g. "Blind 6/9 · Response 3/9". */
 export const usageCounts = (r: Pick<TopRow, "blind" | "response" | "classified">) =>
   r.classified ? `Blind ${r.blind}/${r.classified} · Response ${r.response}/${r.classified}` : "No classifiable games";
+
+// ---------- page bundle (built at build time by lib/data.ts getTopDraft) ----------
+
+export interface GameBrief {
+  id: number; event: string; tournament: string; patch: string; date: string; series: string; gameNo: number; stage?: string;
+  firstPick?: Side; winner: Side; url: string;
+  blue: { team: string; order?: string[]; picks: Record<Role, string>; bans: string[] };
+  red: { team: string; order?: string[]; picks: Record<Role, string>; bans: string[] };
+}
+export interface PriorityBrief { presence: number | null; picks: number; bans: number; topPicks?: number; winRate: number | null; low: boolean }
+export interface TopDraftBundle {
+  selections: TopSelection[];
+  games: Record<number, GameBrief>;
+  players: Record<string, string>; // `${game}:${side}` -> the top laner's name, from the recorded builds
+  drafts: Record<string, string>; // `${game}:${side}` -> Pro Drafts draft id, when the game is listed there
+  priority: Record<string, { games: number; rows: Record<string, PriorityBrief> }>; // patch key ("all" for every patch)
+  dpm: DPMRow[]; // only the top-lane rows for matchups that occur in the recorded games
+  events: { id: string; short: string }[];
+  blind: Record<string, BlindLine[]>; // General Draft Logic (lib/top-blind.ts), never pro evidence
+}
+
+export const brief = (g: ProGame): GameBrief => ({
+  id: g.id, event: g.event, tournament: g.tournament, patch: g.patch, date: g.date, series: g.series, gameNo: g.game, stage: g.stage,
+  firstPick: g.firstPick, winner: g.winner, url: g.url,
+  blue: { team: g.blue.team, order: g.blue.pickOrder, picks: g.blue.picks, bans: g.blue.bans },
+  red: { team: g.red.team, order: g.red.pickOrder, picks: g.red.picks, bans: g.red.bans },
+});
+
+/** The ten picks of a game in draft order (turn 1-10), or undefined when the order or the first-pick side is unknown. */
+export function draftSequence(g: Pick<GameBrief, "firstPick" | "blue" | "red">): { turn: number; side: Side; champion: string; role?: Role }[] | undefined {
+  if (!g.firstPick || !g.blue.order || !g.red.order) return undefined;
+  const out = (["blue", "red"] as const).flatMap((side) => g[side].order!.map((champion, i) => ({
+    turn: turnOf(i, g.firstPick === side), side, champion, role: ROLES.find((r) => g[side].picks[r] === champion),
+  })));
+  return out.sort((a, b) => a.turn - b.turn);
+}
+
+// ---------- Draft Room (alan, 2026-10-13): labels only, never read by the ranking ----------
+
+export interface TopUsageMark {
+  usage: UsageLabel; blind: number; response: number; classified: number; games: number; low: boolean;
+  into: Record<string, { games: number; series: number; status: PairStatus }>; // responses into each enemy top
+}
+export interface TopUsageMarks { patch?: string; marks: Record<string, TopUsageMark>; blind: Record<string, BlindLine[]> }
+
+/** Per-champion top usage on one patch (the default: newest with enough classified games), for Draft Room labels. */
+export function topUsageMarks(sel: TopSelection[], dpm: DPMRow[], blind: Record<string, BlindLine[]>, patch = defaultTopPatch(sel)): TopUsageMarks {
+  const marks: Record<string, TopUsageMark> = {};
+  for (const r of topRows(sel, { patch }, dpm)) {
+    marks[r.champion] = {
+      usage: r.usage, blind: r.blind, response: r.response, classified: r.classified, games: r.games, low: r.low,
+      into: Object.fromEntries(r.respondedInto.map((p) => [p.into, { games: p.games.length, series: p.series, status: p.status }])),
+    };
+  }
+  return { patch, marks, blind };
+}

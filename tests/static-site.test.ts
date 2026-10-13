@@ -65,8 +65,9 @@ describe("static GitHub Pages export", () => {
     expect(ddragonKey("jarvan-iv", "Jarvan IV")).toBe("JarvanIV");
   });
 
-  it("keeps the v2 model out of the site except the Comp Check diagnosis, the needs in the ranking and the weekly comp discovery", () => {
-    const allowed = ["components/CompCheck.tsx", "lib/comp-summary.ts", "lib/recommend.ts", "lib/comp-discovery.ts"]; // comp-summary: the Comp Check line on phones
+  it("keeps the v2 model out of the site except the Comp Check diagnosis, the needs in the ranking, the weekly comp discovery and the top blind read", () => {
+    // comp-summary: the Comp Check line on phones; top-blind: the kit read beside top draft usage (General Draft Logic)
+    const allowed = ["components/CompCheck.tsx", "lib/comp-summary.ts", "lib/recommend.ts", "lib/comp-discovery.ts", "lib/top-blind.ts"];
     for (const f of source.filter((f) => !f.startsWith("lib/model-v2/") && !allowed.includes(f))) expect(read(f), f).not.toMatch(/model-v2/);
   });
 });

@@ -493,6 +493,26 @@ await page.locator(".theme-toggle").click();
   const conf = (await page.locator(".scout .layer.clash:not(.proposed)").first().textContent().catch(() => "")) ?? "";
   check("synergies: Support tab keeps Saved synergy (Nami with Corki) apart from Proposed", /Saved synergy/.test(conf) && /Corki/.test(conf) && (await page.locator(".scout .layer.clash.proposed").count()) === 1, conf.slice(0, 80));
 }
+// Top draft usage (alan, 2026-10-13): blind / response from the rebuilt draft order, matchups open their game in place,
+// saved grade and pro usage side by side, Draft Room labels only.
+{
+  await open("/synergies/top/?champ=jax&view=matchups&patch=26.18");
+  const head = (await page.locator(".top-report .scout-meta").textContent().catch(() => "")) ?? "";
+  check("top: header shows the saved grade beside observed usage", /Saved blind grade/.test(head) && /(Blind|Response) \d+\/\d+/.test(head), head.slice(0, 120));
+  await page.locator(".pair-list > li > button", { hasText: "Olaf" }).first().click();
+  await page.locator(".pair-list .top-games > li > button", { hasText: "LGD" }).first().click();
+  const game = (await page.locator(".top-game").first().textContent().catch(() => "")) ?? "";
+  check("top: Jax into Olaf opens BNK FearX vs LGD with first pick, both picks and no counter claim",
+    /BNK FearX.*picked first/.test(game) && /pick 7 of 10/.test(game) && (await page.locator(".top-game .draft-seq li").count()) === 10 && !/Supported counter/.test(game), game.slice(0, 160));
+  check("top: the open game links to its builds", (await page.locator(".top-game a[href*='/pro-builds/']").count()) === 2, "");
+  await page.locator(".top-use button", { hasText: "Response" }).click();
+  await page.waitForTimeout(300);
+  const rail = await page.locator(".pick-rail .rail-name").allTextContents();
+  check("top: Response filter keeps response-leaning tops (K'Sante) and drops Rumble", rail.some((n) => /Sante/.test(n)) && !rail.includes("Rumble"), rail.join(","));
+  await open("/?jungle=vi&focus=TOP&vs=top:rumble");
+  const sigs = (await page.locator(".fit-row .sig.usage").allTextContents()).join("|");
+  check("draft room: with the enemy top locked, TOP rows say what was picked into it", /Picked into Rumble · \d+/.test(sigs), sigs);
+}
 // Champion Synergies: hover card on desktop, drawer on click
 {
   await open("/synergies/bot/?champ=caitlyn");
