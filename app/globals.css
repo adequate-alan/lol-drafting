@@ -1371,6 +1371,12 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .sig.theory { color: var(--text-faint); }
 .sig.risk { color: var(--caution); }
 .sig.prio { color: var(--pro); opacity: .85; }
+.sig.rot, .sig.blind, .sig.meta { color: var(--pro); }
+.sig.tier { color: var(--text); }
+.sig.tier.out { color: var(--text-faint); font-weight: 400; }
+/* Pro meta scope: role, patch and the games behind the counts, one quiet line under the filters. */
+.fit-scope { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s2) var(--s4); padding: var(--s2) var(--s3); border-bottom: 1px solid var(--border); }
+.fit-divider { margin: 0; padding: var(--s3) var(--s3) var(--s1); border-top: 1px solid var(--border); }
 .fit-reason .drawback { color: var(--caution); }
 .fit-row.ref .name { color: var(--text-muted); }
 .fit-filters { flex: 0 1 auto; min-width: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }

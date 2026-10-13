@@ -1,14 +1,17 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { picksOf, profile, RULES, warnings, type Draft, type DraftWarning } from "@/lib/evaluate";
 import { teamNeeds, type Need, type Recommendation } from "@/lib/recommend";
-import { draftCandidates, hasSignal, type Candidate, type Filter } from "@/lib/candidates";
+import { draftCandidates, hasSignal, startingCandidates, type Candidate, type Filter } from "@/lib/candidates";
 import { ROLES, type Attr, type Role, type Source } from "@/lib/schema";
+import type { Tier } from "@/lib/pool-stats";
+import type { PriorityData } from "@/lib/pro-priority";
 import { describeLine } from "@/lib/evidence";
-import { patchLabel } from "@/lib/pro-priority";
-import { describeEvidence, describePro, enemyParam, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
+import { patchKey, patchLabel, patchesOf, priorityMarks } from "@/lib/pro-priority";
+import { blindLabel, defaultPatch, rotationLabel, sortForView, startLine, startingPicks, type StartView, type StartingPick } from "@/lib/starting-picks";
+import { describeEvidence, describePro, enemyParam, poolTier, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
 import { similarProDrafts, similarShells, type ProSuggestion, type SuggestData } from "@/lib/suggest";
 import type { DraftData, DrawerData } from "@/lib/data";
 import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
@@ -18,7 +21,8 @@ import { GenRang } from "./GenRang";
 import { PairingCard, type CardRecord } from "./PairingCard";
 import { proposedCard } from "@/lib/proposed";
 import { Disclosure } from "./Disclosure";
-import { CounterTrigger, ProEvidenceTrigger, type ProCtx } from "./EvidenceCards";
+import { CounterTrigger, MetaEvidenceTrigger, ProEvidenceTrigger, type ProCtx } from "./EvidenceCards";
+import { Select } from "./Select";
 import { Popover } from "./Popover";
 import { AUTO_BUILDS_KEY, MY_ROLE_KEY, buildsEntry, draftQuery, markOwnQuery, myBuildsHref, opensBuilds, parseRole } from "@/lib/my-role";
 import { ChampIcon, ChampionRow, WarningBadge, type Severity } from "./ui";
@@ -41,19 +45,29 @@ const STATUS = { default: "Preferred", alt: "Alt", fits: "Fits" } as const;
 const REC_LIMIT = 8; // picker and role-tab hints: the top of the draft-fit list
 const ROW_LIMIT = 12; // unified list rows shown before "Show all"
 const FILTERS: { key: Filter; label: string }[] = [
-  { key: "all", label: "All" }, { key: "synergy", label: "Synergy" }, { key: "pro", label: "Pro" }, { key: "fit", label: "Best fit" }, { key: "counter", label: "Counters" }, { key: "priority", label: "Priority" },
+  { key: "all", label: "All" }, { key: "synergy", label: "Synergy" }, { key: "pro", label: "Pro" }, { key: "fit", label: "Best fit" }, { key: "counter", label: "Counters" },
+  { key: "rotation", label: "First rotation" }, { key: "blind", label: "Blind" }, { key: "priority", label: "Pro priority" },
 ];
+// Before anything is locked: the pro meta starting picks and their own views (lib/starting-picks.ts).
+const START_FILTERS: { key: Filter & StartView; label: string }[] = [
+  { key: "all", label: "Recommended" }, { key: "rotation", label: "First rotation" }, { key: "blind", label: "Blind picks" }, { key: "priority", label: "Pro priority" },
+];
+const BLIND_OFF = "Blind or response needs the interleaved draft order (which side picked first), not recorded yet";
+const START_NOTE = "Before any pick: champions with recorded pro picks in this role on the patch. Your pool first (Core, Depth, Prepared / flex), "
+  + "then everyone else; each by first-rotation picks, then role picks, then presence. Real counts only, no score. "
+  + "Once a pick is locked the list orders by your saved pairings and comp fit, and these stay labels.";
 const enemyDraftOf = (list: (string | undefined)[]): EnemyDraft => Object.fromEntries(ROLES.flatMap((r, i) => (list[i] ? [[r, list[i]]] : [])));
 const ORDER_NOTE = "Order: your preferred pairing first, then comp fit (synergy with your picks, team needs, matchups and risks). "
-  + "Synergy, Pro, Counter and Pro priority are labels on each row; pro game counts, counters and presence never move a row. Ties go to the row with more signals.";
+  + "Synergy, Pro, Counter, First rotation and Pro priority are labels on each row; pro game counts, counters and presence never move a row. Ties go to the row with more signals.";
 
-export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, initialFocus, initialFilter = "all", metaPicks }: {
+export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, initialFocus, initialFilter = "all", initialPatch, metaPicks }: {
   data: DraftData;
   sources: Record<string, Source>;
   drawerData: DrawerData;
   initial: Draft;
   initialEnemy: EnemyDraft; // roles from ?vs=top:aatrox, or detected for bare ids
   initialFocus?: Role; initialFilter?: Filter; // restored on the way back from Pro Builds
+  initialPatch?: string; // ?patch=: the pro meta patch, when chosen
   metaPicks: Record<string, { picks: number; winRate: number; lowSample: boolean }>;
 }) {
   const [draft, setDraft] = useState<Draft>(initial);
@@ -69,6 +83,10 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   const [drawer, setDrawer] = useState<DrawerTarget>();
   const [pinned, setPinned] = useState(false);
   const [filter, setFilter] = useState<Filter>(initialFilter);
+  // Pro meta patch: the newest with usable pro evidence unless one is chosen (kept in the URL). Never combined.
+  const metaPatches = useMemo(() => patchesOf(drawerData.priority), [drawerData.priority]);
+  const [chosenPatch, setChosenPatch] = useState<string | undefined>(() => initialPatch && metaPatches.includes(patchKey(initialPatch)) ? patchKey(initialPatch) : undefined);
+  const roomPatch = chosenPatch ?? defaultPatch(drawerData.priority);
   // The slot locked last ("ally:BOT", "enemy:MID"): only it plays the lock acknowledgement.
   const [fresh, setFresh] = useState<string>();
   // My Role: the role I play, kept in this browser. Separate from the role being picked below.
@@ -109,13 +127,14 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
     return () => io.disconnect();
   }, []);
 
-  const update = (next: Draft, nextEnemy = enemy) => {
+  const update = (next: Draft, nextEnemy = enemy, nextPatch = chosenPatch) => {
     setDraft(next);
     setEnemy(nextEnemy);
     const q = new URLSearchParams();
     ROLES.forEach((r) => next[r] && q.set(r.toLowerCase(), next[r]!));
     const vs = enemyParam(enemyDraftOf(nextEnemy));
     if (vs) q.set("vs", vs);
+    if (nextPatch) q.set("patch", patchLabel(nextPatch));
     // window.location keeps the GitHub Pages base path; usePathname() would drop it. Marked as the room's own write so
     // the page keeps this room (components/views/DraftRoomView.tsx).
     markOwnQuery(q.toString());
@@ -135,17 +154,25 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
 
   // Everything read from the board is derived once per board change. Hovering a row, opening a card, switching the
   // filter or the role tab re-renders the room without re-ranking the roster (they were 70-160ms long tasks).
-  const { enemyIds, taken, picks, prof, warns, needs, enemyDraft, proAll, fits, counters, unified, recs, similar, shells } = useMemo(() => {
+  const { enemyIds, taken, picks, prof, warns, needs, enemyDraft, proAll, fits, counters, unified, starting, recs, similar, shells } = useMemo(() => {
     const enemyIds = enemy.filter((e): e is string => !!e);
     const picks = picksOf(draft, data.champions);
     const enemyDraft = enemyDraftOf(enemy);
+    // Pro meta starting picks for every open role on the room's patch: the list before any pick, labels after.
+    const taken = [...(Object.values(draft).filter(Boolean) as string[]), ...enemyIds];
+    const marks = roomPatch ? priorityMarks(drawerData.priority, roomPatch) : {};
+    const starting = Object.fromEntries(ROLES.filter((r) => !draft[r]).map((r) => [r, roomPatch
+      ? startingPicks(drawerData.priority, data.pool, r, roomPatch).rows.filter((s) => !taken.includes(s.champion)) : []])) as Partial<Record<Role, StartingPick[]>>;
     // One candidate list per open role (lib/candidates.ts). Pro pairings first: a support seen next to a locked pick in
     // pro games is read for fit even outside the locked bot's saved supports (eligible: false). `fits` is the eligible
     // draft-fit list: picker hints, tab hints, counters' fit rank.
-    const { pro: proAll, fits, counters, unified } = draftCandidates(draft, enemyDraft, data, sources);
+    const started = picks.length > 0 || enemyIds.length > 0;
+    const res = draftCandidates(draft, enemyDraft, { ...data, priority: marks }, sources, starting);
+    const { pro: proAll, fits, counters } = res;
+    const unified = started ? res.unified
+      : Object.fromEntries(Object.entries(starting).map(([r, rows]) => [r, startingCandidates(rows!, r as Role, marks)])) as typeof res.unified;
     return {
-      enemyIds, picks, enemyDraft, proAll, fits, counters, unified,
-      taken: [...(Object.values(draft).filter(Boolean) as string[]), ...enemyIds],
+      enemyIds, picks, enemyDraft, proAll, fits, counters, unified, starting, taken,
       prof: profile(draft, data.champions),
       warns: warnings(draft, data.champions),
       needs: picks.length ? teamNeeds(picks) : [],
@@ -153,7 +180,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
       similar: similarProDrafts(draft, data.proDrafts),
       shells: similarShells(draft, data.shells),
     };
-  }, [draft, enemy, data, sources]);
+  }, [draft, enemy, data, sources, roomPatch, drawerData.priority]);
   const proCtx: ProCtx = useMemo(() => ({ drafts: data.proDrafts, sources, enemy: enemyDraft, names }), [data.proDrafts, sources, enemyDraft, names]);
   const open = ROLES.filter((r) => !draft[r]);
   const lockedCount = ROLES.length - open.length;
@@ -162,18 +189,26 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
 
   // The role being picked: the one the user chose, else the open lane partner of a locked pick, else the open role
   // with the strongest fit.
-  const topScore = (r: Role) => recs[r]?.[0]?.score ?? -99;
+  const topScore = (r: Role) => recs[r]?.[0]?.score ?? (started ? -99 : -99 - ROLES.indexOf(r)); // nothing locked: Top first
   const partnered = open.filter((r) => PARTNER[r] && draft[PARTNER[r]!]);
   const active: Role | undefined = focus && open.includes(focus) ? focus
     : [...(partnered.length ? partnered : open)].sort((a, b) => topScore(b) - topScore(a))[0];
   const activeRows = active ? unified[active] ?? [] : [];
+  // Nothing locked: only the starting views apply, each in its own order (real counts, lib/starting-picks.ts).
+  const startView: StartView = START_FILTERS.some((f) => f.key === filter) ? filter as StartView : "all";
+  const viewFilter: Filter = started ? filter : startView;
   // A new role or filter starts collapsed again.
   const listKey = `${active}-${filter}`;
   const [shownFor, setShownFor] = useState(listKey);
   if (shownFor !== listKey) { setShownFor(listKey); setShowAll(false); }
   const activeCounters: RoleCounters | undefined = active ? counters[active] : undefined;
-  const shownRows = activeRows.filter((c) => hasSignal(c, filter));
-  const visibleRows = filter === "all" && !showAll ? shownRows.slice(0, ROW_LIMIT) : shownRows;
+  const shownRows = started ? activeRows.filter((c) => hasSignal(c, filter))
+    : active ? startingCandidates(sortForView(starting[active] ?? [], startView), active, roomPatch ? priorityMarks(drawerData.priority, roomPatch) : {}) : [];
+  const visibleRows = viewFilter === "all" && !showAll ? shownRows.slice(0, ROW_LIMIT) : shownRows;
+  // The first starting pick outside your pool gets a divider in the Recommended order.
+  const firstOut = !started && startView === "all" ? visibleRows.find((c) => !c.meta?.tier && visibleRows.some((x) => x.meta?.tier))?.champion : undefined;
+  const scope = roomPatch ? patchLabel(roomPatch) : undefined;
+  const choosePatch = (p: string) => { const next = p === defaultPatch(drawerData.priority) ? undefined : p; setChosenPatch(next); update(draft, enemy, next); };
   const proIds = active ? (proAll[active] ?? []).map((s) => s.champion) : [];
   const proSourceLine = `Recorded Gol.gg games next to your picks: ${(data.events ?? []).map((e) => `${e.short} ${patchLabel(e.patch)}${e.status === "ongoing" ? " (ongoing)" : ""}`).join(" · ")}. Evidence, never part of the order.`;
   const laneFoes = active ? LANE[active].map((r) => enemy[ROLES.indexOf(r)]).filter((e): e is string => !!e) : [];
@@ -284,38 +319,51 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                 {active && (
                   <div className={`fit-role role-${active}`} role="tabpanel" aria-label={`${ROLE_LABEL[active]} recommendations`}>
                     <div className="fit-context">
-                      {started && (
-                        <div className="seg fit-filters" role="group" aria-label="Show recommendations by signal">
-                          {FILTERS.map((f) => {
-                            const n = f.key === "all" ? activeRows.length : activeRows.filter((c) => hasSignal(c, f.key)).length;
-                            const off = f.key === "counter" && !activeCounters;
-                            return (
-                              <button key={f.key} type="button" className={filter === f.key ? "active" : undefined} aria-pressed={filter === f.key} disabled={off}
-                                title={off ? "Add the enemy lane opponent to read counters" : f.key === "pro" ? proSourceLine : undefined} onClick={() => setFilter(f.key)}>
-                                {f.label}{!off && <span className="n tnum">{n}</span>}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
+                      <div className="seg fit-filters" role="group" aria-label="Show recommendations by signal">
+                        {(started ? FILTERS : START_FILTERS).map((f) => {
+                          const n = started ? (f.key === "all" ? activeRows.length : activeRows.filter((c) => hasSignal(c, f.key)).length)
+                            : sortForView(starting[active] ?? [], f.key as StartView).length;
+                          const off = (f.key === "counter" && !activeCounters) || (f.key === "blind" && !n && !(starting[active] ?? []).some((s) => s.blind != null));
+                          return (
+                            <button key={f.key} type="button" className={viewFilter === f.key ? "active" : undefined} aria-pressed={viewFilter === f.key} disabled={off}
+                              title={off ? (f.key === "blind" ? BLIND_OFF : "Add the enemy lane opponent to read counters") : f.key === "pro" ? proSourceLine : undefined} onClick={() => setFilter(f.key)}>
+                              {f.label}{!off && <span className="n tnum">{n}</span>}
+                            </button>
+                          );
+                        })}
+                      </div>
                       {laneFoes.length
                         ? <span className="vs">vs {laneFoes.map((id, i) => <span key={id}>{i > 0 && " + "}<b>{names[id]}</b></span>)}</span>
                         : enemyIds.length ? <span className="vs muted">vs {enemyIds.map((id) => names[id]).join(" · ")}</span> : null}
-                      {started && <span className="order-note xs faint" title={ORDER_NOTE}>Preferred, then comp fit</span>}
+                      {started ? <span className="order-note xs faint" title={ORDER_NOTE}>Preferred, then comp fit</span>
+                        : <span className="order-note xs faint" title={START_NOTE}>Pro meta starting picks</span>}
                     </div>
+                    {scope && (
+                      <div className="fit-scope xs muted">
+                        <span>Pro meta · {ROLE_LABEL[active]}</span>
+                        {metaPatches.length > 1
+                          ? <Select label="Pro meta patch" value={roomPatch!} options={metaPatches.map((p) => ({ value: p, label: `Patch ${patchLabel(p)}${p === defaultPatch(drawerData.priority) ? " (latest)" : ""}` }))} onChange={choosePatch} />
+                          : <span className="tnum">Patch {scope}</span>}
+                        <ScopeLine priority={drawerData.priority} patch={roomPatch!} events={eventMap} />
+                      </div>
+                    )}
                     {activeCounters && (filter === "counter" || activeCounters.note) && (
                       <p className="fit-note xs muted">
                         {activeCounters.counters.length ? `Counters vs ${vsNames(activeCounters.vs, names)}${activeCounters.scope === "duo" ? " (duo)" : ""}.` : `No reliable counter data for ${vsNames(activeCounters.vs, names)}.`}
                         {activeCounters.note ? ` ${activeCounters.note}` : ""}
                       </p>
                     )}
-                    {!started ? <div className="rec-empty start"><GenRang size={44} /><span>Lock a pick to start. Recommendations for the open role appear here.</span></div>
+                    {!started && !visibleRows.length && startView === "all"
+                      ? <div className="rec-empty start"><GenRang size={44} /><span>No recorded pro picks for {ROLE_LABEL[active]}{scope ? ` on patch ${scope}` : ""}. Lock a pick and recommendations for the open role appear here.</span></div>
                       : visibleRows.length
                         ? visibleRows.map((c) => (
-                          <FitRow key={c.champion} c={c} bot={draft.BOT ? names[draft.BOT] ?? draft.BOT : undefined} names={names} proCtx={proCtx} hovered={hover === c.champion}
-                            onHover={(h) => preview(h ? c.champion : undefined)} onPick={() => lock(active, c.champion)} onOpen={() => setDrawer({ id: c.champion, role: active })} />
+                          <Fragment key={c.champion}>
+                            {c.champion === firstOut && <p className="fit-divider xs faint">Outside your pool</p>}
+                            <FitRow c={c} tier={poolTier(data.pool, c.champion, active)} bot={draft.BOT ? names[draft.BOT] ?? draft.BOT : undefined} names={names} proCtx={proCtx} hovered={hover === c.champion}
+                              onHover={(h) => preview(h ? c.champion : undefined)} onPick={() => lock(active, c.champion)} onOpen={() => setDrawer({ id: c.champion, role: active })} />
+                          </Fragment>
                         ))
-                        : <p className="rec-empty">{filter === "all" ? "Nothing stands out yet." : filter === "counter" && activeCounters?.counters.length === 0 ? "No counters to show." : "No candidate has this signal yet."}</p>}
+                        : <p className="rec-empty">{viewFilter === "all" ? "Nothing stands out yet." : viewFilter === "counter" && activeCounters?.counters.length === 0 ? "No counters to show." : "No candidate has this signal yet."}</p>}
                     {visibleRows.length < shownRows.length && (
                       <button type="button" className="btn sm fit-more" onClick={() => setShowAll(true)}>Show all {shownRows.length}</button>
                     )}
@@ -361,8 +409,8 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
             ))}</div>
           </Disclosure>
         )}
-        <Disclosure section lazy summary="Similar pro drafts" meta={similar.length ? `${similar.length}` : "none"}>
-          {!similar.length ? <p className="xs muted">Nothing recorded shares a champion with this draft.</p> : (
+        {similar.length > 0 && <Disclosure section lazy summary="Similar pro drafts" meta={`${similar.length}`}>
+          {(
             <div className="table-wrap">
               <table>
                 <thead><tr><th>Game</th><th>Team</th>{ROLES.map((r) => <th key={r}><span className={`role-tag role-${r}`}>{r}</span></th>)}</tr></thead>
@@ -374,10 +422,9 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
               </table>
             </div>
           )}
-        </Disclosure>
-        <Disclosure section lazy summary="Similar comps" meta={shells.length ? `${shells.length}` : "none"}>
+        </Disclosure>}
+        {shells.length > 0 && <Disclosure section lazy summary="Similar comps" meta={`${shells.length}`}>
           <div className="shell-list">
-            {!shells.length && <p className="xs muted">No shell shares a pick or swap with this draft.</p>}
             {shells.map(({ shell, exact, swap }) => (
               <div key={shell.id} className="shell-line">
                 <div className="row">
@@ -389,7 +436,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
               </div>
             ))}
           </div>
-        </Disclosure>
+        </Disclosure>}
       </div>
 
       {hoverCard.card && !drawer && (
@@ -411,9 +458,12 @@ const proLine = (pro: ProSuggestion) => pro.lines.map((l) => `${describeLine({ .
 const BONUS = new Set(["saved", "proposed"]);
 
 // The row's labels, one per independent signal, each in its own layer colour. Nothing here changes the order.
-function chipsOf(c: Candidate, names: Record<string, string>, bot?: string): Chip[] {
+function chipsOf(c: Candidate, names: Record<string, string>, bot?: string, tier?: Tier | null): Chip[] {
   const r = c.fit;
   const out: Chip[] = [];
+  // alan's pool tier in this role, or a clear "Not in pool": never changed by anything here.
+  out.push(tier ? { key: `tier ${tier}`, label: tierLabel(tier), title: `Your Champion Pool: ${tierLabel(tier)} (${ROLE_LABEL[c.role]})` }
+    : { key: "tier out", label: "Not in pool", title: `Not in your ${ROLE_LABEL[c.role]} pool` });
   if (r.eligible && r.saved) {
     out.push(r.savedFromPro
       ? { key: "syn alt", label: "Synergy · Alt (pro)", title: "Alternative from pro games, not hand-saved" }
@@ -429,6 +479,13 @@ function chipsOf(c: Candidate, names: Record<string, string>, bot?: string): Chi
   else if (c.bestFit) out.push({ key: "fit", label: "Best fit", title: FIT });
   if (c.counter) out.push({ key: "counter", label: "Counter" }); // rendered as the Counter popover
   if (c.priority) out.push({ key: "prio", label: `Pro priority · ${Math.round(c.priority.presence * 100)}%`, title: priorityTitle(c) });
+  // Pro meta counts: each opens the games behind it (rendered as MetaEvidenceTrigger).
+  const rot = c.meta && c.meta.firstRotation > 0 ? rotationLabel(c.meta) : undefined;
+  if (rot) out.push({ key: "rot", label: rot });
+  const blind = c.meta && (c.meta.blind ?? 0) > 0 ? blindLabel(c.meta) : undefined;
+  if (blind) out.push({ key: "blind", label: blind });
+  // Nothing locked and no other label: the role picks themselves open the evidence.
+  if (c.meta && !c.priority && !rot && !blind) out.push({ key: "meta", label: c.meta.rolePicks != null ? `Pro · ${plural(c.meta.rolePicks, `${ROLE_LABEL[c.role].toLowerCase()} pick`)}` : `Pro · ${plural(c.meta.picks, "pick")}` });
   if (c.theoretical) out.push({ key: "theory", label: "Theoretical", title: `Not one of ${bot ?? "the bot"}'s saved supports: theoretical, not recommended` });
   if (r.parts.some((p) => p.kind === "risk")) out.push({ key: "risk", label: "Risk" });
   return out;
@@ -443,6 +500,7 @@ const priorityTitle = (c: Candidate) => {
 /** Main benefit and potential drawback, one line. */
 function reasonOf(c: Candidate): { benefit: string; drawback?: string } {
   const r = c.fit;
+  if (!r.parts.length && c.meta) return { benefit: `Patch ${patchLabel(c.meta.patch)}: ${startLine(c.meta, ROLE_LABEL[c.role], false)}` }; // first rotation is its own label
   const lead = r.parts.find((p) => p.points > 0 && !BONUS.has(p.kind));
   const benefit = r.fixes.length ? `Fixes ${r.fixes.join(", ").toLowerCase()}`
     : lead?.text ?? (c.pro ? proLine(c.pro) : r.parts.find((p) => BONUS.has(p.kind))?.text ?? (c.counter ? `Counter: ${describeEvidence(c.counter.evidence)}` : "No comp reasons yet"));
@@ -450,14 +508,15 @@ function reasonOf(c: Candidate): { benefit: string; drawback?: string } {
   return { benefit, drawback: r.tradeoffs[0] ?? risk?.text };
 }
 
-function FitRow({ c, bot, names, proCtx, hovered, onHover, onPick, onOpen }: {
-  c: Candidate; bot?: string; names: Record<string, string>; proCtx: ProCtx; hovered: boolean;
+function FitRow({ c, tier, bot, names, proCtx, hovered, onHover, onPick, onOpen }: {
+  c: Candidate; tier?: Tier | null; bot?: string; names: Record<string, string>; proCtx: ProCtx; hovered: boolean;
   onHover: (on: boolean) => void; onPick: () => void; onOpen: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const rec = c.fit;
   const name = names[c.champion] ?? c.champion;
-  const chips = chipsOf(c, names, bot);
+  const chips = chipsOf(c, names, bot, tier);
+  const metaChip = new Set(["prio", "rot", "blind", "meta"]);
   const { benefit, drawback } = reasonOf(c);
   const counter = c.counter;
   const read = rec.parts.length > 0;
@@ -474,12 +533,14 @@ function FitRow({ c, bot, names, proCtx, hovered, onHover, onPick, onOpen }: {
           {chips.length > 0 && <span className="sig-line">{chips.map((s) => s.key === "pro" && c.pro
             ? <ProEvidenceTrigger key={s.key} pro={c.pro} champion={c.champion} role={c.role} ctx={proCtx} />
             : s.key === "counter" && counter ? <CounterTrigger key={s.key} c={counter} names={names} />
+              : metaChip.has(s.key) && c.meta ? <MetaEvidenceTrigger key={s.key} s={c.meta} label={s.label} cls={s.key} names={names} />
               : <span key={s.key} className={`sig ${s.key}`} title={s.title}>{s.label}</span>)}</span>}
         </span>
         <span className="fit-reason truncate">{benefit}{drawback && <span className="drawback"> · {drawback}</span>}</span>
       </div>
       {read ? <FitScore c={c} />
-        : <span className="fit-score" title="No champion attributes yet, so no comp fit">—</span>}
+        : c.meta && !c.fit.parts.length && !c.pro && !c.counter ? <span className="fit-score" aria-hidden="true" />
+          : <span className="fit-score" title="No champion attributes yet, so no comp fit">—</span>}
       <button className="fit-toggle" aria-expanded={open} aria-label={`Why ${name}`} title={`${rec.parts.length} reasons`} onClick={() => setOpen((o) => !o)}>
         <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
       </button>
@@ -513,7 +574,14 @@ function FitRow({ c, bot, names, proCtx, hovered, onHover, onPick, onOpen }: {
           </div>
         )}
         {!rec.eligible && c.pro && <p className="fit-note xs muted">Not one of {bot ?? "the bot"}&apos;s saved supports: a pro pairing, not a saved one.</p>}
-        {!read && <p className="fit-note xs muted">No champion attributes yet, so no comp read.</p>}
+        {c.meta && (
+          <div className="fit-pro">
+            <span className="k">Pro meta</span>
+            <span className="t">Patch {patchLabel(c.meta.patch)}: {startLine(c.meta, ROLE_LABEL[c.role])}{c.meta.blind != null ? ` · ${c.meta.blind} blind, ${c.meta.response} response of ${c.meta.games.length}` : ""}</span>
+          </div>
+        )}
+        {!read && !c.meta && <p className="fit-note xs muted">No champion attributes yet, so no comp read.</p>}
+        {!read && c.meta && <p className="fit-note xs muted">No pick locked yet, so no comp read: these are pro counts on one patch, not a score.</p>}
       </div>
     </div>
   );
@@ -746,5 +814,18 @@ function Indicators({ prof, needs, picks, siege, disengage }: { prof: ReturnType
         </div>
       ))}
     </div>
+  );
+}
+
+// ---------- pro meta scope ----------
+
+/** Which games the pro meta counts come from on the patch: unique games, how many have pick order, which events. */
+function ScopeLine({ priority, patch, events }: { priority: PriorityData; patch: string; events: Record<string, { short: string }> }) {
+  const { scope } = startingPicks(priority, [], "TOP", patch);
+  const names = scope.events.map((e) => events[e]?.short ?? e).join(", ");
+  return (
+    <span className="tnum" title={scope.tableGames ? "Tournament table only: picks and bans, no pick order or game records" : `${scope.orderGames} of ${scope.recorded} recorded games have both teams' pick order`}>
+      {scope.games} games{names ? ` · ${names}` : ""}{scope.tableGames ? " · no pick order" : ""}
+    </span>
   );
 }

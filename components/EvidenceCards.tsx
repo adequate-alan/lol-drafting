@@ -5,7 +5,9 @@
 // Pro evidence answers "who played it, against what, what happened" from the recorded games only (lib/pro-evidence.ts).
 // Results, sides, enemy drafts and source status appear only when recorded; pick order never is, so no game is shown
 // as a draft response. A champion on the other team is an observed matchup, never a counter.
+import Link from "next/link";
 import { useState } from "react";
+import { FIRST_ROTATION, type StartGame, type StartingPick } from "@/lib/starting-picks";
 import { describePro, type Counter } from "@/lib/counters";
 import { shortDate } from "@/lib/evidence";
 import { evidenceGames, type EvidenceGame, type Picks } from "@/lib/pro-evidence";
@@ -149,3 +151,84 @@ export function CounterTrigger({ c, names }: { c: Counter; names: Record<string,
   );
 }
 
+
+// ---------- Pro meta (starting picks) ----------
+
+/**
+ * The games behind a row's pro meta counts (lib/starting-picks.ts): presence on the patch, picks in the role, first
+ * rotation from each team's recorded pick order, and blind / response only where the pick-order engine read it. Every
+ * game links to its Pro Drafts view with that player's build open.
+ */
+export function MetaEvidenceTrigger({ s, label, cls, names }: { s: StartingPick; label: string; cls: string; names: Record<string, string> }) {
+  const n = (id: string) => names[id] ?? id;
+  return (
+    <Popover label={`Pro meta evidence for ${n(s.champion)}`} triggerClass={`sig ${cls}`} className="pe" trigger={label}>
+      {({ mode, pin }) => <MetaEvidenceBody s={s} n={n} pinned={mode !== "hover"} pin={pin} />}
+    </Popover>
+  );
+}
+
+function MetaEvidenceBody({ s, n, pinned, pin }: { s: StartingPick; n: (id: string) => string; pinned: boolean; pin: () => void }) {
+  const [all, setAll] = useState(false);
+  const role = ROLE_SHORT[s.role];
+  const shown = all ? s.games : s.games.slice(0, HOVER_GAMES);
+  const pct = (x: number) => `${Math.round(x * 100)}%`;
+  const unclassified = s.games.length - s.classified;
+  return (
+    <div className={`pe-card ${all ? "all" : ""}`}>
+      <header className="pop-head">
+        <span className="pop-title pro">Pro meta · {role}</span>
+        <span className="mono">{patchLabel(s.patch)}</span>
+      </header>
+      <dl className="pop-kv">
+        <dt>Presence</dt>
+        <dd>{s.presence == null ? "—" : <><span className="mono">{pct(s.presence)}</span> of <span className="mono">{s.banGames}</span> games · {plural(s.picks, "pick")}, {plural(s.bans, "ban")} (bans are champion-wide)</>}{s.low ? " · small sample" : ""}</dd>
+        <dt>{role} picks</dt>
+        <dd>{s.rolePicks != null ? <span className="mono">{s.rolePicks}</span> : "Champion-wide only: the tournament table doesn't split picks by role"}</dd>
+        <dt>First rotation</dt>
+        <dd>{s.ordered ? <><span className="mono">{s.firstRotation} of {s.ordered}</span> recorded {role.toLowerCase()} picks were in the team&apos;s first three picks</> : "No pick order recorded"}</dd>
+        <dt>First overall</dt>
+        <dd>{s.firstOverall == null ? "Not verifiable yet: needs which side picked first" : <span className="mono">{s.firstOverall} of {s.games.length}</span>}</dd>
+        <dt>Blind / response</dt>
+        <dd>{s.blind == null ? "Not classified yet: needs the interleaved draft order"
+          : <><span className="mono">{s.blind}</span> blind · <span className="mono">{s.response}</span> response{unclassified ? <> · <span className="mono">{unclassified}</span> unclassified</> : null}</>}</dd>
+      </dl>
+      {shown.length > 0 && <ol className="pe-games">{shown.map((g) => <MetaGame key={g.draftId} g={g} s={s} n={n} />)}</ol>}
+      {!s.games.length && <p className="pop-sub">Tournament table only: no game records, so no pick order or games to list.</p>}
+      <footer className="pop-foot">
+        <span>Observed pro evidence on one patch, never a score. Early or blind picks are not proof of blind safety.</span>
+        {s.games.length > HOVER_GAMES && (
+          <button type="button" className="btn sm" onClick={() => { pin(); setAll((v) => !v); }}>{all ? "Show fewer" : `View all ${s.games.length} games`}</button>
+        )}
+        {!pinned && s.games.length <= HOVER_GAMES && <span className="faint">Click to keep open</span>}
+      </footer>
+    </div>
+  );
+}
+
+function MetaGame({ g, s, n }: { g: StartGame; s: StartingPick; n: (id: string) => string }) {
+  const meta = [shortDate(g.date), g.stage, `Game ${g.gameNo}`, `${g.side === "blue" ? "Blue" : "Red"} side`,
+    g.teamPick ? `team pick ${g.teamPick} of 5${g.teamPick <= FIRST_ROTATION ? " (first rotation)" : ""}` : undefined].filter(Boolean);
+  const r = g.read;
+  const situation = !r ? undefined : r.situation === "blind" ? `Blind: the enemy ${ROLE_SHORT[s.role].toLowerCase()} wasn't revealed yet`
+    : r.situation === "response" ? `Response: picked after ${r.laneOpponent ? n(r.laneOpponent) : "the enemy pick"} was revealed (not proof of a counter)` : "Blind or response can't be verified for this pick";
+  return (
+    <li className="pe-game">
+      <div className="pe-game-head">
+        <span className="pe-teams"><b>{g.team}</b><span className="muted"> vs {g.opponent}</span></span>
+        <span className={`pe-res ${g.won ? "win" : "loss"}`}>{g.won ? "Win" : "Loss"}</span>
+      </div>
+      <div className="pe-meta">
+        <span>{meta.join(" · ")}</span>
+        <span className="row tight">
+          <Link href={`/pro-drafts?id=${g.draftId}&build=${encodeURIComponent(`${g.draftId}:${s.role}`)}`}>Draft and build</Link>
+          <a href={g.url} target="_blank" rel="noopener noreferrer">Gol.gg<span aria-hidden="true"> ↗</span></a>
+        </span>
+      </div>
+      {situation && <p className="pe-why">{situation}{r?.firstOverall ? " · first overall pick" : ""}</p>}
+      {r?.revealed && r.revealed.length > 0 && (
+        <p className="pe-why vs">Enemy picks visible: {r.revealed.map(n).join(", ")}</p>
+      )}
+    </li>
+  );
+}

@@ -101,6 +101,15 @@ check("Champion Synergies ?champ=ziggs selects Ziggs", (await page.locator("main
 // Draft Room: one candidate list per open role; Synergy, Pro, Fit and Counter are separate labels on each row
 const recNames = async (role) => page.locator(`.recs .fit-role.role-${role} .fit-head .name`).allTextContents();
 const text = async (sel) => (await page.locator(sel).allTextContents()).join(" ");
+// Pro meta starting picks (alan, 2026-10-13): an empty board already lists the role's pro picks with real counts.
+await open("/");
+const startRows = await page.locator(".recs .fit-role.role-TOP .fit-row").count();
+const startText = await text(".recs .fit-role.role-TOP");
+check("empty Draft Room lists pro meta starting picks for Top", startRows > 0 && (await page.locator(".rec-empty.start").count()) === 0
+  && /First rotation · \d+ of \d+/.test(startText) && /Patch 26\.\d+/.test(startText) && !/\b16\.\d\d\b/.test(startText), `${startRows} rows`);
+check("starting picks carry no score", (await page.locator(".recs .fit-role.role-TOP button.fit-score").count()) === 0, "");
+await page.locator(".role-tab.role-MID").click();
+check("starting picks follow the selected role (Mid)", (await page.locator(".recs .fit-role.role-MID .fit-row").count()) > 0, "");
 for (const [bot, first] of [["sivir", "Lulu"], ["ezreal", "Karma"], ["corki", "Nami"]]) {
   await open(`/?bot=${bot}`);
   const c = await recNames("SUPPORT");
@@ -121,7 +130,7 @@ check("Jhin: Nautilus shows its pro games", (await proRow("Nautilus").locator(".
 const proOnly = [];
 for (const n of ["Leona", "Camille"]) if ((await proRow(n).locator(".sig.pro").count()) === 1 && (await proRow(n).locator(".sig.syn").count()) === 0) proOnly.push(n);
 check("Jhin: pro-only supports are full rows without a Synergy label", proOnly.length === 2, proOnly.join(", "));
-await page.locator(".fit-filters button", { hasText: "Pro" }).click();
+await page.locator(".fit-filters button", { hasText: /^Pro\d*$/ }).click();
 const proRows = await page.locator(".recs .fit-row").count();
 check("Pro filter shows only rows with pro games", proRows > 0 && (await page.locator(".recs .fit-row .sig.pro").count()) === proRows, `${proRows} rows`);
 await page.locator(".fit-filters button", { hasText: "All" }).click();

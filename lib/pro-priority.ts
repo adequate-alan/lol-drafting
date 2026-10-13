@@ -384,11 +384,11 @@ export const DRAFT_LABEL_MIN = 0.3; // presence at or above this shows "Pro prio
 export interface PriorityMark { patch: string; presence: number; picks: number; bans: number; games: number; rolePicks: Partial<Record<Role, number>>; roleVerified: boolean; low: boolean }
 
 /**
- * Champion presence on the newest patch with ban data, across all tracked and archived tournaments, for the Draft Room's
+ * Champion presence on the newest patch with ban data (or the patch given), across all tracked and archived tournaments, for the Draft Room's
  * Pro priority label. A label, never a score: nothing reads it to rank a row.
  */
-export function priorityMarks(d: PriorityData): Record<string, PriorityMark> {
-  const patch = patchesOf(d).find((p) => bucket(d, { patch: p }).banGames > 0);
+export function priorityMarks(d: PriorityData, at?: string): Record<string, PriorityMark> {
+  const patch = at ? patchKey(at) : patchesOf(d).find((p) => bucket(d, { patch: p }).banGames > 0);
   if (!patch) return {};
   const b = bucket(d, { patch });
   return Object.fromEntries(b.rows.filter((r) => r.presence != null && r.presence >= DRAFT_LABEL_MIN).map((r) => [r.id, {
