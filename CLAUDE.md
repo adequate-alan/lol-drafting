@@ -168,6 +168,16 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   and drops the Role column when every champion shares the role; secondary text is one step larger there than the
   site's smallest; the player browser is one box (search above the list) with a 2px gold selected bar. Players are keyed by Gol.gg player id (pins and the `player=` filter; old name pins migrate once, an old name
   link still matches by name), so same-name players stay apart and a team change keeps one profile.
+  **Overview and navigation precedence** (alan, 2026-10-13; `lib/pro-builds-home.ts` `selectionOf`,
+  `components/BuildsHome.tsx`, `tests/pro-builds-home.test.ts`, smoke "builds overview"): `/pro-builds/` with no
+  champion, game or player is the overview: search (champions and players), All + five roles, a patch selector on the
+  newest patch with builds (`patch=all` for every patch), pinned players (to their profiles), this browser's recently
+  viewed builds and recent recorded builds (newest patch, then date, then game id; an undated game never jumps ahead),
+  each opening the exact game. The rail is the champion browser and carries the patch scope into the champion. URL
+  parameters always win (champion and role; a game and player without a champion resolve to that record; a game alone
+  lists its builds); links from other features are those parameters. Never a default champion, never a selection
+  reopened from storage: recently viewed is shortcuts only. Choosing a champion is a history entry; "← Pro Builds
+  overview" and the sidebar return to the overview.
   LCK 2026 Season Playoffs builds were backfilled once (`scripts/backfill-lck-builds.mjs`, alan 2026-10-12); their game
   records live in `pro-builds.json` `games`, read by Pro Builds only, never by drafts, priority or totals. The daily
   refresh never requests them.

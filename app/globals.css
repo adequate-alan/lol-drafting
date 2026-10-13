@@ -1010,6 +1010,7 @@ button.link:focus-visible { box-shadow: var(--focus-ring); border-radius: var(--
 .builds-main p { margin: 0; }
 .builds-empty { display: grid; gap: var(--s3); align-content: start; }
 .builds-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s4) var(--s5); }
+.builds-home-link { justify-self: start; }
 .builds-title { display: grid; gap: 2px; margin-right: auto; }
 .builds-title h2 { font-size: var(--fs-3xl); line-height: 1; letter-spacing: -.01em; }
 .builds-title > .small { font-size: var(--fs-sm); }
@@ -1023,6 +1024,31 @@ button.link:focus-visible { box-shadow: var(--focus-ring); border-radius: var(--
 .build-sub { margin: var(--s2) 0 0; }
 .builds-main .win { color: var(--success); }
 .builds-main .loss { color: var(--danger); }
+/* Pro Builds overview (alan, 2026-10-13; components/BuildsHome.tsx): /pro-builds/ without a champion. One row of
+   controls (search, role, patch) above the champion rail and the overview; sections separated by spacing and one rule,
+   never cards. */
+.builds-home-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s4); margin-bottom: var(--s6); }
+.builds-home-tools .builds-search { flex: 1 1 280px; max-width: 420px; height: 36px; font-size: var(--fs-md); }
+.builds-split.home .rail-count { margin: 0; padding: 0 var(--s4); }
+.builds-home { display: grid; gap: var(--s7); min-width: 0; }
+.home-section { display: grid; gap: var(--s4); min-width: 0; }
+.home-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2) var(--s4); padding-bottom: var(--s3); border-bottom: 1px solid var(--border); }
+.home-head h2 { font-size: var(--fs-lg); }
+.home-players, .home-viewed { display: flex; flex-wrap: wrap; gap: var(--s3) var(--s4); margin: 0; padding: 0; list-style: none; }
+.home-player, .home-chip { display: inline-flex; align-items: center; gap: var(--s4); padding: var(--s2) var(--s5) var(--s2) var(--s2); border-radius: var(--r); color: var(--text); transition: background var(--t-fast); }
+.home-chip { gap: var(--s3); padding-right: var(--s4); font-size: var(--fs-sm); font-family: var(--font-display); font-weight: var(--w-control); }
+.home-player:hover, .home-chip:hover { background: var(--surface-hover); text-decoration: none; }
+.home-player-text { display: grid; line-height: 1.25; min-width: 0; }
+.home-player-text b { font-family: var(--font-display); font-weight: var(--w-control); white-space: nowrap; }
+.home-player-text .muted { font-size: var(--fs-xs); white-space: nowrap; }
+.home-player-text .pin-icon { margin-right: var(--s2); }
+.recent-builds td { height: 40px; }
+.recent-builds .champ-cell { display: inline-flex; align-items: center; gap: var(--s3); font-family: var(--font-display); font-weight: var(--w-control); }
+.recent-builds .player-chip { gap: var(--s3); }
+@media (max-width: 760px) {
+  .builds-home-tools .builds-search { max-width: none; flex-basis: 100%; }
+  .builds-home-tools .seg { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+}
 
 /* Recorded games strip: one button per game, the 1px top rule is the side that player's team had */
 .build-picks { display: flex; gap: var(--s2); overflow-x: auto; scrollbar-width: thin; padding-bottom: var(--s1); }

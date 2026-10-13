@@ -25,6 +25,15 @@ async function choose(trigger, value) {
   await page.locator(`.select-menu [role=option][data-value="${value}"]`).click();
   await page.waitForTimeout(150);
 }
+// Pro Builds opens on its overview (alan, 2026-10-13); detailed checks open the champion with the most recorded games
+// from the overview's champion browser, across every patch.
+async function openBuildsChampion() {
+  await open("/pro-builds/?patch=all");
+  const subs = await page.locator(".pick-rail li button .rail-sub:not(.rail-player)").allTextContents();
+  const counts = subs.map((t) => Number(/(\d+) game/.exec(t)?.[1] ?? 0));
+  await page.locator(".pick-rail li button").nth(counts.indexOf(Math.max(...counts))).click();
+  await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
+}
 async function h1() { return (await page.locator("main h1").first().textContent())?.trim(); }
 
 // Sections, direct loads and refreshes
@@ -672,8 +681,53 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
     check("builds: the drawer link opens that champion in that role", (await h1()) === "Pro Builds" && (await page.locator(".builds-title h2").textContent()) === champ && /TOP/.test(await page.locator(".pick-rail li button.active").innerText()), `${champ} → ${await page.locator(".builds-title h2").textContent().catch(() => "")}`);
   }
+  // The overview: /pro-builds/ with nothing asked selects no champion (alan, 2026-10-13)
+  await page.evaluate(() => localStorage.removeItem("pro-builds:recently-viewed"));
   await open("/pro-builds/");
+  await page.locator(".recent-builds tbody tr").first().waitFor({ timeout: 8000 }).catch(() => {});
+  const home = { head: await page.locator(".builds-head").count(), active: await page.locator(".pick-rail li button.active").count(), url: page.url(),
+    rows: await page.locator(".recent-builds tbody tr").count(), pinned: await page.locator(".home-section[aria-label='Pinned players']").count(),
+    search: await page.locator(".builds-home-tools input[type=search]").count(), roles: await page.locator(".builds-home-tools .seg button").count(),
+    patch: await page.locator(".builds-home-tools [role=combobox][aria-label='Patch']").innerText().catch(() => "") };
+  check("builds overview: /pro-builds/ opens the overview with no champion selected", home.head === 0 && home.active === 0 && !/champion=/.test(home.url), JSON.stringify(home));
+  check("builds overview: search, five roles plus All, the latest patch, pinned players and recent builds", home.search === 1 && home.roles === 6 && /26\.\d+ · latest/.test(home.patch) && home.pinned === 1 && home.rows > 0, JSON.stringify(home));
+  const dates = await page.$$eval(".recent-builds tbody tr", (trs) => trs.map((tr) => tr.children[5].textContent + " " + tr.children[6].textContent));
+  check("builds overview: recent builds are on the newest patch, newest first", dates.length > 0 && new Set(dates.map((d) => d.split(" ")[0])).size === 1, dates.slice(0, 3).join(" | "));
+  const firstRow = page.locator(".recent-builds tbody tr").first();
+  const rowPlayer = (await firstRow.locator("td").first().locator("b").textContent())?.trim();
+  const rowChamp = (await firstRow.locator(".champ-cell .champ-name").textContent())?.trim();
+  await firstRow.click();
   await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
+  const opened = new URL(page.url()).searchParams;
+  check("builds overview: a recent build opens that exact game and player", !!opened.get("champion") && !!opened.get("game") && !!opened.get("player") && (await page.locator(".builds-title h2").textContent()) === rowChamp && (await page.locator(".game-head .game-player").innerText()).includes(rowPlayer), `${rowPlayer} ${rowChamp} → ${page.url()}`);
+  const exact = page.url();
+  await page.reload({ waitUntil: "networkidle" });
+  await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
+  check("builds: refreshing a build URL keeps the champion, game and player", page.url() === exact && (await page.locator(".builds-title h2").textContent()) === rowChamp && (await page.locator(".build-pick.active").count()) === 1, page.url());
+  await page.goBack();
+  await page.locator(".recent-builds").waitFor({ timeout: 8000 }).catch(() => {});
+  check("builds overview: Back returns to the overview", (await page.locator(".builds-head").count()) === 0 && (await page.locator(".recent-builds tbody tr").count()) > 0, page.url());
+  await page.goForward();
+  await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
+  await page.locator(".sidebar a, aside a, nav a", { hasText: "Pro Builds" }).first().click();
+  await page.waitForTimeout(400);
+  check("builds overview: the sidebar opens the overview from a champion, nothing carried over", (await page.locator(".builds-head").count()) === 0 && (await page.locator(".pick-rail li button.active").count()) === 0 && !/champion=/.test(page.url()), page.url());
+  check("builds overview: the champion just viewed is a recently viewed shortcut, not reopened", (await page.locator(".home-viewed a .champ-name").first().textContent().catch(() => "")) === rowChamp, await page.locator(".home-viewed").innerText().catch(() => "none"));
+  await page.locator(".pick-rail li button").first().click();
+  await page.locator(".builds-head").waitFor({ timeout: 8000 }).catch(() => {});
+  await page.locator(".builds-home-link").click();
+  await page.waitForTimeout(400);
+  check("builds: the overview link returns from a champion", (await page.locator(".builds-head").count()) === 0 && (await page.locator(".recent-builds").count()) === 1, page.url());
+  await open("/pro-builds/?champion=jhin&role=BOT");
+  await page.locator(".builds-head, .builds-empty").first().waitFor({ timeout: 8000 }).catch(() => {});
+  check("builds: an explicit champion URL opens that champion and role", (await page.locator(".builds-title h2").textContent().catch(() => "")) === "Jhin" && /BOT/.test(await page.locator(".pick-rail li button.active").innerText().catch(() => "")), page.url());
+  await page.setViewportSize({ width: 390, height: 844 });
+  await open("/pro-builds/");
+  await page.locator(".recent-builds tbody tr").first().waitFor({ timeout: 8000 }).catch(() => {});
+  const over = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  check("builds overview at 390px: no sideways page scroll", over <= 0, `${over}px`);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openBuildsChampion();
   check("builds: the rail lists every champion and role with recorded builds", (await page.locator(".pick-rail li button").count()) > 30, `${await page.locator(".pick-rail li button").count()} entries`);
   const games = await page.locator(".build-pick").count();
   // Gol.gg publishes a fresh game's stats before its skill order and purchase timeline (the refresh re-reads such a
@@ -800,8 +854,7 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     await page.locator(".player-head .player-avatar").waitFor({ timeout: 8000 }).catch(() => {});
     const noPhoto = await page.$eval(".player-head .player-avatar", (x) => ({ initials: x.dataset.initials, img: !!x.querySelector("img") })).catch(() => ({}));
     check("portraits: a player without a photo shows initials, no image", noPhoto.initials === "CR" && !noPhoto.img, JSON.stringify(noPhoto));
-    await open("/pro-builds/");
-    await page.locator(".build-pick").first().waitFor({ timeout: 8000 }).catch(() => {});
+    await openBuildsChampion();
     // Teams and tournaments pin the same way (one list each, saved in this browser); a pinned team is starred in the strip.
     const teamPicker = page.locator(".player-picker input[aria-label='Team']");
     await teamPicker.click();
@@ -1012,7 +1065,7 @@ if (shots) {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   check("motion: reduced motion keeps a short fade for the drawer", rm.name === "drawer-in" && parseFloat(rm.dur) <= 0.15, JSON.stringify(rm));
   // Pro Builds: the typeable filters open like the shared dropdown (not on focus) in a portalled, viewport-placed menu
-  await open("/pro-builds/");
+  await openBuildsChampion();
   const player = page.locator("input[aria-label='Player']");
   await player.focus();
   await page.waitForTimeout(150);
