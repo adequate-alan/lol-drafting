@@ -212,7 +212,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   `https://dpm.lol/esport/players/<handle>.webp`, fetched on his Mac because dpm.lol challenges Claude's environments;
   dpm.lol states no reuse license, so the credit says "Photo via dpm.lol" and the Disclosure says none is claimed).
   dpm.lol's generic `nopicture.webp` is not a photo; a dpm.lol page for the handle on another team is not the player.
-  Credits are in the avatar tooltip and the Pinned Players "Photo credits" Disclosure. No team logos (trademarks).
+  Credits are in the library and the Pinned Players "Photo credits" Disclosure; the avatar has no tooltip (alan, 2026-10-13). No team logos (trademarks).
 - A portrait is added by hand and only when the photo is the same person: `scripts/find-player-portraits.mjs`
   (separate from the match refresh, never run by it; a missing photo never fails an import) matches each recorded
   player to a Wikidata League of Legends player item by exact handle, reads the Commons license metadata and writes
@@ -457,7 +457,9 @@ inconsistent, critique finds what is ineffective, polish improves what already w
 - `scripts/smoke-pages.mjs` runs against the live Pages URL after every deploy (the `smoke` job in pages.yml).
 - **Popovers and tooltips** (alan, 2026-10-11): one foundation, `components/Popover.tsx`. Every hint, hover card and
   popover uses the `.popover` surface (tokens only, both themes) and its placement (fixed portal, flips to stay in the
-  viewport, caps its height and scrolls inside, zero layout shift). Plain-text hints stay `title="…"` in markup;
+  viewport, caps its height and scrolls inside, zero layout shift). **A tooltip adds context, never repeats what is already visible** (alan, 2026-10-13): a hint that
+  only restates a visible name, label or value (a portrait's player name and photo credit, say) is removed, not restyled;
+  stats, builds and match context stay. Plain-text hints stay `title="…"` in markup;
   `components/TipLayer.tsx` (mounted once in the app layout) renders them in the themed `.popover.tip`, on hover, keyboard
   focus or a tap on plain text. Anything richer or with links is a `<Popover>`: hover opens, the pointer can move in,
   click pins, Enter pins and moves focus in, Escape closes and returns focus, touch opens a bottom sheet. ChampionHoverCard

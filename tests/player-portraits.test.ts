@@ -72,12 +72,14 @@ describe("avatars", () => {
     expect(initials("")).toBe("?");
   });
 
-  it("a player with a portrait shows that photo, sized in markup (no shift while it loads), with the credit", () => {
+  it("a player with a portrait shows that photo, sized in markup (no shift while it loads), with no tooltip", () => {
     for (const p of allPortraits()) {
       const html = renderToStaticMarkup(createElement(PlayerAvatar, { id: p.playerId, name: p.name, size: "lg" }));
       expect(html).toContain(`src="${PORTRAIT_IMAGES[p.playerId].src}"`);
       expect(html).toMatch(/width="48" height="48"/);
-      expect(html).toContain(p.provider === "commons" ? p.license : "dpm.lol");
+      expect(html).toContain(`alt="${p.name}"`);
+      expect(html).not.toContain("title=");
+      expect(creditLine(p)).toContain(p.provider === "commons" ? p.license : "dpm.lol");
       expect(portraitOf(String(p.playerId))?.meta.playerId).toBe(p.playerId);
     }
   });
