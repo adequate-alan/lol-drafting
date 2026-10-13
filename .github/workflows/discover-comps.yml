@@ -7,12 +7,13 @@ name: Discover comps
 # rest. Deterministic, no model calls. Tests, typecheck and build run, and it commits and deploys only when the library
 # data changed. Saved synergy, pool tiers and proposed synergy are never touched.
 #
-# Sunday 9 AM Eastern all year: cron is UTC, so both 13:00 UTC (9 AM EDT) and 14:00 UTC (9 AM EST) are scheduled and the
+# Sunday 9:17 AM Eastern all year (minute 17 avoids GitHub's late top-of-the-hour starts): cron is UTC, so both 13:17 UTC
+# (9 AM EDT) and 14:17 UTC (9 AM EST) are scheduled and the
 # gate step lets through only the one that matches New York's current offset. GitHub may start scheduled runs late.
 on:
   schedule:
-    - cron: "0 13 * * 0"
-    - cron: "0 14 * * 0"
+    - cron: "17 13 * * 0"
+    - cron: "17 14 * * 0"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -33,13 +34,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: gate
-        name: Run at 9 AM Eastern only
+        name: Run at 9:17 AM Eastern only
         run: |
           offset=$(TZ=America/New_York date +%z)
           run=true
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            if [ "${{ github.event.schedule }}" = "0 13 * * 0" ] && [ "$offset" != "-0400" ]; then run=false; fi
-            if [ "${{ github.event.schedule }}" = "0 14 * * 0" ] && [ "$offset" != "-0500" ]; then run=false; fi
+            if [ "${{ github.event.schedule }}" = "17 13 * * 0" ] && [ "$offset" != "-0400" ]; then run=false; fi
+            if [ "${{ github.event.schedule }}" = "17 14 * * 0" ] && [ "$offset" != "-0500" ]; then run=false; fi
           fi
           echo "New York offset $offset; run=$run"
           echo "run=$run" >> "$GITHUB_OUTPUT"
