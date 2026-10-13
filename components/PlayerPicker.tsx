@@ -7,12 +7,17 @@ import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type 
 import { createPortal } from "react-dom";
 import { menuPlace, type MenuPos } from "@/components/Select";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
+import { ChampIcon } from "@/components/ui";
 import { isLegacyPin, migratePins, togglePin } from "@/lib/pinned-players";
 import type { BuildRow } from "@/lib/pro-builds";
 
 // Players are pinned by Gol.gg player id (names kept beside them for display); teams by name, tournaments by event id.
-export type PinKind = "player" | "team" | "event";
-const KEYS: Record<PinKind, string> = { player: "pro-builds:pinned-players", team: "pro-builds:pinned-teams", event: "pro-builds:pinned-tournaments" };
+// Pro Drafts (alan, 2026-10-13) shares the team and tournament pins and adds champions (by id) and series (by name).
+export type PinKind = "player" | "team" | "event" | "champion" | "series";
+const KEYS: Record<PinKind, string> = {
+  player: "pro-builds:pinned-players", team: "pro-builds:pinned-teams", event: "pro-builds:pinned-tournaments",
+  champion: "pro-drafts:pinned-champions", series: "pro-drafts:pinned-series",
+};
 const EVENT = "pro-builds:pins";
 const NAMES = "pro-builds:pinned-player-names"; // { id: name } as last seen, to label a pin before the data loads
 
@@ -76,7 +81,9 @@ export function PinIcon({ on }: { on: boolean }) {
   );
 }
 
-const NOUN: Record<PinKind, [string, string]> = { player: ["Player", "players"], team: ["Team", "teams"], event: ["Tournament", "tournaments"] };
+const NOUN: Record<PinKind, [string, string]> = {
+  player: ["Player", "players"], team: ["Team", "teams"], event: ["Tournament", "tournaments"], champion: ["Champion", "champions"], series: ["Series", "series"],
+};
 
 /**
  * A typeable, pinnable filter: "" means all. `options` are [value, label] in the current scope (a tournament is pinned
@@ -85,8 +92,9 @@ const NOUN: Record<PinKind, [string, string]> = { player: ["Player", "players"],
 export function PinPicker({ kind, value, options: entries, onChange, placeholder }: {
   kind: PinKind; value: string; options: [string, string][]; onChange: (v: string) => void; placeholder?: string;
 }) {
-  // Players show their portrait (or initials) beside the name; teams and tournaments show text only.
-  const avatar = (v: string) => (kind === "player" && v ? <PlayerAvatar id={v} name={labelOf.get(v) ?? v} size="xs" /> : null);
+  // Players show their portrait (or initials) and champions their icon beside the name; the rest show text only.
+  const avatar = (v: string) => (!v ? null : kind === "player" ? <PlayerAvatar id={v} name={labelOf.get(v) ?? v} size="xs" />
+    : kind === "champion" ? <ChampIcon id={v} name={labelOf.get(v) ?? v} size="xs" /> : null);
   const id = useId();
   const { isPinned, toggle } = usePins(kind);
   const [noun, plural] = NOUN[kind];

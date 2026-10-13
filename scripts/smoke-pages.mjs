@@ -577,7 +577,8 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   for (const path of ["/pool/", "/meta/", "/pro-drafts/", "/comps/"]) { await open(path); natives += await page.locator("main select").count(); }
   check("dropdowns: no native <select> on filter pages", natives === 0, `${natives} native`);
   await open("/pro-drafts/");
-  const team = page.locator(".select-field", { hasText: "Team" }).locator("[role=combobox]");
+  // Role is a shared Select there; Team, Champion, Tournament and Series are pinnable pickers (checked below).
+  const team = page.locator(".select-field", { hasText: "Role" }).locator("[role=combobox]");
   await team.focus();
   await page.keyboard.press("ArrowDown");
   const opened = await page.locator(".select-menu[role=listbox]").isVisible();
@@ -590,16 +591,16 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   const activeId = await team.getAttribute("aria-activedescendant");
   await page.keyboard.press("Enter");
   // The filter lives in the URL; router.replace lands asynchronously.
-  await page.waitForURL(/[?&]team=/, { timeout: 4000 }).catch(() => {});
+  await page.waitForURL(/[?&]role=/, { timeout: 4000 }).catch(() => {});
   await page.waitForTimeout(300);
-  const picked = new URL(page.url()).searchParams.get("team");
-  const focused = await page.evaluate(() => document.activeElement?.getAttribute("role") === "combobox" && document.activeElement.closest(".select-field")?.textContent.startsWith("Team"));
+  const picked = new URL(page.url()).searchParams.get("role");
+  const focused = await page.evaluate(() => document.activeElement?.getAttribute("role") === "combobox" && document.activeElement.closest(".select-field")?.textContent.startsWith("Role"));
   const menuOpen = await page.locator(".select-menu").count();
   check("dropdowns: arrows + Enter choose an option, focus stays on the trigger", opened && !!activeId && !!picked && focused && menuOpen === 0, JSON.stringify({ opened, activeId: !!activeId, picked, focused, menuOpen }));
   check("dropdowns: menu uses the display font, tinted selected row with a check, labelled for screen readers", /grotesk/i.test(look.font ?? "") && look.selBg && look.selBg !== "rgba(0, 0, 0, 0)" && look.check === "visible" && !!look.label, JSON.stringify(look));
   await page.keyboard.press("Space");
   await page.keyboard.press("Escape");
-  const afterEsc = new URL(page.url()).searchParams.get("team");
+  const afterEsc = new URL(page.url()).searchParams.get("role");
   check("dropdowns: Escape closes without changing the value", (await page.locator(".select-menu").count()) === 0 && afterEsc === picked, "");
   await team.click();
   await page.locator("main h1").click();
@@ -627,7 +628,7 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await open("/pro-drafts/");
   const games = await page.$$eval(".drafts-table tbody.game-rows", (gs) => gs.map((g) => ({
     label: g.getAttribute("aria-label") ?? "", game: g.querySelector(".game-cell")?.textContent.trim() ?? "", gameCells: g.querySelectorAll(".game-cell").length,
-    rows: [...g.querySelectorAll("tr")].map((r) => ({ cls: r.className, side: r.dataset.side, title: r.title, team: r.querySelector(".team-name")?.textContent.trim(), vs: r.querySelector(".team-vs")?.textContent.trim() ?? "", picks: r.querySelectorAll(".pick-cell .champ").length, res: r.querySelector(".res")?.textContent.trim() })),
+    rows: [...g.querySelectorAll("tr")].map((r) => ({ cls: r.className, side: r.dataset.side, title: r.title, sr: r.querySelector(".team-cell .sr-only")?.textContent.trim() ?? "", team: r.querySelector(".team-name")?.textContent.trim(), vs: r.querySelector(".team-vs")?.textContent.trim() ?? "", picks: r.querySelectorAll(".pick-cell .champ").length, res: r.querySelector(".res")?.textContent.trim() })),
   })));
   const pairs = games.filter((g) => g.rows.length === 2);
   const ok = pairs.length > 0 && pairs.every((g) => g.gameCells === 1 && g.game && /pair-a/.test(g.rows[0].cls) && /pair-b/.test(g.rows[1].cls) && g.rows.every((r) => r.picks === 5 && !r.vs) && (g.label.includes(`${g.rows[0].team} vs ${g.rows[1].team}`) || g.label.includes(`${g.rows[1].team} vs ${g.rows[0].team}`)));
@@ -643,7 +644,8 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   const threePx = /(^|\s)3px 0px 0px( 0px)? inset|inset 3px/;
   check("pro drafts: blue and red side strips are 3px and differ", threePx.test(blue) && threePx.test(red) && blue !== red, `${blue} | ${red}`);
   const rows = games.flatMap((g) => g.rows);
-  check("pro drafts: side named on hover", rows.every((r) => ({ blue: "Blue side", red: "Red side", none: "Side not recorded" })[r.side] === r.title), "");
+  // No hover tooltip on the strips (alan, 2026-10-13); the side is named for screen readers and in the open game.
+  check("pro drafts: no side tooltip on rows, side named for screen readers", rows.every((r) => !r.title && r.sr === `${({ blue: "Blue side", red: "Red side", none: "Side not recorded" })[r.side]}:`), "");
   const icon = await page.$eval(".drafts-table .pick-cell .champ", (c) => c.getBoundingClientRect().width).catch(() => 0);
   const wl = await page.$eval(".drafts-table .res.win", (e) => { const cs = getComputedStyle(e); return { color: cs.color, bg: cs.backgroundColor, size: parseFloat(cs.fontSize) }; }).catch(() => null);
   const wlL = await page.$eval(".drafts-table .res.loss", (e) => getComputedStyle(e).color).catch(() => "");
@@ -655,6 +657,34 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await open(`/pro-drafts/?team=${encodeURIComponent(team)}`);
   const one = await page.$$eval(".drafts-table tbody.game-rows", (gs) => gs.map((g) => ({ rows: g.querySelectorAll("tr").length, side: g.querySelector("tr")?.dataset.side, vs: g.querySelector(".team-vs")?.textContent.trim() ?? "", game: !!g.querySelector(".game-cell") })));
   check("pro drafts: a one-sided view keeps each game's cell, names the opponent and keeps each row's side", one.length > 0 && one.every((g) => g.rows === 1 && g.game && /^vs /.test(g.vs)) && one.some((g) => g.side === "blue") && one.some((g) => g.side === "red"), `${team}: ${one.map((g) => g.side).join(",")}`);
+}
+// Pro Drafts pins (alan, 2026-10-13): teams, champions, tournaments and series can be pinned in their menus; a pin is
+// listed first, shows as a one-click filter under the menus, and a pinned team is starred in the table.
+{
+  await open("/pro-drafts/");
+  await page.evaluate(() => ["pro-builds:pinned-teams", "pro-builds:pinned-tournaments", "pro-drafts:pinned-champions", "pro-drafts:pinned-series"].forEach((k) => localStorage.removeItem(k)));
+  await open("/pro-drafts/");
+  const kinds = [];
+  for (const label of ["Team", "Champion", "Tournament", "Series"]) {
+    await page.locator(".drafts-tools .select-field", { hasText: label }).locator("[role=combobox]").click();
+    const opt = page.locator(".player-menu .select-option[data-value]:not([data-value=''])").last();
+    const value = await opt.getAttribute("data-value").catch(() => null);
+    await opt.locator(".pin-btn").click().catch(() => {});
+    // An open menu keeps its order while pinning (nothing moves under the pointer); the pin leads once it reopens.
+    await page.keyboard.press("Escape");
+    await page.locator(".drafts-tools .select-field", { hasText: label }).locator("[role=combobox]").click();
+    const first = await page.locator(".player-menu .select-option[data-value]:not([data-value=''])").first().getAttribute("data-value").catch(() => null);
+    await page.keyboard.press("Escape");
+    kinds.push({ label, value, first });
+  }
+  check("pro drafts pins: a pinned team, champion, tournament and series is listed first in its menu", kinds.every((k) => k.value && k.first === k.value), JSON.stringify(kinds));
+  const chips = await page.locator(".pinned-filters button").count();
+  check("pro drafts pins: pinned items show as one-click filters", chips === 4, `${chips} chips`);
+  const team = kinds[0].value;
+  await page.locator(".pinned-filters button", { hasText: team }).click();
+  await page.waitForURL(/[?&]team=/, { timeout: 4000 }).catch(() => {});
+  check("pro drafts pins: a pinned chip filters the table and the team is starred", new URL(page.url()).searchParams.get("team") === team && (await page.locator(".drafts-table .team-line .pin-icon.on").count()) > 0, page.url());
+  await page.evaluate(() => ["pro-builds:pinned-teams", "pro-builds:pinned-tournaments", "pro-drafts:pinned-champions", "pro-drafts:pinned-series"].forEach((k) => localStorage.removeItem(k)));
 }
 // Pro Builds page (/pro-builds/, components/views/ProBuildsView.tsx) and the links into it
 {

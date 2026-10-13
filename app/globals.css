@@ -1816,6 +1816,15 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 /* Filters: one height and one width for every menu, the game count quiet at the end. */
 .drafts-tools .select-trigger { min-width: 132px; }
 .drafts-tools .count { white-space: nowrap; }
+.drafts-tools .player-picker .select-trigger { min-width: 132px; width: 132px; }
+.drafts-tools .select-trigger { width: 132px; }
+/* Pinned teams, champions, tournaments and series as one-click filters (alan, 2026-10-13); a set one uses the strong chip. */
+.pinned-filters { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); flex-basis: 100%; }
+.pinned-filters .label { display: inline-flex; align-items: center; color: var(--text-muted); font-size: var(--fs-xs); }
+.pinned-filters .chip { cursor: pointer; font-family: var(--font-display); transition: background var(--t-fast), border-color var(--t-fast); }
+.pinned-filters .chip:hover { background: var(--surface-hover); }
+.pinned-filters .chip:focus-visible { box-shadow: var(--focus-ring); }
+.drafts-table .team-line .pin-icon { margin-right: 0; }
 .pro-freshness.compact { margin-bottom: var(--s4); }
 .game-panel-meta .source-links { display: inline; }
 .game-panel-meta .source-links a { margin-left: var(--s2); }
@@ -1841,7 +1850,8 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
   .drafts-table tbody.game-rows.selected { background: var(--accent-subtle); box-shadow: inset 1px 0 0 var(--accent); }
   .drafts-table tbody.game-rows:hover { background: var(--surface-hover); }
   .drafts-tools .select-field { flex: 1 1 45%; min-width: 0; }
-  .drafts-tools .select-trigger { min-width: 0; width: 100%; }
+  .drafts-tools .select-trigger, .drafts-tools .player-picker .select-trigger { min-width: 0; width: 100%; }
+  .drafts-tools .player-picker { flex: 1; min-width: 0; }
 }
 
 .game-panel { margin-bottom: var(--s5); }

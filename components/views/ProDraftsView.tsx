@@ -17,6 +17,7 @@ import type { DrawerContext } from "@/lib/drawer";
 const PRO_DRAFTS: DrawerContext = { page: "pro-drafts" };
 import { GameDetail } from "@/components/GameBuild";
 import { Select } from "@/components/Select";
+import { PinIcon, PinPicker, usePins, type PinKind } from "@/components/PlayerPicker";
 import type { DrawerData } from "@/lib/data";
 import { ChampIcon, ChampionRow, PageHeader, SourceLinks } from "@/components/ui";
 import { ROLES, type ProDraft, type Role, type Source } from "@/lib/schema";
@@ -49,11 +50,12 @@ const FILTER_KEYS = KEYS.filter((k) => k !== "id" && k !== "build");
 let loaded: Promise<BuildRow[]> | undefined;
 const load = () => (loaded ??= import("@/lib/pro-builds-bundle").then((m) => m.rows));
 
-export function ProDraftsView({ names, sources, all, freshness, drawerData, buildGames, events, shortNames }: {
+export function ProDraftsView({ names, sources, all, freshness, drawerData, buildGames, events, shortNames, eventIds }: {
   names: Record<string, string>; sources: Record<string, Source>; all: ProDraft[]; freshness: Freshness[]; drawerData: DrawerData;
   buildGames: number[]; // recorded games with Pro Builds (data/pro-builds.json)
   events: Record<string, string>; // meta.json event id -> short name, for the build header
   shortNames: Record<string, string>; // tournament name -> short name, for the game cell
+  eventIds: Record<string, string>; // tournament name -> meta.json event id, so tournament pins are shared with Pro Builds
 }) {
   const params = useSearchParams();
   const router = useRouter();
@@ -75,6 +77,26 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
       options={[{ value: "", label: any }, ...options.map(([value, l]) => ({ value, label: l }))]} />
   );
   const active = FILTER_KEYS.filter((k) => f[k]).length;
+  // Pinnable, typeable filters (alan, 2026-10-13): teams, champions, tournaments and series can be pinned; pins are kept
+  // in this browser, listed first in their menu, and a pinned team is starred in the table. Team and tournament pins
+  // are the same ones Pro Builds uses (tournaments by event id, so the URL keeps the tournament name).
+  const pick = (key: keyof Filters, kind: PinKind, options: [string, string][]) => (
+    <label className="select-field"><span>{key === "series" ? "Series" : key.charAt(0).toUpperCase() + key.slice(1)}</span>
+      <PinPicker kind={kind} value={f[key] ?? ""} options={options} onChange={(v) => setFilter(key, v)} /></label>
+  );
+  const teamPins = usePins("team");
+  const tournamentValue = f.tournament ? eventIds[f.tournament] ?? f.tournament : "";
+  const tournamentOptions: [string, string][] = uniq(all.map((d) => d.tournament)).map((t) => [eventIds[t] ?? t, shortNames[t] ?? t]);
+  const tournamentName = (v: string) => Object.keys(eventIds).find((n) => eventIds[n] === v) ?? v;
+  // Pinned items in this data, as one quiet line of one-click filters under the menus (only when something is pinned).
+  const champPins = usePins("champion"), eventPins = usePins("event"), seriesPins = usePins("series");
+  const teamSet = new Set(all.map((d) => d.team)), champSet = new Set(champions), seriesSet = new Set(all.map(seriesOf));
+  const quick: { key: keyof Filters; value: string; label: React.ReactNode; title: string }[] = [
+    ...teamPins.pins.filter((t) => teamSet.has(t)).map((t) => ({ key: "team" as const, value: t, label: t, title: `Team: ${t}` })),
+    ...champPins.pins.filter((c) => champSet.has(c)).map((c) => ({ key: "champion" as const, value: c, label: <><ChampIcon id={c} name={names[c] ?? c} size="xs" />{names[c] ?? c}</>, title: `Champion: ${names[c] ?? c}` })),
+    ...eventPins.pins.map(tournamentName).filter((t) => t in eventIds && all.some((d) => d.tournament === t)).map((t) => ({ key: "tournament" as const, value: t, label: shortNames[t] ?? t, title: `Tournament: ${t}` })),
+    ...seriesPins.pins.filter((x) => seriesSet.has(x)).map((x) => ({ key: "series" as const, value: x, label: x, title: `Series: ${x}` })),
+  ];
   // One game is one unit: its blue row then its red row under a shared game cell; a one-sided view keeps the game cell.
   const games = groupGames(rows);
   const gameCount = new Set(all.map(gameKey)).size;
@@ -124,7 +146,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
             {view.teams.map(({ d, side }) => (
               <div key={d.id} className={`game-team side-${side} ${target?.d.id === d.id ? "inspecting" : ""}`.trim()}>
                 <div className="game-team-head">
-                  <span className="side-tag label" title={SIDE_LABEL[side]}>{side === "none" ? "Side not recorded" : side === "blue" ? "Blue side" : "Red side"}</span>
+                  <span className="side-tag label">{side === "none" ? "Side not recorded" : side === "blue" ? "Blue side" : "Red side"}</span>
                   <b className="game-team-name">{d.team}</b>
                   {d.won != null && <span className={`xs ${d.won ? "win" : "loss"}`}>{d.won ? "Win" : "Loss"}</span>}
                   {d.bans?.length ? <span className="xs muted game-bans">Bans: {d.bans.map((b) => names[b] ?? b).join(", ")}</span> : null}
@@ -171,14 +193,27 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
       )}
 
       <form className="toolbar drafts-tools" method="get">
-        {sel("team", "Team", "All teams", uniq(all.map((d) => d.team)).map((t) => [t, t]))}
-        {sel("champion", "Champion", "All champions", champions.map((c) => [c, names[c] ?? c]))}
+        {pick("team", "team", uniq(all.map((d) => d.team)).map((t) => [t, t]))}
+        {pick("champion", "champion", champions.map((c) => [c, names[c] ?? c]))}
         {sel("role", "Role", "Any role", ROLES.map((r) => [r, r]))}
-        {sel("tournament", "Tournament", "All tournaments", uniq(all.map((d) => d.tournament)).map((t) => [t, shortNames[t] ?? t]))}
-        {sel("series", "Series", "All series", uniq(all.map(seriesOf)).map((x) => [x, x]))}
+        <label className="select-field"><span>Tournament</span>
+          <PinPicker kind="event" value={tournamentValue} options={tournamentOptions} onChange={(v) => setFilter("tournament", tournamentName(v))} /></label>
+        {pick("series", "series", uniq(all.map(seriesOf)).map((x) => [x, x]))}
         <noscript><button className="btn primary sm" type="submit">Filter</button></noscript>
         {active > 0 && <Link className="btn sm ghost" href="/pro-drafts">Clear {active} filter{active > 1 ? "s" : ""}</Link>}
         <span className="count" title={`${rows.length} of ${all.length} team drafts`}>{games.length} of {gameCount} games</span>
+        {quick.length > 0 && (
+          <div className="pinned-filters" role="group" aria-label="Pinned filters">
+            <span className="label"><PinIcon on />Pinned</span>
+            {quick.map((q) => {
+              const on = f[q.key] === q.value;
+              return (
+                <button key={`${q.key}:${q.value}`} type="button" className={`chip plain ${on ? "strong" : ""}`.trim()} aria-pressed={on}
+                  title={`${q.title}${on ? " (click to clear)" : ""}`} onClick={() => setFilter(q.key, on ? "" : q.value)}>{q.label}</button>
+              );
+            })}
+          </div>
+        )}
       </form>
       <div className="table-wrap tall drafts-table">
         <table>
@@ -188,7 +223,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
             return (
               <tbody key={g.key} className={`game-rows ${open ? "selected" : ""}`.trim()} aria-label={`${g.rows[0].d.team} vs ${g.rows[0].d.opponent}, ${g.rows[0].d.seriesGame}`}>
                 {g.rows.map(({ d, pair, side }, i) => (
-                  <tr key={d.id} className={`clickable side-${side} ${pair} ${d.id === f.id ? "selected" : ""}`.replace(/\s+/g, " ").trim()} title={SIDE_LABEL[side]} data-side={side} aria-selected={d.id === f.id}
+                  <tr key={d.id} className={`clickable side-${side} ${pair} ${d.id === f.id ? "selected" : ""}`.replace(/\s+/g, " ").trim()} data-side={side} aria-selected={d.id === f.id}
                     onClick={(e) => { if ((e.target as HTMLElement).closest("a, button")) return; router.push(link(d)); }}>
                     {i === 0 && (
                       <td className="game-cell" rowSpan={g.rows.length}>
@@ -199,8 +234,10 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
                       </td>
                     )}
                     <td className="team-cell">
+                      {/* The strip carries the side visually (no hover tooltip, alan 2026-10-13); this names it for screen readers. */}
+                      <span className="sr-only">{SIDE_LABEL[side]}: </span>
                       <span className="team-line">
-                        <span className="team-name truncate">{d.team}</span>
+                        {teamPins.isPinned(d.team) && <PinIcon on />}<span className="team-name truncate">{d.team}</span>
                         {d.won != null && <span className={`res ${d.won ? "win" : "loss"}`} title={d.won ? "Won" : "Lost"}>{d.won ? "W" : "L"}</span>}
                       </span>
                       {!g.paired && <span className="team-vs xs muted truncate">vs {d.opponent}</span>}
