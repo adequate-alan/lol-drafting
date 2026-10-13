@@ -161,5 +161,6 @@ export function startLine(s: StartingPick, roleName: string, rotation = true): s
 }
 
 export const blindLabel = (s: StartingPick) => (s.blind == null ? undefined : `Blind · ${ratio(s.blind, s.classified)}`);
-export const rotationLabel = (s: StartingPick) => (s.ordered ? `First rotation · ${ratio(s.firstRotation, s.ordered)}` : undefined);
+// Always the actual fraction (alan, 2026-10-13): "First rotation · 8/10 (80%)". A count, never a claim of blind safety.
+export const rotationLabel = (s: StartingPick) => (s.ordered ? `First rotation · ${s.firstRotation}/${s.ordered} (${pct(s.firstRotation / s.ordered)})` : undefined);
 export const ROLE_NAMES = Object.fromEntries(ROLES.map((r) => [r, r[0] + r.slice(1).toLowerCase()])) as Record<Role, string>;

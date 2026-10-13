@@ -70,7 +70,7 @@ describe("first rotation, first overall and pick order", () => {
     expect(rumble.ordered).toBe(ordered);
     expect(rumble.firstRotation).toBe(first);
     expect(rumble.later).toBe(ordered - first);
-    expect(rotationLabel(rumble)).toBe(`First rotation · ${first} of ${ordered}`);
+    expect(rotationLabel(rumble)).toBe(`First rotation · ${first}/${ordered} (${Math.round((first / ordered) * 100)}%)`);
   });
 
   it("first overall is never inferred from first rotation or from the side", () => {

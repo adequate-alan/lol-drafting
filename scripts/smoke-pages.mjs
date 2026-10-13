@@ -106,7 +106,7 @@ await open("/");
 const startRows = await page.locator(".recs .fit-role.role-TOP .fit-row").count();
 const startText = await text(".recs .fit-role.role-TOP");
 check("empty Draft Room lists pro meta starting picks for Top", startRows > 0 && (await page.locator(".rec-empty.start").count()) === 0
-  && /First rotation · \d+ of \d+/.test(startText) && /Patch 26\.\d+/.test(startText) && !/\b16\.\d\d\b/.test(startText), `${startRows} rows`);
+  && /First rotation · \d+\/\d+ \(\d+%\)/.test(startText) && /Patch 26\.\d+/.test(startText) && !/\b16\.\d\d\b/.test(startText), `${startRows} rows`);
 check("starting picks carry no score", (await page.locator(".recs .fit-role.role-TOP button.fit-score").count()) === 0, "");
 await page.locator(".role-tab.role-MID").click();
 check("starting picks follow the selected role (Mid)", (await page.locator(".recs .fit-role.role-MID .fit-row").count()) > 0, "");
