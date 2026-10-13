@@ -1,12 +1,11 @@
-// My Role (alan, 2026-10-12): the role I play in Draft Room, linked to Pro Builds. Links carry the champion, role, newest
-// patch with recorded builds and the whole draft; only a confirmed lock of my own role opens Pro Builds, and only with
+// My Role (alan, 2026-10-12): the role I play in Draft Room, linked to Pro Builds. Links carry the champion, role and the whole
+// draft, on every patch (alan, 2026-10-13); only a confirmed lock of my own role opens Pro Builds, and only with
 // the preference on. Nothing here changes a recommendation.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { getBuildIndex } from "@/lib/data";
 import { buildsEntry, cleanFrom, draftHref, draftQuery, myBuildsHref, opensBuilds, parseRole } from "@/lib/my-role";
-import { comparePatch, patchLabel } from "@/lib/patch";
 import { ROLES } from "@/lib/schema";
 
 const index = getBuildIndex();
@@ -29,18 +28,15 @@ describe("Draft Room → Pro Builds links", () => {
     expect(cleanFrom("javascript:alert(1)")).toBe("");
   });
 
-  it("opens the champion and role on the newest patch with recorded builds", () => {
+  it("opens the champion and role on every patch, never silently the newest only", () => {
     const e = [...index].sort((a, b) => b.games - a.games)[0];
     const href = myBuildsHref(index, e.champion, e.role, "bot=jhin");
     const u = new URL(href, "https://x.test");
     expect(u.pathname).toBe("/pro-builds/");
     expect(u.searchParams.get("champion")).toBe(e.champion);
     expect(u.searchParams.get("role")).toBe(e.role);
-    expect(u.searchParams.get("patch")).toBe(patchLabel(e.latest));
-    expect(u.searchParams.get("patch")).toMatch(/^26\./);
+    expect(u.searchParams.get("patch")).toBeNull();
     expect(u.searchParams.get("from")).toBe("bot=jhin");
-    // latest really is the newest patch recorded for that champion and role
-    expect(index.filter((x) => x.champion === e.champion && x.role === e.role).every((x) => comparePatch(e.latest, x.latest) >= 0)).toBe(true);
   });
 
   it("keeps each role of a champion with builds in several roles apart", () => {

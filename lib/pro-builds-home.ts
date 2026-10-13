@@ -92,3 +92,19 @@ export function readViewed(raw: string | null): Viewed[] {
     return Array.isArray(v) ? v.filter((x) => x && typeof x.champion === "string" && parseRole(x.role)).slice(0, RECENT_MAX) : [];
   } catch { return []; }
 }
+
+/**
+ * The game Pro Builds shows for a champion (alan, 2026-10-13), from rows already in the active filters, newest first:
+ *   1. the URL's game, when it is among them;
+ *   2. a chosen player: the rows are already that player's, so their newest game (never replaced by a pin);
+ *   3. the newest game of a pinned player (the pinned player who played it most recently, not the one with most games);
+ *   4. the newest game.
+ * Pins are Gol.gg player ids, so newly recorded games count on their own.
+ */
+export function defaultGame(rows: BuildRow[], q: { game?: string; player?: string }, pins: string[]): BuildRow | undefined {
+  const asked = q.game ? rows.find((r) => String(r.game.id) === q.game) : undefined;
+  if (asked) return asked;
+  if (q.player) return rows[0];
+  const pinned = new Set(pins);
+  return rows.find((r) => pinned.has(String(r.build.playerId))) ?? rows[0];
+}

@@ -28,7 +28,7 @@ async function choose(trigger, value) {
 // Pro Builds opens on its overview (alan, 2026-10-13); detailed checks open the champion with the most recorded games
 // from the overview's champion browser, across every patch.
 async function openBuildsChampion() {
-  await open("/pro-builds/?patch=all");
+  await open("/pro-builds/");
   const subs = await page.locator(".pick-rail li button .rail-sub:not(.rail-player)").allTextContents();
   const counts = subs.map((t) => Number(/(\d+) game/.exec(t)?.[1] ?? 0));
   await page.locator(".pick-rail li button").nth(counts.indexOf(Math.max(...counts))).click();
@@ -241,8 +241,8 @@ await page.keyboard.press("Enter");
 await page.waitForURL(/pro-builds/, { timeout: 15000 }).catch(() => {});
 const arrived = new URL(page.url());
 await page.locator(".game-head").first().waitFor({ timeout: 15000 }).catch(() => {});
-check("My Role: locking my champion opens its Pro Builds on the newest patch", arrived.pathname.endsWith("/pro-builds/")
-  && arrived.searchParams.get("champion") === "jhin" && arrived.searchParams.get("role") === "BOT" && /^26\./.test(arrived.searchParams.get("patch") ?? "")
+check("My Role: locking my champion opens its Pro Builds on every patch", arrived.pathname.endsWith("/pro-builds/")
+  && arrived.searchParams.get("champion") === "jhin" && arrived.searchParams.get("role") === "BOT" && !arrived.searchParams.has("patch")
   && (await text(".builds-head h2")) === "Jhin", page.url());
 await page.locator("a", { hasText: "Back to Draft Room" }).first().click();
 await page.locator(".my-role").waitFor();
@@ -733,9 +733,10 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     search: await page.locator(".builds-home-tools input[type=search]").count(), roles: await page.locator(".builds-home-tools .seg button").count(),
     patch: await page.locator(".builds-home-tools [role=combobox][aria-label='Patch']").innerText().catch(() => "") };
   check("builds overview: /pro-builds/ opens the overview with no champion selected", home.head === 0 && home.active === 0 && !/champion=/.test(home.url), JSON.stringify(home));
-  check("builds overview: search, five roles plus All, the latest patch, pinned players and recent builds", home.search === 1 && home.roles === 6 && /26\.\d+ · latest/.test(home.patch) && home.pinned === 1 && home.rows > 0, JSON.stringify(home));
+  check("builds overview: search, five roles plus All, every patch by default, pinned players and recent builds", home.search === 1 && home.roles === 6 && /All patches/.test(home.patch) && home.pinned === 1 && home.rows > 0, JSON.stringify(home));
   const dates = await page.$$eval(".recent-builds tbody tr", (trs) => trs.map((tr) => tr.children[5].textContent + " " + tr.children[6].textContent));
-  check("builds overview: recent builds are on the newest patch, newest first", dates.length > 0 && new Set(dates.map((d) => d.split(" ")[0])).size === 1, dates.slice(0, 3).join(" | "));
+  const rowPatches = dates.map((d) => Number(d.split(" ")[0].split(".")[1]));
+  check("builds overview: recent builds list every patch, newest patch first", rowPatches.length > 0 && rowPatches.every((p, i) => i === 0 || p <= rowPatches[i - 1]), dates.slice(0, 3).join(" | "));
   const firstRow = page.locator(".recent-builds tbody tr").first();
   const rowPlayer = (await firstRow.locator("td").first().locator("b").textContent())?.trim();
   const rowChamp = (await firstRow.locator(".champ-cell .champ-name").textContent())?.trim();
@@ -764,6 +765,27 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await open("/pro-builds/?champion=jhin&role=BOT");
   await page.locator(".builds-head, .builds-empty").first().waitFor({ timeout: 8000 }).catch(() => {});
   check("builds: an explicit champion URL opens that champion and role", (await page.locator(".builds-title h2").textContent().catch(() => "")) === "Jhin" && /BOT/.test(await page.locator(".pick-rail li button.active").innerText().catch(() => "")), page.url());
+  // Pinned players first (alan, 2026-10-13): with Ruler (Gol.gg 685) pinned, Ashe Bot opens his newest Ashe game on
+  // 26.16 although newer 26.18 games exist; a chosen player, an explicit patch and unpinning are respected.
+  {
+    const keep = await page.evaluate(() => localStorage.getItem("pro-builds:pinned-players"));
+    await page.evaluate(() => localStorage.setItem("pro-builds:pinned-players", JSON.stringify(["685"])));
+    const shown = async (q) => {
+      await open(`/pro-builds/?champion=ashe&role=BOT${q}`);
+      await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
+      return { player: (await page.locator(".build-pick.active b").first().textContent().catch(() => ""))?.trim(), head: (await page.locator(".game-head").innerText().catch(() => "")).replace(/\s+/g, " "), games: await page.locator(".build-pick").count(), url: page.url() };
+    };
+    const ruler = await shown("");
+    check("builds: a pinned player's newest game opens first, on any patch, others still listed", ruler.player === "Ruler" && /Ruler/.test(ruler.head) && /26\.16/.test(ruler.head) && ruler.games > 2 && !/game=/.test(ruler.url), JSON.stringify(ruler));
+    const chosen = await shown("&player=1931");
+    check("builds: a chosen player is never replaced by a pinned one", chosen.player === "GALA", JSON.stringify(chosen));
+    const patch = await shown("&patch=26.18");
+    check("builds: an explicit patch stays; the pinned player's older games don't override it", patch.player !== "Ruler" && /26\.18/.test(patch.head) && /patch=26\.18/.test(patch.url), JSON.stringify(patch));
+    await page.evaluate(() => localStorage.setItem("pro-builds:pinned-players", "[]"));
+    const unpinned = await shown("");
+    check("builds: unpinned, the newest recorded game opens", unpinned.player !== "Ruler" && /26\.18/.test(unpinned.head), JSON.stringify(unpinned));
+    await page.evaluate((v) => { if (v == null) localStorage.removeItem("pro-builds:pinned-players"); else localStorage.setItem("pro-builds:pinned-players", v); }, keep);
+  }
   await page.setViewportSize({ width: 390, height: 844 });
   await open("/pro-builds/");
   await page.locator(".recent-builds tbody tr").first().waitFor({ timeout: 8000 }).catch(() => {});

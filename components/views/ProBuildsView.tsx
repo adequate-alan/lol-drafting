@@ -35,7 +35,7 @@ import { ROLES, type Role } from "@/lib/schema";
 import { cleanFrom, draftHref as backHref } from "@/lib/my-role";
 import { rovingIndex, rovingKeys } from "@/components/roving";
 import { BuildsHome } from "@/components/BuildsHome";
-import { browse, buildPatches, latestPatch, parseRole, readViewed, recordFor, selectionOf, addViewed, RECENT_KEY } from "@/lib/pro-builds-home";
+import { browse, buildPatches, defaultGame, latestPatch, parseRole, readViewed, recordFor, selectionOf, addViewed, RECENT_KEY } from "@/lib/pro-builds-home";
 
 type Mode = "games" | "common" | "compare";
 const MODES: [Mode, string][] = [["games", "Games"], ["common", "Common build"], ["compare", "Compare"]];
@@ -88,11 +88,11 @@ export function ProBuildsView({ index, names, events, drawerData }: {
     if (record) update({ champion: record.build.champion, role: record.build.role, game: sel.kind === "record" && sel.game ? String(record.game.id) : undefined, player: String(record.build.playerId) });
   }, [record?.key]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Patch scope: the overview opens on the newest patch with recorded builds ("all" shows every patch); a champion
-  // carries the patch it was opened with and shows every patch without one.
+  // Patch scope (alan, 2026-10-13): every patch unless one is chosen or in the URL; a chosen patch carries into the
+  // champion. "all" (older links) is every patch too.
   const newest = latestPatch(index);
   const patchParam = get("patch");
-  const scopePatch = patchParam === "all" ? undefined : patchParam ?? (home ? newest : undefined);
+  const scopePatch = patchParam === "all" ? undefined : patchParam;
 
   // Rail (the champion browser): on the overview its search and role are the overview's own controls.
   const [query, setQuery] = useState("");
@@ -140,7 +140,7 @@ export function ProBuildsView({ index, names, events, drawerData }: {
     } catch { /* private mode: no shortcuts */ }
   }, [entry?.champion, entry?.role, params.get("game"), params.get("player")]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const homeHref = `/pro-builds/${patchParam && patchKey(patchParam) !== newest ? `?patch=${encodeURIComponent(patchParam)}` : ""}`;
+  const homeHref = `/pro-builds/${scopePatch ? `?patch=${encodeURIComponent(patchLabel(scopePatch))}` : ""}`;
   const toHome = <Link className="btn sm ghost builds-home-link" href={homeHref}>← Pro Builds overview</Link>;
 
   // Scope
@@ -177,9 +177,9 @@ export function ProBuildsView({ index, names, events, drawerData }: {
               <button key={r ?? "all"} type="button" className={homeRole === r ? "active" : undefined} aria-pressed={homeRole === r} onClick={() => update({ role: r })}>{r ? ROLE_NAME[r] : "All"}</button>
             ))}
           </div>
-          <Select label="Patch" value={patchParam === "all" ? "all" : scopePatch ? patchKey(scopePatch) : "all"}
-            options={[...patches.map((p) => ({ value: p, label: p === newest ? `${patchLabel(p)} · latest` : patchLabel(p) })), { value: "all", label: "All patches" }]}
-            onChange={(v) => update({ patch: v === newest ? undefined : v })} />
+          <Select label="Patch" value={scopePatch ? patchKey(scopePatch) : ""}
+            options={[{ value: "", label: "All patches" }, ...patches.map((p) => ({ value: p, label: p === newest ? `${patchLabel(p)} · latest` : patchLabel(p) }))]}
+            onChange={(v) => update({ patch: v || undefined })} />
         </div>
       )}
       <div className={`split builds-split${home ? " home" : ""}`}>
@@ -270,7 +270,7 @@ export function ProBuildsView({ index, names, events, drawerData }: {
               : !rows.length ? <p className="small muted">No recorded games match these filters.{get("patch") && <> <button type="button" className="btn sm ghost" onClick={() => update({ patch: undefined, game: undefined, a: undefined, b: undefined })}>Show every patch</button></>}</p>
               : mode === "common" ? <CommonView c={common(rows)} rows={rows} champion={champion} evName={evName} />
               : mode === "compare" ? <CompareView rows={rows} a={get("a")} b={get("b")} label={gameLabel} name={name} evName={evName} onPick={(k, v) => update({ [k]: v })} />
-              : <GamesView rows={rows} current={get("game")} preferPinned={!!from} name={name} evName={evName} onPick={(g) => update({ game: String(g) })} />}
+              : <GamesView rows={rows} current={get("game")} player={get("player")} name={name} evName={evName} onPick={(g) => update({ game: String(g) })} />}
           </>}
         </div>
       </div>
@@ -279,16 +279,23 @@ export function ProBuildsView({ index, names, events, drawerData }: {
 }
 
 // ---------- individual games ----------
-function GamesView({ rows, current, preferPinned, name, evName, onPick }: {
-  rows: BuildRow[]; current?: string; preferPinned?: boolean; name: (id: string) => string; evName: (r: BuildRow) => string; onPick: (game: number) => void;
+function GamesView({ rows, current, player, name, evName, onPick }: {
+  rows: BuildRow[]; current?: string; player?: string; name: (id: string) => string; evName: (r: BuildRow) => string; onPick: (game: number) => void;
 }) {
-  const { isPinned } = usePins();
+  const { pins, isPinned } = usePins();
   const team = usePins("team");
-  // From Draft Room, the newest game of a pinned player opens first when there is one.
-  const r = rows.find((x) => String(x.game.id) === current) ?? (preferPinned ? rows.find((x) => isPinned(String(x.build.playerId))) : undefined) ?? rows[0];
+  // The game shown (alan, 2026-10-13): the URL's game; else, with no player chosen, the newest game of a pinned
+  // player within the filters; else the newest game. A chosen player is never replaced (rows are already theirs).
+  const r = defaultGame(rows, { game: current, player }, pins)!;
+  // Keep the selected game in view in the strip (the strip scrolls, never the page).
+  const strip = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = strip.current?.querySelector<HTMLElement>(".build-pick.active"), box = strip.current;
+    if (el && box && (el.offsetLeft < box.scrollLeft || el.offsetLeft + el.offsetWidth > box.scrollLeft + box.clientWidth)) box.scrollLeft = el.offsetLeft - box.offsetLeft - 8;
+  }, [r.key]);
   return (
     <>
-      <div className="build-picks" role="listbox" aria-label="Recorded games" onKeyDown={(e) => rovingKeys(e, "[role='option']")}>
+      <div className="build-picks" ref={strip} role="listbox" aria-label="Recorded games" onKeyDown={(e) => rovingKeys(e, "[role='option']")}>
         {rows.map((x) => (
           <button key={x.key} type="button" role="option" aria-selected={x === r} tabIndex={rovingIndex(x === r)} className={`build-pick side-${x.side} ${x === r ? "active" : ""}`} onClick={() => onPick(x.game.id)}
             title={`${x.build.player} (${x.team}) vs ${x.opponentTeam}\n${evName(x)} · ${patchLabel(x.game.patch)} · ${shortDate(x.game.date)} · ${x.side} side · ${x.won ? "win" : "loss"}`}>
