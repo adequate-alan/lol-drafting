@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import { getDraftData, getMeta, getPriority, getProGames, getSources } from "@/lib/data";
 import { draftCandidates } from "@/lib/candidates";
 import {
-  bucket, championHistory, forRole, markFor, orderRead, patchKey, patchLabel, patchesOf, previousPatch, priorityChanges,
+  bucket, championHistory, forRole, markFor, ORDER_READ, ORDER_READ_LABEL, orderRead, orderText, patchKey, patchLabel, patchesOf, previousPatch, priorityChanges,
   priorityData, priorityMarks, rolePicksOf, sortRows, supportingGames,
 } from "@/lib/pro-priority";
 import { parseGamePage } from "@/scripts/golgg/parse.mjs";
@@ -263,5 +263,17 @@ describe("order read over the six-pick first rotation", () => {
     expect(orderRead(o(6, 4))).toBe("mixed");
     expect(orderRead(o(8, 2))).toBe("early");
     expect(orderRead(o(4, 6))).toBe("late");
+  });
+
+  it("needs five ordered picks before any read and always shows the fraction", () => {
+    const o = (known: number, first: number) => ({ known, firstPick: 0, firstRotation: first, phase2: known - first, lastPick: 0 });
+    expect(ORDER_READ.minPicks).toBe(5);
+    expect(orderRead(o(1, 1))).toBeUndefined();
+    expect(orderRead(o(4, 4))).toBeUndefined();
+    expect(orderText(o(1, 1))).toBe("1/1 first rotation (100%) · too few picks to read");
+    expect(orderRead(o(5, 4))).toBe("early");
+    expect(orderText(o(10, 8))).toBe("8/10 first rotation (80%) · usually picked early");
+    // Descriptive only: never a blind-safety, counter or meta claim.
+    expect(Object.values(ORDER_READ_LABEL).join(" ")).not.toMatch(/blind|safe|counter|meta|priority/i);
   });
 });
