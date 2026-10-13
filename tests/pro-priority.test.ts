@@ -186,13 +186,13 @@ describe("pick order", () => {
     if (!ordered) expect(b.rows.every((r) => r.order.known === 0 && orderRead(r.order) === undefined)).toBe(true);
   });
 
-  it("counts pick 1 of the draft as first pick and picks 1-3 as first rotation, whichever side picked first", () => {
+  it("counts pick 1 of the draft as first pick and each team's first three picks as first rotation, whichever side picked first", () => {
     const games = clone(file.games.filter((g) => g.event === DEMACIA));
     games.forEach((g, i) => { g.blue.pickOrder = Object.values(g.blue.picks); g.red.pickOrder = Object.values(g.red.picks); g.firstPick = i % 2 ? "red" : "blue"; });
     const b = bucket(priorityData(meta, withGames(games)), { patch: "16.18", ...demacia });
     expect(b.orderGames).toBe(games.length);
     const total = b.rows.reduce((n, r) => n + r.order.firstRotation, 0);
-    expect(total).toBe(3 * games.length);
+    expect(total).toBe(6 * games.length);
     expect(b.rows.reduce((n, r) => n + r.order.firstPick, 0)).toBe(games.length);
     expect(b.rows.reduce((n, r) => n + r.order.lastPick, 0)).toBe(games.length);
     expect(b.rows.reduce((n, r) => n + r.order.phase2, 0)).toBe(4 * games.length);
@@ -254,5 +254,14 @@ describe("Draft Room label", () => {
     }
     expect(markFor(marks, "nocturne", "JUNGLE")).toBeDefined();
     expect(markFor(marks, "nocturne", "MID")).toBeUndefined();
+  });
+});
+
+describe("order read over the six-pick first rotation", () => {
+  it("calls a champion early or late only past the 60 / 40 split", () => {
+    const o = (first: number, late: number) => ({ known: 10, firstPick: 0, firstRotation: first, phase2: late, lastPick: 0 });
+    expect(orderRead(o(6, 4))).toBe("mixed");
+    expect(orderRead(o(8, 2))).toBe("early");
+    expect(orderRead(o(4, 6))).toBe("late");
   });
 });

@@ -204,7 +204,7 @@ export function bucket(d: PriorityData, s: Scope): Bucket {
           const o = row(id).order, turn = turnOf(i, g.firstPick === side);
           o.known += 1;
           if (turn === 1) o.firstPick += 1;
-          if (turn <= 3) o.firstRotation += 1;
+          if (turn <= 6) o.firstRotation += 1; // each team's first three picks (alan, 2026-10-13)
           if (turn >= 7) o.phase2 += 1;
           if (turn === 10) o.lastPick += 1;
         });
@@ -287,8 +287,9 @@ export function sortRows(rows: PriorityRow[], key: PrioritySort, role?: Role): P
 /** A read of when a champion is taken, from recorded pick order only. Undefined below three ordered picks. */
 export function orderRead(o: OrderStats): "early" | "late" | "mixed" | undefined {
   if (o.known < 3) return undefined;
-  if (o.firstRotation / o.known >= 0.5) return "early";
-  if (o.phase2 / o.known >= 0.5) return "late";
+  // Six of ten picks are first rotation, so "early" and "late" need a clear lean past that 60 / 40 split.
+  if (o.firstRotation / o.known >= 0.8) return "early";
+  if (o.phase2 / o.known >= 0.6) return "late";
   return "mixed";
 }
 

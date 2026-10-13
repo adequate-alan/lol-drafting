@@ -96,7 +96,7 @@ export function ProPrioritySection({ data, patchIndex, names, sources, params, C
             <span className="count">{rows.length} champions</span>
           </div>
           <Disclosure summary="How these numbers work">
-            <p>Presence = games a champion was picked or banned ÷ games on the patch with both teams&apos; bans recorded. Pick rate = picks ÷ games; ban rate = games banned ÷ games; win rate = wins ÷ picks. Games are unique games, never team-games. Bans have no role: on a role tab, picks are that role&apos;s recorded picks, while bans and presence stay champion-wide. A patch is counted from its recorded Gol.gg games when every game of the tournament is recorded; otherwise from the tournament&apos;s Gol.gg table, and only when the whole tournament was played on that one patch (that table has no sides, dates or pick order). First rotation = blue&apos;s first pick and red&apos;s first two, from each team&apos;s pick order as the Gol.gg game page lists it in the standard tournament draft; shown only where that order is stored. * is fewer than 5 picks. Pro evidence only: it never changes saved pairings or the Draft Room order.</p>
+            <p>Presence = games a champion was picked or banned ÷ games on the patch with both teams&apos; bans recorded. Pick rate = picks ÷ games; ban rate = games banned ÷ games; win rate = wins ÷ picks. Games are unique games, never team-games. Bans have no role: on a role tab, picks are that role&apos;s recorded picks, while bans and presence stay champion-wide. A patch is counted from its recorded Gol.gg games when every game of the tournament is recorded; otherwise from the tournament&apos;s Gol.gg table, and only when the whole tournament was played on that one patch (that table has no sides, dates or pick order). First rotation = each team&apos;s first three picks (six per game, before the second ban phase), from each team&apos;s pick order as the Gol.gg game page lists it in the standard tournament draft; shown only where that order is stored. * is fewer than 5 picks. Pro evidence only: it never changes saved pairings or the Draft Room order.</p>
           </Disclosure>
           <div className="table-wrap tall hub-table priority-table">
             <table>
@@ -108,7 +108,7 @@ export function ProPrioritySection({ data, patchIndex, names, sources, params, C
                 {sortHead("presence", <>Presence{role !== "ALL" && <span className="faint"> · all</span>}</>, "Games picked or banned ÷ games. Champion-wide")}
                 {sortHead("winRate", "WR", "Wins ÷ picks, all roles")}
                 <th className="num hide-sm" title="Picks on blue side / red side (recorded games only)">Blue / red</th>
-                {showOrder && sortHead("firstRotation", "1st rot.", "Share of ordered picks taken in the first rotation (picks 1–3 of the draft; the first-picking team is read per game)", "hide-sm")}
+                {showOrder && sortHead("firstRotation", "1st rot.", "Share of ordered picks taken in the first rotation (each team's first three picks, six per game)", "hide-sm")}
                 {allPatches && <th className="hide-sm">Patches</th>}
                 {sortHead("recency", "Latest", "Most recent recorded game with this champion picked or banned")}
               </tr></thead>

@@ -34,7 +34,7 @@ describe("draft order", () => {
   it("interleaves first team F1 S1 S2 F2 F3 S3 | S4 F4 F5 S5", () => {
     expect([0, 1, 2, 3, 4].map((i) => turnOf(i, true))).toEqual([1, 4, 5, 8, 9]);
     expect([0, 1, 2, 3, 4].map((i) => turnOf(i, false))).toEqual([2, 3, 6, 7, 10]);
-    expect([1, 3, 4, 6, 7, 9, 10].map(rotationOf)).toEqual(["first", "first", "phase1", "phase1", "phase2", "phase2", "last"]);
+    expect([1, 3, 4, 6, 7, 9, 10].map(rotationOf)).toEqual(["first", "first", "first", "first", "second", "second", "last"]);
   });
 
   it("reads the real Gol.gg game pages: per-team order and the first-pick side together give the interleaved draft", () => {
