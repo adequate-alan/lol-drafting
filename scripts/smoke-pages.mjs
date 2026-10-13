@@ -409,7 +409,7 @@ await page.locator(".theme-toggle").click();
   check("drawer: a pinned player's game opens that exact build (champion, role, game, player)", /champion=ashe&role=BOT&game=\d+&player=685/.test(pinGame ?? ""), pinGame);
   await page.keyboard.press("Escape");
   await page.evaluate(() => localStorage.removeItem("pro-builds:pinned-players"));
-  await open("/synergies/bot/?champ=ezreal");
+  await open("/synergies/bot/?champ=ezreal&view=pro");
   const karmaRow = await page.locator(".pro-table tr", { hasText: "Karma" }).first().innerText().catch(() => "");
   check("pro pairings show games, event, patch and date (Ezreal + Karma)", /1\s+Demacia Cup.*\s+26\.18\s+Oct 3/.test(karmaRow), karmaRow.replace(/\s+/g, " "));
 }
@@ -553,9 +553,34 @@ await page.locator(".theme-toggle").click();
   const sigs = (await page.locator(".fit-row .sig.usage").allTextContents()).join("|");
   check("draft room: with the enemy top locked, TOP rows say what was picked into it", /Picked into Rumble · \d+/.test(sigs), sigs);
 }
+// Mid, Bot and Support draft usage (alan, 2026-10-13): All patches by default, a chosen patch kept while browsing, an
+// explicit URL patch wins; Mid shows the enemy jungler as context; Bot and Support read the bot lane as a duo.
+{
+  await open("/synergies/mid/?champ=ryze&view=usage");
+  const usage = (await page.locator(".top-report").textContent().catch(() => "")) ?? "";
+  check("mid: Ryze opens on All patches with blind counts, the enemy jungler as context and a per-patch table",
+    (await page.locator(".top-tools [aria-label=Patch]").getAttribute("data-value")) === "all" && /All patches \(26\.\d+–26\.\d+\)/.test(usage)
+    && /Blind\s*\d+\/\d+/.test(usage) && /After enemy jungler/.test(usage) && (await page.locator(".by-patch tbody tr").count()) >= 2, usage.slice(0, 160));
+  await choose(".top-tools [aria-label=Patch]", "26.18");
+  await page.locator("nav.tabs a", { hasText: "Support" }).click();
+  await page.waitForURL(/synergies\/support\//);
+  await page.waitForTimeout(300);
+  check("synergies: a chosen patch is kept when switching roles", /patch=26\.18/.test(page.url()), page.url());
+  await open("/synergies/bot/?champ=yunara&view=duo&patch=26.16");
+  check("synergies: an explicit URL patch wins over the kept one", /patch=26\.16/.test(page.url()) && (await page.locator(".top-tools [aria-label=Patch]").getAttribute("data-value")) === "26.16", page.url());
+  await choose(".top-tools [aria-label=Patch]", "all");
+  await open("/synergies/bot/?champ=yunara&view=duo");
+  const duo = (await page.locator(".top-report").textContent().catch(() => "")) ?? "";
+  check("bot: Yunara's Duo drafting lists Yunara + Lulu and a repeated response into Lucian + Milio, never a counter",
+    /Yunara \+ Lulu/.test(duo) && (await page.locator(".duo-list > li", { hasText: "Lucian + Milio" }).filter({ hasText: "Repeated response" }).count()) >= 1 && !/Supported counter/.test(duo) && !/patch=/.test(page.url()), page.url());
+  await page.locator(".duo-btn", { hasText: "Yunara + Lulu" }).click();
+  await page.locator(".duo-games > li > button").first().click();
+  const g = (await page.locator(".duo-games .top-game").first().textContent().catch(() => "")) ?? "";
+  check("bot: a duo game opens with first pick, the ten picks and what the pick could see", /picked first|not marked/.test(g) && /Enemy ADC/.test(g), g.slice(0, 160));
+}
 // Champion Synergies: hover card on desktop, drawer on click
 {
-  await open("/synergies/bot/?champ=caitlyn");
+  await open("/synergies/bot/?champ=caitlyn&view=pro");
   check("synergies: rail marks the selected pick", (await page.locator(".pick-rail a.active .rail-name").textContent().catch(() => "")) === "Caitlyn", "");
   check("synergies: sources start collapsed", (await page.locator(".scout-sources").count()) === 1 && !(await page.locator(".scout-sources").evaluate((d) => d.open)), "");
   await page.locator(".pick-rail input[type=search]").fill("nami");
@@ -565,7 +590,8 @@ await page.locator(".theme-toggle").click();
   await open("/synergies/bot/?champ=sivir");
   const lulu = page.locator(".pick-card .champ-btn", { hasText: "Lulu" }).first();
   await lulu.hover();
-  const card = await page.locator(".hovercard").waitFor({ timeout: 3000 }).then(() => page.locator(".hovercard").textContent()).catch(() => "");
+  // The pointer can cross a neighbouring champion on its way (hover cards swap in place): wait for Lulu's own card.
+  const card = await page.locator(".hovercard", { hasText: "Lulu" }).waitFor({ timeout: 3000 }).then(() => page.locator(".hovercard").textContent()).catch(() => page.locator(".hovercard").textContent().catch(() => ""));
   check("synergies: hovering Lulu shows Synergy · Default with Sivir", /Lulu/.test(card) && /Synergy · Default/.test(card) && /Peel 3/.test(card), card.slice(0, 120));
   await lulu.click();
   await page.locator(".drawer").waitFor({ timeout: 3000 }).catch(() => {});

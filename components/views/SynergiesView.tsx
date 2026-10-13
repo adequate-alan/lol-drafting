@@ -21,6 +21,7 @@ import { proposedCard, proposedPartners, shownPartners } from "@/lib/proposed";
 import { buildsHref } from "@/lib/pro-builds";
 import { TopUsageReport } from "@/components/TopDraft";
 import { TopRailTools, topRail, useTopScope } from "@/components/TopRail";
+import { patchToRestore, readStoredPatch, storePatch } from "@/lib/synergy-patch";
 import { poolTier, tierLabel } from "@/lib/counters";
 import type { TopDraftBundle } from "@/lib/top-draft";
 import type { BotPairing, CompShell, MetaStat, MidJunglePairing, PoolEntry, Role, Source, TopPick } from "@/lib/schema";
@@ -28,19 +29,25 @@ import type { BotPairing, CompShell, MetaStat, MidJunglePairing, PoolEntry, Role
 const GRADE_ORDER = ["A", "A-", "B+", "B", "B-", "C+", "C"];
 const tierOf = (pool: PoolEntry[], id: string) => { const t = poolTier(pool, id, "TOP"); return t ? `${tierLabel(t)} tier` : undefined; };
 
-export function SynergiesView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top, pool, drawerData, freshness, shells, topDraft }: {
+export function SynergiesView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top, pool, drawerData, freshness, shells, laneDraft }: {
   drawerData: DrawerData; tab: Tab; names: Record<string, string>; sources: Record<string, Source>; events: EventMap; stats: Record<string, MetaStat & { winRate: number }>;
   draftLabels: Record<string, string>; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; pool: PoolEntry[]; freshness: Freshness[]; shells: CompShell[];
-  topDraft?: TopDraftBundle; // Top tab only: observed draft usage (lib/top-draft.ts)
+  laneDraft?: TopDraftBundle; // Top, Mid, Bot and Support: observed draft usage (lib/top-draft.ts); not Jungle
 }) {
   const params = useSearchParams();
   const router = useRouter();
   const champ = params.get("champ") || undefined;
-  // Top tab scope and view, all in the URL: patch (26.xx or "all"), event, usage filter, sort, report view.
-  const topScope = useTopScope(topDraft, params);
+  // Lane tab scope and view, all in the URL: patch (26.xx or "all"; none = All patches), event, usage filter, sort, view.
+  const topScope = useTopScope(laneDraft, params, tab);
+  // A patch picked earlier this session comes back when the URL names none (role switches, links from other pages).
+  useEffect(() => {
+    if (!topScope) return;
+    const restore = patchToRestore(params.get("patch"), readStoredPatch());
+    if (restore) router.replace(topScope.href({ patch: restore }), { scroll: false });
+  }, [topScope, params, router]);
   const [query, setQuery] = useState("");
   const rail = useRef<HTMLUListElement>(null);
-  let list: { id: string; label: string; sub: string; proposed?: boolean }[] = [];
+  let list: { id: string; label: string; sub: string; proposed?: boolean; short?: string; search?: string }[] = [];
   let selected: CardRecord | undefined;
   const records = drawerData.proposed;
   // Every champion who plays the tab's role and has no saved record gets a profile from the proposed layer (alan,
@@ -57,29 +64,32 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
   const profile = (id: string, role: Role): CardRecord => proposedCard(id, role, records, drawerData);
   if (tab === "bot") {
     const rows = sortBotPicks(bot, pool, names);
-    list = [...rows.map((r) => ({ id: r.champion, label: names[r.champion], sub: r.clashDefault.map((s) => names[s]).join(" / ") })),
+    const base = [...rows.map((r) => ({ id: r.champion, label: names[r.champion], sub: r.clashDefault.map((s) => names[s]).join(" / "), short: r.clashDefault.map((s) => names[s]).join(" / ") })),
       ...proposedRows("BOT", (id) => rows.some((r) => r.champion === id))];
-    const id = champ ?? list[0].id;
+    list = topScope ? topRail(base, topScope) : base;
+    const id = champ ?? list[0]?.id ?? base[0].id;
     const r = rows.find((x) => x.champion === id);
     if (r) selected = { kind: "bot", record: r };
     else if (list.some((x) => x.id === id)) selected = profile(id, "BOT");
   } else if (tab === "support") {
-    list = proposedRows("SUPPORT", () => false).map((x) => {
+    const base = proposedRows("SUPPORT", () => false).map((x) => {
       const saved = bot.filter((b) => b.clashDefault.includes(x.id)).map((b) => names[b.champion]);
-      return saved.length ? { ...x, sub: `Saved with ${saved.slice(0, 3).join(" / ")}${saved.length > 3 ? ` +${saved.length - 3}` : ""}` } : x;
+      return saved.length ? { ...x, proposed: false, sub: `Saved with ${saved.slice(0, 3).join(" / ")}${saved.length > 3 ? ` +${saved.length - 3}` : ""}` } : x;
     });
-    const id = champ ?? list[0].id;
-    if (list.some((x) => x.id === id)) selected = profile(id, "SUPPORT");
+    list = topScope ? topRail(base, topScope) : base;
+    const id = champ ?? list[0]?.id ?? base[0].id;
+    if (base.some((x) => x.id === id)) selected = profile(id, "SUPPORT");
   } else if (tab === "mid" || tab === "jungle") {
     // Each role keeps its own records: a mid's profile lists jungle partners and the reverse (alan, 2026-10-12).
     const tabRole = TAB_ROLE[tab];
     const rows = sortMidJunglePicks(midJungle, pool, names).filter((r) => r.role === tabRole);
-    list = [...rows.map((r) => ({ id: r.anchor, label: names[r.anchor], sub: `${r.clashDefault.map((s) => names[s]).join(" / ")}${r.status === "downgraded" ? " · downgraded" : ""}` })),
+    const base = [...rows.map((r) => ({ id: r.anchor, label: names[r.anchor], sub: `${r.clashDefault.map((s) => names[s]).join(" / ")}${r.status === "downgraded" ? " · downgraded" : ""}`, short: r.clashDefault.map((s) => names[s]).join(" / ") })),
       ...proposedRows(tabRole, (id) => rows.some((r) => r.anchor === id))];
-    const id = champ ?? list[0].id;
+    list = topScope ? topRail(base, topScope) : base;
+    const id = champ ?? list[0]?.id ?? base[0].id;
     const r = rows.find((x) => x.anchor === id);
     if (r) selected = { kind: "mid-jungle", record: r };
-    else if (list.some((x) => x.id === id)) selected = profile(id, tabRole);
+    else if (base.some((x) => x.id === id)) selected = profile(id, tabRole);
   } else {
     const rows = [...top].sort((a, b) => GRADE_ORDER.indexOf(a.blindGrade) - GRADE_ORDER.indexOf(b.blindGrade));
     // Saved records first (by saved grade), then every other top laner; observed usage replaces the old pick count.
@@ -103,7 +113,7 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
   // The tab on screen is the role being researched: the sidebar's Synergies link comes back here (lib/synergy-nav.ts).
   useEffect(() => { noteSynergiesRole(TAB_ROLE[tab]); }, [tab]);
   const q = query.trim().toLowerCase();
-  const shown = q ? list.filter((x) => `${x.label} ${x.sub}`.toLowerCase().includes(q)) : list;
+  const shown = q ? list.filter((x) => `${x.label} ${x.sub} ${x.search ?? ""}`.toLowerCase().includes(q)) : list;
   // Keep the selected pick in view inside the rail (without scrolling the page) when arriving from a link.
   useEffect(() => {
     const ul = rail.current, el = ul?.querySelector<HTMLElement>("a.active");
@@ -121,12 +131,12 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
         </>} />
       <ProFreshness items={freshness} />
       <nav className="tabs" aria-label="Roles">
-        {(Object.keys(TABS) as Tab[]).map((t) => <Link key={t} href={`/synergies/${t}`} className={t === tab ? "active" : undefined} aria-current={t === tab ? "page" : undefined}>{TABS[t]}</Link>)}
+        {(Object.keys(TABS) as Tab[]).map((t) => <Link key={t} href={`/synergies/${t}${topScope?.patch ? `?patch=${topScope.patchParam}` : ""}`} className={t === tab ? "active" : undefined} aria-current={t === tab ? "page" : undefined}>{TABS[t]}</Link>)}
       </nav>
       <div className="split">
         <nav className="pick-rail" aria-label={`${TABS[tab]} champions`}>
           <input type="search" placeholder="Search champions or partners" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search champions" />
-          {topScope && <TopRailTools scope={topScope} set={(k, v) => router.replace(topScope.href({ [k]: v }), { scroll: false })} />}
+          {topScope && <TopRailTools scope={topScope} set={(k, v) => { if (k === "patch") storePatch(v); router.replace(topScope.href({ [k]: v }), { scroll: false }); }} />}
           <ul ref={rail}>
             {shown.map((x) => {
               const active = isSelected(x);
@@ -146,12 +156,12 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
           {selected && selectedId && (
             // Champions in the report: hover for the quick card (relation to the selected pick), click for the drawer.
             <ChampionProvider data={drawerData} focus={{ id: selectedId, role: selectedRole! }} context={SYNERGIES}>
-              {topScope && topDraft ? (
-                <TopUsageReport id={selectedId} row={topScope.rows.find((r) => r.champion === selectedId)} prio={topScope.prio[selectedId]} bundle={topDraft} names={names}
+              {topScope && laneDraft ? (
+                <TopUsageReport id={selectedId} row={topScope.rows.find((r) => r.champion === selectedId)} prio={topScope.prio[selectedId]} prioLabel={topScope.prioLabel} bundle={laneDraft} names={names}
                   view={topScope.view} setView={(v) => router.replace(topScope.href({ view: v === "overview" ? undefined : v }), { scroll: false })}
-                  scopeLabel={topScope.label}
+                  scopeLabel={topScope.label} scope={{ patch: topScope.patch, events: topScope.event ? [topScope.event] : undefined }}
                   saved={selected.kind === "top" ? { grade: selected.record.blindGrade, tier: tierOf(pool, selectedId), gives: selected.record.logic.gives, avoid: selected.record.logic.avoid } : undefined}
-                  logic={topDraft.blind[selectedId] ?? []}
+                  logic={laneDraft.blind[selectedId] ?? []}
                   synergies={<ScoutingReport item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels} proposed={extra} proCount={proCount} games={myGames} bot={bot} shells={shells} only="synergy" />}
                   proEvidence={<ScoutingReport item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels} proposed={extra} proCount={proCount} games={myGames} bot={bot} shells={shells} only="pro" />} />
               ) : (

@@ -76,6 +76,23 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   Overview | Draft usage | Matchups | Synergies | Pro evidence (`?view=`); a matchup opens its game in place (who picked
   first, ten picks in order, Pro Drafts and both tops' builds). Draft Room TOP rows get a label and a detail line only
   ("Often blinded" with no enemy top, "Picked into X · n" with one); never part of the order or the fit.
+- **Mid, Bot and Support draft usage** (alan, 2026-10-13; the same engine, `laneSelections` / `duoSelections` in
+  `lib/top-draft.ts`, `getLaneDraft(role)` in `lib/data.ts`, `tests/lane-draft.test.ts`, smoke "mid:" / "bot:"): every
+  Synergies lane tab (Top, Mid, Bot, Support; Jungle is out of scope) uses the Top report and rail. Mid adds whether the
+  enemy jungler was on the board (`enemyJungle`): composition context, never a lane response. Bot and Support read what
+  each pick could see of both enemy bot laners (`BotRead`: blind, after enemy ADC, after enemy support, after one enemy
+  bot laner whose slot was open, full bot-lane response, or unclear when a visible champion could still play another
+  lane) and when its own partner came (earlier, same turn, later; two picks in one turn are never ordered). Duos
+  (`DuoShape`): blind, partially revealed, full response, split construction (the second half saw more), unclear; a
+  "repeated" duo response needs two series and is never a counter (no duo lane data exists). Off Top the saved partners
+  sit on Overview (no Synergies tab); Bot and Support add a Duo drafting tab and a "Duo analysis" rail filter. Findings
+  for alan: `/mnt/project-files/lol-drafting/top-draft/mid-bot-support-findings.md`. Draft Room labels for these roles
+  wait on alan's review of those findings.
+- **Synergies patch scope** (alan, 2026-10-13; `lib/synergy-patch.ts`, `tests/synergy-patch.test.ts`): every lane tab
+  opens on All patches (historical, labelled with its range), including role switches and Draft Room links without a
+  patch. A patch chosen in the rail is kept for the session (sessionStorage) and carried by the role tabs until changed
+  or cleared; a patch in the URL always wins. Meta priority always names the one patch it comes from (the chosen one,
+  else the newest), and Draft usage shows a per-patch table under All patches.
 - A low-sample champion can only be in a pool's `core` tier with a written `coreReasons` entry.
 - The draft-fit score (alan, 2026-10-10) lives in `lib/recommend.ts` and
   `tests/recommend.test.ts`. Every champion who plays the open role is a candidate. The score adds saved pairings
