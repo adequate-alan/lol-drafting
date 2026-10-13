@@ -102,7 +102,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83447/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83447/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "blue"
     },
     {
       "id": 83448,
@@ -165,7 +166,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83448/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83448/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "blue"
     },
     {
       "id": 83449,
@@ -228,7 +230,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83449/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83449/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83450,
@@ -354,7 +357,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83451/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83451/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83452,
@@ -417,7 +421,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83452/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83452/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83453,
@@ -480,7 +485,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83453/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83453/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "blue"
     },
     {
       "id": 83454,
@@ -543,7 +549,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83454/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83454/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "blue"
     },
     {
       "id": 83455,
@@ -606,7 +613,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83455/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83455/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83456,
@@ -669,7 +677,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83456/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83456/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83457,
@@ -732,7 +741,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83457/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83457/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83459,
@@ -795,7 +805,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83459/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83459/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83460,
@@ -858,7 +869,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83460/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83460/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83461,
@@ -921,7 +933,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83461/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83461/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83462,
@@ -984,7 +997,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83462/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83462/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "blue"
     },
     {
       "id": 83463,
@@ -1047,7 +1061,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83463/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83463/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83465,
@@ -1110,7 +1125,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83465/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83465/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83466,
@@ -1173,7 +1189,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83466/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83466/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "blue"
     },
     {
       "id": 83468,
@@ -1236,7 +1253,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83468/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83468/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83469,
@@ -1299,7 +1317,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83469/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83469/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83520,
@@ -1362,7 +1381,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83520/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83520/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83521,
@@ -1425,7 +1445,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83521/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83521/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "blue"
     },
     {
       "id": 83522,
@@ -1488,7 +1509,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83522/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83522/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83523,
@@ -1551,7 +1573,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83523/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83523/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83524,
@@ -1614,7 +1637,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83524/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83524/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83526,
@@ -1677,7 +1701,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83526/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83526/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "blue"
     },
     {
       "id": 83527,
@@ -1740,7 +1765,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83527/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83527/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "blue"
     },
     {
       "id": 83528,
@@ -1803,7 +1829,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83528/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83528/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "blue"
     },
     {
       "id": 83529,
@@ -1866,7 +1893,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83529/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83529/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83531,
@@ -1929,7 +1957,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83531/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83531/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83532,
@@ -1992,7 +2021,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83532/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83532/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "blue"
     },
     {
       "id": 83534,
@@ -2055,7 +2085,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83534/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83534/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83535,
@@ -2118,7 +2149,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83535/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83535/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83536,
@@ -2181,7 +2213,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83536/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83536/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83537,
@@ -2244,7 +2277,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83537/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83537/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83538,
@@ -2307,7 +2341,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83538/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83538/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83540,
@@ -2370,7 +2405,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83540/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83540/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83541,
@@ -2433,7 +2469,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83541/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83541/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "red"
     },
     {
       "id": 83542,
@@ -2496,7 +2533,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83542/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83542/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "blue"
     },
     {
       "id": 83563,
@@ -2559,7 +2597,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83563/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83563/page-fullstats/",
-      "checkedOn": "2026-10-13"
+      "checkedOn": "2026-10-13",
+      "firstPick": "blue"
     },
     {
       "id": 83564,
@@ -2622,7 +2661,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83564/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83564/page-fullstats/",
-      "checkedOn": "2026-10-13"
+      "checkedOn": "2026-10-13",
+      "firstPick": "red"
     },
     {
       "id": 83565,
@@ -2685,7 +2725,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83565/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83565/page-fullstats/",
-      "checkedOn": "2026-10-13"
+      "checkedOn": "2026-10-13",
+      "firstPick": "blue"
     },
     {
       "id": 83566,
@@ -2748,7 +2789,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83566/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83566/page-fullstats/",
-      "checkedOn": "2026-10-13"
+      "checkedOn": "2026-10-13",
+      "firstPick": "blue"
     },
     {
       "id": 83567,
@@ -2811,7 +2853,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83567/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83567/page-fullstats/",
-      "checkedOn": "2026-10-13"
+      "checkedOn": "2026-10-13",
+      "firstPick": "red"
     },
     {
       "id": 83568,
@@ -2874,7 +2917,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83568/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83568/page-fullstats/",
-      "checkedOn": "2026-10-13"
+      "checkedOn": "2026-10-13",
+      "firstPick": "red"
     },
     {
       "id": 83569,
@@ -2937,7 +2981,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83569/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83569/page-fullstats/",
-      "checkedOn": "2026-10-13"
+      "checkedOn": "2026-10-13",
+      "firstPick": "red"
     },
     {
       "id": 83570,
@@ -3000,7 +3045,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83570/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83570/page-fullstats/",
-      "checkedOn": "2026-10-13"
+      "checkedOn": "2026-10-13",
+      "firstPick": "red"
     },
     {
       "id": 83571,
@@ -3063,7 +3109,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83571/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83571/page-fullstats/",
-      "checkedOn": "2026-10-13"
+      "checkedOn": "2026-10-13",
+      "firstPick": "red"
     },
     {
       "id": 83572,
@@ -3126,7 +3173,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83572/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83572/page-fullstats/",
-      "checkedOn": "2026-10-13"
+      "checkedOn": "2026-10-13",
+      "firstPick": "red"
     },
     {
       "id": 83573,
@@ -3189,7 +3237,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83573/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83573/page-fullstats/",
-      "checkedOn": "2026-10-13"
+      "checkedOn": "2026-10-13",
+      "firstPick": "red"
     },
     {
       "id": 83574,
@@ -3252,7 +3301,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83574/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83574/page-fullstats/",
-      "checkedOn": "2026-10-13"
+      "checkedOn": "2026-10-13",
+      "firstPick": "red"
     },
     {
       "id": 83575,
@@ -3315,7 +3365,8 @@
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83575/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83575/page-fullstats/",
-      "checkedOn": "2026-10-13"
+      "checkedOn": "2026-10-13",
+      "firstPick": "red"
     },
     {
       "id": 83576,
@@ -3378,7 +3429,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83576/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83576/page-fullstats/",
-      "checkedOn": "2026-10-13"
+      "checkedOn": "2026-10-13",
+      "firstPick": "blue"
     },
     {
       "id": 83577,
@@ -3441,7 +3493,8 @@
       "winner": "red",
       "url": "https://gol.gg/game/stats/83577/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83577/page-fullstats/",
-      "checkedOn": "2026-10-13"
+      "checkedOn": "2026-10-13",
+      "firstPick": "blue"
     }
   ]
 }
