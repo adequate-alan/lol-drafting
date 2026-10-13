@@ -9,7 +9,7 @@ import { ROLES, type Role, type Source } from "@/lib/schema";
 import { parseRole } from "@/lib/my-role";
 import type { Filter } from "@/lib/candidates";
 
-const FILTERS: Filter[] = ["all", "synergy", "pro", "fit", "counter", "priority"];
+const FILTERS: Filter[] = ["all", "synergy", "pro", "fit", "counter", "priority", "rotation", "blind"];
 
 export function DraftRoomView({ data, sources, drawerData, metaPicks }: {
   data: DraftData; sources: Record<string, Source>; drawerData: DrawerData;
@@ -34,9 +34,9 @@ export function DraftRoomView({ data, sources, drawerData, metaPicks }: {
   // useSearchParams, and re-keying there rebuilt the room on every lock, dropping the tab, filter, open rows, focus
   // and the Clear draft undo.
   const key = useRef<string>(undefined);
-  if (key.current === undefined || !ownQuery(q.toString())) key.current = JSON.stringify(initial) + JSON.stringify(initialEnemy);
+  if (key.current === undefined || !ownQuery(q.toString())) key.current = JSON.stringify(initial) + JSON.stringify(initialEnemy) + (q.get("patch") ?? "");
   return (
     <DraftRoom key={key.current} data={data} sources={sources} drawerData={drawerData}
-      initial={initial} initialEnemy={initialEnemy} initialFocus={initialFocus} initialFilter={initialFilter} metaPicks={metaPicks} />
+      initial={initial} initialEnemy={initialEnemy} initialFocus={initialFocus} initialFilter={initialFilter} initialPatch={q.get("patch") ?? undefined} metaPicks={metaPicks} />
   );
 }

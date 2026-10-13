@@ -97,6 +97,18 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   a support outside its saved supports comes in only through games with that bot (counting only those), gets no
   Synergy, Best fit or Best fix, and one with only a counter is "Theoretical" and listed last. Filters All / Synergy /
   Pro / Best fit / Counters filter that one list.
+- **Pro meta starting picks** (alan, 2026-10-13; `lib/starting-picks.ts`, `tests/starting-picks.test.ts`, smoke "empty Draft
+  Room"): with nothing locked on either team, each role tab lists the champions with recorded pro picks in that role on
+  one patch (newest with picks by default, `?patch=` and a patch menu; never combined): pool tier (or "Not in pool"),
+  presence, role picks, First rotation (role picks within the team's first three picks, from `pickOrder`, "N of M"),
+  first overall (turn 1 from Gol.gg's First Pick mark) and blind / response only from the pick-order engine
+  (`engineReader` over `lib/top-draft.ts`; Top only so far, other roles show none and the Blind filter is disabled).
+  On Top the engine's usage label ("Often blinded", "Picked into …") replaces the blind count. Views Recommended | First rotation | Blind picks |
+  Pro priority. Recommended order is pool first, then first-rotation picks, role picks, presence: real counts, no score
+  shown. After any lock the normal order applies; the counts stay labels (First rotation, Blind, Pro priority, with
+  filters) and bring in eligible champions who already play the role, never moving another row or passing the saved-bot
+  support rule. Each label opens the games behind it (`MetaEvidenceTrigger`, links to Pro Drafts with the player's build).
+  Similar pro drafts / Similar comps are hidden while empty.
 - **Synergy · Proposed** (alan, 2026-10-10, "Complete Champion Synergy Expansion"): `data/proposed-synergy.json` holds
   Claude's kit-based partners for every playable champion and role (preferred / alternatives, a specific reason and a
   kit-fit confidence `strong` / `moderate` / `provisional` per partner). It sits inside Synergy but apart from alan's

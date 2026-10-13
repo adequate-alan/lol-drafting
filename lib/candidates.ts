@@ -6,8 +6,11 @@
 //   Fit      - comp fit: synergy with the locked picks, team needs, matchups and risks (lib/recommend.ts parts minus
 //              the saved and proposed bonuses). "Best fit" marks the top three, "Best fix" the comp engine's pick.
 //   Counter  - a DPM matchup counter into the lane opponent (lib/counters.ts).
-//   Priority - pro pick/ban presence on the newest patch (lib/pro-priority.ts), shown when the champion has recorded
-//              picks in this role. A label only: never a reason to list a champion, never a signal in the tie-break.
+//   Priority - pro pick/ban presence on the room's patch (lib/pro-priority.ts), shown when the champion has recorded
+//              picks in this role. A label only: never a signal in the tie-break.
+//   Meta     - the pro meta starting-pick counts (lib/starting-picks.ts): role picks, first rotation, blind / response.
+//              With nothing locked they are the list (ordered by those counts, lib/starting-picks.ts startingOrder);
+//              after that they bring an eligible champion into the list but never move a row and never count as a signal.
 //
 // A champion qualifies through any one signal. Order is transparent rather than an invented aggregate:
 //   1. alan's preferred saved pairing first (his explicit preference is never outranked by evidence);
@@ -22,9 +25,10 @@ import { recommend, savedSupports, type RecommendData, type Recommendation, type
 import { ROLES, type MetaEvent, type Role, type Source } from "./schema";
 import { proSuggestions, type ProByRole, type ProSuggestion } from "./suggest";
 import { markFor, type PriorityMark } from "./pro-priority";
+import { hasStart, type StartingPick } from "./starting-picks";
 
 export type SignalKey = "synergy" | "pro" | "fit" | "counter";
-export type Filter = "all" | SignalKey | "priority";
+export type Filter = "all" | SignalKey | "priority" | "rotation" | "blind";
 
 export interface Candidate {
   champion: string;
@@ -34,6 +38,7 @@ export interface Candidate {
   pro: ProSuggestion | null;
   counter: Counter | null;
   priority: PriorityMark | null; // label only (see above)
+  meta: StartingPick | null; // label only (see above)
   bestFit: boolean; // top BEST_FIT on comp fit among eligible candidates
   theoretical: boolean; // a support outside the locked bot's saved supports with no pro games: counter reference only
   signals: SignalKey[]; // independent signals: a pro-derived alternative counts as Pro, not twice
@@ -47,15 +52,15 @@ const round = (n: number) => Math.round(n * 100) / 100;
 export const compFitOf = (r: Recommendation) => round(r.parts.filter((p) => !BONUS.has(p.kind)).reduce((s, p) => s + p.points, 0));
 
 /** A row for a champion with no draft-fit read (roster-only champion seen in a pro game): no reasons, no score. */
-const blank = (champion: string, role: Role, eligible: boolean): Recommendation => ({
+export const blank = (champion: string, role: Role, eligible: boolean): Recommendation => ({
   champion, role, score: 0, parts: [], saved: null, proposed: null, proGames: 0, fixes: [], also: [], tradeoffs: [], bestFix: false, eligible, savedFromPro: false,
 });
 
 export const hasSignal = (c: Candidate, f: Filter) =>
-  f === "all" || (f === "priority" ? !!c.priority : (f === "synergy" ? !!(c.fit.saved || c.fit.proposed) : f === "fit" ? c.bestFit || c.fit.bestFix : f === "pro" ? !!c.pro : !!c.counter));
+  f === "all" || (f === "priority" ? !!c.priority || hasStart(c.meta, "priority") : f === "rotation" || f === "blind" ? hasStart(c.meta, f) : (f === "synergy" ? !!(c.fit.saved || c.fit.proposed) : f === "fit" ? c.bestFit || c.fit.bestFix : f === "pro" ? !!c.pro : !!c.counter));
 
 export function unifiedCandidates(fits: Recommendations, pro: ProByRole, counters: Partial<Record<Role, RoleCounters>>,
-  priority?: Record<string, PriorityMark>): Partial<Record<Role, Candidate[]>> {
+  priority?: Record<string, PriorityMark>, meta: Partial<Record<Role, StartingPick[]>> = {}): Partial<Record<Role, Candidate[]>> {
   const out: Partial<Record<Role, Candidate[]>> = {};
   for (const role of ROLES) {
     const list = fits[role];
@@ -63,6 +68,7 @@ export function unifiedCandidates(fits: Recommendations, pro: ProByRole, counter
     const byId = new Map(list.map((r) => [r.champion, r]));
     const proBy = new Map((pro[role] ?? []).map((s) => [s.champion, s]));
     const counterBy = new Map((counters[role]?.counters ?? []).map((c) => [c.champion, c]));
+    const metaBy = new Map((meta[role] ?? []).map((s) => [s.champion, s]));
     const eligible = list.filter((r) => r.eligible);
     const byComp = [...eligible].sort((a, b) => compFitOf(b) - compFitOf(a) || b.score - a.score || a.champion.localeCompare(b.champion)).filter((r) => compFitOf(r) > 0);
     // Best fit: the top BEST_FIT on comp fit, and anything tied with the last of them.
@@ -73,6 +79,9 @@ export function unifiedCandidates(fits: Recommendations, pro: ProByRole, counter
       ...byComp.slice(0, FIT_ROWS).map((r) => r.champion),
       ...proBy.keys(),
       ...counterBy.keys(),
+      // Pro meta champions stay in the list once picks are locked, but only ones the draft-fit read already allows
+      // (with a saved bot locked, an outside support never comes in through presence).
+      ...[...metaBy.keys()].filter((id) => byId.get(id)?.eligible),
     ]);
     const rows: Candidate[] = [...ids].map((id) => {
       const p = proBy.get(id) ?? null;
@@ -85,7 +94,7 @@ export function unifiedCandidates(fits: Recommendations, pro: ProByRole, counter
       if (p) signals.push("pro");
       if (bestFit || fit.bestFix) signals.push("fit");
       if (counter) signals.push("counter");
-      return { champion: id, role, fit, compFit: compFitOf(fit), pro: p, counter, priority: markFor(priority, id, role) ?? null, bestFit, theoretical: !fit.eligible && !p, signals };
+      return { champion: id, role, fit, compFit: compFitOf(fit), pro: p, counter, priority: markFor(priority, id, role) ?? null, meta: metaBy.get(id) ?? null, bestFit, theoretical: !fit.eligible && !p, signals };
     });
     const preferred = (c: Candidate) => Number(c.fit.eligible && c.fit.saved === "default");
     out[role] = rows.sort((a, b) =>
@@ -105,11 +114,22 @@ export const proIncludes = (pro: ProByRole): Partial<Record<Role, string[]>> =>
 export type CandidateData = RecommendData & CounterInput & { events?: MetaEvent[]; priority?: Record<string, PriorityMark> };
 
 /**
+ * The list before anything is locked on either team: the pro meta starting picks for the role, in their own order
+ * (lib/starting-picks.ts). No draft-fit read exists yet, so no row carries a score.
+ */
+export function startingCandidates(rows: StartingPick[], role: Role, priority?: Record<string, PriorityMark>): Candidate[] {
+  return rows.map((s) => ({
+    champion: s.champion, role, fit: blank(s.champion, role, true), compFit: 0, pro: null, counter: null,
+    priority: markFor(priority, s.champion, role) ?? null, meta: s, bestFit: false, theoretical: false, signals: [],
+  }));
+}
+
+/**
  * Everything the Draft Room list needs for a draft: pro pairings (enemy picks left out), the draft-fit read for every
  * champion they bring in, the eligible draft-fit list (`fits`, used by counters and the picker), counters, and the
  * unified candidates.
  */
-export function draftCandidates(draft: Draft, enemy: EnemyDraft, data: CandidateData, sources: Record<string, Source>) {
+export function draftCandidates(draft: Draft, enemy: EnemyDraft, data: CandidateData, sources: Record<string, Source>, meta: Partial<Record<Role, StartingPick[]>> = {}) {
   const enemyIds = ROLES.flatMap((r) => (enemy[r] ? [enemy[r]!] : []));
   const extra = { botPairings: data.botPairings, events: data.events, sources };
   const pro = Object.fromEntries(Object.entries(proSuggestions(draft, data.proDrafts, extra, Infinity))
@@ -121,8 +141,17 @@ export function draftCandidates(draft: Draft, enemy: EnemyDraft, data: Candidate
     const withBot = new Map((proSuggestions({ BOT: draft.BOT }, data.proDrafts, extra, Infinity).SUPPORT ?? []).map((s) => [s.champion, s]));
     pro.SUPPORT = pro.SUPPORT.flatMap((s) => (eligibleSupports.includes(s.champion) ? [s] : withBot.has(s.champion) ? [withBot.get(s.champion)!] : []));
   }
-  const wide = recommend(draft, enemyIds, data, Infinity, { include: proIncludes(pro) });
+  // Pro meta champions get a draft-fit read too (even with no reason yet), but only champions who already play the role
+  // and never past the saved-bot support rule: presence adds rows, it never changes another row's read or rank.
+  const include = proIncludes(pro);
+  const plays = new Map(data.champions.map((c) => [c.id, c]));
+  for (const [r, rows] of Object.entries(meta) as [Role, StartingPick[]][]) {
+    const ids = rows.map((x) => x.champion).filter((id) => !enemyIds.includes(id) && plays.get(id)?.roles.includes(r) && !plays.get(id)?.rosterOnly
+      && (r !== "SUPPORT" || !eligibleSupports || eligibleSupports.includes(id)));
+    include[r] = [...new Set([...(include[r] ?? []), ...ids])];
+  }
+  const wide = recommend(draft, enemyIds, data, Infinity, { include });
   const fits = Object.fromEntries(Object.entries(wide).map(([r, list]) => [r, list!.filter((x) => x.eligible)])) as Recommendations;
   const counters = counterPicks(draft, enemy, data, fits);
-  return { pro, fits, counters, unified: unifiedCandidates(wide, pro, counters, data.priority) };
+  return { pro, fits, counters, unified: unifiedCandidates(wide, pro, counters, data.priority, meta) };
 }
