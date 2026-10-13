@@ -44,7 +44,7 @@ export function BuildsTab({ env }: { env: DrawerEnv }) {
               <Link key={`${g.game}-${g.playerId}`} className="dw-row dw-build" href={href} data-to={href}>
                 <PlayerAvatar id={g.playerId} name={g.player} size="sm" />
                 <span className="dw-row-main">
-                  <span className="dw-row-name">{g.player}{g.team && <span className="muted xs"> {g.team}</span>}{g.won != null && <span className={`dw-result ${g.won ? "win" : "loss"}`}>{g.won ? "W" : "L"}</span>}</span>
+                  <span className="dw-row-name">{g.player}{g.team && <span className="muted xs"> {g.team}</span>}{g.won != null && <span className={`res ${g.won ? "win" : "loss"}`}>{g.won ? "W" : "L"}</span>}</span>
                   <span className="dw-row-sub tnum">{patchLabel(g.patch)} · {shortDate(g.date)} · game {g.game}</span>
                 </span>
                 <span className="dw-chevron" aria-hidden="true">›</span>

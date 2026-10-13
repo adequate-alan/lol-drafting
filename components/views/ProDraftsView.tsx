@@ -179,7 +179,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
               <tr key={d.id} className={`clickable side-${side} ${pair} ${d.id === f.id ? "selected" : ""}`.replace(/\s+/g, " ").trim()} title={SIDE_LABEL[side]} data-side={side} aria-selected={d.id === f.id}
                 onClick={(e) => { if ((e.target as HTMLElement).closest("a, button")) return; router.push(link(d)); }}>
                 <td><Link className="cell-link nowrap" href={link(d)}>{d.seriesGame}</Link></td>
-                <td className="nowrap">{d.team}{d.won != null && <span className="xs muted" title={d.won ? "Won" : "Lost"}> {d.won ? "W" : "L"}</span>}</td>
+                <td className="nowrap">{d.team}{d.won != null && <span className={`res ${d.won ? "win" : "loss"}`} title={d.won ? "Won" : "Lost"}>{d.won ? "W" : "L"}</span>}</td>
                 <td className="muted nowrap">{d.opponent}</td>
                 {ROLES.map((r) => <td key={r}><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={d.picks[r] === f.champion} /></td>)}
                 <td className="xs wrap">{d.read}</td>

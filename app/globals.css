@@ -354,6 +354,10 @@ h3 { font-size: var(--fs); font-weight: var(--w-strong); letter-spacing: -.005em
 .badge.caution { color: var(--caution); background: var(--caution-subtle); }
 .badge.success { color: var(--success); background: var(--success-subtle); }
 .badge.outline { background: transparent; border-color: var(--border-strong); }
+/* Result tag: the W / L after a team or game. One letter, tinted text on a faint tint, the row height unchanged. */
+.res { display: inline-block; margin-left: var(--s1); padding: 0 4px; border-radius: var(--r-sm); font-family: var(--font-mono); font-size: var(--fs-2xs); font-weight: var(--w-strong); line-height: 16px; vertical-align: 1px; }
+.res.win { color: var(--success); background: var(--success-subtle); }
+.res.loss { color: var(--danger); background: var(--danger-subtle); }
 /* Pro evidence and "plain" metadata are text, not pills */
 .badge.pro, .badge.plain { height: auto; padding: 0; background: none; border: 0; font-weight: var(--w-control); font-size: var(--fs-xs); }
 .badge.pro { color: var(--pro); }
@@ -769,9 +773,6 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .dw-row-end { flex: none; }
 .dw-chevron { flex: none; width: 12px; text-align: center; color: var(--text-faint); font-size: var(--fs-sm); }
 .dw-row:hover .dw-chevron { color: var(--text); }
-.dw-result { margin-left: var(--s2); font-family: var(--font-mono); font-size: var(--fs-2xs); font-weight: var(--w-strong); }
-.dw-result.win, .dw-draft-team .win { color: var(--success); }
-.dw-result.loss, .dw-draft-team .loss { color: var(--text-faint); }
 .dw-game, .dw-obs, .dw-change { position: relative; }
 .dw-game.open, .dw-obs.open, .dw-change.open { background: var(--surface-subtle); border-radius: var(--r-sm); margin: 0 calc(-1 * var(--s3)); padding: 0 var(--s3); }
 .dw-game.open .dw-row, .dw-obs.open .dw-row, .dw-change.open .dw-row { margin: 0; width: 100%; }

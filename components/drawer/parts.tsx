@@ -78,7 +78,7 @@ export function PartnerRow({ env, id, role, note, tag, kind }: { env: DrawerEnv;
 export function MiniDraft({ env, picks, label, side, won, mark }: { env: DrawerEnv; picks: Partial<Record<Role, string>>; label?: string; side?: "blue" | "red" | "none"; won?: boolean; mark?: string[] }) {
   return (
     <div className={`dw-draft side-${side ?? "none"}`}>
-      {label && <span className="dw-draft-team xs">{label}{won != null && <span className={won ? "win" : "loss"}> {won ? "W" : "L"}</span>}</span>}
+      {label && <span className="dw-draft-team xs">{label}{won != null && <span className={`res ${won ? "win" : "loss"}`}>{won ? "W" : "L"}</span>}</span>}
       <span className="dw-draft-picks">
         {ROLES.filter((r) => picks[r]).map((r) => (
           <button key={r} type="button" className={`dw-pick ${mark?.includes(picks[r]!) ? "mark" : ""} ${picks[r] === env.id ? "me" : ""}`.trim()} data-drawer-trigger
@@ -104,7 +104,7 @@ export function GameRow({ env, g, open, onToggle, partner }: { env: DrawerEnv; g
     <div className={`dw-game ${open ? "open" : ""} side-${d.side ?? "none"}`.trim()}>
       <button type="button" className="dw-row dw-game-row" aria-expanded={open} onClick={onToggle}>
         <span className="dw-row-main">
-          <span className="dw-row-name">{g.label}{d.won != null && <span className={`dw-result ${d.won ? "win" : "loss"}`}>{d.won ? "W" : "L"}</span>}{g.pending && <span className="badge plain"> pending refresh</span>}</span>
+          <span className="dw-row-name">{g.label}{d.won != null && <span className={`res ${d.won ? "win" : "loss"}`}>{d.won ? "W" : "L"}</span>}{g.pending && <span className="badge plain"> pending refresh</span>}</span>
           <span className="dw-row-sub tnum">{when}{p && <> · with {env.name(p)}</>}{shared > 0 && <span className="faint"> · +{shared} from this comp</span>}</span>
         </span>
         <span className="dw-chevron" aria-hidden="true">{open ? "▾" : "▸"}</span>
