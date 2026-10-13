@@ -67,11 +67,15 @@ function sidePanel(html, color) {
   const headText = header ? text(header[1]) : "";
   const result = (headText.match(/-\s*(WIN|LOSS)\s*$/) ?? [])[1];
   const team = headText.replace(/\s*-\s*(WIN|LOSS)\s*$/, "").trim();
-  const row = (label) => {
-    const m = block.match(new RegExp(`<div class="col-2">${label}[\\s\\S]*?<div class="col-10">([\\s\\S]*?)</div>`, "i"));
-    return m ? [...m[1].matchAll(/<img[^>]*src='[^']*champions_icon\/([^'./]+)\.png'/gi)].map((x) => decode(x[1])) : undefined;
-  };
-  return { team: team || undefined, result, bans: row("Bans"), picks: row("Picks") };
+  const cell = (label) => block.match(new RegExp(`<div class="col-2">${label}([\\s\\S]*?)<div class="col-10">([\\s\\S]*?)</div>`, "i"));
+  const icons = (html) => [...html.matchAll(/<img[^>]*src='[^']*champions_icon\/([^'./]+)\.png'/gi)].map((x) => decode(x[1]));
+  const row = (label) => { const m = cell(label); return m ? icons(m[2]) : undefined; };
+  const picks = cell("Picks");
+  // The Picks row marks the team that picked first (first.png beside the label) and splits the picks into the turns
+  // Gol.gg draws with "|": 1 | 2 | 2 for the first-picking team, 2 | 2 | 1 for the other.
+  const firstPick = picks ? /alt=['"]First Pick['"]/i.test(picks[1]) : undefined;
+  const pickGroups = picks ? picks[2].split(/&nbsp;\|&nbsp;|\s\|\s/).map((g) => icons(g).length) : undefined;
+  return { team: team || undefined, result, bans: row("Bans"), picks: row("Picks"), firstPick, pickGroups };
 }
 
 /** A game page (page-game): series, tournament, date, stage, patch, game number, the series' games and both sides. */
