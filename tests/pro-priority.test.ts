@@ -181,14 +181,14 @@ describe("priority changes", () => {
 describe("pick order", () => {
   it("is omitted when not stored, never rebuilt from the lineup", () => {
     const b = bucket(data, { patch: "16.18", ...demacia });
-    const ordered = file.games.filter((g) => g.event === DEMACIA && g.blue.pickOrder && g.red.pickOrder).length;
+    const ordered = file.games.filter((g) => g.event === DEMACIA && g.blue.pickOrder && g.red.pickOrder && g.firstPick).length;
     expect(b.orderGames).toBe(ordered);
     if (!ordered) expect(b.rows.every((r) => r.order.known === 0 && orderRead(r.order) === undefined)).toBe(true);
   });
 
-  it("counts B1 as first pick and B1 / R1 / R2 as first rotation", () => {
+  it("counts pick 1 of the draft as first pick and picks 1-3 as first rotation, whichever side picked first", () => {
     const games = clone(file.games.filter((g) => g.event === DEMACIA));
-    for (const g of games) { g.blue.pickOrder = Object.values(g.blue.picks); g.red.pickOrder = Object.values(g.red.picks); }
+    games.forEach((g, i) => { g.blue.pickOrder = Object.values(g.blue.picks); g.red.pickOrder = Object.values(g.red.picks); g.firstPick = i % 2 ? "red" : "blue"; });
     const b = bucket(priorityData(meta, withGames(games)), { patch: "16.18", ...demacia });
     expect(b.orderGames).toBe(games.length);
     const total = b.rows.reduce((n, r) => n + r.order.firstRotation, 0);
@@ -196,6 +196,14 @@ describe("pick order", () => {
     expect(b.rows.reduce((n, r) => n + r.order.firstPick, 0)).toBe(games.length);
     expect(b.rows.reduce((n, r) => n + r.order.lastPick, 0)).toBe(games.length);
     expect(b.rows.reduce((n, r) => n + r.order.phase2, 0)).toBe(4 * games.length);
+    // A red first pick is the first pick of the game: red's first champion, not blue's.
+    const g = games.find((x) => x.firstPick === "red")!;
+    const one = bucket(priorityData(meta, withGames([g])), { patch: "16.18", ...demacia });
+    expect(one.rows.find((r) => r.id === g.red.pickOrder![0])!.order.firstPick).toBe(1);
+    expect(one.rows.find((r) => r.id === g.blue.pickOrder![0])!.order.firstPick).toBe(0);
+    // Without the first-pick side the order is not used at all.
+    const unknown = clone(games).map((x) => ({ ...x, firstPick: undefined }));
+    expect(bucket(priorityData(meta, withGames(unknown)), { patch: "16.18", ...demacia }).orderGames).toBe(0);
   });
 
   it("is read back from a stored game's Gol.gg page only when teams, picks and bans match", () => {
@@ -203,7 +211,7 @@ describe("pick order", () => {
     const resolve = championResolver(champions);
     const page = parseGamePage(readFileSync(join(process.cwd(), "tests/fixtures/golgg/game-83540-game.html"), "utf8"));
     const got = pickOrderFor(g0, page, resolve);
-    expect(got).toEqual({ blue: ["ashe", "seraphine", "qiyana", "galio", "locke"], red: ["ryze", "jarvan-iv", "rumble", "jhin", "nautilus"] });
+    expect(got).toEqual({ blue: ["ashe", "seraphine", "qiyana", "galio", "locke"], red: ["ryze", "jarvan-iv", "rumble", "jhin", "nautilus"], firstPick: "red" });
     const other = clone(g0);
     other.blue.bans = [...other.blue.bans].reverse();
     expect(pickOrderFor(other, page, resolve).problems).toBeDefined();

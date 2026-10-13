@@ -108,7 +108,7 @@ export function ProPrioritySection({ data, patchIndex, names, sources, params, C
                 {sortHead("presence", <>Presence{role !== "ALL" && <span className="faint"> · all</span>}</>, "Games picked or banned ÷ games. Champion-wide")}
                 {sortHead("winRate", "WR", "Wins ÷ picks, all roles")}
                 <th className="num hide-sm" title="Picks on blue side / red side (recorded games only)">Blue / red</th>
-                {showOrder && sortHead("firstRotation", "1st rot.", "Share of ordered picks taken in the first rotation (B1, R1, R2)", "hide-sm")}
+                {showOrder && sortHead("firstRotation", "1st rot.", "Share of ordered picks taken in the first rotation (picks 1–3 of the draft; the first-picking team is read per game)", "hide-sm")}
                 {allPatches && <th className="hide-sm">Patches</th>}
                 {sortHead("recency", "Latest", "Most recent recorded game with this champion picked or banned")}
               </tr></thead>
