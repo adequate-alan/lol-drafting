@@ -277,7 +277,7 @@ function PriorityDetail({ r, b, data, patchIndex, tournaments, names, sources }:
             <span className="small nowrap">{g.blue.team} <span className="faint">vs</span> {g.red.team}</span>
             <span className="ctx">{[shortDate(g.date), patchLabel(g.patch), `G${g.game}`].join(" · ")}</span>
             {banned ? <span className="xs muted">banned</span>
-              : <span className="xs nowrap">{side === "blue" ? "Blue" : "Red"} <span className={`role-tag role-${role}`}>{role}</span> {g.winner === side ? "W" : "L"}</span>}
+              : <span className="xs nowrap">{side === "blue" ? "Blue" : "Red"} <span className={`role-tag role-${role}`}>{role}</span><span className={`res ${g.winner === side ? "win" : "loss"}`} title={g.winner === side ? "Won" : "Lost"}>{g.winner === side ? "W" : "L"}</span></span>}
             <a className="src" href={g.url} target="_blank" rel="noreferrer" title="Gol.gg game page, checked by the daily refresh">Gol.gg</a>
           </div>
         )) : <p className="xs muted">No per-game records in this scope{tableSources.length ? "; the numbers come from the tournament table" : ""}.</p>}
