@@ -202,7 +202,7 @@ function GameList({ games, role, names }: { games: ProGame[]; role: Role; names:
 export function ScoutingReport({ item, names, sources, events, draftLabels, proposed = [], proCount, games = [], bot = [], shells = [], only }: {
   item: CardRecord; names: Names; sources: Sources; events: EventMap; draftLabels?: Record<string, string>;
   proposed?: ProposedLink[]; proCount?: ProCount; games?: ProGame[]; bot?: BotPairing[]; shells?: CompShell[];
-  /** Top tab (components/TopDraft.tsx): one part of a top or proposed report, without its header, inside a report tab. */
+  /** Lane tabs (components/TopDraft.tsx): one part of a report, without its header, inside a report tab. */
   only?: "synergy" | "pro";
 }) {
   // A proposed bot for a support that the bot's own saved record does not list says so: the bot's record decides.
@@ -223,7 +223,7 @@ export function ScoutingReport({ item, names, sources, events, draftLabels, prop
           {item.identity && <p className="prop-identity">{item.identity}</p>}
           <ProposedGroups links={item.links} names={names} proCount={proCount} noteFor={noteFor} />
         </Section>
-        <CompShells shells={shells} id={item.id} role={item.role} names={names} />
+        {(item.role === "TOP" || item.role === "SUPPORT") && <CompShells shells={shells} id={item.id} role={item.role} names={names} />}
       </>
     ) : (
       <Section layer="pro" title="Pro pairings">
@@ -253,6 +253,31 @@ export function ScoutingReport({ item, names, sources, events, draftLabels, prop
   }
   if (item.kind === "bot") {
     const r = item.record;
+    if (only === "synergy") return (
+      <>
+        <Section layer="clash" title="Synergy">
+          <SBox noted={r.alternatives.some((id) => r.alternativeNotes[id])}>
+            <Group title="Preferred"><ChipList ids={r.clashDefault} names={names} role="SUPPORT" strong /></Group>
+            <Group title="Alternatives"><ChipList ids={r.alternatives} names={names} role="SUPPORT" notes={r.alternativeNotes} empty="none (default only)" /></Group>
+          </SBox>
+          <SBox support>
+            <Group title="Best jungle partners"><ChipList ids={r.surrounding.jungle} names={names} role="JUNGLE" /></Group>
+            <Group title="Best mids"><ChipList ids={r.surrounding.mid} names={names} role="MID" /></Group>
+          </SBox>
+        </Section>
+        <ProposedSection links={proposed} names={names} proCount={proCount} />
+        {r.logic.warning && <Warning><p>{r.logic.warning}</p></Warning>}
+      </>
+    );
+    if (only === "pro") return (
+      <>
+        <Section layer="pro" title="Pro pairings">
+          <ProTable list={r.observedProPairings} names={names} sources={sources} events={events} role="SUPPORT" partnerLabel="Support" draftLabels={draftLabels} />
+          <Read text={r.playoffRead} />
+        </Section>
+        <SourcesSection ids={allSources(r.sources, r.observedProPairings)} sources={sources} />
+      </>
+    );
     return (
       <article className="panel pick-card scout">
         <Header role="BOT" id={r.champion} name={names[r.champion]} confidence={r.confidence} identities={r.identities} />
@@ -280,6 +305,38 @@ export function ScoutingReport({ item, names, sources, events, draftLabels, prop
     const r = item.record;
     const other: Role = r.role === "MID" ? "JUNGLE" : "MID";
     const otherName = other === "MID" ? "mid" : "jungle";
+    if (only === "synergy") return (
+      <>
+        <Section layer="clash" title="Synergy">
+          <SBox>
+            <Group title={`Preferred ${otherName}`}><ChipList ids={r.clashDefault} names={names} role={other} strong /></Group>
+            <Group title="Alternatives"><ChipList ids={r.alternatives} names={names} role={other} notes={r.alternativeNotes} /></Group>
+          </SBox>
+          {r.botShapes.length > 0 && (
+            <SBox support>
+              <Group title="Compatible bot shapes"><Shapes list={r.botShapes} names={names} /></Group>
+            </SBox>
+          )}
+          {r.status === "downgraded" && <p className="xs caution-text">Downgraded</p>}
+        </Section>
+        <ProposedSection links={proposed} names={names} proCount={proCount} />
+      </>
+    );
+    if (only === "pro") return (
+      <>
+        <Section layer="pro" title="Pro pairings">
+          <ProTable list={r.observedProPairings} names={names} sources={sources} events={events} role={other} partnerLabel={other === "MID" ? "Mid" : "Jungle"} draftLabels={draftLabels} />
+          <ProShapes list={r.observedBotShapes} names={names} anchor={r.anchor} draftLabels={draftLabels} />
+          <Read text={r.playoffRead} />
+        </Section>
+        {r.history.length > 0 && (
+          <Section title="History" end={<span className="faint">older tendencies, not current</span>}>
+            {r.history.map((h) => <p key={h.partner} className="small"><b>{names[r.anchor]} + {names[h.partner]}</b> <span className="muted">({h.era})</span>: {h.note}</p>)}
+          </Section>
+        )}
+        <SourcesSection ids={allSources(r.sources, r.observedProPairings, r.observedBotShapes)} sources={sources} />
+      </>
+    );
     return (
       <article className="panel pick-card scout">
         <Header role={r.role} id={r.anchor} name={names[r.anchor]} confidence={r.confidence} identities={r.identities}>

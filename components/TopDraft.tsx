@@ -1,10 +1,12 @@
 "use client";
-// Top Synergies draft analysis (alan, 2026-10-13): one selected top laner, read through tabs Overview | Draft usage |
-// Matchups | Synergies | Pro evidence. Three layers stay apart: the saved blind grade (alan's), observed pro draft usage
+// Synergies lane draft analysis (alan, 2026-10-13; Top first, then Mid, Bot and Support): one selected laner, read through
+// tabs Overview | Draft usage | (Duo drafting on Bot and Support) | Matchups | (Synergies on Top) | Pro evidence. Three
+// layers stay apart: alan's saved record (Top's blind grade, every lane's saved partners), observed pro draft usage
 // (lib/top-draft.ts, every number with its denominator and its games) and the kit read (General Draft Logic). A response
-// is never called a counter; a counter needs a DPM.LOL row. Nothing here scores or changes a saved record.
+// is never called a counter; a counter needs a DPM.LOL row, and no duo-level lane data exists. Nothing here scores or
+// changes a saved record.
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ChampIcon } from "./ChampIcon";
 import { rovingIndex, rovingKeys } from "./roving";
 import { shortDate } from "@/lib/evidence";
@@ -14,21 +16,30 @@ import { DRAFT_LABEL_MIN } from "@/lib/pro-priority";
 import type { Role } from "@/lib/schema";
 import type { BlindLine } from "@/lib/top-blind";
 import {
-  draftSequence, dpmCounter, LOW_SAMPLE, MIN_CLASSIFIED, PAIR_LABEL, ROTATION_LABEL, USAGE_LABEL,
-  type GameBrief, type Pair, type PriorityBrief, type TopDraftBundle, type TopRow, type TopSelection,
+  BOT_DETAIL_LABEL, draftSequence, dpmCounter, DUO_SHAPE_LABEL, duoResponses, duoRows, LOW_SAMPLE, MIN_CLASSIFIED, PAIR_LABEL, topPatches, topRows, USAGE_LABEL,
+  type DuoResponse, type DuoSelection, type DuoShape, type GameBrief, type LaneRole, type Pair, type PriorityBrief, type Seen, type TopDraftBundle, type TopRow, type TopScope, type TopSelection,
 } from "@/lib/top-draft";
 
 type Names = Record<string, string>;
-export type TopView = "overview" | "usage" | "matchups" | "synergies" | "pro";
+export type TopView = "overview" | "usage" | "duo" | "matchups" | "synergies" | "pro";
 export const TOP_VIEWS: [TopView, string][] = [["overview", "Overview"], ["usage", "Draft usage"], ["matchups", "Matchups"], ["synergies", "Synergies"], ["pro", "Pro evidence"]];
+/** Report tabs per lane. Off Top, the saved partners sit on Overview (they are that lane's saved record), so there is no
+ *  separate Synergies tab; Bot and Support add Duo drafting. */
+export const laneViews = (role: LaneRole): [TopView, string][] => role === "TOP" ? TOP_VIEWS
+  : [["overview", "Overview"], ["usage", "Draft usage"], ...(role === "MID" ? [] : [["duo", "Duo drafting"] as [TopView, string]]), ["matchups", "Matchups"], ["pro", "Pro evidence"]];
+
+/** How each lane is named in prose: "the enemy top", "the enemy ADC". */
+export const LANE_WORD: Record<LaneRole, string> = { TOP: "top", MID: "mid", BOT: "ADC", SUPPORT: "support" };
+const isBot = (r: LaneRole) => r === "BOT" || r === "SUPPORT";
+const SEEN_TEXT: Record<Seen, string> = { hidden: "not yet picked", revealed: "on the board", botlane: "on the board, slot unclear", ambiguous: "on the board, lane unclear" };
 
 const pct = (n: number, d: number) => (d ? `${Math.round((n / d) * 100)}%` : "—");
 const nm = (names: Names, id: string) => names[id] ?? id;
 const SIDE = { blue: "Blue", red: "Red" } as const;
 
 /** "Often blinded · Blind 6/9" style line; neutral below three classified games. */
-export function usageLine(r: TopRow | undefined): string {
-  if (!r) return "No recorded top games";
+export function usageLine(r: TopRow | undefined, role: LaneRole = "TOP"): string {
+  if (!r) return `No recorded ${LANE_WORD[role]} games`;
   if (r.usage === "too-few") return `Too few games (${r.classified} classified)`;
   return `${USAGE_LABEL[r.usage]} · ${r.usage === "response" ? `Response ${r.response}/${r.classified}` : `Blind ${r.blind}/${r.classified}`}`;
 }
@@ -36,7 +47,25 @@ export function usageLine(r: TopRow | undefined): string {
 export const isPriority = (p?: PriorityBrief) => (p?.presence ?? 0) >= DRAFT_LABEL_MIN;
 
 function UsageTag({ s }: { s: TopSelection }) {
-  return <span className={`usage-tag ${s.usage}`} title={s.why}>{s.usage === "blind" ? "Blind" : s.usage === "response" ? "Response" : "Unclear"}</span>;
+  const label = s.bot?.detail ? BOT_DETAIL_LABEL[s.bot.detail] : s.usage === "blind" ? "Blind" : s.usage === "response" ? "Response" : "Unclear";
+  return <span className={`usage-tag ${s.usage}`}>{label}</span>;
+}
+
+/** Why a pick reads the way it does, in names: when it was picked and what of the enemy lane (or bot lane) it could see. */
+function readText(s: TopSelection, game: GameBrief, names: Names): React.ReactNode {
+  const other = s.side === "blue" ? "red" : "blue";
+  if (!s.turn) return s.why;
+  const me = <b>{nm(names, s.champion)}</b>;
+  if (s.bot) {
+    const b = s.bot, ea = nm(names, game[other].picks.BOT), es = nm(names, game[other].picks.SUPPORT);
+    const partner = <>{nm(names, b.partner)} {b.partnerWhen === "together" ? "in the same turn (the source does not say which of the two came first)" : b.partnerWhen === "before" ? `earlier, at ${b.partnerTurn}` : `later, at ${b.partnerTurn}`}</>;
+    return <>{me} was pick {s.turn} of 10, with {partner}. Enemy ADC {ea}: {SEEN_TEXT[b.enemyAdc]}; enemy support {es}: {SEEN_TEXT[b.enemySupport]}.{" "}
+      {b.detail ? <>Read: <b>{BOT_DETAIL_LABEL[b.detail]}</b>.</> : "Unclear: a visible enemy champion could still have played another lane."}</>;
+  }
+  return <>
+    {s.usage === "uncertain" ? s.why.replace(s.laneOpponent, nm(names, s.laneOpponent)) : <>{me} was pick {s.turn} of 10; {nm(names, s.laneOpponent)} was pick {s.opponentTurn}.</>}
+    {s.enemyJungle && <> The enemy jungler {nm(names, game[other].picks.JUNGLE)} was {SEEN_TEXT[s.enemyJungle]} (composition context, not a lane response).</>}
+  </>;
 }
 
 // ---------- one game ----------
@@ -44,7 +73,8 @@ function UsageTag({ s }: { s: TopSelection }) {
 /** The recorded game behind a selection: who picked first, the ten picks in draft order, both lineups, result, links. */
 export function TopGameDetail({ game, focus, names, bundle, pair }: { game: GameBrief; focus: TopSelection; names: Names; bundle: TopDraftBundle; pair?: Pair }) {
   const seq = draftSequence(game);
-  const tops = new Set([game.blue.picks.TOP, game.red.picks.TOP]);
+  const role = focus.role as LaneRole;
+  const lane = new Set((isBot(role) ? (["BOT", "SUPPORT"] as const) : [role]).flatMap((r) => [game.blue.picks[r], game.red.picks[r]]));
   const first = game.firstPick ? game[game.firstPick].team : undefined;
   const event = bundle.events.find((e) => e.id === game.event)?.short ?? game.tournament;
   const draftId = (side: "blue" | "red") => bundle.drafts[`${game.id}:${side}`];
@@ -57,12 +87,12 @@ export function TopGameDetail({ game, focus, names, bundle, pair }: { game: Game
       </p>
       <p className="small">
         {first ? <><b>{first}</b> ({SIDE[game.firstPick!].toLowerCase()} side) picked first. </> : "First pick not marked on the game page. "}
-        {focus.usage === "uncertain" ? focus.why : <><b>{nm(names, focus.champion)}</b> was pick {focus.turn} of 10; {nm(names, focus.laneOpponent)} was pick {focus.opponentTurn}.</>}
+        {readText(focus, game, names)}
       </p>
       {seq && (
         <ol className="draft-seq" aria-label="Picks in draft order">
           {seq.map((p) => (
-            <li key={p.turn} className={`seq-${p.side}${tops.has(p.champion) ? " top" : ""}`} title={`${p.turn}. ${game[p.side].team}: ${nm(names, p.champion)}${p.role ? ` (${p.role.toLowerCase()})` : ""}`}>
+            <li key={p.turn} className={`seq-${p.side}${lane.has(p.champion) ? " lane" : ""}`} title={`${p.turn}. ${game[p.side].team}: ${nm(names, p.champion)}${p.role ? ` (${p.role.toLowerCase()})` : ""}`}>
               <span className="seq-n tnum">{p.turn}</span>
               <ChampIcon id={p.champion} name={nm(names, p.champion)} size="sm" />
               <span className="sr-only">{game[p.side].team} {nm(names, p.champion)}</span>
@@ -74,16 +104,16 @@ export function TopGameDetail({ game, focus, names, bundle, pair }: { game: Game
         <p className="xs">
           <span className={`pair-tag ${pair.status}`}>{PAIR_LABEL[pair.status]}</span>{" "}
           {pair.status === "supported" && pair.dpm
-            ? <>DPM.LOL: {nm(names, pair.champion)} wins {(pair.dpm.winRate * 100).toFixed(1)}% of {pair.dpm.games.toLocaleString()} ranked games into {nm(names, pair.into)} ({patchLabel(pair.dpm.patch)}). The pro games are context, not proof.</>
+            ? <>DPM.LOL: {nm(names, pair.champion)} wins {(pair.dpm.winRate * 100).toFixed(1)}% of {pair.dpm.games.toLocaleString()} ranked {LANE_WORD[role]} games into {nm(names, pair.into)} ({patchLabel(pair.dpm.patch)}). The pro games are context, not proof.</>
             : pair.status === "repeated" ? <>Picked into {nm(names, pair.into)} in {pair.series} different series. No lane data says it is favourable.</>
             : <>One observed response. It says nothing yet about the matchup.</>}
         </p>
       )}
       <div className="top-game-links">
-        {anyDraft && <Link className="btn sm" href={`/pro-drafts?id=${anyDraft}&build=${anyDraft}:TOP`}>Open in Pro Drafts</Link>}
+        {anyDraft && <Link className="btn sm" href={`/pro-drafts?id=${anyDraft}&build=${anyDraft}:${role}`}>Open in Pro Drafts</Link>}
         {(["blue", "red"] as const).map((side) => {
-          const c = game[side].picks.TOP, player = bundle.players[`${game.id}:${side}`];
-          return <Link key={side} className="btn sm" href={buildsHref(c, "TOP" as Role, game.id)}>{nm(names, c)} build{player ? ` · ${player}` : ""}</Link>;
+          const c = game[side].picks[role], player = bundle.players[`${game.id}:${side}`];
+          return <Link key={side} className="btn sm" href={buildsHref(c, role as Role, game.id)}>{nm(names, c)} build{player ? ` · ${player}` : ""}</Link>;
         })}
         <a className="xs" href={game.url} target="_blank" rel="noreferrer">Gol.gg game page</a>
       </div>
@@ -104,7 +134,7 @@ function GameRows({ list, names, bundle, open, setOpen, pair, opponent = true }:
           <li key={k} className={isOpen ? "open" : undefined}>
             <button type="button" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? undefined : k)}>
               <span className="tg-date tnum faint">{shortDate(s.date) ?? s.date}</span>
-              <span className="tg-team">{s.team}{player ? <span className="faint"> · {player}</span> : null}</span>
+              <span className="tg-team">{s.team}{player ? <span className="faint"> · {player}</span> : null}{s.bot ? <span className="faint"> · with {nm(names, s.bot.partner)}</span> : null}</span>
               {opponent && <span className="tg-vs"><span className="faint">vs</span> <ChampIcon id={s.laneOpponent} name={nm(names, s.laneOpponent)} size="xs" /> {nm(names, s.laneOpponent)}</span>}
               <span className="tg-turn tnum faint" title="Pick number in the draft">{s.turn ? `${s.turn}/10` : "—"}</span>
               <UsageTag s={s} />
@@ -120,45 +150,49 @@ function GameRows({ list, names, bundle, open, setOpen, pair, opponent = true }:
 
 // ---------- the report ----------
 
-export function TopUsageReport({ id, row, prio, bundle, names, view, setView, saved, logic, synergies, proEvidence, scopeLabel }: {
-  id: string; row?: TopRow; prio?: PriorityBrief; bundle: TopDraftBundle; names: Names; view: TopView; setView: (v: TopView) => void;
-  saved?: { grade: string; tier?: string; gives?: string; avoid?: string };
-  logic: BlindLine[]; synergies: React.ReactNode; proEvidence: React.ReactNode; scopeLabel: string;
+export function TopUsageReport({ id, row, prio, prioLabel, bundle, names, view, setView, saved, logic, synergies, proEvidence, scopeLabel, scope }: {
+  id: string; row?: TopRow; prio?: PriorityBrief; prioLabel: string; bundle: TopDraftBundle; names: Names; view: TopView; setView: (v: TopView) => void;
+  saved?: { grade: string; tier?: string; gives?: string; avoid?: string }; // Top's saved blind grade
+  logic: BlindLine[]; synergies: React.ReactNode; proEvidence: React.ReactNode; scopeLabel: string; scope: TopScope;
 }) {
   const [open, setOpen] = useState<string>();
   const [pairOpen, setPairOpen] = useState<string>();
+  const role = bundle.role;
   const name = nm(names, id);
+  const views = laneViews(role);
+  const shown = views.some(([v]) => v === view) ? view : "overview";
   return (
-    <article className="panel pick-card scout top-report">
-      <header className="scout-head role-TOP">
-        <ChampIcon id={id} name={name} role="TOP" size="xxl" />
+    <article className={`panel pick-card scout top-report lane-${role}`}>
+      <header className={`scout-head role-${role}`}>
+        <ChampIcon id={id} name={name} role={role} size="xxl" />
         <div className="scout-id">
           <h2>{name}</h2>
           <div className="scout-meta">
-            <span className="role-tag role-TOP">TOP</span>
+            <span className={`role-tag role-${role}`}>{role}</span>
             {saved?.tier && <span>{saved.tier}</span>}
             {saved && <span className="clash-text" title="Your saved blind-pick grade">Saved blind grade <b className="grade">{saved.grade}</b></span>}
-            <span className="pro-text" title={`Observed pro draft usage, ${scopeLabel}`}>{usageLine(row)}</span>
-            {prio?.presence != null && <span className="pro-text tnum" title={`Pick or ban presence, ${scopeLabel}`}>{isPriority(prio) ? "Pro priority" : "Presence"} {Math.round(prio.presence * 100)}%</span>}
+            <span className="pro-text" title={`Observed pro draft usage, ${scopeLabel}`}>{usageLine(row, role)}</span>
+            {prio?.presence != null && <span className="pro-text tnum" title={`Pick or ban presence on ${prioLabel}`}>{isPriority(prio) ? "Pro priority" : "Presence"} {Math.round(prio.presence * 100)}%</span>}
           </div>
         </div>
       </header>
       <div className="tabs" role="tablist" aria-label={`${name} report`} onKeyDown={(e) => rovingKeys(e)}>
-        {TOP_VIEWS.map(([v, l]) => (
-          <button key={v} type="button" role="tab" aria-selected={view === v} tabIndex={rovingIndex(view === v)} className={view === v ? "active" : undefined} onClick={() => setView(v)}>{l}</button>
+        {views.map(([v, l]) => (
+          <button key={v} type="button" role="tab" aria-selected={shown === v} tabIndex={rovingIndex(shown === v)} className={shown === v ? "active" : undefined} onClick={() => setView(v)}>{l}</button>
         ))}
       </div>
       <div role="tabpanel">
-        {view === "overview" && <Overview row={row} prio={prio} saved={saved} logic={logic} names={names} scopeLabel={scopeLabel} />}
-        {view === "usage" && <Usage row={row} names={names} bundle={bundle} open={open} setOpen={setOpen} scopeLabel={scopeLabel} />}
-        {view === "matchups" && <Matchups id={id} row={row} names={names} bundle={bundle} open={open} setOpen={setOpen} pairOpen={pairOpen} setPairOpen={setPairOpen} />}
-        {view === "synergies" && synergies}
-        {view === "pro" && (
+        {shown === "overview" && <Overview role={role} row={row} prio={prio} prioLabel={prioLabel} saved={saved} logic={logic} names={names} scopeLabel={scopeLabel} synergies={role === "TOP" ? undefined : synergies} />}
+        {shown === "usage" && <Usage id={id} row={row} names={names} bundle={bundle} open={open} setOpen={setOpen} scopeLabel={scopeLabel} scope={scope} />}
+        {shown === "duo" && <DuoView id={id} names={names} bundle={bundle} scope={scope} scopeLabel={scopeLabel} />}
+        {shown === "matchups" && <Matchups id={id} row={row} names={names} bundle={bundle} open={open} setOpen={setOpen} pairOpen={pairOpen} setPairOpen={setPairOpen} />}
+        {shown === "synergies" && synergies}
+        {shown === "pro" && (
           <>
             {proEvidence}
             {row && (
               <section className="scout-sec layer pro">
-                <h3 className="scout-title"><span className="ldot" />Recorded games at top<span className="end tnum">{row.games}</span></h3>
+                <h3 className="scout-title"><span className="ldot" />Recorded games at {LANE_WORD[role]}<span className="end tnum">{row.games}</span></h3>
                 <GameRows list={row.selections} names={names} bundle={bundle} open={open} setOpen={setOpen} />
               </section>
             )}
@@ -169,26 +203,41 @@ export function TopUsageReport({ id, row, prio, bundle, names, view, setView, sa
   );
 }
 
-function Overview({ row, prio, saved, logic, names, scopeLabel }: {
-  row?: TopRow; prio?: PriorityBrief; saved?: { grade: string; gives?: string; avoid?: string }; logic: BlindLine[]; names: Names; scopeLabel: string;
+function Overview({ role, row, prio, prioLabel, saved, logic, names, scopeLabel, synergies }: {
+  role: LaneRole; row?: TopRow; prio?: PriorityBrief; prioLabel: string; saved?: { grade: string; gives?: string; avoid?: string }; logic: BlindLine[]; names: Names; scopeLabel: string;
+  synergies?: React.ReactNode;
 }) {
   const answers = row?.answeredBy.filter((p) => p.games.length >= 2) ?? [];
   const high = isPriority(prio);
   const savedHigh = saved && /^A/.test(saved.grade), savedLow = saved && /^C/.test(saved.grade);
   const disagree = row && row.usage !== "too-few" && ((savedHigh && row.usage === "response") || (savedLow && row.usage === "blind"));
+  const enemy = `enemy ${LANE_WORD[role]}`;
+  const ordered = row ? row.selections.filter((s) => s.turn).length : 0;
   return (
     <>
       <section className="scout-sec layer pro">
         <h3 className="scout-title"><span className="ldot" />Observed draft usage<span className="end">{scopeLabel}</span></h3>
-        {!row ? <p className="muted xs">No recorded pro game has this champion at top in this scope.</p> : (
+        {!row ? <p className="muted xs">No recorded pro game has this champion at {LANE_WORD[role]} in this scope.</p> : (
           <>
-            <p className="small"><b>{usageLine(row)}</b>{row.low && row.usage !== "too-few" ? <span className="faint"> · small sample (under {LOW_SAMPLE})</span> : null}</p>
+            <p className="small"><b>{usageLine(row, role)}</b>{row.low && row.usage !== "too-few" ? <span className="faint"> · small sample (under {LOW_SAMPLE})</span> : null}</p>
             <p className="xs muted tnum">
-              {row.games} top game{row.games === 1 ? "" : "s"} · blind {row.blind} · response {row.response}{row.uncertain ? ` · unclear ${row.uncertain}` : ""}
-              {prio && <> · {prio.picks} picks, {prio.bans} bans{prio.presence != null ? `, ${Math.round(prio.presence * 100)}% presence` : ""}{prio.winRate != null ? `, ${Math.round(prio.winRate * 100)}% WR${prio.low ? " (low sample)" : ""}` : ""}</>}
+              {row.games} {LANE_WORD[role]} game{row.games === 1 ? "" : "s"} · blind {row.blind} · response {row.response}{row.uncertain ? ` · unclear ${row.uncertain}` : ""}
             </p>
+            {prio && (
+              <p className="xs muted tnum">
+                Meta priority on {prioLabel}: {prio.picks} picks, {prio.bans} bans{prio.presence != null ? `, ${Math.round(prio.presence * 100)}% presence` : ""}{prio.winRate != null ? `, ${Math.round(prio.winRate * 100)}% WR${prio.low ? " (low sample)" : ""}` : ""}
+              </p>
+            )}
+            {row.bot && ordered > 0 && (
+              <p className="xs tnum">
+                Own {role === "BOT" ? "support" : "ADC"} picked earlier in {row.bot.partnerBefore}/{ordered}, in the same turn in {row.bot.together}/{ordered}, later in {row.bot.partnerAfter}/{ordered}.
+              </p>
+            )}
+            {row.enemyJungleSeen != null && ordered > 0 && (
+              <p className="xs tnum">Picked after the enemy jungler was revealed in {row.enemyJungleSeen}/{ordered} (composition context, not a lane response).</p>
+            )}
             {high && row.usage === "blind" && <p className="xs">High priority and usually blinded. Priority is not evidence that it is safe to blind{answers.length ? `: it was answered by ${answers.map((p) => `${nm(names, p.champion)} ${p.games.length}×`).join(", ")}` : ""}.</p>}
-            {high && row.usage === "response" && <p className="xs">High priority, and usually held until the enemy top is known.</p>}
+            {high && row.usage === "response" && <p className="xs">High priority, and usually held until the {enemy} is known.</p>}
             {!high && row.usage === "response" && <p className="xs">Low priority but a recurring response: a situational pick.</p>}
             {row.usage === "too-few" && <p className="xs muted">Fewer than {MIN_CLASSIFIED} classified games: no usage label.</p>}
           </>
@@ -203,6 +252,7 @@ function Overview({ row, prio, saved, logic, names, scopeLabel }: {
           {saved.avoid && <p className="xs"><b>Avoid</b> {saved.avoid}</p>}
         </section>
       )}
+      {synergies}
       <section className="scout-sec layer logic">
         <h3 className="scout-title"><span className="ldot" />Blind-pick safety<span className="end">general draft logic, from the kit</span></h3>
         {logic.length ? (
@@ -224,9 +274,17 @@ function Bar({ parts }: { parts: [string, number, string][] }) {
   );
 }
 
-function Usage({ row, names, bundle, open, setOpen, scopeLabel }: { row?: TopRow; names: Names; bundle: TopDraftBundle; open?: string; setOpen: (k?: string) => void; scopeLabel: string }) {
-  if (!row) return <p className="muted xs">No recorded pro game has this champion at top in this scope.</p>;
-  const ordered = row.blind + row.response + row.selections.filter((s) => s.usage === "uncertain" && s.turn).length;
+function Usage({ id, row, names, bundle, open, setOpen, scopeLabel, scope }: {
+  id: string; row?: TopRow; names: Names; bundle: TopDraftBundle; open?: string; setOpen: (k?: string) => void; scopeLabel: string; scope: TopScope;
+}) {
+  const role = bundle.role;
+  // Per-patch breakdown under All patches: the combined history above, each patch's own counts and presence here.
+  const perPatch = useMemo(() => scope.patch ? [] : topPatches(bundle.selections).map((patch) => ({
+    patch, row: topRows(bundle.selections, { ...scope, patch }, bundle.dpm).find((r) => r.champion === id), prio: bundle.priority[patch]?.rows[id],
+  })).filter((p) => p.row || p.prio), [bundle, id, scope]);
+  if (!row) return <p className="muted xs">No recorded pro game has this champion at {LANE_WORD[role]} in this scope.</p>;
+  const ordered = row.selections.filter((s) => s.turn).length;
+  const b = row.bot;
   return (
     <>
       <section className="scout-sec layer pro">
@@ -242,13 +300,52 @@ function Usage({ row, names, bundle, open, setOpen, scopeLabel }: { row?: TopRow
           <div><dt>Blue / red</dt><dd>{row.blue} / {row.red}</dd></div>
           <div><dt>Team had first pick</dt><dd>{row.firstPicker}/{ordered}</dd></div>
           <div><dt>Won</dt><dd>{row.wins}/{row.games}</dd></div>
+          {row.enemyJungleSeen != null && <div><dt title="Composition context, never counted as a lane response">After enemy jungler</dt><dd>{row.enemyJungleSeen}/{ordered}</dd></div>}
         </dl>
         <p className="xs muted">
           Percentages are over classified games only. {row.low ? `Small sample: under ${LOW_SAMPLE} classified games. ` : ""}
           {row.unavailableGames ? `Fearless: already used earlier in the series in ${row.unavailableGames} game${row.unavailableGames === 1 ? "" : "s"}, so it could not be picked there. ` : ""}
-          Unclear means the order or the opposing top's lane could not be verified.
+          {isBot(role) ? "Unclear means the order was not recorded or a visible enemy champion could still have played another lane." : `Unclear means the order or the opposing ${LANE_WORD[role]}'s lane could not be verified.`}
         </p>
       </section>
+      {b && (
+        <section className="scout-sec layer pro">
+          <h3 className="scout-title"><span className="ldot" />What it could see of the enemy bot lane<span className="end tnum">{ordered} ordered</span></h3>
+          <dl className="usage-facts tnum">
+            {(Object.keys(BOT_DETAIL_LABEL) as (keyof typeof BOT_DETAIL_LABEL)[]).map((k) => <div key={k}><dt>{BOT_DETAIL_LABEL[k]}</dt><dd>{b[k]}/{row.games}</dd></div>)}
+            <div><dt>Unclear</dt><dd>{row.uncertain}/{row.games}</dd></div>
+          </dl>
+          <dl className="usage-facts tnum">
+            <div><dt>Own {role === "BOT" ? "support" : "ADC"} earlier</dt><dd>{b.partnerBefore}/{ordered}</dd></div>
+            <div><dt>Same turn</dt><dd>{b.together}/{ordered}</dd></div>
+            <div><dt>Own {role === "BOT" ? "support" : "ADC"} later</dt><dd>{b.partnerAfter}/{ordered}</dd></div>
+          </dl>
+          <p className="xs muted">&ldquo;After one enemy bot laner&rdquo; is a champion that was certainly bot lane but could still have been the ADC or the support. Two picks in the same turn are never ordered.</p>
+        </section>
+      )}
+      {perPatch.length > 1 && (
+        <section className="scout-sec layer pro">
+          <h3 className="scout-title"><span className="ldot" />By patch<span className="end">meta priority is per patch, never combined</span></h3>
+          <table className="pro-table by-patch">
+            <thead><tr><th>Patch</th><th className="num">Games</th><th className="num">Blind</th><th className="num">Response</th><th className="num">First rotation</th><th className="num" title="Pick or ban presence on that patch">Presence</th></tr></thead>
+            <tbody>
+              {perPatch.map(({ patch, row: r, prio }) => {
+                const o = r ? r.selections.filter((s) => s.turn).length : 0;
+                return (
+                  <tr key={patch}>
+                    <td>{patchLabel(patch)}</td>
+                    <td className="num">{r?.games ?? 0}</td>
+                    <td className="num">{r ? `${r.blind}/${r.classified}` : "—"}</td>
+                    <td className="num">{r ? `${r.response}/${r.classified}` : "—"}</td>
+                    <td className="num">{r && o ? `${r.rotation.first}/${o}` : "—"}</td>
+                    <td className="num">{prio?.presence != null ? `${Math.round(prio.presence * 100)}%` : "—"}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </section>
+      )}
       <section className="scout-sec layer pro">
         <h3 className="scout-title"><span className="ldot" />Games<span className="end tnum">{row.games}</span></h3>
         <GameRows list={row.selections} names={names} bundle={bundle} open={open} setOpen={setOpen} />
@@ -289,18 +386,19 @@ function PairList({ title, pairs, names, bundle, open, setOpen, pairOpen, setPai
 function Matchups({ id, row, names, bundle, open, setOpen, pairOpen, setPairOpen }: {
   id: string; row?: TopRow; names: Names; bundle: TopDraftBundle; open?: string; setOpen: (k?: string) => void; pairOpen?: string; setPairOpen: (k?: string) => void;
 }) {
-  if (!row) return <p className="muted xs">No recorded pro game has this champion at top in this scope.</p>;
+  const role = bundle.role, word = LANE_WORD[role];
+  if (!row) return <p className="muted xs">No recorded pro game has this champion at {word} in this scope.</p>;
   const lane = (enemy: string) => bundle.dpm.find((r) => r.champion === id && r.enemy === enemy);
   return (
     <>
       <section className="scout-sec layer pro">
-        <h3 className="scout-title"><span className="ldot" />Opposing tops faced<span className="end tnum">{row.faced.length}</span></h3>
+        <h3 className="scout-title"><span className="ldot" />Opposing {word === "ADC" ? "ADCs" : `${word}s`} faced<span className="end tnum">{row.faced.length}</span></h3>
         <table className="pro-table faced">
           <thead><tr><th>Opponent</th><th className="num">Games</th><th className="num">Blind</th><th className="num">Response</th><th className="num">Won</th><th className="num" title="DPM.LOL ranked lane win rate for this champion into the opponent">Lane data</th></tr></thead>
           <tbody>
             {row.faced.map((f) => {
               const g = row.selections.filter((s) => s.laneOpponent === f.champion), d = lane(f.champion);
-              const counter = dpmCounter(bundle.dpm, id, f.champion);
+              const counter = dpmCounter(bundle.dpm, id, f.champion, role);
               return (
                 <tr key={f.champion}>
                   <td><span className="chip"><ChampIcon id={f.champion} name={nm(names, f.champion)} size="xs" />{nm(names, f.champion)}</span></td>
@@ -314,12 +412,143 @@ function Matchups({ id, row, names, bundle, open, setOpen, pairOpen, setPairOpen
             })}
           </tbody>
         </table>
-        <p className="xs muted">Won counts games, not lanes. Lane data is DPM.LOL ranked play, a separate signal; a dot marks a matchup that clears the counter threshold.</p>
+        <p className="xs muted">Won counts games, not lanes. Lane data is DPM.LOL ranked play, a separate signal; a dot marks a matchup that clears the counter threshold.{isBot(role) ? ` Responses here are ${word} into ${word}; whole bot lanes are under Duo drafting.` : ""}</p>
       </section>
       <PairList title={`${nm(names, id)} picked into`} pairs={row.respondedInto} names={names} bundle={bundle} open={open} setOpen={setOpen} pairOpen={pairOpen} setPairOpen={setPairOpen}
-        other={(p) => p.into} empty="Never picked after the enemy top was known in this scope." />
+        other={(p) => p.into} empty={`Never picked after the enemy ${word} was known in this scope.`} />
       <PairList title={`Picked into ${nm(names, id)}`} pairs={row.answeredBy} names={names} bundle={bundle} open={open} setOpen={setOpen} pairOpen={pairOpen} setPairOpen={setPairOpen}
-        other={(p) => p.champion} empty="No team picked its top after this champion was revealed in this scope." />
+        other={(p) => p.champion} empty={`No team picked its ${word} after this champion was revealed in this scope.`} />
+    </>
+  );
+}
+
+// ---------- duo drafting (Bot and Support) ----------
+
+const SHAPES: DuoShape[] = ["blind", "partial", "split", "full", "uncertain"];
+const SHAPE_SHORT: Record<DuoShape, string> = { blind: "Blind", partial: "Partial", split: "Split", full: "Full", uncertain: "Unclear" };
+const turnText = (d: DuoSelection) => d.adcTurn == null || d.supportTurn == null ? "order not recorded"
+  : d.order === "together" ? `${d.adcTurn} + ${d.supportTurn}, same turn` : `ADC ${d.adcTurn}, support ${d.supportTurn}`;
+const knownText = (d: DuoSelection) => !d.known ? "—" : d.known.first == null || d.known.last == null ? "unclear" : d.known.first === d.known.last ? `${d.known.first} of 2` : `${d.known.first} → ${d.known.last} of 2`;
+
+function Duo({ adc, support, names }: { adc: string; support: string; names: Names }) {
+  return (
+    <span className="duo">
+      <ChampIcon id={adc} name={nm(names, adc)} size="xs" /><ChampIcon id={support} name={nm(names, support)} size="xs" />
+      <span>{nm(names, adc)} + {nm(names, support)}</span>
+    </span>
+  );
+}
+
+/** The duo's games: pick order, what of the enemy bot lane each half could see, the enemy duo, the result; each opens its game. */
+function DuoGames({ list, names, bundle }: { list: DuoSelection[]; names: Names; bundle: TopDraftBundle }) {
+  const [open, setOpen] = useState<string>();
+  const sel = useMemo(() => new Map(bundle.selections.map((s) => [`${s.game}:${s.side}`, s])), [bundle]);
+  return (
+    <ul className="top-games duo-games">
+      {list.map((d) => {
+        const k = `${d.game}:${d.side}`, isOpen = open === k, s = sel.get(k);
+        return (
+          <li key={k} className={isOpen ? "open" : undefined}>
+            <button type="button" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? undefined : k)}>
+              <span className="tg-date tnum faint">{shortDate(d.date) ?? d.date}</span>
+              <span className="tg-team">{d.team} <span className="faint">· {patchLabel(d.patch)} · {turnText(d)}</span></span>
+              <span className="tg-vs"><span className="faint">vs</span> <Duo adc={d.enemyAdc} support={d.enemySupport} names={names} /></span>
+              <span className="tg-turn tnum faint" title="Enemy bot laners known at the duo's first → last pick">{knownText(d)}</span>
+              <span className={`usage-tag ${d.shape === "uncertain" ? "uncertain" : d.shape}`}>{DUO_SHAPE_LABEL[d.shape]}</span>
+              <span className={`res ${d.won ? "win" : "loss"}`}>{d.won ? "W" : "L"}</span>
+            </button>
+            {isOpen && s && bundle.games[d.game] && <TopGameDetail game={bundle.games[d.game]} focus={s} names={names} bundle={bundle} />}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function ResponseList({ title, list, names, bundle, empty, note }: { title: string; list: DuoResponse[]; names: Names; bundle: TopDraftBundle; empty: string; note?: string }) {
+  const [open, setOpen] = useState<string>();
+  return (
+    <section className="scout-sec layer pro">
+      <h3 className="scout-title"><span className="ldot" />{title}<span className="end tnum">{list.reduce((n, r) => n + r.games.length, 0)}</span></h3>
+      {!list.length ? <p className="muted xs">{empty}</p> : (
+        <ul className="pair-list duo-list">
+          {list.map((r) => {
+            const k = `${r.adc}+${r.support}>${r.enemyAdc}+${r.enemySupport}`, isOpen = open === k;
+            return (
+              <li key={k}>
+                <button type="button" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? undefined : k)}>
+                  <Duo adc={r.adc} support={r.support} names={names} />
+                  <span className="duo-into"><span className="faint">into</span> <Duo adc={r.enemyAdc} support={r.enemySupport} names={names} /></span>
+                  <span className="tnum">{r.series} series · {r.teams.length} team{r.teams.length === 1 ? "" : "s"} · won {r.wins}/{r.games.length}</span>
+                  <span className={`pair-tag ${r.status}`}>{r.status === "repeated" ? "Repeated response" : "Observed response"}</span>
+                </button>
+                {isOpen && <DuoGames list={r.games} names={names} bundle={bundle} />}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      {note && <p className="xs muted">{note}</p>}
+    </section>
+  );
+}
+
+function DuoView({ id, names, bundle, scope, scopeLabel }: { id: string; names: Names; bundle: TopDraftBundle; scope: TopScope; scopeLabel: string }) {
+  const [open, setOpen] = useState<string>();
+  const support = bundle.role === "SUPPORT";
+  const all = bundle.duos ?? [];
+  const mine = (d: { adc: string; support: string }) => (support ? d.support : d.adc) === id;
+  const rows = useMemo(() => duoRows(all, scope).filter(mine), [all, scope, id]); // eslint-disable-line react-hooks/exhaustive-deps
+  const responses = useMemo(() => duoResponses(all, scope), [all, scope]);
+  const games = rows.flatMap((r) => r.games);
+  if (!games.length) return <p className="muted xs">No recorded duo with this champion in this scope.</p>;
+  const shapes = Object.fromEntries(SHAPES.map((k) => [k, games.filter((g) => g.shape === k).length])) as Record<DuoShape, number>;
+  const ordered = games.filter((g) => g.order).length;
+  const order = (o: DuoSelection["order"]) => games.filter((g) => g.order === o).length;
+  const into = responses.filter((r) => mine(r));
+  const against = responses.filter((r) => (support ? r.enemySupport : r.enemyAdc) === id);
+  return (
+    <>
+      <section className="scout-sec layer pro">
+        <h3 className="scout-title"><span className="ldot" />How its duos were built<span className="end">{scopeLabel}</span></h3>
+        <Bar parts={[["Duo blind", shapes.blind, "blind"], ["Partially revealed", shapes.partial, "response"], ["Split construction", shapes.split, "response"], ["Full duo response", shapes.full, "response"], ["Unclear", shapes.uncertain, "uncertain"]]} />
+        <dl className="usage-facts tnum">
+          {SHAPES.map((k) => <div key={k}><dt>{DUO_SHAPE_LABEL[k]}</dt><dd>{shapes[k]}/{games.length}</dd></div>)}
+          <div><dt>ADC first</dt><dd>{order("adc")}/{ordered}</dd></div>
+          <div><dt>Same turn</dt><dd>{order("together")}/{ordered}</dd></div>
+          <div><dt>Support first</dt><dd>{order("support")}/{ordered}</dd></div>
+        </dl>
+        <p className="xs muted">
+          Duo blind: both picks before either enemy bot laner. Partially revealed: one enemy bot laner known at both picks. Full: both known at both picks. Split: the
+          second half saw more of the enemy bot lane than the first. Unclear: no order recorded, or a visible enemy champion could still have played another lane.
+        </p>
+      </section>
+      <section className="scout-sec layer pro">
+        <h3 className="scout-title"><span className="ldot" />Duos<span className="end tnum">{rows.length}</span></h3>
+        <table className="pro-table duo-table">
+          <thead><tr><th>Duo</th><th className="num">Games</th>{SHAPES.map((k) => <th key={k} className="num shape-col" title={DUO_SHAPE_LABEL[k]}>{SHAPE_SHORT[k]}</th>)}<th className="num">Teams</th><th className="num">Won</th></tr></thead>
+          {rows.map((r) => {
+            const k = `${r.adc}+${r.support}`, isOpen = open === k;
+            return (
+              <tbody key={k} className={isOpen ? "open" : undefined}>
+                <tr>
+                  <td><button type="button" className="duo-btn" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? undefined : k)}><Duo adc={r.adc} support={r.support} names={names} /></button></td>
+                  <td className="num">{r.games.length}</td>
+                  {SHAPES.map((s) => <td key={s} className="num shape-col">{r.shapes[s] || "·"}</td>)}
+                  <td className="num">{r.teams.length}</td>
+                  <td className="num">{r.wins}/{r.games.length}</td>
+                </tr>
+                {isOpen && <tr className="duo-open"><td colSpan={SHAPES.length + 4}><DuoGames list={r.games} names={names} bundle={bundle} /></td></tr>}
+              </tbody>
+            );
+          })}
+        </table>
+      </section>
+      <ResponseList title="Completed after the whole enemy bot lane" list={into} names={names} bundle={bundle}
+        empty="This champion's duo was never completed after both enemy bot laners were known in this scope." />
+      <ResponseList title="Duos picked into it" list={against} names={names} bundle={bundle}
+        empty="No duo was completed into a bot lane with this champion in this scope."
+        note="Both lists count duos whose last pick came after both enemy bot laners were known (full responses and splits). A response is not a counter: no duo-level lane data exists, and wins prove nothing. Repeated needs two different series." />
     </>
   );
 }

@@ -432,17 +432,20 @@ export interface GameBrief {
   blue: { team: string; order?: string[]; picks: Record<Role, string>; bans: string[] };
   red: { team: string; order?: string[]; picks: Record<Role, string>; bans: string[] };
 }
-export interface PriorityBrief { presence: number | null; picks: number; bans: number; topPicks?: number; winRate: number | null; low: boolean }
+export interface PriorityBrief { presence: number | null; picks: number; bans: number; topPicks?: number /* picks in this lane */; winRate: number | null; low: boolean }
 export interface TopDraftBundle {
+  role: LaneRole;
   selections: TopSelection[];
   games: Record<number, GameBrief>;
-  players: Record<string, string>; // `${game}:${side}` -> the top laner's name, from the recorded builds
+  players: Record<string, string>; // `${game}:${side}` -> the player in this role, from the recorded builds
   drafts: Record<string, string>; // `${game}:${side}` -> Pro Drafts draft id, when the game is listed there
   priority: Record<string, { games: number; rows: Record<string, PriorityBrief> }>; // patch key ("all" for every patch)
-  dpm: DPMRow[]; // only the top-lane rows for matchups that occur in the recorded games
+  dpm: DPMRow[]; // only this lane's rows for matchups that occur in the recorded games
   events: { id: string; short: string }[];
   blind: Record<string, BlindLine[]>; // General Draft Logic (lib/top-blind.ts), never pro evidence
+  duos?: DuoSelection[]; // BOT and SUPPORT: every team's bot lane
 }
+export type LaneDraftBundle = TopDraftBundle;
 
 export const brief = (g: ProGame): GameBrief => ({
   id: g.id, event: g.event, tournament: g.tournament, patch: g.patch, date: g.date, series: g.series, gameNo: g.game, stage: g.stage,

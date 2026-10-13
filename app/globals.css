@@ -1693,7 +1693,7 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .draft-seq li { position: relative; display: grid; justify-items: center; gap: var(--s1); padding: var(--s1) var(--s1) var(--s2); border-bottom: 2px solid var(--border-strong); }
 .draft-seq li.seq-blue { border-color: var(--team-blue); }
 .draft-seq li.seq-red { border-color: var(--team-red); }
-.draft-seq li.top .champ { box-shadow: 0 0 0 1px var(--accent); }
+.draft-seq li.lane .champ { box-shadow: 0 0 0 1px var(--accent); }
 .draft-seq .seq-n { font-size: var(--fs-2xs); color: var(--text-faint); }
 .top-game-links { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); }
 .blind-read { display: grid; gap: var(--s2); margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
@@ -1702,8 +1702,28 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .blind-read li.plus::before { content: "+"; }
 .blind-read li.minus::before { content: "−"; color: var(--caution); }
 .blind-read li.note::before { content: "·"; }
-.faced { width: 100%; }
+.faced, .by-patch, .duo-table { width: 100%; }
+/* Duo drafting (Bot and Support): a duo is two portraits and its names; a row opens its games under it. */
+.duo { display: inline-flex; align-items: center; gap: var(--s1); min-width: 0; }
+.duo > span { margin-left: var(--s2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.duo-btn { all: unset; box-sizing: border-box; display: inline-flex; max-width: 100%; cursor: pointer; border-radius: var(--r-sm); }
+.duo-btn:hover > .duo > span { color: var(--accent-text); }
+.duo-btn:focus-visible { box-shadow: var(--focus-ring); }
+.duo-table tbody.open > tr:first-child { background: var(--accent-subtle); }
+.duo-table .duo-open > td { padding: 0 0 var(--s3) var(--s6); }
+.duo-list > li > button { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto; }
+.duo-into { display: inline-flex; align-items: center; gap: var(--s2); min-width: 0; }
+.usage-tag.split, .usage-tag.partial, .usage-tag.full { color: var(--pro); }
+.duo-list .pair-tag, .top-games .usage-tag { justify-self: start; }
+/* Bot-lane reads have longer labels: a fixed column keeps the pick number and result aligned row to row. */
+.lane-BOT .top-games > li > button, .lane-SUPPORT .top-games > li > button { grid-template-columns: 48px minmax(0, 1.4fr) minmax(0, 1fr) 40px 150px auto; }
+.lane-BOT .top-games.no-vs > li > button, .lane-SUPPORT .top-games.no-vs > li > button { grid-template-columns: 48px minmax(0, 1fr) 40px 150px auto; }
 @media (max-width: 760px) {
+  .duo-list > li > button { grid-template-columns: minmax(0, 1fr) auto; }
+  .duo-list > li > button .duo-into { grid-column: 1 / -1; grid-row: 2; }
+  .duo-table .shape-col { display: none; }
+  .lane-BOT .top-games > li > button, .lane-BOT .top-games.no-vs > li > button,
+  .lane-SUPPORT .top-games > li > button, .lane-SUPPORT .top-games.no-vs > li > button { grid-template-columns: minmax(0, 1fr) 40px auto auto; }
   .top-games > li > button, .top-games.no-vs > li > button { grid-template-columns: minmax(0, 1fr) 36px auto auto; }
   .top-games > li > button .tg-vs, .top-games > li > button .tg-date { display: none; }
   .top-report > .tabs { padding: 0 var(--s5); }

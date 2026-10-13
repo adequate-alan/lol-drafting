@@ -11,7 +11,7 @@ import { buildPatchIndex } from "./patch-changes";
 import { championIndex, type ChampionBuilds } from "./pro-builds";
 import { withoutConfirmed } from "./proposed";
 import { Files, ROLES, type Role } from "./schema";
-import { brief, roleBook, topSelections, topUsageMarks, type TopDraftBundle } from "./top-draft";
+import { brief, duoSelections, laneSelections, roleBook, topUsageMarks, type LaneRole, type TopDraftBundle } from "./top-draft";
 import { blindReads } from "./top-blind";
 import { bucket, patchesOf } from "./pro-priority";
 
@@ -138,32 +138,40 @@ export const jungleOnlyIds = () => {
 
 // Top lane draft usage (Synergies Top tab, Draft Room): every recorded game's top selections classified, with the games,
 // players, Pro Drafts ids, per-patch priority and the DPM matchup rows they need. Observed Pro Evidence only.
-let topDraft: TopDraftBundle | undefined;
-export function getTopDraft(): TopDraftBundle {
-  if (topDraft) return topDraft;
+const laneDrafts = new Map<LaneRole, TopDraftBundle>();
+/** Observed draft usage for one lane (alan, 2026-10-13): Top, Mid, and Bot / Support with their duos. */
+export function getLaneDraft(role: LaneRole): TopDraftBundle {
+  const hit = laneDrafts.get(role);
+  if (hit) return hit;
   const records = getBuildGameRecords();
-  const selections = topSelections(records, roleBook(getChampions(), records));
+  const book = roleBook(getChampions(), records);
+  const selections = laneSelections(records, book, role);
+  const bot = role === "BOT" || role === "SUPPORT";
+  const duos = bot ? duoSelections(role === "BOT" ? selections : laneSelections(records, book, "BOT"), role === "SUPPORT" ? selections : laneSelections(records, book, "SUPPORT")) : undefined;
   const players: Record<string, string> = {};
-  for (const b of load("pro-builds.json").builds) if (b.role === "TOP") players[`${b.game}:${b.side}`] = b.player;
+  for (const b of load("pro-builds.json").builds) if (b.role === role) players[`${b.game}:${b.side}`] = b.player;
   const drafts: Record<string, string> = {};
   for (const d of getProDrafts()) {
     const id = golggGameId(d);
     if (id && d.side) drafts[`${id}:${d.side}`] = d.id;
   }
   const priority: TopDraftBundle["priority"] = {};
-  const tops = new Set(selections.map((s) => s.champion));
+  const ids = new Set([...selections.map((s) => s.champion), ...(duos ?? []).flatMap((d) => [d.adc, d.support])]);
   for (const patch of [...patchesOf(getPriority()), "all"]) {
     const b = bucket(getPriority(), patch === "all" ? {} : { patch });
-    priority[patch] = { games: b.games, rows: Object.fromEntries(b.rows.filter((r) => tops.has(r.id)).map((r) => [r.id, {
-      presence: r.presence, picks: r.picks, bans: r.bans, topPicks: r.roleVerified ? r.rolePicks.TOP ?? 0 : undefined, winRate: r.winRate, low: r.low,
+    priority[patch] = { games: b.games, rows: Object.fromEntries(b.rows.filter((r) => ids.has(r.id)).map((r) => [r.id, {
+      presence: r.presence, picks: r.picks, bans: r.bans, topPicks: r.roleVerified ? r.rolePicks[role] ?? 0 : undefined, winRate: r.winRate, low: r.low,
     }])) };
   }
   const pairs = new Set(selections.flatMap((s) => [`${s.champion}>${s.laneOpponent}`, `${s.laneOpponent}>${s.champion}`]));
-  const dpm = getCounters().dpm.filter((r) => r.role === "TOP" && pairs.has(`${r.champion}>${r.enemy}`))
+  const dpm = getCounters().dpm.filter((r) => r.role === role && pairs.has(`${r.champion}>${r.enemy}`))
     .map((r) => ({ role: r.role, champion: r.champion, enemy: r.enemy, winRate: r.winRate, games: r.games, patch: r.patch, url: r.url }));
   const events = getMeta().events.filter((e) => selections.some((s) => s.event === e.id)).map((e) => ({ id: e.id, short: e.short }));
-  // General Draft Logic for every champion who plays top and has a kit (Locke and Zaahen have none yet).
-  const saved = new Map(getTopPicks().map((t) => [t.champion, t.identities]));
-  const blind = blindReads(getChampions(), saved, tops);
-  return (topDraft = { selections, games: Object.fromEntries(records.map((g) => [g.id, brief(g)])), players, drafts, priority, dpm, events, blind });
+  // General Draft Logic for every champion who plays the lane and has a kit (Locke and Zaahen have none yet).
+  const saved = new Map(role === "TOP" ? getTopPicks().map((t) => [t.champion, t.identities]) : []);
+  const blind = blindReads(getChampions(), saved, new Set(selections.map((s) => s.champion)), role);
+  const bundle: TopDraftBundle = { role, selections, games: Object.fromEntries(records.map((g) => [g.id, brief(g)])), players, drafts, priority, dpm, events, blind, ...(duos ? { duos } : {}) };
+  laneDrafts.set(role, bundle);
+  return bundle;
 }
+export const getTopDraft = () => getLaneDraft("TOP");
