@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
-  championBuildsHref, expandedRow, gameHref, inPlayerScope, migratePins, playerDirectory, playerProfile, profileHref, rowsOfPlayer, togglePin,
+  championBuildsHref, expandedRow, gameHref, inPlayerScope, migratePins, pinnedOnChampion, playerDirectory, playerProfile, profileHref, rowsOfPlayer, togglePin,
 } from "@/lib/pinned-players";
 import { buildRows, scoped, type BuildRow } from "@/lib/pro-builds";
 import { Files, type BuildAssets, type ProBuild, type ProBuilds, type ProGame, type ProGames } from "@/lib/schema";
@@ -58,11 +58,10 @@ describe("player profiles", () => {
 
   it("pick up a newly recorded game on its own", () => {
     const g5 = game(5, "2026-10-09", "16.18", "worlds-2026", "GAM", "HLE", "blue", "varus");
-    const more = buildRows([...builds, build(g5, "Artemis", 10)], [g1, g2, g3, g4, g5], {});
-    const p = playerProfile(more, "10");
-    expect(p.games).toBe(4);
-    expect(p.last?.game.id).toBe(5);
-    expect(p.champions.map((c) => c.champion)).toContain("varus");
+    // Player 10 gets a second Jhin game, still older than player 30's: the most games does not lead.
+    const g7 = game(7, "2026-10-04", "16.18", "demacia-cup-2026", "GAM", "HLE", "blue");
+    const more = buildRows([...builds, build(g7, "Artemis", 10)], [g1, g2, g3, g4, g7], {});
+    expect(pinnedOnChampion(more, ["10", "30"], "jhin", "BOT").map((p) => [p.id, p.rows.length])).toEqual([["30", 1], ["10", 2]]);
   });
 
   it("open the exact Pro Builds game for that player, and the player's champion builds", () => {
@@ -118,6 +117,74 @@ describe("pins", () => {
     expect(migratePins(["Artemis", "Gumayusi", "20"], rows)).toEqual(["30", "20"]);
     expect(migratePins(["Unknown"], rows)).toEqual(["Unknown"]); // kept until a recorded game names them
     expect(migratePins(["10"], rows)).toEqual(["10"]);
+  });
+});
+
+describe("pinned players in the champion drawer", () => {
+  // Jhin in mid for player 10, on a later game: same champion, another role.
+  const g5 = game(5, "2026-10-07", "16.20", "demacia-cup-2026", "KT", "GEN", "red");
+  const mid: ProBuild = { game: 5, side: "blue", role: "MID", champion: "jhin", player: "Artemis", playerId: 10, checkedOn: g5.date } as ProBuild;
+  const withMid = buildRows([...builds, mid], [g1, g2, g3, g4, g5], {});
+
+  it("one pinned player with games on the champion in the role shown", () => {
+    const [p, ...rest] = pinnedOnChampion(rows, ["10"], "ashe", "BOT");
+    expect(rest).toEqual([]);
+    expect(p).toMatchObject({ id: "10", name: "Artemis", team: "GAM", roles: ["BOT"], latestPatch: "16.18" });
+    expect(p.rows.map((r) => r.game.id)).toEqual([2]);
+  });
+
+  it("several pinned players together, most recent appearance first, never by game count", () => {
+    const ps = pinnedOnChampion(rows, ["10", "30"], "jhin", "BOT");
+    expect(ps.map((p) => [p.id, p.rows.length])).toEqual([["30", 1], ["10", 1]]);
+    const more = buildRows([...builds, build(g4, "Artemis", 10, "red")].map((b) => (b.game === 4 && b.side === "red" ? { ...b, champion: "jhin" } : b)), [g1, g2, g3, g4], {});
+    // Player 10 now has two Jhin games but player 30's latest is just as recent: the same game, so the higher id is no tiebreak on count.
+    expect(pinnedOnChampion(more, ["10", "30"], "jhin", "BOT").map((p) => p.rows.length).sort()).toEqual([1, 2]);
+  });
+
+  it("nothing when no pinned player played the champion, or nothing is pinned", () => {
+    expect(pinnedOnChampion(rows, ["10"], "kaisa", "BOT")).toEqual([]);
+    expect(pinnedOnChampion(rows, [], "jhin", "BOT")).toEqual([]);
+    expect(pinnedOnChampion(rows, ["20"], "jhin", "BOT")).toEqual([]); // Gumayusi played the red bot, not Jhin
+  });
+
+  it("keeps roles apart unless every role is asked for", () => {
+    expect(pinnedOnChampion(withMid, ["10"], "jhin", "BOT")[0].rows.map((r) => r.game.id)).toEqual([1]);
+    expect(pinnedOnChampion(withMid, ["10"], "jhin", "MID")[0].rows.map((r) => r.game.id)).toEqual([5]);
+    const all = pinnedOnChampion(withMid, ["10"], "jhin", "all")[0];
+    expect(all.rows.map((r) => [r.game.id, r.build.role])).toEqual([[5, "MID"], [1, "BOT"]]);
+    expect(all.roles).toEqual(["MID", "BOT"]);
+    expect(all.latestPatch).toBe("16.20");
+  });
+
+  it("follows pins: unpinning removes the player, pinning adds them", () => {
+    let pins = togglePin([], "10");
+    expect(pinnedOnChampion(rows, pins, "ashe", "BOT")).toHaveLength(1);
+    pins = togglePin(pins, "10");
+    expect(pinnedOnChampion(rows, pins, "ashe", "BOT")).toEqual([]);
+  });
+
+  it("shows the team of the player's latest recorded game after a team change, by id not by name", () => {
+    // Player 10 moved to KT (game 5); their Ashe game was with GAM.
+    const [p] = pinnedOnChampion(withMid, ["10"], "ashe", "BOT");
+    expect(p.team).toBe("KT");
+    expect(p.rows[0].team).toBe("GAM");
+    // Player 30 is also named Artemis and is not pinned.
+    expect(pinnedOnChampion(withMid, ["10"], "jhin", "BOT").map((x) => x.id)).toEqual(["10"]);
+  });
+
+  it("each game opens that exact build: champion, role, game and player", () => {
+    const [p] = pinnedOnChampion(rows, ["10"], "ashe", "BOT");
+    const q = new URLSearchParams(gameHref(p.rows[0]).split("?")[1]);
+    expect(Object.fromEntries(q)).toEqual({ champion: "ashe", role: "BOT", game: "2", player: "10" });
+    expect(championBuildsHref(p.id, "ashe", "BOT")).toBe("/pro-builds/?champion=ashe&role=BOT&player=10");
+  });
+
+  it("picks up a newly recorded game on its own", () => {
+    const g6 = game(6, "2026-10-09", "16.20", "demacia-cup-2026", "GAM", "T1", "blue", "ashe");
+    const later = buildRows([...builds, build(g6, "Artemis", 10)], [g1, g2, g3, g4, g6], {});
+    const [p] = pinnedOnChampion(later, ["10"], "ashe", "BOT");
+    expect(p.rows.map((r) => r.game.id)).toEqual([6, 2]);
+    expect(p.latestPatch).toBe("16.20");
   });
 });
 

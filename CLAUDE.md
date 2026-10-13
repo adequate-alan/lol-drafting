@@ -158,7 +158,14 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   scouting hub per pinned player: overview list (kept with an empty state when filters leave no game), profile with
   facts, champion history, that champion's builds and the full match history; each game opens the exact Pro Builds view
   (`gameHref`, `player=<id>`). Derived from the build rows only, so newly recorded games appear on their own; never a
-  career. **Match History rows expand in place** (alan, 2026-10-12): a click, Enter or Space on a row opens that game's
+  career. **Pinned players in the champion drawer** (alan, 2026-10-13, "personal relevance first, broader professional
+  evidence second"; `components/drawer/PinnedPlayers.tsx`, `pinnedOnChampion` in `lib/pinned-players.ts`): the drawer's
+  Overview, between Synergy and Pro evidence, and the Builds tab, above the general player list, list the pinned players
+  with recorded games on the champion in the role shown ("All roles" only when chosen), most recent appearance first,
+  never by game count: portrait, name, team of their latest game, role, games, latest patch, "Builds →"; a player expands
+  into their games (tournament, patch, date, opponent, result, role), each opening that exact build (`gameHref`, `from`
+  kept), plus their profile. Hidden when no pinned player played the champion. Read from the build rows chunk, loaded
+  only when something is pinned. **Match History rows expand in place** (alan, 2026-10-12): a click, Enter or Space on a row opens that game's
   exact build under it (`components/GameBuild.tsx` `GameDetail`, the same component Pro Builds renders: context line,
   spells, rune page, skill grid, item progression and timeline, Gol.gg source, "Open full Pro Builds"); one game at a
   time, named by Gol.gg game id in `?game=` and the profile's player id (`expandedRow`), never by row position, and a

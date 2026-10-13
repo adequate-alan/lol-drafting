@@ -780,6 +780,15 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .dw-game.open .dw-row, .dw-obs.open .dw-row, .dw-change.open .dw-row { margin: 0; width: 100%; }
 .dw-detail { display: grid; gap: var(--s3); padding: var(--s2) var(--s3) var(--s4); font-size: var(--fs-sm); }
 .dw-detail p { margin: 0; }
+/* Pinned players (alan, 2026-10-13): the player row expands; "Builds →" beside it opens their builds on this champion. */
+.dw-pinned .layer-label .pin-icon { margin-right: var(--s2); }
+.dw-pin-head { display: flex; align-items: center; }
+.dw-pin-head > .dw-row { flex: 1 1 auto; width: auto; margin-right: 0; }
+.dw-pin.open .dw-pin-head > .dw-row { margin: 0; }
+.dw-pin-link { flex: none; padding: var(--s2) 0 var(--s2) var(--s3); color: var(--accent-text); font-family: var(--font-display); font-weight: var(--w-control); white-space: nowrap; }
+.dw-pin-link:hover { color: var(--text); }
+.dw-pin-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--r-sm); }
+.dw-row-name .pin-icon { margin-right: var(--s2); }
 .dw-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s5); margin: 0; }
 .dw-actions .source-links { font-size: inherit; }
 .dw-kv { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: var(--s2) var(--s4); margin: 0; font-size: var(--fs-xs); }
