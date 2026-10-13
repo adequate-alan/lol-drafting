@@ -144,7 +144,7 @@ describe("per-champion rows", () => {
   it("needs 3 classified games for a label and marks fewer than 5 as a small sample", () => {
     const sel = (n: number, usage: TopSelection["usage"]) => Array.from({ length: n }, (_, i) => ({
       game: i + Math.random(), event: "t", tournament: "T", patch: "16.18", date: "2026-10-01", series: "s", seriesId: i, gameNo: 1,
-      champion: "gnar", team: "A", opponent: "B", side: "blue", won: true, opponentTop: "jax", usage, why: "", enemySeen: [], ownSeen: [], flex: [], unavailable: [],
+      role: "TOP", champion: "gnar", team: "A", opponent: "B", side: "blue", won: true, laneOpponent: "jax", laneSeen: usage === "response", usage, why: "", enemySeen: [], ownSeen: [], flex: [], unavailable: [],
     } as TopSelection));
     expect(topRows(sel(2, "blind"), {})[0].usage).toBe("too-few");
     const r = topRows([...sel(2, "blind"), ...sel(1, "response")], {})[0];
@@ -185,7 +185,7 @@ describe("recorded games (fixed Demacia / LCK facts, scoped to those games)", ()
     for (const s of all.filter((x) => x.usage !== "uncertain")) {
       expect(records.some((g) => g.id === s.game)).toBe(true);
       expect(s.turn && s.opponentTurn).toBeTruthy();
-      expect(s.enemySeen.includes(s.opponentTop)).toBe(s.usage === "response");
+      expect(s.enemySeen.includes(s.laneOpponent)).toBe(s.usage === "response");
     }
   });
 });

@@ -117,7 +117,7 @@ export function engineReader(games: ProGame[], champions: { id: string; roles: R
     const idx = g[side].pickOrder?.indexOf(g[side].picks[role]);
     const firstOverall = g.firstPick && idx != null && idx >= 0 ? turnOf(idx, g.firstPick === side) === 1 : undefined;
     const t = role === "TOP" ? top.get(`${g.id}:${side}`) : undefined;
-    if (t) return { situation: t.usage, firstOverall, revealed: t.enemySeen, laneOpponent: t.opponentTop };
+    if (t) return { situation: t.usage, firstOverall, revealed: t.enemySeen, laneOpponent: t.laneOpponent };
     return firstOverall === undefined ? undefined : { situation: "uncertain", firstOverall };
   };
 }

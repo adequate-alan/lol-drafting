@@ -158,7 +158,7 @@ export function getTopDraft(): TopDraftBundle {
       presence: r.presence, picks: r.picks, bans: r.bans, topPicks: r.roleVerified ? r.rolePicks.TOP ?? 0 : undefined, winRate: r.winRate, low: r.low,
     }])) };
   }
-  const pairs = new Set(selections.flatMap((s) => [`${s.champion}>${s.opponentTop}`, `${s.opponentTop}>${s.champion}`]));
+  const pairs = new Set(selections.flatMap((s) => [`${s.champion}>${s.laneOpponent}`, `${s.laneOpponent}>${s.champion}`]));
   const dpm = getCounters().dpm.filter((r) => r.role === "TOP" && pairs.has(`${r.champion}>${r.enemy}`))
     .map((r) => ({ role: r.role, champion: r.champion, enemy: r.enemy, winRate: r.winRate, games: r.games, patch: r.patch, url: r.url }));
   const events = getMeta().events.filter((e) => selections.some((s) => s.event === e.id)).map((e) => ({ id: e.id, short: e.short }));

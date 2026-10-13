@@ -57,7 +57,7 @@ export function TopGameDetail({ game, focus, names, bundle, pair }: { game: Game
       </p>
       <p className="small">
         {first ? <><b>{first}</b> ({SIDE[game.firstPick!].toLowerCase()} side) picked first. </> : "First pick not marked on the game page. "}
-        {focus.usage === "uncertain" ? focus.why : <><b>{nm(names, focus.champion)}</b> was pick {focus.turn} of 10; {nm(names, focus.opponentTop)} was pick {focus.opponentTurn}.</>}
+        {focus.usage === "uncertain" ? focus.why : <><b>{nm(names, focus.champion)}</b> was pick {focus.turn} of 10; {nm(names, focus.laneOpponent)} was pick {focus.opponentTurn}.</>}
       </p>
       {seq && (
         <ol className="draft-seq" aria-label="Picks in draft order">
@@ -105,7 +105,7 @@ function GameRows({ list, names, bundle, open, setOpen, pair, opponent = true }:
             <button type="button" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? undefined : k)}>
               <span className="tg-date tnum faint">{shortDate(s.date) ?? s.date}</span>
               <span className="tg-team">{s.team}{player ? <span className="faint"> · {player}</span> : null}</span>
-              {opponent && <span className="tg-vs"><span className="faint">vs</span> <ChampIcon id={s.opponentTop} name={nm(names, s.opponentTop)} size="xs" /> {nm(names, s.opponentTop)}</span>}
+              {opponent && <span className="tg-vs"><span className="faint">vs</span> <ChampIcon id={s.laneOpponent} name={nm(names, s.laneOpponent)} size="xs" /> {nm(names, s.laneOpponent)}</span>}
               <span className="tg-turn tnum faint" title="Pick number in the draft">{s.turn ? `${s.turn}/10` : "—"}</span>
               <UsageTag s={s} />
               <span className={`res ${s.won ? "win" : "loss"}`}>{s.won ? "W" : "L"}</span>
@@ -299,7 +299,7 @@ function Matchups({ id, row, names, bundle, open, setOpen, pairOpen, setPairOpen
           <thead><tr><th>Opponent</th><th className="num">Games</th><th className="num">Blind</th><th className="num">Response</th><th className="num">Won</th><th className="num" title="DPM.LOL ranked lane win rate for this champion into the opponent">Lane data</th></tr></thead>
           <tbody>
             {row.faced.map((f) => {
-              const g = row.selections.filter((s) => s.opponentTop === f.champion), d = lane(f.champion);
+              const g = row.selections.filter((s) => s.laneOpponent === f.champion), d = lane(f.champion);
               const counter = dpmCounter(bundle.dpm, id, f.champion);
               return (
                 <tr key={f.champion}>
