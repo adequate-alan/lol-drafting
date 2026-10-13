@@ -3,8 +3,9 @@
 // enemy board traits at each pick (General Draft Logic over champions already picked). Observed Pro Evidence never
 // becomes a saved pairing.
 import { describe, expect, it } from "vitest";
-import { getBuildGameRecords, getChampions, getDraftData, getLaneDraft, getMidJungle } from "@/lib/data";
-import { boardTraits, kitMap } from "@/lib/jungle-context";
+import { getBuildGameRecords, getChampions, getDraftData, getJungleBoard, getLaneDraft, getMidJungle } from "@/lib/data";
+import { boardTraits, CONTEXT } from "@/lib/jungle-context";
+import { factBook } from "@/lib/jungle-kits";
 import type { ProGame } from "@/lib/schema";
 import { laneSelections, mateRows, roleBook, topUsageMarks, turnOf } from "@/lib/top-draft";
 
@@ -91,7 +92,7 @@ describe("jungle draft usage", () => {
   });
 
   it("board traits need their thresholds", () => {
-    const kits = kitMap(champions);
+    const kits = factBook(champions);
     expect(boardTraits([], kits)).toEqual([]);
     // Limited engage / disengage and damage share need three visible champions.
     const two = boardTraits([{ champion: "jinx", role: "BOT" }, { champion: "kassadin", role: "MID" }], kits).map((h) => h.trait);
@@ -100,14 +101,45 @@ describe("jungle draft usage", () => {
     expect(two).not.toContain("magic");
   });
 
-  it("Draft Room marks carry Mid/Jungle order on the mark's patch, never a score", () => {
+  it("Draft Room marks carry Mid/Jungle order on every patch with the games per patch, never a score", () => {
     const u = topUsageMarks(sel, [], {}, "16.18");
     expect(u.role).toBe("JUNGLE");
-    for (const [id, m] of Object.entries(u.marks)) {
-      const rows = mateRows(sel.filter((s) => s.champion === id), "MID", { patch: "16.18" });
-      for (const r of rows) expect(m.withMid![r.mate]).toMatchObject({ games: r.games.length, jungleFirst: r.order.jungleFirst, together: r.order.together, midFirst: r.order.mateFirst });
+    for (const id of new Set(sel.map((s) => s.champion))) {
+      const rows = mateRows(sel.filter((s) => s.champion === id), "MID", {});
+      for (const r of rows) {
+        const w = u.withMid![id][r.mate];
+        expect(w).toMatchObject({ games: r.games.length, jungleFirst: r.order.jungleFirst, together: r.order.together, midFirst: r.order.mateFirst, unknown: r.order.unknown });
+        expect(w.jungleFirst + w.together + w.midFirst + w.unknown).toBe(w.games);
+        expect(Object.values(w.byPatch).reduce((a, b) => a + b, 0)).toBe(w.games);
+      }
     }
     expect(getDraftData().laneUsage.JUNGLE.role).toBe("JUNGLE");
+  });
+
+  it("every jungle selection is accounted for in the Mid/Jungle order (jungler first, same turn, mid first or no order)", () => {
+    const rows = mateRows(sel, "MID", {});
+    const t = rows.reduce((o, r) => ({ j: o.j + r.order.jungleFirst, s: o.s + r.order.together, m: o.m + r.order.mateFirst, u: o.u + r.order.unknown }), { j: 0, s: 0, m: 0, u: 0 });
+    expect(t.j + t.s + t.m + t.u).toBe(sel.length);
+    // The orderless selections are exactly the ones without a First Pick mark or pick order.
+    const noOrder = sel.filter((s) => s.turn === undefined);
+    expect(t.u).toBe(noOrder.length);
+    for (const s of noOrder) expect(s.mates!.MID!.turn).toBeUndefined();
+  });
+
+  it("composition responses need the sample and the lift in CONTEXT, from picks already visible", () => {
+    const { responses } = getJungleBoard();
+    // Cho'Gath into an immobile carry is the clear case (9 of 10 picks, 57% across every jungle pick).
+    expect(responses.chogath?.map((r) => r.trait)).toContain("immobile-carry");
+    const ordered = sel.filter((s) => s.turn);
+    for (const [id, list] of Object.entries(responses)) {
+      const mine = ordered.filter((s) => s.champion === id);
+      for (const r of list) {
+        expect(r.picks).toBe(mine.length);
+        expect(r.with).toBeGreaterThanOrEqual(CONTEXT.responseMin);
+        expect(r.with / r.picks).toBeGreaterThanOrEqual(CONTEXT.responseShare);
+        expect(r.with / r.picks).toBeGreaterThanOrEqual(CONTEXT.responseLift * (r.base / r.baseOf));
+      }
+    }
   });
 
   it("never touches saved Mid/Jungle records", () => {

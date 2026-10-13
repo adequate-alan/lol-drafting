@@ -591,6 +591,11 @@ await page.locator(".theme-toggle").click();
   check("jungle: a Mid/Jungle pair opens its games", (await page.locator(".mate-table .duo-open .top-games > li").count()) >= 2, "");
   await open("/synergies/jungle/?champ=chogath&view=matchups");
   check("jungle: Matchups lists the enemy board at the pick as composition context", /potential composition responses/.test((await page.locator("main").textContent()) ?? ""), "");
+  await open("/?mid=syndra&focus=JUNGLE");
+  const mate = (await page.locator(".fit-row .sig.mate").allTextContents()).join("|");
+  check("draft room: with a mid locked, Jungle rows link their pro games with that mid", /With Syndra · \d+ games?/.test(mate), mate.slice(0, 120));
+  const href = (await page.locator(".fit-row .sig.mate").first().getAttribute("href").catch(() => "")) ?? "";
+  check("draft room: the Mid/Jungle label opens the pair on the Jungle page", /synergies\/jungle\/\?champ=[a-z-]+&view=mates&mate=syndra/.test(href), href);
 }
 // Champion Synergies: hover card on desktop, drawer on click
 {

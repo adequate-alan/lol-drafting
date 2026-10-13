@@ -3,6 +3,7 @@
 // board at each jungle pick. Pairings are Observed Pro Evidence (never a saved preference); the board traits are General
 // Draft Logic over the champions already visible (lib/jungle-context.ts), shown as potential composition responses, never
 // as the reason a team picked.
+import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { ChampIcon } from "./ChampIcon";
 import { GameRows } from "./TopDraft";
@@ -72,7 +73,9 @@ function MateTable({ rows, role, names, bundle, saved, open, setOpen }: {
 export function MatesView({ id, names, bundle, scope, scopeLabel, saved }: {
   id: string; names: Names; bundle: TopDraftBundle; scope: TopScope; scopeLabel: string; saved?: { preferred: string[]; alternatives: string[] };
 }) {
-  const [open, setOpen] = useState<string>();
+  // `?mate=<mid>` (from a Draft Room Mid/Jungle label) opens that pair with its games.
+  const mateParam = useSearchParams().get("mate");
+  const [open, setOpen] = useState<string | undefined>(mateParam ? `${id}+${mateParam}` : undefined);
   const mine = useMemo(() => bundle.selections.filter((s) => s.champion === id), [bundle, id]);
   const mids = useMemo(() => mateRows(mine, "MID", scope), [mine, scope]);
   const tops = useMemo(() => mateRows(mine, "TOP", scope).slice(0, 6), [mine, scope]);
@@ -87,11 +90,13 @@ export function MatesView({ id, names, bundle, scope, scopeLabel, saved }: {
         <h3 className="scout-title"><span className="ldot" />Mid partners in pro games<span className="end">{scopeLabel}</span></h3>
         <p className="small tnum">
           Picked before its mid in <b>{sum("jungleFirst")}/{ordered}</b>, in the same turn in <b>{sum("together")}/{ordered}</b>, after its mid in <b>{sum("mateFirst")}/{ordered}</b>.
+          {sum("unknown") > 0 && <> No order recorded in <b>{sum("unknown")}</b> more (no First Pick mark or pick order): {games.length} games in all.</>}
           {sum("jungleFirst") > sum("mateFirst") ? " Usually the first half of the Mid/Jungle core." : sum("mateFirst") > sum("jungleFirst") ? " Usually added to a mid already picked." : ""}
         </p>
         <MateTable rows={mids} role="MID" names={names} bundle={bundle} saved={saved} open={open} setOpen={setOpen} />
         <p className="xs muted">
-          Observed pairing: the two appeared together. Repeated: two or more different series. Neither becomes a saved pairing. &ldquo;Before / after enemy core&rdquo;
+          Observed pairing: the two appeared together. Repeated: two or more different series. Neither becomes a saved pairing. Two picks in one turn are
+          never ordered, and a jungler picked after its mid was not necessarily picked for that mid. &ldquo;Before / after enemy core&rdquo;
           counts pairs completed before the enemy mid or jungler was revealed, and after one of them was; a question mark counts reads a flex pick left unclear.
         </p>
         {savedOnly.length > 0 && <p className="xs"><span className="clash-text">Your saved mids</span> with no recorded pro game together: {savedOnly.map((m) => nm(names, m)).join(", ")}.</p>}

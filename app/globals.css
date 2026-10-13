@@ -1377,7 +1377,11 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 /* Pro meta scope: role, patch and the games behind the counts, one quiet line under the filters. */
 .fit-scope { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s2) var(--s4); padding: var(--s2) var(--s3); border-bottom: 1px solid var(--border); }
 .fit-divider { margin: 0; padding: var(--s3) var(--s3) var(--s1); border-top: 1px solid var(--border); }
-.sig.usage { color: var(--pro); }
+.sig.usage, .sig.mate { color: var(--pro); }
+.sig.comp { color: var(--logic); }
+/* A label that opens its evidence page: same colour, dotted underline, solid on hover. */
+.sig-link { text-decoration: underline dotted; text-decoration-color: var(--border-strong); text-underline-offset: 3px; }
+.sig-link:hover { text-decoration-style: solid; text-decoration-color: currentColor; }
 .fit-reason .drawback { color: var(--caution); }
 .fit-row.ref .name { color: var(--text-muted); }
 .fit-filters { flex: 0 1 auto; min-width: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }

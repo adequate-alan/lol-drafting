@@ -29,7 +29,9 @@ import { noteDraftRole, restoredDraftRole, sessionStore } from "@/lib/synergy-na
 import { ChampIcon, ChampionRow, WarningBadge, type Severity } from "./ui";
 import { scrollBehavior } from "@/lib/motion";
 import { rovingIndex, rovingKeys } from "./roving";
-import { isLaneRole, PAIR_LABEL, USAGE_LABEL, type TopUsageMark, type TopUsageMarks } from "@/lib/top-draft";
+import { isLaneRole, PAIR_LABEL, USAGE_LABEL, type MidPair, type TopUsageMark, type TopUsageMarks } from "@/lib/top-draft";
+import { boardTraits, TRAIT_LABEL, type CompResponse, type TraitHit } from "@/lib/jungle-context";
+import { comparePatch } from "@/lib/patch";
 import type { BlindLine } from "@/lib/top-blind";
 
 const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
@@ -164,7 +166,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
 
   // Everything read from the board is derived once per board change. Hovering a row, opening a card, switching the
   // filter or the role tab re-renders the room without re-ranking the roster (they were 70-160ms long tasks).
-  const { enemyIds, taken, picks, prof, warns, needs, enemyDraft, proAll, fits, counters, unified, starting, recs, similar, shells } = useMemo(() => {
+  const { boardHits, enemyIds, taken, picks, prof, warns, needs, enemyDraft, proAll, fits, counters, unified, starting, recs, similar, shells } = useMemo(() => {
     const enemyIds = enemy.filter((e): e is string => !!e);
     const picks = picksOf(draft, data.champions);
     const enemyDraft = enemyDraftOf(enemy);
@@ -181,8 +183,10 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
     const { pro: proAll, fits, counters } = res;
     const unified = started ? res.unified
       : Object.fromEntries(Object.entries(starting).map(([r, rows]) => [r, startingCandidates(rows!, r as Role, marks)])) as typeof res.unified;
+    // The enemy board's traits (General Draft Logic from kit facts), for Jungle composition-response labels.
+    const boardHits = boardTraits(ROLES.flatMap((r) => (enemyDraft[r] ? [{ champion: enemyDraft[r]!, role: r }] : [])), data.jungleBoard.facts);
     return {
-      enemyIds, picks, enemyDraft, proAll, fits, counters, unified, starting, taken,
+      boardHits, enemyIds, picks, enemyDraft, proAll, fits, counters, unified, starting, taken,
       prof: profile(draft, data.champions),
       warns: warnings(draft, data.champions),
       needs: picks.length ? teamNeeds(picks) : [],
@@ -388,7 +392,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                             {c.champion === firstOut && <p className="fit-divider xs faint">Outside your pool</p>}
                             <FitRow c={c} tier={poolTier(data.pool, c.champion, active)} bot={draft.BOT ? names[draft.BOT] ?? draft.BOT : undefined} names={names} proCtx={proCtx} hovered={hover === c.champion}
                               onHover={(h) => preview(h ? c.champion : undefined)} onPick={() => lock(active, c.champion)} onOpen={() => setDrawer({ id: c.champion, role: active })}
-                              top={isLaneRole(active) ? laneCtx(data.laneUsage[active], c.champion, enemyDraft, draft) : undefined} />
+                              top={isLaneRole(active) ? laneCtx(data.laneUsage[active], c.champion, enemyDraft, draft, active === "JUNGLE" ? { hits: boardHits, responses: data.jungleBoard.responses[c.champion] ?? [] } : undefined) : undefined} />
                           </Fragment>
                         ))
                         : <p className="rec-empty">{viewFilter === "all" ? "Nothing stands out yet." : viewFilter === "counter" && activeCounters?.counters.length === 0 ? "No counters to show." : "No candidate has this signal yet."}</p>}
@@ -479,19 +483,27 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
 
 // ---------- recommendation rows ----------
 
-type Chip = { key: string; label: string; title?: string };
+type Chip = { key: string; label: string; title?: string; href?: string };
+// Under five classified games the usage word stays neutral: the counts, flagged (alan, 2026-10-13: Nocturne 3/3 on 26.18).
+const smallUsage = (m: TopUsageMark) => (m.usage === "blind" ? `Blind ${m.blind}/${m.classified}` : m.usage === "response" ? `Response ${m.response}/${m.classified}` : `Blind ${m.blind} · response ${m.response} of ${m.classified}`) + " · small sample";
 
 const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? "" : "s"}`;
 const proLine = (pro: ProSuggestion) => pro.lines.map((l) => `${describeLine({ ...l, label: l.event })}${l.ongoing ? " · ongoing" : ""}`).join("; ");
 const BONUS = new Set(["saved", "proposed"]);
 
 // The row's labels, one per independent signal, each in its own layer colour. Nothing here changes the order.
-type TopCtx = { mark?: TopUsageMark; patch?: string; enemyTop?: string; enemyDuo?: [string, string]; allyMid?: string; blind?: BlindLine[] };
+type TopCtx = {
+  mark?: TopUsageMark; patch?: string; enemyTop?: string; enemyDuo?: [string, string]; blind?: BlindLine[];
+  allyMid?: string; mid?: MidPair; // JUNGLE with a mid locked: the pair's pro games on every patch
+  comp?: (CompResponse & { champions: string[] })[]; // JUNGLE: its composition responses whose trait is on the enemy board now
+};
 
 /** The lane usage context for one candidate: its mark, the enemy lane opponent and, for Bot and Support, the whole enemy
  *  bot lane once both are locked. */
-const laneCtx = (u: TopUsageMarks, id: string, enemy: Partial<Record<Role, string>>, ally: Partial<Record<Role, string>>): TopCtx => ({
+const laneCtx = (u: TopUsageMarks, id: string, enemy: Partial<Record<Role, string>>, ally: Partial<Record<Role, string>>, board?: { hits: TraitHit[]; responses: CompResponse[] }): TopCtx => ({
   allyMid: u.role === "JUNGLE" ? ally.MID : undefined,
+  mid: u.role === "JUNGLE" && ally.MID ? u.withMid?.[id]?.[ally.MID] : undefined,
+  comp: board?.responses.flatMap((r) => { const h = board.hits.find((x) => x.trait === r.trait); return h ? [{ ...r, champions: h.champions }] : []; }),
   mark: u.marks[id], patch: u.patch, enemyTop: u.role ? enemy[u.role] : undefined, blind: u.blind[id],
   enemyDuo: (u.role === "BOT" || u.role === "SUPPORT") && enemy.BOT && enemy.SUPPORT ? [enemy.BOT, enemy.SUPPORT] : undefined,
 });
@@ -504,13 +516,23 @@ const topUsageTitle = (c: Candidate, t: TopCtx, names: Record<string, string>) =
   const n = (id: string) => names[id] ?? id;
   const duo = t.enemyDuo ? m.duoInto?.[t.enemyDuo.join("+")] : undefined;
   const into = t.enemyTop ? m.into[t.enemyTop] : undefined;
-  const mid = t.allyMid ? m.withMid?.[t.allyMid] : undefined;
-  const pair = mid ? ` With ${n(t.allyMid!)} at mid in ${mid.games} game${mid.games === 1 ? "" : "s"} (${mid.series} series, won ${mid.wins}): jungler first ${mid.jungleFirst}, same turn ${mid.together}, mid first ${mid.midFirst}; ${mid.series >= 2 ? "a repeated" : "an observed"} pro pairing, not a saved one.` : "";
-  const base = `Patch ${p} pro games at ${lane}: blind ${m.blind}/${m.classified}, response ${m.response}/${m.classified}${m.low ? " (small sample)" : ""}.${pair}`;
+  const base = `Patch ${p} pro games at ${lane}: blind ${m.blind}/${m.classified}, response ${m.response}/${m.classified}${m.low ? " (small sample)" : ""}.`;
   if (duo) return `${base} Its duo was completed after ${n(t.enemyDuo![0])} + ${n(t.enemyDuo![1])} were both known in ${duo.games} game${duo.games === 1 ? "" : "s"} (${duo.series} series, won ${duo.wins}): ${duo.series >= 2 ? "a repeated response" : "an observed response"}, not a counter. Never part of the order or the fit.`;
   if (into) return `${base} Picked after ${n(t.enemyTop!)} was revealed in ${into.games} game${into.games === 1 ? "" : "s"} (${into.series} series): ${PAIR_LABEL[into.status].toLowerCase()}${into.status === "supported" ? "" : ", not a proven counter"}. Never part of the order or the fit.`;
   return `${base} Being blinded often is not proof it is safe to blind. Never part of the order or the fit.`;
 };
+
+// Mid/Jungle pairing (alan, 2026-10-13): pro games with the locked mid on every patch, who was picked first, games per
+// patch. Same-turn picks are never ordered; picked after the mid does not mean picked for that mid.
+const midTitle = (t: TopCtx, names: Record<string, string>) => {
+  const m = t.mid!, mid = names[t.allyMid!] ?? t.allyMid!;
+  const order = [`jungler first ${m.jungleFirst}`, `same turn ${m.together}`, `mid first ${m.midFirst}`, ...(m.unknown ? [`no order recorded ${m.unknown}`] : [])].join(", ");
+  const patches = Object.entries(m.byPatch).sort(([a], [b]) => comparePatch(b, a)).map(([p, n]) => `${patchLabel(p)}: ${n}`).join(", ");
+  return `With ${mid} at mid in ${m.games} pro game${m.games === 1 ? "" : "s"} (${m.series} series, won ${m.wins}/${m.games}; ${patches}): ${order}. ${m.series >= 2 ? "A repeated" : "An observed"} pro pairing, not a saved one; picked after the mid does not mean picked for it. Counted from every recorded game, the LCK archive included, so it can exceed the Pro label, which lists stored drafts. Never part of the order or the fit.`;
+};
+const compTitle = (r: CompResponse & { champions: string[] }, names: Record<string, string>) =>
+  `${TRAIT_LABEL[r.trait]} was on the enemy board in ${r.with} of this jungler's ${r.picks} ordered pro picks (all patches), against ${Math.round((r.base / r.baseOf) * 100)}% of every jungle pick. On your enemy board now: ${r.champions.map((x) => names[x] ?? x).join(", ")}. A potential composition response read from kits (general draft logic): what was visible, not why teams picked, and not a counter. Never part of the order or the fit.`;
+const lower1 = (s: string) => s[0].toLowerCase() + s.slice(1);
 
 function chipsOf(c: Candidate, names: Record<string, string>, bot?: string, tier?: Tier | null, top?: TopCtx): Chip[] {
   const r = c.fit;
@@ -539,8 +561,12 @@ function chipsOf(c: Candidate, names: Record<string, string>, bot?: string, tier
     const into = top.enemyTop ? tu.into[top.enemyTop] : undefined;
     if (duo) out.push({ key: "usage", label: `Picked into ${top.enemyDuo!.map((x) => names[x] ?? x).join(" + ")} · ${duo.games}`, title: topUsageTitle(c, top, names) });
     else if (top.enemyTop && into) out.push({ key: "usage", label: `Picked into ${names[top.enemyTop] ?? top.enemyTop} · ${into.games}`, title: topUsageTitle(c, top, names) });
-    else if (!top.enemyTop && tu.usage !== "too-few") out.push({ key: "usage", label: USAGE_LABEL[tu.usage], title: topUsageTitle(c, top, names) });
+    else if (!top.enemyTop && tu.usage !== "too-few") out.push({ key: "usage", label: tu.low ? smallUsage(tu) : USAGE_LABEL[tu.usage], title: topUsageTitle(c, top, names) });
   }
+  if (top?.mid && top.allyMid) out.push({ key: "mate", label: `With ${names[top.allyMid] ?? top.allyMid} · ${plural(top.mid.games, "game")}`, title: midTitle(top, names),
+    href: `/synergies/jungle/?champ=${c.champion}&view=mates&mate=${top.allyMid}` });
+  for (const r of top?.comp ?? []) out.push({ key: "comp", label: `Picked vs ${lower1(TRAIT_LABEL[r.trait])} · ${r.with}/${r.picks}`, title: compTitle(r, names),
+    href: `/synergies/jungle/?champ=${c.champion}&view=matchups` });
   // Pro meta counts: each opens the games behind it (rendered as MetaEvidenceTrigger).
   const rot = c.meta && c.meta.firstRotation > 0 ? rotationLabel(c.meta) : undefined;
   if (rot) out.push({ key: "rot", label: rot });
@@ -554,10 +580,12 @@ function chipsOf(c: Candidate, names: Record<string, string>, bot?: string, tier
   return out;
 }
 
+// Presence carried by bans (twice the picks or more) says little about pick behaviour (alan, 2026-10-13: Nocturne 46 bans, 3 picks).
+const banHeavy = (p: { picks: number; bans: number }) => p.bans >= 2 * p.picks;
 const priorityTitle = (c: Candidate) => {
   const p = c.priority!;
   const n = p.rolePicks[c.role] ?? 0;
-  return `Patch ${patchLabel(p.patch)}: picked or banned in ${Math.round(p.presence * 100)}% of ${p.games} pro games (${p.picks} picks, ${n} as ${c.role.toLowerCase()}; ${p.bans} bans, champion-wide). Pro meta context only: it does not change the order or the fit.`;
+  return `Patch ${patchLabel(p.patch)}: picked or banned in ${Math.round(p.presence * 100)}% of ${p.games} pro games (${p.picks} picks, ${n} as ${c.role.toLowerCase()}; ${p.bans} bans, champion-wide).${banHeavy(p) ? " Mostly bans: ban priority, not evidence about when or how it is picked." : ""} Pro meta context only: it does not change the order or the fit.`;
 };
 
 /** Main benefit and potential drawback, one line. */
@@ -578,7 +606,7 @@ function FitRow({ c, tier, bot, names, proCtx, hovered, onHover, onPick, onOpen,
   const [open, setOpen] = useState(false);
   const rec = c.fit;
   const name = names[c.champion] ?? c.champion;
-  const tctx = top?.mark ? top : undefined;
+  const tctx = top?.mark || top?.mid || top?.comp?.length ? top : undefined;
   const chips = chipsOf(c, names, bot, tier, tctx);
   const metaChip = new Set(["prio", "rot", "blind", "meta"]);
   const { benefit, drawback } = reasonOf(c);
@@ -598,7 +626,8 @@ function FitRow({ c, tier, bot, names, proCtx, hovered, onHover, onPick, onOpen,
             ? <ProEvidenceTrigger key={s.key} pro={c.pro} champion={c.champion} role={c.role} ctx={proCtx} />
             : s.key === "counter" && counter ? <CounterTrigger key={s.key} c={counter} names={names} />
               : metaChip.has(s.key) && c.meta ? <MetaEvidenceTrigger key={s.key} s={c.meta} label={s.label} cls={s.key} names={names} />
-              : <span key={s.key} className={`sig ${s.key}`} title={s.title}>{s.label}</span>)}</span>}
+              : s.href ? <Link key={s.key} className={`sig ${s.key} sig-link`} href={s.href} title={s.title}>{s.label}</Link>
+                : <span key={s.key} className={`sig ${s.key}`} title={s.title}>{s.label}</span>)}</span>}
         </span>
         <span className="fit-reason truncate">{benefit}{drawback && <span className="drawback"> · {drawback}</span>}</span>
       </div>
@@ -643,6 +672,18 @@ function FitRow({ c, tier, bot, names, proCtx, hovered, onHover, onPick, onOpen,
             <span className="t">{topUsageTitle(c, tctx, names)}</span>
           </div>
         )}
+        {tctx?.mid && (
+          <div className="fit-pro">
+            <span className="k">Mid/Jungle</span>
+            <span className="t">{midTitle(tctx, names)}</span>
+          </div>
+        )}
+        {tctx?.comp?.map((r) => (
+          <div key={r.trait} className="fit-logic">
+            <span className="k">Comp response</span>
+            <span className="t">{compTitle(r, names)}</span>
+          </div>
+        ))}
         {tctx && !tctx.enemyTop && tctx.blind && tctx.blind.length > 0 && (
           <div className="fit-logic">
             <span className="k">Blind read</span>

@@ -287,6 +287,7 @@ function Overview({ role, row, prio, prioLabel, saved, logic, names, scopeLabel,
             {prio && (
               <p className="xs muted tnum">
                 Meta priority on {prioLabel}: {prio.picks} picks, {prio.bans} bans{prio.presence != null ? `, ${Math.round(prio.presence * 100)}% presence` : ""}{prio.winRate != null ? `, ${Math.round(prio.winRate * 100)}% WR${prio.low ? " (low sample)" : ""}` : ""}
+                {prio.bans >= 2 * prio.picks && prio.bans > 0 ? ". Mostly bans: ban priority, not evidence about when or how it is picked." : ""}
               </p>
             )}
             {row.bot && ordered > 0 && (
