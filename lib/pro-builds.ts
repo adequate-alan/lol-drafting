@@ -8,7 +8,7 @@
 //                    called optimal.
 // Summaries below (starting items, boots, core, max order) are read from one game's purchase log and skill order; they
 // are labelled as derived, and say so when the log is incomplete.
-import { comparePatch, samePatch } from "./patch";
+import { comparePatch, patchKey, samePatch } from "./patch";
 import type { PatchAssets, ProBuild, ProGame, Role } from "./schema";
 
 export type Skill = "Q" | "W" | "E" | "R";
@@ -67,18 +67,22 @@ export const scoped = (rows: BuildRow[], s: BuildScope) => rows.filter((r) => in
 /** One entry per champion and role with recorded builds: game count, players, the newest patch and the latest games
  *  (newest first, at most RECENT), so the champion drawer can name who played it last and open that exact build. */
 export interface RecentBuild { game: number; date: string; patch: string; player: string; playerId: number; team?: string; won?: boolean }
-export interface ChampionBuilds { champion: string; role: Role; games: number; players: number; names: string[]; latest: string; lastPlayed: string; recent: RecentBuild[] }
+export interface ChampionBuilds {
+  champion: string; role: Role; games: number; players: number; names: string[]; latest: string; lastPlayed: string; recent: RecentBuild[];
+  patches: Record<string, number>; // recorded games per patch, keyed by Riot's 26.xx (patchKey), for the overview's patch filter
+}
 export const RECENT = 3;
 export function championIndex(builds: Pick<ProBuild, "champion" | "role" | "player" | "playerId" | "game" | "side">[],
   games: (Pick<ProGame, "id" | "patch" | "date"> & Partial<Pick<ProGame, "blue" | "red" | "winner">>)[]): ChampionBuilds[] {
   const byGame = new Map(games.map((g) => [g.id, g]));
-  const m = new Map<string, { champion: string; role: Role; games: number; players: Set<string>; latest: string; lastPlayed: string; recent: RecentBuild[] }>();
+  const m = new Map<string, { champion: string; role: Role; games: number; players: Set<string>; latest: string; lastPlayed: string; recent: RecentBuild[]; patches: Record<string, number> }>();
   for (const b of builds) {
     const g = byGame.get(b.game);
     if (!g) continue;
     const k = `${b.champion}|${b.role}`;
-    const e = m.get(k) ?? { champion: b.champion, role: b.role, games: 0, players: new Set<string>(), latest: g.patch, lastPlayed: g.date, recent: [] };
+    const e = m.get(k) ?? { champion: b.champion, role: b.role, games: 0, players: new Set<string>(), latest: g.patch, lastPlayed: g.date, recent: [], patches: {} };
     e.games += 1; e.players.add(b.player);
+    e.patches[patchKey(g.patch)] = (e.patches[patchKey(g.patch)] ?? 0) + 1;
     if (comparePatch(g.patch, e.latest) > 0) e.latest = g.patch;
     if (g.date > e.lastPlayed) e.lastPlayed = g.date;
     e.recent.push({ game: g.id, date: g.date, patch: g.patch, player: b.player, playerId: b.playerId, team: g[b.side]?.team, won: g.winner ? g.winner === b.side : undefined });

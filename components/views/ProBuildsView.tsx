@@ -34,6 +34,8 @@ import {
 import { ROLES, type Role } from "@/lib/schema";
 import { cleanFrom, draftHref as backHref } from "@/lib/my-role";
 import { rovingIndex, rovingKeys } from "@/components/roving";
+import { BuildsHome } from "@/components/BuildsHome";
+import { browse, buildPatches, latestPatch, parseRole, readViewed, recordFor, selectionOf, addViewed, RECENT_KEY } from "@/lib/pro-builds-home";
 
 type Mode = "games" | "common" | "compare";
 const MODES: [Mode, string][] = [["games", "Games"], ["common", "Common build"], ["compare", "Compare"]];
@@ -48,12 +50,19 @@ export function ProBuildsView({ index, names, events, drawerData }: {
 }) {
   const initial = useSearchParams();
   const [params, setParams] = useState(() => new URLSearchParams(initial.toString()));
+  // The URL is the selection: a link to this page (the sidebar included), Back and Forward all land here and replace
+  // what is shown, so nothing stale is carried over from an earlier visit.
+  const urlQuery = initial.toString();
+  useEffect(() => { setParams((p) => (p.toString() === urlQuery ? p : new URLSearchParams(urlQuery))); }, [urlQuery]);
   const get = (k: string) => params.get(k) || undefined;
-  const update = (changes: Record<string, string | undefined>) => {
+  // Choosing a champion is a history entry (Back returns to the overview or the previous champion); filters, games
+  // and modes replace the entry.
+  const update = (changes: Record<string, string | undefined>, push = false) => {
     const next = new URLSearchParams(params);
     for (const [k, v] of Object.entries(changes)) if (v) next.set(k, v); else next.delete(k);
     setParams(next);
-    window.history.replaceState(null, "", `${window.location.pathname}${next.size ? `?${next}` : ""}`);
+    const url = `${window.location.pathname}${next.size ? `?${next}` : ""}`;
+    if (push) window.history.pushState(null, "", url); else window.history.replaceState(null, "", url);
   };
 
   const [all, setAll] = useState<BuildRow[]>();
@@ -63,18 +72,29 @@ export function ProBuildsView({ index, names, events, drawerData }: {
   const name = (id: string) => names[id] ?? id;
   const evName = (r: BuildRow) => events[r.game.event] ?? r.game.tournament;
 
-  // Selected champion and role: the URL's, else the champion's most played role, else the most recorded entry.
-  // From Draft Room (`from` holds the draft) the asked champion and role are exact: no builds there is an empty state,
-  // never another champion or role shown in its place.
+  // What the URL asks for (lib/pro-builds-home.ts): a champion (exact role from Draft Room), a recorded game or player,
+  // or nothing, which is the overview. Never a default champion.
   const from = cleanFrom(get("from"));
-  const askedRole = ROLES.find((r) => r === get("role")?.toUpperCase());
-  const askedChampion = get("champion");
-  const champion = askedChampion && (from || index.some((e) => e.champion === askedChampion)) ? askedChampion : index[0]?.champion;
-  const roles = index.filter((e) => e.champion === champion);
-  const entry = roles.find((e) => e.role === askedRole) ?? (from && askedRole ? undefined : roles[0]);
+  const sel = selectionOf({ champion: get("champion"), role: get("role"), game: get("game"), player: get("player"), from }, index);
+  const home = sel.kind === "home" || sel.kind === "record";
+  const askedRole = parseRole(get("role"));
+  const champion = sel.kind === "champion" || sel.kind === "missing" ? sel.champion : undefined;
+  const roles = sel.kind === "champion" ? sel.roles : [];
+  const entry = sel.kind === "champion" ? sel.entry : undefined;
   const role = entry?.role;
+  // A game and player without a champion: open that exact recorded build once the rows are in.
+  const record = sel.kind === "record" && all ? recordFor(all, sel.game, sel.player) : undefined;
+  useEffect(() => {
+    if (record) update({ champion: record.build.champion, role: record.build.role, game: sel.kind === "record" && sel.game ? String(record.game.id) : undefined, player: String(record.build.playerId) });
+  }, [record?.key]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Rail
+  // Patch scope: the overview opens on the newest patch with recorded builds ("all" shows every patch); a champion
+  // carries the patch it was opened with and shows every patch without one.
+  const newest = latestPatch(index);
+  const patchParam = get("patch");
+  const scopePatch = patchParam === "all" ? undefined : patchParam ?? (home ? newest : undefined);
+
+  // Rail (the champion browser): on the overview its search and role are the overview's own controls.
   const [query, setQuery] = useState("");
   const [railRole, setRailRole] = useState<Role | "">("");
   const q = query.trim().toLowerCase();
@@ -82,9 +102,8 @@ export function ProBuildsView({ index, names, events, drawerData }: {
   const { pins, names: pinNames } = usePins();
   useMigratePlayerPins(all);
   const pinnedNames = new Set(pins.map((id) => pinNames[id] ?? id));
-  const playerHit = (e: ChampionBuilds) => (q ? e.names.find((p) => p.toLowerCase().includes(q)) : undefined);
-  const railed = index.filter((e) => (!railRole || e.role === railRole) && (!q || name(e.champion).toLowerCase().includes(q) || playerHit(e)))
-    .sort((a, b) => name(a.champion).localeCompare(name(b.champion)) || ROLES.indexOf(a.role) - ROLES.indexOf(b.role));
+  const homeRole = home ? askedRole : undefined;
+  const railed = browse(index, { q, role: home ? homeRole : railRole || undefined, patch: scopePatch }, name);
   const rail = useRef<HTMLUListElement>(null);
   useEffect(() => {
     const ul = rail.current, el = ul?.querySelector<HTMLElement>("li button.active");
@@ -99,12 +118,30 @@ export function ProBuildsView({ index, names, events, drawerData }: {
     landed.current = true;
     if (window.matchMedia("(max-width: 760px)").matches) main.current?.scrollIntoView({ block: "start" });
   }, [all, failed, from]);
-  // Picking a champion found by a player's name keeps that player selected.
+  // Picking a champion found by a player's name keeps that player selected. The patch scope comes along.
   const choose = (e: ChampionBuilds, player?: string) => {
     // A player found by name is selected by id when the build data is in (a name shared by two players picks the one on this champion).
     const hit = player && all?.find((r) => r.build.player === player && r.build.champion === e.champion && r.build.role === e.role);
-    update({ champion: e.champion, role: e.role, game: undefined, a: undefined, b: undefined, event: undefined, patch: undefined, team: undefined, player: hit ? String(hit.build.playerId) : player });
+    const sameChampion = e.champion === champion;
+    update({ champion: e.champion, role: e.role, game: undefined, a: undefined, b: undefined, event: undefined, team: undefined,
+      patch: scopePatch && (e.patches[patchKey(scopePatch)] ?? 0) > 0 ? scopePatch : undefined,
+      player: hit ? String(hit.build.playerId) : player }, !sameChampion);
+    if (!sameChampion && home) window.scrollTo({ top: 0 });
   };
+
+  // Recently viewed (this browser): the champion and role on screen, with the game and player picked, as overview
+  // shortcuts. Never reopened on its own.
+  useEffect(() => {
+    if (!entry) return;
+    try {
+      const list = readViewed(localStorage.getItem(RECENT_KEY));
+      const game = Number(get("game")) || undefined;
+      localStorage.setItem(RECENT_KEY, JSON.stringify(addViewed(list, { champion: entry.champion, role: entry.role, game, player: get("player") })));
+    } catch { /* private mode: no shortcuts */ }
+  }, [entry?.champion, entry?.role, params.get("game"), params.get("player")]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const homeHref = `/pro-builds/${patchParam && patchKey(patchParam) !== newest ? `?patch=${encodeURIComponent(patchParam)}` : ""}`;
+  const toHome = <Link className="btn sm ghost builds-home-link" href={homeHref}>← Pro Builds overview</Link>;
 
   // Scope
   const mine = useMemo(() => (all && champion && role ? inScope(all, { champion, role }) : []), [all, champion, role]);
@@ -125,53 +162,74 @@ export function ProBuildsView({ index, names, events, drawerData }: {
   const draftHref = champion && role ? `/?${role.toLowerCase()}=${champion}` : undefined;
   // Arriving from Draft Room: the way back restores that draft (picks, enemy row, role being picked, filter).
   const back = from ? <Link className="btn sm" href={backHref(from)}>← Back to Draft Room</Link> : undefined;
+  const patches = buildPatches(index);
   return (
     <ChampionProvider data={drawerData} context={PRO_BUILDS}>
-      <PageHeader title="Pro Builds" badges={<BuildsTabs current="champions" />} desc="Items, runes, skill order and summoner spells from recorded professional games."
+      <PageHeader title="Pro Builds" badges={<BuildsTabs current="champions" />}
+        desc={home ? "Explore professional champion builds: items, runes, skill order and summoner spells from recorded games." : "Items, runes, skill order and summoner spells from recorded professional games."}
         actions={back ?? (draftHref && <Link className="btn sm" href={draftHref}>Open in Draft Room →</Link>)} />
-      <div className="split builds-split">
-        <nav className="pick-rail" aria-label="Champions with recorded builds">
-          <div className="rail-tools">
-            <input type="search" placeholder="Champ or player" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search champions or players" />
-            <Select label="Role" value={railRole} onChange={(v) => setRailRole(v as Role | "")}
-              options={[{ value: "", label: "All roles" }, ...ROLES.map((r) => ({ value: r, label: ROLE_NAME[r] }))]} />
+      {home && (
+        // The overview's controls drive the champion browser and the recent builds below.
+        <div className="builds-home-tools">
+          <input type="search" className="builds-search" placeholder="Search champions or players…" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search champions or players" />
+          <div className="seg" role="group" aria-label="Role">
+            {([undefined, ...ROLES] as (Role | undefined)[]).map((r) => (
+              <button key={r ?? "all"} type="button" className={homeRole === r ? "active" : undefined} aria-pressed={homeRole === r} onClick={() => update({ role: r })}>{r ? ROLE_NAME[r] : "All"}</button>
+            ))}
           </div>
+          <Select label="Patch" value={patchParam === "all" ? "all" : scopePatch ? patchKey(scopePatch) : "all"}
+            options={[...patches.map((p) => ({ value: p, label: p === newest ? `${patchLabel(p)} · latest` : patchLabel(p) })), { value: "all", label: "All patches" }]}
+            onChange={(v) => update({ patch: v === newest ? undefined : v })} />
+        </div>
+      )}
+      <div className={`split builds-split${home ? " home" : ""}`}>
+        <nav className="pick-rail" aria-label="Champions with recorded builds">
+          {!home && (
+            <div className="rail-tools">
+              <input type="search" placeholder="Champ or player" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search champions or players" />
+              <Select label="Role" value={railRole} onChange={(v) => setRailRole(v as Role | "")}
+                options={[{ value: "", label: "All roles" }, ...ROLES.map((r) => ({ value: r, label: ROLE_NAME[r] }))]} />
+            </div>
+          )}
+          {home && <p className="rail-count xs muted tnum">{railed.length} champion{railed.length === 1 ? "" : "s"} · {scopePatch ? patchLabel(scopePatch) : "all patches"}</p>}
           <ul ref={rail}>
-            {railed.map((e) => {
+            {railed.map(({ entry: e, games, player: hit }) => {
               const on = e.champion === champion && e.role === role;
+              const pinned = e.names.filter((p) => pinnedNames.has(p));
               return (
                 <li key={`${e.champion}-${e.role}`}>
-                  <button type="button" className={on ? "active" : undefined} aria-current={on ? "true" : undefined}
-                    onClick={() => choose(e, name(e.champion).toLowerCase().includes(q) ? undefined : playerHit(e))}>
+                  <button type="button" className={on ? "active" : undefined} aria-current={on ? "true" : undefined} onClick={() => choose(e, hit)}>
                     <ChampIcon id={e.champion} name={name(e.champion)} role={e.role} size="md" />
                     <span className="rail-text"><span className="rail-name">{name(e.champion)}</span>
-                      <span className="rail-sub">{e.role} · {e.games} game{e.games > 1 ? "s" : ""} · {patchLabel(e.latest)}</span>
-                      {(() => {
-                        const hit = !name(e.champion).toLowerCase().includes(q) && playerHit(e);
-                        const pinned = e.names.filter((p) => pinnedNames.has(p));
-                        return hit ? <span className="rail-sub rail-player">{hit}</span>
-                          : pinned.length > 0 ? <span className="rail-sub rail-player" title="Pinned players with recorded builds on this champion"><PinIcon on /> {pinned.join(", ")}</span> : null;
-                      })()}</span>
+                      <span className="rail-sub">{e.role} · {games} game{games > 1 ? "s" : ""} · {patchLabel(e.latest)}</span>
+                      {hit ? <span className="rail-sub rail-player">{hit}</span>
+                        : pinned.length > 0 ? <span className="rail-sub rail-player" title="Pinned players with recorded builds on this champion"><PinIcon on /> {pinned.join(", ")}</span> : null}</span>
                   </button>
                 </li>
               );
             })}
-            {!railed.length && <li className="rail-empty">No champion or player matches “{query}”.</li>}
+            {!railed.length && <li className="rail-empty">{q ? <>No champion or player matches “{query}”.</> : "No recorded builds in this scope."}</li>}
           </ul>
         </nav>
 
         <div className="builds-main" ref={main}>
-          {!entry && from && champion && askedRole ? (
+          {home ? (
+            sel.kind === "record" && !all && !failed ? <p className="small faint" aria-busy="true">Opening the recorded build…</p>
+              : <BuildsHome rows={all} failed={failed} filter={{ q, role: homeRole, patch: scopePatch, game: sel.kind === "home" ? sel.game : undefined }}
+                notFound={sel.kind === "record" && !!all && !record} name={name} evName={evName} onClearGame={() => update({ game: undefined, player: undefined })} />
+          ) : !entry && champion ? (
             <div className="builds-empty">
-              <h2>{name(champion)} · {ROLE_NAME[askedRole]}</h2>
-              <p className="small muted">No recorded professional builds for {name(champion)} as {ROLE_NAME[askedRole]} in the tracked tournaments.</p>
-              <p className="row">
+              {toHome}
+              <h2>{name(champion)}{askedRole && <> · {ROLE_NAME[askedRole]}</>}</h2>
+              <p className="small muted">No recorded professional builds for {name(champion)}{askedRole && <> as {ROLE_NAME[askedRole]}</>} in the tracked tournaments.</p>
+              {(roles.length > 0 || back) && <p className="row">
                 {roles.map((e) => <button key={e.role} type="button" className="btn sm" onClick={() => choose(e)}>{ROLE_NAME[e.role]} builds · {e.games}</button>)}
                 {back}
-              </p>
+              </p>}
               <p className="xs muted">Pick another champion from the list to explore other recorded builds.</p>
             </div>
           ) : !entry || !champion || !role ? <p className="muted">No recorded pro builds yet.</p> : <>
+            {toHome}
             <div className="builds-head">
               <ChampIcon id={champion} name={name(champion)} role={role} size="xxl" />
               <div className="builds-title">
