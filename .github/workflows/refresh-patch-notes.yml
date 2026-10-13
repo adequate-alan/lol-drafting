@@ -5,12 +5,13 @@ name: Refresh patch notes
 # only. Commits data/patch-notes.json and deploys only when that content changed; a refused or failed request writes
 # nothing. Earlier patches stay in the archive. Saved pairings, pool tiers and recommendations are never touched.
 #
-# 8:30 AM Eastern all year, half an hour after the pro-data refresh: both 12:30 and 13:30 UTC are scheduled and the gate
+# 8:47 AM Eastern all year, half an hour after the pro-data refresh (minute 47 keeps off the busy top and half hour; GitHub
+# starts those late under load): both 12:47 and 13:47 UTC are scheduled and the gate
 # step lets through only the one matching New York's current offset. GitHub may start scheduled runs late.
 on:
   schedule:
-    - cron: "30 12 * * *"
-    - cron: "30 13 * * *"
+    - cron: "47 12 * * *"
+    - cron: "47 13 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -35,13 +36,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: gate
-        name: Run at 8:30 AM Eastern only
+        name: Run at 8:47 AM Eastern only
         run: |
           offset=$(TZ=America/New_York date +%z)
           run=true
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            if [ "${{ github.event.schedule }}" = "30 12 * * *" ] && [ "$offset" != "-0400" ]; then run=false; fi
-            if [ "${{ github.event.schedule }}" = "30 13 * * *" ] && [ "$offset" != "-0500" ]; then run=false; fi
+            if [ "${{ github.event.schedule }}" = "47 12 * * *" ] && [ "$offset" != "-0400" ]; then run=false; fi
+            if [ "${{ github.event.schedule }}" = "47 13 * * *" ] && [ "$offset" != "-0500" ]; then run=false; fi
           fi
           echo "New York offset $offset; run=$run"
           echo "run=$run" >> "$GITHUB_OUTPUT"

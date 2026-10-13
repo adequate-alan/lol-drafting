@@ -203,10 +203,10 @@ describe("weekly report and pipeline", () => {
     expect(src).toMatch(/const REPORT = join\(root, "reports", "comp-discovery.md"\)/);
   });
 
-  it("the workflow runs weekly at 9 AM Eastern, on demand, and commits only the library when it changed", () => {
+  it("the workflow runs weekly on Sunday morning Eastern (off the top of the hour), on demand, and commits only the library when it changed", () => {
     const wf = readFileSync(join(process.cwd(), ".github", "workflows", "discover-comps.yml"), "utf8");
-    expect(wf).toMatch(/cron: "0 13 \* \* 0"/);
-    expect(wf).toMatch(/cron: "0 14 \* \* 0"/);
+    expect(wf).toMatch(/cron: "17 13 \* \* 0"/);
+    expect(wf).toMatch(/cron: "17 14 \* \* 0"/);
     expect(wf).toMatch(/workflow_dispatch/);
     expect(wf).toMatch(/steps\.discover\.outputs\.changed == 'true'/);
     expect(wf).toMatch(/git add data\/discovered-comps\.json reports\/comp-discovery\.md\n/);

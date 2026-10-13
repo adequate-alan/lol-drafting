@@ -122,8 +122,9 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 
 ## Daily pro-data refresh (alan, 2026-10-11; twice a day since 2026-10-12)
 
-- `.github/workflows/refresh-pro-data.yml` runs twice a day, 8 AM and 8 PM Eastern (alan, 2026-10-12; crons 12:00 / 13:00
-  and 00:00 / 01:00 UTC, a gate keeps the one matching New York's offset) and on `workflow_dispatch`. It reads Gol.gg with plain requests from the GitHub runner
+- `.github/workflows/refresh-pro-data.yml` runs twice a day, 8:17 AM and 8:17 PM Eastern (alan, 2026-10-12; crons 12:17 / 13:17
+  and 00:17 / 01:17 UTC, a gate keeps the one matching New York's offset; schedules sit off the top of the hour because
+  GitHub started the 12:00 cron 9 hours late on 2026-10-12) and on `workflow_dispatch`. It reads Gol.gg with plain requests from the GitHub runner
   (it answers there; robots.txt allows these pages) and stops, writing nothing, on any refusal or challenge. Never bypass one.
 - Only the tournaments in `data/pro-games.json` `tracked` are requested, by exact Gol.gg name: Demacia Cup Global
   Invitational 2026 and Worlds 2026 (main event and play-in names). The LCK playoffs are a frozen archive. Adding a
@@ -246,7 +247,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   `changedSince`, `patchHref`. The champion drawer's "Patch changes" block and the hover card's latest-patch line use
   them; `components/ChangedSince.tsx` (`ChangedSince`, `PatchTag`) is the "Changed since this game" control for Pro
   Builds. It never calls an old build current or optimal.
-- Daily check: `.github/workflows/refresh-patch-notes.yml`, 8:30 AM Eastern (same offset gate as the pro refresh) and
+- Daily check: `.github/workflows/refresh-patch-notes.yml`, 8:47 AM Eastern (crons 12:47 / 13:47 UTC, same offset gate as the pro refresh) and
   `workflow_dispatch` (dry run, force). `scripts/refresh-patch-notes.mjs` reads Riot's patch-notes tag page and each
   tracked patch page from the runner (leagueoflegends.com is unreachable from Claude's environments; robots.txt allows
   it), re-reads a patch only when it is new or its article revision changed, and writes `data/patch-notes.json` only
@@ -256,7 +257,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 
 ## Weekly Comp Library discovery (alan, 2026-10-12)
 
-- `.github/workflows/discover-comps.yml` runs Sundays at 9 AM Eastern (cron 13:00 and 14:00 UTC, same New York gate as
+- `.github/workflows/discover-comps.yml` runs Sundays at 9:17 AM Eastern (cron 13:17 and 14:17 UTC, same New York gate as
   the daily refresh) and on `workflow_dispatch`. It downloads nothing: `scripts/discover-comps.ts` reads the lineups the
   daily refresh stored for the tracked tournaments (`data/pro-games.json`), runs `lib/comp-discovery.ts` and writes only
   `data/discovered-comps.json` and `reports/comp-discovery.md`, committing (after test/typecheck/build) only when the
