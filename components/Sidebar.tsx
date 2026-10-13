@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { SYNERGIES_ROLE_EVENT, sessionStore, storedSynergiesRole, synergiesNavHref } from "@/lib/synergy-nav";
 import { GenRang } from "./GenRang";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -19,7 +20,7 @@ const I = {
 const GROUPS = [
   ["Draft", [
     ["/", "Draft Room", I.draft],
-    ["/synergies/bot", "Synergies", I.synergy],
+    ["/synergies", "Synergies", I.synergy],
     ["/comps", "Comp Library", I.comps],
     ["/pool", "Champion Pool", I.pool],
   ]],
@@ -54,6 +55,15 @@ function Brand() {
   );
 }
 
+// The Synergies link opens the role being researched (Draft Room's highlighted role, or the last Synergies tab), never
+// "I'm playing" (lib/synergy-nav.ts). Top before anything is stored, and on the server.
+const subscribe = (cb: () => void) => {
+  window.addEventListener(SYNERGIES_ROLE_EVENT, cb);
+  window.addEventListener("storage", cb);
+  return () => { window.removeEventListener(SYNERGIES_ROLE_EVENT, cb); window.removeEventListener("storage", cb); };
+};
+const useSynergiesHref = () => useSyncExternalStore(subscribe, () => synergiesNavHref(storedSynergiesRole(sessionStore())), () => synergiesNavHref(null));
+
 export function Sidebar() {
   const raw = usePathname();
   const path = raw.length > 1 ? raw.replace(/\/$/, "") : raw;
@@ -67,6 +77,7 @@ export function Sidebar() {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
+  const synergies = useSynergiesHref();
   const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(href.split("/").slice(0, 2).join("/")));
   return (
     <>
@@ -86,12 +97,12 @@ export function Sidebar() {
           {GROUPS.map(([group, links]) => (
             <div key={group} className="nav-group">
               <div className="nav-label">{group}</div>
-              {links.map(([href, label, icon]) => (
-                <Link key={href} href={href} className={`nav-item ${active(href) ? "active" : ""}`} aria-current={active(href) ? "page" : undefined}>
+              {links.map(([section, label, icon]) => { const href = section === "/synergies" ? synergies : section; return (
+                <Link key={section} href={href} className={`nav-item ${active(href) ? "active" : ""}`} aria-current={active(href) ? "page" : undefined}>
                   <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round">{icon}</svg>
                   {label}
                 </Link>
-              ))}
+              ); })}
             </div>
           ))}
         </nav>
