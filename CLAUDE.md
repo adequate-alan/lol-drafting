@@ -177,14 +177,19 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   link still matches by name), so same-name players stay apart and a team change keeps one profile.
   **Overview and navigation precedence** (alan, 2026-10-13; `lib/pro-builds-home.ts` `selectionOf`,
   `components/BuildsHome.tsx`, `tests/pro-builds-home.test.ts`, smoke "builds overview"): `/pro-builds/` with no
-  champion, game or player is the overview: search (champions and players), All + five roles, a patch selector on the
-  newest patch with builds (`patch=all` for every patch), pinned players (to their profiles), this browser's recently
+  champion, game or player is the overview: search (champions and players), All + five roles, a patch selector on
+  All patches (alan, 2026-10-13: every Pro Builds entry point shows every patch unless a patch is chosen or in the URL;
+  a chosen patch carries into the champion), pinned players (to their profiles), this browser's recently
   viewed builds and recent recorded builds (newest patch, then date, then game id; an undated game never jumps ahead),
   each opening the exact game. The rail is the champion browser and carries the patch scope into the champion. URL
   parameters always win (champion and role; a game and player without a champion resolve to that record; a game alone
   lists its builds); links from other features are those parameters. Never a default champion, never a selection
   reopened from storage: recently viewed is shortcuts only. Choosing a champion is a history entry; "← Pro Builds
   overview" and the sidebar return to the overview.
+  **Default game** (alan, 2026-10-13; `defaultGame`): within the active filters, the URL's game; else a chosen player's
+  newest game (never replaced by a pin); else the newest game of a pinned player on that champion and role (the pinned
+  player who played it most recently, by Gol.gg id, any patch); else the newest game. Every other game stays in the
+  strip; the existing star marks why. No banner or explanation. An explicit patch is never changed to reach a pin.
   LCK 2026 Season Playoffs builds were backfilled once (`scripts/backfill-lck-builds.mjs`, alan 2026-10-12); their game
   records live in `pro-builds.json` `games`, read by Pro Builds only, never by drafts, priority or totals. The daily
   refresh never requests them.
@@ -195,8 +200,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   unavailable; never fill in the rest.
 - **My Role** (alan, 2026-10-12; `lib/my-role.ts`, `tests/my-role.test.ts`): Draft Room's "I'm playing" selector is the
   user's own role, saved in localStorage, never the role being picked. My slot gets a gold name and a "You" tag; when
-  its champion is locked, the bar and the slot link to Pro Builds with champion, role, the newest patch with recorded
-  builds and `from` (the whole draft, enemy row, picked role and filter), which "Back to Draft Room" restores. "Open Pro
+  its champion is locked, the bar and the slot link to Pro Builds with champion, role (every patch) and `from` (the whole draft, enemy row, picked role and filter), which "Back to Draft Room" restores. "Open Pro
   Builds when I lock" (localStorage, off by default) navigates only on a confirmed lock of a new champion in my role that
   has recorded builds. From Draft Room, a champion and role without builds is an empty state, never another entry.
 - `data/pro-builds.json`: one record per player per game (Gol.gg game id, side, role, player and Gol.gg player id,

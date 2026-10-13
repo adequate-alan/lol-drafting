@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { buildRows, championIndex } from "@/lib/pro-builds";
 import {
-  addViewed, browse, buildPatches, latestPatch, readViewed, recentBuilds, recordFor, selectionOf, RECENT_MAX,
+  addViewed, browse, defaultGame, buildPatches, latestPatch, readViewed, recentBuilds, recordFor, selectionOf, RECENT_MAX,
 } from "@/lib/pro-builds-home";
 import type { ProBuild, ProGame } from "@/lib/schema";
 
@@ -92,6 +92,38 @@ describe("overview", () => {
     expect(list).toHaveLength(RECENT_MAX);
     expect(readViewed("not json")).toEqual([]);
     expect(readViewed(JSON.stringify([{ champion: "jhin", role: "BOT" }, { champion: 3 }, { champion: "x", role: "NOPE" }]))).toEqual([{ champion: "jhin", role: "BOT" }]);
+  });
+});
+
+describe("default game: pinned players first (alan, 2026-10-13)", () => {
+  // Ashe-style case: a pinned player with older games on the champion, a newer game from someone else.
+  const h1 = game(11, "2026-09-02", "16.16", "GEN", "KT", "ashe");
+  const h2 = game(12, "2026-09-04", "16.16", "GEN", "T1", "ashe");
+  const h3 = game(13, "2026-10-06", "16.18", "BLG", "TES", "ashe");
+  const h4 = game(14, "2026-10-08", "16.18", "TES", "BLG", "ashe");
+  const ashe = buildRows([build(h1, "BOT", "Ruler", 100), build(h2, "BOT", "Ruler", 100), build(h3, "BOT", "Elk", 200), build(h4, "BOT", "JackeyLove", 300)], [h1, h2, h3, h4], {});
+  const ids = (r?: { game: { id: number } }) => r?.game.id;
+
+  it("opens the pinned player's newest game on the champion, even on an older patch", () => {
+    expect(ids(defaultGame(ashe, {}, ["100"]))).toBe(12);
+    expect(ashe).toHaveLength(4); // everyone else's games stay in the selector
+  });
+  it("falls back to the newest game when nobody pinned played it, or after unpinning", () => {
+    expect(ids(defaultGame(ashe, {}, []))).toBe(14);
+    expect(ids(defaultGame(ashe, {}, ["999"]))).toBe(14);
+  });
+  it("with several pinned players, takes the one who played it most recently, not the one with most games", () => {
+    expect(ids(defaultGame(ashe, {}, ["100", "200"]))).toBe(13);
+  });
+  it("keeps an explicit game, and a chosen player is never replaced by a pin", () => {
+    expect(ids(defaultGame(ashe, { game: "11" }, ["200"]))).toBe(11);
+    const elk = ashe.filter((r) => r.build.playerId === 200);
+    expect(ids(defaultGame(elk, { player: "200" }, ["100"]))).toBe(13);
+    expect(ids(defaultGame(ashe, { game: "999" }, ["100"]))).toBe(12); // a stale game falls back to the default
+  });
+  it("stays inside the active filters: a patch without the pinned player's games keeps that patch", () => {
+    const on1618 = ashe.filter((r) => r.game.patch === "16.18");
+    expect(ids(defaultGame(on1618, {}, ["100"]))).toBe(14);
   });
 });
 

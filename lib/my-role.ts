@@ -3,7 +3,6 @@
 // touches recommendations, saved pairings, pro evidence or Comp Check: it only builds links and decides when a confirmed
 // lock opens Pro Builds.
 import { buildsHref, type ChampionBuilds } from "./pro-builds";
-import { patchLabel } from "./patch";
 import { ROLES, type Role } from "./schema";
 
 export const MY_ROLE_KEY = "draft-room:my-role";
@@ -41,12 +40,11 @@ export const draftHref = (from: string | null | undefined) => { const q = cleanF
 export const buildsEntry = (index: ChampionBuilds[], champion: string, role: Role) => index.find((e) => e.champion === champion && e.role === role);
 
 /**
- * Pro Builds for my locked champion in my role: preselects the champion, role and (when builds exist) the newest patch
- * with recorded builds, and carries the draft so "Back to Draft Room" restores it.
+ * Pro Builds for my locked champion in my role: preselects the champion and role on every patch (alan, 2026-10-13: never
+ * silently the newest patch only) and carries the draft so "Back to Draft Room" restores it.
  */
-export function myBuildsHref(index: ChampionBuilds[], champion: string, role: Role, from: string): string {
-  const e = buildsEntry(index, champion, role);
-  return `${buildsHref(champion, role)}${e ? `&patch=${patchLabel(e.latest)}` : ""}${from ? `&from=${encodeURIComponent(from)}` : ""}`;
+export function myBuildsHref(_index: ChampionBuilds[], champion: string, role: Role, from: string): string {
+  return `${buildsHref(champion, role)}${from ? `&from=${encodeURIComponent(from)}` : ""}`;
 }
 
 /**
