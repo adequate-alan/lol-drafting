@@ -22,14 +22,16 @@ import type { BlindLine } from "./top-blind";
 
 export type Side = "blue" | "red";
 export type Usage = "blind" | "response" | "uncertain";
-export type Rotation = "first" | "phase1" | "phase2" | "last";
+export type Rotation = "first" | "second" | "last";
 
 // Global turns (1-10) of each team's picks: the first-picking team and the other.
 export const FIRST_TURNS = [1, 4, 5, 8, 9] as const;
 export const SECOND_TURNS = [2, 3, 6, 7, 10] as const;
 export const turnOf = (pickIndex: number, first: boolean) => (first ? FIRST_TURNS : SECOND_TURNS)[pickIndex];
-export const rotationOf = (turn: number): Rotation => (turn <= 3 ? "first" : turn <= 6 ? "phase1" : turn === 10 ? "last" : "phase2");
-export const ROTATION_LABEL: Record<Rotation, string> = { first: "First rotation", phase1: "Phase 1", phase2: "Phase 2", last: "Last pick" };
+// First rotation = each team's first three picks, before the second ban phase (turns 1-6; alan, 2026-10-13, site-wide).
+// Second rotation = turns 7-10, with the last pick (turn 10) kept apart.
+export const rotationOf = (turn: number): Rotation => (turn <= 6 ? "first" : turn === 10 ? "last" : "second");
+export const ROTATION_LABEL: Record<Rotation, string> = { first: "First rotation", second: "Second rotation", last: "Last pick" };
 
 export interface TopSelection {
   game: number; // Gol.gg game id
@@ -226,7 +228,7 @@ export function topRows(all: TopSelection[], scope: TopScope, dpm: DPMRow[] = []
     return {
       champion: id, games: mine.length, blind, response, uncertain: mine.length - classified, classified, blindShare, usage,
       low: classified < LOW_SAMPLE,
-      rotation: { first: count(mine, (s) => s.rotation === "first"), phase1: count(mine, (s) => s.rotation === "phase1"), phase2: count(mine, (s) => s.rotation === "phase2"), last: count(mine, (s) => s.rotation === "last") },
+      rotation: { first: count(mine, (s) => s.rotation === "first"), second: count(mine, (s) => s.rotation === "second"), last: count(mine, (s) => s.rotation === "last") },
       firstPicker: count(mine, (s) => s.firstPicker === true),
       blue: count(mine, (s) => s.side === "blue"), red: count(mine, (s) => s.side === "red"),
       wins: count(mine, (s) => s.won),
