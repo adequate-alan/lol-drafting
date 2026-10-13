@@ -1703,6 +1703,14 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .blind-read li.minus::before { content: "−"; color: var(--caution); }
 .blind-read li.note::before { content: "·"; }
 .faced, .by-patch, .duo-table { width: 100%; }
+/* Bot lane in draft order (game detail): one line per turn, the side's colour on a 1px rule. */
+.bot-seq { display: grid; gap: var(--s2); }
+.bot-seq p { margin: 0; }
+.bot-seq ol { display: grid; gap: var(--s1); margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
+.bot-seq li { display: grid; grid-template-columns: 150px minmax(0, 1fr) auto auto; align-items: center; gap: var(--s4); padding: var(--s1) 0 var(--s1) var(--s3); border-left: 1px solid var(--border-strong); }
+.bot-seq li.seq-blue { border-left-color: var(--team-blue); }
+.bot-seq li.seq-red { border-left-color: var(--team-red); }
+@media (max-width: 760px) { .bot-seq li { grid-template-columns: minmax(0, 1fr) auto; } .bot-seq li > :first-child { grid-column: 1 / -1; } }
 /* Duo drafting (Bot and Support): a duo is two portraits and its names; a row opens its games under it. */
 .duo { display: inline-flex; align-items: center; gap: var(--s1); min-width: 0; }
 .duo > span { margin-left: var(--s2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

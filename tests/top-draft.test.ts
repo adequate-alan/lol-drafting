@@ -193,13 +193,13 @@ describe("recorded games (fixed Demacia / LCK facts, scoped to those games)", ()
 describe("Draft Room and pages", () => {
   it("never feeds the ranking: the candidate and recommendation code does not read top usage", () => {
     for (const f of ["lib/candidates.ts", "lib/recommend.ts", "lib/counters.ts", "lib/evaluate.ts"])
-      expect(readFileSync(join(process.cwd(), f), "utf8")).not.toMatch(/top-draft|topUsage/);
+      expect(readFileSync(join(process.cwd(), f), "utf8")).not.toMatch(/top-draft|topUsage|laneUsage/);
   });
 
   it("ships usage marks for the default patch and never edits saved grades", () => {
     const d = getDraftData();
-    expect(d.topUsage.patch).toBe(defaultTopPatch(topSelections(records, book)));
-    expect(Object.keys(d.topUsage.marks).length).toBeGreaterThan(5);
+    expect(d.laneUsage.TOP.patch).toBe(defaultTopPatch(topSelections(records, book)));
+    expect(Object.keys(d.laneUsage.TOP.marks).length).toBeGreaterThan(5);
     const before = JSON.parse(readFileSync(join(process.cwd(), "data/top.json"), "utf8"));
     expect(getTopPicks().map((t) => t.blindGrade)).toEqual(before.map((t: { blindGrade: string }) => t.blindGrade));
   });

@@ -11,7 +11,7 @@ import { buildPatchIndex } from "./patch-changes";
 import { championIndex, type ChampionBuilds } from "./pro-builds";
 import { withoutConfirmed } from "./proposed";
 import { Files, ROLES, type Role } from "./schema";
-import { brief, duoSelections, laneSelections, roleBook, topUsageMarks, type LaneRole, type TopDraftBundle } from "./top-draft";
+import { brief, duoSelections, LANE_ROLES, laneSelections, roleBook, topUsageMarks, type LaneRole, type TopDraftBundle, type TopUsageMarks } from "./top-draft";
 import { blindReads } from "./top-blind";
 import { bucket, patchesOf } from "./pro-priority";
 
@@ -101,7 +101,8 @@ export function getDraftData() {
     counters: getCounters(),
     proposed: getProposed().records,
     priority: priorityMarks(getPriority()), // a label on rows, never read by the ranking
-    topUsage: ((t) => topUsageMarks(t.selections, t.dpm, t.blind))(getTopDraft()), // TOP row labels, never read by the ranking
+    // Lane row labels (Top, Mid, Bot, Support), never read by the ranking.
+    laneUsage: Object.fromEntries(LANE_ROLES.map((r) => [r, ((t) => topUsageMarks(t.selections, t.dpm, t.blind, undefined, t.duos))(getLaneDraft(r))])) as Record<LaneRole, TopUsageMarks>,
   };
 }
 export type DraftData = ReturnType<typeof getDraftData>;
@@ -165,7 +166,7 @@ export function getLaneDraft(role: LaneRole): TopDraftBundle {
   }
   const pairs = new Set(selections.flatMap((s) => [`${s.champion}>${s.laneOpponent}`, `${s.laneOpponent}>${s.champion}`]));
   const dpm = getCounters().dpm.filter((r) => r.role === role && pairs.has(`${r.champion}>${r.enemy}`))
-    .map((r) => ({ role: r.role, champion: r.champion, enemy: r.enemy, winRate: r.winRate, games: r.games, patch: r.patch, url: r.url }));
+    .map((r) => ({ role: r.role, champion: r.champion, enemy: r.enemy, winRate: r.winRate, games: r.games, patch: r.patch, url: r.url, rank: r.rank }));
   const events = getMeta().events.filter((e) => selections.some((s) => s.event === e.id)).map((e) => ({ id: e.id, short: e.short }));
   // General Draft Logic for every champion who plays the lane and has a kit (Locke and Zaahen have none yet).
   const saved = new Map(role === "TOP" ? getTopPicks().map((t) => [t.champion, t.identities]) : []);

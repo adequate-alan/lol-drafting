@@ -29,7 +29,7 @@ import { noteDraftRole, restoredDraftRole, sessionStore } from "@/lib/synergy-na
 import { ChampIcon, ChampionRow, WarningBadge, type Severity } from "./ui";
 import { scrollBehavior } from "@/lib/motion";
 import { rovingIndex, rovingKeys } from "./roving";
-import { PAIR_LABEL, USAGE_LABEL, type TopUsageMark } from "@/lib/top-draft";
+import { isLaneRole, PAIR_LABEL, USAGE_LABEL, type TopUsageMark, type TopUsageMarks } from "@/lib/top-draft";
 import type { BlindLine } from "@/lib/top-blind";
 
 const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
@@ -55,7 +55,7 @@ const FILTERS: { key: Filter; label: string }[] = [
 const START_FILTERS: { key: Filter & StartView; label: string }[] = [
   { key: "all", label: "Recommended" }, { key: "rotation", label: "First rotation" }, { key: "blind", label: "Blind picks" }, { key: "priority", label: "Pro priority" },
 ];
-const BLIND_OFF = "No classified blind picks for this role yet: only top picks are classified so far";
+const BLIND_OFF = "No classified blind picks for this role: Jungle is not classified";
 const START_NOTE = "Before any pick: champions with recorded pro picks in this role on the patch. First rotation = picks within the team's first three. Your pool first (Core, Depth, Prepared / flex), "
   + "then everyone else; each by first-rotation picks, then role picks, then presence. Real counts only, no score. "
   + "Once a pick is locked the list orders by your saved pairings and comp fit, and these stay labels.";
@@ -388,7 +388,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                             {c.champion === firstOut && <p className="fit-divider xs faint">Outside your pool</p>}
                             <FitRow c={c} tier={poolTier(data.pool, c.champion, active)} bot={draft.BOT ? names[draft.BOT] ?? draft.BOT : undefined} names={names} proCtx={proCtx} hovered={hover === c.champion}
                               onHover={(h) => preview(h ? c.champion : undefined)} onPick={() => lock(active, c.champion)} onOpen={() => setDrawer({ id: c.champion, role: active })}
-                              top={active === "TOP" ? { mark: data.topUsage.marks[c.champion], patch: data.topUsage.patch, enemyTop: enemyDraft.TOP, blind: data.topUsage.blind[c.champion] } : undefined} />
+                              top={isLaneRole(active) ? laneCtx(data.laneUsage[active], c.champion, enemyDraft) : undefined} />
                           </Fragment>
                         ))
                         : <p className="rec-empty">{viewFilter === "all" ? "Nothing stands out yet." : viewFilter === "counter" && activeCounters?.counters.length === 0 ? "No counters to show." : "No candidate has this signal yet."}</p>}
@@ -486,15 +486,26 @@ const proLine = (pro: ProSuggestion) => pro.lines.map((l) => `${describeLine({ .
 const BONUS = new Set(["saved", "proposed"]);
 
 // The row's labels, one per independent signal, each in its own layer colour. Nothing here changes the order.
-type TopCtx = { mark?: TopUsageMark; patch?: string; enemyTop?: string; blind?: BlindLine[] };
+type TopCtx = { mark?: TopUsageMark; patch?: string; enemyTop?: string; enemyDuo?: [string, string]; blind?: BlindLine[] };
 
-// Top lane draft usage (lib/top-draft.ts): when pros picked this top laner, and what it was picked into. Observed Pro
-// Evidence: a label and a detail line, never part of the order or the comp fit.
+/** The lane usage context for one candidate: its mark, the enemy lane opponent and, for Bot and Support, the whole enemy
+ *  bot lane once both are locked. */
+const laneCtx = (u: TopUsageMarks, id: string, enemy: Partial<Record<Role, string>>): TopCtx => ({
+  mark: u.marks[id], patch: u.patch, enemyTop: u.role ? enemy[u.role] : undefined, blind: u.blind[id],
+  enemyDuo: (u.role === "BOT" || u.role === "SUPPORT") && enemy.BOT && enemy.SUPPORT ? [enemy.BOT, enemy.SUPPORT] : undefined,
+});
+const LANE_WORD: Record<string, string> = { TOP: "top", MID: "mid", BOT: "ADC", SUPPORT: "support" };
+
+// Lane draft usage (lib/top-draft.ts): when pros picked this champion in the role, and what it was picked into. Observed
+// Pro Evidence: a label and a detail line, never part of the order or the comp fit.
 const topUsageTitle = (c: Candidate, t: TopCtx, names: Record<string, string>) => {
-  const m = t.mark!, p = t.patch ? patchLabel(t.patch) : "all patches";
+  const m = t.mark!, p = t.patch ? patchLabel(t.patch) : "all patches", lane = LANE_WORD[c.role] ?? c.role.toLowerCase();
+  const n = (id: string) => names[id] ?? id;
+  const duo = t.enemyDuo ? m.duoInto?.[t.enemyDuo.join("+")] : undefined;
   const into = t.enemyTop ? m.into[t.enemyTop] : undefined;
-  const base = `Patch ${p} pro games at top: blind ${m.blind}/${m.classified}, response ${m.response}/${m.classified}${m.low ? " (small sample)" : ""}.`;
-  if (into) return `${base} Picked after ${names[t.enemyTop!] ?? t.enemyTop} was revealed in ${into.games} game${into.games === 1 ? "" : "s"} (${into.series} series): ${PAIR_LABEL[into.status].toLowerCase()}${into.status === "supported" ? "" : ", not a proven counter"}. Never part of the order or the fit.`;
+  const base = `Patch ${p} pro games at ${lane}: blind ${m.blind}/${m.classified}, response ${m.response}/${m.classified}${m.low ? " (small sample)" : ""}.`;
+  if (duo) return `${base} Its duo was completed after ${n(t.enemyDuo![0])} + ${n(t.enemyDuo![1])} were both known in ${duo.games} game${duo.games === 1 ? "" : "s"} (${duo.series} series, won ${duo.wins}): ${duo.series >= 2 ? "a repeated response" : "an observed response"}, not a counter. Never part of the order or the fit.`;
+  if (into) return `${base} Picked after ${n(t.enemyTop!)} was revealed in ${into.games} game${into.games === 1 ? "" : "s"} (${into.series} series): ${PAIR_LABEL[into.status].toLowerCase()}${into.status === "supported" ? "" : ", not a proven counter"}. Never part of the order or the fit.`;
   return `${base} Being blinded often is not proof it is safe to blind. Never part of the order or the fit.`;
 };
 
@@ -520,9 +531,11 @@ function chipsOf(c: Candidate, names: Record<string, string>, bot?: string, tier
   if (c.counter) out.push({ key: "counter", label: "Counter" }); // rendered as the Counter popover
   if (c.priority) out.push({ key: "prio", label: `Pro priority · ${Math.round(c.priority.presence * 100)}%`, title: priorityTitle(c) });
   const tu = top?.mark;
-  if (c.role === "TOP" && tu) {
+  if (tu) {
+    const duo = top.enemyDuo ? tu.duoInto?.[top.enemyDuo.join("+")] : undefined;
     const into = top.enemyTop ? tu.into[top.enemyTop] : undefined;
-    if (top.enemyTop && into) out.push({ key: "usage", label: `Picked into ${names[top.enemyTop] ?? top.enemyTop} · ${into.games}`, title: topUsageTitle(c, top, names) });
+    if (duo) out.push({ key: "usage", label: `Picked into ${top.enemyDuo!.map((x) => names[x] ?? x).join(" + ")} · ${duo.games}`, title: topUsageTitle(c, top, names) });
+    else if (top.enemyTop && into) out.push({ key: "usage", label: `Picked into ${names[top.enemyTop] ?? top.enemyTop} · ${into.games}`, title: topUsageTitle(c, top, names) });
     else if (!top.enemyTop && tu.usage !== "too-few") out.push({ key: "usage", label: USAGE_LABEL[tu.usage], title: topUsageTitle(c, top, names) });
   }
   // Pro meta counts: each opens the games behind it (rendered as MetaEvidenceTrigger).
@@ -562,7 +575,7 @@ function FitRow({ c, tier, bot, names, proCtx, hovered, onHover, onPick, onOpen,
   const [open, setOpen] = useState(false);
   const rec = c.fit;
   const name = names[c.champion] ?? c.champion;
-  const tctx = c.role === "TOP" && top ? { ...top, mark: top.mark } : undefined;
+  const tctx = top?.mark ? top : undefined;
   const chips = chipsOf(c, names, bot, tier, tctx);
   const metaChip = new Set(["prio", "rot", "blind", "meta"]);
   const { benefit, drawback } = reasonOf(c);
@@ -627,7 +640,7 @@ function FitRow({ c, tier, bot, names, proCtx, hovered, onHover, onPick, onOpen,
             <span className="t">{topUsageTitle(c, tctx, names)}</span>
           </div>
         )}
-        {c.role === "TOP" && tctx && !tctx.enemyTop && tctx.blind && tctx.blind.length > 0 && (
+        {tctx && !tctx.enemyTop && tctx.blind && tctx.blind.length > 0 && (
           <div className="fit-logic">
             <span className="k">Blind read</span>
             <span className="t">{tctx.blind.map((l) => `${l.tone === "minus" ? "− " : l.tone === "plus" ? "+ " : ""}${l.text}`).join(" · ")} <span className="faint">(general draft logic)</span></span>

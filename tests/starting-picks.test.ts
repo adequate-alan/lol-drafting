@@ -10,7 +10,7 @@ import { priorityData, priorityMarks } from "@/lib/pro-priority";
 import {
   defaultPatch, engineReader, FIRST_ROTATION, hasStart, rotationLabel, sortForView, startingOrder, startingPicks, type PickReader, type StartingPick,
 } from "@/lib/starting-picks";
-import { roleBook, topSelections } from "@/lib/top-draft";
+import { laneSelections, roleBook, topSelections } from "@/lib/top-draft";
 import { ROLES, type ProGame, type ProGames, type Role } from "@/lib/schema";
 
 const prio = getPriority(), pool = getPool(), file = getProGames(), data = getDraftData();
@@ -254,7 +254,18 @@ describe("pick-order engine (lib/top-draft.ts)", () => {
     expect(reader(unmarked, "blue", "JUNGLE")?.firstOverall).toBeUndefined();
   });
 
-  it("other roles are not classified blind / response", () => {
-    for (const r of startingPicks(prio, pool, "MID", PATCH, { reader }).rows) expect(r.blind).toBeNull();
+  it("Mid, Bot and Support blind / response come from the same engine; Jungle stays unclassified", () => {
+    const book = roleBook(data.champions, records);
+    for (const role of ["MID", "BOT", "SUPPORT"] as const) {
+      const rows = startingPicks(prio, pool, role, PATCH, { reader }).rows;
+      const sel = laneSelections(records.filter((g) => g.patch === PATCH), book, role);
+      for (const r of rows) {
+        const mine = sel.filter((s) => s.champion === r.champion);
+        expect(r.blind ?? 0, `${role} ${r.champion}`).toBe(mine.filter((s) => s.usage === "blind").length);
+        expect(r.response ?? 0, `${role} ${r.champion}`).toBe(mine.filter((s) => s.usage === "response").length);
+      }
+      expect(rows.some((r) => (r.blind ?? 0) > 0), role).toBe(true);
+    }
+    for (const r of startingPicks(prio, pool, "JUNGLE", PATCH, { reader }).rows) expect(r.blind).toBeNull();
   });
 });
