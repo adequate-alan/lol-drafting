@@ -5,6 +5,7 @@ import Link from "next/link";
 import { PriorityHistory } from "@/components/ProPriority";
 import { ProposedTag } from "@/components/ProposedSynergy";
 import { pct } from "@/components/ui";
+import { PinnedPlayers } from "@/components/drawer/PinnedPlayers";
 import { PartnerRow, Section, TIER_LABEL, roleName, type DrawerEnv } from "@/components/drawer/parts";
 import { buildsLink, FLAG_TEXT } from "@/lib/drawer";
 import { shortDate } from "@/lib/evidence";
@@ -53,6 +54,9 @@ export function OverviewTab({ env, champ, tier }: { env: DrawerEnv; champ?: Cham
           </>
         ) : <p className="xs muted">No saved or proposed pairing for {roleName(role).toLowerCase()}.</p>}
       </Section>
+
+      {/* Pinned players before the general sample (alan, 2026-10-13: personal relevance first). */}
+      <PinnedPlayers key={`${env.id}-${role}`} env={env} />
 
       <Section layer="pro" title="Pro evidence" end={more("pro", "Games and priority")}>
         {latest ? (

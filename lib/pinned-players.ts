@@ -99,3 +99,39 @@ export function migratePins(stored: string[], rows: BuildRow[]): string[] {
   return out;
 }
 export const togglePin = (pins: string[], id: string) => (pins.includes(id) ? pins.filter((p) => p !== id) : [...pins, id]);
+
+// ---------- pinned players in the champion drawer ----------
+// alan, 2026-10-13: "personal relevance first, broader professional evidence second". The champion drawer names the
+// pinned players with recorded games on the champion it shows, in the role it shows (another role only when "All roles"
+// is chosen), most recent appearance first. Never the player with the most games first: more games is not a better build.
+export interface PinnedOnChampion {
+  id: PlayerId;
+  name: string; // the name on the player's most recent recorded game (any champion)
+  team?: string; // the team on the player's most recent recorded game (any champion): a team change shows the new team
+  rows: BuildRow[]; // this champion in the roles in scope, newest first
+  roles: Role[]; // roles of `rows`, in role order
+  latestPatch: string;
+  last: BuildRow;
+}
+
+/** Pinned players with recorded games on one champion, in one role (or every role), most recent appearance first. */
+export function pinnedOnChampion(rows: BuildRow[], pins: string[], champion: string, role: Role | "all"): PinnedOnChampion[] {
+  const pinned = new Set(pins);
+  const out = new Map<PlayerId, PinnedOnChampion>();
+  const latest = new Map<PlayerId, BuildRow>(); // newest game of each pinned player, any champion
+  for (const r of rows) { // newest first
+    const id = playerKey(r);
+    if (!pinned.has(id)) continue;
+    if (!latest.has(id)) latest.set(id, r);
+    if (r.build.champion !== champion || (role !== "all" && r.build.role !== role)) continue;
+    const p = out.get(id);
+    if (!p) out.set(id, { id, name: latest.get(id)!.build.player, team: latest.get(id)!.team, rows: [r], roles: [r.build.role], latestPatch: r.game.patch, last: r });
+    else {
+      p.rows.push(r);
+      if (!p.roles.includes(r.build.role)) p.roles.push(r.build.role);
+      if (comparePatch(r.game.patch, p.latestPatch) > 0) p.latestPatch = r.game.patch;
+    }
+  }
+  for (const p of out.values()) p.roles.sort((a, b) => ROLES.indexOf(a) - ROLES.indexOf(b));
+  return [...out.values()].sort((a, b) => b.last.game.date.localeCompare(a.last.game.date) || b.last.game.id - a.last.game.id);
+}
