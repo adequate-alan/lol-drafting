@@ -12,12 +12,12 @@ import { rovingIndex, rovingKeys } from "./roving";
 import { shortDate } from "@/lib/evidence";
 import { patchLabel } from "@/lib/patch";
 import { buildsHref } from "@/lib/pro-builds";
-import { DRAFT_LABEL_MIN } from "@/lib/pro-priority";
+import { DRAFT_LABEL_MIN, orderText } from "@/lib/pro-priority";
 import type { Role } from "@/lib/schema";
 import type { BlindLine } from "@/lib/top-blind";
 import {
-  BOT_DETAIL_LABEL, draftSequence, dpmCounter, DUO_SHAPE_LABEL, duoResponses, duoRows, LOW_SAMPLE, MIN_CLASSIFIED, PAIR_LABEL, topPatches, topRows, USAGE_LABEL,
-  type DuoResponse, type DuoSelection, type DuoShape, type GameBrief, type LaneRole, type Pair, type PriorityBrief, type Seen, type TopDraftBundle, type TopRow, type TopScope, type TopSelection,
+  BOT_DETAIL_LABEL, draftSequence, sameTurn, dpmCounter, DUO_SHAPE_LABEL, duoResponses, duoRows, LOW_SAMPLE, MIN_CLASSIFIED, PAIR_LABEL, topPatches, topRows, USAGE_LABEL,
+  type BotRead, type DuoResponse, type DuoSelection, type Side, type DuoShape, type GameBrief, type LaneRole, type Pair, type PriorityBrief, type Seen, type TopDraftBundle, type TopRow, type TopScope, type TopSelection,
 } from "@/lib/top-draft";
 
 type Names = Record<string, string>;
@@ -30,6 +30,7 @@ export const laneViews = (role: LaneRole): [TopView, string][] => role === "TOP"
 
 /** How each lane is named in prose: "the enemy top", "the enemy ADC". */
 export const LANE_WORD: Record<LaneRole, string> = { TOP: "top", MID: "mid", BOT: "ADC", SUPPORT: "support" };
+const lower = (t: string) => t[0].toLowerCase() + t.slice(1); // "After enemy ADC" -> "after enemy ADC"
 const isBot = (r: LaneRole) => r === "BOT" || r === "SUPPORT";
 const SEEN_TEXT: Record<Seen, string> = { hidden: "not yet picked", revealed: "on the board", botlane: "on the board, slot unclear", ambiguous: "on the board, lane unclear" };
 
@@ -49,6 +50,11 @@ export const isPriority = (p?: PriorityBrief) => (p?.presence ?? 0) >= DRAFT_LAB
 function UsageTag({ s }: { s: TopSelection }) {
   const label = s.bot?.detail ? BOT_DETAIL_LABEL[s.bot.detail] : s.usage === "blind" ? "Blind" : s.usage === "response" ? "Response" : "Unclear";
   return <span className={`usage-tag ${s.usage}`}>{label}</span>;
+}
+
+/** DPM.LOL lane evidence with its sample, role, patch and population: a separate signal from the pro games. */
+export function dpmText(champion: string, into: string, d: { winRate: number; games: number; patch: string; rank?: string }, role: LaneRole, names: Names): string {
+  return `DPM.LOL ranked solo queue (${d.rank ?? "rank not recorded"}, all regions, patch ${patchLabel(d.patch)}): ${nm(names, champion)} won ${(d.winRate * 100).toFixed(1)}% of ${d.games.toLocaleString()} games as ${LANE_WORD[role]} against ${nm(names, into)}.`;
 }
 
 /** Why a pick reads the way it does, in names: when it was picked and what of the enemy lane (or bot lane) it could see. */
@@ -100,11 +106,12 @@ export function TopGameDetail({ game, focus, names, bundle, pair }: { game: Game
           ))}
         </ol>
       )}
+      {isBot(role) && <BotLaneSequence game={game} bundle={bundle} names={names} />}
       {pair && (
         <p className="xs">
           <span className={`pair-tag ${pair.status}`}>{PAIR_LABEL[pair.status]}</span>{" "}
           {pair.status === "supported" && pair.dpm
-            ? <>DPM.LOL: {nm(names, pair.champion)} wins {(pair.dpm.winRate * 100).toFixed(1)}% of {pair.dpm.games.toLocaleString()} ranked {LANE_WORD[role]} games into {nm(names, pair.into)} ({patchLabel(pair.dpm.patch)}). The pro games are context, not proof.</>
+            ? <>{dpmText(pair.champion, pair.into, pair.dpm, role, names)} The pro games are context, not proof, and ranked play is not pro play.</>
             : pair.status === "repeated" ? <>Picked into {nm(names, pair.into)} in {pair.series} different series. No lane data says it is favourable.</>
             : <>One observed response. It says nothing yet about the matchup.</>}
         </p>
@@ -117,6 +124,48 @@ export function TopGameDetail({ game, focus, names, bundle, pair }: { game: Game
         })}
         <a className="xs" href={game.url} target="_blank" rel="noreferrer">Gol.gg game page</a>
       </div>
+    </div>
+  );
+}
+
+const KNOWN_TEXT = (r?: BotRead) => !r ? "order not recorded" : !r.detail ? "a visible enemy champion could still have played another lane" : lower(BOT_DETAIL_LABEL[r.detail]);
+
+/**
+ * The bot lane of one game in draft order: each team's ADC and support pick (two picks in one turn stay together, never
+ * ordered), what of the enemy bot lane each pick could see, and how each duo was built. From the rebuilt turns only.
+ */
+function BotLaneSequence({ game, bundle, names }: { game: GameBrief; bundle: TopDraftBundle; names: Names }) {
+  const duos = (bundle.duos ?? []).filter((d) => d.game === game.id);
+  if (!duos.length || duos.some((d) => d.adcTurn == null || d.supportTurn == null)) return null;
+  type Step = { turn: number; side: Side; picks: { id: string; slot: "ADC" | "support"; read?: BotRead }[] };
+  const steps: Step[] = [];
+  for (const d of duos) {
+    const add = (turn: number, id: string, slot: "ADC" | "support", read?: BotRead) => {
+      const same = steps.find((x) => x.side === d.side && sameTurn(x.turn, turn));
+      if (same) { same.picks.push({ id, slot, read }); same.turn = Math.min(same.turn, turn); } else steps.push({ turn, side: d.side, picks: [{ id, slot, read }] });
+    };
+    add(d.adcTurn!, d.adc, "ADC", d.adcRead);
+    add(d.supportTurn!, d.support, "support", d.supportRead);
+  }
+  steps.sort((a, b) => a.turn - b.turn);
+  const last = (side: Side) => steps.filter((x) => x.side === side).at(-1);
+  return (
+    <div className="bot-seq">
+      <p className="xs label">Bot lane in draft order</p>
+      <ol>
+        {steps.map((st) => {
+          const d = duos.find((x) => x.side === st.side)!;
+          const turns = st.picks.length > 1 ? `Picks ${st.turn}–${st.turn + 1}, same turn` : `Pick ${st.turn}`;
+          return (
+            <li key={`${st.side}${st.turn}`} className={`seq-${st.side}`}>
+              <span className="tnum faint">{turns}</span>
+              <span><b>{game[st.side].team}</b> {st.picks.map((p) => `${nm(names, p.id)} (${p.slot})`).join(" + ")}</span>
+              <span className="faint">{KNOWN_TEXT(st.picks[0].read)}</span>
+              {last(st.side) === st && <span className={`usage-tag ${d.shape === "uncertain" ? "uncertain" : d.shape}`}>{DUO_SHAPE_LABEL[d.shape]}</span>}
+            </li>
+          );
+        })}
+      </ol>
     </div>
   );
 }
@@ -223,9 +272,19 @@ function Overview({ role, row, prio, prioLabel, saved, logic, names, scopeLabel,
             <p className="xs muted tnum">
               {row.games} {LANE_WORD[role]} game{row.games === 1 ? "" : "s"} · blind {row.blind} · response {row.response}{row.uncertain ? ` · unclear ${row.uncertain}` : ""}
             </p>
+            {ordered > 0 && (
+              <p className="xs tnum" title="When it was picked, from recorded pick order. Separate from blind or response, and never a claim of blind safety.">
+                Pick timing: {orderText({ known: ordered, firstPick: 0, firstRotation: row.rotation.first, phase2: row.rotation.second + row.rotation.last, lastPick: row.rotation.last })}
+              </p>
+            )}
             {prio && (
               <p className="xs muted tnum">
                 Meta priority on {prioLabel}: {prio.picks} picks, {prio.bans} bans{prio.presence != null ? `, ${Math.round(prio.presence * 100)}% presence` : ""}{prio.winRate != null ? `, ${Math.round(prio.winRate * 100)}% WR${prio.low ? " (low sample)" : ""}` : ""}
+              </p>
+            )}
+            {row.bot && ordered > 0 && (
+              <p className="xs tnum">
+                What it could see of the enemy bot lane: {(Object.keys(BOT_DETAIL_LABEL) as (keyof typeof BOT_DETAIL_LABEL)[]).filter((k) => row.bot![k]).map((k) => `${lower(BOT_DETAIL_LABEL[k])} ${row.bot![k]}`).join(", ")}{row.uncertain ? `, unclear ${row.uncertain}` : ""} (of {row.games}).
               </p>
             )}
             {row.bot && ordered > 0 && (
@@ -370,7 +429,7 @@ function PairList({ title, pairs, names, bundle, open, setOpen, pairOpen, setPai
                 <button type="button" aria-expanded={isOpen} onClick={() => setPairOpen(isOpen ? undefined : k)}>
                   <ChampIcon id={o} name={nm(names, o)} size="sm" />
                   <span className="pl-name">{nm(names, o)}</span>
-                  <span className="tnum">{p.games.length} game{p.games.length === 1 ? "" : "s"}{p.series !== p.games.length ? ` · ${p.series} series` : ""}</span>
+                  <span className="tnum">{p.games.length} game{p.games.length === 1 ? "" : "s"} · {p.series} series · won {p.wins}/{p.games.length}</span>
                   <span className={`pair-tag ${p.status}`}>{PAIR_LABEL[p.status]}</span>
                 </button>
                 {isOpen && <GameRows list={p.games} names={names} bundle={bundle} open={open} setOpen={setOpen} pair={p} opponent={false} />}
@@ -406,13 +465,13 @@ function Matchups({ id, row, names, bundle, open, setOpen, pairOpen, setPairOpen
                   <td className="num">{g.filter((s) => s.usage === "blind").length}</td>
                   <td className="num">{g.filter((s) => s.usage === "response").length}</td>
                   <td className="num">{g.filter((s) => s.won).length}/{g.length}</td>
-                  <td className="num" title={d ? `${d.games.toLocaleString()} ranked games, ${patchLabel(d.patch)}${counter ? "; clears the counter threshold" : ""}` : "No DPM.LOL row"}>{d ? `${(d.winRate * 100).toFixed(1)}%${counter ? " ·" : ""}` : "—"}</td>
+                  <td className="num" title={d ? `${dpmText(id, f.champion, d, role, names)}${counter ? " Clears the counter threshold." : ""}` : "No DPM.LOL row"}>{d ? `${(d.winRate * 100).toFixed(1)}%${counter ? " ·" : ""}` : "—"}</td>
                 </tr>
               );
             })}
           </tbody>
         </table>
-        <p className="xs muted">Won counts games, not lanes. Lane data is DPM.LOL ranked play, a separate signal; a dot marks a matchup that clears the counter threshold.{isBot(role) ? ` Responses here are ${word} into ${word}; whole bot lanes are under Duo drafting.` : ""}</p>
+        <p className="xs muted">Won counts pro games, not lanes. Lane data is DPM.LOL ranked solo queue{bundle.dpm[0]?.rank ? ` (${bundle.dpm[0].rank})` : ""}, a separate signal from pro play; a dot marks a matchup that clears the counter threshold (300+ games, 52%+).{isBot(role) ? ` Responses here are ${word} into ${word}; whole bot lanes are under Duo drafting.` : ""}</p>
       </section>
       <PairList title={`${nm(names, id)} picked into`} pairs={row.respondedInto} names={names} bundle={bundle} open={open} setOpen={setOpen} pairOpen={pairOpen} setPairOpen={setPairOpen}
         other={(p) => p.into} empty={`Never picked after the enemy ${word} was known in this scope.`} />

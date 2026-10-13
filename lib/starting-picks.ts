@@ -14,7 +14,7 @@ import { tierLabel, poolTier } from "./counters";
 import type { Tier } from "./pool-stats";
 import { bucket, DRAFT_LABEL_MIN, forRole, patchesOf, rolePicksOf, type Bucket, type PriorityData } from "./pro-priority";
 import { ROLES, type PoolEntry, type ProGame, type Role } from "./schema";
-import { roleBook, topSelections, turnOf } from "./top-draft";
+import { LANE_ROLES, laneSelections, roleBook, turnOf, type LaneSelection } from "./top-draft";
 
 export const FIRST_ROTATION = 3; // a team's first three picks
 export { tierLabel };
@@ -108,15 +108,16 @@ export function startingPicks(d: PriorityData, pool: PoolEntry[], role: Role, pa
 
 /**
  * The reader built on the pick-order engine (lib/top-draft.ts, Gol.gg's First Pick mark; never the side): first overall
- * for every role from the rebuilt turns, blind / response for Top from its classification. Other roles stay unclassified
- * until the engine classifies them.
+ * for every role from the rebuilt turns, blind / response for Top, Mid, Bot and Support from their classification (alan,
+ * 2026-10-13). Jungle stays unclassified.
  */
 export function engineReader(games: ProGame[], champions: { id: string; roles: Role[] }[]): PickReader {
-  const top = new Map(topSelections(games, roleBook(champions, games)).map((s) => [`${s.game}:${s.side}`, s]));
+  const book = roleBook(champions, games);
+  const lanes = new Map<string, LaneSelection>(LANE_ROLES.flatMap((r) => laneSelections(games, book, r).map((s) => [`${s.game}:${s.side}:${r}`, s] as const)));
   return (g, side, role) => {
     const idx = g[side].pickOrder?.indexOf(g[side].picks[role]);
     const firstOverall = g.firstPick && idx != null && idx >= 0 ? turnOf(idx, g.firstPick === side) === 1 : undefined;
-    const t = role === "TOP" ? top.get(`${g.id}:${side}`) : undefined;
+    const t = lanes.get(`${g.id}:${side}:${role}`);
     if (t) return { situation: t.usage, firstOverall, revealed: t.enemySeen, laneOpponent: t.laneOpponent };
     return firstOverall === undefined ? undefined : { situation: "uncertain", firstOverall };
   };

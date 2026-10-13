@@ -577,6 +577,10 @@ await page.locator(".theme-toggle").click();
   await page.locator(".duo-games > li > button").first().click();
   const g = (await page.locator(".duo-games .top-game").first().textContent().catch(() => "")) ?? "";
   check("bot: a duo game opens with first pick, the ten picks and what the pick could see", /picked first|not marked/.test(g) && /Enemy ADC/.test(g), g.slice(0, 160));
+  check("bot: the open duo game lists the bot lane in draft order with each duo's construction", (await page.locator(".duo-games .bot-seq li").count()) >= 3 && /Bot lane in draft order/.test(g), g.slice(0, 160));
+  await open("/?bot=yunara&vs=bot:lucian,support:milio&focus=SUPPORT");
+  const sup = (await page.locator(".fit-row .sig.usage").allTextContents()).join("|");
+  check("draft room: with the enemy bot lane locked, SUPPORT rows say which duos were picked into it", /Picked into Lucian \+ Milio · \d+/.test(sup), sup);
 }
 // Champion Synergies: hover card on desktop, drawer on click
 {

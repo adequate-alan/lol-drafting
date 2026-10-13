@@ -86,8 +86,11 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   (`DuoShape`): blind, partially revealed, full response, split construction (the second half saw more), unclear; a
   "repeated" duo response needs two series and is never a counter (no duo lane data exists). Off Top the saved partners
   sit on Overview (no Synergies tab); Bot and Support add a Duo drafting tab and a "Duo analysis" rail filter. Findings
-  for alan: `/mnt/project-files/lol-drafting/top-draft/mid-bot-support-findings.md`. Draft Room labels for these roles
-  wait on alan's review of those findings.
+  for alan: `/mnt/project-files/lol-drafting/top-draft/mid-bot-support-findings.md`. After alan's review (2026-10-13) Draft
+  Room shows the same labels for Mid, Bot and Support (`laneUsage` in `getDraftData`, `topUsageMarks` per lane; with the
+  whole enemy bot lane locked, "Picked into ADC + Support · n" from duo responses) and the starting picks classify blind /
+  response for every lane (`engineReader`); labels only, never the order or the fit. Every DPM figure names its sample,
+  role, patch and population (`dpmText`); each duo game lists the bot lane in draft order (`BotLaneSequence`).
 - **Synergies patch scope** (alan, 2026-10-13; `lib/synergy-patch.ts`, `tests/synergy-patch.test.ts`): every lane tab
   opens on All patches (historical, labelled with its range), including role switches and Draft Room links without a
   patch. A patch chosen in the rail is kept for the session (sessionStorage) and carried by the role tabs until changed

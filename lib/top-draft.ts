@@ -315,7 +315,7 @@ export const LEAN = 2 / 3; // share of classifiable selections for "often blinde
 export type UsageLabel = "blind" | "response" | "both" | "too-few";
 export const USAGE_LABEL: Record<UsageLabel, string> = { blind: "Often blinded", response: "Usually a response", both: "Both ways", "too-few": "Too few games" };
 
-export interface DPMRow { role: Role; champion: string; enemy: string; winRate: number; games: number; patch: string; url: string }
+export interface DPMRow { role: Role; champion: string; enemy: string; winRate: number; games: number; patch: string; url: string; rank?: string }
 export type PairStatus = "observed" | "repeated" | "supported";
 export const PAIR_LABEL: Record<PairStatus, string> = { observed: "Observed response", repeated: "Repeated response", supported: "Supported counter" };
 
@@ -326,7 +326,7 @@ export interface Pair {
   series: number; // independent series
   wins: number;
   status: PairStatus;
-  dpm?: { winRate: number; games: number; patch: string; url: string; strong: boolean };
+  dpm?: { winRate: number; games: number; patch: string; url: string; strong: boolean; rank?: string };
 }
 
 export interface TopRow {
@@ -360,7 +360,7 @@ const count = <T,>(xs: T[], f: (x: T) => boolean) => xs.filter(f).length;
 export function dpmCounter(rows: DPMRow[], champion: string, enemy: string, role: Role = "TOP"): Pair["dpm"] {
   const r = rows.find((x) => x.role === role && x.champion === champion && x.enemy === enemy);
   if (!r || r.games < DPM_MIN_GAMES || r.winRate < DPM_MIN_WIN_RATE) return undefined;
-  return { winRate: r.winRate, games: r.games, patch: r.patch, url: r.url, strong: r.winRate >= DPM_STRONG_WIN_RATE };
+  return { winRate: r.winRate, games: r.games, patch: r.patch, url: r.url, rank: r.rank, strong: r.winRate >= DPM_STRONG_WIN_RATE };
 }
 
 function pairs(responses: TopSelection[], dpm: DPMRow[]): Pair[] {
@@ -467,18 +467,29 @@ export function draftSequence(g: Pick<GameBrief, "firstPick" | "blue" | "red">):
 
 export interface TopUsageMark {
   usage: UsageLabel; blind: number; response: number; classified: number; games: number; low: boolean;
-  into: Record<string, { games: number; series: number; status: PairStatus }>; // responses into each enemy top
+  into: Record<string, { games: number; series: number; status: PairStatus }>; // responses into each enemy lane opponent
+  /** Bot and Support: duos with this champion completed after both enemy bot laners were known, by `${enemyAdc}+${enemySupport}`. */
+  duoInto?: Record<string, { games: number; series: number; wins: number }>;
 }
-export interface TopUsageMarks { patch?: string; marks: Record<string, TopUsageMark>; blind: Record<string, BlindLine[]> }
+export interface TopUsageMarks { role?: LaneRole; patch?: string; marks: Record<string, TopUsageMark>; blind: Record<string, BlindLine[]> }
 
-/** Per-champion top usage on one patch (the default: newest with enough classified games), for Draft Room labels. */
-export function topUsageMarks(sel: TopSelection[], dpm: DPMRow[], blind: Record<string, BlindLine[]>, patch = defaultTopPatch(sel)): TopUsageMarks {
+/** Per-champion lane usage on one patch (the default: newest with enough classified games), for Draft Room labels. */
+export function topUsageMarks(sel: TopSelection[], dpm: DPMRow[], blind: Record<string, BlindLine[]>, patch = defaultTopPatch(sel), duos?: DuoSelection[]): TopUsageMarks {
   const marks: Record<string, TopUsageMark> = {};
+  const role = sel[0]?.role as LaneRole | undefined;
+  const responses = duos ? duoResponses(duos, { patch }) : [];
   for (const r of topRows(sel, { patch }, dpm)) {
+    const mine = responses.filter((d) => (role === "SUPPORT" ? d.support : d.adc) === r.champion);
+    const by = new Map<string, DuoSelection[]>();
+    for (const d of mine) { const k = `${d.enemyAdc}+${d.enemySupport}`; by.set(k, [...(by.get(k) ?? []), ...d.games]); }
+    const duoInto: TopUsageMark["duoInto"] = Object.fromEntries([...by].map(([k, g]) => [k, {
+      games: g.length, series: new Set(g.map((x) => `${x.event}:${x.seriesId}`)).size, wins: g.filter((x) => x.won).length,
+    }]));
     marks[r.champion] = {
       usage: r.usage, blind: r.blind, response: r.response, classified: r.classified, games: r.games, low: r.low,
       into: Object.fromEntries(r.respondedInto.map((p) => [p.into, { games: p.games.length, series: p.series, status: p.status }])),
+      ...(duos ? { duoInto } : {}),
     };
   }
-  return { patch, marks, blind };
+  return { role, patch, marks, blind };
 }
