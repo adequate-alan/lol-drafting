@@ -237,7 +237,7 @@ function Usage({ row, names, bundle, open, setOpen, scopeLabel }: { row?: TopRow
           <div><dt>Response</dt><dd>{row.response}/{row.classified} <span className="faint">{pct(row.response, row.classified)}</span></dd></div>
           <div><dt>Unclear</dt><dd>{row.uncertain}</dd></div>
           <div><dt>First rotation</dt><dd>{row.rotation.first}/{ordered}</dd></div>
-          <div><dt>Phase 2</dt><dd>{row.rotation.phase2 + row.rotation.last}/{ordered}</dd></div>
+          <div><dt>Second rotation</dt><dd>{row.rotation.second + row.rotation.last}/{ordered}</dd></div>
           <div><dt>Last pick</dt><dd>{row.rotation.last}/{ordered}</dd></div>
           <div><dt>Blue / red</dt><dd>{row.blue} / {row.red}</dd></div>
           <div><dt>Team had first pick</dt><dd>{row.firstPicker}/{ordered}</dd></div>

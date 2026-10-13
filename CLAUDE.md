@@ -53,7 +53,9 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   recorded; otherwise from its Gol.gg table only when the whole tournament was one patch (no sides, dates or order);
   otherwise it is withheld and named in the coverage line. Pick order is each team's order as the Gol.gg game page lists
   it (`pickOrder`, stored by the daily refresh, backfilled once per game), never rebuilt from the lineup; first rotation
-  = picks 1–3 of the draft, with the first-picking team read per game (`firstPick`, not always blue since 2026). Patches show Riot's 26.xx (`patchLabel`; data keeps Gol.gg's 16.xx). Shown in the champion drawer
+  = each team's first three picks, six per game, before the second ban phase (alan, 2026-10-13, site-wide; Top draft
+  usage and Draft Room starting picks use the same definition); first pick, second rotation and last pick read the
+  first-picking team per game (`firstPick`, not always blue since 2026). Patches show Riot's 26.xx (`patchLabel`; data keeps Gol.gg's 16.xx). Shown in the champion drawer
   (history chart, per-patch table) and as a "Pro priority · N%" label in the Draft Room when presence ≥ 30% on the
   newest patch and the champion has picks in that role: a label and a filter only, never a score, never an order.
 - **Top draft usage** (alan, 2026-10-13; `lib/top-draft.ts`, `lib/top-blind.ts`, `components/TopDraft.tsx`,
