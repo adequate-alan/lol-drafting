@@ -37,7 +37,7 @@ export const turnOf = (pickIndex: number, first: boolean) => (first ? FIRST_TURN
 export const rotationOf = (turn: number): Rotation => (turn <= 6 ? "first" : turn === 10 ? "last" : "second");
 export const ROTATION_LABEL: Record<Rotation, string> = { first: "First rotation", second: "Second rotation", last: "Last pick" };
 
-export const LANE_ROLES = ["TOP", "MID", "BOT", "SUPPORT"] as const satisfies readonly Role[];
+export const LANE_ROLES = ["TOP", "JUNGLE", "MID", "BOT", "SUPPORT"] as const satisfies readonly Role[]; // every role has a draft-usage read
 export type LaneRole = (typeof LANE_ROLES)[number];
 export const isLaneRole = (r: string): r is LaneRole => (LANE_ROLES as readonly string[]).includes(r);
 
@@ -90,7 +90,13 @@ export interface TopSelection {
   unavailable: string[] | null; // Fearless: champions picked earlier in the series (null when an earlier game is missing)
   bot?: BotRead; // BOT and SUPPORT only
   enemyJungle?: Seen; // MID only: whether the enemy jungler was on the board (composition context, not a lane response)
+  /** JUNGLE only (alan, 2026-10-13): the own laners and when each was picked relative to this pick, and what of the enemy
+   *  mid / jungle was on the board when the Mid/Jungle pair was completed (at the later of the two picks). */
+  mates?: Partial<Record<Role, Mate>>;
+  core?: { enemyMid: Seen; enemyJungle: Seen; allyMidFirst?: boolean };
+  enemyMid?: Seen;
 }
+export interface Mate { id: string; turn?: number; when?: "before" | "together" | "after" }
 export type LaneSelection = TopSelection;
 
 export interface RoleBook { rolesOf: (id: string) => Role[] }
@@ -128,6 +134,21 @@ function seenOf(x: string, role: Role, enemyOrder: string[], enemyFirst: boolean
 
 const LANE_NAME: Record<Role, string> = { TOP: "top", JUNGLE: "jungler", MID: "mid", BOT: "ADC", SUPPORT: "support" };
 
+const MATE_ROLES = ["TOP", "MID", "BOT", "SUPPORT"] as const;
+
+/** Jungle context: own laners' timing relative to the jungle pick, and the enemy mid / jungle when Mid/Jungle was completed. */
+function jungleExtra(me: ProGame["blue"], them: ProGame["blue"], first: boolean, turn: number, book: RoleBook) {
+  const tOf = (r: Role) => turnOf(me.pickOrder!.indexOf(me.picks[r]), first);
+  const mates = Object.fromEntries(MATE_ROLES.map((r) => {
+    const t = tOf(r);
+    return [r, { id: me.picks[r], turn: t, when: sameTurn(t, turn) ? "together" : t < turn ? "before" : "after" } satisfies Mate];
+  })) as Partial<Record<Role, Mate>>;
+  const done = Math.max(turn, mates.MID!.turn!);
+  const seenAt = (r: Role) => seenOf(them.picks[r], r, them.pickOrder!, !first, done, book);
+  const seenNow = (r: Role) => seenOf(them.picks[r], r, them.pickOrder!, !first, turn, book);
+  return { mates, enemyMid: seenNow("MID"), core: { enemyMid: seenAt("MID"), enemyJungle: seenAt("JUNGLE"), allyMidFirst: mates.MID!.when === "before" } };
+}
+
 /** Both selections in `role` of every recorded game, classified. Games are deduplicated by Gol.gg id. */
 export function laneSelections(games: ProGame[], book: RoleBook, role: LaneRole): LaneSelection[] {
   const byId = new Map<number, ProGame>();
@@ -149,7 +170,8 @@ export function laneSelections(games: ProGame[], book: RoleBook, role: LaneRole)
       };
       if (!me.pickOrder || !them.pickOrder || !g.firstPick) {
         out.push({ ...base, usage: "uncertain", why: !g.firstPick ? "The game page does not mark which team picked first." : "Pick order not recorded.", enemySeen: [], ownSeen: [], flex: [],
-          ...(bot ? { bot: { enemyAdc: "hidden", enemySupport: "hidden", partner: me.picks[partnerRole] } as BotRead } : {}) });
+          ...(bot ? { bot: { enemyAdc: "hidden", enemySupport: "hidden", partner: me.picks[partnerRole] } as BotRead } : {}),
+          ...(role === "JUNGLE" ? { mates: Object.fromEntries(MATE_ROLES.map((r) => [r, { id: me.picks[r] }])) } : {}) });
         continue;
       }
       const first = g.firstPick === side;
@@ -161,7 +183,8 @@ export function laneSelections(games: ProGame[], book: RoleBook, role: LaneRole)
       const common = { ...base, turn, opponentTurn, rotation: rotationOf(turn), firstPicker: first, enemySeen, ownSeen, flex };
       const opp = LANE_NAME[role];
       if (!bot) {
-        const extra = role === "MID" ? { enemyJungle: seen(them.picks.JUNGLE, "JUNGLE") } : {};
+        const extra = role === "MID" ? { enemyJungle: seen(them.picks.JUNGLE, "JUNGLE") }
+          : role === "JUNGLE" ? jungleExtra(me, them, first, turn, book) : {};
         if (opponentTurn > turn) {
           out.push({ ...common, ...extra, usage: "blind", why: `Picked at ${turn} of 10, before the enemy ${opp} ${laneOpponent} (${opponentTurn}).` });
           continue;
@@ -287,6 +310,41 @@ export function duoResponses(all: DuoSelection[], scope: TopScope): DuoResponse[
       teams: [...new Set(games.map((g) => g.team))].sort(), wins: games.filter((g) => g.won).length, status: series >= 2 ? "repeated" as const : "observed" as const,
     };
   }).sort((a, b) => b.series - a.series || b.games.length - a.games.length || a.adc.localeCompare(b.adc));
+}
+
+// ---------- jungle partners (Mid/Jungle first) ----------
+
+export interface MateRow {
+  jungle: string; mate: string; role: Role;
+  games: TopSelection[]; series: number; teams: string[]; wins: number;
+  order: { jungleFirst: number; together: number; mateFirst: number; unknown: number };
+  /** Mid only: pairs completed before / after the enemy mid or jungler was on the board (certainly in role). */
+  completed?: { blind: number; afterEnemyCore: number; unclear: number };
+  status: "observed" | "repeated"; // repeated = two or more independent series
+}
+
+/** Jungle + laner pairs in scope, most games first. Observed Pro Evidence only: never a saved pairing. */
+export function mateRows(jungle: TopSelection[], role: Role, scope: TopScope): MateRow[] {
+  const by = new Map<string, TopSelection[]>();
+  for (const s of jungle.filter((x) => inTopScope(x, scope) && x.mates?.[role])) {
+    const k = `${s.champion}+${s.mates![role]!.id}`;
+    by.set(k, [...(by.get(k) ?? []), s]);
+  }
+  return [...by.values()].map((games) => {
+    const series = new Set(games.map((g) => `${g.event}:${g.seriesId}`)).size;
+    const w = (x: Mate["when"] | undefined) => count(games, (g) => g.mates![role]!.when === x);
+    return {
+      jungle: games[0].champion, mate: games[0].mates![role]!.id, role, games, series,
+      teams: [...new Set(games.map((g) => g.team))].sort(), wins: count(games, (g) => g.won),
+      order: { jungleFirst: w("after"), together: w("together"), mateFirst: w("before"), unknown: w(undefined) },
+      ...(role === "MID" ? { completed: {
+        blind: count(games, (g) => !!g.core && g.core.enemyMid === "hidden" && g.core.enemyJungle === "hidden"),
+        afterEnemyCore: count(games, (g) => !!g.core && (g.core.enemyMid === "revealed" || g.core.enemyJungle === "revealed")),
+        unclear: count(games, (g) => !g.core || ((g.core.enemyMid === "ambiguous" || g.core.enemyJungle === "ambiguous") && g.core.enemyMid !== "revealed" && g.core.enemyJungle !== "revealed")),
+      } } : {}),
+      status: series >= 2 ? "repeated" as const : "observed" as const,
+    };
+  }).sort((a, b) => b.games.length - a.games.length || b.series - a.series || a.mate.localeCompare(b.mate));
 }
 
 // ---------- scope ----------
@@ -444,6 +502,8 @@ export interface TopDraftBundle {
   events: { id: string; short: string }[];
   blind: Record<string, BlindLine[]>; // General Draft Logic (lib/top-blind.ts), never pro evidence
   duos?: DuoSelection[]; // BOT and SUPPORT: every team's bot lane
+  /** JUNGLE: enemy board traits at each jungle pick, by `${game}:${side}` (General Draft Logic, lib/jungle-context.ts). */
+  context?: Record<string, { trait: string; champions: string[] }[]>;
 }
 export type LaneDraftBundle = TopDraftBundle;
 
@@ -470,6 +530,8 @@ export interface TopUsageMark {
   into: Record<string, { games: number; series: number; status: PairStatus }>; // responses into each enemy lane opponent
   /** Bot and Support: duos with this champion completed after both enemy bot laners were known, by `${enemyAdc}+${enemySupport}`. */
   duoInto?: Record<string, { games: number; series: number; wins: number }>;
+  /** Jungle: games with each allied mid, with who was picked first (Observed Pro Evidence, never a saved pairing). */
+  withMid?: Record<string, { games: number; series: number; wins: number; jungleFirst: number; together: number; midFirst: number }>;
 }
 export interface TopUsageMarks { role?: LaneRole; patch?: string; marks: Record<string, TopUsageMark>; blind: Record<string, BlindLine[]> }
 
@@ -489,6 +551,9 @@ export function topUsageMarks(sel: TopSelection[], dpm: DPMRow[], blind: Record<
       usage: r.usage, blind: r.blind, response: r.response, classified: r.classified, games: r.games, low: r.low,
       into: Object.fromEntries(r.respondedInto.map((p) => [p.into, { games: p.games.length, series: p.series, status: p.status }])),
       ...(duos ? { duoInto } : {}),
+      ...(role === "JUNGLE" ? { withMid: Object.fromEntries(mateRows(r.selections, "MID", { patch }).map((m) => [m.mate, {
+        games: m.games.length, series: m.series, wins: m.wins, jungleFirst: m.order.jungleFirst, together: m.order.together, midFirst: m.order.mateFirst,
+      }])) } : {}),
     };
   }
   return { role, patch, marks, blind };

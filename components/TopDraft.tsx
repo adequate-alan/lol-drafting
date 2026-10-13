@@ -13,6 +13,7 @@ import { shortDate } from "@/lib/evidence";
 import { patchLabel } from "@/lib/patch";
 import { buildsHref } from "@/lib/pro-builds";
 import { DRAFT_LABEL_MIN, orderText } from "@/lib/pro-priority";
+import { BoardContext, ContextView, MatesView } from "./JungleDraft";
 import type { Role } from "@/lib/schema";
 import type { BlindLine } from "@/lib/top-blind";
 import {
@@ -21,15 +22,16 @@ import {
 } from "@/lib/top-draft";
 
 type Names = Record<string, string>;
-export type TopView = "overview" | "usage" | "duo" | "matchups" | "synergies" | "pro";
+export type TopView = "overview" | "usage" | "duo" | "mates" | "matchups" | "synergies" | "pro";
 export const TOP_VIEWS: [TopView, string][] = [["overview", "Overview"], ["usage", "Draft usage"], ["matchups", "Matchups"], ["synergies", "Synergies"], ["pro", "Pro evidence"]];
 /** Report tabs per lane. Off Top, the saved partners sit on Overview (they are that lane's saved record), so there is no
- *  separate Synergies tab; Bot and Support add Duo drafting. */
+ *  separate Synergies tab; Bot and Support add Duo drafting, Jungle adds Mid/Jungle. */
 export const laneViews = (role: LaneRole): [TopView, string][] => role === "TOP" ? TOP_VIEWS
+  : role === "JUNGLE" ? [["overview", "Overview"], ["usage", "Draft usage"], ["mates", "Mid/Jungle"], ["matchups", "Matchups"], ["pro", "Pro evidence"]]
   : [["overview", "Overview"], ["usage", "Draft usage"], ...(role === "MID" ? [] : [["duo", "Duo drafting"] as [TopView, string]]), ["matchups", "Matchups"], ["pro", "Pro evidence"]];
 
 /** How each lane is named in prose: "the enemy top", "the enemy ADC". */
-export const LANE_WORD: Record<LaneRole, string> = { TOP: "top", MID: "mid", BOT: "ADC", SUPPORT: "support" };
+export const LANE_WORD: Record<LaneRole, string> = { TOP: "top", JUNGLE: "jungler", MID: "mid", BOT: "ADC", SUPPORT: "support" };
 const lower = (t: string) => t[0].toLowerCase() + t.slice(1); // "After enemy ADC" -> "after enemy ADC"
 const isBot = (r: LaneRole) => r === "BOT" || r === "SUPPORT";
 const SEEN_TEXT: Record<Seen, string> = { hidden: "not yet picked", revealed: "on the board", botlane: "on the board, slot unclear", ambiguous: "on the board, lane unclear" };
@@ -71,6 +73,7 @@ function readText(s: TopSelection, game: GameBrief, names: Names): React.ReactNo
   return <>
     {s.usage === "uncertain" ? s.why.replace(s.laneOpponent, nm(names, s.laneOpponent)) : <>{me} was pick {s.turn} of 10; {nm(names, s.laneOpponent)} was pick {s.opponentTurn}.</>}
     {s.enemyJungle && <> The enemy jungler {nm(names, game[other].picks.JUNGLE)} was {SEEN_TEXT[s.enemyJungle]} (composition context, not a lane response).</>}
+    {s.mates?.MID?.turn != null && <> Own mid {nm(names, s.mates.MID.id)} {s.mates.MID.when === "together" ? "in the same turn" : s.mates.MID.when === "before" ? `earlier, at ${s.mates.MID.turn}` : `later, at ${s.mates.MID.turn}`}; enemy mid {nm(names, game[other].picks.MID)} {SEEN_TEXT[s.enemyMid ?? "hidden"]} at this pick.</>}
   </>;
 }
 
@@ -107,6 +110,7 @@ export function TopGameDetail({ game, focus, names, bundle, pair }: { game: Game
         </ol>
       )}
       {isBot(role) && <BotLaneSequence game={game} bundle={bundle} names={names} />}
+      {role === "JUNGLE" && <BoardContext hits={bundle.context?.[`${game.id}:${focus.side}`]} names={names} />}
       {pair && (
         <p className="xs">
           <span className={`pair-tag ${pair.status}`}>{PAIR_LABEL[pair.status]}</span>{" "}
@@ -171,7 +175,7 @@ function BotLaneSequence({ game, bundle, names }: { game: GameBrief; bundle: Top
 }
 
 /** A list of selections; each row opens its game in place. */
-function GameRows({ list, names, bundle, open, setOpen, pair, opponent = true }: {
+export function GameRows({ list, names, bundle, open, setOpen, pair, opponent = true }: {
   list: TopSelection[]; names: Names; bundle: TopDraftBundle; open?: string; setOpen: (k?: string) => void; pair?: Pair; opponent?: boolean;
 }) {
   if (!list.length) return <p className="muted xs">No recorded games in this scope.</p>;
@@ -199,10 +203,11 @@ function GameRows({ list, names, bundle, open, setOpen, pair, opponent = true }:
 
 // ---------- the report ----------
 
-export function TopUsageReport({ id, row, prio, prioLabel, bundle, names, view, setView, saved, logic, synergies, proEvidence, scopeLabel, scope }: {
+export function TopUsageReport({ id, row, prio, prioLabel, bundle, names, view, setView, saved, logic, synergies, proEvidence, scopeLabel, scope, savedMates }: {
   id: string; row?: TopRow; prio?: PriorityBrief; prioLabel: string; bundle: TopDraftBundle; names: Names; view: TopView; setView: (v: TopView) => void;
   saved?: { grade: string; tier?: string; gives?: string; avoid?: string }; // Top's saved blind grade
   logic: BlindLine[]; synergies: React.ReactNode; proEvidence: React.ReactNode; scopeLabel: string; scope: TopScope;
+  savedMates?: { preferred: string[]; alternatives: string[] }; // Jungle: alan's saved mids for this jungler
 }) {
   const [open, setOpen] = useState<string>();
   const [pairOpen, setPairOpen] = useState<string>();
@@ -234,7 +239,9 @@ export function TopUsageReport({ id, row, prio, prioLabel, bundle, names, view, 
         {shown === "overview" && <Overview role={role} row={row} prio={prio} prioLabel={prioLabel} saved={saved} logic={logic} names={names} scopeLabel={scopeLabel} synergies={role === "TOP" ? undefined : synergies} />}
         {shown === "usage" && <Usage id={id} row={row} names={names} bundle={bundle} open={open} setOpen={setOpen} scopeLabel={scopeLabel} scope={scope} />}
         {shown === "duo" && <DuoView id={id} names={names} bundle={bundle} scope={scope} scopeLabel={scopeLabel} />}
+        {shown === "mates" && <MatesView id={id} names={names} bundle={bundle} scope={scope} scopeLabel={scopeLabel} saved={savedMates} />}
         {shown === "matchups" && <Matchups id={id} row={row} names={names} bundle={bundle} open={open} setOpen={setOpen} pairOpen={pairOpen} setPairOpen={setPairOpen} />}
+        {shown === "matchups" && role === "JUNGLE" && row && <ContextView row={row} bundle={bundle} names={names} scope={scope} />}
         {shown === "synergies" && synergies}
         {shown === "pro" && (
           <>
@@ -292,6 +299,10 @@ function Overview({ role, row, prio, prioLabel, saved, logic, names, scopeLabel,
                 Own {role === "BOT" ? "support" : "ADC"} picked earlier in {row.bot.partnerBefore}/{ordered}, in the same turn in {row.bot.together}/{ordered}, later in {row.bot.partnerAfter}/{ordered}.
               </p>
             )}
+            {row.selections[0]?.mates && ordered > 0 && (() => {
+              const w = (x: string) => row.selections.filter((s) => s.turn && s.mates?.MID?.when === x).length;
+              return <p className="xs tnum">Mid/Jungle order: jungler first in {w("after")}/{ordered}, same turn {w("together")}/{ordered}, mid first {w("before")}/{ordered}.</p>;
+            })()}
             {row.enemyJungleSeen != null && ordered > 0 && (
               <p className="xs tnum">Picked after the enemy jungler was revealed in {row.enemyJungleSeen}/{ordered} (composition context, not a lane response).</p>
             )}

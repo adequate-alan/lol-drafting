@@ -32,7 +32,7 @@ const tierOf = (pool: PoolEntry[], id: string) => { const t = poolTier(pool, id,
 export function SynergiesView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top, pool, drawerData, freshness, shells, laneDraft }: {
   drawerData: DrawerData; tab: Tab; names: Record<string, string>; sources: Record<string, Source>; events: EventMap; stats: Record<string, MetaStat & { winRate: number }>;
   draftLabels: Record<string, string>; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; pool: PoolEntry[]; freshness: Freshness[]; shells: CompShell[];
-  laneDraft?: TopDraftBundle; // Top, Mid, Bot and Support: observed draft usage (lib/top-draft.ts); not Jungle
+  laneDraft?: TopDraftBundle; // every role: observed draft usage (lib/top-draft.ts)
 }) {
   const params = useSearchParams();
   const router = useRouter();
@@ -162,6 +162,7 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
                   scopeLabel={topScope.label} scope={{ patch: topScope.patch, events: topScope.event ? [topScope.event] : undefined }}
                   saved={selected.kind === "top" ? { grade: selected.record.blindGrade, tier: tierOf(pool, selectedId), gives: selected.record.logic.gives, avoid: selected.record.logic.avoid } : undefined}
                   logic={laneDraft.blind[selectedId] ?? []}
+                  savedMates={selected.kind === "mid-jungle" && selected.record.role === "JUNGLE" ? { preferred: selected.record.clashDefault, alternatives: selected.record.alternatives } : undefined}
                   synergies={<ScoutingReport item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels} proposed={extra} proCount={proCount} games={myGames} bot={bot} shells={shells} only="synergy" />}
                   proEvidence={<ScoutingReport item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels} proposed={extra} proCount={proCount} games={myGames} bot={bot} shells={shells} only="pro" />} />
               ) : (

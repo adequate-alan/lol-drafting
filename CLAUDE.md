@@ -78,7 +78,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   ("Often blinded" with no enemy top, "Picked into X · n" with one); never part of the order or the fit.
 - **Mid, Bot and Support draft usage** (alan, 2026-10-13; the same engine, `laneSelections` / `duoSelections` in
   `lib/top-draft.ts`, `getLaneDraft(role)` in `lib/data.ts`, `tests/lane-draft.test.ts`, smoke "mid:" / "bot:"): every
-  Synergies lane tab (Top, Mid, Bot, Support; Jungle is out of scope) uses the Top report and rail. Mid adds whether the
+  Synergies lane tab (Top, Mid, Bot, Support, and Jungle below) uses the Top report and rail. Mid adds whether the
   enemy jungler was on the board (`enemyJungle`): composition context, never a lane response. Bot and Support read what
   each pick could see of both enemy bot laners (`BotRead`: blind, after enemy ADC, after enemy support, after one enemy
   bot laner whose slot was open, full bot-lane response, or unclear when a visible champion could still play another
@@ -91,6 +91,17 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   whole enemy bot lane locked, "Picked into ADC + Support · n" from duo responses) and the starting picks classify blind /
   response for every lane (`engineReader`); labels only, never the order or the fit. Every DPM figure names its sample,
   role, patch and population (`dpmText`); each duo game lists the bot lane in draft order (`BotLaneSequence`).
+- **Jungle draft usage** (alan, 2026-10-13; the same engine, `tests/jungle-draft.test.ts`, smoke "jungle:"): tabs Overview |
+  Draft usage | Mid/Jungle | Matchups | Pro evidence (`components/JungleDraft.tsx`). Each jungle selection stores its lane
+  partners with turn and order (`mates`, `when`: partner before / same turn / after; same-turn picks are never ordered),
+  the enemy mid at the pick and the Mid/Jungle core's completion against the enemy mid and jungler (`core`). `mateRows`
+  gives Mid/Jungle (the main view: who was picked first), Top and Support partners: "Observed pairing", "Repeated" with 2+
+  series, saved mids tagged beside them; never a saved pairing. Matchups add "Enemy board at the pick"
+  (`lib/jungle-context.ts`, thresholds in `CONTEXT`): kit traits of champions already picked (General Draft Logic,
+  unreviewed kits), against the all-jungle base rate, "potential composition responses", never the team's reason. Draft
+  Room: Jungle labels and starting-pick blind counts through `laneUsage`; with an allied mid locked the usage tooltip adds
+  the pair's games and order (`withMid`). Labels only. Findings: `/mnt/project-files/lol-drafting/top-draft/jungle-findings.md`;
+  any Jungle-specific counter scoring or ranking change waits on alan.
 - **Synergies patch scope** (alan, 2026-10-13; `lib/synergy-patch.ts`, `tests/synergy-patch.test.ts`): every lane tab
   opens on All patches (historical, labelled with its range), including role switches and Draft Room links without a
   patch. A patch chosen in the rail is kept for the session (sessionStorage) and carried by the role tabs until changed
@@ -122,7 +133,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   one patch (newest with picks by default, `?patch=` and a patch menu; never combined): pool tier (or "Not in pool"),
   presence, role picks, First rotation (role picks within the team's first three picks, from `pickOrder`, "N of M"),
   first overall (turn 1 from Gol.gg's First Pick mark) and blind / response only from the pick-order engine
-  (`engineReader` over `lib/top-draft.ts`; Top only so far, other roles show none and the Blind filter is disabled).
+  (`engineReader` over `lib/top-draft.ts`; every role since 2026-10-13; the Blind filter is disabled only when a role has no blind pick on the patch).
   On Top the engine's usage label ("Often blinded", "Picked into …") replaces the blind count. Views Recommended | First rotation | Blind picks |
   Pro priority. Recommended order is pool first, then first-rotation picks, role picks, presence: real counts, no score
   shown. After any lock the normal order applies; the counts stay labels (First rotation, Blind, Pro priority, with

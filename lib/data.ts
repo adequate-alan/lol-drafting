@@ -13,6 +13,7 @@ import { withoutConfirmed } from "./proposed";
 import { Files, ROLES, type Role } from "./schema";
 import { brief, duoSelections, LANE_ROLES, laneSelections, roleBook, topUsageMarks, type LaneRole, type TopDraftBundle, type TopUsageMarks } from "./top-draft";
 import { blindReads } from "./top-blind";
+import { boardTraits, kitMap } from "./jungle-context";
 import { bucket, patchesOf } from "./pro-priority";
 
 // Data lives in /data and is read at build time; the static export embeds what each page renders.
@@ -171,7 +172,18 @@ export function getLaneDraft(role: LaneRole): TopDraftBundle {
   // General Draft Logic for every champion who plays the lane and has a kit (Locke and Zaahen have none yet).
   const saved = new Map(role === "TOP" ? getTopPicks().map((t) => [t.champion, t.identities]) : []);
   const blind = blindReads(getChampions(), saved, new Set(selections.map((s) => s.champion)), role);
-  const bundle: TopDraftBundle = { role, selections, games: Object.fromEntries(records.map((g) => [g.id, brief(g)])), players, drafts, priority, dpm, events, blind, ...(duos ? { duos } : {}) };
+  // Jungle: what the enemy board showed at each pick (only champions already picked), read from the kits.
+  let context: TopDraftBundle["context"];
+  if (role === "JUNGLE") {
+    const kits = kitMap(getChampions());
+    const byId = new Map(records.map((g) => [g.id, g]));
+    context = Object.fromEntries(selections.filter((s) => s.turn).map((s) => {
+      const g = byId.get(s.game)!, them = g[s.side === "blue" ? "red" : "blue"];
+      const visible = s.enemySeen.map((c) => ({ champion: c, role: ROLES.find((r) => them.picks[r] === c) }));
+      return [`${s.game}:${s.side}`, boardTraits(visible, kits)];
+    }));
+  }
+  const bundle: TopDraftBundle = { role, selections, games: Object.fromEntries(records.map((g) => [g.id, brief(g)])), players, drafts, priority, dpm, events, blind, ...(duos ? { duos } : {}), ...(context ? { context } : {}) };
   laneDrafts.set(role, bundle);
   return bundle;
 }

@@ -14,7 +14,7 @@ import { topPatches, topRows, type PriorityBrief, type TopDraftBundle, type TopR
 const BASE_FILTERS: [UseFilter, string][] = [["", "All"], ["blind", "Blind"], ["response", "Response"], ["both", "Both"]];
 export type UseFilter = "" | "blind" | "response" | "both" | "duo" | "meta";
 export const useFilters = (duo: boolean): [UseFilter, string][] => [...BASE_FILTERS, ...(duo ? [["duo", "Duo analysis"] as [UseFilter, string]] : []), ["meta", "Meta priority"]];
-export const TOP_SORTS = [["", "Saved order"], ["blind", "Blind frequency"], ["response", "Response frequency"], ["presence", "Pro presence"], ["recent", "Recent"]] as const;
+export const TOP_SORTS = [["", "Saved order"], ["blind", "Blind frequency"], ["response", "Response frequency"], ["rotation", "First-rotation frequency"], ["presence", "Pro presence"], ["recent", "Recent"]] as const;
 export type TopSort = (typeof TOP_SORTS)[number][0];
 
 export interface TopScopeState {
@@ -74,6 +74,11 @@ const railUsage = (r: TopRow | undefined) => !r ? "no pro games"
   : r.usage === "too-few" ? `${r.games} game${r.games === 1 ? "" : "s"}, too few`
   : r.usage === "response" ? `Response ${r.response}/${r.classified}` : r.usage === "both" ? `Both · blind ${r.blind}/${r.classified}` : `Blind ${r.blind}/${r.classified}`;
 
+// First rotation over ordered picks (turn 1-6), 3+ ordered picks to rank, ties by sample.
+const rotationShare = (r: TopRow | undefined) => {
+  const n = r ? r.rotation.first + r.rotation.second + r.rotation.last : 0;
+  return r && n >= 3 ? r.rotation.first / n + n / 1000 : -1;
+};
 const share = (r: TopRow | undefined, k: "blind" | "response") => (r && r.classified >= 3 ? r[k] / r.classified + r.classified / 1000 : -1);
 
 /**
@@ -98,6 +103,7 @@ export function topRail<T extends { id: string; label: string; sub: string; prop
   switch (s.sort) {
     case "blind": return by((id) => share(row(id), "blind"));
     case "response": return by((id) => share(row(id), "response"));
+    case "rotation": return by((id) => rotationShare(row(id)));
     case "presence": return by((id) => s.prio[id]?.presence ?? -1);
     case "recent": return by((id) => Date.parse(row(id)?.latest || "1970-01-01"));
     default: return out;

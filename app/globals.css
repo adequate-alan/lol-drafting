@@ -1729,7 +1729,7 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 @media (max-width: 760px) {
   .duo-list > li > button { grid-template-columns: minmax(0, 1fr) auto; }
   .duo-list > li > button .duo-into { grid-column: 1 / -1; grid-row: 2; }
-  .duo-table .shape-col { display: none; }
+  .duo-table .shape-col, .mate-table .wide-col { display: none; }
   .lane-BOT .top-games > li > button, .lane-BOT .top-games.no-vs > li > button,
   .lane-SUPPORT .top-games > li > button, .lane-SUPPORT .top-games.no-vs > li > button { grid-template-columns: minmax(0, 1fr) 40px auto auto; }
   .top-games > li > button, .top-games.no-vs > li > button { grid-template-columns: minmax(0, 1fr) 36px auto auto; }
