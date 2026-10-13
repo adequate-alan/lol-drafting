@@ -415,6 +415,13 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   team's name is gold in the table and the panel. The toolbar counts games (team drafts in the tooltip) and the
   freshness line is one compact line (`ProFreshness compact`, details in its tooltip). Below 760px the same markup
   reflows into a match list (game line, two team lines with portraits only; names in the hover card and drawer).
+  Rows carry no side tooltip (alan, 2026-10-13: the strip already says it); a visually hidden "Blue side:" / "Red
+  side:" in the team cell names it for screen readers, and the open game labels each team's side. Champion hover cards
+  stay. **Pins** (alan, 2026-10-13): Team, Champion, Tournament and Series are typeable `PinPicker`s
+  (`components/PlayerPicker.tsx`, kinds `team` / `champion` / `event` / `series`); Role stays a `Select`. Team and
+  tournament pins are the same localStorage lists Pro Builds uses (tournaments by event id; the URL keeps the name);
+  champion and series pins are `pro-drafts:pinned-*`. Pinned items lead their menu, appear as one quiet line of
+  one-click filter chips under the menus (only when something is pinned), and a pinned team is starred in the table.
 - **Pro Drafts game inspection** (alan, 2026-10-12; `lib/pro-drafts-game.ts`, `tests/pro-drafts-game.test.ts`): a row
   click (or its game link) opens the whole game in the panel above the table (`?id=`): both teams blue first, each with
   side strip, result, bans and five champion buttons (`gameView`; a stored draft whose other side is not stored shows

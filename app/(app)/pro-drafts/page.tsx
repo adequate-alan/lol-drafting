@@ -10,9 +10,10 @@ export const metadata = { title: "Pro Drafts" };
 export default function ProDrafts() {
   const events = Object.fromEntries(getMeta().events.map((e) => [e.id, e.short]));
   const shortNames = Object.fromEntries(getMeta().events.map((e) => [e.name, e.short]));
+  const eventIds = Object.fromEntries(getMeta().events.map((e) => [e.name, e.id]));
   return (
     <Suspense fallback={<PageLoading title="Pro Drafts" />}>
-      <ProDraftsView names={nameMap()} sources={sourceMap()} all={getProDrafts()} freshness={getProFreshness()} drawerData={getDrawerData()} buildGames={getBuildGames()} events={events} shortNames={shortNames} />
+      <ProDraftsView names={nameMap()} sources={sourceMap()} all={getProDrafts()} freshness={getProFreshness()} drawerData={getDrawerData()} buildGames={getBuildGames()} events={events} shortNames={shortNames} eventIds={eventIds} />
     </Suspense>
   );
 }
