@@ -791,9 +791,9 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     // Player portraits: credited Commons photos load for Chovy and Ruler; a player without one shows initials, never a champion icon
     await open("/geng/");
     await page.waitForTimeout(500);
-    const portraits = await page.$$eval(".team-players .player-avatar img", (xs) => xs.map((i) => ({ alt: i.alt, ok: i.complete && i.naturalWidth > 0, title: i.parentElement.title })));
+    const portraits = await page.$$eval(".team-players .player-avatar img", (xs) => xs.map((i) => ({ alt: i.alt, ok: i.complete && i.naturalWidth > 0, title: i.parentElement.getAttribute("title") })));
     const named = (n) => portraits.find((p) => p.alt.includes(n));
-    check("portraits: Chovy and Ruler load with a photo credit", ["Chovy", "Ruler"].every((n) => named(n)?.ok && /Photo (via dpm\.lol|: .+ via Wikimedia Commons)/.test(named(n).title)), JSON.stringify(portraits.map((p) => [p.alt, p.ok])));
+    check("portraits: Chovy and Ruler load, with no tooltip repeating the name or credit", ["Chovy", "Ruler"].every((n) => named(n)?.ok && named(n).title === null), JSON.stringify(portraits.map((p) => [p.alt, p.ok])));
     check("portraits: every roster avatar is a loaded photo or initials, never a champion icon", await page.$$eval(".team-players .player-avatar", (xs) => xs.length > 0 && xs.every((x) => x.classList.contains("initials") ? /^[A-Z0-9]{1,2}$/i.test(x.dataset.initials ?? "") : (x.querySelector("img")?.naturalWidth ?? 0) > 0)), "");
     // A player without a checked photo (Cryogen, FlyQuest: dpm.lol has only its placeholder for him) shows initials
     await open("/pro-builds/pinned/?player=6344");
