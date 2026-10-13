@@ -186,7 +186,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   spells, final inventory slots, rune page, `skills` as one letter per ability point, purchase log `[seconds, item, buy|sell]`,
   `missing` for anything Gol.gg did not give). Read by the daily refresh from the game page (player ids) and Gol.gg's
   build answer (`POST /game/ajax.build.php`, the request the Builds tab makes; not disallowed by robots.txt), at most 45
-  games a run (`scripts/golgg/builds.mjs`). A game with no builds yet goes in `unavailable` and is asked again after 3 days.
+  games a run (`scripts/golgg/builds.mjs`). A game with no builds yet goes in `unavailable` and is asked again after 3 days; a game whose builds name a missing field (Gol.gg publishes a fresh game's stats before its skill order and purchase timeline) is re-read every 3 days for 3 weeks from its date and replaced only by a fuller answer (alan, 2026-10-13). The post-deploy smoke checks the exact setup on the newest game with a recorded timeline and that a partial record says so.
 - `data/build-assets.json`: names, icons, item stats and ability max ranks per game patch, from that patch's Data Dragon
   files (CommunityDragon for stat shard names), only for ids the builds use; ids a patch does not name are `unnamed`.
   Icons load from Data Dragon's CDN at the game's version, like champion icons; nothing is stored in the repo.

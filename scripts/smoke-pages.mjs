@@ -664,6 +664,17 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
   check("builds: the rail lists every champion and role with recorded builds", (await page.locator(".pick-rail li button").count()) > 30, `${await page.locator(".pick-rail li button").count()} entries`);
   const games = await page.locator(".build-pick").count();
+  // Gol.gg publishes a fresh game's stats before its skill order and purchase timeline (the refresh re-reads such a
+  // game), so the exact-setup checks run on the newest game whose purchase log is recorded, and a partial record
+  // must say what the source did not give rather than show a filled-in build.
+  let partialNote = null;
+  for (let i = 0; i < Math.min(games, 15) && (await page.locator(".build-timeline li").count()) < 3; i++) {
+    if (i > 0) { await page.locator(".build-pick").nth(i).click(); await page.waitForTimeout(150); }
+    if ((await page.locator(".build-timeline li").count()) < 3) partialNote ??= await page.locator(".game-detail").innerText().catch(() => "");
+  }
+  if (partialNote != null) check("builds: a game whose timeline Gol.gg has not published says so, nothing filled in", /Partial record: .*not given by the source/.test(partialNote) && /Purchase log not recorded/.test(partialNote), partialNote.replace(/\s+/g, " ").slice(0, 120));
+  const active = games ? await page.locator(".build-pick").evaluateAll((els) => els.findIndex((e) => e.classList.contains("active"))) : -1;
+  const other = active === 1 ? 0 : 1;
   const head = await page.locator(".game-head").innerText().catch(() => "");
   const src = await page.locator(".game-head a[href*='gol.gg/game/stats/']").getAttribute("href").catch(() => null);
   check("builds: a game names player, opponent, tournament, patch, date, side, result and its Gol.gg source", games > 0 && /\bvs\b/.test(head) && /26\.\d+/.test(head) && /(Blue|Red) side/.test(head) && /Win|Loss/.test(head) && !!src, head.replace(/\s+/g, " ").slice(0, 160));
@@ -681,13 +692,13 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   const loaded = await page.locator(".game-detail .bicon img").evaluateAll((els) => els.filter((e) => e.complete && e.naturalWidth > 0).length);
   check("builds: item, rune, spell and ability icons load from Data Dragon", loaded > 20, `${loaded} icons`);
   if (games > 1) {
-    await page.locator(".build-pick").nth(1).click();
+    await page.locator(".build-pick").nth(other).click();
     await page.waitForTimeout(200);
     check("builds: picking another game updates the whole setup and the URL", (await page.locator(".game-head").innerText()) !== head && /[?&]game=\d+/.test(page.url()), page.url());
     const shared = page.url();
     await open(shared.replace(base, ""));
     await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
-    check("builds: a shared URL reopens the same game", (await page.locator(".build-pick.active").count()) === 1 && (await page.locator(".build-pick").nth(1).getAttribute("aria-selected")) === "true", "");
+    check("builds: a shared URL reopens the same game", (await page.locator(".build-pick.active").count()) === 1 && (await page.locator(".build-pick").nth(other).getAttribute("aria-selected")) === "true", "");
   }
   // Player filter: type to find a player, pin them (saved in this browser), pinned players first
   {
@@ -737,8 +748,10 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     const matchCount = await matchRows.count();
     await matchRows.first().click();
     await page.locator(".match-detail .game-detail").waitFor({ timeout: 5000 }).catch(() => {});
+    // The skill grid shows only when the source gave the order; a partial record says so instead (never filled in).
+    const skillsShown = (await page.locator(".match-detail .skill-grid").count()) === 1 || /Skill order was not recorded/.test(await page.locator(".match-detail").innerText().catch(() => ""));
     const expandedOk = (await page.locator(".match-detail .game-detail").count()) === 1 && (await page.locator(".match-detail .rune-page").count()) === 1
-      && (await page.locator(".match-detail .skill-grid").count()) === 1 && (await page.locator(".match-detail .game-player").innerText()).includes(pinned)
+      && skillsShown && (await page.locator(".match-detail .game-player").innerText()).includes(pinned)
       && (await matchRows.first().getAttribute("aria-expanded")) === "true" && /[?&]game=\d+/.test(page.url());
     check("pinned: a match row expands into that game's exact build under the row", expandedOk, page.url());
     const pageWide = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
