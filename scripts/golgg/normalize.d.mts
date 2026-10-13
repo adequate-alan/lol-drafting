@@ -13,4 +13,5 @@ export function buildAggregates(table: { rows: ChampionRow[] } | undefined, tota
   sourceIds: string[], previous?: unknown[]): { stats: Record<string, unknown>[]; rolesVerified: boolean; problems?: undefined } | { problems: string[] };
 export function isComplete(series: Series[], today: string): boolean;
 export function pickOrderFor(game: ProGame, page: GamePage, resolve: (name?: string) => string | undefined):
-  { blue: string[]; red: string[]; problems?: undefined } | { problems: string[] };
+  { blue: string[]; red: string[]; firstPick?: "blue" | "red"; problems?: undefined } | { problems: string[] };
+export function firstPickOf(page: GamePage): "blue" | "red" | undefined;

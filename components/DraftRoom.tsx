@@ -24,6 +24,8 @@ import { AUTO_BUILDS_KEY, MY_ROLE_KEY, buildsEntry, draftQuery, markOwnQuery, my
 import { ChampIcon, ChampionRow, WarningBadge, type Severity } from "./ui";
 import { scrollBehavior } from "@/lib/motion";
 import { rovingIndex, rovingKeys } from "./roving";
+import { PAIR_LABEL, USAGE_LABEL, type TopUsageMark } from "@/lib/top-draft";
+import type { BlindLine } from "@/lib/top-blind";
 
 const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
 // Lane partner: with Bot locked, Support is the natural next pick (and the other way round).
@@ -313,7 +315,8 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                       : visibleRows.length
                         ? visibleRows.map((c) => (
                           <FitRow key={c.champion} c={c} bot={draft.BOT ? names[draft.BOT] ?? draft.BOT : undefined} names={names} proCtx={proCtx} hovered={hover === c.champion}
-                            onHover={(h) => preview(h ? c.champion : undefined)} onPick={() => lock(active, c.champion)} onOpen={() => setDrawer({ id: c.champion, role: active })} />
+                            onHover={(h) => preview(h ? c.champion : undefined)} onPick={() => lock(active, c.champion)} onOpen={() => setDrawer({ id: c.champion, role: active })}
+                            top={active === "TOP" ? { mark: data.topUsage.marks[c.champion], patch: data.topUsage.patch, enemyTop: enemyDraft.TOP, blind: data.topUsage.blind[c.champion] } : undefined} />
                         ))
                         : <p className="rec-empty">{filter === "all" ? "Nothing stands out yet." : filter === "counter" && activeCounters?.counters.length === 0 ? "No counters to show." : "No candidate has this signal yet."}</p>}
                     {visibleRows.length < shownRows.length && (
@@ -411,7 +414,19 @@ const proLine = (pro: ProSuggestion) => pro.lines.map((l) => `${describeLine({ .
 const BONUS = new Set(["saved", "proposed"]);
 
 // The row's labels, one per independent signal, each in its own layer colour. Nothing here changes the order.
-function chipsOf(c: Candidate, names: Record<string, string>, bot?: string): Chip[] {
+type TopCtx = { mark?: TopUsageMark; patch?: string; enemyTop?: string; blind?: BlindLine[] };
+
+// Top lane draft usage (lib/top-draft.ts): when pros picked this top laner, and what it was picked into. Observed Pro
+// Evidence: a label and a detail line, never part of the order or the comp fit.
+const topUsageTitle = (c: Candidate, t: TopCtx, names: Record<string, string>) => {
+  const m = t.mark!, p = t.patch ? patchLabel(t.patch) : "all patches";
+  const into = t.enemyTop ? m.into[t.enemyTop] : undefined;
+  const base = `Patch ${p} pro games at top: blind ${m.blind}/${m.classified}, response ${m.response}/${m.classified}${m.low ? " (small sample)" : ""}.`;
+  if (into) return `${base} Picked after ${names[t.enemyTop!] ?? t.enemyTop} was revealed in ${into.games} game${into.games === 1 ? "" : "s"} (${into.series} series): ${PAIR_LABEL[into.status].toLowerCase()}${into.status === "supported" ? "" : ", not a proven counter"}. Never part of the order or the fit.`;
+  return `${base} Being blinded often is not proof it is safe to blind. Never part of the order or the fit.`;
+};
+
+function chipsOf(c: Candidate, names: Record<string, string>, bot?: string, top?: TopCtx): Chip[] {
   const r = c.fit;
   const out: Chip[] = [];
   if (r.eligible && r.saved) {
@@ -429,6 +444,12 @@ function chipsOf(c: Candidate, names: Record<string, string>, bot?: string): Chi
   else if (c.bestFit) out.push({ key: "fit", label: "Best fit", title: FIT });
   if (c.counter) out.push({ key: "counter", label: "Counter" }); // rendered as the Counter popover
   if (c.priority) out.push({ key: "prio", label: `Pro priority · ${Math.round(c.priority.presence * 100)}%`, title: priorityTitle(c) });
+  const tu = top?.mark;
+  if (c.role === "TOP" && tu) {
+    const into = top.enemyTop ? tu.into[top.enemyTop] : undefined;
+    if (top.enemyTop && into) out.push({ key: "usage", label: `Picked into ${names[top.enemyTop] ?? top.enemyTop} · ${into.games}`, title: topUsageTitle(c, top, names) });
+    else if (!top.enemyTop && tu.usage !== "too-few") out.push({ key: "usage", label: USAGE_LABEL[tu.usage], title: topUsageTitle(c, top, names) });
+  }
   if (c.theoretical) out.push({ key: "theory", label: "Theoretical", title: `Not one of ${bot ?? "the bot"}'s saved supports: theoretical, not recommended` });
   if (r.parts.some((p) => p.kind === "risk")) out.push({ key: "risk", label: "Risk" });
   return out;
@@ -450,14 +471,15 @@ function reasonOf(c: Candidate): { benefit: string; drawback?: string } {
   return { benefit, drawback: r.tradeoffs[0] ?? risk?.text };
 }
 
-function FitRow({ c, bot, names, proCtx, hovered, onHover, onPick, onOpen }: {
-  c: Candidate; bot?: string; names: Record<string, string>; proCtx: ProCtx; hovered: boolean;
+function FitRow({ c, bot, names, proCtx, hovered, onHover, onPick, onOpen, top }: {
+  c: Candidate; bot?: string; names: Record<string, string>; proCtx: ProCtx; hovered: boolean; top?: TopCtx;
   onHover: (on: boolean) => void; onPick: () => void; onOpen: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const rec = c.fit;
   const name = names[c.champion] ?? c.champion;
-  const chips = chipsOf(c, names, bot);
+  const tctx = c.role === "TOP" && top ? { ...top, mark: top.mark } : undefined;
+  const chips = chipsOf(c, names, bot, tctx);
   const { benefit, drawback } = reasonOf(c);
   const counter = c.counter;
   const read = rec.parts.length > 0;
@@ -510,6 +532,18 @@ function FitRow({ c, bot, names, proCtx, hovered, onHover, onPick, onOpen }: {
           <div className="fit-pro">
             <span className="k">Priority</span>
             <span className="t">{priorityTitle(c)}</span>
+          </div>
+        )}
+        {tctx?.mark && (
+          <div className="fit-pro">
+            <span className="k">Usage</span>
+            <span className="t">{topUsageTitle(c, tctx, names)}</span>
+          </div>
+        )}
+        {c.role === "TOP" && tctx && !tctx.enemyTop && tctx.blind && tctx.blind.length > 0 && (
+          <div className="fit-logic">
+            <span className="k">Blind read</span>
+            <span className="t">{tctx.blind.map((l) => `${l.tone === "minus" ? "− " : l.tone === "plus" ? "+ " : ""}${l.text}`).join(" · ")} <span className="faint">(general draft logic)</span></span>
           </div>
         )}
         {!rec.eligible && c.pro && <p className="fit-note xs muted">Not one of {bot ?? "the bot"}&apos;s saved supports: a pro pairing, not a saved one.</p>}

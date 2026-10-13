@@ -4,13 +4,16 @@ import { join } from "node:path";
 import type { z } from "zod";
 import { buildLibrary, type Library } from "./comp-library";
 import { withProAlternatives } from "./pro-alternatives";
-import { newestGameFirst, withGameSides } from "./draft-side";
+import { golggGameId, newestGameFirst, withGameSides } from "./draft-side";
 import { draftsFromGames, freshness, resultsFromGames, sourcesFromGames } from "./pro-games";
 import { priorityData, priorityMarks, type PriorityData } from "./pro-priority";
 import { buildPatchIndex } from "./patch-changes";
 import { championIndex, type ChampionBuilds } from "./pro-builds";
 import { withoutConfirmed } from "./proposed";
 import { Files, ROLES, type Role } from "./schema";
+import { brief, roleBook, topSelections, topUsageMarks, type TopDraftBundle } from "./top-draft";
+import { blindReads } from "./top-blind";
+import { bucket, patchesOf } from "./pro-priority";
 
 // Data lives in /data and is read at build time; the static export embeds what each page renders.
 type FileName = keyof typeof Files;
@@ -98,6 +101,7 @@ export function getDraftData() {
     counters: getCounters(),
     proposed: getProposed().records,
     priority: priorityMarks(getPriority()), // a label on rows, never read by the ranking
+    topUsage: ((t) => topUsageMarks(t.selections, t.dpm, t.blind))(getTopDraft()), // TOP row labels, never read by the ranking
   };
 }
 export type DraftData = ReturnType<typeof getDraftData>;
@@ -131,3 +135,35 @@ export const jungleOnlyIds = () => {
   const ids = new Set([...mj.map((r) => r.anchor), ...getChampions().filter((c) => c.roles.includes("JUNGLE")).map((c) => c.id)]);
   return [...ids].filter((id) => plays(id, "JUNGLE") && !plays(id, "MID")).sort();
 };
+
+// Top lane draft usage (Synergies Top tab, Draft Room): every recorded game's top selections classified, with the games,
+// players, Pro Drafts ids, per-patch priority and the DPM matchup rows they need. Observed Pro Evidence only.
+let topDraft: TopDraftBundle | undefined;
+export function getTopDraft(): TopDraftBundle {
+  if (topDraft) return topDraft;
+  const records = getBuildGameRecords();
+  const selections = topSelections(records, roleBook(getChampions(), records));
+  const players: Record<string, string> = {};
+  for (const b of load("pro-builds.json").builds) if (b.role === "TOP") players[`${b.game}:${b.side}`] = b.player;
+  const drafts: Record<string, string> = {};
+  for (const d of getProDrafts()) {
+    const id = golggGameId(d);
+    if (id && d.side) drafts[`${id}:${d.side}`] = d.id;
+  }
+  const priority: TopDraftBundle["priority"] = {};
+  const tops = new Set(selections.map((s) => s.champion));
+  for (const patch of [...patchesOf(getPriority()), "all"]) {
+    const b = bucket(getPriority(), patch === "all" ? {} : { patch });
+    priority[patch] = { games: b.games, rows: Object.fromEntries(b.rows.filter((r) => tops.has(r.id)).map((r) => [r.id, {
+      presence: r.presence, picks: r.picks, bans: r.bans, topPicks: r.roleVerified ? r.rolePicks.TOP ?? 0 : undefined, winRate: r.winRate, low: r.low,
+    }])) };
+  }
+  const pairs = new Set(selections.flatMap((s) => [`${s.champion}>${s.opponentTop}`, `${s.opponentTop}>${s.champion}`]));
+  const dpm = getCounters().dpm.filter((r) => r.role === "TOP" && pairs.has(`${r.champion}>${r.enemy}`))
+    .map((r) => ({ role: r.role, champion: r.champion, enemy: r.enemy, winRate: r.winRate, games: r.games, patch: r.patch, url: r.url }));
+  const events = getMeta().events.filter((e) => selections.some((s) => s.event === e.id)).map((e) => ({ id: e.id, short: e.short }));
+  // General Draft Logic for every champion who plays top and has a kit (Locke and Zaahen have none yet).
+  const saved = new Map(getTopPicks().map((t) => [t.champion, t.identities]));
+  const blind = blindReads(getChampions(), saved, tops);
+  return (topDraft = { selections, games: Object.fromEntries(records.map((g) => [g.id, brief(g)])), players, drafts, priority, dpm, events, blind });
+}
