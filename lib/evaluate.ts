@@ -7,6 +7,9 @@ export type Draft = Partial<Record<Role, string>>;
 export interface Meter { attr: Attr; best: number; bestBy: string | null; total: number }
 export interface Profile {
   picks: Champion[];
+  // Team-wide rules apply: 4+ picks, or a smaller draft read as a team (the draft before a 4th pick, so a candidate is
+  // not charged for a warning the first three picks already had).
+  team: boolean;
   meters: Meter[];
   damage: { physical: number; magic: number; physicalShare: number | null };
 }
@@ -19,7 +22,7 @@ export function picksOf(draft: Draft, champions: Champion[]): Champion[] {
   return ROLES.map((r) => draft[r]).filter((id): id is string => !!id && byId.has(id)).map((id) => byId.get(id)!);
 }
 
-export function profile(draft: Draft, champions: Champion[]): Profile {
+export function profile(draft: Draft, champions: Champion[], asTeam = false): Profile {
   const picks = picksOf(draft, champions);
   const meters = ATTRS.map((attr) => {
     let best = 0, bestBy: string | null = null, total = 0;
@@ -37,7 +40,7 @@ export function profile(draft: Draft, champions: Champion[]): Profile {
     else { physical += w / 2; magic += w / 2; }
   }
   const sum = physical + magic;
-  return { picks, meters, damage: { physical, magic, physicalShare: sum ? physical / sum : null } };
+  return { picks, team: picks.length >= 4 || (asTeam && picks.length > 0), meters, damage: { physical, magic, physicalShare: sum ? physical / sum : null } };
 }
 
 const names = (cs: Champion[]) => cs.map((c) => c.name).join(", ");
@@ -48,7 +51,7 @@ interface RuleDef { id: string; label: string; rule: string; check: (p: Profile)
 export const RULES: RuleDef[] = [
   {
     id: "no-engage", label: "No reliable engage", rule: "4+ picks and no pick has engage 2 or more",
-    check: (p) => p.picks.length >= 4 && meter(p, "engage").best < 2
+    check: (p) => p.team && meter(p, "engage").best < 2
       ? `Best engage is ${meter(p, "engage").best}${meter(p, "engage").bestBy ? ` (${meter(p, "engage").bestBy})` : ""}.` : null,
   },
   {
@@ -62,22 +65,22 @@ export const RULES: RuleDef[] = [
   },
   {
     id: "too-much-ad", label: "Too much AD", rule: "4+ picks and 80% or more of the damage is physical",
-    check: (p) => p.picks.length >= 4 && p.damage.physicalShare !== null && p.damage.physicalShare >= 0.8
+    check: (p) => p.team && p.damage.physicalShare !== null && p.damage.physicalShare >= 0.8
       ? `${Math.round(p.damage.physicalShare * 100)}% physical damage; armor stacking shuts it down.` : null,
   },
   {
     id: "too-much-ap", label: "Too much AP", rule: "4+ picks and 80% or more of the damage is magic",
-    check: (p) => p.picks.length >= 4 && p.damage.physicalShare !== null && 1 - p.damage.physicalShare >= 0.8
+    check: (p) => p.team && p.damage.physicalShare !== null && 1 - p.damage.physicalShare >= 0.8
       ? `${Math.round((1 - p.damage.physicalShare) * 100)}% magic damage; magic resist stacking shuts it down.` : null,
   },
   {
     id: "no-frontline", label: "No frontline", rule: "4+ picks and no pick has frontline 2 or more",
-    check: (p) => p.picks.length >= 4 && meter(p, "frontline").best < 2 ? `Best frontline is ${meter(p, "frontline").best}.` : null,
+    check: (p) => p.team && meter(p, "frontline").best < 2 ? `Best frontline is ${meter(p, "frontline").best}.` : null,
   },
   {
     id: "insufficient-peel", label: "Insufficient peel for the carry", rule: "A needs-peel carry is locked and teammates' peel totals under 3; checks from 4 picks",
     check: (p) => {
-      if (p.picks.length < 4) return null;
+      if (!p.team) return null;
       const carries = p.picks.filter((c) => c.flags.includes("needs-peel"));
       for (const carry of carries) {
         const peel = p.picks.filter((c) => c !== carry).reduce((s, c) => s + c.attrs.peel, 0);
@@ -95,12 +98,12 @@ export const RULES: RuleDef[] = [
   },
   {
     id: "no-sustained-dps", label: "No sustained DPS", rule: "4+ picks and no pick has sustained DPS 2 or more",
-    check: (p) => p.picks.length >= 4 && meter(p, "sustainedDps").best < 2 ? "Nobody can keep dealing damage in a long fight or burn a tank." : null,
+    check: (p) => p.team && meter(p, "sustainedDps").best < 2 ? "Nobody can keep dealing damage in a long fight or burn a tank." : null,
   },
   {
     id: "vulnerable-hard-engage", label: "Vulnerable to hard engage", rule: "4+ picks, team peel under 3, no frontline 2+, and no disengage pick",
     check: (p) => {
-      if (p.picks.length < 4) return null;
+      if (!p.team) return null;
       const peel = meter(p, "peel").total;
       const disengage = p.picks.some((c) => c.flags.includes("disengage"));
       return peel < 3 && meter(p, "frontline").best < 2 && !disengage ? `Team peel totals ${peel}, no frontline and no disengage.` : null;
@@ -108,8 +111,8 @@ export const RULES: RuleDef[] = [
   },
 ];
 
-export function warnings(draft: Draft, champions: Champion[]): DraftWarning[] {
-  const p = profile(draft, champions);
+export function warnings(draft: Draft, champions: Champion[], asTeam = false): DraftWarning[] {
+  const p = profile(draft, champions, asTeam);
   return RULES.flatMap((r) => {
     const why = r.check(p);
     return why ? [{ id: r.id, label: r.label, rule: r.rule, why }] : [];

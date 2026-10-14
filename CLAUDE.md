@@ -121,7 +121,10 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   weighted by need priority and more the later the pick; one weakness scores once; tradeoffs cost a point; each row carries
   fixes / also / tradeoffs and one `bestFix`, shown apart from best overall), matchups against the optional
   enemy picks (from champion attributes; there is no lane-matchup data), and risks (a new warning, or more holes than
-  picks left). Every point comes with a written reason. Saved defaults must still lead an early draft (one pick
+  picks left). A pick is charged only for a weakness it creates, never one the earlier picks already had (alan,
+  2026-10-14): before the 4th pick the draft is read with the team-wide rules on, so an inherited weakness is
+  "unresolved", not "Creates" (`weaknessChanges`: creates / worsens / unresolved / improves / fixes; only Creates costs a
+  point; `tests/fourth-pick.test.ts`). Every point comes with a written reason. Saved defaults must still lead an early draft (one pick
   locked). **Pro evidence never adds to the score** (a pro-derived alternative scores only as an alternative); it is a Pro
   label on the candidate row. A saved `botShapes` entry needs a bot whose record lists the support.
 - **One candidate list per open role** (alan, 2026-10-11; `lib/candidates.ts`, `tests/unified-candidates.test.ts`): the

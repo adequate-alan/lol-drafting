@@ -54,7 +54,7 @@ function v1Profile(picks: Pick[]): V1Profile {
     for (const c of asV1) { total += c.attrs[attr]; if (c.attrs[attr] > best) { best = c.attrs[attr]; bestBy = c.name; } }
     return { attr, best, bestBy, total };
   });
-  return { picks: asV1, meters, damage: { physical: 0, magic: 0, physicalShare: null } };
+  return { picks: asV1, team: asV1.length >= 4, meters, damage: { physical: 0, magic: 0, physicalShare: null } };
 }
 
 export function warningsV2(draft: DraftV2, champions: ChampionV2[]): WarningV2[] {
