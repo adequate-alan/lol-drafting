@@ -273,6 +273,9 @@ export function recommend(draft: Draft, enemyIds: string[], data: RecommendData,
   // Needs tied to a locked champion (setup, peel) count from the first pick.
   const urgency = (n: Need) => Math.max(0.5 * (picks.length - 1), n.personal ? 1 : 0);
   const before = new Set(warnings(draft, data.champions).map((w) => w.id));
+  // A warning the locked picks already have, read as a team when the next pick is the 4th: the candidate inherits it and
+  // is not charged for "triggering" it (alan, 2026-10-14). Clearing still compares against `before`.
+  const inherited = picks.length + 1 >= 4 ? new Set(warnings(draft, data.champions, true).map((w) => w.id)) : before;
   const eligibleSupports = savedSupports(draft, data.botPairings);
   const kits = kitsFor(data.champions);
   const kitById = new Map(kits.map((k) => [k.id, k]));
@@ -322,7 +325,7 @@ export function recommend(draft: Draft, enemyIds: string[], data: RecommendData,
 
       const next = { ...draft, [role]: c.id };
       const after = warnings(next, data.champions);
-      for (const w of after) if (!before.has(w.id) && OTHER_WARNINGS.includes(w.id)) parts.push({ kind: "risk", points: -1.5, text: `Triggers "${w.label}": ${w.why}` });
+      for (const w of after) if (!inherited.has(w.id) && OTHER_WARNINGS.includes(w.id)) parts.push({ kind: "risk", points: -1.5, text: `Triggers "${w.label}": ${w.why}` });
       for (const id of before) if (OTHER_WARNINGS.includes(id) && !after.some((w) => w.id === id)) parts.push({ kind: "need", points: 1.5, text: `Clears "${RULES.find((r) => r.id === id)!.label}"` });
       // A strong champion can still be a bad late pick: count the holes left against the picks left to fill them.
       const left = open.length - 1;

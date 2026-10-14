@@ -226,9 +226,11 @@ export function pickIdentity(scores: IdentityScore[]) {
 
 const W = (id: string, kind: InsightKind, severity: Severity, label: string, text: string, fixes: NeedId[], weight = 0, short?: string): Insight => ({ id, kind, severity, label, text, fixes, weight, short });
 
-export function weaknesses(slots: Slot[], f: Facts = facts(slots), ids: IdentityScore[] = identities(slots, f)): Insight[] {
+// `asTeam` reads a smaller draft with the team-wide rules on. A candidate's read uses it for the draft before the pick
+// that reaches ANALYSIS.teamRules, so a weakness the earlier picks already had counts as inherited, not created.
+export function weaknesses(slots: Slot[], f: Facts = facts(slots), ids: IdentityScore[] = identities(slots, f), asTeam = false): Insight[] {
   const out: Insight[] = [];
-  const team = f.n >= T.teamRules;
+  const team = f.n >= T.teamRules || (asTeam && f.n > 0);
   const has = (id: IdentityId) => { const p = pickIdentity(ids); return p.primary?.id === id || p.secondary?.id === id; };
 
   // Fight structure
@@ -468,7 +470,7 @@ export function roleNeeds(open: Role[], all: RoleNeed[], champions: ChampionKit[
 
 // ---------- candidates: fixes, tradeoffs, best fix ----------
 
-export interface CandidateRead { champion: string; role: Role; fixes: RoleNeed[]; fixScore: number; tradeoffs: string[]; also: string[] }
+export interface CandidateRead { champion: string; role: Role; fixes: RoleNeed[]; fixScore: number; tradeoffs: string[]; also: string[]; changes: WeaknessChanges }
 
 export function readCandidate(c: ChampionKit, role: Role, draft: Draft, champions: ChampionKit[], needs: RoleNeed[], enemy: string[] = []): CandidateRead {
   const before = slotsOf(draft, champions);
@@ -485,14 +487,49 @@ export function readCandidate(c: ChampionKit, role: Role, draft: Draft, champion
   if (c.kit.curve.early <= 1 && fa.curve.early <= 2) tradeoffs.push("Adds to a slow early game");
   if (c.kit.curve.late <= 1 && fa.curve.late <= 2) tradeoffs.push("Falls off late");
   if (c.fightStart === "none" && threatOf(c, role).damageThreat <= 1 && !fa.primary.length) tradeoffs.push("Does not start fights");
-  const beforeIds = new Set(weaknesses(before, fa).map((w) => w.id));
-  for (const w of weaknesses(after, fb)) if (!beforeIds.has(w.id) && w.severity !== "minor" && !["no-fight-start", "no-frontline", "no-sustained", "low-tank-damage", "low-waveclear", "follow-up-no-engage", "no-engage"].includes(w.id)) tradeoffs.push(`Creates: ${w.label}`);
+  const changes = weaknessChanges(before, after, fa, fb);
+  for (const w of changes.creates) if (w.severity !== "minor" && !UNFIXED.includes(w.id)) tradeoffs.push(`Creates: ${w.label}`);
   if (enemy.length) {
     const vb = new Set(versus(before, slotsOf(enemyDraft(enemy, champions), champions)).map((w) => w.id));
     for (const w of versus(after, slotsOf(enemyDraft(enemy, champions), champions))) if (!vb.has(w.id) && w.kind === "threat") tradeoffs.push(`Into their draft: ${w.label}`);
   }
   const fixScore = r1(sum(fixes.map((n) => n.priority)));
-  return { champion: c.id, role, fixes, fixScore, tradeoffs: [...new Set(tradeoffs)].slice(0, 3), also: [] };
+  return { champion: c.id, role, fixes, fixScore, tradeoffs: [...new Set(tradeoffs)].slice(0, 3), also: [], changes };
+}
+
+// Weaknesses that describe a job nobody has done yet. A pick that does not do the job leaves them unresolved; it never
+// creates them, so they are never a tradeoff.
+const UNFIXED = ["no-fight-start", "no-frontline", "no-sustained", "low-tank-damage", "low-waveclear", "follow-up-no-engage", "no-engage"];
+
+export interface WeaknessChanges {
+  creates: Insight[];    // new with this pick: the pick introduces it
+  worsens: Insight[];    // already there, more severe after the pick (shown, not scored)
+  unresolved: Insight[]; // already there at the same severity: inherited, not the pick's fault
+  improves: Insight[];   // already there, less severe after the pick (the "after" insight)
+  fixes: Insight[];      // gone after the pick (the "before" insight)
+}
+
+/**
+ * How one pick changes the comp's weaknesses. The draft before the pick is read with the team-wide rules on whenever
+ * the pick reaches ANALYSIS.teamRules (alan, 2026-10-14): a weakness the first three picks already had becomes visible
+ * at four picks, and the fourth pick is not charged for it.
+ */
+export function weaknessChanges(before: Slot[], after: Slot[], fa: Facts = facts(before), fb: Facts = facts(after)): WeaknessChanges {
+  const asTeam = fb.n >= T.teamRules;
+  const was = new Map(weaknesses(before, fa, identities(before, fa), asTeam).flatMap((w) => [w, ...(w.covers ?? []).map((id) => ({ ...w, id }))]).map((w) => [w.id, w]));
+  const now = weaknesses(after, fb);
+  const nowIds = new Set(now.flatMap((w) => [w.id, ...(w.covers ?? [])]));
+  const out: WeaknessChanges = { creates: [], worsens: [], unresolved: [], improves: [], fixes: [] };
+  for (const w of now) {
+    const prev = was.get(w.id) ?? (w.covers ?? []).map((id) => was.get(id)).find(Boolean);
+    if (!prev) out.creates.push(w);
+    else if (SEV[w.severity] > SEV[prev.severity]) out.worsens.push(w);
+    else if (SEV[w.severity] < SEV[prev.severity]) out.improves.push(w);
+    else out.unresolved.push(w);
+  }
+  const seen = new Set<string>();
+  for (const w of was.values()) if (!nowIds.has(w.id) && !(w.covers ?? []).some((id) => nowIds.has(id)) && !seen.has(w.label)) { seen.add(w.label); out.fixes.push(w); }
+  return out;
 }
 
 /** Enemy champion ids placed in their listed roles, for the enemy-aware rules. */
