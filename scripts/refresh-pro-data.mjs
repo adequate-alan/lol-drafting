@@ -5,7 +5,7 @@
 //
 // Reads Gol.gg with plain GET/POST requests a few seconds apart, as a browser would load the same public pages. A
 // refused request (403, 429, a challenge page) stops the run with an error: it is never retried around, and nothing is
-// written. Writes data/pro-games.json, data/meta.json, data/sources.json, data/pro-builds.json and data/build-assets.json
+// written. Only network faults (no connection, timeout, 502 / 503 / 504) are tried again, twice at most. Writes data/pro-games.json, data/meta.json, data/sources.json, data/pro-builds.json and data/build-assets.json
 // (player builds and their Data Dragon names and icons) only when verified data changed, and
 // reports `changed=true|false` to GitHub Actions.
 import { appendFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -23,15 +23,40 @@ const UA = "lol-drafting-refresh/1.0 (+https://github.com/adequate-alan/lol-draf
 const PAUSE_MS = Number(process.env.GOLGG_PAUSE_MS ?? 2500);
 let requests = 0, last = 0;
 
+// A connection that never opened, timed out or met a gateway error (502 / 503 / 504) is a network fault, not a refusal:
+// it is tried again after a longer pause, at most twice (a run on 2026-10-14 died on one connect timeout to gol.gg).
+// A 403, 429 or challenge page is an answer and still stops the run at once.
+const RETRY_MS = (process.env.GOLGG_RETRY_MS ?? "15000,45000").split(",").map(Number);
+const transient = (status) => status === 502 || status === 503 || status === 504;
+
 async function get(url, { method = "GET", body } = {}) {
-  const wait = last + PAUSE_MS - Date.now();
-  if (wait > 0) await new Promise((r) => setTimeout(r, wait));
-  last = Date.now();
-  requests += 1;
-  const res = await fetch(url, {
-    method, body, signal: AbortSignal.timeout(30000),
-    headers: { "User-Agent": UA, ...(body ? { "Content-Type": "application/x-www-form-urlencoded" } : {}) },
-  });
+  for (let attempt = 0; ; attempt++) {
+    const wait = last + PAUSE_MS - Date.now();
+    if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+    last = Date.now();
+    requests += 1;
+    let res;
+    try {
+      res = await fetch(url, {
+        method, body, signal: AbortSignal.timeout(30000),
+        headers: { "User-Agent": UA, ...(body ? { "Content-Type": "application/x-www-form-urlencoded" } : {}) },
+      });
+    } catch (e) {
+      if (attempt >= RETRY_MS.length) throw e;
+      console.log(`${url}: ${e.cause?.code ?? e.name} (network); trying again in ${RETRY_MS[attempt] / 1000} s.`);
+      await new Promise((r) => setTimeout(r, RETRY_MS[attempt]));
+      continue;
+    }
+    if (transient(res.status) && attempt < RETRY_MS.length && !res.headers.get("cf-mitigated")) {
+      console.log(`${url}: HTTP ${res.status} (gateway); trying again in ${RETRY_MS[attempt] / 1000} s.`);
+      await new Promise((r) => setTimeout(r, RETRY_MS[attempt]));
+      continue;
+    }
+    return answer(url, res);
+  }
+}
+
+async function answer(url, res) {
   const text = await res.text();
   if (res.headers.get("cf-mitigated") || /challenge-platform|cf-chl|<title>Just a moment/i.test(text))
     throw new Error(`${url}: the site answered with a bot challenge. Not bypassed; nothing written.`);

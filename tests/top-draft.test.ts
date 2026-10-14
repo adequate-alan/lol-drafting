@@ -85,6 +85,9 @@ describe("classification", () => {
 
   it("does not call a response when the opposing top could still have gone to another role", () => {
     // Red picks Jayce (top or mid) first, then the top responds; red's mid is picked later, so Jayce's lane was unknown.
+    // Roster roles only: recorded games keep adding roles (Jayce was later played in the jungle), and a synthetic case
+    // must not change with each daily import.
+    const book = roleBook(champions, []);
     const red = ["jayce", "sejuani", "ryze", "kaisa", "rakan"];
     const g = game({ id: 4 }, [A, ["vi", "olaf", "orianna", "jhin", "nautilus"]], [red, ["jayce", "sejuani", "kaisa", "rakan", "ryze"]], "red");
     const olaf = topSelections([g], book).find((s) => s.champion === "olaf")!;

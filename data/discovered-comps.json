@@ -1,5 +1,5 @@
 {
-  "lastAddition": "2026-10-12",
+  "lastAddition": "2026-10-14",
   "comps": [
     {
       "id": "pro-83448-blue",
@@ -220,6 +220,67 @@
         {
           "game": 83459,
           "side": "blue"
+        }
+      ]
+    },
+    {
+      "id": "pro-83462-red",
+      "name": "Pick + Skirmish · Ryze",
+      "addedOn": "2026-10-14",
+      "primary": "pick",
+      "secondary": "skirmish",
+      "tags": [
+        "pick-catch",
+        "skirmish",
+        "hybrid"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "olaf",
+          "job": "Backline dive"
+        },
+        "JUNGLE": {
+          "champion": "lee-sin",
+          "job": "Catch + damage"
+        },
+        "MID": {
+          "champion": "ryze",
+          "job": "Side-lane carry"
+        },
+        "BOT": {
+          "champion": "jhin",
+          "job": "Poke"
+        },
+        "SUPPORT": {
+          "champion": "bard",
+          "job": "Catch"
+        }
+      },
+      "winCondition": "Win through vision and fog: catch a target with Lee Sin and Bard before each objective, then fight with the numbers advantage.",
+      "why": "Catch from Lee Sin and Bard, burst from Jhin; Olaf and Lee Sin win short fights before items.",
+      "timing": "Falls off late. Strongest before first items.",
+      "strengths": [
+        "Catch: Lee Sin and Bard",
+        "Peel and disengage: Lee Sin and Bard",
+        "Side lane: Ryze",
+        "Tank damage: Olaf",
+        "Mixed damage (58% physical)"
+      ],
+      "weaknesses": [
+        {
+          "label": "Short range",
+          "severity": "moderate"
+        },
+        {
+          "label": "Thin frontline",
+          "severity": "minor"
+        }
+      ],
+      "difficulty": "medium",
+      "games": [
+        {
+          "game": 83462,
+          "side": "red"
         }
       ]
     },
@@ -451,6 +512,122 @@
           "side": "red"
         }
       ]
+    },
+    {
+      "id": "pro-83542-red",
+      "name": "Front-to-back + Wombo · Viktor",
+      "addedOn": "2026-10-14",
+      "primary": "front-to-back",
+      "secondary": "wombo",
+      "tags": [
+        "front-to-back",
+        "wombo",
+        "hybrid",
+        "objective-control"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "ambessa",
+          "job": "Catch + damage"
+        },
+        "JUNGLE": {
+          "champion": "sejuani",
+          "job": "Hard engage"
+        },
+        "MID": {
+          "champion": "viktor",
+          "job": "AoE damage"
+        },
+        "BOT": {
+          "champion": "kalista",
+          "job": "Ranged DPS"
+        },
+        "SUPPORT": {
+          "champion": "renata-glasc",
+          "job": "Peel"
+        }
+      },
+      "winCondition": "Set up first around objectives, let Sejuani start fights, and play front-to-back through Viktor and Kalista.",
+      "why": "Sejuani in front, Viktor and Kalista dealing damage from range; Sejuani, Viktor and Renata Glasc stack AoE crowd control.",
+      "timing": "Strongest around two to three items.",
+      "strengths": [
+        "Fight start: Sejuani",
+        "Side lane: Ambessa",
+        "Mixed damage (56% physical)"
+      ],
+      "weaknesses": [],
+      "difficulty": "easy",
+      "games": [
+        {
+          "game": 83542,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "id": "pro-83576-blue",
+      "name": "Protect + Skirmish · Aphelios",
+      "addedOn": "2026-10-14",
+      "primary": "protect",
+      "secondary": "skirmish",
+      "tags": [
+        "protect-the-carry",
+        "skirmish",
+        "hybrid"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "yorick",
+          "job": "Side-lane carry"
+        },
+        "JUNGLE": {
+          "champion": "gragas",
+          "job": "Catch + damage"
+        },
+        "MID": {
+          "champion": "ahri",
+          "job": "Catch + damage"
+        },
+        "BOT": {
+          "champion": "aphelios",
+          "job": "Ranged DPS"
+        },
+        "SUPPORT": {
+          "champion": "lulu",
+          "job": "Peel"
+        }
+      },
+      "winCondition": "Play around Aphelios: Gragas and Lulu stay with Aphelios and let the enemy dive into you.",
+      "why": "Gragas and Lulu protect Aphelios; Yorick, Gragas and Ahri win short fights before items.",
+      "timing": "Even across the game; no clear power spike.",
+      "strengths": [
+        "Catch: Gragas and Ahri",
+        "Peel and disengage: Gragas and Lulu",
+        "Side lane: Yorick",
+        "Mixed damage (45% physical)",
+        "Scales into the late game"
+      ],
+      "weaknesses": [
+        {
+          "label": "No on-demand engage",
+          "severity": "moderate"
+        },
+        {
+          "label": "Short range",
+          "severity": "moderate"
+        },
+        {
+          "label": "Thin frontline",
+          "severity": "minor"
+        }
+      ],
+      "difficulty": "easy",
+      "games": [
+        {
+          "game": 83576,
+          "side": "blue"
+        }
+      ]
     }
   ],
   "variations": [
@@ -608,6 +785,23 @@
       ]
     },
     {
+      "of": "pro-83457-red",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "qiyana",
+        "MID": "orianna",
+        "BOT": "xayah",
+        "SUPPORT": "rakan"
+      },
+      "addedOn": "2026-10-14",
+      "games": [
+        {
+          "game": 83563,
+          "side": "blue"
+        }
+      ]
+    },
+    {
       "of": "pro-83459-blue",
       "picks": {
         "TOP": "rumble",
@@ -621,6 +815,40 @@
         {
           "game": 83520,
           "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "pro-83462-red",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "naafiri",
+        "MID": "ryze",
+        "BOT": "jhin",
+        "SUPPORT": "bard"
+      },
+      "addedOn": "2026-10-14",
+      "games": [
+        {
+          "game": 83573,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "pro-83469-blue",
+      "picks": {
+        "TOP": "renekton",
+        "JUNGLE": "jarvan-iv",
+        "MID": "sylas",
+        "BOT": "kalista",
+        "SUPPORT": "renata-glasc"
+      },
+      "addedOn": "2026-10-14",
+      "games": [
+        {
+          "game": 83604,
+          "side": "blue"
         }
       ]
     },
@@ -676,6 +904,23 @@
       ]
     },
     {
+      "of": "pro-83521-red",
+      "picks": {
+        "TOP": "renekton",
+        "JUNGLE": "vi",
+        "MID": "viktor",
+        "BOT": "lucian",
+        "SUPPORT": "milio"
+      },
+      "addedOn": "2026-10-14",
+      "games": [
+        {
+          "game": 83574,
+          "side": "red"
+        }
+      ]
+    },
+    {
       "of": "pro-83529-red",
       "picks": {
         "TOP": "olaf",
@@ -688,6 +933,57 @@
       "games": [
         {
           "game": 83538,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "pro-83542-red",
+      "picks": {
+        "TOP": "kennen",
+        "JUNGLE": "trundle",
+        "MID": "viktor",
+        "BOT": "kalista",
+        "SUPPORT": "renata-glasc"
+      },
+      "addedOn": "2026-10-14",
+      "games": [
+        {
+          "game": 83580,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "pro-83576-blue",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "lee-sin",
+        "MID": "ahri",
+        "BOT": "yunara",
+        "SUPPORT": "lulu"
+      },
+      "addedOn": "2026-10-14",
+      "games": [
+        {
+          "game": 83603,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "counter-engage-front-to-back",
+      "picks": {
+        "TOP": "gnar",
+        "JUNGLE": "nocturne",
+        "MID": "taliyah",
+        "BOT": "xayah",
+        "SUPPORT": "rakan"
+      },
+      "addedOn": "2026-10-14",
+      "games": [
+        {
+          "game": 83604,
           "side": "red"
         }
       ]

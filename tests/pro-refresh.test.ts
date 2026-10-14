@@ -9,6 +9,7 @@ import { buildGame, championResolver, firstPickOf, isComplete, seriesProblems } 
 import { refresh, urls, type Get } from "@/scripts/golgg/refresh.mjs";
 import { draftsFromGames, freshness, gameSourceId, resultsFromGames, sourcesFromGames, stageLabel } from "@/lib/pro-games";
 import { Files, type ProGames } from "@/lib/schema";
+import { lastCheckedRun } from "@/components/ProFreshness";
 
 const fixture = (f: string) => readFileSync(join(process.cwd(), "tests/fixtures/golgg", f), "utf8");
 const raw = <T,>(f: string): T => JSON.parse(readFileSync(join(process.cwd(), "data", f), "utf8"));
@@ -218,7 +219,19 @@ describe("daily refresh", () => {
     const written = [...src.matchAll(/write\("([^"]+)"|join\(dataDir, "([^"]+)"\), compactJson/g)].map((m) => m[1] ?? m[2]).sort();
     expect(written).toEqual(["build-assets.json", "meta.json", "pro-builds.json", "pro-games.json", "sources.json"]);
     const wf = readFileSync(join(process.cwd(), ".github/workflows/refresh-pro-data.yml"), "utf8");
-    expect(wf).toMatch(/git add data\/pro-games\.json data\/meta\.json data\/sources\.json data\/pro-builds\.json data\/build-assets\.json\n/);
+    // The workflow stages the evidence files plus the one stored derived dataset, the Comp Library's discovered comps,
+    // regenerated from the new lineups (alan, 2026-10-14); saved pairings, pool tiers and proposed synergy never.
+    expect(wf).toMatch(/git add data\/pro-games\.json data\/meta\.json data\/sources\.json data\/pro-builds\.json data\/build-assets\.json data\/discovered-comps\.json reports\/comp-discovery\.md\n/);
+    expect(wf).toMatch(/run: npx tsx scripts\/discover-comps\.ts\n/);
+    expect(wf.indexOf("scripts/discover-comps.ts")).toBeLessThan(wf.indexOf("run: npm test"));
+  });
+
+  it("never counts a schedule that stopped at the time gate as a check", () => {
+    const run = (start: string, seconds: number) => ({ run_started_at: start, updated_at: new Date(Date.parse(start) + seconds * 1000).toISOString() });
+    // Newest first, as GitHub lists them: an 8-second gate skip, then the last run that really read Gol.gg.
+    expect(lastCheckedRun([run("2026-10-14T06:08:30Z", 8), run("2026-10-13T19:51:41Z", 150)])).toBe("2026-10-13T19:54:11.000Z");
+    expect(lastCheckedRun([run("2026-10-14T06:08:30Z", 8)])).toBeNull();
+    expect(lastCheckedRun(undefined)).toBeNull();
   });
 
   it("follows only Demacia Cup 2026 and Worlds 2026", () => {

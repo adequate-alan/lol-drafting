@@ -5,7 +5,7 @@ import { day, useLastRun } from "./ProFreshness";
 // GitHub's public Actions API, and when it last added a comp or a variation (stored with the data). The run commits
 // only when the library changes, so the two dates differ on quiet weeks.
 export function CompFreshness({ lastAddition }: { lastAddition: string | null }) {
-  const reviewed = useLastRun("discover-comps.yml", "comp-library-review");
+  const reviewed = useLastRun("discover-comps.yml", "comp-library-review-v2");
   return (
     <p className="pro-freshness xs muted">
       {reviewed && <span title={new Date(reviewed).toLocaleString("en-US", { timeZone: "America/New_York", timeZoneName: "short" })}>Library reviewed: {day(reviewed)}</span>}

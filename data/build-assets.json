@@ -753,6 +753,14 @@
           "from": [3057, 3113, 1026],
           "kind": "completed"
         },
+        "3102": {
+          "name": "Banshee's Veil",
+          "gold": 3000,
+          "stats": ["105 Ability Power", "40 Magic Resist"],
+          "text": "Periodically blocks enemy abilities",
+          "from": [1058, 4632],
+          "kind": "completed"
+        },
         "3107": {
           "name": "Redemption",
           "gold": 2300,
@@ -831,6 +839,12 @@
           "stats": ["90 Ability Power", "600 Mana", "15 Ability Haste"],
           "text": "Partner with an ally to protect each other",
           "from": [3802, 1026],
+          "kind": "completed"
+        },
+        "3121": {
+          "name": "Fimbulwinter",
+          "gold": 2400,
+          "stats": ["550 Health", "1000 Mana", "15 Ability Haste"],
           "kind": "completed"
         },
         "3123": {
@@ -950,6 +964,14 @@
           "stats": ["60 Ability Power", "350 Health", "20 Ability Haste"],
           "text": "Activate to dash forward and unleash a fiery explosion",
           "from": [3145, 3067, 1028],
+          "kind": "completed"
+        },
+        "3153": {
+          "name": "Blade of The Ruined King",
+          "gold": 3200,
+          "stats": ["40 Attack Damage", "25% Attack Speed", "10% Life Steal"],
+          "text": "Deals damage based on target's Health, can steal Move Speed",
+          "from": [1053, 1043, 1037],
           "kind": "completed"
         },
         "3155": {
@@ -1369,6 +1391,13 @@
           "gold": 3000,
           "stats": ["45 Attack Damage", "40% Attack Speed", "4% Move Speed"],
           "from": [6690, 3051, 1043],
+          "kind": "completed"
+        },
+        "6673": {
+          "name": "Immortal Shieldbow",
+          "gold": 3000,
+          "stats": ["55 Attack Damage", "25% Critical Strike Chance"],
+          "from": [1037, 6670],
           "kind": "completed"
         },
         "6675": {
@@ -2629,6 +2658,28 @@
             "maxrank": 4
           }
         },
+        "kennen": {
+          "Q": {
+            "name": "Thundering Shuriken",
+            "icon": "KennenShurikenHurlMissile1.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Electrical Surge",
+            "icon": "KennenBringTheLight.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Lightning Rush",
+            "icon": "KennenLightningRush.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Slicing Maelstrom",
+            "icon": "KennenShurikenStorm.png",
+            "maxrank": 3
+          }
+        },
         "kled": {
           "Q": {
             "name": "Bear Trap on a Rope",
@@ -2736,6 +2787,28 @@
           "R": {
             "name": "Solar Flare",
             "icon": "LeonaSolarFlare.png",
+            "maxrank": 3
+          }
+        },
+        "lissandra": {
+          "Q": {
+            "name": "Ice Shard",
+            "icon": "LissandraQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Ring of Frost",
+            "icon": "LissandraW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Glacial Path",
+            "icon": "LissandraE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Frozen Tomb",
+            "icon": "LissandraR.png",
             "maxrank": 3
           }
         },
@@ -3814,6 +3887,28 @@
           "R": {
             "name": "Crescent Guard",
             "icon": "XinZhaoR.png",
+            "maxrank": 3
+          }
+        },
+        "yone": {
+          "Q": {
+            "name": "Mortal Steel",
+            "icon": "YoneQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Spirit Cleave",
+            "icon": "YoneW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Soul Unbound",
+            "icon": "YoneE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Fate Sealed",
+            "icon": "YoneR.png",
             "maxrank": 3
           }
         },
