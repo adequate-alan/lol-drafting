@@ -164,11 +164,11 @@ export function economyBurden(slots: Slot[]) {
 }
 
 // A carry who needs protecting: flagged needs-peel, or an immobile gold-hungry late-game ranged carry.
-const needsPeel = (s: Slot) => s.c.flags.includes("needs-peel") || (s.threat >= 3 && s.c.kit.resourceDemand >= 3 && s.c.kit.range >= 2 && s.c.kit.backlineAccess === 0 && s.c.kit.curve.late >= 3);
+export const needsPeel = (s: Slot) => s.c.flags.includes("needs-peel") || (s.threat >= 3 && s.c.kit.resourceDemand >= 3 && s.c.kit.range >= 2 && s.c.kit.backlineAccess === 0 && s.c.kit.curve.late >= 3);
 // The carry the comp has to protect; a carry who dives with a dive comp is not waiting for peel.
-const exposedCarries = (slots: Slot[], dive: boolean) => slots.filter((s) => needsPeel(s) && !(dive && s.c.kit.backlineAccess >= 2));
-const peeler = (s: Slot) => s.c.attrs.peel >= 2 || s.c.kit.disengage >= 2;
-const diver = (s: Slot) => s.c.kit.backlineAccess >= 2 && (s.threat >= 2 || s.c.fightStart === "primary");
+export const exposedCarries = (slots: Slot[], dive: boolean) => slots.filter((s) => needsPeel(s) && !(dive && s.c.kit.backlineAccess >= 2));
+export const peeler = (s: Slot) => s.c.attrs.peel >= 2 || s.c.kit.disengage >= 2;
+export const diver = (s: Slot) => s.c.kit.backlineAccess >= 2 && (s.threat >= 2 || s.c.fightStart === "primary");
 
 // ---------- identity ----------
 
@@ -328,7 +328,7 @@ function collapse(out: Insight[]): Insight[] {
   return [merged, ...out.filter((w) => w !== ad && w !== tank)];
 }
 
-const SEV: Record<Severity, number> = { major: 3, moderate: 2, minor: 1 };
+export const SEV: Record<Severity, number> = { major: 3, moderate: 2, minor: 1 };
 const rank = (xs: Insight[]) => xs.sort((a, b) => SEV[b.severity] - SEV[a.severity] || b.weight - a.weight);
 
 // ---------- enemy-aware ----------
@@ -390,7 +390,7 @@ export function timing(f: Facts) {
 
 // ---------- win condition ----------
 
-function winCondition(id: IdentityId, slots: Slot[], f: Facts, secondary: IdentityId | null): string {
+export function winCondition(id: IdentityId, slots: Slot[], f: Facts, secondary: IdentityId | null): string {
   const starters = f.primary.length ? f.primary : f.catchers;
   const carries = f.carries.length ? f.carries : slots;
   const ranged = carries.filter((s) => s.c.kit.range >= 2);

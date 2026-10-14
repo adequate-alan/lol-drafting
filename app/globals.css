@@ -1479,6 +1479,12 @@ button.fit-score:hover, button.fit-score.is-open { color: var(--text); }
 .cc-more > summary { cursor: pointer; font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--w-control); color: var(--text-muted); }
 .cc-more[open] > summary { margin-bottom: var(--s3); }
 .cc-more > .cc-section + .cc-section { margin-top: var(--s5); }
+.cc-plan { display: grid; gap: var(--s3); }
+.cc-jobs { display: grid; gap: var(--s1); margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
+.cc-jobs li { display: grid; grid-template-columns: 1.2em minmax(0, 1fr); column-gap: var(--s2); }
+.cc-jobs li.met > span:first-child { color: var(--success); }
+.cc-jobs li.missing > span:first-child { color: var(--danger); }
+.cc-jobs .t { grid-column: 2; font-size: var(--fs-xs); color: var(--text-muted); }
 .cc-scores { display: grid; gap: 1px; margin: 0; padding: 0; list-style: none; }
 .cc-scores li { display: flex; justify-content: space-between; font-size: var(--fs-xs); color: var(--text-muted); }
 .warning-item { padding: 2px 0 2px var(--s4); border-left: 1px solid var(--border-strong); }

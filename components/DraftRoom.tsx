@@ -65,7 +65,7 @@ const enemyDraftOf = (list: (string | undefined)[]): EnemyDraft => Object.fromEn
 const ORDER_NOTE = "Order: your preferred pairing first, then comp fit (synergy with your picks, team needs, matchups and risks). "
   + "Synergy, Pro, Counter, First rotation and Pro priority are labels on each row; pro game counts, counters and presence never move a row. Ties go to the row with more signals.";
 
-export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, initialFocus, initialFilter = "all", initialPatch, metaPicks }: {
+export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, initialFocus, initialFilter = "all", initialPatch, metaPicks, planPreview = false }: {
   data: DraftData;
   sources: Record<string, Source>;
   drawerData: DrawerData;
@@ -74,6 +74,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   initialFocus?: Role; initialFilter?: Filter; // restored on the way back from Pro Builds
   initialPatch?: string; // ?patch=: the pro meta patch, when chosen
   metaPicks: Record<string, { picks: number; winRate: number; lowSample: boolean }>;
+  planPreview?: boolean; // ?plan=1: the plan-aware Comp Check read beside the live one, for review
 }) {
   const [draft, setDraft] = useState<Draft>(initial);
   // One enemy slot per role, in ROLES order.
@@ -147,6 +148,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
     if (nextPatch) q.set("patch", patchLabel(nextPatch));
     // The role tab the user chose, so a refresh or Back keeps it (only while that role is open).
     if (nextFocus && !next[nextFocus]) q.set("focus", nextFocus.toLowerCase());
+    if (planPreview) q.set("plan", "1");
     // window.location keeps the GitHub Pages base path; usePathname() would drop it. Marked as the room's own write so
     // the page keeps this room (components/views/DraftRoomView.tsx).
     markOwnQuery(q.toString());
@@ -407,7 +409,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
 
         </div>
 
-        <CompCheck draft={draft} enemyIds={enemyIds} champions={data.champions} botPairings={data.botPairings} active={active}
+        <CompCheck plan={planPreview} draft={draft} enemyIds={enemyIds} champions={data.champions} botPairings={data.botPairings} active={active}
           bestOverall={activeRows.find((c) => !c.theoretical)?.champion} bestFixId={active ? fits[active]?.find((r) => r.bestFix)?.champion : undefined} proIds={proIds} names={names} grid={(siege, disengage) => <Indicators prof={prof} needs={needs} picks={picks.length} siege={siege} disengage={disengage} />}>
           <div className="cc-section">
             <div className="cc-label">Rule checks</div>

@@ -7,6 +7,7 @@ import { useMemo, type ReactNode } from "react";
 import { analyze, bestFix, CONFIDENCE_LABEL, IDENTITY_LABEL, SIEGE_LABEL, type Insight } from "@/lib/model-v2/analyze";
 import type { Draft } from "@/lib/model-v2/analyze";
 import { convertKits } from "@/lib/model-v2/kits";
+import { analyzePlan, type PlanFinding } from "@/lib/model-v2/plan";
 import type { BotPairing, Champion, Role } from "@/lib/schema";
 import { SourceBadge } from "./ui";
 import { compSummary, summaryText } from "@/lib/comp-summary";
@@ -23,10 +24,52 @@ function Point({ w, open = false }: { w: Insight; open?: boolean }) {
   );
 }
 
+const TIER = { critical: "Critical", weakness: "Weakness", accepted: "Accepted" } as const;
+const TIER_SEV = { critical: "major", weakness: "moderate", accepted: "minor" } as const;
+
+function PlanPoint({ w }: { w: PlanFinding }) {
+  return (
+    <details className={`cc-point ${TIER_SEV[w.tier]}`}>
+      <summary><span className={`sev ${TIER_SEV[w.tier]}`}>{TIER[w.tier]}</span>{w.label}</summary>
+      <p>{w.why}</p>
+    </details>
+  );
+}
+
+/** Preview of the plan-aware read (lib/model-v2/plan.ts, ?plan=1): does the comp have what its own win condition
+ *  needs? Shown beside the live read for review; it never feeds a score. */
+function PlanPreview({ draft, kits, enemyIds, active }: { draft: Draft; kits: ReturnType<typeof convertKits>; enemyIds: string[]; active?: Role }) {
+  const vs = enemyIds.join(",");
+  const p = useMemo(() => analyzePlan(draft, kits, enemyIds), [draft, kits, vs]);
+  if (p.confidence === "none") return null;
+  const needs = active ? (p.roleNeeds[active] ?? []).slice(0, 3) : [];
+  // A missing plan job is already on the job list with its reason; the points below are everything else.
+  const points = [...p.weaknesses, ...p.more].filter((w) => w.source !== "plan");
+  return (
+    <div className="cc-section cc-plan">
+      <div className="cc-label">Plan check · preview</div>
+      <p className="cc-headline">{p.headline}</p>
+      {p.plan && (
+        <ul className="cc-jobs">{p.plan.jobs.map((j) => (
+          <li key={j.id} className={j.met ? "met" : "missing"}><span aria-hidden="true">{j.met ? "✓" : "✗"}</span><span className="sr-only">{j.met ? "Has" : "Missing"}: </span>{j.label}{!j.met && <span className="t">{j.missing}</span>}</li>
+        ))}</ul>
+      )}
+      {!p.weaknesses.length ? <p className="cc-ok">{p.confidence === "early" ? "Nothing blocks the plan yet." : "Nothing blocks the plan."}</p>
+        : points.slice(0, 3).map((w) => <PlanPoint key={w.id} w={w} />)}
+      {points.length > 3 && <details className="cc-more"><summary>{points.length - 3} more {points.length === 4 ? "weakness" : "weaknesses"}</summary>{points.slice(3).map((w) => <PlanPoint key={w.id} w={w} />)}</details>}
+      {p.accepted.length > 0 && <details className="cc-more"><summary>Accepted tradeoffs ({p.accepted.length})</summary>{p.accepted.map((w) => <PlanPoint key={w.id} w={w} />)}</details>}
+      {active && needs.length > 0 && <div className="cc-label">{active.charAt(0) + active.slice(1).toLowerCase()} should bring</div>}
+      {active && needs.length > 0 && (
+        <ol className="cc-needs">{needs.map((n) => <li key={n.id}><b>{n.label}</b><span>{n.because}</span></li>)}</ol>
+      )}
+    </div>
+  );
+}
+
 export interface SiegeCell { value: string; title: string }
 
-export function CompCheck({ draft, enemyIds, champions, botPairings, active, bestOverall, bestFixId, proIds = [], names, grid, children }: {
-  draft: Draft; enemyIds: string[]; champions: Champion[]; botPairings: BotPairing[]; active?: Role; bestOverall?: string;
+export function CompCheck({ plan = false, draft, enemyIds, champions, botPairings, active, bestOverall, bestFixId, proIds = [], names, grid, children }: {
+  plan?: boolean; draft: Draft; enemyIds: string[]; champions: Champion[]; botPairings: BotPairing[]; active?: Role; bestOverall?: string;
   bestFixId?: string; // the ranking's best fix, so the rail and the list name the same champion
   proIds?: string[]; // candidates the list already shows through their pro games: not repeated as theoretical
   names: Record<string, string>; grid?: (siege: SiegeCell, disengage: SiegeCell) => ReactNode; children?: ReactNode;
@@ -76,6 +119,8 @@ export function CompCheck({ draft, enemyIds, champions, botPairings, active, bes
             {!r.weakPoints.length ? <p className="cc-ok">{r.confidence === "early" ? "Nothing major yet." : "None found."}</p>
               : r.weakPoints.map((w, i) => <Point key={w.id} w={w} open={i === 0 && w.severity === "major"} />)}
           </div>
+
+          {plan && <PlanPreview draft={draft} kits={kits} enemyIds={enemyIds} active={active} />}
 
           {active && (
             <div className="cc-section">

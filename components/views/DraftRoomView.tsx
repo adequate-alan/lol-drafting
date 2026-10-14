@@ -37,6 +37,7 @@ export function DraftRoomView({ data, sources, drawerData, metaPicks }: {
   if (key.current === undefined || !ownQuery(q.toString())) key.current = JSON.stringify(initial) + JSON.stringify(initialEnemy) + (q.get("patch") ?? "");
   return (
     <DraftRoom key={key.current} data={data} sources={sources} drawerData={drawerData}
-      initial={initial} initialEnemy={initialEnemy} initialFocus={initialFocus} initialFilter={initialFilter} initialPatch={q.get("patch") ?? undefined} metaPicks={metaPicks} />
+      initial={initial} initialEnemy={initialEnemy} initialFocus={initialFocus} initialFilter={initialFilter} initialPatch={q.get("patch") ?? undefined} metaPicks={metaPicks}
+      planPreview={q.get("plan") === "1"} />
   );
 }
