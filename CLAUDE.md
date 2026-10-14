@@ -595,6 +595,12 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   identity, win condition, ranked weak points, role needs with best fix vs best overall, timing, and the compact grid.
   Siege (`siegeOf`, alan 2026-10-10) is its own metric, not Poke: structure pressure first, then range, waveclear,
   poke and disengage; it feeds the Poke / siege identity.
+  **Plan check · preview** (alan, 2026-10-14; `lib/model-v2/plan.ts`, `tests/comp-plan.test.ts`, shown only with `?plan=1`
+  until alan reviews it): asks whether the comp is missing something its own win condition needs. Jobs per plan
+  (front-to-back, dive, poke, protect, pick, skirmish, wombo, split, tempo, scaling) and every current rule re-read as
+  critical, weakness or accepted tradeoff with its reason; a rule merges into a plan job only when that job is reported
+  missing, so nothing is silently dropped. Bot duo reads only (Mid/Jungle pair facts showed no signal). Never scored;
+  validation on pro vs shuffled lineups: `npx tsx scripts/diagnostics/plan-validate.ts`.
 
 ## Commit authorship
 
