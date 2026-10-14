@@ -528,7 +528,7 @@ const midTitle = (t: TopCtx, names: Record<string, string>) => {
   const m = t.mid!, mid = names[t.allyMid!] ?? t.allyMid!;
   const order = [`jungler first ${m.jungleFirst}`, `same turn ${m.together}`, `mid first ${m.midFirst}`, ...(m.unknown ? [`no order recorded ${m.unknown}`] : [])].join(", ");
   const patches = Object.entries(m.byPatch).sort(([a], [b]) => comparePatch(b, a)).map(([p, n]) => `${patchLabel(p)}: ${n}`).join(", ");
-  return `With ${mid} at mid in ${m.games} pro game${m.games === 1 ? "" : "s"} (${m.series} series, won ${m.wins}/${m.games}; ${patches}): ${order}. ${m.series >= 2 ? "A repeated" : "An observed"} pro pairing, not a saved one; picked after the mid does not mean picked for it. Counted from every recorded game, the LCK archive included, so it can exceed the Pro label, which lists stored drafts. Never part of the order or the fit.`;
+  return `Every recorded pro game with ${mid} at mid, the LCK archive included: ${m.games} game${m.games === 1 ? "" : "s"} (${m.series} series, won ${m.wins}/${m.games}; ${patches}). The Pro label is narrower: stored drafts with your locked picks only, so it can show fewer. Order: ${order}. ${m.series >= 2 ? "A repeated" : "An observed"} pro pairing, not a saved one; picked after the mid does not mean picked for it. Never part of the order or the fit.`;
 };
 const compTitle = (r: CompResponse & { champions: string[] }, names: Record<string, string>) =>
   `${TRAIT_LABEL[r.trait]} was on the enemy board in ${r.with} of this jungler's ${r.picks} ordered pro picks (all patches), against ${Math.round((r.base / r.baseOf) * 100)}% of every jungle pick. On your enemy board now: ${r.champions.map((x) => names[x] ?? x).join(", ")}. A potential composition response read from kits (general draft logic): what was visible, not why teams picked, and not a counter. Never part of the order or the fit.`;
@@ -623,7 +623,8 @@ function FitRow({ c, tier, bot, names, proCtx, hovered, onHover, onPick, onOpen,
           <button type="button" className="name fit-lock" onClick={onPick} onFocus={() => onHover(true)} onBlur={() => onHover(false)}
             aria-label={`Lock ${name} at ${ROLE_LABEL[c.role]}`}>{name}</button>
           {chips.length > 0 && <span className="sig-line">{chips.map((s) => s.key === "pro" && c.pro
-            ? <ProEvidenceTrigger key={s.key} pro={c.pro} champion={c.champion} role={c.role} ctx={proCtx} />
+            ? <ProEvidenceTrigger key={s.key} pro={c.pro} champion={c.champion} role={c.role} ctx={proCtx}
+              mate={tctx?.mid && tctx.allyMid ? { name: names[tctx.allyMid] ?? tctx.allyMid, games: tctx.mid.games } : undefined} />
             : s.key === "counter" && counter ? <CounterTrigger key={s.key} c={counter} names={names} />
               : metaChip.has(s.key) && c.meta ? <MetaEvidenceTrigger key={s.key} s={c.meta} label={s.label} cls={s.key} names={names} />
               : s.href ? <Link key={s.key} className={`sig ${s.key} sig-link`} href={s.href} title={s.title}>{s.label}</Link>
