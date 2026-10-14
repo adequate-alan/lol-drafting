@@ -604,7 +604,14 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   trade; kit values unchanged), so a carry who only follows from range gets a minor "ranged follow-up, not an all-in";
   the read is structural, and enemy picks only tag a finding "exploited" / "less relevant" (`exposure`), never its
   tier; with four picks a critical gap an available champion closes is "Needed from the <role>" with the champions
-  that close it (saved-bot support rule applied, others theoretical), real severity only at five. Never scored;
+  that close it (saved-bot support rule applied, others theoretical), real severity only at five. Accuracy pass (alan,
+  2026-10-14, "critical = a serious inability to execute the plan"): one frontliner is a frontline and missing depth is
+  a weakness unless disengage covers it; protection counts points (strong protector 1.5, an engage that also protects
+  0.5, a self-protecting carry 0.5); split has one splitter and the four stall with waveclear plus space (disengage,
+  catch threats, globals); a carry who stops a dive alone and a covered rule whose plan job is met are weaknesses; a
+  lone bruiser with an enchanter is thin, not missing; anti-engage one short is a weakness. A fixer must fix the gap
+  within the same plan (`fifthPick`: fixes / switches / eases / unresolved); a pick that only changes the plan is named
+  apart (`switches`), never as a fix. Kit corrections are proposed to alan, never applied to clear a warning. Never scored;
   validation: `npx tsx scripts/diagnostics/plan-validate.ts` and `plan-review.ts`.
 
 ## Commit authorship

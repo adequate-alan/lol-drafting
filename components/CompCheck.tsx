@@ -33,6 +33,8 @@ const tierSev = (w: PlanFinding) => (w.tier === "critical" ? "major" : w.tier ==
 const list = (xs: string[]) => (xs.length > 4 ? `${xs.slice(0, 4).join(", ")} and ${xs.length - 4} more` : xs.length > 1 ? `${xs.slice(0, -1).join(", ")} or ${xs[xs.length - 1]}` : xs[0]);
 const fixersText = (w: PlanFinding) => w.fixers?.length ? `${list(w.fixers)} ${w.fixers.length === 1 ? "closes" : "close"} it.`
   : w.theoretical?.length ? `Only supports outside the bot's saved supports close it (theoretical): ${list(w.theoretical)}.` : "";
+// Picks that remove the gap only by changing what the comp is: named apart, never as a fix.
+const switchText = (w: PlanFinding) => w.switches?.length ? ` Not a fix, a different plan: ${list(w.switches)} would turn the comp into another plan without a critical gap.` : "";
 
 function Exposure({ w }: { w: PlanFinding }) {
   if (w.exposure === "exploited") return <span className="cc-exposure exploited">Against this enemy: {w.against}.</span>;
@@ -45,7 +47,7 @@ function PlanPoint({ w, open }: { w: PlanFinding; open: Role | null }) {
   return (
     <details className={`cc-point ${sev}`}>
       <summary><span className={`sev ${sev}`}>{tierLabel(w, open)}</span>{w.label}</summary>
-      <p>{w.why}{w.tier === "needed" ? ` ${fixersText(w)}` : ""}</p>
+      <p>{w.why}{w.tier === "needed" ? ` ${fixersText(w)}` : ""}{switchText(w)}</p>
       <Exposure w={w} />
     </details>
   );
@@ -73,7 +75,7 @@ function PlanPreview({ draft, kits, enemyIds, botPairings, active }: { draft: Dr
           const state = j.met ? "met" : w?.tier === "needed" ? "needed" : "missing";
           return (
             <li key={j.id} className={state}><span aria-hidden="true">{j.met ? "✓" : state === "needed" ? "○" : "✗"}</span><span className="sr-only">{j.met ? "Has" : state === "needed" ? "Needed from the last pick" : "Missing"}: </span>{j.label}
-              {!j.met && <span className="t">{cap(j.missing)}.{w && state === "needed" ? ` ${tierLabel(w, p.open)}: ${fixersText(w)}` : ""}</span>}
+              {!j.met && <span className="t">{cap(j.missing)}.{w && state === "needed" ? ` ${tierLabel(w, p.open)}: ${fixersText(w)}` : ""}{w ? switchText(w) : ""}</span>}
               {w && <Exposure w={w} />}
             </li>
           );

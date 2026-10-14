@@ -2,7 +2,7 @@
 // carries with enchanters, four-pick vs five-pick reads, enemy exposure on real matchups, and the pro lineups the read
 // still flags as critical. Diagnostic only. Usage: npx tsx scripts/diagnostics/plan-review.ts [out.json]
 import { writeFileSync } from "node:fs";
-import { analyzePlan, followOf } from "../../lib/model-v2/plan";
+import { analyzePlan, followOf, fifthPick, type FifthPick } from "../../lib/model-v2/plan";
 import { slotsOf } from "../../lib/model-v2/analyze";
 import { kits, lineups, nameOf } from "./load";
 import type { Role } from "../../lib/schema";
@@ -32,19 +32,27 @@ const sc = new Map<string, { n: number; flagged: boolean }>();
 for (const l of short) { const r = analyzePlan(l.picks, kits); const k = `${nameOf(l.picks.BOT)} + ${nameOf(l.picks.SUPPORT)}`; const c = sc.get(k) ?? { n: 0, flagged: [...r.weaknesses, ...r.more].some((w) => w.id === "duo-short-no-peel") }; c.n++; sc.set(k, c); }
 console.log(`\nSHORT-RANGE BOT CARRIES (${short.length})`); for (const [k, v] of [...sc].sort((a, b) => b[1].n - a[1].n)) console.log(" ", k.padEnd(28), v.n, v.flagged ? "flagged: no protector" : "ok");
 
-// 3. Four picks vs five
-let crit4 = 0, needed4 = 0, closedByReal = 0, unfixable = 0; const rows: string[] = [];
+// 3. Four picks vs five: what the real fifth pick did to each "needed" gap (fixes / switches plan / unresolved)
+let crit4 = 0, needed4 = 0, vanished = 0; const fifth = { fixes: 0, switches: 0, eases: 0, unresolved: 0 } as Record<FifthPick, number>; const rows: string[] = [];
+let named = 0, namedSwitch = 0;
 for (const l of pro) for (const drop of ROLES) {
   const d = { ...l.picks } as Partial<Record<Role, string>>; delete d[drop];
   const r4 = analyzePlan(d, kits, Object.values(l.enemy));
   const five = analyzePlan(l.picks, kits); const still = new Set(five.critical.map((x) => x.id));
   for (const x of [...r4.weaknesses, ...r4.more]) {
-    if (x.tier === "critical") { crit4++; unfixable++; }
-    if (x.tier === "needed") { needed4++; if (!still.has(x.id)) closedByReal++; else rows.push(`${l.team} drop ${drop}: ${x.label} still open after ${nameOf(l.picks[drop])}`); }
+    if (x.tier === "critical") crit4++;
+    if (x.switches) namedSwitch++;
+    if (x.tier !== "needed") continue;
+    needed4++; named += x.fixers?.length ?? 0;
+    if (!still.has(x.id)) vanished++;
+    const k = fifthPick(d, x.id, l.picks, kits)!; fifth[k]++;
+    if (k !== "fixes") rows.push(`${l.team} drop ${drop}: ${x.label} → ${nameOf(l.picks[drop])} ${k} (${five.identity.primary?.id} vs ${r4.identity.primary?.id})`);
   }
 }
-console.log(`\nFOUR PICKS (${pro.length * 5} states): needed ${needed4}, still critical (no available fix) ${crit4}; real 5th pick closed ${closedByReal}/${needed4} (${pct(closedByReal, needed4)})`);
-out.fourPick = { states: pro.length * 5, needed4, crit4, closedByReal };
+console.log(`\nFOUR PICKS (${pro.length * 5} states): needed ${needed4}, still critical (no fix within the plan) ${crit4}, with a plan switch named ${namedSwitch}`);
+console.log(`  real 5th pick: gap gone ${vanished}/${needed4} (old count); fixes ${fifth.fixes} (${pct(fifth.fixes, needed4)}), switched plan ${fifth.switches}, only eased ${fifth.eases}, unresolved ${fifth.unresolved}`);
+for (const r of rows.slice(0, 30)) console.log("  ", r);
+out.fourPick = { states: pro.length * 5, needed4, crit4, vanished, ...fifth };
 
 // 4. Enemy exposure on the real matchups
 const exp = { exploited: 0, structural: 0, "less-relevant": 0 } as Record<string, number>; const pokeRows: string[] = [];
