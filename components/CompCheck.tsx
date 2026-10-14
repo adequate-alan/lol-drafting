@@ -1,13 +1,14 @@
 "use client";
 
-// Comp Check: the deterministic comp diagnosis from lib/model-v2/analyze.ts (General Draft Logic layer). Identity,
-// win condition, the top weak points, what the active open role should bring, and the timing curve up front; the
-// numeric detail, the remaining reads and the old rule checks behind "Full analysis". Pro evidence never feeds it.
+// Comp Check: the plan-aware comp diagnosis from lib/model-v2/plan.ts (General Draft Logic layer; the default since
+// alan's approval, 2026-10-14). The plan and its jobs, critical gaps, weaknesses and accepted tradeoffs, what the open
+// role should bring, and the timing curve up front; enemy opportunities and identity scores behind "Full analysis".
+// Explanatory only: pro evidence never feeds it and it never feeds a score.
 import { useMemo, type ReactNode } from "react";
 import { analyze, bestFix, CONFIDENCE_LABEL, IDENTITY_LABEL, SIEGE_LABEL, type Insight } from "@/lib/model-v2/analyze";
 import type { Draft } from "@/lib/model-v2/analyze";
 import { convertKits } from "@/lib/model-v2/kits";
-import { analyzePlan, type PlanFinding } from "@/lib/model-v2/plan";
+import { analyzePlan, type PlanFinding, type PlanRead } from "@/lib/model-v2/plan";
 import type { BotPairing, Champion, Role } from "@/lib/schema";
 import { SourceBadge } from "./ui";
 import { compSummary, summaryText } from "@/lib/comp-summary";
@@ -53,50 +54,54 @@ function PlanPoint({ w, open }: { w: PlanFinding; open: Role | null }) {
   );
 }
 
-/** Preview of the plan-aware read (lib/model-v2/plan.ts, ?plan=1): does the comp have what its own win condition
- *  needs? Shown beside the live read for review; it never feeds a score. The read is structural (our picks only);
- *  enemy picks only tag the gaps they can exploit. */
-function PlanPreview({ draft, kits, enemyIds, botPairings, active }: { draft: Draft; kits: ReturnType<typeof convertKits>; enemyIds: string[]; botPairings: BotPairing[]; active?: Role }) {
+export interface SiegeCell { value: string; title: string }
+
+/** The plan read, computed once per board for every Comp Check surface (rail, phone line, header badge), so they
+ *  always describe the same comp. */
+export function usePlanRead(draft: Draft, enemyIds: string[], champions: Champion[], botPairings: BotPairing[]): PlanRead {
+  const kits = useMemo(() => convertKits(champions), [champions]);
   const vs = enemyIds.join(",");
-  const p = useMemo(() => analyzePlan(draft, kits, enemyIds, botPairings), [draft, kits, vs, botPairings]);
-  if (p.confidence === "none") return null;
-  const needs = active ? (p.roleNeeds[active] ?? []).slice(0, 3) : [];
-  // A missing plan job is already on the job list with its reason; the points below are everything else.
-  const points = [...p.weaknesses, ...p.more].filter((w) => w.source !== "plan");
-  const jobFinding = (id: string) => [...p.weaknesses, ...p.more].find((w) => w.id === `plan:${id}`);
+  return useMemo(() => analyzePlan(draft, kits, enemyIds, botPairings), [draft, kits, vs, botPairings]);
+}
+
+/** Which Comp Check grid cells the plan read flags, with the reason: a real (not accepted, not minor) finding that
+ *  asks for that kind of champion. The grid's numbers are kit facts; only this read colours them. */
+const CELL_NEEDS: Record<string, string[]> = {
+  Engage: ["engage", "fight-start"], Frontline: ["frontline", "second-frontline"], Peel: ["peel"], Disengage: ["disengage"],
+  "AD / AP": ["magic", "physical"], Sustained: ["sustained"],
+};
+export function planFlags(p: PlanRead): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (p.confidence === "none") return out;
+  for (const w of [...p.weaknesses, ...p.more]) {
+    if (w.tier === "weakness" && w.severity === "minor") continue;
+    for (const [cell, ids] of Object.entries(CELL_NEEDS)) if (!out[cell] && w.fixes.some((f) => ids.includes(f))) out[cell] = `${w.label}: ${w.why}`;
+  }
+  return out;
+}
+
+/** Draft Room header badge: the plan read's own count, never a separate rule set. */
+export function CompStatus({ read: p }: { read: PlanRead }) {
+  if (p.confidence === "none" || p.picks < 2) return null;
+  const real = [...p.weaknesses, ...p.more];
+  const needed = real.filter((w) => w.tier === "needed").length;
+  const weak = real.filter((w) => w.tier === "weakness" && w.severity !== "minor").length;
+  if (!p.critical.length && !needed && !weak) return <span className="badge success">No major weak points</span>;
   return (
-    <div className="cc-section cc-plan">
-      <div className="cc-label">Plan check · preview</div>
-      <p className="cc-headline">{p.headline}</p>
-      <p className="xs muted">{p.enemyRead === "none" ? "Reads your picks only; no enemy picks entered." : `Reads your picks; the ${p.enemyRead === "full" ? "" : "revealed "}enemy picks only mark which gaps they can exploit.`}</p>
-      {p.plan && (
-        <ul className="cc-jobs">{p.plan.jobs.map((j) => {
-          const w = jobFinding(j.id);
-          const state = j.met ? "met" : w?.tier === "needed" ? "needed" : "missing";
-          return (
-            <li key={j.id} className={state}><span aria-hidden="true">{j.met ? "✓" : state === "needed" ? "○" : "✗"}</span><span className="sr-only">{j.met ? "Has" : state === "needed" ? "Needed from the last pick" : "Missing"}: </span>{j.label}
-              {!j.met && <span className="t">{cap(j.missing)}.{w && state === "needed" ? ` ${tierLabel(w, p.open)}: ${fixersText(w)}` : ""}{w ? switchText(w) : ""}</span>}
-              {w && <Exposure w={w} />}
-            </li>
-          );
-        })}</ul>
-      )}
-      {!p.weaknesses.length ? <p className="cc-ok">{p.confidence === "early" ? "Nothing blocks the plan yet." : "Nothing blocks the plan."}</p>
-        : points.slice(0, 3).map((w) => <PlanPoint key={w.id} w={w} open={p.open} />)}
-      {points.length > 3 && <details className="cc-more"><summary>{points.length - 3} more {points.length === 4 ? "point" : "points"}</summary>{points.slice(3).map((w) => <PlanPoint key={w.id} w={w} open={p.open} />)}</details>}
-      {p.accepted.length > 0 && <details className="cc-more"><summary>Accepted tradeoffs ({p.accepted.length})</summary>{p.accepted.map((w) => <PlanPoint key={w.id} w={w} open={p.open} />)}</details>}
-      {active && needs.length > 0 && <div className="cc-label">{roleName(active)} should bring</div>}
-      {active && needs.length > 0 && (
-        <ol className="cc-needs">{needs.map((n) => <li key={n.id}><b>{n.label}</b><span>{n.because}</span></li>)}</ol>
-      )}
-    </div>
+    <span className="row tight">
+      {p.critical.length > 0 && <span className="badge danger">{p.critical.length} critical</span>}
+      {needed > 0 && <span className="badge caution">{needed} needed</span>}
+      {weak > 0 && <span className="badge caution">{weak} {weak === 1 ? "weakness" : "weaknesses"}</span>}
+    </span>
   );
 }
 
-export interface SiegeCell { value: string; title: string }
-
-export function CompCheck({ plan = false, draft, enemyIds, champions, botPairings, active, bestOverall, bestFixId, proIds = [], names, grid, children }: {
-  plan?: boolean; draft: Draft; enemyIds: string[]; champions: Champion[]; botPairings: BotPairing[]; active?: Role; bestOverall?: string;
+/** The Comp Check (alan, 2026-10-14: the plan-aware read is the default): does the comp have what its own win
+ *  condition needs? Plan jobs, critical gaps, weaknesses, accepted tradeoffs, what the open role should bring, and
+ *  enemy-exposure tags. Explanatory only: it never feeds a score. Best fix / Best overall come from the
+ *  recommendation ranking and say so. `legacy` (?legacy=1, a debugging switch) adds the previous rule list. */
+export function CompCheck({ read: p, legacy = false, draft, enemyIds, champions, botPairings, active, bestOverall, bestFixId, proIds = [], names, grid, children }: {
+  read: PlanRead; legacy?: boolean; draft: Draft; enemyIds: string[]; champions: Champion[]; botPairings: BotPairing[]; active?: Role; bestOverall?: string;
   bestFixId?: string; // the ranking's best fix, so the rail and the list name the same champion
   proIds?: string[]; // candidates the list already shows through their pro games: not repeated as theoretical
   names: Record<string, string>; grid?: (siege: SiegeCell, disengage: SiegeCell) => ReactNode; children?: ReactNode;
@@ -104,13 +109,18 @@ export function CompCheck({ plan = false, draft, enemyIds, champions, botPairing
   const kits = useMemo(() => convertKits(champions), [champions]);
   // The enemy list is rebuilt on every Draft Room render; key the reads on its contents.
   const vs = enemyIds.join(",");
+  // The comp facts (grid, timing, identity scores) and the ranking's best fix come from the general engine; the
+  // diagnosis itself is the plan read.
   const r = useMemo(() => analyze(draft, kits, enemyIds), [draft, kits, vs]);
   const fix = useMemo(() => (active && r.confidence !== "none" ? bestFix(active, draft, kits, botPairings, enemyIds) : null), [active, r.confidence, draft, kits, botPairings, vs]);
   const locked = Object.values(draft).filter(Boolean) as string[];
   const noKit = locked.filter((id) => !kits.some((k) => k.id === id));
-  const needs = active ? (r.roleNeeds[active] ?? []).slice(0, 3) : [];
+  const needs = active ? (p.roleNeeds[active] ?? []).slice(0, 3) : [];
   const best = (bestFixId && fix?.fixes.find((c) => c.champion === bestFixId)) || fix?.fixes.find((c) => c.fixScore > 0);
   const opportunities = r.versus.filter((v) => v.kind === "opportunity");
+  // A missing plan job is on the job list with its reason; the points below are everything else.
+  const points = [...p.weaknesses, ...p.more].filter((w) => w.source !== "plan");
+  const jobFinding = (id: string) => [...p.weaknesses, ...p.more].find((w) => w.id === `plan:${id}`);
   const sg = r.facts.siege;
   const siege: SiegeCell = !r.facts.n ? { value: "—", title: "No picks yet" } : {
     value: SIEGE_LABEL(sg.score),
@@ -125,7 +135,7 @@ export function CompCheck({ plan = false, draft, enemyIds, champions, botPairing
       <div className="cc-head">
         <h2>Comp Check</h2>
         <span className="cc-head-tags">
-          {r.confidence !== "none" && <span className={`cc-conf ${r.confidence}`}>{CONFIDENCE_LABEL[r.confidence]}</span>}
+          {p.confidence !== "none" && <span className={`cc-conf ${p.confidence}`}>{CONFIDENCE_LABEL[p.confidence]}</span>}
           <SourceBadge layer="logic" />
         </span>
       </div>
@@ -133,31 +143,45 @@ export function CompCheck({ plan = false, draft, enemyIds, champions, botPairing
         <p className="xs muted">{noKit.map((id) => names[id] ?? id).join(", ")}: kit not reviewed yet, so Comp Check counts nothing from {noKit.length === 1 ? "this pick" : "these picks"}.</p>
       )}
 
-      {r.confidence === "none" ? <p className="xs muted">{r.facts.n ? "The full read starts at two picks." : "Lock a pick to start."}</p> : (
+      {p.confidence === "none" ? <p className="xs muted">{r.facts.n ? "The full read starts at two picks." : "Lock a pick to start."}</p> : (
         <>
           <div className="cc-section cc-identity">
-            <div className="cc-label">Identity</div>
-            <p className="cc-headline">{r.headline}</p>
-            {r.winCondition && <p className="cc-win">{r.winCondition}</p>}
+            <div className="cc-label">Plan</div>
+            <p className="cc-headline">{p.headline}</p>
+            {p.winCondition && <p className="cc-win">{p.winCondition}</p>}
+            {p.enemyRead !== "none" && <p className="xs muted">Read from your picks; the {p.enemyRead === "full" ? "" : "revealed "}enemy picks only mark which gaps they can exploit.</p>}
+            {p.plan && (
+              <ul className="cc-jobs" aria-label={`${p.plan.label} needs`}>{p.plan.jobs.map((j) => {
+                const w = jobFinding(j.id);
+                const state = j.met ? "met" : w?.tier === "needed" ? "needed" : "missing";
+                return (
+                  <li key={j.id} className={state}><span aria-hidden="true">{j.met ? "✓" : state === "needed" ? "○" : "✗"}</span><span className="sr-only">{j.met ? "Has" : state === "needed" ? "Needed from the last pick" : "Missing"}: </span>{j.label}
+                    {!j.met && <span className="t">{cap(j.missing)}.{w && state === "needed" ? ` ${tierLabel(w, p.open)}: ${fixersText(w)}` : ""}{w ? switchText(w) : ""}</span>}
+                    {w && <Exposure w={w} />}
+                  </li>
+                );
+              })}</ul>
+            )}
           </div>
 
           <div className="cc-section">
             <div className="cc-label">Weak points</div>
-            {!r.weakPoints.length ? <p className="cc-ok">{r.confidence === "early" ? "Nothing major yet." : "None found."}</p>
-              : r.weakPoints.map((w, i) => <Point key={w.id} w={w} open={i === 0 && w.severity === "major"} />)}
+            {!points.length ? <p className="cc-ok">{p.weaknesses.length ? "Nothing beyond the plan's missing jobs." : p.confidence === "early" ? "Nothing blocks the plan yet." : "Nothing blocks the plan."}</p>
+              : points.slice(0, 3).map((w) => <PlanPoint key={w.id} w={w} open={p.open} />)}
+            {points.length > 3 && <details className="cc-more"><summary>{points.length - 3} more {points.length === 4 ? "point" : "points"}</summary>{points.slice(3).map((w) => <PlanPoint key={w.id} w={w} open={p.open} />)}</details>}
+            {p.accepted.length > 0 && <details className="cc-more"><summary>Accepted tradeoffs ({p.accepted.length})</summary>{p.accepted.map((w) => <PlanPoint key={w.id} w={w} open={p.open} />)}</details>}
           </div>
-
-          {plan && <PlanPreview draft={draft} kits={kits} enemyIds={enemyIds} botPairings={botPairings} active={active} />}
 
           {active && (
             <div className="cc-section">
-              <div className="cc-label">{active.charAt(0) + active.slice(1).toLowerCase()} needs</div>
+              <div className="cc-label">{roleName(active)} should bring</div>
               {!needs.length ? <p className="xs muted">Nothing specific; take the best fit.</p> : (
-                // The weak point above already names the cause; repeat it under a need only when it adds something
-                <ol className="cc-needs">{needs.map((n) => <li key={n.id} title={n.because}><b>{n.label}</b>{!r.weakPoints.some((w) => w.label === n.because) && <span>{n.because}</span>}</li>)}</ol>
+                <ol className="cc-needs">{needs.map((n) => <li key={n.id}><b>{n.label}</b><span>{n.because}</span></li>)}</ol>
               )}
               {(best || bestOverall) && (
                 <div className="cc-picks">
+                  {/* Scored by the recommendation ranking (General Draft Logic rules), not by the plan read above. */}
+                  <p className="xs muted">From the recommendation ranking</p>
                   {best && <div><span className="k">Best fix</span><b>{names[best.champion] ?? best.champion}</b><span className="t">{best.fixes.map((f) => f.label).join(", ")}{best.tradeoffs.length ? ` · costs: ${best.tradeoffs.join("; ")}` : ""}</span></div>}
                   {bestOverall && <div><span className="k">Best overall</span><b>{names[bestOverall] ?? bestOverall}</b><span className="t">Top of the recommendation list</span></div>}
                   {fix?.restricted && fix.theoretical.some((c) => !proIds.includes(c.champion)) && (
@@ -185,15 +209,20 @@ export function CompCheck({ plan = false, draft, enemyIds, champions, botPairing
         </>
       )}
 
-      {r.confidence === "none" && r.facts.n > 0 && grid?.(siege, disengage)}
+      {p.confidence === "none" && r.facts.n > 0 && grid?.(siege, disengage)}
 
       <details className="cc-section cc-more">
         <summary>Full analysis</summary>
-        {r.more.length > 0 && <div className="cc-section"><div className="cc-label">More weak points</div>{r.more.map((w) => <Point key={w.id} w={w} />)}</div>}
         {opportunities.length > 0 && <div className="cc-section"><div className="cc-label">Into the enemy</div>{opportunities.map((w) => <p key={w.id} className="xs"><b>{w.label}.</b> {w.text}</p>)}</div>}
         {identities.length > 0 && (
           <div className="cc-section"><div className="cc-label">Identity scores</div>
             <ul className="cc-scores">{identities.map((i) => <li key={i.id} title={i.because}><span>{IDENTITY_LABEL[i.id]}</span><span className="cc-v">{i.score.toFixed(1)}</span></li>)}</ul>
+          </div>
+        )}
+        {legacy && (
+          <div className="cc-section"><div className="cc-label">Previous Comp Check rules (debug, ?legacy=1)</div>
+            <p className="xs muted">{r.headline}</p>
+            {[...r.weakPoints, ...r.more].map((w) => <Point key={w.id} w={w} />)}
           </div>
         )}
         {children}
@@ -204,13 +233,9 @@ export function CompCheck({ plan = false, draft, enemyIds, champions, botPairing
 
 /** Narrow screens, where the rail sits below the list: one line naming what the draft is missing; tap to jump to the
  *  full Comp Check. Same analysis, nothing added. */
-export function CompSummaryLine({ draft, enemyIds, champions, active, className = "" }: {
-  draft: Draft; enemyIds: string[]; champions: Champion[]; active?: Role; className?: string;
-}) {
-  const kits = useMemo(() => convertKits(champions), [champions]);
-  const vs = enemyIds.join(",");
-  const r = useMemo(() => analyze(draft, kits, enemyIds), [draft, kits, vs]);
-  const s = compSummary(r, active);
+export function CompSummaryLine({ read: p, active, className = "" }: { read: PlanRead; active?: Role; className?: string }) {
+  // The same plan read as the rail (usePlanRead), so the line and the full Comp Check describe one comp.
+  const s = compSummary(p, active);
   const line = summaryText(s);
   const jump = () => {
     const el = document.getElementById("comp-check");

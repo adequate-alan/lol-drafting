@@ -1,6 +1,7 @@
 // The plan-aware comp read (alan, 2026-10-14; lib/model-v2/plan.ts): is the comp missing something its own win
 // condition needs? A preview beside the live Comp Check (?plan=1), never part of any score.
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { getDraftData } from "@/lib/data";
 import { analyze, type Draft } from "@/lib/model-v2/analyze";
@@ -249,9 +250,53 @@ describe("early reads", () => {
   });
 });
 
+describe("default Comp Check states (alan, 2026-10-14 rollout)", () => {
+  it("zero through five allied picks: none, none, early, early, read with the open role, full", () => {
+    const order = ["TOP", "JUNGLE", "MID", "BOT", "SUPPORT"] as const;
+    const five: Draft = { TOP: "ornn", JUNGLE: "sejuani", MID: "orianna", BOT: "jinx", SUPPORT: "lulu" };
+    const want = ["none", "none", "early", "early", "read", "full"];
+    for (let n = 0; n <= 5; n++) {
+      const d: Draft = Object.fromEntries(order.slice(0, n).map((r) => [r, five[r]]));
+      const r = plan(d);
+      expect(r.confidence, `${n} picks`).toBe(want[n]);
+      expect(r.picks).toBe(n);
+      expect(r.open).toBe(n === 4 ? "SUPPORT" : null);
+    }
+  });
+
+  it("a champion without a kit is not counted and never breaks the read", () => {
+    const noKit = getDraftData().champions.find((c) => !kits.some((k) => k.id === c.id));
+    expect(noKit).toBeDefined();
+    const r = plan({ TOP: noKit!.id, JUNGLE: "sejuani", MID: "orianna" });
+    expect(r.picks).toBe(2);
+    expect(r.confidence).toBe("early");
+  });
+
+  it("known limitation, not suppressed: Gen.G Gwen / Aatrox / Akali / Ashe / Seraphine reads as split (shared identity engine) and keeps its critical stall gap", () => {
+    // The shared identity read counts three side laners as a split comp; the team drafted it to skirmish. The fix
+    // belongs in a plan-local reading of ambiguous identities, never in a lineup exception.
+    const r = plan({ TOP: "gwen", JUNGLE: "aatrox", MID: "akali", BOT: "ashe", SUPPORT: "seraphine" });
+    expect(r.identity.primary!.id).toBe("split");
+    expect(r.critical.map((c) => c.id)).toContain("plan:stall");
+    expect(readFileSync("lib/model-v2/plan.ts", "utf8")).not.toMatch(/gwen|aatrox|akali/i);
+  });
+});
+
 describe("separation", () => {
   it("recommendation scoring never reads the plan", () => {
     for (const f of ["lib/recommend.ts", "lib/candidates.ts", "lib/model-v2/analyze.ts"])
       expect(readFileSync(f, "utf8")).not.toMatch(/model-v2\/plan|from "\.\/plan"/);
+  });
+
+  it("only the Comp Check surfaces read the plan: no other lib module, engine file or component imports it", () => {
+    // The plan read is the default Comp Check (alan, 2026-10-14) and explanatory only; scoring, ranking, synergy,
+    // counters, pool tiers and saved data never see it.
+    const files = (dir: string): string[] => readdirSync(dir).flatMap((f) => {
+      const p = join(dir, f);
+      return statSync(p).isDirectory() ? files(p) : /\.tsx?$/.test(p) ? [p] : [];
+    });
+    const allowed = ["lib/model-v2/plan.ts", "lib/comp-summary.ts", "components/CompCheck.tsx"];
+    for (const f of [...files("lib"), ...files("components"), ...files("app")].filter((f) => !allowed.includes(f)))
+      expect(readFileSync(f, "utf8"), f).not.toMatch(/model-v2\/plan|from "\.\/plan"|analyzePlan/);
   });
 });

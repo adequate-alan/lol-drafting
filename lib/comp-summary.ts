@@ -1,6 +1,7 @@
 // One-line Comp Check summary for narrow screens (alan, 2026-10-12): what the draft is missing, never a score.
-// It reads the same analysis as the Comp Check rail (lib/model-v2/analyze.ts) and adds nothing to it.
-import type { Analysis } from "./model-v2/analyze";
+// It reads the same plan read as the Comp Check rail (lib/model-v2/plan.ts, the default since 2026-10-14), so the
+// line and the rail always describe the same comp, and adds nothing to it.
+import type { PlanFinding, PlanRead } from "./model-v2/plan";
 import type { Role } from "./schema";
 
 export interface CompSummary {
@@ -11,16 +12,21 @@ export interface CompSummary {
   clean: boolean;                                             // a read with nothing to act on
 }
 
-export function compSummary(r: Analysis, active?: Role): CompSummary {
-  const picks = r.facts.n;
-  if (r.confidence === "none") return { state: "none", picks, needs: [], clean: false };
-  const top = r.weakPoints.find((w) => w.severity !== "minor");
-  const needs = active ? (r.roleNeeds[active] ?? []).slice(0, 2).map((n) => n.label) : [];
+// A missing plan job reads "Missing <job>" on its own; the plan's name is already in the headline.
+const labelOf = (x: PlanFinding, plan: string | undefined) =>
+  x.source === "plan" && plan && x.label.startsWith(`${plan}: `) ? x.label.slice(plan.length + 2).replace(/^m/, "M") : x.label;
+
+export function compSummary(p: PlanRead, active?: Role): CompSummary {
+  const picks = p.picks;
+  if (p.confidence === "none") return { state: "none", picks, needs: [], clean: false };
+  // Critical, needed and non-minor weaknesses are worth acting on; accepted tradeoffs never are.
+  const top = [...p.weaknesses, ...p.more].find((w) => w.tier === "critical" || w.tier === "needed" || w.severity !== "minor");
+  const needs = active ? (p.roleNeeds[active] ?? []).slice(0, 2).map((n) => n.label) : [];
   return {
-    state: r.confidence === "early" ? "early" : "read",
+    state: p.confidence === "early" ? "early" : "read",
     picks,
     needs,
-    weak: top ? { label: top.label, text: top.text, severity: top.severity as "major" | "moderate" } : undefined,
+    weak: top ? { label: labelOf(top, p.plan?.label), text: top.why, severity: top.tier === "critical" || top.tier === "needed" ? "major" : "moderate" } : undefined,
     clean: !top && !needs.length,
   };
 }

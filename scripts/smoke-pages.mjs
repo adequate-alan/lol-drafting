@@ -225,6 +225,16 @@ check("each champion appears once in the recommendation list", rowNames.length >
 const recBox = await page.locator("section.recs").boundingBox();
 const ccBox = await page.locator("aside.comp-check").boundingBox();
 check("desktop: Comp Check is a right rail beside the recommendations", !!recBox && !!ccBox && ccBox.x > recBox.x + recBox.width - 1 && ccBox.width < recBox.width, JSON.stringify({ recBox, ccBox }));
+// The plan-aware read is the default Comp Check (alan, 2026-10-14): one assessment, no old rule list beside it
+{
+  await open("/?top=jayce&jungle=lee-sin&mid=viktor&bot=caitlyn&vs=renekton,,,ezreal,karma");
+  const cc = (await text("aside.comp-check")).replace(/\s+/g, " ");
+  check("Comp Check: the plan read is the default (plan, jobs, what the support should bring)", /Plan/.test(cc) && (await page.locator("aside.comp-check .cc-jobs li").count()) > 0 && /Support should bring/.test(cc), cc.slice(0, 200));
+  check("Comp Check: the ranking's picks say where they come from", !/Best fix|Best overall/.test(cc) || /From the recommendation ranking/.test(cc), "");
+  check("Comp Check: no old rule checks or preview label by default", !/Rule checks|Plan check · preview/.test(cc), "");
+  check("Draft Room header badge reads the same plan read", !/\d+ caution/.test(await text(".draft-head .actions")), await text(".draft-head .actions"));
+  await open("/?bot=sivir&vs=renekton,,,ezreal,karma");
+}
 await page.evaluate(() => window.scrollTo(0, 900));
 await page.waitForTimeout(400);
 check("scrolled: condensed draft bar stays visible", await page.locator(".draft-mini.show").isVisible(), "");

@@ -590,13 +590,20 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   before that. Never a score; a tap jumps to the full Comp Check.
 - **Meta / Research folding** (alan, 2026-10-12): Pro priority, its filters and the Tournaments table stay open; Tournament
   comparison, both pairing tables, Recent drafts and Research notes are folded section Disclosures with counts.
-- Warning severity (critical / caution) in the Draft Room is a display grouping only; the rules are in `lib/evaluate.ts`.
+- Warning severity (critical / caution) for the `lib/evaluate.ts` rule checks is a display grouping only, shown with `?legacy=1`; the Draft Room header badge counts the plan read (critical / needed / weaknesses).
 - Comp Check (`components/CompCheck.tsx`) shows the comp-analysis engine (`lib/model-v2/analyze.ts`, `tests/comp-analysis.test.ts`):
   identity, win condition, ranked weak points, role needs with best fix vs best overall, timing, and the compact grid.
   Siege (`siegeOf`, alan 2026-10-10) is its own metric, not Poke: structure pressure first, then range, waveclear,
   poke and disengage; it feeds the Poke / siege identity.
-  **Plan check · preview** (alan, 2026-10-14; `lib/model-v2/plan.ts`, `tests/comp-plan.test.ts`, shown only with `?plan=1`
-  until alan reviews it): asks whether the comp is missing something its own win condition needs. Jobs per plan
+  **Plan-aware Comp Check, the default since alan's approval (2026-10-14)** (`lib/model-v2/plan.ts`,
+  `tests/comp-plan.test.ts`): one plan read (`usePlanRead` in `components/CompCheck.tsx`, computed once per board) drives
+  the rail, the phone line (`lib/comp-summary.ts`), the header badge (`CompStatus`) and which grid cells are marked
+  (`planFlags`; the numbers stay kit facts), so no two surfaces disagree. Best fix / Best overall stay the ranking's and
+  say "From the recommendation ranking"; candidate-row reasons stay the ranking's. The previous rule list and the
+  `lib/evaluate.ts` rule checks show only with `?legacy=1` (debugging). Known limitation: the shared identity engine
+  reads Gen.G Gwen / Aatrox / Akali / Ashe / Seraphine as split (three side laners) though it was drafted to skirmish; it
+  keeps its critical stall gap (test), never a lineup exception; the fix is a plan-local reading of ambiguous
+  identities, never a change to the shared identity engine without alan. The read asks whether the comp is missing something its own win condition needs. Jobs per plan
   (front-to-back, dive, poke, protect, pick, skirmish, wombo, split, tempo, scaling) and every current rule re-read as
   critical, weakness or accepted tradeoff with its reason; a rule merges into a plan job only when that job is reported
   missing, so nothing is silently dropped (`merged` names the job). Bot duo reads only (Mid/Jungle pair facts showed no
