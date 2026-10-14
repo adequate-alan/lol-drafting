@@ -31,13 +31,13 @@
       "event": "demacia-cup-2026",
       "golgg": "Demacia Cup Global Invitational 2026",
       "status": "ongoing",
-      "series": 24,
-      "seriesPlayed": 23,
-      "games": 54,
-      "recorded": 54,
+      "series": 26,
+      "seriesPlayed": 25,
+      "games": 62,
+      "recorded": 62,
       "matchlist": "https://gol.gg/tournament/tournament-matchlist/Demacia%20Cup%20Global%20Invitational%202026/",
-      "lastUpdate": "2026-10-13T11:11:17.311Z",
-      "lastCheck": "2026-10-13T11:11:17.311Z"
+      "lastUpdate": "2026-10-14T15:35:23.369Z",
+      "lastCheck": "2026-10-14T15:35:23.369Z"
     }
   ],
   "games": [
@@ -3495,6 +3495,518 @@
       "rolesUrl": "https://gol.gg/game/stats/83577/page-fullstats/",
       "checkedOn": "2026-10-13",
       "firstPick": "blue"
+    },
+    {
+      "id": 83578,
+      "event": "demacia-cup-2026",
+      "tournament": "Demacia Cup Global Invitational 2026",
+      "seriesId": 83578,
+      "series": "BRO vs LGD Gaming",
+      "game": 1,
+      "stage": "QUARTERFINALS",
+      "date": "2026-10-13",
+      "patch": "16.18",
+      "blue": {
+        "team": "HANJIN BRION",
+        "picks": {
+          "TOP": "rumble",
+          "JUNGLE": "vi",
+          "MID": "locke",
+          "BOT": "yunara",
+          "SUPPORT": "lulu"
+        },
+        "bans": [
+          "skarner",
+          "karma",
+          "olaf",
+          "ryze",
+          "ksante"
+        ],
+        "pickOrder": [
+          "vi",
+          "yunara",
+          "lulu",
+          "rumble",
+          "locke"
+        ]
+      },
+      "red": {
+        "team": "LGD Gaming",
+        "picks": {
+          "TOP": "ornn",
+          "JUNGLE": "qiyana",
+          "MID": "syndra",
+          "BOT": "lucian",
+          "SUPPORT": "milio"
+        },
+        "bans": [
+          "cassiopeia",
+          "nocturne",
+          "lee-sin",
+          "jayce",
+          "akali"
+        ],
+        "pickOrder": [
+          "lucian",
+          "milio",
+          "qiyana",
+          "syndra",
+          "ornn"
+        ]
+      },
+      "winner": "red",
+      "firstPick": "blue",
+      "url": "https://gol.gg/game/stats/83578/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83578/page-fullstats/",
+      "checkedOn": "2026-10-14"
+    },
+    {
+      "id": 83579,
+      "event": "demacia-cup-2026",
+      "tournament": "Demacia Cup Global Invitational 2026",
+      "seriesId": 83578,
+      "series": "BRO vs LGD Gaming",
+      "game": 2,
+      "stage": "QUARTERFINALS",
+      "date": "2026-10-13",
+      "patch": "16.18",
+      "blue": {
+        "team": "LGD Gaming",
+        "picks": {
+          "TOP": "yorick",
+          "JUNGLE": "jarvan-iv",
+          "MID": "ryze",
+          "BOT": "ashe",
+          "SUPPORT": "seraphine"
+        },
+        "bans": [
+          "cassiopeia",
+          "nocturne",
+          "jayce",
+          "nautilus",
+          "kalista"
+        ],
+        "pickOrder": [
+          "seraphine",
+          "ashe",
+          "jarvan-iv",
+          "ryze",
+          "yorick"
+        ]
+      },
+      "red": {
+        "team": "HANJIN BRION",
+        "picks": {
+          "TOP": "varus",
+          "JUNGLE": "lee-sin",
+          "MID": "orianna",
+          "BOT": "ezreal",
+          "SUPPORT": "leona"
+        },
+        "bans": [
+          "olaf",
+          "skarner",
+          "karma",
+          "jax",
+          "viktor"
+        ],
+        "pickOrder": [
+          "lee-sin",
+          "orianna",
+          "varus",
+          "ezreal",
+          "leona"
+        ]
+      },
+      "winner": "red",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83579/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83579/page-fullstats/",
+      "checkedOn": "2026-10-14"
+    },
+    {
+      "id": 83580,
+      "event": "demacia-cup-2026",
+      "tournament": "Demacia Cup Global Invitational 2026",
+      "seriesId": 83578,
+      "series": "BRO vs LGD Gaming",
+      "game": 3,
+      "stage": "QUARTERFINALS",
+      "date": "2026-10-13",
+      "patch": "16.18",
+      "blue": {
+        "team": "HANJIN BRION",
+        "picks": {
+          "TOP": "kennen",
+          "JUNGLE": "trundle",
+          "MID": "viktor",
+          "BOT": "kalista",
+          "SUPPORT": "renata-glasc"
+        },
+        "bans": [
+          "olaf",
+          "karma",
+          "akali",
+          "neeko",
+          "lux"
+        ],
+        "pickOrder": [
+          "viktor",
+          "kalista",
+          "renata-glasc",
+          "trundle",
+          "kennen"
+        ]
+      },
+      "red": {
+        "team": "LGD Gaming",
+        "picks": {
+          "TOP": "aatrox",
+          "JUNGLE": "maokai",
+          "MID": "yone",
+          "BOT": "caitlyn",
+          "SUPPORT": "bard"
+        },
+        "bans": [
+          "cassiopeia",
+          "jayce",
+          "nocturne",
+          "pantheon",
+          "skarner"
+        ],
+        "pickOrder": [
+          "yone",
+          "maokai",
+          "caitlyn",
+          "bard",
+          "aatrox"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "blue",
+      "url": "https://gol.gg/game/stats/83580/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83580/page-fullstats/",
+      "checkedOn": "2026-10-14"
+    },
+    {
+      "id": 83581,
+      "event": "demacia-cup-2026",
+      "tournament": "Demacia Cup Global Invitational 2026",
+      "seriesId": 83578,
+      "series": "BRO vs LGD Gaming",
+      "game": 4,
+      "stage": "QUARTERFINALS",
+      "date": "2026-10-13",
+      "patch": "16.18",
+      "blue": {
+        "team": "LGD Gaming",
+        "picks": {
+          "TOP": "poppy",
+          "JUNGLE": "jayce",
+          "MID": "akali",
+          "BOT": "jhin",
+          "SUPPORT": "rell"
+        },
+        "bans": [
+          "cassiopeia",
+          "nocturne",
+          "pantheon",
+          "rakan",
+          "thresh"
+        ],
+        "pickOrder": [
+          "jayce",
+          "jhin",
+          "poppy",
+          "rell",
+          "akali"
+        ]
+      },
+      "red": {
+        "team": "HANJIN BRION",
+        "picks": {
+          "TOP": "ksante",
+          "JUNGLE": "wukong",
+          "MID": "ahri",
+          "BOT": "corki",
+          "SUPPORT": "neeko"
+        },
+        "bans": [
+          "olaf",
+          "karma",
+          "naafiri",
+          "sylas",
+          "lissandra"
+        ],
+        "pickOrder": [
+          "wukong",
+          "ksante",
+          "ahri",
+          "corki",
+          "neeko"
+        ]
+      },
+      "winner": "red",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83581/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83581/page-fullstats/",
+      "checkedOn": "2026-10-14"
+    },
+    {
+      "id": 83603,
+      "event": "demacia-cup-2026",
+      "tournament": "Demacia Cup Global Invitational 2026",
+      "seriesId": 83603,
+      "series": "KT Rolster vs BNK FearX",
+      "game": 1,
+      "stage": "SEMIFINALS",
+      "date": "2026-10-14",
+      "patch": "16.18",
+      "blue": {
+        "team": "BNK FearX",
+        "picks": {
+          "TOP": "rumble",
+          "JUNGLE": "lee-sin",
+          "MID": "ahri",
+          "BOT": "yunara",
+          "SUPPORT": "lulu"
+        },
+        "bans": [
+          "nocturne",
+          "pantheon",
+          "syndra",
+          "ksante",
+          "karma"
+        ],
+        "pickOrder": [
+          "lee-sin",
+          "yunara",
+          "lulu",
+          "rumble",
+          "ahri"
+        ]
+      },
+      "red": {
+        "team": "KT Rolster",
+        "picks": {
+          "TOP": "yorick",
+          "JUNGLE": "skarner",
+          "MID": "ryze",
+          "BOT": "ezreal",
+          "SUPPORT": "seraphine"
+        },
+        "bans": [
+          "cassiopeia",
+          "qiyana",
+          "vi",
+          "anivia",
+          "orianna"
+        ],
+        "pickOrder": [
+          "ryze",
+          "skarner",
+          "ezreal",
+          "seraphine",
+          "yorick"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "blue",
+      "url": "https://gol.gg/game/stats/83603/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83603/page-fullstats/",
+      "checkedOn": "2026-10-14"
+    },
+    {
+      "id": 83604,
+      "event": "demacia-cup-2026",
+      "tournament": "Demacia Cup Global Invitational 2026",
+      "seriesId": 83603,
+      "series": "KT Rolster vs BNK FearX",
+      "game": 2,
+      "stage": "SEMIFINALS",
+      "date": "2026-10-14",
+      "patch": "16.18",
+      "blue": {
+        "team": "BNK FearX",
+        "picks": {
+          "TOP": "renekton",
+          "JUNGLE": "jarvan-iv",
+          "MID": "sylas",
+          "BOT": "kalista",
+          "SUPPORT": "renata-glasc"
+        },
+        "bans": [
+          "cassiopeia",
+          "vi",
+          "jayce",
+          "syndra",
+          "olaf"
+        ],
+        "pickOrder": [
+          "kalista",
+          "renata-glasc",
+          "jarvan-iv",
+          "renekton",
+          "sylas"
+        ]
+      },
+      "red": {
+        "team": "KT Rolster",
+        "picks": {
+          "TOP": "gnar",
+          "JUNGLE": "nocturne",
+          "MID": "taliyah",
+          "BOT": "xayah",
+          "SUPPORT": "rakan"
+        },
+        "bans": [
+          "lucian",
+          "poppy",
+          "pantheon",
+          "trundle",
+          "orianna"
+        ],
+        "pickOrder": [
+          "nocturne",
+          "xayah",
+          "rakan",
+          "gnar",
+          "taliyah"
+        ]
+      },
+      "winner": "red",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83604/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83604/page-fullstats/",
+      "checkedOn": "2026-10-14"
+    },
+    {
+      "id": 83605,
+      "event": "demacia-cup-2026",
+      "tournament": "Demacia Cup Global Invitational 2026",
+      "seriesId": 83603,
+      "series": "KT Rolster vs BNK FearX",
+      "game": 3,
+      "stage": "SEMIFINALS",
+      "date": "2026-10-14",
+      "patch": "16.18",
+      "blue": {
+        "team": "KT Rolster",
+        "picks": {
+          "TOP": "olaf",
+          "JUNGLE": "wukong",
+          "MID": "orianna",
+          "BOT": "corki",
+          "SUPPORT": "nautilus"
+        },
+        "bans": [
+          "cassiopeia",
+          "qiyana",
+          "vi",
+          "galio",
+          "akali"
+        ],
+        "pickOrder": [
+          "olaf",
+          "orianna",
+          "corki",
+          "nautilus",
+          "wukong"
+        ]
+      },
+      "red": {
+        "team": "BNK FearX",
+        "picks": {
+          "TOP": "ksante",
+          "JUNGLE": "jayce",
+          "MID": "locke",
+          "BOT": "jhin",
+          "SUPPORT": "camille"
+        },
+        "bans": [
+          "syndra",
+          "pantheon",
+          "lucian",
+          "naafiri",
+          "leona"
+        ],
+        "pickOrder": [
+          "jayce",
+          "jhin",
+          "camille",
+          "ksante",
+          "locke"
+        ]
+      },
+      "winner": "red",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83605/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83605/page-fullstats/",
+      "checkedOn": "2026-10-14"
+    },
+    {
+      "id": 83606,
+      "event": "demacia-cup-2026",
+      "tournament": "Demacia Cup Global Invitational 2026",
+      "seriesId": 83603,
+      "series": "KT Rolster vs BNK FearX",
+      "game": 4,
+      "stage": "SEMIFINALS",
+      "date": "2026-10-14",
+      "patch": "16.18",
+      "blue": {
+        "team": "BNK FearX",
+        "picks": {
+          "TOP": "nidalee",
+          "JUNGLE": "vi",
+          "MID": "viktor",
+          "BOT": "ziggs",
+          "SUPPORT": "shen"
+        },
+        "bans": [
+          "varus",
+          "syndra",
+          "maokai",
+          "jax",
+          "akali"
+        ],
+        "pickOrder": [
+          "vi",
+          "ziggs",
+          "shen",
+          "viktor",
+          "nidalee"
+        ]
+      },
+      "red": {
+        "team": "KT Rolster",
+        "picks": {
+          "TOP": "kennen",
+          "JUNGLE": "pantheon",
+          "MID": "lissandra",
+          "BOT": "caitlyn",
+          "SUPPORT": "bard"
+        },
+        "bans": [
+          "cassiopeia",
+          "qiyana",
+          "lucian",
+          "ambessa",
+          "twisted-fate"
+        ],
+        "pickOrder": [
+          "caitlyn",
+          "bard",
+          "pantheon",
+          "lissandra",
+          "kennen"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "blue",
+      "url": "https://gol.gg/game/stats/83606/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83606/page-fullstats/",
+      "checkedOn": "2026-10-14"
     }
   ]
 }

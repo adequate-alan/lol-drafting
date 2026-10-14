@@ -1,92 +1,56 @@
-# Comp Library review · 2026-10-12
+# Comp Library review · 2026-10-14
 
-Read 78 lineups from 39 recorded games (latest 2026-10-08). Demacia Cup: 39/39 games recorded, ongoing; Worlds 2026: not on Gol.gg yet; Worlds 2026 Play-In: not on Gol.gg yet. LCK 2026 playoff drafts are used for comparison only.
+Read 124 lineups from 62 recorded games (latest 2026-10-14). Demacia Cup: 62/62 games recorded, ongoing; Worlds 2026: not on Gol.gg yet; Worlds 2026 Play-In: not on Gol.gg yet. LCK 2026 playoff drafts are used for comparison only.
 
-## New compositions (8)
+## New compositions (3)
 
-- **Split + Front-to-back · Ryze** · Top Rumble · Jng Trundle · Mid Ryze · Bot Senna · Sup Nautilus · Easy
-  - First split comp in the library. Trundle and Ryze can hold a side lane alone; Senna can join a fight from anywhere; Trundle and Nautilus in front, Senna dealing damage from range. Create side-lane pressure with Trundle and Ryze, then use Rumble, Senna and Nautilus to punish rotations.
-  - Strengths: Fight start: Nautilus; Frontline: Trundle and Nautilus; Side lane: Trundle and Ryze; Tank damage: Trundle; Mixed damage (36% physical).
-  - Weak points: Short range (moderate).
-  - [FlyQuest vs LGD Gaming G1](https://gol.gg/game/stats/83448/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-03, loss)
-- **Protect + Front-to-back · Yunara** · Top K'Sante · Jng Naafiri · Mid Anivia · Bot Yunara · Sup Lulu · Easy
-  - K'Sante and Lulu protect Anivia; K'Sante in front, Anivia and Yunara dealing damage from range. Play around Anivia: K'Sante and Lulu stay with Anivia and let the enemy dive into you.
-  - Strengths: Catch: K'Sante; Peel and disengage: K'Sante, Anivia and Lulu; Mixed damage (58% physical); Scales into the late game.
-  - Weak points: No on-demand engage (moderate).
-  - [Team Vitality vs BNK FearX G1](https://gol.gg/game/stats/83450/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-03, loss)
-  - 1 observed variation: Top K'Sante · Jng Vi · Mid Viktor · Bot Yunara · Sup Lulu
-- **Wombo + Front-to-back · Corki** · Top Rumble · Jng Wukong · Mid Orianna · Bot Corki · Sup Rakan · Medium
-  - First wombo comp in the library. Wukong, Orianna and Rakan stack AoE crowd control; Wukong in front, Orianna and Corki dealing damage from range. Fight in choke points and around objectives where Wukong, Orianna and Rakan can land their crowd control on the same targets.
-  - Strengths: Fight start: Wukong and Rakan; Peel and disengage: Orianna and Rakan; Scales into the late game.
-  - Weak points: Thin frontline (minor).
-  - [RED Canids vs KT Rolster G2](https://gol.gg/game/stats/83457/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-04, loss)
-  - 1 observed variation: Top Rumble · Jng Wukong · Mid Orianna · Bot Xayah · Sup Rakan
-- **Front-to-back · Viktor** · Top Rumble · Jng Skarner · Mid Viktor · Bot Ezreal · Sup Alistar · Easy
-  - Skarner and Alistar in front, Viktor and Ezreal dealing damage from range. Set up first around objectives, let Skarner and Alistar start fights, and play front-to-back through Viktor and Ezreal.
-  - Strengths: Fight start: Skarner and Alistar; Frontline: Skarner and Alistar.
-  - Weak points: Little tank damage (moderate).
-  - [Team WE vs HANJIN BRION G1](https://gol.gg/game/stats/83459/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-04, win)
-  - 1 observed variation: Top Rumble · Jng Skarner · Mid Ryze · Bot Ezreal · Sup Seraphine
-- **Dive · Kalista** · Top Renekton · Jng Skarner · Mid Akali · Bot Kalista · Sup Renata Glasc · Easy
-  - First dive comp in the library. Renekton, Skarner and Akali can all reach the backline. Go in together: Renekton, Skarner and Akali reach the enemy carries at the same time instead of one by one.
-  - Strengths: Fight start: Skarner; Frontline: Renekton and Skarner; Side lane: Akali; Mixed damage (62% physical); Strong before first items.
-  - [JD Gaming vs Shopify Rebellion G2](https://gol.gg/game/stats/83469/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-05, win)
-- **Protect · Yunara** · Top Olaf · Jng Xin Zhao · Mid Orianna · Bot Yunara · Sup Lulu · Easy
-  - Orianna and Lulu protect Yunara. Play around Yunara: Orianna and Lulu stay with Yunara and let the enemy dive into you.
-  - Strengths: Catch: Xin Zhao; Peel and disengage: Orianna and Lulu; Tank damage: Olaf; Mixed damage (53% physical).
-  - Weak points: No on-demand engage (moderate); Thin frontline (minor).
-  - [HANJIN BRION vs Natus Vincere G2](https://gol.gg/game/stats/83521/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-06, win)
-  - 2 observed variations: Top Olaf · Jng Jarvan IV · Mid Orianna · Bot Yunara · Sup Lulu / Top Renekton · Jng Lee Sin · Mid Orianna · Bot Yunara · Sup Lulu
-- **Skirmish + Front-to-back · Jax** · Top Jax · Jng Wukong · Mid Viktor · Bot Lucian · Sup Milio · Easy
-  - Jax, Wukong and Lucian win short fights before items; Wukong in front, Viktor dealing damage from range. Fight short 2v2s and 3v3s around the jungle before items stack up, and snowball the leads into objectives.
-  - Strengths: Fight start: Wukong; Side lane: Jax; Tank damage: Jax; Mixed damage (62% physical); Scales into the late game.
+- **Pick + Skirmish · Ryze** · Top Olaf · Jng Lee Sin · Mid Ryze · Bot Jhin · Sup Bard · Medium
+  - Catch from Lee Sin and Bard, burst from Jhin; Olaf and Lee Sin win short fights before items. Win through vision and fog: catch a target with Lee Sin and Bard before each objective, then fight with the numbers advantage.
+  - Strengths: Catch: Lee Sin and Bard; Peel and disengage: Lee Sin and Bard; Side lane: Ryze; Tank damage: Olaf; Mixed damage (58% physical).
   - Weak points: Short range (moderate); Thin frontline (minor).
-  - [Natus Vincere vs HANJIN BRION G2](https://gol.gg/game/stats/83521/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-06, loss)
-  - 1 observed variation: Top Vayne · Jng Wukong · Mid Viktor · Bot Lucian · Sup Milio
-- **Skirmish + Pick · Ryze** · Top Olaf · Jng Qiyana · Mid Ryze · Bot Ashe · Sup Seraphine · Easy
-  - Olaf and Qiyana win short fights before items; catch from Qiyana and Ashe. Fight short 2v2s and 3v3s around the jungle before items stack up, and snowball the leads into objectives. Between objectives, look for catches with Qiyana and Ashe.
-  - Strengths: Catch: Qiyana and Ashe; Side lane: Ryze; Tank damage: Olaf; Mixed damage (58% physical).
-  - Weak points: Short range (moderate); Thin frontline (minor).
-  - [GAM Esports vs FlyQuest G2](https://gol.gg/game/stats/83529/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-07, loss)
-  - 1 observed variation: Top Olaf · Jng Naafiri · Mid Aurora · Bot Ashe · Sup Seraphine
+  - [GAM Esports vs Team Vitality G1](https://gol.gg/game/stats/83462/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-05, loss)
+  - 1 observed variation: Top Rumble · Jng Naafiri · Mid Ryze · Bot Jhin · Sup Bard
+- **Front-to-back + Wombo · Viktor** · Top Ambessa · Jng Sejuani · Mid Viktor · Bot Kalista · Sup Renata Glasc · Easy
+  - Sejuani in front, Viktor and Kalista dealing damage from range; Sejuani, Viktor and Renata Glasc stack AoE crowd control. Set up first around objectives, let Sejuani start fights, and play front-to-back through Viktor and Kalista.
+  - Strengths: Fight start: Sejuani; Side lane: Ambessa; Mixed damage (56% physical).
+  - [Natus Vincere vs JD Gaming G3](https://gol.gg/game/stats/83542/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-08, loss)
+  - 1 observed variation: Top Kennen · Jng Trundle · Mid Viktor · Bot Kalista · Sup Renata Glasc
+- **Protect + Skirmish · Aphelios** · Top Yorick · Jng Gragas · Mid Ahri · Bot Aphelios · Sup Lulu · Easy
+  - Gragas and Lulu protect Aphelios; Yorick, Gragas and Ahri win short fights before items. Play around Aphelios: Gragas and Lulu stay with Aphelios and let the enemy dive into you.
+  - Strengths: Catch: Gragas and Ahri; Peel and disengage: Gragas and Lulu; Side lane: Yorick; Mixed damage (45% physical); Scales into the late game.
+  - Weak points: No on-demand engage (moderate); Short range (moderate); Thin frontline (minor).
+  - [Team WE vs FlyQuest G4](https://gol.gg/game/stats/83576/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-13, loss)
+  - 1 observed variation: Top Rumble · Jng Lee Sin · Mid Ahri · Bot Yunara · Sup Lulu
 
-## New variations of existing compositions (7)
+## New variations of existing compositions (4)
 
-- **Objective Zone**: K'Sante for Rumble, Jarvan IV for Vi, Cassiopeia for Ryze
-  - [RED Canids vs Natus Vincere G1](https://gol.gg/game/stats/83447/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-03, win)
-- **Objective Zone**: Wukong for Vi, Syndra for Ryze
-  - [Natus Vincere vs FlyQuest G1](https://gol.gg/game/stats/83465/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-05, win)
-- **Objective Zone**: Naafiri for Vi
-  - [JD Gaming vs Shopify Rebellion G1](https://gol.gg/game/stats/83468/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-05, win)
-- **Objective Zone**: Xin Zhao for Vi
-  - [Shopify Rebellion vs FlyQuest G1](https://gol.gg/game/stats/83534/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-07, loss)
-- **Objective Zone**: K'Sante for Rumble, Jarvan IV for Vi
-  - [FlyQuest vs RED Canids G2](https://gol.gg/game/stats/83538/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-08, win)
-- **Poke + Catch**: K'Sante for Jayce, Leona for Alistar
-  - [KT Rolster vs Shopify Rebellion G1](https://gol.gg/game/stats/83449/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-03, win)
-- **Poke + Catch**: Galio for Jayce, Syndra for Ryze
-  - [KT Rolster vs RED Canids G2](https://gol.gg/game/stats/83457/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-04, win)
+- **Wombo + Front-to-back · Corki**: Qiyana for Wukong, Xayah for Corki
+  - [Team Vitality vs KT Rolster G1](https://gol.gg/game/stats/83563/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-12, win)
+- **Dive · Kalista**: Jarvan IV for Skarner, Sylas for Akali
+  - [BNK FearX vs KT Rolster G2](https://gol.gg/game/stats/83604/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-14, loss)
+- **Skirmish + Front-to-back · Jax**: Renekton for Jax, Vi for Wukong
+  - [Team WE vs FlyQuest G2](https://gol.gg/game/stats/83574/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-13, win)
+- **Counter-Engage Front-to-Back**: Nocturne for Cho'Gath, Taliyah for Viktor
+  - [KT Rolster vs BNK FearX G2](https://gol.gg/game/stats/83604/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-14, win)
 
-## Existing compositions seeing new professional play (2)
+## Existing compositions seeing new professional play (4)
 
-- **Objective Zone**: 5 new games
-  - [RED Canids vs Natus Vincere G1](https://gol.gg/game/stats/83447/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-03, win)
-  - [Natus Vincere vs FlyQuest G1](https://gol.gg/game/stats/83465/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-05, win)
-  - [JD Gaming vs Shopify Rebellion G1](https://gol.gg/game/stats/83468/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-05, win)
-  - [Shopify Rebellion vs FlyQuest G1](https://gol.gg/game/stats/83534/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-07, loss)
-  - [FlyQuest vs RED Canids G2](https://gol.gg/game/stats/83538/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-08, win)
-- **Poke + Catch**: 2 new games
-  - [KT Rolster vs Shopify Rebellion G1](https://gol.gg/game/stats/83449/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-03, win)
-  - [KT Rolster vs RED Canids G2](https://gol.gg/game/stats/83457/page-game/) (Demacia Cup Global Invitational 2026, 16.18, 2026-10-04, win)
+- **Wombo + Front-to-back · Corki**: 1 new game
+  - [Team Vitality vs KT Rolster G1](https://gol.gg/game/stats/83563/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-12, win)
+- **Dive · Kalista**: 1 new game
+  - [BNK FearX vs KT Rolster G2](https://gol.gg/game/stats/83604/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-14, loss)
+- **Skirmish + Front-to-back · Jax**: 1 new game
+  - [Team WE vs FlyQuest G2](https://gol.gg/game/stats/83574/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-13, win)
+- **Counter-Engage Front-to-Back**: 1 new game
+  - [KT Rolster vs BNK FearX G2](https://gol.gg/game/stats/83604/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-14, win)
 
-## May be outdated (10)
+## May be outdated (9)
 
 Observed library comps with no exact or variation game in the tracked tournaments (newest patch 16.18). Report only; nothing is removed.
 
 - **Protected Hypercarry** · Top K'Sante · Jng Vi · Mid Akali · Bot Zeri · Sup Yuumi · not picked in tracked games: Zeri, Yuumi
 - **Yunara Protect** · Top Rumble · Jng Pantheon · Mid Syndra · Bot Yunara · Sup Lulu
-- **Counter-Engage Front-to-Back** · Top Gnar · Jng Cho'Gath · Mid Viktor · Bot Xayah · Sup Rakan
-- **Pick Tempo** · Top Varus · Jng Nocturne · Mid Lissandra · Bot Kalista · Sup Renata Glasc · not picked in tracked games: Lissandra
+- **Pick Tempo** · Top Varus · Jng Nocturne · Mid Lissandra · Bot Kalista · Sup Renata Glasc
 - **Weakside Tank + Carry Bot** · Top Sion · Jng Lee Sin · Mid Sylas · Bot Zeri · Sup Yuumi · not picked in tracked games: Zeri, Yuumi
 - **Side Carry Scaling** · Top Gwen · Jng Trundle · Mid Viktor · Bot Corki · Sup Alistar
 - **Stable Top + Carry Bot** · Top Gnar · Jng Vi · Mid Taliyah · Bot Lucian · Sup Milio
@@ -94,7 +58,7 @@ Observed library comps with no exact or variation game in the tracked tournament
 - **Speed-Up Skirmish** · Top Olaf · Jng Skarner · Mid Locke · Bot Sivir · Sup Karma
 - **Dive + Utility Bot** · Top Camille · Jng Naafiri · Mid Galio · Bot Kalista · Sup Renata Glasc
 
-## Proposed comps for review (51)
+## Proposed comps for review (86)
 
 Not added automatically: each needs more games or a person's call. One line per lineup group, newest games marked.
 
@@ -116,18 +80,17 @@ Not added automatically: each needs more games or a person's call. One line per 
 - Front-to-back + Skirmish · Top Jayce · Jng Jarvan IV · Mid Ahri · Bot Ashe · Sup Seraphine · [HANJIN BRION G2 W](https://gol.gg/game/stats/83460/page-game/) · 1 game from HANJIN BRION, and the library already has front-to-back comps
 - Pick + Dive · Top Renekton · Jng Pantheon · Mid Orianna · Bot Varus · Sup Elise · [HANJIN BRION G3 L](https://gol.gg/game/stats/83461/page-game/) · 1 game from HANJIN BRION, and the library already has pick comps
 - **New** · Skirmish + Early tempo · Top Ambessa · Jng Vi · Mid Syndra · Bot Kalista · Sup Renata Glasc · [Team Vitality G1 W](https://gol.gg/game/stats/83462/page-game/), [FlyQuest G1 L](https://gol.gg/game/stats/83465/page-game/), [FlyQuest G1 W](https://gol.gg/game/stats/83534/page-game/) · major weak point (No frontline)
-- **New** · Pick + Skirmish · Top Olaf · Jng Lee Sin · Mid Ryze · Bot Jhin · Sup Bard · [GAM Esports G1 L](https://gol.gg/game/stats/83462/page-game/) · 1 game from GAM Esports, and the library already has pick comps
-- **New** · Skirmish + Pick · Top Rumble · Jng Pantheon · Mid Sylas · Bot Xayah · Sup Blitzcrank · [Team Vitality G2 W](https://gol.gg/game/stats/83463/page-game/) · major weak point (No frontline, Xayah is unprotected); 1 game from Team Vitality, and the library already has skirmish comps
-- **New** · Protect + Wombo · Top Galio · Jng Qiyana · Mid Ahri · Bot Aphelios · Sup Thresh · [GAM Esports G2 L](https://gol.gg/game/stats/83463/page-game/) · 1 game from GAM Esports, and the library already has protect comps
-- **New** · Poke / siege + Pick · Top Jayce · Jng Lee Sin · Mid Ryze · Bot Mel · Sup Pyke · [FlyQuest G2 L](https://gol.gg/game/stats/83466/page-game/) · major weak point (No frontline); 1 game from FlyQuest, and the library already has poke / siege comps
-- **New** · Pick + Skirmish · Top Yorick · Jng Xin Zhao · Mid Orianna · Bot Ashe · Sup Seraphine · [Natus Vincere G2 W](https://gol.gg/game/stats/83466/page-game/) · major weak point (No frontline); 1 game from Natus Vincere, and the library already has pick comps
-- **New** · Dive + Skirmish · Top Gwen · Jng Lee Sin · Mid Sylas · Bot Kalista · Sup Renata Glasc · [HANJIN BRION G3 W](https://gol.gg/game/stats/83522/page-game/) · major weak point (No frontline); 1 game from HANJIN BRION, and the library already has dive comps
-- **New** · Front-to-back + Wombo · Top Sion · Jng Sejuani · Mid Cassiopeia · Bot Ezreal · Sup Karma · [RED Canids G1 L](https://gol.gg/game/stats/83523/page-game/) · 1 game from RED Canids, and the library already has front-to-back comps
-- **New** · Poke / siege + Pick · Top Jayce · Jng Qiyana · Mid Syndra · Bot Caitlyn · Sup Bard · [Team Vitality G1 W](https://gol.gg/game/stats/83523/page-game/) · major weak point (No frontline); 1 game from Team Vitality, and the library already has poke / siege comps
-- **New** · Dive · Top Rumble · Jng Naafiri · Mid Ryze · Bot Kai'Sa · Sup Nautilus · [JD Gaming G1 L](https://gol.gg/game/stats/83526/page-game/) · 1 game from JD Gaming, and the library already has dive comps
-- **New** · Front-to-back + Protect · Top Ornn · Jng Lee Sin · Mid Syndra · Bot Sivir · Sup Karma · [LGD Gaming G1 W](https://gol.gg/game/stats/83526/page-game/) · 1 game from LGD Gaming, and the library already has front-to-back comps
-- **New** · Pick + Front-to-back · Top Varus · Jng Poppy · Mid Orianna · Bot Lucian · Sup Milio · [LGD Gaming G2 W](https://gol.gg/game/stats/83527/page-game/) · 1 game from LGD Gaming, and the library already has pick comps
-- **New** · Front-to-back · Top K'Sante · Jng Wukong · Mid Orianna · Bot Ezreal · Sup Karma · [FlyQuest G1 W](https://gol.gg/game/stats/83528/page-game/) · 1 game from FlyQuest, and the library already has front-to-back comps
+- Skirmish + Pick · Top Rumble · Jng Pantheon · Mid Sylas · Bot Xayah · Sup Blitzcrank · [Team Vitality G2 W](https://gol.gg/game/stats/83463/page-game/) · major weak point (No frontline, Xayah is unprotected); 1 game from Team Vitality, and the library already has skirmish comps
+- Protect + Wombo · Top Galio · Jng Qiyana · Mid Ahri · Bot Aphelios · Sup Thresh · [GAM Esports G2 L](https://gol.gg/game/stats/83463/page-game/) · 1 game from GAM Esports, and the library already has protect comps
+- Poke / siege + Pick · Top Jayce · Jng Lee Sin · Mid Ryze · Bot Mel · Sup Pyke · [FlyQuest G2 L](https://gol.gg/game/stats/83466/page-game/) · major weak point (No frontline); 1 game from FlyQuest, and the library already has poke / siege comps
+- Pick + Skirmish · Top Yorick · Jng Xin Zhao · Mid Orianna · Bot Ashe · Sup Seraphine · [Natus Vincere G2 W](https://gol.gg/game/stats/83466/page-game/) · major weak point (No frontline); 1 game from Natus Vincere, and the library already has pick comps
+- Dive + Skirmish · Top Gwen · Jng Lee Sin · Mid Sylas · Bot Kalista · Sup Renata Glasc · [HANJIN BRION G3 W](https://gol.gg/game/stats/83522/page-game/) · major weak point (No frontline); 1 game from HANJIN BRION, and the library already has dive comps
+- Front-to-back + Wombo · Top Sion · Jng Sejuani · Mid Cassiopeia · Bot Ezreal · Sup Karma · [RED Canids G1 L](https://gol.gg/game/stats/83523/page-game/) · 1 game from RED Canids, and the library already has front-to-back comps
+- Poke / siege + Pick · Top Jayce · Jng Qiyana · Mid Syndra · Bot Caitlyn · Sup Bard · [Team Vitality G1 W](https://gol.gg/game/stats/83523/page-game/) · major weak point (No frontline); 1 game from Team Vitality, and the library already has poke / siege comps
+- Dive · Top Rumble · Jng Naafiri · Mid Ryze · Bot Kai'Sa · Sup Nautilus · [JD Gaming G1 L](https://gol.gg/game/stats/83526/page-game/) · 1 game from JD Gaming, and the library already has dive comps
+- Front-to-back + Protect · Top Ornn · Jng Lee Sin · Mid Syndra · Bot Sivir · Sup Karma · [LGD Gaming G1 W](https://gol.gg/game/stats/83526/page-game/) · 1 game from LGD Gaming, and the library already has front-to-back comps
+- Pick + Front-to-back · Top Varus · Jng Poppy · Mid Orianna · Bot Lucian · Sup Milio · [LGD Gaming G2 W](https://gol.gg/game/stats/83527/page-game/) · 1 game from LGD Gaming, and the library already has pick comps
+- **New** · Front-to-back · Top K'Sante · Jng Wukong · Mid Orianna · Bot Ezreal · Sup Karma · [FlyQuest G1 W](https://gol.gg/game/stats/83528/page-game/), [FlyQuest G1 W](https://gol.gg/game/stats/83573/page-game/) · 2 games from FlyQuest, and the library already has front-to-back comps
 - **New** · Dive + Skirmish · Top Rumble · Jng Pantheon · Mid Akali · Bot Jhin · Sup Nautilus · [GAM Esports G1 L](https://gol.gg/game/stats/83528/page-game/) · 1 game from GAM Esports, and the library already has dive comps
 - **New** · Front-to-back + Early tempo · Top Kled · Jng Cho'Gath · Mid Twisted Fate · Bot Kalista · Sup Renata Glasc · [FlyQuest G2 W](https://gol.gg/game/stats/83529/page-game/) · 1 game from FlyQuest, and the library already has front-to-back comps
 - **New** · Poke / siege + Front-to-back · Top Jayce · Jng Jarvan IV · Mid Viktor · Bot Lucian · Sup Milio · [GAM Esports G1 L](https://gol.gg/game/stats/83531/page-game/) · 1 game from GAM Esports, and the library already has poke / siege comps
@@ -141,14 +104,50 @@ Not added automatically: each needs more games or a person's call. One line per 
 - **New** · Front-to-back + Scaling · Top Ornn · Jng Nocturne · Mid Syndra · Bot Yunara · Sup Lulu · [FlyQuest G1 W](https://gol.gg/game/stats/83537/page-game/) · 1 game from FlyQuest, and the library already has front-to-back comps
 - **New** · Front-to-back + Skirmish · Top Rumble · Jng Jarvan IV · Mid Ryze · Bot Jhin · Sup Nautilus · [Natus Vincere G1 W](https://gol.gg/game/stats/83540/page-game/) · 1 game from Natus Vincere, and the library already has front-to-back comps
 - **New** · Dive · Top Jax · Jng Nocturne · Mid Taliyah · Bot Xayah · Sup Rakan · [JD Gaming G3 W](https://gol.gg/game/stats/83542/page-game/) · major weak point (No frontline); 1 game from JD Gaming, and the library already has dive comps
-- **New** · Front-to-back + Wombo · Top Ambessa · Jng Sejuani · Mid Viktor · Bot Kalista · Sup Renata Glasc · [Natus Vincere G3 L](https://gol.gg/game/stats/83542/page-game/) · 1 game from Natus Vincere, and the library already has front-to-back comps
+- **New** · Pick + Front-to-back · Top K'Sante · Jng Pantheon · Mid Ryze · Bot Kalista · Sup Renata Glasc · [KT Rolster G1 L](https://gol.gg/game/stats/83563/page-game/) · 1 game from KT Rolster, and the library already has pick comps
+- **New** · Front-to-back + Poke / siege · Top Renekton · Jng Jarvan IV · Mid Viktor · Bot Ezreal · Sup Seraphine · [KT Rolster G2 L](https://gol.gg/game/stats/83564/page-game/) · 1 game from KT Rolster, and the library already has front-to-back comps
+- **New** · Dive + Skirmish · Top Ambessa · Jng Lee Sin · Mid Syndra · Bot Ziggs · Sup Alistar · [Team Vitality G2 W](https://gol.gg/game/stats/83564/page-game/) · 1 game from Team Vitality, and the library already has dive comps
+- **New** · Dive + Early tempo · Top Olaf · Jng Vi · Mid Taliyah · Bot Miss Fortune · Sup Leona · [KT Rolster G3 W](https://gol.gg/game/stats/83565/page-game/) · 1 game from KT Rolster, and the library already has dive comps
+- **New** · Dive · Top Camille · Jng Wukong · Mid Ahri · Bot Kai'Sa · Sup Nautilus · [Team Vitality G3 L](https://gol.gg/game/stats/83565/page-game/) · 1 game from Team Vitality, and the library already has dive comps
+- **New** · Poke / siege + Front-to-back · Top Cho'Gath · Jng Trundle · Mid Hwei · Bot Caitlyn · Sup Karma · [Team Vitality G4 L](https://gol.gg/game/stats/83566/page-game/) · 1 game from Team Vitality, and the library already has poke / siege comps
+- **New** · Dive + Skirmish · Top Jax · Jng Xin Zhao · Mid Vex · Bot Corki · Sup Maokai · [KT Rolster G5 W](https://gol.gg/game/stats/83567/page-game/) · 1 game from KT Rolster, and the library already has dive comps
+- **New** · Pick + Split · Top Varus · Jng Aatrox · Mid Akali · Bot Aphelios · Sup Blitzcrank · [Team Vitality G5 L](https://gol.gg/game/stats/83567/page-game/) · major weak point (Aphelios is unprotected); 1 game from Team Vitality, and the library already has pick comps
+- **New** · Protect + Front-to-back · Top K'Sante · Jng Nocturne · Mid Orianna · Bot Xayah · Sup Rakan · [JD Gaming G1 L](https://gol.gg/game/stats/83568/page-game/) · 1 game from JD Gaming, and the library already has protect comps
+- **New** · Pick + Poke / siege · Top Jayce · Jng Xin Zhao · Mid Syndra · Bot Jhin · Sup Camille · [BNK FearX G2 L](https://gol.gg/game/stats/83569/page-game/) · major weak point (No frontline); 1 game from BNK FearX, and the library already has pick comps
+- **New** · Front-to-back + Skirmish · Top Sion · Jng Jarvan IV · Mid Viktor · Bot Lucian · Sup Milio · [JD Gaming G2 W](https://gol.gg/game/stats/83569/page-game/) · 1 game from JD Gaming, and the library already has front-to-back comps
+- **New** · Front-to-back · Top Renekton · Jng Skarner · Mid Taliyah · Bot Ashe · Sup Seraphine · [JD Gaming G3 L](https://gol.gg/game/stats/83570/page-game/) · 1 game from JD Gaming, and the library already has front-to-back comps
+- **New** · Protect + Pick · Top Shen · Jng Lee Sin · Mid Anivia · Bot Caitlyn · Sup Bard · [BNK FearX G3 W](https://gol.gg/game/stats/83570/page-game/) · 1 game from BNK FearX, and the library already has protect comps
+- **New** · Protect + Front-to-back · Top Yorick · Jng Poppy · Mid Mel · Bot Yunara · Sup Karma · [BNK FearX G4 L](https://gol.gg/game/stats/83571/page-game/) · 1 game from BNK FearX, and the library already has protect comps
+- **New** · Split + Skirmish · Top Jax · Jng Naafiri · Mid Twisted Fate · Bot Tristana · Sup Lulu · [JD Gaming G4 W](https://gol.gg/game/stats/83571/page-game/) · major weak point (No frontline); 1 game from JD Gaming, and the library already has split comps
+- **New** · Dive · Top Trundle · Jng Viego · Mid Akali · Bot Kai'Sa · Sup Alistar · [JD Gaming G5 L](https://gol.gg/game/stats/83572/page-game/) · 1 game from JD Gaming, and the library already has dive comps
+- **New** · Front-to-back + Poke / siege · Top Nidalee · Jng Olaf · Mid Ryze · Bot Ezreal · Sup Leona · [BNK FearX G5 W](https://gol.gg/game/stats/83572/page-game/) · 1 game from BNK FearX, and the library already has front-to-back comps
+- **New** · Wombo + Front-to-back · Top Ornn · Jng Ambessa · Mid Annie · Bot Kalista · Sup Renata Glasc · [FlyQuest G2 L](https://gol.gg/game/stats/83574/page-game/) · 1 game from FlyQuest, and the library already has wombo comps
+- **New** · Dive + Front-to-back · Top Sion · Jng Jarvan IV · Mid Akali · Bot Ashe · Sup Alistar · [Team WE G3 W](https://gol.gg/game/stats/83575/page-game/) · 1 game from Team WE, and the library already has dive comps
+- **New** · Poke / siege + Front-to-back · Top Jayce · Jng Ivern · Mid Tristana · Bot Ziggs · Sup Nautilus · [FlyQuest G3 L](https://gol.gg/game/stats/83575/page-game/) · 1 game from FlyQuest, and the library already has poke / siege comps
+- **New** · Dive + Poke / siege · Top Varus · Jng Lee Sin · Mid Sylas · Bot Hwei · Sup Rell · [FlyQuest G4 W](https://gol.gg/game/stats/83576/page-game/) · dive + poke / siege pull in different directions, so the win condition is ambiguous; 1 game from FlyQuest, and the library already has dive comps
+- **New** · Skirmish + Front-to-back · Top Aatrox · Jng Shyvana · Mid Aurora · Bot Caitlyn · Sup Neeko · [FlyQuest G5 L](https://gol.gg/game/stats/83577/page-game/) · 1 game from FlyQuest, and the library already has skirmish comps
+- **New** · Skirmish + Pick · Top Jax · Jng Maokai · Mid LeBlanc · Bot Corki · Sup Camille · [Team WE G5 W](https://gol.gg/game/stats/83577/page-game/) · 1 game from Team WE, and the library already has skirmish comps
+- **New** · Front-to-back + Skirmish · Top Ornn · Jng Qiyana · Mid Syndra · Bot Lucian · Sup Milio · [LGD Gaming G1 W](https://gol.gg/game/stats/83578/page-game/) · 1 game from LGD Gaming, and the library already has front-to-back comps
+- **New** · Split + Skirmish · Top Yorick · Jng Jarvan IV · Mid Ryze · Bot Ashe · Sup Seraphine · [LGD Gaming G2 L](https://gol.gg/game/stats/83579/page-game/) · 1 game from LGD Gaming, and the library already has split comps
+- **New** · Poke / siege + Front-to-back · Top Varus · Jng Lee Sin · Mid Orianna · Bot Ezreal · Sup Leona · [HANJIN BRION G2 W](https://gol.gg/game/stats/83579/page-game/) · 1 game from HANJIN BRION, and the library already has poke / siege comps
+- **New** · Front-to-back · Top Poppy · Jng Jayce · Mid Akali · Bot Jhin · Sup Rell · [LGD Gaming G4 L](https://gol.gg/game/stats/83581/page-game/) · 1 game from LGD Gaming, and the library already has front-to-back comps
+- **New** · Dive + Skirmish · Top K'Sante · Jng Wukong · Mid Ahri · Bot Corki · Sup Neeko · [HANJIN BRION G4 W](https://gol.gg/game/stats/83581/page-game/) · 1 game from HANJIN BRION, and the library already has dive comps
+- **New** · Front-to-back + Split · Top Yorick · Jng Skarner · Mid Ryze · Bot Ezreal · Sup Seraphine · [KT Rolster G1 L](https://gol.gg/game/stats/83603/page-game/) · 1 game from KT Rolster, and the library already has front-to-back comps
+- **New** · Dive + Front-to-back · Top Olaf · Jng Wukong · Mid Orianna · Bot Corki · Sup Nautilus · [KT Rolster G3 L](https://gol.gg/game/stats/83605/page-game/) · 1 game from KT Rolster, and the library already has dive comps
+- **New** · Poke / siege + Front-to-back · Top Nidalee · Jng Vi · Mid Viktor · Bot Ziggs · Sup Shen · [BNK FearX G4 W](https://gol.gg/game/stats/83606/page-game/) · 1 game from BNK FearX, and the library already has poke / siege comps
+- **New** · Dive + Skirmish · Top Kennen · Jng Pantheon · Mid Lissandra · Bot Caitlyn · Sup Bard · [KT Rolster G4 L](https://gol.gg/game/stats/83606/page-game/) · major weak point (No frontline); 1 game from KT Rolster, and the library already has dive comps
 - Cannot be read · Top Jax · Jng Skarner · Mid Locke · Bot Aphelios · Sup Karma · [LGD Gaming G2 W](https://gol.gg/game/stats/83454/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
 - Cannot be read · Top Ornn · Jng Naafiri · Mid Locke · Bot Jhin · Sup Bard · [Team WE G3 W](https://gol.gg/game/stats/83461/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
-- **New** · Cannot be read · Top Ornn · Jng Jarvan IV · Mid Locke · Bot Yunara · Sup Lulu · [Shopify Rebellion G1 L](https://gol.gg/game/stats/83468/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
-- **New** · Cannot be read · Top Zaahen · Jng Pantheon · Mid Orianna · Bot Xayah · Sup Rakan · [Shopify Rebellion G2 L](https://gol.gg/game/stats/83469/page-game/) · Zaahen has no reviewed kit, so the comp check cannot read this lineup
-- **New** · Cannot be read · Top Ambessa · Jng Jarvan IV · Mid Locke · Bot Jhin · Sup Karma · [HANJIN BRION G1 L](https://gol.gg/game/stats/83520/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
-- **New** · Cannot be read · Top K'Sante · Jng Zaahen · Mid Syndra · Bot Miss Fortune · Sup Neeko · [Natus Vincere G3 L](https://gol.gg/game/stats/83522/page-game/) · Zaahen has no reviewed kit, so the comp check cannot read this lineup
+- Cannot be read · Top Ornn · Jng Jarvan IV · Mid Locke · Bot Yunara · Sup Lulu · [Shopify Rebellion G1 L](https://gol.gg/game/stats/83468/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
+- Cannot be read · Top Zaahen · Jng Pantheon · Mid Orianna · Bot Xayah · Sup Rakan · [Shopify Rebellion G2 L](https://gol.gg/game/stats/83469/page-game/) · Zaahen has no reviewed kit, so the comp check cannot read this lineup
+- Cannot be read · Top Ambessa · Jng Jarvan IV · Mid Locke · Bot Jhin · Sup Karma · [HANJIN BRION G1 L](https://gol.gg/game/stats/83520/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
+- Cannot be read · Top K'Sante · Jng Zaahen · Mid Syndra · Bot Miss Fortune · Sup Neeko · [Natus Vincere G3 L](https://gol.gg/game/stats/83522/page-game/) · Zaahen has no reviewed kit, so the comp check cannot read this lineup
 - **New** · Cannot be read · Top Galio · Jng Qiyana · Mid Locke · Bot Ashe · Sup Seraphine · [JD Gaming G1 L](https://gol.gg/game/stats/83540/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
+- **New** · Cannot be read · Top Yorick · Jng Skarner · Mid Locke · Bot Yunara · Sup Lulu · [KT Rolster G4 W](https://gol.gg/game/stats/83566/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
+- **New** · Cannot be read · Top Rumble · Jng Pantheon · Mid Locke · Bot Kalista · Sup Renata Glasc · [BNK FearX G1 W](https://gol.gg/game/stats/83568/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
+- **New** · Cannot be read · Top Rumble · Jng Vi · Mid Locke · Bot Yunara · Sup Lulu · [HANJIN BRION G1 L](https://gol.gg/game/stats/83578/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
+- **New** · Cannot be read · Top Aatrox · Jng Maokai · Mid Yone · Bot Caitlyn · Sup Bard · [LGD Gaming G3 L](https://gol.gg/game/stats/83580/page-game/) · Yone has no reviewed kit, so the comp check cannot read this lineup
+- **New** · Cannot be read · Top K'Sante · Jng Jayce · Mid Locke · Bot Jhin · Sup Camille · [BNK FearX G3 W](https://gol.gg/game/stats/83605/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
 
 ## Limits
 
