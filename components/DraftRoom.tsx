@@ -15,7 +15,7 @@ import { describeEvidence, describePro, enemyParam, poolTier, tierLabel, type Co
 import { similarProDrafts, similarShells, type ProSuggestion, type SuggestData } from "@/lib/suggest";
 import type { DraftData, DrawerData } from "@/lib/data";
 import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
-import { CompCheck, CompSummaryLine, type SiegeCell } from "./CompCheck";
+import { CompCheck, CompStatus, CompSummaryLine, planFlags, usePlanRead, type SiegeCell } from "./CompCheck";
 import { ChampionHoverCard, useHoverIntent } from "./ChampionInteraction";
 import { GenRang } from "./GenRang";
 import { PairingCard, type CardRecord } from "./PairingCard";
@@ -65,7 +65,7 @@ const enemyDraftOf = (list: (string | undefined)[]): EnemyDraft => Object.fromEn
 const ORDER_NOTE = "Order: your preferred pairing first, then comp fit (synergy with your picks, team needs, matchups and risks). "
   + "Synergy, Pro, Counter, First rotation and Pro priority are labels on each row; pro game counts, counters and presence never move a row. Ties go to the row with more signals.";
 
-export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, initialFocus, initialFilter = "all", initialPatch, metaPicks, planPreview = false }: {
+export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, initialFocus, initialFilter = "all", initialPatch, metaPicks, legacyCheck = false }: {
   data: DraftData;
   sources: Record<string, Source>;
   drawerData: DrawerData;
@@ -74,7 +74,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   initialFocus?: Role; initialFilter?: Filter; // restored on the way back from Pro Builds
   initialPatch?: string; // ?patch=: the pro meta patch, when chosen
   metaPicks: Record<string, { picks: number; winRate: number; lowSample: boolean }>;
-  planPreview?: boolean; // ?plan=1: the plan-aware Comp Check read beside the live one, for review
+  legacyCheck?: boolean; // ?legacy=1: a debugging switch that adds the previous Comp Check rules under Full analysis
 }) {
   const [draft, setDraft] = useState<Draft>(initial);
   // One enemy slot per role, in ROLES order.
@@ -148,7 +148,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
     if (nextPatch) q.set("patch", patchLabel(nextPatch));
     // The role tab the user chose, so a refresh or Back keeps it (only while that role is open).
     if (nextFocus && !next[nextFocus]) q.set("focus", nextFocus.toLowerCase());
-    if (planPreview) q.set("plan", "1");
+    if (legacyCheck) q.set("legacy", "1");
     // window.location keeps the GitHub Pages base path; usePathname() would drop it. Marked as the room's own write so
     // the page keeps this room (components/views/DraftRoomView.tsx).
     markOwnQuery(q.toString());
@@ -201,7 +201,9 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   const open = ROLES.filter((r) => !draft[r]);
   const lockedCount = ROLES.length - open.length;
   const started = lockedCount > 0 || enemyIds.length > 0;
-  const critical = warns.filter((w) => severityOf(w) === "critical").length;
+  // One plan read for every Comp Check surface (rail, phone line, header badge). The rule warnings above stay for the
+  // ?legacy=1 debugging view only.
+  const planRead = usePlanRead(draft, enemyIds, data.champions, data.botPairings);
 
   // The role being picked: the one the user chose, else the open lane partner of a locked pick, else the open role
   // with the strongest fit.
@@ -276,9 +278,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
         <div className="titles"><h1>Draft Room</h1></div>
         <div className="actions">
           <span className="xs muted tnum">{lockedCount}/5 locked{enemyIds.length ? ` · ${enemyIds.length} enemy` : ""}</span>
-          {lockedCount >= 2 && (warns.length
-            ? <span className="row tight">{critical > 0 && <span className="badge danger">{critical} critical</span>}{warns.length - critical > 0 && <span className="badge caution">{warns.length - critical} caution</span>}</span>
-            : <span className="badge success">No warnings</span>)}
+          {lockedCount >= 2 && <CompStatus read={planRead} />}
           {cleared
             ? <button className="btn sm" onClick={() => { update(cleared.draft, cleared.enemy); setCleared(undefined); }}>Draft cleared · Undo</button>
             : <button className="btn sm" title="Unlock every pick on both teams" onClick={() => { setCleared({ draft, enemy }); setFocus(undefined); update({}, ROLES.map(() => undefined)); }} disabled={!started}>Clear draft</button>}
@@ -329,9 +329,9 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
       </div>
 
       {/* Narrow screens put Comp Check below the list: one line says what the draft is missing, here and pinned */}
-      <CompSummaryLine draft={draft} enemyIds={enemyIds} champions={data.champions} active={active} className="cc-summary-board" />
+      <CompSummaryLine read={planRead} active={active} className="cc-summary-board" />
       <MiniBoard show={pinned} draft={draft} enemy={enemy} active={active} names={names} onActivate={setFocus}
-        summary={<CompSummaryLine draft={draft} enemyIds={enemyIds} champions={data.champions} active={active} className="cc-summary-mini" />} />
+        summary={<CompSummaryLine read={planRead} active={active} className="cc-summary-mini" />} />
 
       <div className="draft-layout">
         <div className="draft-main">
@@ -409,10 +409,10 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
 
         </div>
 
-        <CompCheck plan={planPreview} draft={draft} enemyIds={enemyIds} champions={data.champions} botPairings={data.botPairings} active={active}
-          bestOverall={activeRows.find((c) => !c.theoretical)?.champion} bestFixId={active ? fits[active]?.find((r) => r.bestFix)?.champion : undefined} proIds={proIds} names={names} grid={(siege, disengage) => <Indicators prof={prof} needs={needs} picks={picks.length} siege={siege} disengage={disengage} />}>
-          <div className="cc-section">
-            <div className="cc-label">Rule checks</div>
+        <CompCheck read={planRead} legacy={legacyCheck} draft={draft} enemyIds={enemyIds} champions={data.champions} botPairings={data.botPairings} active={active}
+          bestOverall={activeRows.find((c) => !c.theoretical)?.champion} bestFixId={active ? fits[active]?.find((r) => r.bestFix)?.champion : undefined} proIds={proIds} names={names} grid={(siege, disengage) => <Indicators prof={prof} flags={planFlags(planRead)} picks={picks.length} siege={siege} disengage={disengage} />}>
+          {legacyCheck && <div className="cc-section">
+            <div className="cc-label">Rule checks (debug, ?legacy=1)</div>
             {!warns.length && (lockedCount < 2 ? <p className="xs muted">Needs two picks.</p> : <p className="cc-ok">No warnings.</p>)}
             {[...warns].sort((a, b) => Number(severityOf(b) === "critical") - Number(severityOf(a) === "critical")).map((w) => (
               <details key={w.id} className={`warning-item ${severityOf(w)}`}>
@@ -421,17 +421,17 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                 <p className="xs muted">Rule: {w.rule}.</p>
               </details>
             ))}
-          </div>
+          </div>}
           {pickNotes.length > 0 && (
             <div className="cc-section notes">
               <div className="cc-label">Pick notes</div>
               {pickNotes.map((n) => <p key={n.id}><b>{names[n.id]}:</b> {n.text}</p>)}
             </div>
           )}
-          <details className="rules cc-section">
+          {legacyCheck && <details className="rules cc-section">
             <summary>All {RULES.length} rules</summary>
             <ul>{RULES.map((r) => <li key={r.id}><b>{r.label}:</b> {r.rule}</li>)}</ul>
-          </details>
+          </details>}
         </CompCheck>
       </div>
 
@@ -907,18 +907,18 @@ function MiniBoard({ show, draft, enemy, active, names, onActivate, summary }: {
 
 const scale = (v: number) => (v >= 3 ? "High" : v >= 2 ? "Mid" : "Low");
 
-function Indicators({ prof, needs, picks, siege, disengage }: { prof: ReturnType<typeof profile>; needs: Need[]; picks: number; siege: SiegeCell; disengage: SiegeCell }) {
+function Indicators({ prof, flags, picks, siege, disengage }: { prof: ReturnType<typeof profile>; flags: Record<string, string>; picks: number; siege: SiegeCell; disengage: SiegeCell }) {
   const m = Object.fromEntries(prof.meters.map((x) => [x.attr, x])) as Record<Attr, (typeof prof.meters)[number]>;
-  // A missing job only reads as a problem once it matters: a need tied to a locked champion, or three picks in.
-  const problem = (...ids: Need["id"][]) => needs.find((n) => ids.includes(n.id) && (n.personal || picks >= 3));
+  // The values are kit facts; a cell is marked only when the Comp Check's plan read names that gap (planFlags), so the
+  // grid never disagrees with the read above it.
   const share = prof.damage.physicalShare;
-  const cells: { label: string; value: string; bad?: Need; title?: string }[] = [
-    { label: "Engage", value: !picks ? "—" : needs.some((n) => n.id === "engage" || n.id === "setup") ? "None" : "✓", bad: problem("engage", "setup"), title: m.engage.bestBy ? `Best engage: ${m.engage.bestBy}` : undefined },
-    { label: "Frontline", value: picks ? String(m.frontline.best) : "—", bad: problem("frontline"), title: `Best ${m.frontline.best} · team ${m.frontline.total}` },
-    { label: "Peel", value: picks ? String(m.peel.total) : "—", bad: problem("peel"), title: `Team total · best ${m.peel.best}` },
+  const cells: { label: string; value: string; bad?: string; title?: string }[] = [
+    { label: "Engage", value: !picks ? "—" : m.engage.best >= 2 ? "✓" : "None", title: m.engage.bestBy ? `Best engage: ${m.engage.bestBy}` : undefined },
+    { label: "Frontline", value: picks ? String(m.frontline.best) : "—", title: `Best ${m.frontline.best} · team ${m.frontline.total}` },
+    { label: "Peel", value: picks ? String(m.peel.total) : "—", title: `Team total · best ${m.peel.best}` },
     { label: "Disengage", value: disengage.value, title: disengage.title },
-    { label: "AD / AP", value: share === null ? "—" : `${Math.round(share * 100)} / ${Math.round((1 - share) * 100)}`, bad: problem("magic", "physical"), title: "Damage split, physical / magic" },
-    { label: "Sustained", value: picks ? String(m.sustainedDps.best) : "—", bad: problem("dps") },
+    { label: "AD / AP", value: share === null ? "—" : `${Math.round(share * 100)} / ${Math.round((1 - share) * 100)}`, title: "Damage split, physical / magic" },
+    { label: "Sustained", value: picks ? String(m.sustainedDps.best) : "—" },
     { label: "Scaling", value: picks ? scale(m.scaling.best) : "—" },
     { label: "Burst", value: picks ? String(m.burst.best) : "—" },
     { label: "Poke", value: picks ? String(m.poke.best) : "—" },
@@ -929,7 +929,7 @@ function Indicators({ prof, needs, picks, siege, disengage }: { prof: ReturnType
   return (
     <div className="cc-grid">
       {cells.map((c) => (
-        <div key={c.label} className={`cc-cell ${c.bad ? "bad" : ""}`} title={c.bad ? c.bad.text : c.title}>
+        <div key={c.label} className={`cc-cell ${flags[c.label] ? "bad" : ""}`} title={flags[c.label] ?? c.title}>
           <span className="cc-k">{c.label}</span><span className="cc-v">{c.value}</span>
         </div>
       ))}

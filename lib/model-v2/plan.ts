@@ -69,6 +69,7 @@ export interface PlanCheck { identity: IdentityId; label: string; jobs: Job[]; m
 
 export interface PlanRead {
   confidence: Confidence;
+  picks: number;              // allied picks with a kit
   headline: string;
   identity: { primary: IdentityScore | null; secondary: IdentityScore | null };
   plan: PlanCheck | null;
@@ -531,7 +532,7 @@ export function analyzePlan(draft: Draft, champions: ChampionKit[], enemyIds: st
     : open && needed.length ? `${id || "No clear plan"}: the ${open.toLowerCase()} must bring ${needed.slice(0, 2).map((x) => short(x).replace(/^missing /, "")).join(" and ")}`
     : id || "No clear plan";
   return {
-    confidence, headline,
+    confidence, picks: n, headline,
     identity: { primary, secondary },
     plan,
     winCondition: primary && n >= T.earlyRead ? winCondition(primary.id, slots, f, secondary?.id ?? null) : null,
