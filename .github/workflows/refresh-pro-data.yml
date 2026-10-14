@@ -2,8 +2,9 @@ name: Refresh pro data
 
 # Twice-daily check of Gol.gg for newly completed games in the tracked tournaments only (data/pro-games.json `tracked`:
 # Demacia Cup Global Invitational 2026 and Worlds 2026; the LCK playoffs are a frozen archive). Imports verified games
-# and tournament totals plus every player's build (items, runes, spells, skill order), runs the full test suite, typecheck and build, and commits and deploys only when verified data
-# changed. A refused or failed request writes nothing. Saved pairings and pool tiers are never touched.
+# and tournament totals plus every player's build (items, runes, spells, skill order), regenerates the Comp Library's
+# discovered comps from the new lineups, runs the full test suite, typecheck and build, and commits and deploys only when
+# verified data changed. A refused or failed request writes nothing. Saved pairings and pool tiers are never touched.
 #
 # Twice a day, 8 AM and 8 PM Eastern all year (alan, 2026-10-12: the evening run picks up the day's games without waiting
 # for the next morning). Cron is UTC, so each run is scheduled at both its EDT and its EST hour (8 AM: 12:17 / 13:17 UTC;
@@ -63,6 +64,17 @@ jobs:
 
       - if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
         run: npm ci
+
+      # Derived data follows the games (alan, 2026-10-14). Every chart and statistic (Meta, Pro Priority, Pro Drafts,
+      # Pro Builds, Champion Pool, Synergies draft usage, Duo, Jungle, Gen.G, Draft Room labels) is computed from the
+      # stored games at build time, so the build below regenerates them. The one derived dataset stored in the repo is
+      # the Comp Library's discovered comps; it is re-run here on the new lineups with the same fixed rules as the weekly
+      # job (scripts/discover-comps.ts, deterministic, additions only).
+      - id: discover
+        if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
+        name: Regenerate the Comp Library from the new lineups
+        run: npx tsx scripts/discover-comps.ts
+
       - if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
         run: npm test
       - if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
@@ -76,7 +88,7 @@ jobs:
         run: |
           git config user.name "adequate-alan"
           git config user.email "54249725+adequate-alan@users.noreply.github.com"
-          git add data/pro-games.json data/meta.json data/sources.json data/pro-builds.json data/build-assets.json
+          git add data/pro-games.json data/meta.json data/sources.json data/pro-builds.json data/build-assets.json data/discovered-comps.json reports/comp-discovery.md
           git diff --cached --quiet && { echo "Nothing staged."; exit 0; }
           git commit -m "Pro data: daily Gol.gg refresh $(date -u +%Y-%m-%d)" -m "$(node -e 'const p=require("./data/pro-games.json");console.log(p.tournaments.map(t=>`${t.golgg}: ${t.recorded}/${t.games} games recorded, ${t.seriesPlayed}/${t.series} series played, ${t.status}`).join("\n"))')"
           for i in 1 2 3; do
@@ -84,6 +96,22 @@ jobs:
             git pull --rebase origin "${GITHUB_REF_NAME}"
           done
           exit 1
+
+      # A failed check after a refresh (a test, typecheck or build) commits nothing. Keep what was read, so the games are
+      # not lost to a log line and the failure can be reproduced locally against the same data.
+      - if: failure() && steps.refresh.outputs.changed == 'true'
+        name: Keep the unverified refresh for diagnosis
+        uses: actions/upload-artifact@v4
+        with:
+          name: unverified-pro-data
+          path: |
+            data/pro-games.json
+            data/meta.json
+            data/sources.json
+            data/pro-builds.json
+            data/build-assets.json
+            data/discovered-comps.json
+          retention-days: 14
 
       - if: steps.commit.outputs.pushed == 'true' && github.ref_name == 'main'
         name: Deploy to GitHub Pages

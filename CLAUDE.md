@@ -208,7 +208,12 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 - Tournament totals are replaced only when the champion table sums to 10 picks per match-list game and, with every game
   recorded, agrees champion by champion; then `rolePicks` comes from the game pages. Never across patches.
 - The updater writes only `pro-games.json`, `meta.json`, `sources.json`, `pro-builds.json` and `build-assets.json`; imported games add no pro-derived
-  alternatives (alan: new pro pairings stay Pro Evidence). It commits as adequate-alan only when verified data changed,
+  alternatives (alan: new pro pairings stay Pro Evidence). Derived data follows the games (alan, 2026-10-14): every chart
+  and statistic is computed from them at build time, and when data changed the workflow also re-runs comp discovery
+  (`scripts/discover-comps.ts`, same rules as the weekly job) and commits `discovered-comps.json` with them. A test that
+  reads recorded data must survive new games (synthetic cases use a roster-only `roleBook(champions, [])`); a failed run
+  commits nothing and keeps the unverified data as the `unverified-pro-data` artifact. "Last checked" counts only runs
+  that ran past the time gate (`lastCheckedRun`, 30 s or longer). It commits as adequate-alan only when verified data changed,
   after test/typecheck/build, then starts `pages.yml`. A supplied game link becomes verified only when its game shows the claim.
 - Tests that check fixed Demacia numbers are scoped to the known events; new imports must never be able to break them.
 

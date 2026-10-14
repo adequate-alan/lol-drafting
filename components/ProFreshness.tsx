@@ -5,7 +5,14 @@ import type { Freshness } from "@/lib/pro-games";
 // The daily pro-data refresh (.github/workflows/refresh-pro-data.yml) commits only when verified data changes, so the
 // build knows when data last changed but not when it was last checked. The latest successful scheduled check comes from
 // GitHub's public Actions API when it answers; otherwise the check stored with the data is shown.
-const runsUrl = (workflow: string) => `https://api.github.com/repos/adequate-alan/lol-drafting/actions/workflows/${workflow}/runs?status=success&branch=main&per_page=1`;
+const runsUrl = (workflow: string) => `https://api.github.com/repos/adequate-alan/lol-drafting/actions/workflows/${workflow}/runs?status=success&branch=main&per_page=10`;
+
+type Run = { run_started_at?: string; updated_at?: string };
+// Each schedule is set at both its EDT and EST hour and the off-season one ends at the gate in seconds, still "success".
+// Such a run checked nothing, so it never counts as a check: a real one reads Gol.gg or the stored games for minutes.
+const CHECKED_MS = 30_000;
+export const lastCheckedRun = (runs: Run[] | undefined) =>
+  runs?.find((r) => r.run_started_at && r.updated_at && Date.parse(r.updated_at) - Date.parse(r.run_started_at) >= CHECKED_MS)?.updated_at ?? null;
 
 export const day = (iso: string | null) => iso ? new Date(iso.length === 10 ? `${iso}T12:00:00Z` : iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "America/New_York" }) : undefined;
 const latest = (xs: (string | null | undefined)[]) => xs.filter((x): x is string => !!x).sort().at(-1) ?? null;
@@ -27,8 +34,8 @@ export function useLastRun(workflow: string, cacheKey: string) {
     let live = true;
     fetch(runsUrl(workflow), { headers: { Accept: "application/vnd.github+json" } })
       .then((r) => (r.ok ? r.json() : undefined))
-      .then((j: { workflow_runs?: { updated_at?: string }[] } | undefined) => {
-        const v = j?.workflow_runs?.[0]?.updated_at ?? null;
+      .then((j: { workflow_runs?: Run[] } | undefined) => {
+        const v = lastCheckedRun(j?.workflow_runs);
         writeCache(cacheKey, v);
         if (live) setValue(v);
       })
@@ -39,7 +46,7 @@ export function useLastRun(workflow: string, cacheKey: string) {
 }
 
 export function ProFreshness({ items, compact = false }: { items: Freshness[]; compact?: boolean }) {
-  const checked = useLastRun("refresh-pro-data.yml", "pro-freshness-check");
+  const checked = useLastRun("refresh-pro-data.yml", "pro-freshness-check-v2");
   const updated = latest(items.map((i) => i.lastUpdate));
   const check = latest([...items.map((i) => i.lastCheck), checked]);
   const status = (i: Freshness) => i.status === "complete" ? "Completed" : "Ongoing";
