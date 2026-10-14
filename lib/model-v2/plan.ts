@@ -12,7 +12,7 @@
 import { ROLES, type Role } from "../schema";
 import {
   facts, identities, pickIdentity, weaknesses, winCondition, timing, roleNeeds, names, slotsOf, SEV, IDENTITY_LABEL,
-  needsPeel, peeler, NEEDS, type Draft, type Facts, type IdentityId, type IdentityScore, type Insight, type NeedId,
+  needsPeel, peeler, NEEDS, savedEligible, type SavedBotRecord, type Draft, type Facts, type IdentityId, type IdentityScore, type Insight, type NeedId,
   type RoleNeed, type Severity, type Slot, type Confidence, enemyDraft,
 } from "./analyze";
 import type { ChampionKit } from "./schema";
@@ -35,7 +35,11 @@ export const PLAN = {
   splitStall: { waveclear: 7, hold: 4 },
 } as const;
 
-export type Tier = "critical" | "weakness" | "accepted";
+// needed: with four picks, a critical gap an available champion in the open role closes; the last pick must bring it.
+export type Tier = "critical" | "needed" | "weakness" | "accepted";
+// What the revealed enemy does to a finding. The plan read itself is structural: it reads only our picks.
+// exploited: an enemy pick targets this gap · less-relevant: four or more enemy picks and none of the tools that would.
+export type Exposure = "structural" | "exploited" | "less-relevant";
 export interface PlanFinding {
   id: string;
   tier: Tier;               // critical: blocks the plan · weakness: real cost · accepted: the plan can live with it
@@ -45,6 +49,10 @@ export interface PlanFinding {
   fixes: NeedId[];
   replaces?: string[];      // ids of the current Comp Check rules this finding stands for
   source: "plan" | "general" | "interaction" | "duo";
+  exposure: Exposure;
+  against?: string;         // the enemy picks that exploit it, or why the matchup makes it matter less
+  fixers?: string[];        // needed: available champions in the open role whose pick closes it (saved-bot rule applied)
+  theoretical?: string[];   // needed: supports that close it but sit outside the locked bot's saved supports
 }
 // essential: without it the plan cannot be executed (critical); otherwise a missing job is a real weakness.
 export interface Job { id: string; label: string; met: boolean; by: string; missing: string; fixes: NeedId[]; essential: boolean }
@@ -63,6 +71,10 @@ export interface PlanRead {
   needs: RoleNeed[];
   roleNeeds: Partial<Record<Role, RoleNeed[]>>;
   timing: ReturnType<typeof timing> | null;
+  open: Role | null;          // the one role left with four picks
+  needed: PlanFinding[];      // four picks: what the last pick must bring
+  merged: { rule: string; job: string }[]; // current rules reported by a missing plan job instead of on their own
+  enemyRead: "none" | "partial" | "full"; // how much of the enemy the exposure tags could see
 }
 const SHOWN = 3;
 
@@ -78,6 +90,13 @@ const reaches = (s: Slot) => s.threat >= 2 && s.c.kit.backlineAccess >= 2;
 const stuck = (s: Slot) => s.threat >= 2 && s.c.kit.range === 0 && s.c.kit.backlineAccess < 2;
 const starter = (s: Slot) => s.c.fightStart === "primary";
 const catcher = (s: Slot) => s.c.fightStart === "catch";
+/** How a carry follows an ally's engage, from the unreviewed kit fields (no value is changed for this read). */
+export const followOf = (s: Slot) => ({
+  allIn: s.c.kit.followUp >= 2,                                  // crowd control or burst of their own on the locked target
+  ranged: s.threat >= 2 && s.c.kit.range >= 2,                    // hits the locked target from standard range or further
+  joins: s.c.kit.backlineAccess >= 2 || (s.threat >= 2 && s.c.kit.range <= 1), // reaches it, or is already standing there
+  extended: s.c.attrs.sustainedDps >= 2,                          // keeps dealing damage in the longer trade that follows
+});
 
 // ---------- plan jobs ----------
 
@@ -200,8 +219,8 @@ const CRITICAL_RULES = ["no-fight-start", "carry-unprotected", "all-ad", "all-ap
 /** One current rule against the plan: keep, accept (with the reason), or merge into a plan job. */
 function reread(w: Insight, plan: IdentityId, slots: Slot[], f: Facts, reported: Set<string>): PlanFinding | null {
   const keep = (tier: Tier = w.severity === "major" && CRITICAL_RULES.includes(w.id) ? "critical" : "weakness", why = w.text): PlanFinding =>
-    ({ id: w.id, tier, severity: w.severity, label: w.label, why, fixes: w.fixes, replaces: [w.id, ...(w.covers ?? [])], source: "general" });
-  const accept = (why: string): PlanFinding => ({ id: w.id, tier: "accepted", severity: w.severity, label: w.label, why, fixes: w.fixes, replaces: [w.id], source: "general" });
+    ({ id: w.id, tier, severity: w.severity, label: w.label, why, fixes: w.fixes, replaces: [w.id, ...(w.covers ?? [])], source: "general", exposure: "structural" });
+  const accept = (why: string): PlanFinding => ({ id: w.id, tier: "accepted", severity: w.severity, label: w.label, why, fixes: w.fixes, replaces: [w.id], source: "general", exposure: "structural" });
   // Merged only when that job is reported as missing; otherwise the rule stands on its own, so nothing is dropped.
   const job = COVERED[plan]?.[w.id];
   if (job && reported.has(job)) return null;
@@ -258,7 +277,7 @@ function reread(w: Insight, plan: IdentityId, slots: Slot[], f: Facts, reported:
 function interactions(slots: Slot[], f: Facts, plan: IdentityId | null): PlanFinding[] {
   const out: PlanFinding[] = [];
   const add = (id: string, tier: Tier, severity: Severity, label: string, why: string, fixes: NeedId[], source: PlanFinding["source"] = "interaction") =>
-    out.push({ id, tier, severity, label, why, fixes, source });
+    out.push({ id, tier, severity, label, why, fixes, source, exposure: "structural" });
   const hold = holdOf(slots);
   const stuckCarries = slots.filter(stuck);
   if (hold < PLAN.hold.any && stuckCarries.length >= 2 && plan !== "dive")
@@ -277,9 +296,19 @@ function interactions(slots: Slot[], f: Facts, plan: IdentityId | null): PlanFin
   // Bot lane pair reads (supported by recorded pro lineups against shuffled ones, 2026-10-14).
   const bot = slots.find((s) => s.role === "BOT"), sup = slots.find((s) => s.role === "SUPPORT");
   if (bot && sup) {
-    if (starter(sup) && bot.c.kit.followUp < 2 && bot.c.kit.backlineAccess < 2)
-      add("duo-engage-no-follow", "weakness", "moderate", "Support engages, carry cannot follow", `${sup.c.name} starts fights in lane and at dragon, but ${bot.c.name} has no way to join an engage quickly.`, ["follow-up"], "duo");
-    if (bot.threat >= 2 && bot.c.kit.range <= 1 && !peeler(sup))
+    if (starter(sup)) {
+      // Following an engage is four different things (alan's review, 2026-10-14), read from the kit fields as they are:
+      // an all-in (crowd control or burst of their own on the locked target, followUp 2+), damage from range onto it,
+      // physically joining (reach, or a short-range carry who is already there) and staying in the extended trade.
+      const f2 = followOf(bot);
+      if (!f2.allIn && !f2.ranged && !f2.joins)
+        add("duo-engage-no-follow", "weakness", "moderate", "Support engages, carry cannot follow", `${sup.c.name} starts fights in lane and at dragon, but ${bot.c.name} can neither reach the target nor hit it from range in time.`, ["follow-up"], "duo");
+      else if (!f2.allIn)
+        add("duo-engage-ranged-follow", "weakness", "minor", "Engage gets ranged follow-up, not an all-in", `${bot.c.name} adds damage from range once ${sup.c.name} lands, but brings no crowd control or burst of their own to finish the all-in${f2.extended ? `; ${bot.c.name} is at home in the longer trade that follows` : ""}. Lane all-ins and dragon engages lean on the jungler or mid to finish the target.`, ["follow-up"], "duo");
+    }
+    // A diving carry (Kai'Sa into Nautilus) goes in with the engage on purpose; only a carry who must stand close
+    // without a way in needs the support to protect them there.
+    if (bot.threat >= 2 && bot.c.kit.range <= 1 && bot.c.kit.backlineAccess < 2 && !peeler(sup))
       add("duo-short-no-peel", "weakness", "moderate", "Short-range carry without a protector", `${bot.c.name} has to stand close to fight, and ${sup.c.name} does not peel for that.`, ["peel"], "duo");
   }
   return out;
@@ -287,27 +316,29 @@ function interactions(slots: Slot[], f: Facts, plan: IdentityId | null): PlanFin
 
 // ---------- the whole read ----------
 
-const TIER: Record<Tier, number> = { critical: 3, weakness: 2, accepted: 1 };
+const TIER: Record<Tier, number> = { critical: 4, needed: 3, weakness: 2, accepted: 1 };
 const order = (xs: PlanFinding[]) => xs.sort((a, b) => TIER[b.tier] - TIER[a.tier] || SEV[b.severity] - SEV[a.severity]);
 
-export function analyzePlan(draft: Draft, champions: ChampionKit[], enemyIds: string[] = []): PlanRead {
+function core(draft: Draft, champions: ChampionKit[]) {
   const slots = slotsOf(draft, champions);
   const f = facts(slots);
   const n = slots.length;
-  const confidence: Confidence = n < T.earlyRead ? "none" : n < T.teamRules ? "early" : n < 5 ? "read" : "full";
   const all = identities(slots, f);
   const { primary, secondary } = n >= T.earlyRead ? pickIdentity(all) : { primary: null, secondary: null };
   const plan = primary ? checkPlan(primary.id, slots, f) : null;
   const team = n >= T.teamRules;
 
   const findings: PlanFinding[] = [];
+  const merged: { rule: string; job: string }[] = [];
   // Plan jobs: a missing job is critical on a team read, and a "still needs" line on an early read.
   if (plan && team) for (const j of plan.jobs.filter((x) => !x.met))
-    findings.push({ id: `plan:${j.id}`, tier: j.essential ? "critical" : "weakness", severity: j.essential ? "major" : "moderate", label: `${plan.label}: missing ${j.label.toLowerCase()}`, why: `${cap(j.missing)}.`, fixes: j.fixes, source: "plan" });
+    findings.push({ id: `plan:${j.id}`, tier: j.essential ? "critical" : "weakness", severity: j.essential ? "major" : "moderate", label: `${plan.label}: missing ${j.label.toLowerCase()}`, why: `${cap(j.missing)}.`, fixes: j.fixes, source: "plan", exposure: "structural" });
   const reported = new Set(plan && team ? plan.jobs.filter((j) => !j.met).map((j) => j.id) : []);
   if (n >= T.earlyRead) {
     for (const w of weaknesses(slots, f, all)) {
-      const r = primary ? reread(w, primary.id, slots, f, reported) : { id: w.id, tier: (w.severity === "major" ? "critical" : "weakness") as Tier, severity: w.severity, label: w.label, why: w.text, fixes: w.fixes, source: "general" as const };
+      const job = primary ? COVERED[primary.id]?.[w.id] : undefined;
+      if (job && reported.has(job)) { merged.push({ rule: w.id, job: `plan:${job}` }); continue; }
+      const r = primary ? reread(w, primary.id, slots, f, reported) : { id: w.id, tier: (w.severity === "major" ? "critical" : "weakness") as Tier, severity: w.severity, label: w.label, why: w.text, fixes: w.fixes, source: "general" as const, exposure: "structural" as const };
       if (r) findings.push(r);
     }
     if (team) findings.push(...interactions(slots, f, primary?.id ?? null));
@@ -317,6 +348,79 @@ export function analyzePlan(draft: Draft, champions: ChampionKit[], enemyIds: st
     if (x.tier === "critical" && x.severity === "minor") x.tier = "weakness";
     if (x.tier === "critical" && !team) x.tier = "weakness";
   }
+  return { slots, f, n, all, primary, secondary, plan, team, findings, merged };
+}
+
+/** Four picks: a critical gap that an available champion in the open role closes is something the last pick must
+ *  bring, not a failure of a finished comp. Each candidate is checked by reading the five-pick draft it would make. */
+function lastPick(draft: Draft, open: Role, critical: PlanFinding[], champions: ChampionKit[], taken: Set<string>) {
+  // champion ids per finding; names are applied by the caller
+  const pool = champions.filter((c) => c.roles.includes(open) && !taken.has(c.id));
+  const closes = new Map<string, string[]>(critical.map((x) => [x.id, []]));
+  for (const c of pool) {
+    const after = core({ ...draft, [open]: c.id }, champions);
+    const still = new Set(after.findings.filter((x) => x.tier === "critical").map((x) => x.id));
+    for (const x of critical) if (!still.has(x.id)) closes.get(x.id)!.push(c.id);
+  }
+  return closes;
+}
+
+/** Tags each finding with what the revealed enemy does to it. Never changes a tier: the plan read stays structural. */
+function expose(findings: PlanFinding[], theirs: Slot[]) {
+  if (!theirs.length) return;
+  const b = facts(theirs);
+  const reach = theirs.filter((s) => s.c.kit.backlineAccess >= 2);
+  const engagers = theirs.filter((s) => s.c.fightStart === "primary");
+  const ep = pickIdentity(identities(theirs, b)).primary?.id;
+  const many = theirs.length >= 4;
+  // Gaps around the carry: exploited by two or more champions who reach the backline.
+  const CARRY = ["carry-unprotected", "x-engage-is-peel", "duo-short-no-peel", "plan:protectors", "plan:protect"];
+  // Gaps in front of the team: exploited by a hard engage that lands on several (AoE) or by a dive comp.
+  const FRONT = ["no-frontline", "thin-frontline", "x-no-front-short", "poke-no-disengage", "plan:anti-engage", "plan:front", "plan:frontline", "plan:durable", "plan:stall"];
+  const TANKS = ["low-tank-damage", "all-ad", "all-ap", "armor-frontline"];
+  const PASSIVE = ["no-engage", "no-fight-start", "follow-up-no-engage", "plan:start", "plan:reach-start", "low-waveclear", "plan:waveclear"];
+  const hardEngage = engagers.filter((s) => s.c.kit.aoeCc >= 2);
+  for (const x of findings) {
+    if (CARRY.includes(x.id)) {
+      if (reach.length >= 2) { x.exposure = "exploited"; x.against = `${names(reach)} reach the backline`; }
+      else if (many && !reach.length) { x.exposure = "less-relevant"; x.against = "none of their picks reaches the backline"; }
+    } else if (FRONT.includes(x.id)) {
+      if (hardEngage.length || ep === "dive") { x.exposure = "exploited"; x.against = hardEngage.length ? `${names(hardEngage)} can land an engage on several of you` : `their dive (${names(reach)}) goes through the front`; }
+      else if (many && !engagers.length && reach.length <= 1) { x.exposure = "less-relevant"; x.against = "they have no hard engage and little dive"; }
+    } else if (TANKS.includes(x.id)) {
+      if (b.frontliners.length >= 2) { x.exposure = "exploited"; x.against = `${names(b.frontliners)} stand in front`; }
+      else if (many && !b.frontliners.length) { x.exposure = "less-relevant"; x.against = "they have no frontline to shred"; }
+    } else if (PASSIVE.includes(x.id)) {
+      if (ep === "poke" || ep === "scaling") { x.exposure = "exploited"; x.against = `a ${IDENTITY_LABEL[ep].toLowerCase()} comp is happy not to fight on your terms`; }
+    }
+  }
+}
+
+export function analyzePlan(draft: Draft, champions: ChampionKit[], enemyIds: string[] = [], botPairings: SavedBotRecord[] = []): PlanRead {
+  const { slots, f, n, primary, secondary, plan, team, findings, merged } = core(draft, champions);
+  const confidence: Confidence = n < T.earlyRead ? "none" : n < T.teamRules ? "early" : n < 5 ? "read" : "full";
+  const theirs = slotsOf(enemyDraft(enemyIds, champions), champions);
+  const taken = new Set([...Object.values(draft).filter(Boolean) as string[], ...theirs.map((s) => s.c.id)]);
+  const openRoles = ROLES.filter((r) => !draft[r]);
+  const open = openRoles.length === 1 && n === 4 ? openRoles[0] : null;
+  if (open) {
+    const closes = lastPick(draft, open, findings.filter((x) => x.tier === "critical"), champions, taken);
+    // With a saved bot locked, only its saved supports are named as fixes (the Draft Room's support rule); the rest
+    // are theoretical. Alphabetical: the read names who closes the gap, it does not rank them.
+    const allowed = savedEligible(open, draft, botPairings);
+    const nameOf = (id: string) => champions.find((c) => c.id === id)?.name ?? id;
+    const abc = (ids: string[]) => ids.map(nameOf).sort((a, b) => a.localeCompare(b));
+    for (const x of findings) {
+      const by = closes.get(x.id);
+      if (x.tier !== "critical" || !by) continue;
+      if (by.length) {
+        x.tier = "needed";
+        x.fixers = abc(allowed ? by.filter((id) => allowed.includes(id)) : by);
+        if (allowed) x.theoretical = abc(by.filter((id) => !allowed.includes(id)));
+      } else x.why = `${x.why} No available ${open.toLowerCase()} closes it.`;
+    }
+  }
+  expose(findings, theirs);
   const ranked = order(findings);
   const real = ranked.filter((x) => x.tier !== "accepted");
   const accepted = ranked.filter((x) => x.tier === "accepted");
@@ -326,21 +430,23 @@ export function analyzePlan(draft: Draft, champions: ChampionKit[], enemyIds: st
   const need = new Map<NeedId, RoleNeed>();
   const add = (id: NeedId, priority: number, because: string) => { const cur = need.get(id); if (!cur || cur.priority < priority) need.set(id, { id, label: NEEDS[id].label, because, priority }); };
   if (plan) for (const j of plan.jobs.filter((x) => !x.met)) j.fixes.forEach((id, i) => add(id, 7 - i * 0.3, `${plan.label}: ${j.label.toLowerCase()}`));
-  for (const w of real) w.fixes.forEach((id, i) => add(id, TIER[w.tier] * 2 - i * 0.3 + (w.severity === "major" ? 0.5 : 0), w.label));
+  for (const w of real) w.fixes.forEach((id, i) => add(id, (w.tier === "weakness" ? 2 : 3) * 2 - i * 0.3 + (w.severity === "major" ? 0.5 : 0), w.label));
   if (!plan && n) {
     if (!f.primary.length && !f.catchers.length) add("fight-start", 3, "no fight starter yet");
     if (!f.frontliners.length) add("frontline", 3, "no frontline yet");
     if (f.carries.length < 2) add("second-threat", 2.5, f.carries.length ? `only ${names(f.carries)} deals real damage so far` : "no damage source yet");
   }
   const needs = [...need.values()].sort((a, b) => b.priority - a.priority);
-  const theirs = slotsOf(enemyDraft(enemyIds, champions), champions);
-  const taken = new Set([...slots.map((s) => s.c.id), ...theirs.map((s) => s.c.id)]);
 
   const id = [primary, secondary].filter(Boolean).map((i) => IDENTITY_LABEL[i!.id]).join(" · ");
+  const short = (x: PlanFinding) => (x.source === "plan" && plan ? x.label.slice(plan.label.length + 2) : x.label.toLowerCase());
+  const needed = real.filter((x) => x.tier === "needed");
   const top = real[0];
   const headline = confidence === "none" ? "Read starts at two picks"
     : confidence === "early" ? `Early read: ${primary ? `trending toward ${id.toLowerCase()}` : "no clear plan yet"}.${plan && plan.jobs.some((j) => !j.met) ? ` The plan still needs ${plan.jobs.filter((j) => !j.met).slice(0, 2).map((j) => j.label.toLowerCase()).join(" and ")}.` : ""}`
-    : `${id || "No clear plan"}${top && top.tier === "critical" ? `, but ${top.source === "plan" && plan ? top.label.slice(plan.label.length + 2) : top.label.toLowerCase()}` : ""}`;
+    : top && top.tier === "critical" ? `${id || "No clear plan"}, but ${short(top)}`
+    : open && needed.length ? `${id || "No clear plan"}: the ${open.toLowerCase()} must bring ${needed.slice(0, 2).map((x) => short(x).replace(/^missing /, "")).join(" and ")}`
+    : id || "No clear plan";
   return {
     confidence, headline,
     identity: { primary, secondary },
@@ -351,8 +457,10 @@ export function analyzePlan(draft: Draft, champions: ChampionKit[], enemyIds: st
     more: real.slice(SHOWN),
     accepted,
     needs,
-    roleNeeds: roleNeeds(ROLES.filter((r) => !draft[r]), needs, champions, taken),
+    roleNeeds: roleNeeds(openRoles, needs, champions, taken),
     timing: n >= T.earlyRead ? timing(f) : null,
+    open, needed, merged,
+    enemyRead: !theirs.length ? "none" : theirs.length >= 5 ? "full" : "partial",
   };
 }
 

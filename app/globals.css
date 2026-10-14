@@ -1485,6 +1485,9 @@ button.fit-score:hover, button.fit-score.is-open { color: var(--text); }
 .cc-jobs li.met > span:first-child { color: var(--success); }
 .cc-jobs li.missing > span:first-child { color: var(--danger); }
 .cc-jobs .t { grid-column: 2; font-size: var(--fs-xs); color: var(--text-muted); }
+.cc-jobs li.needed > span:first-child { color: var(--caution); }
+.cc-exposure { display: block; grid-column: 2; margin: 2px 0 0; font-size: var(--fs-xs); color: var(--text-muted); }
+.cc-exposure.exploited { color: var(--caution); }
 .cc-scores { display: grid; gap: 1px; margin: 0; padding: 0; list-style: none; }
 .cc-scores li { display: flex; justify-content: space-between; font-size: var(--fs-xs); color: var(--text-muted); }
 .warning-item { padding: 2px 0 2px var(--s4); border-left: 1px solid var(--border-strong); }

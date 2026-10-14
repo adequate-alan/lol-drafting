@@ -599,8 +599,13 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   until alan reviews it): asks whether the comp is missing something its own win condition needs. Jobs per plan
   (front-to-back, dive, poke, protect, pick, skirmish, wombo, split, tempo, scaling) and every current rule re-read as
   critical, weakness or accepted tradeoff with its reason; a rule merges into a plan job only when that job is reported
-  missing, so nothing is silently dropped. Bot duo reads only (Mid/Jungle pair facts showed no signal). Never scored;
-  validation on pro vs shuffled lineups: `npx tsx scripts/diagnostics/plan-validate.ts`.
+  missing, so nothing is silently dropped (`merged` names the job). Bot duo reads only (Mid/Jungle pair facts showed no
+  signal). alan's review (2026-10-14): following an engage is four things (`followOf`: all-in, ranged, joins, extended
+  trade; kit values unchanged), so a carry who only follows from range gets a minor "ranged follow-up, not an all-in";
+  the read is structural, and enemy picks only tag a finding "exploited" / "less relevant" (`exposure`), never its
+  tier; with four picks a critical gap an available champion closes is "Needed from the <role>" with the champions
+  that close it (saved-bot support rule applied, others theoretical), real severity only at five. Never scored;
+  validation: `npx tsx scripts/diagnostics/plan-validate.ts` and `plan-review.ts`.
 
 ## Commit authorship
 
