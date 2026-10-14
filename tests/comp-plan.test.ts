@@ -6,7 +6,7 @@ import { getDraftData } from "@/lib/data";
 import { analyze, type Draft } from "@/lib/model-v2/analyze";
 import { ARCHETYPES } from "@/lib/model-v2/archetypes";
 import { convertKits } from "@/lib/model-v2/kits";
-import { analyzePlan, type PlanFinding } from "@/lib/model-v2/plan";
+import { analyzePlan, fifthPick, type PlanFinding } from "@/lib/model-v2/plan";
 import { savedSupports } from "@/lib/recommend";
 import { lineups as allLineups } from "../scripts/diagnostics/load";
 
@@ -34,8 +34,17 @@ describe("plan jobs", () => {
     expect(r.headline).toMatch(/but missing anti-engage/);
   });
 
-  it("a split-push comp whose other four cannot stall is critical", () => {
-    expect(tierOf(plan(arch("split")), "plan:stall")).toBe("critical");
+  it("a split-push comp whose other four cannot stall is critical; one with map-wide ultimates and catches holds", () => {
+    const r = plan({ TOP: "tryndamere", JUNGLE: "kindred", MID: "akali", BOT: "kaisa", SUPPORT: "blitzcrank" });
+    expect(r.identity.primary!.id).toBe("split");
+    expect(tierOf(r, "plan:stall")).toBe("critical");
+    expect(tierOf(plan(arch("split")), "plan:stall")).toBeUndefined();
+  });
+
+  it("split: one side laner splits, a second side-lane champion is part of the four (Yorick, Cho'Gath, Ryze, Ezreal, Karma)", () => {
+    const r = plan({ TOP: "yorick", JUNGLE: "chogath", MID: "ryze", BOT: "ezreal", SUPPORT: "karma" });
+    expect(r.plan!.jobs.find((j) => j.id === "side")!.by).toBe("Yorick");
+    expect(r.critical).toEqual([]);
   });
 
   it("front-to-back with one carry: missing damage from behind the frontline, single threat stays a weakness", () => {
@@ -43,6 +52,35 @@ describe("plan jobs", () => {
     expect(tierOf(r, "plan:backline-damage")).toBe("weakness");
     expect(tierOf(r, "frontline-no-damage")).toBe("critical");
     expect(tierOf(r, "single-threat")).toBe("weakness");
+  });
+});
+
+describe("accuracy pass (alan, 2026-10-14): critical means the plan cannot be executed", () => {
+  it("front-to-back: no frontline is critical, one frontliner is a frontline, missing depth is a weakness unless disengage covers it", () => {
+    const covered = plan({ TOP: "jayce", JUNGLE: "jarvan-iv", MID: "ahri", BOT: "ashe", SUPPORT: "seraphine" });
+    expect(covered.identity.primary!.id).toBe("front-to-back");
+    expect(covered.plan!.jobs.find((j) => j.id === "depth")!.met).toBe(true);
+    expect(covered.critical).toEqual([]);
+    const bare = plan({ TOP: "jayce", JUNGLE: "qiyana", MID: "ryze", BOT: "jhin", SUPPORT: "alistar" });
+    expect(tierOf(bare, "plan:depth")).toBe("weakness");
+    expect(bare.critical).toEqual([]);
+  });
+
+  it("protect: one strong protector plus an engage that also protects (Thresh + Galio) is enough; a lone protector is not", () => {
+    const r = plan({ TOP: "galio", JUNGLE: "qiyana", MID: "ahri", BOT: "aphelios", SUPPORT: "thresh" });
+    expect(r.identity.primary!.id).toBe("protect");
+    expect(r.plan!.jobs.find((j) => j.id === "protectors")!.met).toBe(true);
+    expect(r.critical).toEqual([]);
+  });
+
+  it("a carry who stops a dive alone (Anivia's wall) is an exposed carry, not a critical one; Aphelios with nobody stays critical", () => {
+    expect(tierOf(plan({ TOP: "gwen", JUNGLE: "qiyana", MID: "anivia", BOT: "jhin", SUPPORT: "blitzcrank" }), "carry-unprotected")).toBe("weakness");
+    expect(tierOf(plan({ TOP: "varus", JUNGLE: "aatrox", MID: "akali", BOT: "aphelios", SUPPORT: "blitzcrank" }), "carry-unprotected")).toBe("critical");
+  });
+
+  it("skirmish: a lone bruiser kept up by an enchanter is thin, not missing", () => {
+    const r = plan({ TOP: "rumble", JUNGLE: "naafiri", MID: "ryze", BOT: "lucian", SUPPORT: "milio" });
+    expect(tierOf(r, "plan:durable")).toBe("weakness");
   });
 });
 
@@ -133,7 +171,7 @@ describe("following an engage (alan's review: four different things)", () => {
 });
 
 describe("four picks: missing essentials are needs for the last pick", () => {
-  const four: Draft = { TOP: "jayce", JUNGLE: "lee-sin", MID: "viktor", BOT: "ziggs" };
+  const four: Draft = { TOP: "jayce", JUNGLE: "lee-sin", MID: "viktor", BOT: "caitlyn" };
   it("the siege's missing anti-engage is needed from the support, with the supports that close it", () => {
     const r = plan(four);
     expect(r.open).toBe("SUPPORT");
@@ -151,12 +189,26 @@ describe("four picks: missing essentials are needs for the last pick", () => {
     expect(tierOf(plan({ ...four, SUPPORT: id(w.fixers![0]) }), "plan:anti-engage")).not.toBe("critical");
     expect(tierOf(plan({ ...four, SUPPORT: "pyke" }), "plan:anti-engage")).toBe("critical");
   });
+
+  it("a fix keeps the plan: every named fixer fixes it within the plan, a pick that only changes the plan is named apart", () => {
+    let fixers = 0, switches = 0;
+    for (const l of lineups.slice(0, 60)) for (const drop of ["TOP", "JUNGLE", "MID", "BOT", "SUPPORT"] as const) {
+      const d = { ...l.picks }; delete d[drop];
+      const r = plan(d);
+      for (const w of [...r.needed, ...r.critical]) {
+        for (const n of w.fixers ?? []) { fixers++; expect(fifthPick(d, w.id, { ...d, [drop]: kits.find((k) => k.name === n)!.id }, kits), `${l.key} ${n}`).toBe("fixes"); }
+        for (const n of w.switches ?? []) { switches++; expect(fifthPick(d, w.id, { ...d, [drop]: kits.find((k) => k.name === n)!.id }, kits), `${l.key} ${n}`).toBe("switches"); }
+      }
+    }
+    expect(fixers).toBeGreaterThan(50);
+    expect(switches).toBeGreaterThan(0);
+  });
 });
 
 describe("named fixes follow the saved-bot support rule", () => {
   it("with Ziggs locked, only Ziggs's saved supports are named; others are theoretical", () => {
     const data = getDraftData();
-    const r = analyzePlan({ TOP: "jayce", JUNGLE: "lee-sin", MID: "viktor", BOT: "ziggs" }, kits, [], data.botPairings);
+    const r = analyzePlan({ TOP: "jayce", JUNGLE: "kindred", MID: "viktor", BOT: "ziggs" }, kits, [], data.botPairings);
     const w = r.needed.find((x) => x.id === "plan:anti-engage")!;
     const saved = (savedSupports({ BOT: "ziggs" }, data.botPairings) ?? []).map((id) => kits.find((k) => k.id === id)!.name);
     expect(w.fixers!.length).toBeGreaterThan(0);
