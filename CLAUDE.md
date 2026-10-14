@@ -101,7 +101,8 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   unreviewed kits), against the all-jungle base rate, "potential composition responses", never the team's reason. Draft
   Room (alan's review, 2026-10-13): Jungle labels and starting-pick blind counts through `laneUsage`; with an allied mid
   locked, "With <mid> · n games" (`TopUsageMarks.withMid`, every patch, order and games per patch in the tooltip, links to
-  the pair on the Jungle page via `?mate=`); with enemy picks, "Picked vs <trait> · n/m" when a jungler's composition
+  the pair on the Jungle page via `?mate=`; its hover and the Pro evidence card say it counts every recorded game, LCK archive
+  included, while the Pro label counts stored drafts only, alan 2026-10-14); with enemy picks, "Picked vs <trait> · n/m" when a jungler's composition
   response (`compResponses`: 5+ picks with the trait, half its picks, 1.5x the all-jungle rate) is on the enemy board now
   (kit facts from `lib/jungle-kits.ts`, the board read in `lib/jungle-context.ts`). Under five classified games a usage
   label shows its counts ("Blind 3/3 · small sample"), and presence carried by bans (2x picks) says so. Labels only. Findings: `/mnt/project-files/lol-drafting/top-draft/jungle-findings.md`;

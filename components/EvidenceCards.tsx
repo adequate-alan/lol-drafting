@@ -24,17 +24,21 @@ const list = (xs: string[]) => (xs.length < 3 ? xs.join(" and ") : `${xs.slice(0
 
 export interface ProCtx { drafts: ProDraft[]; sources: Record<string, Source>; enemy: Partial<Record<Role, string>>; names: Record<string, string> }
 
-export function ProEvidenceTrigger({ pro, champion, role, ctx }: { pro: ProSuggestion; champion: string; role: Role; ctx: ProCtx }) {
+// `mate`: the Jungle row's "With <mid> · n games" label, which counts every recorded game (LCK archive included); the
+// card says how its own narrower count differs (alan, 2026-10-14).
+export function ProEvidenceTrigger({ pro, champion, role, ctx, mate }: {
+  pro: ProSuggestion; champion: string; role: Role; ctx: ProCtx; mate?: { name: string; games: number };
+}) {
   const name = ctx.names[champion] ?? champion;
   return (
     <Popover label={`Pro evidence for ${name}`} triggerClass="sig pro" className="pe" trigger={<>Pro · {plural(pro.score, "game")}</>}>
-      {({ mode, pin }) => <ProEvidenceBody pro={pro} champion={champion} role={role} ctx={ctx} pinned={mode !== "hover"} pin={pin} />}
+      {({ mode, pin }) => <ProEvidenceBody pro={pro} champion={champion} role={role} ctx={ctx} mate={mate} pinned={mode !== "hover"} pin={pin} />}
     </Popover>
   );
 }
 
-function ProEvidenceBody({ pro, champion, role, ctx, pinned, pin }: {
-  pro: ProSuggestion; champion: string; role: Role; ctx: ProCtx; pinned: boolean; pin: () => void;
+function ProEvidenceBody({ pro, champion, role, ctx, mate, pinned, pin }: {
+  pro: ProSuggestion; champion: string; role: Role; ctx: ProCtx; mate?: { name: string; games: number }; pinned: boolean; pin: () => void;
 }) {
   const [all, setAll] = useState(false);
   const games = evidenceGames(pro, ctx);
@@ -55,6 +59,7 @@ function ProEvidenceBody({ pro, champion, role, ctx, pinned, pin }: {
         <span className="mono">{plural(games.length, "game")}</span>
       </header>
       <p className="pop-sub">{n(champion)} on the same team as {list(pro.with.map(n))}{games.some((g) => g.pending) ? ", including supplied links not read yet" : ""}.</p>
+      {mate && <p className="pop-sub">Stored drafts only. &ldquo;With {mate.name} &middot; {plural(mate.games, "game")}&rdquo; counts every recorded game with {mate.name} at mid, the LCK archive included, so it can be higher.</p>}
       {groups.map((grp, i) => (
         <section key={`${grp.event}-${grp.patch}-${i}`} className="pe-event">
           <h4 className="pe-event-name">{grp.event}{grp.patch && <span className="mono"> {patchLabel(grp.patch)}</span>}{ongoing.has(grp.event) && <span className="faint"> · ongoing</span>}</h4>

@@ -596,6 +596,8 @@ await page.locator(".theme-toggle").click();
   check("draft room: with a mid locked, Jungle rows link their pro games with that mid", /With Syndra · \d+ games?/.test(mate), mate.slice(0, 120));
   const href = (await page.locator(".fit-row .sig.mate").first().getAttribute("href").catch(() => "")) ?? "";
   check("draft room: the Mid/Jungle label opens the pair on the Jungle page", /synergies\/jungle\/\?champ=[a-z-]+&view=mates&mate=syndra/.test(href), href);
+  const tip = (await page.locator(".fit-row .sig.mate").first().getAttribute("title").catch(() => "")) ?? "";
+  check("draft room: the Mid/Jungle hover separates every recorded game from the narrower Pro label", /^Every recorded pro game with Syndra at mid/.test(tip) && tip.includes("The Pro label is narrower"), tip.slice(0, 120));
 }
 // Champion Synergies: hover card on desktop, drawer on click
 {
