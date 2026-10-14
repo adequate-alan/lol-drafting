@@ -24,41 +24,66 @@ function Point({ w, open = false }: { w: Insight; open?: boolean }) {
   );
 }
 
-const TIER = { critical: "Critical", weakness: "Weakness", accepted: "Accepted" } as const;
-const TIER_SEV = { critical: "major", weakness: "moderate", accepted: "minor" } as const;
+const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+const roleName = (r: Role) => r.charAt(0) + r.slice(1).toLowerCase();
+const tierLabel = (w: PlanFinding, open: Role | null) =>
+  w.tier === "critical" ? "Critical" : w.tier === "needed" ? `Needed from the ${open ? roleName(open).toLowerCase() : "last pick"}`
+    : w.tier === "accepted" ? "Accepted" : w.severity === "minor" ? "Minor" : "Weakness";
+const tierSev = (w: PlanFinding) => (w.tier === "critical" ? "major" : w.tier === "accepted" || w.severity === "minor" ? "minor" : "moderate");
+const list = (xs: string[]) => (xs.length > 4 ? `${xs.slice(0, 4).join(", ")} and ${xs.length - 4} more` : xs.length > 1 ? `${xs.slice(0, -1).join(", ")} or ${xs[xs.length - 1]}` : xs[0]);
+const fixersText = (w: PlanFinding) => w.fixers?.length ? `${list(w.fixers)} ${w.fixers.length === 1 ? "closes" : "close"} it.`
+  : w.theoretical?.length ? `Only supports outside the bot's saved supports close it (theoretical): ${list(w.theoretical)}.` : "";
 
-function PlanPoint({ w }: { w: PlanFinding }) {
+function Exposure({ w }: { w: PlanFinding }) {
+  if (w.exposure === "exploited") return <span className="cc-exposure exploited">Against this enemy: {w.against}.</span>;
+  if (w.exposure === "less-relevant") return <span className="cc-exposure">Matters less here: {w.against}.</span>;
+  return null;
+}
+
+function PlanPoint({ w, open }: { w: PlanFinding; open: Role | null }) {
+  const sev = tierSev(w);
   return (
-    <details className={`cc-point ${TIER_SEV[w.tier]}`}>
-      <summary><span className={`sev ${TIER_SEV[w.tier]}`}>{TIER[w.tier]}</span>{w.label}</summary>
-      <p>{w.why}</p>
+    <details className={`cc-point ${sev}`}>
+      <summary><span className={`sev ${sev}`}>{tierLabel(w, open)}</span>{w.label}</summary>
+      <p>{w.why}{w.tier === "needed" ? ` ${fixersText(w)}` : ""}</p>
+      <Exposure w={w} />
     </details>
   );
 }
 
 /** Preview of the plan-aware read (lib/model-v2/plan.ts, ?plan=1): does the comp have what its own win condition
- *  needs? Shown beside the live read for review; it never feeds a score. */
-function PlanPreview({ draft, kits, enemyIds, active }: { draft: Draft; kits: ReturnType<typeof convertKits>; enemyIds: string[]; active?: Role }) {
+ *  needs? Shown beside the live read for review; it never feeds a score. The read is structural (our picks only);
+ *  enemy picks only tag the gaps they can exploit. */
+function PlanPreview({ draft, kits, enemyIds, botPairings, active }: { draft: Draft; kits: ReturnType<typeof convertKits>; enemyIds: string[]; botPairings: BotPairing[]; active?: Role }) {
   const vs = enemyIds.join(",");
-  const p = useMemo(() => analyzePlan(draft, kits, enemyIds), [draft, kits, vs]);
+  const p = useMemo(() => analyzePlan(draft, kits, enemyIds, botPairings), [draft, kits, vs, botPairings]);
   if (p.confidence === "none") return null;
   const needs = active ? (p.roleNeeds[active] ?? []).slice(0, 3) : [];
   // A missing plan job is already on the job list with its reason; the points below are everything else.
   const points = [...p.weaknesses, ...p.more].filter((w) => w.source !== "plan");
+  const jobFinding = (id: string) => [...p.weaknesses, ...p.more].find((w) => w.id === `plan:${id}`);
   return (
     <div className="cc-section cc-plan">
       <div className="cc-label">Plan check · preview</div>
       <p className="cc-headline">{p.headline}</p>
+      <p className="xs muted">{p.enemyRead === "none" ? "Reads your picks only; no enemy picks entered." : `Reads your picks; the ${p.enemyRead === "full" ? "" : "revealed "}enemy picks only mark which gaps they can exploit.`}</p>
       {p.plan && (
-        <ul className="cc-jobs">{p.plan.jobs.map((j) => (
-          <li key={j.id} className={j.met ? "met" : "missing"}><span aria-hidden="true">{j.met ? "✓" : "✗"}</span><span className="sr-only">{j.met ? "Has" : "Missing"}: </span>{j.label}{!j.met && <span className="t">{j.missing}</span>}</li>
-        ))}</ul>
+        <ul className="cc-jobs">{p.plan.jobs.map((j) => {
+          const w = jobFinding(j.id);
+          const state = j.met ? "met" : w?.tier === "needed" ? "needed" : "missing";
+          return (
+            <li key={j.id} className={state}><span aria-hidden="true">{j.met ? "✓" : state === "needed" ? "○" : "✗"}</span><span className="sr-only">{j.met ? "Has" : state === "needed" ? "Needed from the last pick" : "Missing"}: </span>{j.label}
+              {!j.met && <span className="t">{cap(j.missing)}.{w && state === "needed" ? ` ${tierLabel(w, p.open)}: ${fixersText(w)}` : ""}</span>}
+              {w && <Exposure w={w} />}
+            </li>
+          );
+        })}</ul>
       )}
       {!p.weaknesses.length ? <p className="cc-ok">{p.confidence === "early" ? "Nothing blocks the plan yet." : "Nothing blocks the plan."}</p>
-        : points.slice(0, 3).map((w) => <PlanPoint key={w.id} w={w} />)}
-      {points.length > 3 && <details className="cc-more"><summary>{points.length - 3} more {points.length === 4 ? "weakness" : "weaknesses"}</summary>{points.slice(3).map((w) => <PlanPoint key={w.id} w={w} />)}</details>}
-      {p.accepted.length > 0 && <details className="cc-more"><summary>Accepted tradeoffs ({p.accepted.length})</summary>{p.accepted.map((w) => <PlanPoint key={w.id} w={w} />)}</details>}
-      {active && needs.length > 0 && <div className="cc-label">{active.charAt(0) + active.slice(1).toLowerCase()} should bring</div>}
+        : points.slice(0, 3).map((w) => <PlanPoint key={w.id} w={w} open={p.open} />)}
+      {points.length > 3 && <details className="cc-more"><summary>{points.length - 3} more {points.length === 4 ? "point" : "points"}</summary>{points.slice(3).map((w) => <PlanPoint key={w.id} w={w} open={p.open} />)}</details>}
+      {p.accepted.length > 0 && <details className="cc-more"><summary>Accepted tradeoffs ({p.accepted.length})</summary>{p.accepted.map((w) => <PlanPoint key={w.id} w={w} open={p.open} />)}</details>}
+      {active && needs.length > 0 && <div className="cc-label">{roleName(active)} should bring</div>}
       {active && needs.length > 0 && (
         <ol className="cc-needs">{needs.map((n) => <li key={n.id}><b>{n.label}</b><span>{n.because}</span></li>)}</ol>
       )}
@@ -120,7 +145,7 @@ export function CompCheck({ plan = false, draft, enemyIds, champions, botPairing
               : r.weakPoints.map((w, i) => <Point key={w.id} w={w} open={i === 0 && w.severity === "major"} />)}
           </div>
 
-          {plan && <PlanPreview draft={draft} kits={kits} enemyIds={enemyIds} active={active} />}
+          {plan && <PlanPreview draft={draft} kits={kits} enemyIds={enemyIds} botPairings={botPairings} active={active} />}
 
           {active && (
             <div className="cc-section">
