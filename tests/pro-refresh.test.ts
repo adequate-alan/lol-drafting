@@ -231,6 +231,8 @@ describe("daily refresh", () => {
     // Newest first, as GitHub lists them: an 8-second gate skip, then the last run that really read Gol.gg.
     expect(lastCheckedRun([run("2026-10-14T06:08:30Z", 8), run("2026-10-13T19:51:41Z", 150)])).toBe("2026-10-13T19:54:11.000Z");
     expect(lastCheckedRun([run("2026-10-14T06:08:30Z", 8)])).toBeNull();
+    // A real check that found nothing new is short but still a check (2026-10-14 17:08 UTC, 24 seconds).
+    expect(lastCheckedRun([run("2026-10-14T18:00:21Z", 6), run("2026-10-14T17:08:44Z", 24)])).toBe("2026-10-14T17:09:08.000Z");
     expect(lastCheckedRun(undefined)).toBeNull();
   });
 
