@@ -9,8 +9,9 @@ const runsUrl = (workflow: string) => `https://api.github.com/repos/adequate-ala
 
 type Run = { run_started_at?: string; updated_at?: string };
 // Each schedule is set at both its EDT and EST hour and the off-season one ends at the gate in seconds, still "success".
-// Such a run checked nothing, so it never counts as a check: a real one reads Gol.gg or the stored games for minutes.
-const CHECKED_MS = 30_000;
+// Such a run checked nothing (6-8 s), so it never counts as a check; a real one takes 20 s or more even when nothing
+// changed (a no-change check on 2026-10-14 took 24 s).
+const CHECKED_MS = 15_000;
 export const lastCheckedRun = (runs: Run[] | undefined) =>
   runs?.find((r) => r.run_started_at && r.updated_at && Date.parse(r.updated_at) - Date.parse(r.run_started_at) >= CHECKED_MS)?.updated_at ?? null;
 
