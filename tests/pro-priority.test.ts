@@ -10,6 +10,7 @@ import {
   bucket, championHistory, forRole, markFor, ORDER_READ, ORDER_READ_LABEL, orderRead, orderText, patchKey, patchLabel, patchesOf, previousPatch, priorityChanges,
   priorityData, priorityMarks, rolePicksOf, sortRows, supportingGames,
 } from "@/lib/pro-priority";
+import { comparePatch } from "@/lib/patch";
 import { parseGamePage } from "@/scripts/golgg/parse.mjs";
 import { championResolver, pickOrderFor } from "@/scripts/golgg/normalize.mjs";
 import { Files, type Meta, type ProGame, type ProGames } from "@/lib/schema";
@@ -131,19 +132,27 @@ describe("roles", () => {
 
 describe("patch separation", () => {
   it("defaults to the newest patch and never mixes another patch into it", () => {
+    // New patches arrive with the daily refresh (Worlds 2026 on 16.20), so "newest" is read from the data.
     const patches = patchesOf(data);
-    expect(patches[0]).toBe("16.18");
-    const newest = bucket(data, { patch: patches[0] });
-    expect(newest.contributions.every((c) => c.patch === "16.18")).toBe(true);
-    expect(newest.games).toBe(bucket(data, { patch: "16.18", ...demacia }).games);
+    expect([...patches].sort((a, b) => comparePatch(b, a))).toEqual(patches);
+    expect(patches).toEqual(expect.arrayContaining(["16.18", "16.16"]));
+    for (const p of patches) {
+      const b = bucket(data, { patch: p });
+      expect(b.contributions.every((c) => c.patch === p), p).toBe(true);
+      expect(b.games, p).toBe(b.contributions.reduce((n, c) => n + c.games, 0));
+    }
+    const dem = bucket(data, { patch: "16.18", ...demacia });
+    expect(dem.contributions.every((c) => c.patch === "16.18" && c.event === DEMACIA)).toBe(true);
   });
 
   it("combines patches only when asked, and says which", () => {
     const all = bucket(data, {});
-    expect(all.patches).toEqual(["16.18", "16.16"]);
-    expect(all.games).toBe(bucket(data, { patch: "16.18" }).games + 41);
+    expect(all.patches).toEqual(patchesOf(data));
+    expect(all.games).toBe(patchesOf(data).reduce((n, p) => n + bucket(data, { patch: p }).games, 0));
+    expect(bucket(data, { patch: "16.16" }).games).toBe(41);
     const cass = all.rows.find((r) => r.id === "cassiopeia")!;
-    expect(cass.patches).toEqual(["16.18", "16.16"]);
+    expect(cass.patches).toEqual(expect.arrayContaining(["16.18", "16.16"]));
+    expect(cass.patches.every((p) => patchesOf(data).includes(p))).toBe(true);
   });
 
   it("aggregates tournaments sharing a patch", () => {
@@ -158,7 +167,8 @@ describe("patch separation", () => {
 
   it("history keeps each patch on its own and shows 0 where a champion was absent", () => {
     const h = championHistory(data, "orianna");
-    expect(h.map((p) => p.patch)).toEqual(["16.16", "16.18"]);
+    expect(h.map((p) => p.patch)).toEqual([...patchesOf(data)].reverse());
+    expect(h.slice(0, 2).map((p) => p.patch)).toEqual(["16.16", "16.18"]);
     expect(h[0].presence).toBeCloseTo(25 / 41, 10);
     const none = championHistory(data, "no-such-champion");
     expect(none.every((p) => p.presence === 0 || p.presence === null)).toBe(true);
@@ -252,8 +262,9 @@ describe("Draft Room label", () => {
       expect(marks[id].patch).toBe(patchesOf(data)[0]);
       expect(marks[id].presence).toBeGreaterThanOrEqual(0.3);
     }
-    expect(markFor(marks, "nocturne", "JUNGLE")).toBeDefined();
-    expect(markFor(marks, "nocturne", "MID")).toBeUndefined();
+    const demacia18 = priorityMarks(data, "16.18"); // a fixed patch, so a new patch can't move the champion
+    expect(markFor(demacia18, "nocturne", "JUNGLE")).toBeDefined();
+    expect(markFor(demacia18, "nocturne", "MID")).toBeUndefined();
   });
 });
 
