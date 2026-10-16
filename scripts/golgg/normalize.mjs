@@ -21,17 +21,28 @@ export function championResolver(champions) {
 
 /**
  * Which side picked first, from the game page: the side whose Picks row carries Gol.gg's "First Pick" mark. Since 2026 the
- * team with first pick is not always blue, so it is read per game, never assumed. Accepted only when exactly one side is
- * marked and the turns Gol.gg draws match the draft (1 | 2 | 2 for the first-picking team, 2 | 2 | 1 for the other).
- * Returns "blue", "red" or undefined.
+ * team with first pick is not always blue, so it is read per game, never assumed. Accepted when exactly one side is
+ * marked. Some pages draw no turns (the picks listed in role order, no "|"); the mark still stands there (alan,
+ * 2026-10-16), but turns drawn against the mark (anything but 1 | 2 | 2 for the marked team and 2 | 2 | 1 for the other)
+ * make the page contradict itself and nothing is accepted. Returns "blue", "red" or undefined.
  */
 export function firstPickOf(page) {
   const marked = ["blue", "red"].filter((c) => page[c]?.firstPick);
   if (marked.length !== 1) return undefined;
-  const first = marked[0], second = first === "blue" ? "red" : "blue";
-  const turns = (c) => (page[c]?.pickGroups ?? []).join();
-  return turns(first) === "1,2,2" && turns(second) === "2,2,1" ? first : undefined;
+  const first = marked[0];
+  return turnsDrawn(page) || noTurns(page) ? first : undefined;
 }
+
+const groups = (page, c) => (page[c]?.pickGroups ?? []).join();
+/** The page draws each team's picks in its draft turns, matching the First Pick mark: the listed order is the draft order. */
+export function turnsDrawn(page) {
+  const marked = ["blue", "red"].filter((c) => page[c]?.firstPick);
+  if (marked.length !== 1) return false;
+  const first = marked[0], second = first === "blue" ? "red" : "blue";
+  return groups(page, first) === "1,2,2" && groups(page, second) === "2,2,1";
+}
+/** The page lists each team's five picks with no turns drawn (role order): no draft order can be read from it. */
+const noTurns = (page) => ["blue", "red"].every((c) => groups(page, c) === "5");
 
 /**
  * One game record from a parsed page-game and page-fullstats. Returns { game } or { problems }.
@@ -68,7 +79,8 @@ export function buildGame(id, page, stats, expect, resolve, checkedOn) {
     const bans = (p.bans ?? []).map((b) => ({ b, id: resolve(b) }));
     for (const x of bans) need(!!x.id, `unknown banned champion "${x.b}"`);
     need(bans.length <= 5, `${color} side: ${bans.length} bans`);
-    sides[color] = { team: p.team, picks, bans: bans.map((x) => x.id).filter(Boolean), pickOrder: drafted, result: p.result };
+    // The listed order is the team's draft order only when the page draws the turns; otherwise no pick order is stored.
+    sides[color] = { team: p.team, picks, bans: bans.map((x) => x.id).filter(Boolean), pickOrder: turnsDrawn(page) ? drafted : undefined, result: p.result };
   }
   const firstPick = firstPickOf(page);
   if (sides.blue && sides.red) {
@@ -82,7 +94,7 @@ export function buildGame(id, page, stats, expect, resolve, checkedOn) {
       `teams ${sides.blue.team} / ${sides.red.team} do not match the match list (${expect.teams.join(" / ")})`);
   }
   if (problems.length) return { problems };
-  const side = (s) => ({ team: s.team, picks: s.picks, bans: s.bans, pickOrder: s.pickOrder });
+  const side = (s) => ({ team: s.team, picks: s.picks, bans: s.bans, ...(s.pickOrder ? { pickOrder: s.pickOrder } : {}) });
   return {
     game: {
       id, event: expect.event, tournament: page.tournament, seriesId: expect.seriesId, series: page.series, game: page.game,
@@ -165,8 +177,8 @@ export function isComplete(series, today) {
 
 /**
  * The pick order of an already stored game, from its re-read game page: each side's picks as the page lists them (that
- * team's draft order) and, when the page marks it clearly, which side picked first (`firstPick`). Returns
- * { blue, red, firstPick? } or { problems } when the page does not show the same teams, picks and bans.
+ * team's draft order), only when the page draws the turns, and, when the page marks it, which side picked first
+ * (`firstPick`). Returns { blue?, red?, firstPick? } or { problems } when the page does not show the same teams, picks and bans.
  */
 export function pickOrderFor(game, page, resolve) {
   const problems = [];
@@ -183,5 +195,5 @@ export function pickOrderFor(game, page, resolve) {
   }
   if (problems.length) return { problems };
   const first = firstPickOf(page);
-  return first ? { ...out, firstPick: first } : out;
+  return { ...(turnsDrawn(page) ? out : {}), ...(first ? { firstPick: first } : {}) };
 }
