@@ -5,6 +5,7 @@
 // (.select-trigger / .select-menu).
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
+import { useLeave } from "@/components/useLeave";
 import { menuPlace, type MenuPos } from "@/components/Select";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { ChampIcon } from "@/components/ui";
@@ -158,6 +159,13 @@ export function PinPicker({ kind, value, options: entries, onChange, placeholder
   };
 
   const listId = `${id}-list`;
+  // The menu fades out where it was after closing (components/useLeave.ts), like the shared dropdown's.
+  const exit = useLeave(open && pos ? pos : undefined);
+  const at = exit.shown;
+  // Closing clears the typed query; the leaving menu keeps the rows it showed, so nothing reflows while it fades.
+  const frozen = useRef(options);
+  if (open) frozen.current = options;
+  const rows = exit.leaving ? frozen.current : options;
   return (
     <div ref={box} className="player-picker">
       <div className={`select-trigger ${value ? "is-set" : ""}`} aria-expanded={open || undefined} onClick={() => { setOpen(true); input.current?.focus(); }}>
@@ -173,17 +181,18 @@ export function PinPicker({ kind, value, options: entries, onChange, placeholder
         {/* The chevron opens and closes the menu, like the shared dropdown's trigger; the text field keeps it open for typing. */}
         <svg className="select-chevron" viewBox="0 0 10 10" aria-hidden="true" onMouseDown={(e) => { e.preventDefault(); }} onClick={(e) => { if (open) { e.stopPropagation(); close(); } }}><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </div>
-      {open && pos && createPortal(
-        <div ref={menu} className={`select-menu player-menu ${pos.bottom != null ? "above" : ""}`.trim()}
-          style={{ left: pos.left, minWidth: pos.width, top: pos.top, bottom: pos.bottom, maxHeight: pos.maxHeight }}>
+      {at && createPortal(
+        <div ref={exit.leaving ? undefined : menu} className={`select-menu player-menu ${at.bottom != null ? "above" : ""} ${exit.leaving ? "leaving" : ""}`.replace(/ +/g, " ").trim()}
+          aria-hidden={exit.leaving || undefined} inert={exit.leaving || undefined} onAnimationEnd={exit.end}
+          style={{ left: at.left, minWidth: at.width, top: at.top, bottom: at.bottom, maxHeight: at.maxHeight }}>
         <button type="button" className={`pinned-only ${pinnedOnly ? "on" : ""}`} aria-pressed={pinnedOnly}
           onMouseDown={(e) => e.preventDefault()} onClick={() => { setPinnedOnly((x) => !x); setActive(0); }}>
           <PinIcon on={pinnedOnly} /> Pinned only
         </button>
         <ul ref={list} id={listId} role="listbox" aria-label={plural} className="player-options">
-          {options.map((p, i) => (
+          {rows.map((p, i) => (
             <li key={p || "all"} id={`${id}-${i}`} role="option" aria-selected={p === value} data-value={p}
-              className={`select-option ${i === active ? "is-active" : ""} ${p && first(p) && !first(options[i + 1] ?? "") && options[i + 1] ? "last-pinned" : ""}`.trim()}
+              className={`select-option ${i === active ? "is-active" : ""} ${p && first(p) && !first(rows[i + 1] ?? "") && rows[i + 1] ? "last-pinned" : ""}`.trim()}
               onMouseDown={(e) => e.preventDefault()} onMouseMove={() => i !== active && setActive(i)} onClick={() => pick(p)}>
               <span className="select-label player-chip">{avatar(p)}{label(p)}</span>
               {p && (
@@ -195,7 +204,7 @@ export function PinPicker({ kind, value, options: entries, onChange, placeholder
               )}
             </li>
           ))}
-          {!options.length && <li className="select-option empty">{pinnedOnly && !q ? `No pinned ${plural} here` : `No ${noun.toLowerCase()} matches “${query}”`}</li>}
+          {!rows.length && <li className="select-option empty">{pinnedOnly && !q ? `No pinned ${plural} here` : `No ${noun.toLowerCase()} matches “${query}”`}</li>}
         </ul>
         </div>,
         document.body,

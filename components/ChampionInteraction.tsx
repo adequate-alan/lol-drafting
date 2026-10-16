@@ -11,6 +11,7 @@ import { ChampionDrawer, compLinks, poolTier, useDrawerIndex, type CompContext, 
 import { ChampIcon } from "@/components/ChampIcon";
 import { ChampionCtx } from "@/components/InteractiveChampion";
 import { HIDE_MS, place, SHOW_MS, SWITCH_MS } from "@/components/Popover";
+import { useLeave } from "@/components/useLeave";
 import { proLinks, savedLinks, type Slots } from "@/lib/comp-links";
 import type { DrawerData } from "@/lib/data";
 import { fresher, shortDate } from "@/lib/evidence";
@@ -56,13 +57,15 @@ export function ChampionProvider({ data, focus, context, children }: { data: Dra
   const index = useDrawerIndex(data);
   const [drawer, setDrawer] = useState<DrawerTarget>();
   const { card, hover, unhover, hide, keep } = useHoverIntent();
+  const quick = useLeave(card && !drawer ? card : undefined);
   const openDrawer = useCallback((t: DrawerTarget) => { hide(); setDrawer(t); }, [hide]);
   const ctx = useMemo(() => ({ openDrawer, hover, unhover }), [openDrawer, hover, unhover]);
   return (
     <ChampionCtx.Provider value={ctx}>
       {children}
-      {card && !drawer && (
-        <ChampionHoverCard key={`${card.t.id}-${card.t.role}`} target={card.t} anchor={card.el} swap={card.swap} data={data} index={index} focus={focus} onEnter={keep} onLeave={unhover} />
+      {quick.shown && (
+        <ChampionHoverCard key={`${quick.shown.t.id}-${quick.shown.t.role}`} target={quick.shown.t} anchor={quick.shown.el} swap={quick.shown.swap} data={data} index={index} focus={focus}
+          leaving={quick.leaving} onGone={quick.end} onEnter={keep} onLeave={unhover} />
       )}
       {drawer && <ChampionDrawer target={drawer} data={data} index={index} context={context} onClose={() => setDrawer(undefined)} onSelect={setDrawer} />}
     </ChampionCtx.Provider>
@@ -123,9 +126,11 @@ function relationLines(t: { id: string; role: Role }, data: DrawerData, index: D
   return lines;
 }
 
-export function ChampionHoverCard({ target, anchor, data, index, focus, comp, side, swap, onEnter, onLeave }: {
+export function ChampionHoverCard({ target, anchor, data, index, focus, comp, side, swap, leaving, onGone, onEnter, onLeave }: {
   target: DrawerTarget; anchor: HTMLElement; data: DrawerData; index: DrawerIndex; focus?: Focus; comp?: CompContext;
   side?: "beside" | "below"; swap?: boolean; onEnter: () => void; onLeave: () => void;
+  /** Playing its exit (components/useLeave.ts); `onGone` ends it. */
+  leaving?: boolean; onGone?: (e: React.AnimationEvent) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ top: number; left: number } | undefined>(undefined);
@@ -151,7 +156,8 @@ export function ChampionHoverCard({ target, anchor, data, index, focus, comp, si
   const latest = games[0] ? [games[0].eventName, games[0].patch && patchLabel(games[0].patch), shortDate(games[0].date)].filter(Boolean).join(" · ") : "";
 
   return createPortal(
-    <div ref={ref} className={`popover hovercard ${swap ? "swap" : ""}`.trim()} role="tooltip" onPointerEnter={onEnter} onPointerLeave={onLeave}
+    <div ref={ref} className={`popover hovercard ${swap ? "swap" : ""} ${leaving ? "leaving" : ""}`.replace(/ +/g, " ").trim()} role="tooltip"
+      aria-hidden={leaving || undefined} onPointerEnter={onEnter} onPointerLeave={onLeave} onAnimationEnd={onGone}
       style={pos ? { top: pos.top, left: pos.left } : { top: 0, left: 0, visibility: "hidden" }}>
       <div className="hc-head">
         <ChampIcon id={target.id} name={name} role={role} size="md" />

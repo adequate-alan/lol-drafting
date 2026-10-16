@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChampionDrawer, compLinks, useDrawerIndex, type CompContext, type DrawerContext, type DrawerTarget } from "@/components/ChampionDrawer";
 const COMPS: DrawerContext = { page: "comps" };
 import { ChampionHoverCard, useHoverIntent } from "@/components/ChampionInteraction";
+import { useLeave } from "@/components/useLeave";
 import { CompFreshness } from "@/components/CompFreshness";
 import { ChampIcon, PageHeader, SourceBadge } from "@/components/ui";
 import { jobLabel, WHY_LINE } from "@/lib/comp-copy";
@@ -81,7 +82,8 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
     setHover(role ? { shell: s.id, role } : undefined);
     if (role && el) intent.hover({ id: id ?? shellDraft(s, swapsOf(s.id))[role], role }, el); else intent.unhover();
   };
-  const cardShellId = intent.card?.el.closest("article.shell")?.id;
+  const quick = useLeave(intent.card && !open ? intent.card : undefined);
+  const cardShellId = quick.shown?.el.closest("article.shell")?.id;
   const cardShell = cardShellId ? allShells.find((x) => x.id === cardShellId) : undefined;
   // Highlights follow the hovered or focused champion, else the open one.
   const active = hover ?? open;
@@ -201,11 +203,11 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
           );
         })}
       </div>
-      {intent.card && !open && cardShell && intent.card.t.role && (
-        <ChampionHoverCard key={`${cardShell.id}-${intent.card.t.role}-${intent.card.t.id}`} target={intent.card.t} anchor={intent.card.el} swap={intent.card.swap} data={data} index={index}
-          comp={compOf(cardShell, { ...swapsOf(cardShell.id), [intent.card.t.role]: intent.card.t.id })}
-          side={intent.card.el.classList.contains("lu-slot") ? "below" : "beside"}
-          onEnter={intent.keep} onLeave={intent.unhover} />
+      {quick.shown && cardShell && quick.shown.t.role && (
+        <ChampionHoverCard key={`${cardShell.id}-${quick.shown.t.role}-${quick.shown.t.id}`} target={quick.shown.t} anchor={quick.shown.el} swap={quick.shown.swap} data={data} index={index}
+          comp={compOf(cardShell, { ...swapsOf(cardShell.id), [quick.shown.t.role]: quick.shown.t.id })}
+          side={quick.shown.el.classList.contains("lu-slot") ? "below" : "beside"}
+          leaving={quick.leaving} onGone={quick.end} onEnter={intent.keep} onLeave={intent.unhover} />
       )}
       {open && openShell && (
         <ChampionDrawer target={{ id: shellDraft(openShell, swapsOf(openShell.id))[open.role], role: open.role }} comp={compOf(openShell, swapsOf(openShell.id))}

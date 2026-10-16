@@ -619,6 +619,12 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .popover.hovercard.swap { animation: none; }
 @keyframes pop-in { from { opacity: 0; transform: translateY(3px); } }
 @keyframes pop-in-up { from { opacity: 0; transform: translateY(-3px); } }
+/* Closing (components/useLeave.ts): the surface fades where it is, faster than it came, and takes no pointer or focus.
+   A swapped hover card leaves the same way. Sheets and their scrim follow the drawer's exit. */
+@keyframes pop-out { to { opacity: 0; transform: translateY(2px); } }
+.popover.leaving, .popover.hovercard.swap.leaving, .select-menu.leaving { animation: pop-out var(--dur-pop-out) var(--ease-in) forwards; pointer-events: none; }
+.popover.sheet.leaving { animation: sheet-out var(--dur-panel-out) var(--ease-in) forwards; }
+.popover-scrim.leaving { animation: fade-out var(--dur-panel-out) var(--ease-in) forwards; pointer-events: none; }
 .popover:focus-visible { box-shadow: var(--shadow-pop), var(--focus-ring); }
 /* Plain-text hints (components/TipLayer.tsx) */
 .popover.tip { z-index: 60; max-width: 300px; padding: var(--s3) var(--s4); font-size: var(--fs-xs); white-space: pre-line; pointer-events: none; box-shadow: var(--shadow-menu); }
@@ -1334,6 +1340,10 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .role-tab.active { color: var(--text); border-bottom-color: var(--accent); }
 .role-tab.active::before { opacity: 1; }
 .tab-top { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font); font-size: var(--fs-xs); color: var(--text-faint); }
+/* The list catching up with a lock it deferred (components/DraftRoom.tsx): it only dims when re-ranking takes longer
+   than a selection beat, so a normal lock never flickers. */
+.fit-role { transition: opacity var(--dur-hover) ease-out; }
+.fit-role.ranking { opacity: .6; transition: opacity var(--dur-select) ease-out var(--dur-select); }
 .fit-context { display: flex; align-items: center; gap: var(--s5); flex-wrap: wrap; min-height: 32px; font-size: var(--fs-sm); border-bottom: 1px solid var(--border); }
 .fit-context .vs b { color: var(--enemy); }
 .rec-empty { padding: var(--s5) 0; color: var(--text-muted); font-size: var(--fs-sm); }
@@ -2176,6 +2186,7 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
   :root { --dur-panel: 140ms; --dur-panel-out: 100ms; --dur-pop: 100ms; }
   @keyframes pop-in { from { opacity: 0; } }
   @keyframes pop-in-up { from { opacity: 0; } }
+  @keyframes pop-out { to { opacity: 0; } }
   @keyframes drawer-in { from { opacity: 0; } }
   @keyframes drawer-out { to { opacity: 0; } }
   @keyframes sheet-in { from { opacity: 0; } }

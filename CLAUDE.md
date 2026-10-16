@@ -593,7 +593,16 @@ inconsistent, critique finds what is ineffective, polish improves what already w
 - **Interaction polish** (alan, 2026-10-16): smoothness from not reloading first. In-page filters, tabs and views write
   history (`history.pushState` / `replaceState`, read back through `useSearchParams`), never `router.push` / `replace`;
   the sidebar marks the clicked section at once (and closes the phone menu) before the page arrives; Disclosure bodies
-  settle in with `pop-in`.
+  settle in with `pop-in`. Site-wide pass (alan, 2026-10-16, "Interaction, Motion & UX Polish"): every arriving surface
+  also leaves (`components/useLeave.ts`: hover cards, popovers and sheets, tips, Select and PinPicker menus keep their last
+  content for a `.leaving` fade on `--dur-pop-out`, inert, no pointer; re-opening takes over at once; a leaving PinPicker
+  keeps the rows it showed). Back / Forward between pages restores each page's scroll, the window and its own scroll boxes
+  (`components/ScrollKeeper.tsx`, mounted once in the app layout: `.table-wrap.tall`, `.pick-rail ul` or
+  `[data-keep-scroll]`, by URL, recorded on scroll and on link clicks); a fresh link starts at the top and in-page history
+  steps keep their own handling. A filter, sort or search puts its results' scroll box back to the top (`resultsToTop`
+  in `lib/motion.ts`; opening a row or game never does). Draft Room shows a lock at once and ranks from deferred copies
+  of the board (`useDeferredValue`; first pick, removals and Clear rank at once); while it catches up the list is
+  `aria-busy`, dims only past a selection beat and never locks a champion already taken.
 - **Motion and interaction system** (alan, 2026-10-12, Impeccable interaction pass; `tests/interaction.test.ts`, smoke
   "Interaction and motion audit"): smooth is not the same as animated. Every duration is a token in `app/globals.css`
   "Motion": hover 100ms, tabs / selection 140ms, dropdowns / popovers 140ms in and 90ms out, drawers / sheets / mobile nav

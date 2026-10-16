@@ -12,6 +12,7 @@
 // Zero layout shift: nothing here changes the trigger's box; surfaces are fixed-position portals.
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useLeave } from "./useLeave";
 
 // Open after a short pause so sweeping the pointer across a row doesn't flash cards; closing waits a moment so the
 // pointer can travel from the trigger into the card.
@@ -55,10 +56,12 @@ export function useNoHover() {
 }
 
 /** A fixed-position surface placed against `anchor`. `sheet` renders it as a bottom sheet instead (phones). */
-export function PopoverSurface({ anchor, children, className = "", side = "below", align, sheet, onEnter, onLeave, onAway, id, role = "dialog", label, surfaceRef }: {
+export function PopoverSurface({ anchor, children, className = "", side = "below", align, sheet, onEnter, onLeave, onAway, id, role = "dialog", label, surfaceRef, leaving, onGone }: {
   anchor: HTMLElement; children: React.ReactNode; className?: string; side?: Placement; align?: "start" | "center"; sheet?: boolean;
   onEnter?: () => void; onLeave?: () => void; onAway?: () => void; id?: string; role?: "dialog" | "tooltip"; label?: string;
   surfaceRef?: React.RefObject<HTMLDivElement | null>;
+  /** Playing its exit (components/useLeave.ts): no pointer, no focus, out of the accessibility tree; `onGone` ends it. */
+  leaving?: boolean; onGone?: (e: React.AnimationEvent) => void;
 }) {
   const own = useRef<HTMLDivElement>(null);
   const ref = surfaceRef ?? own;
@@ -68,13 +71,13 @@ export function PopoverSurface({ anchor, children, className = "", side = "below
 
   const measure = useCallback(() => {
     const el = ref.current;
-    if (!el || sheet) return;
+    if (!el || sheet || leaving) return;
     const a = anchor.getBoundingClientRect();
     // The anchor scrolled out of view (or left the page): close rather than float over unrelated content.
     if (!anchor.isConnected || a.bottom < 0 || a.top > window.innerHeight) { away.current?.(); return; }
     // scrollHeight is the content's full height whatever the current cap, so capping never feeds back into placement.
     setPos(place(a, el.offsetWidth, el.scrollHeight + 2, side, align));
-  }, [anchor, side, align, sheet, ref]);
+  }, [anchor, side, align, sheet, ref, leaving]);
 
   useLayoutEffect(measure, [measure]);
   useEffect(() => {
@@ -93,9 +96,10 @@ export function PopoverSurface({ anchor, children, className = "", side = "below
     : pos ? { top: pos.top, left: pos.left, maxHeight: pos.maxHeight } : { top: 0, left: 0, visibility: "hidden" };
   return createPortal(
     <>
-      {sheet && <div className="popover-scrim" onClick={onAway} aria-hidden="true" />}
-      <div ref={ref} id={id} role={role} tabIndex={role === "dialog" ? -1 : undefined} aria-label={label} aria-modal={sheet ? true : undefined} className={`popover ${sheet ? "sheet" : ""} ${className}`.trim()}
-        style={style} onPointerEnter={onEnter} onPointerLeave={onLeave}>
+      {sheet && <div className={`popover-scrim ${leaving ? "leaving" : ""}`.trim()} onClick={leaving ? undefined : onAway} aria-hidden="true" />}
+      <div ref={ref} id={leaving ? undefined : id} role={role} tabIndex={role === "dialog" && !leaving ? -1 : undefined} aria-label={label} aria-modal={sheet && !leaving ? true : undefined}
+        aria-hidden={leaving || undefined} inert={leaving || undefined} className={`popover ${sheet ? "sheet" : ""} ${className} ${leaving ? "leaving" : ""}`.replace(/ +/g, " ").trim()}
+        style={style} onPointerEnter={leaving ? undefined : onEnter} onPointerLeave={leaving ? undefined : onLeave} onAnimationEnd={onGone}>
         {children}
       </div>
     </>,
@@ -162,6 +166,8 @@ export function Popover({ label, trigger, triggerClass = "", className = "", sid
   }, [mode]);
 
   const leave = () => { if (mode === "hover") later(() => setMode("closed"), HIDE_MS); };
+  // The card plays a short exit after closing (its last mode and anchor kept); opening again takes over at once.
+  const shownMode = useLeave(open && btn.current ? mode : undefined);
   return (
     <>
       <button ref={btn} type="button" className={`pop-trigger ${triggerClass} ${open ? "is-open" : ""}`.trim()}
@@ -180,16 +186,16 @@ export function Popover({ label, trigger, triggerClass = "", className = "", sid
         }}>
         {trigger}
       </button>
-      {open && btn.current && (
-        <PopoverSurface anchor={btn.current} id={id} label={label} side={side} sheet={mode === "sheet"} surfaceRef={surface}
-          className={`${className} ${mode}`.trim()}
+      {shownMode.shown && btn.current && (
+        <PopoverSurface anchor={btn.current} id={id} label={label} side={side} sheet={shownMode.shown === "sheet"} surfaceRef={surface}
+          className={`${className} ${shownMode.shown}`.trim()} leaving={shownMode.leaving} onGone={shownMode.end}
           onEnter={clear} onLeave={leave} onAway={() => close()}>
           <div className="popover-body"
             // Leaving the card by keyboard closes it, like moving the pointer away.
             onBlur={(e) => { if (mode !== "sheet" && e.relatedTarget && !e.currentTarget.contains(e.relatedTarget as Node) && e.relatedTarget !== btn.current) close(); }}>
-            {children({ mode: mode as PopoverApi["mode"], close: () => close(true), pin: () => setMode((m) => (m === "hover" ? "pinned" : m)) })}
+            {children({ mode: shownMode.shown as PopoverApi["mode"], close: () => close(true), pin: () => setMode((m) => (m === "hover" ? "pinned" : m)) })}
           </div>
-          {mode === "sheet" && <button type="button" className="btn sm popover-close" onClick={() => close(true)}>Close</button>}
+          {shownMode.shown === "sheet" && <button type="button" className="btn sm popover-close" onClick={() => close(true)}>Close</button>}
         </PopoverSurface>
       )}
     </>

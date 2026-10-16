@@ -2,6 +2,7 @@
 import { ProFreshness } from "@/components/ProFreshness";
 import type { Freshness } from "@/lib/pro-games";
 import { useSearchParams } from "next/navigation";
+import { resultsToTop } from "@/lib/motion";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { ChampionProvider } from "@/components/ChampionInteraction";
 import type { DrawerContext } from "@/lib/drawer";
@@ -33,6 +34,7 @@ export function PoolView({ names, data, bot, midJungle, top, proposed, freshness
     if (v) next.set(k, v); else next.delete(k);
     setParams(next);
     window.history.replaceState(null, "", `${window.location.pathname}${next.size ? `?${next}` : ""}`);
+    resultsToTop(".pool-table");
   };
   const role = get("role") as Role | undefined;
   const tier = get("tier") as Tier | undefined;
