@@ -6,7 +6,8 @@ import { getDraftData, getMeta, getPool, getPriority, getProGames, getSources } 
 import { draftCandidates, hasSignal, startingCandidates } from "@/lib/candidates";
 import { poolTier } from "@/lib/counters";
 import { savedSupports } from "@/lib/recommend";
-import { priorityData, priorityMarks } from "@/lib/pro-priority";
+import { bucket, patchesOf, priorityData, priorityMarks } from "@/lib/pro-priority";
+import { comparePatch, samePatch } from "@/lib/patch";
 import {
   defaultPatch, engineReader, FIRST_ROTATION, hasStart, rotationLabel, sortForView, startingOrder, startingPicks, type PickReader, type StartingPick,
 } from "@/lib/starting-picks";
@@ -199,7 +200,11 @@ describe("progressive recommendations", () => {
 
 describe("patch and tournament scope", () => {
   it("defaults to the newest patch with usable evidence and never combines patches", () => {
-    expect(defaultPatch(prio)).toBe(PATCH);
+    // The newest patch with picks, read from the data: Worlds 2026 brings 16.20, never combined with 16.18.
+    const newest = patchesOf(prio).find((p) => bucket(prio, { patch: p }).rows.some((r) => r.picks > 0))!;
+    expect(defaultPatch(prio)).toBe(newest);
+    expect(comparePatch(newest, PATCH)).toBeGreaterThanOrEqual(0);
+    expect(startingPicks(prio, pool, "TOP", newest).rows.every((r) => samePatch(r.patch, newest))).toBe(true);
     const old = startingPicks(prio, pool, "TOP", "16.16");
     expect(old.scope.events).toEqual([LCK]);
     expect(old.rows.every((r) => r.patch === "16.16" && r.games.length === 0 && r.ordered === 0)).toBe(true);
