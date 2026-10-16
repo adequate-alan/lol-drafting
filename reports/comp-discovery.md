@@ -10,17 +10,16 @@ None this week.
 
 None this week.
 
-## Existing compositions seeing new professional play (1)
+## Existing compositions seeing new professional play (0)
 
-- **Caitlyn + Bard Pick**: 1 new game
-  - [Team Vitality vs RED Canids G1](https://gol.gg/game/stats/83523/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-06, win)
+None this week.
 
 ## May be outdated (9)
 
 Observed library comps with no exact or variation game in the tracked tournaments (newest patch 16.20). Report only; nothing is removed.
 
 - **Protected Hypercarry** · Top K'Sante · Jng Vi · Mid Akali · Bot Zeri · Sup Yuumi · not picked in tracked games: Zeri, Yuumi
-- **Yunara Protect** · Top Rumble · Jng Pantheon · Mid Syndra · Bot Yunara · Sup Lulu
+- **Pick · Protected Yunara** · Top Rumble · Jng Pantheon · Mid Syndra · Bot Yunara · Sup Lulu
 - **Pick Tempo** · Top Varus · Jng Nocturne · Mid Lissandra · Bot Kalista · Sup Renata Glasc
 - **Weakside Tank + Carry Bot** · Top Sion · Jng Lee Sin · Mid Sylas · Bot Zeri · Sup Yuumi · not picked in tracked games: Zeri, Yuumi
 - **Side Carry Scaling** · Top Gwen · Jng Trundle · Mid Viktor · Bot Corki · Sup Alistar
@@ -97,6 +96,7 @@ Not added automatically: each needs more games or a person's call. One line per 
 - **New** · Front-to-back + Skirmish · Top Ornn · Jng Qiyana · Mid Syndra · Bot Lucian · Sup Milio · [LGD Gaming G1 W](https://gol.gg/game/stats/83578/page-game/) · 1 game from LGD Gaming, and the library already has front-to-back comps
 - **New** · Split + Skirmish · Top Yorick · Jng Jarvan IV · Mid Ryze · Bot Ashe · Sup Seraphine · [LGD Gaming G2 L](https://gol.gg/game/stats/83579/page-game/) · 1 game from LGD Gaming, and the library already has split comps
 - **New** · Poke / siege + Front-to-back · Top Varus · Jng Lee Sin · Mid Orianna · Bot Ezreal · Sup Leona · [HANJIN BRION G2 W](https://gol.gg/game/stats/83579/page-game/) · 1 game from HANJIN BRION, and the library already has poke / siege comps
+- **New** · Front-to-back + Wombo · Top Aatrox · Jng Maokai · Mid Yone · Bot Caitlyn · Sup Bard · [LGD Gaming G3 L](https://gol.gg/game/stats/83580/page-game/) · 1 game from LGD Gaming, and the library already has front-to-back comps
 - **New** · Front-to-back · Top Poppy · Jng Jayce · Mid Akali · Bot Jhin · Sup Rell · [LGD Gaming G4 L](https://gol.gg/game/stats/83581/page-game/) · 1 game from LGD Gaming, and the library already has front-to-back comps
 - **New** · Dive + Skirmish · Top K'Sante · Jng Wukong · Mid Ahri · Bot Corki · Sup Neeko · [HANJIN BRION G4 W](https://gol.gg/game/stats/83581/page-game/) · 1 game from HANJIN BRION, and the library already has dive comps
 - **New** · Front-to-back + Split · Top Yorick · Jng Skarner · Mid Ryze · Bot Ezreal · Sup Seraphine · [KT Rolster G1 L](https://gol.gg/game/stats/83603/page-game/) · 1 game from KT Rolster, and the library already has front-to-back comps
@@ -110,6 +110,7 @@ Not added automatically: each needs more games or a person's call. One line per 
 - **New** · Skirmish + Pick · Top Kled · Jng Naafiri · Mid Anivia · Bot Lucian · Sup Nami · [Karmine Corp G3 L](https://gol.gg/game/stats/83600/page-game/) · major weak point (No frontline); 1 game from Karmine Corp, and the library already has skirmish comps
 - **New** · Dive + Skirmish · Top Olaf · Jng Jarvan IV · Mid Annie · Bot Jhin · Sup Alistar · [Cloud9 G3 W](https://gol.gg/game/stats/83600/page-game/) · 1 game from Cloud9, and the library already has dive comps
 - **New** · Dive + Wombo · Top Renekton · Jng Qiyana · Mid Orianna · Bot Xayah · Sup Rakan · [Karmine Corp G4 W](https://gol.gg/game/stats/83601/page-game/) · 1 game from Karmine Corp, and the library already has dive comps
+- **New** · Front-to-back + Pick · Top K'Sante · Jng Lillia · Mid Yone · Bot Ziggs · Sup Shen · [Cloud9 G5 L](https://gol.gg/game/stats/83602/page-game/) · 1 game from Cloud9, and the library already has front-to-back comps
 - **New** · Split · Top Rumble · Jng Jayce · Mid Ryze · Bot Sivir · Sup Karma · [Team WE G1 W](https://gol.gg/game/stats/83608/page-game/) · major weak point (Follow-up without engage, No frontline); 1 game from Team WE, and the library already has split comps
 - **New** · Pick + Poke / siege · Top K'Sante · Jng Lee Sin · Mid Syndra · Bot Ezreal · Sup Neeko · [HANJIN BRION G1 L](https://gol.gg/game/stats/83608/page-game/) · 1 game from HANJIN BRION, and the library already has pick comps
 - **New** · Skirmish + Pick · Top Renekton · Jng Naafiri · Mid Akali · Bot Caitlyn · Sup Bard · [Team WE G2 W](https://gol.gg/game/stats/83609/page-game/) · 1 game from Team WE, and the library already has skirmish comps
@@ -128,12 +129,10 @@ Not added automatically: each needs more games or a person's call. One line per 
 - **New** · Cannot be read · Top Yorick · Jng Skarner · Mid Locke · Bot Yunara · Sup Lulu · [KT Rolster G4 W](https://gol.gg/game/stats/83566/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
 - **New** · Cannot be read · Top Rumble · Jng Pantheon · Mid Locke · Bot Kalista · Sup Renata Glasc · [BNK FearX G1 W](https://gol.gg/game/stats/83568/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
 - **New** · Cannot be read · Top Rumble · Jng Vi · Mid Locke · Bot Yunara · Sup Lulu · [HANJIN BRION G1 L](https://gol.gg/game/stats/83578/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
-- **New** · Cannot be read · Top Aatrox · Jng Maokai · Mid Yone · Bot Caitlyn · Sup Bard · [LGD Gaming G3 L](https://gol.gg/game/stats/83580/page-game/) · Yone has no reviewed kit, so the comp check cannot read this lineup
 - **New** · Cannot be read · Top K'Sante · Jng Jayce · Mid Locke · Bot Jhin · Sup Camille · [BNK FearX G3 W](https://gol.gg/game/stats/83605/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
 - **New** · Cannot be read · Top Zaahen · Jng Jarvan IV · Mid Kog'Maw · Bot Jhin · Sup Camille · [MVK Esports G3 W](https://gol.gg/game/stats/83595/page-game/) · Zaahen has no reviewed kit, so the comp check cannot read this lineup
 - **New** · Cannot be read · Top Gnar · Jng Xin Zhao · Mid Locke · Bot Ezreal · Sup Karma · [Cloud9 G1 W](https://gol.gg/game/stats/83598/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
 - **New** · Cannot be read · Top Zaahen · Jng Sejuani · Mid Sylas · Bot Yunara · Sup Lulu · [Cloud9 G4 L](https://gol.gg/game/stats/83601/page-game/) · Zaahen has no reviewed kit, so the comp check cannot read this lineup
-- **New** · Cannot be read · Top K'Sante · Jng Lillia · Mid Yone · Bot Ziggs · Sup Shen · [Cloud9 G5 L](https://gol.gg/game/stats/83602/page-game/) · Yone has no reviewed kit, so the comp check cannot read this lineup
 - **New** · Cannot be read · Top Olaf · Jng Wukong · Mid Locke · Bot Kalista · Sup Renata Glasc · [HANJIN BRION G3 W](https://gol.gg/game/stats/83610/page-game/) · Locke has no reviewed kit, so the comp check cannot read this lineup
 - **New** · Cannot be read · Top Zaahen · Jng Nocturne · Mid Annie · Bot Smolder · Sup Alistar · [Team WE G5 W](https://gol.gg/game/stats/83612/page-game/) · Zaahen has no reviewed kit, so the comp check cannot read this lineup
 

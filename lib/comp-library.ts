@@ -4,7 +4,8 @@
 // alan's reviewed decisions (data/comp-review.json) add three things, all Observed Pro Evidence: pro swaps (a champion
 // pro teams played in one slot of the comp, with every game, its series, teams and patches; kept apart from the slot's
 // `swaps`, which are General Draft Logic), supporting lineups (filed with the comp's variations, LCK archive included)
-// and a historical mark (the last patch pros picked a slot's champion in that role, shown only once it is not the newest).
+// a historical mark (the last patch pros picked a slot's champion in that role, shown only once it is not the newest) and
+// named variants (a comp shown inside its parent's card; every shell stays in `shells`, so Draft Room links still work).
 import { newestGamesFirst, recordStamp } from "./chronology";
 import { lineupKey, shellPicks, type LineupRef, type Picks } from "./comp-discovery";
 import { comparePatch } from "./patch";
@@ -28,8 +29,10 @@ export interface LibraryExtra {
   variations: ObservedLineup[]; // other observed lineups filed under this comp, most games first
   proSwaps?: Partial<Record<Role, ProSwap[]>>;
   historical?: Partial<Record<Role, string>>; // role → last patch pros picked the slot's champion there, when older than the newest
+  variantOf?: { parent: string; name: string }; // shown inside the parent's card, never as its own card
+  variants?: { id: string; name: string }[];    // a parent's named variants, in review order
 }
-const NO_REVIEW: CompReview = { proSwaps: [], supporting: [], historical: [] };
+const NO_REVIEW: CompReview = { proSwaps: [], supporting: [], historical: [], variants: [] };
 
 export function gameView(g: ProGame, side: "blue" | "red"): ObservedGame {
   const them = side === "blue" ? "red" : "blue";
@@ -103,9 +106,12 @@ export function buildLibrary(shells: CompShell[], file: DiscoveredComps, proGame
       if (last && newest && comparePatch(last, newest) < 0) historical[role] = last;
     }
     const hasSwaps = Object.keys(proSwaps).length > 0, hasHist = Object.keys(historical).length > 0;
-    if (!d && !replays.length && !variations.length && !hasSwaps && !hasHist) continue;
+    const parent = review.variants.find((v) => v.comp === s.id);
+    const children = review.variants.filter((v) => v.parent === s.id && all.some((x) => x.id === v.comp)).map((v) => ({ id: v.comp, name: v.name }));
+    if (!d && !replays.length && !variations.length && !hasSwaps && !hasHist && !parent && !children.length) continue;
     const { slots: _s, games: _g, winCondition: _w, why: _y, ...read } = d ?? ({} as DiscoveredComp);
-    extras[s.id] = { ...(d ? { discovered: read } : {}), games: replays, variations, ...(hasSwaps ? { proSwaps } : {}), ...(hasHist ? { historical } : {}) };
+    extras[s.id] = { ...(d ? { discovered: read } : {}), games: replays, variations, ...(hasSwaps ? { proSwaps } : {}), ...(hasHist ? { historical } : {}),
+      ...(parent ? { variantOf: { parent: parent.parent, name: parent.name } } : {}), ...(children.length ? { variants: children } : {}) };
   }
   return { shells: all, extras, lastAddition: file.lastAddition };
 }

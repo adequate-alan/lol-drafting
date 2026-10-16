@@ -64,7 +64,7 @@ export interface PlanFinding {
   switches?: string[];      // four picks: open-role picks that turn the comp into a different plan with no critical gap
 }
 // essential: without it the plan cannot be executed (critical); otherwise a missing job is a real weakness.
-export interface Job { id: string; label: string; met: boolean; by: string; missing: string; fixes: NeedId[]; essential: boolean }
+export interface Job { id: string; label: string; met: boolean; by: string; missing: string; fixes: NeedId[]; essential: boolean; unread?: string[] } // unread: unread picks that could be doing this job
 export interface PlanCheck { identity: IdentityId; label: string; jobs: Job[]; met: number }
 
 export interface PlanRead {
@@ -85,6 +85,10 @@ export interface PlanRead {
   needed: PlanFinding[];      // four picks: what the last pick must bring
   merged: { rule: string; job: string }[]; // current rules reported by a missing plan job instead of on their own
   enemyRead: "none" | "partial" | "full"; // how much of the enemy the exposure tags could see
+  // Locked picks without a kit (alan, 2026-10-16): the read is incomplete. A gap is kept only when it stays whoever
+  // plays that role (every available kit in the role, tried in its place); the rest are held back, never invented.
+  unread: { role: Role; id: string }[];
+  withheld: number; // gaps held back because the unread pick could be covering them
 }
 const SHOWN = 3;
 
@@ -476,8 +480,39 @@ function expose(findings: PlanFinding[], theirs: Slot[]) {
   }
 }
 
+/** Findings and missing jobs that stand whoever fills the unread slot: the read is run again with every available kit in
+ *  that role in its place, and only what every one of those reads still reports is kept, at its mildest tier. Two or
+ *  more unread picks (or a role with no kit to try) keep nothing. */
+function standing(draft: Draft, champions: ChampionKit[], unread: { role: Role; id: string }[], taken: Set<string>) {
+  const findings = new Map<string, Tier>();
+  const jobs = new Set<string>();
+  if (unread.length !== 1) return { findings, jobs };
+  const { role } = unread[0];
+  const subs = champions.filter((c) => c.roles.includes(role) && !taken.has(c.id));
+  subs.forEach((c, i) => {
+    const r = core({ ...draft, [role]: c.id }, champions);
+    const seen = new Map(r.findings.filter((x) => x.tier !== "accepted").map((x) => [x.id, x.tier]));
+    const missing = new Set(r.plan?.jobs.filter((j) => !j.met).map((j) => j.id) ?? []);
+    if (!i) { seen.forEach((t, id) => findings.set(id, t)); missing.forEach((j) => jobs.add(j)); return; }
+    for (const [id, t] of findings) { const u = seen.get(id); if (!u) findings.delete(id); else if (TIER[u] < TIER[t]) findings.set(id, u); }
+    for (const j of jobs) if (!missing.has(j)) jobs.delete(j);
+  });
+  return { findings, jobs };
+}
+
 export function analyzePlan(draft: Draft, champions: ChampionKit[], enemyIds: string[] = [], botPairings: SavedBotRecord[] = []): PlanRead {
-  const { slots, f, n, primary, secondary, plan, team, findings, merged } = core(draft, champions);
+  const { slots, f, n, primary, secondary, plan, team, findings: all, merged } = core(draft, champions);
+  const unread = ROLES.flatMap((r) => (draft[r] && !champions.some((c) => c.id === draft[r]) ? [{ role: r, id: draft[r]! }] : []));
+  let findings = all, withheld = 0;
+  if (unread.length) {
+    const lockedIds = new Set([...Object.values(draft).filter(Boolean) as string[], ...enemyIds]);
+    const stand = standing(draft, champions, unread, lockedIds);
+    const real = all.filter((x) => x.tier !== "accepted");
+    findings = all.filter((x) => x.tier === "accepted" || stand.findings.has(x.id));
+    for (const x of findings) { const t = stand.findings.get(x.id); if (t && TIER[t] < TIER[x.tier]) x.tier = t; }
+    withheld = real.length - findings.filter((x) => x.tier !== "accepted").length;
+    if (plan) for (const j of plan.jobs) if (!j.met && !stand.jobs.has(j.id)) j.unread = unread.map((u) => u.id);
+  }
   const confidence: Confidence = n < T.earlyRead ? "none" : n < T.teamRules ? "early" : n < 5 ? "read" : "full";
   const theirs = slotsOf(enemyDraft(enemyIds, champions), champions);
   const taken = new Set([...Object.values(draft).filter(Boolean) as string[], ...theirs.map((s) => s.c.id)]);
@@ -513,7 +548,7 @@ export function analyzePlan(draft: Draft, champions: ChampionKit[], enemyIds: st
   // for nothing.
   const need = new Map<NeedId, RoleNeed>();
   const add = (id: NeedId, priority: number, because: string) => { const cur = need.get(id); if (!cur || cur.priority < priority) need.set(id, { id, label: NEEDS[id].label, because, priority }); };
-  if (plan) for (const j of plan.jobs.filter((x) => !x.met)) j.fixes.forEach((id, i) => add(id, 7 - i * 0.3, `${plan.label}: ${j.label.toLowerCase()}`));
+  if (plan) for (const j of plan.jobs.filter((x) => !x.met && !x.unread)) j.fixes.forEach((id, i) => add(id, 7 - i * 0.3, `${plan.label}: ${j.label.toLowerCase()}`));
   for (const w of real) w.fixes.forEach((id, i) => add(id, (w.tier === "weakness" ? 2 : 3) * 2 - i * 0.3 + (w.severity === "major" ? 0.5 : 0), w.label));
   if (!plan && n) {
     if (!f.primary.length && !f.catchers.length) add("fight-start", 3, "no fight starter yet");
@@ -527,7 +562,7 @@ export function analyzePlan(draft: Draft, champions: ChampionKit[], enemyIds: st
   const needed = real.filter((x) => x.tier === "needed");
   const top = real[0];
   const headline = confidence === "none" ? "Read starts at two picks"
-    : confidence === "early" ? `Early read: ${primary ? `trending toward ${id.toLowerCase()}` : "no clear plan yet"}.${plan && plan.jobs.some((j) => !j.met) ? ` The plan still needs ${plan.jobs.filter((j) => !j.met).slice(0, 2).map((j) => j.label.toLowerCase()).join(" and ")}.` : ""}`
+    : confidence === "early" ? `Early read: ${primary ? `trending toward ${id.toLowerCase()}` : "no clear plan yet"}.${plan && plan.jobs.some((j) => !j.met && !j.unread) ? ` The plan still needs ${plan.jobs.filter((j) => !j.met && !j.unread).slice(0, 2).map((j) => j.label.toLowerCase()).join(" and ")}.` : ""}`
     : top && top.tier === "critical" ? `${id || "No clear plan"}, but ${short(top)}`
     : open && needed.length ? `${id || "No clear plan"}: the ${open.toLowerCase()} must bring ${needed.slice(0, 2).map((x) => short(x).replace(/^missing /, "")).join(" and ")}`
     : id || "No clear plan";
@@ -545,6 +580,7 @@ export function analyzePlan(draft: Draft, champions: ChampionKit[], enemyIds: st
     timing: n >= T.earlyRead ? timing(f) : null,
     open, needed, merged,
     enemyRead: !theirs.length ? "none" : theirs.length >= 5 ? "full" : "partial",
+    unread, withheld,
   };
 }
 

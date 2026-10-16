@@ -18,5 +18,8 @@
   "historical": [
     { "comp": "protected-hypercarry", "roles": ["BOT", "SUPPORT"], "approvedOn": "2026-10-16" },
     { "comp": "weakside-tank-carry-bot", "roles": ["BOT", "SUPPORT"], "approvedOn": "2026-10-16" }
+  ],
+  "variants": [
+    { "comp": "weakside-tank-carry-bot", "parent": "protected-hypercarry", "name": "Weakside tank · Gen.G", "approvedOn": "2026-10-16" }
   ]
 }

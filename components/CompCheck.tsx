@@ -86,9 +86,12 @@ export function CompStatus({ read: p }: { read: PlanRead }) {
   const real = [...p.weaknesses, ...p.more];
   const needed = real.filter((w) => w.tier === "needed").length;
   const weak = real.filter((w) => w.tier === "weakness" && w.severity !== "minor").length;
-  if (!p.critical.length && !needed && !weak) return <span className="badge success">No major weak points</span>;
+  // A pick without a kit: the read is incomplete, so it never says the comp is clean (alan, 2026-10-16).
+  const partial = p.unread.length > 0 && <span className="badge">Incomplete read</span>;
+  if (!p.critical.length && !needed && !weak) return partial || <span className="badge success">No major weak points</span>;
   return (
     <span className="row tight">
+      {partial}
       {p.critical.length > 0 && <span className="badge danger">{p.critical.length} critical</span>}
       {needed > 0 && <span className="badge caution">{needed} needed</span>}
       {weak > 0 && <span className="badge caution">{weak} {weak === 1 ? "weakness" : "weaknesses"}</span>}
@@ -113,8 +116,6 @@ export function CompCheck({ read: p, legacy = false, draft, enemyIds, champions,
   // diagnosis itself is the plan read.
   const r = useMemo(() => analyze(draft, kits, enemyIds), [draft, kits, vs]);
   const fix = useMemo(() => (active && r.confidence !== "none" ? bestFix(active, draft, kits, botPairings, enemyIds) : null), [active, r.confidence, draft, kits, botPairings, vs]);
-  const locked = Object.values(draft).filter(Boolean) as string[];
-  const noKit = locked.filter((id) => !kits.some((k) => k.id === id));
   const needs = active ? (p.roleNeeds[active] ?? []).slice(0, 3) : [];
   const best = (bestFixId && fix?.fixes.find((c) => c.champion === bestFixId)) || fix?.fixes.find((c) => c.fixScore > 0);
   const opportunities = r.versus.filter((v) => v.kind === "opportunity");
@@ -139,9 +140,7 @@ export function CompCheck({ read: p, legacy = false, draft, enemyIds, champions,
           <SourceBadge layer="logic" />
         </span>
       </div>
-      {noKit.length > 0 && (
-        <p className="xs muted">{noKit.map((id) => names[id] ?? id).join(", ")}: kit not reviewed yet, so Comp Check counts nothing from {noKit.length === 1 ? "this pick" : "these picks"}.</p>
-      )}
+      {p.unread.length > 0 && <p className="xs muted cc-unread">{unreadText(p, names)}</p>}
 
       {p.confidence === "none" ? <p className="xs muted">{r.facts.n ? "The full read starts at two picks." : "Lock a pick to start."}</p> : (
         <>
@@ -153,10 +152,11 @@ export function CompCheck({ read: p, legacy = false, draft, enemyIds, champions,
             {p.plan && (
               <ul className="cc-jobs" aria-label={`${p.plan.label} needs`}>{p.plan.jobs.map((j) => {
                 const w = jobFinding(j.id);
-                const state = j.met ? "met" : w?.tier === "needed" ? "needed" : "missing";
+                const state = j.met ? "met" : j.unread ? "unread" : w?.tier === "needed" ? "needed" : "missing";
                 return (
-                  <li key={j.id} className={state}><span aria-hidden="true">{j.met ? "✓" : state === "needed" ? "○" : "✗"}</span><span className="sr-only">{j.met ? "Has" : state === "needed" ? "Needed from the last pick" : "Missing"}: </span>{j.label}
-                    {!j.met && <span className="t">{cap(j.missing)}.{w && state === "needed" ? ` ${tierLabel(w, p.open)}: ${fixersText(w)}` : ""}{w ? switchText(w) : ""}</span>}
+                  <li key={j.id} className={state}><span aria-hidden="true">{j.met ? "✓" : state === "unread" ? "?" : state === "needed" ? "○" : "✗"}</span><span className="sr-only">{j.met ? "Has" : state === "unread" ? "Not read yet" : state === "needed" ? "Needed from the last pick" : "Missing"}: </span>{j.label}
+                    {state === "unread" && <span className="t">Not read yet: {j.unread!.map((id) => names[id] ?? id).join(" or ")} could be doing this.</span>}
+                    {!j.met && state !== "unread" && <span className="t">{cap(j.missing)}.{w && state === "needed" ? ` ${tierLabel(w, p.open)}: ${fixersText(w)}` : ""}{w ? switchText(w) : ""}</span>}
                     {w && <Exposure w={w} />}
                   </li>
                 );
@@ -166,7 +166,7 @@ export function CompCheck({ read: p, legacy = false, draft, enemyIds, champions,
 
           <div className="cc-section">
             <div className="cc-label">Weak points</div>
-            {!points.length ? <p className="cc-ok">{p.weaknesses.length ? "Nothing beyond the plan's missing jobs." : p.confidence === "early" ? "Nothing blocks the plan yet." : "Nothing blocks the plan."}</p>
+            {!points.length ? <p className="cc-ok">{p.weaknesses.length ? "Nothing beyond the plan's missing jobs." : p.unread.length === 1 ? `No weak point stands whoever plays ${p.unread[0].role.toLowerCase()}.` : p.unread.length ? "No weak point is shown until every pick is read." : p.confidence === "early" ? "Nothing blocks the plan yet." : "Nothing blocks the plan."}</p>
               : points.slice(0, 3).map((w) => <PlanPoint key={w.id} w={w} open={p.open} />)}
             {points.length > 3 && <details className="cc-more"><summary>{points.length - 3} more {points.length === 4 ? "point" : "points"}</summary>{points.slice(3).map((w) => <PlanPoint key={w.id} w={w} open={p.open} />)}</details>}
             {p.accepted.length > 0 && <details className="cc-more"><summary>Accepted tradeoffs ({p.accepted.length})</summary>{p.accepted.map((w) => <PlanPoint key={w.id} w={w} open={p.open} />)}</details>}
@@ -231,6 +231,16 @@ export function CompCheck({ read: p, legacy = false, draft, enemyIds, champions,
   );
 }
 
+/** Why the read is incomplete and what was left out: a pick without a kit is never read as an empty slot. */
+export function unreadText(p: PlanRead, names: Record<string, string>): string {
+  const who = p.unread.map((u) => names[u.id] ?? u.id);
+  const one = who.length === 1;
+  const list = who.join(" and ");
+  const left = p.withheld ? ` ${p.withheld} possible ${p.withheld === 1 ? "gap" : "gaps"} ${one ? `${list} could be covering ${p.withheld === 1 ? "is" : "are"}` : `${p.withheld === 1 ? "is" : "are"}`} left out.` : "";
+  const kept = one ? ` Gaps shown stay whoever plays ${p.unread[0].role.toLowerCase()}.` : " No gap is shown until they are read.";
+  return `${list} ${one ? "has" : "have"} no kit yet, so this read is incomplete.${left}${kept}`;
+}
+
 /** Narrow screens, where the rail sits below the list: one line naming what the draft is missing; tap to jump to the
  *  full Comp Check. Same analysis, nothing added. */
 export function CompSummaryLine({ read: p, active, className = "" }: { read: PlanRead; active?: Role; className?: string }) {
@@ -247,6 +257,7 @@ export function CompSummaryLine({ read: p, active, className = "" }: { read: Pla
       aria-label={`Comp Check: ${line}${s.state === "early" ? " (early read)" : ""}. Open the full Comp Check`}>
       <span className="cc-sum-k">Comp Check</span>
       {s.state === "early" && <span className="cc-sum-tag">Early read</span>}
+      {s.incomplete && <span className="cc-sum-tag">Incomplete</span>}
       <span className="cc-sum-t truncate">
         {s.state === "none" ? <span className="muted">{line}</span> : s.clean ? <span className="cc-sum-ok">{line}</span> : <>
           {s.needs.length > 0 && <span>Needs <b>{s.needs.map((n, i) => (i ? n.toLowerCase() : n)).join(" + ")}</b></span>}

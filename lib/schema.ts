@@ -394,10 +394,14 @@ export type DiscoveredComps = z.infer<typeof DiscoveredComps>;
 // Observed Pro Evidence, kept apart from a slot's `swaps` (General Draft Logic). Supporting lineups: recorded lineups
 // alan accepted as evidence for a comp outside the tracked tournaments (the discovery files the tracked ones itself).
 // Historical: slots whose champion pros have stopped picking in that role; the page shows the last patch it was picked.
+// Variants: see below.
 export const CompReview = z.object({
   proSwaps: z.array(z.object({ comp: id, role: Role, champion: ChampionId, approvedOn: Day, games: z.array(LineupRef).min(2) })),
   supporting: z.array(z.object({ comp: id, approvedOn: Day, games: z.array(LineupRef).min(1) })),
   historical: z.array(z.object({ comp: id, roles: z.array(Role).min(1), approvedOn: Day })),
+  // Named variants: a comp shown inside its parent's card (same win condition, different execution), keeping its own
+  // lineup, swaps, sources and evidence. Never deleted, never merged into the parent's lineup.
+  variants: z.array(z.object({ comp: id, parent: id, name: z.string(), approvedOn: Day })).default([]),
 });
 export type CompReview = z.infer<typeof CompReview>;
 

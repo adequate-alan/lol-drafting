@@ -89,7 +89,7 @@ describe("historical marks", () => {
     const shells = getCompShells();
     const s = shells.find((x) => x.id === "protected-hypercarry")!;
     const fresh = { ...newest, id: 999001, blue: { ...newest.blue, picks: { ...newest.blue.picks, BOT: s.slots.BOT.champion } } };
-    const lib = buildLibrary(shells, discovered, [...games, fresh], { proSwaps: [], supporting: [], historical: [{ comp: s.id, roles: ["BOT"], approvedOn: "2026-10-16" }] });
+    const lib = buildLibrary(shells, discovered, [...games, fresh], { proSwaps: [], supporting: [], historical: [{ comp: s.id, roles: ["BOT"], approvedOn: "2026-10-16" }], variants: [] });
     expect(lib.extras[s.id]?.historical?.BOT).toBeUndefined();
   });
 });
