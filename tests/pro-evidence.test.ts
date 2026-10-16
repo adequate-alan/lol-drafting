@@ -25,7 +25,7 @@ describe("Pro evidence games", () => {
     for (const c of withPro) {
       const games = evidenceGames(c.pro!, ctx);
       expect(games, c.champion).toHaveLength(c.pro!.score);
-      expect([...games].sort(newestFirst), c.champion).toEqual(games);
+      expect(newestFirst(games), c.champion).toEqual(games);
     }
   });
 

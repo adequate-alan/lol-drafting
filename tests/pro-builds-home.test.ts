@@ -76,8 +76,8 @@ describe("overview", () => {
     expect(browse(index, { q: "arte" }, name).map((b) => [b.entry.champion, b.player])).toEqual([["ashe", "Artemis"], ["jhin", "Artemis"]]);
   });
 
-  it("lists recent builds newest patch first, then by date, with undated games after dated ones", () => {
-    expect(recentBuilds(rows, {}, name).map((r) => r.game.id)).toEqual([3, 2, 2, 4, 1]);
+  it("lists recent builds newest game first by date (alan, 2026-10-16), with undated games after every dated one", () => {
+    expect(recentBuilds(rows, {}, name).map((r) => r.game.id)).toEqual([3, 2, 2, 1, 4]);
     expect(recentBuilds(rows, { patch: "26.16" }, name).map((r) => r.build.player)).toEqual(["Deft"]);
     expect(recentBuilds(rows, { q: "faker" }, name).map((r) => r.build.player)).toEqual(["Faker"]);
     expect(recentBuilds(rows, { game: "2" }, name)).toHaveLength(2);

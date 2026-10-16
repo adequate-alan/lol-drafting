@@ -9,6 +9,7 @@
 // Summaries below (starting items, boots, core, max order) are read from one game's purchase log and skill order; they
 // are labelled as derived, and say so when the log is incomplete.
 import { comparePatch, patchKey, samePatch } from "./patch";
+import { newestGamesFirst, recordStamp } from "./chronology";
 import type { PatchAssets, ProBuild, ProGame, Role } from "./schema";
 
 export type Skill = "Q" | "W" | "E" | "R";
@@ -19,7 +20,7 @@ export const DDRAGON = "https://ddragon.leagueoflegends.com";
 export interface BuildRow {
   key: string;
   build: ProBuild;
-  game: Pick<ProGame, "id" | "event" | "tournament" | "series" | "game" | "stage" | "date" | "patch" | "url">;
+  game: Pick<ProGame, "id" | "event" | "tournament" | "series" | "game" | "stage" | "date" | "patch" | "url"> & Partial<Pick<ProGame, "seriesId">>;
   side: "blue" | "red"; // the side this player's team had in this game (Gol.gg game page)
   team: string;
   opponentTeam: string;
@@ -39,14 +40,14 @@ export function buildRows(builds: ProBuild[], games: ProGame[], assets: Record<s
     const opp = g[other].picks[b.role];
     rows.push({
       key: `${b.game}-${b.side}-${b.role}`, build: b,
-      game: { id: g.id, event: g.event, tournament: g.tournament, series: g.series, game: g.game, stage: g.stage, date: g.date, patch: g.patch, url: g.url },
+      game: { id: g.id, event: g.event, tournament: g.tournament, series: g.series, seriesId: g.seriesId, game: g.game, stage: g.stage, date: g.date, patch: g.patch, url: g.url },
       side: b.side, team: g[b.side].team, opponentTeam: g[other].team, won: g.winner === b.side,
       opponent: opp ? { champion: opp, player: byPlayer.get(`${b.game}-${other}-${b.role}`)?.player } : undefined,
       assets: assets[g.patch],
     });
   }
-  // Newest first: date, then game id.
-  return rows.sort((a, b) => b.game.date.localeCompare(a.game.date) || b.game.id - a.game.id);
+  // Newest game first (lib/chronology.ts): date, newer patch, a series in descending game order.
+  return newestGamesFirst(rows, (r) => recordStamp(r.game));
 }
 
 export const rowsFor = (rows: BuildRow[], champion: string, role: Role) => rows.filter((r) => r.build.champion === champion && r.build.role === role);
@@ -73,7 +74,7 @@ export interface ChampionBuilds {
 }
 export const RECENT = 3;
 export function championIndex(builds: Pick<ProBuild, "champion" | "role" | "player" | "playerId" | "game" | "side">[],
-  games: (Pick<ProGame, "id" | "patch" | "date"> & Partial<Pick<ProGame, "blue" | "red" | "winner">>)[]): ChampionBuilds[] {
+  games: (Pick<ProGame, "id" | "patch" | "date"> & Partial<Pick<ProGame, "blue" | "red" | "winner" | "event" | "seriesId" | "game">>)[]): ChampionBuilds[] {
   const byGame = new Map(games.map((g) => [g.id, g]));
   const m = new Map<string, { champion: string; role: Role; games: number; players: Set<string>; latest: string; lastPlayed: string; recent: RecentBuild[]; patches: Record<string, number> }>();
   for (const b of builds) {
@@ -90,7 +91,7 @@ export function championIndex(builds: Pick<ProBuild, "champion" | "role" | "play
   }
   return [...m.values()].map((e) => ({
     ...e, players: e.players.size, names: [...e.players].sort(),
-    recent: e.recent.sort((a, b) => b.date.localeCompare(a.date) || b.game - a.game).slice(0, RECENT),
+    recent: newestGamesFirst(e.recent, (r) => recordStamp({ ...byGame.get(r.game)!, id: r.game })).slice(0, RECENT),
   })).sort((a, b) => b.games - a.games || a.champion.localeCompare(b.champion));
 }
 

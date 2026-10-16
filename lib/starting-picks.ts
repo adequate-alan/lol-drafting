@@ -10,6 +10,7 @@
 //
 // Nothing here is a score. Starting picks are ordered by the real counts they show (see `startingOrder`), and once a
 // pick is locked the Draft Room's own order (saved pairing, then comp fit) takes over; these stay labels.
+import { newestGamesFirst, recordStamp } from "./chronology";
 import { tierLabel, poolTier } from "./counters";
 import type { Tier } from "./pool-stats";
 import { bucket, DRAFT_LABEL_MIN, forRole, patchesOf, rolePicksOf, type Bucket, type PriorityData } from "./pro-priority";
@@ -82,7 +83,8 @@ export function startingPicks(d: PriorityData, pool: PoolEntry[], role: Role, pa
         teamPick: order != null && order >= 0 ? order + 1 : undefined, read: opts.reader?.(g, side, role), draftId: `golgg-${g.id}-${side}`, url: g.url,
       });
     }
-    games.sort((a, x) => x.date.localeCompare(a.date) || x.game - a.game);
+    const sorted = newestGamesFirst(games, (x) => recordStamp({ id: x.game, event: x.event, series: x.series, game: x.gameNo, date: x.date, patch: x.patch }));
+    games.splice(0, games.length, ...sorted);
     const ordered = games.filter((g) => g.teamPick);
     const reads = games.filter((g) => g.read);
     const classified = reads.filter((g) => g.read!.situation !== "uncertain");

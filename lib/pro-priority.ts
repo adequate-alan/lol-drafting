@@ -13,6 +13,7 @@
 // Denominator: unique games on the patch (never team-games). Presence = games picked or banned / games with both teams'
 // bans recorded; pick rate = picks / games; ban rate = games banned / games with bans recorded; win rate = wins / picks.
 // Bans are champion-wide. Role picks come from the role each game page records, or from a table's verified role picks.
+import { newestGamesFirst, recordStamp } from "./chronology";
 import { comparePatchDesc } from "./evidence";
 import { turnOf } from "./top-draft";
 import { patchLabel, shortPatch } from "./patch";
@@ -373,13 +374,14 @@ export function championHistory(d: PriorityData, id: string, tournaments?: strin
 
 /** Recorded games on a patch that support a champion's numbers (picked or banned), newest first. */
 export function supportingGames(b: Bucket, id: string): { game: ProGame; side?: "blue" | "red"; role?: Role; banned: boolean }[] {
-  return b.contributions.flatMap((c) => (c.kind === "games" ? c.records : [])).flatMap((g) => {
+  const games = b.contributions.flatMap((c) => (c.kind === "games" ? c.records : [])).flatMap((g) => {
     for (const side of ["blue", "red"] as const) {
       const role = ROLES.find((r) => g[side].picks[r] === id);
       if (role) return [{ game: g, side, role, banned: false }];
     }
     return fullBans(g) && [...g.blue.bans, ...g.red.bans].includes(id) ? [{ game: g, banned: true }] : [];
-  }).sort((a, b) => b.game.date.localeCompare(a.game.date) || b.game.id - a.game.id);
+  });
+  return newestGamesFirst(games, (x) => recordStamp(x.game));
 }
 
 /** Teams that picked the champion in scope, most picks first. */

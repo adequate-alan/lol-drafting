@@ -1,6 +1,7 @@
 // Comp Library entries: the hand-written shells (data/comp-shells.json) plus the Observed Pro Comps the weekly discovery
 // added (data/discovered-comps.json), in the one CompShell shape the cards, the drawer and the Draft Room already read,
 // with each comp's observed variations and replays resolved from data/pro-games.json. Derived at load, never written.
+import { newestGamesFirst, recordStamp } from "./chronology";
 import { lineupKey, shellPicks, type LineupRef, type Picks } from "./comp-discovery";
 import { gameSourceId } from "./pro-games";
 import { ROLES, type CompShell, type DiscoveredComp, type DiscoveredComps, type ProGame } from "./schema";
@@ -38,8 +39,8 @@ export function discoveredShell(c: DiscoveredComp, games: Map<number, ProGame>):
 
 export function buildLibrary(shells: CompShell[], file: DiscoveredComps, proGames: ProGame[]) {
   const games = new Map(proGames.map((g) => [g.id, g]));
-  const view = (refs: LineupRef[]) => refs.flatMap((r) => { const g = games.get(r.game); return g ? [gameView(g, r.side)] : []; })
-    .sort((a, b) => b.date.localeCompare(a.date) || b.game - a.game);
+  const view = (refs: LineupRef[]) => newestGamesFirst(refs.flatMap((r) => { const g = games.get(r.game); return g ? [{ g, v: gameView(g, r.side) }] : []; }),
+    (x) => recordStamp(x.g)).map((x) => x.v);
   const all = [...shells, ...file.comps.map((c) => discoveredShell(c, games))];
   const extras: Record<string, LibraryExtra> = {};
   for (const s of all) {
