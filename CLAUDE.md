@@ -520,7 +520,10 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   chosen. Worlds games this browser had not seen on its last visit get a "New" marker and a toolbar count
   (localStorage `pro-drafts:seen-worlds`, kept for the visit in sessionStorage; the first visit flags nothing).
 - **Pro Drafts game inspection** (alan, 2026-10-12; `lib/pro-drafts-game.ts`, `tests/pro-drafts-game.test.ts`): a row
-  click (or its game link) opens the whole game in the panel above the table (`?id=`): both teams blue first, each with
+  click (or its game link) opens the whole game in place, unfolded under its own two rows (alan, 2026-10-16; above the
+  table only when the filters hide the game; `?id=`; clicking the open row again or Escape folds it, focus back on the
+  game link). Every Pro Drafts change is a history write (open / close push, filters and builds replace), never a route
+  change, so nothing reloads and the scroll stays put: both teams blue first, each with
   side strip, result, bans and five champion buttons (`gameView`; a stored draft whose other side is not stored shows
   one team and says so). Each champion is a button that opens that player's exact recorded build for that game in the
   same panel, `?build=<draft id>:<ROLE>` (`buildParam`, `buildFor`: game id + recorded side + role, never row position),
@@ -587,6 +590,10 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   only when recorded; current enemy picks on the other team are an observed matchup, never a counter; pick order is not
   recorded, so no game is shown as a response), the Counter card and the comp-fit breakdown. Don't build page-specific
   tooltips.
+- **Interaction polish** (alan, 2026-10-16): smoothness from not reloading first. In-page filters, tabs and views write
+  history (`history.pushState` / `replaceState`, read back through `useSearchParams`), never `router.push` / `replace`;
+  the sidebar marks the clicked section at once (and closes the phone menu) before the page arrives; Disclosure bodies
+  settle in with `pop-in`.
 - **Motion and interaction system** (alan, 2026-10-12, Impeccable interaction pass; `tests/interaction.test.ts`, smoke
   "Interaction and motion audit"): smooth is not the same as animated. Every duration is a token in `app/globals.css`
   "Motion": hover 100ms, tabs / selection 140ms, dropdowns / popovers 140ms in and 90ms out, drawers / sheets / mobile nav
