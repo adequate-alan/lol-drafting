@@ -338,6 +338,8 @@ h3 { font-size: var(--fs); font-weight: var(--w-strong); letter-spacing: -.005em
 .disclosure[open] > summary::before { transform: rotate(90deg); }
 .disclosure > summary:hover { color: var(--text); }
 .disclosure > .disclosure-body { display: grid; gap: var(--s2); max-width: 900px; margin-top: var(--s3); line-height: 1.45; }
+/* Opening settles the body in (alan, 2026-10-16); the summary line never moves. */
+.disclosure[open] > .disclosure-body { animation: pop-in var(--dur-pop) var(--ease-out); }
 /* A research section in the Draft Room: a section header that opens and closes */
 .disclosure.section { margin: var(--gap-section) 0 0; }
 .disclosure.section > summary { font-size: var(--fs-md); font-weight: var(--w-strong); color: var(--text); gap: var(--s4); }
@@ -2001,12 +2003,22 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
   .drafts-table .pick-cell .cell-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .drafts-table tbody.game-rows.selected { background: var(--accent-subtle); box-shadow: inset 1px 0 0 var(--accent); }
   .drafts-table tbody.game-rows:hover { background: var(--surface-hover); }
+  .drafts-table tbody.game-expand td { padding: 0 !important; }
+  .game-expand-inner { position: static; width: auto; }
   .drafts-tools .select-field { flex: 1 1 45%; min-width: 0; }
   .drafts-tools .select-trigger, .drafts-tools .player-picker .select-trigger { min-width: 0; width: 100%; }
   .drafts-tools .player-picker { flex: 1; min-width: 0; }
 }
 
 .game-panel { margin-bottom: var(--s5); }
+/* The open game unfolds in place under its two rows (alan, 2026-10-16): one full-width cell, pinned to the visible width
+   of the table so a horizontally scrolled table still shows it whole; it fades and settles in, and fades out on close. */
+.drafts-table { container-type: inline-size; }
+.drafts-table tbody.game-expand td { height: auto; padding: 0; border-bottom: 1px solid var(--border-strong); background: var(--surface); }
+.game-expand-inner { position: sticky; left: 0; width: 100cqi; animation: pop-in var(--dur-panel) var(--ease-out); }
+.game-expand.closing .game-expand-inner { animation: fade-out var(--dur-panel-out) var(--ease-in) forwards; }
+.game-expand .game-panel { margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.game-expand .game-panel:focus { outline: none; }
 .game-panel-head { align-items: center; min-height: 0; padding: var(--s4) var(--pad-card); }
 .game-panel-head .game-id { display: grid; gap: 2px; min-width: 0; }
 .game-panel-head h2 { font-size: var(--fs-2xl); line-height: 1.05; letter-spacing: -.01em; }

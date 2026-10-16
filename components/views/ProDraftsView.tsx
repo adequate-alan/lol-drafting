@@ -10,8 +10,8 @@
 import { ProFreshness } from "@/components/ProFreshness";
 import type { Freshness } from "@/lib/pro-games";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { ChampionProvider } from "@/components/ChampionInteraction";
 import type { DrawerContext } from "@/lib/drawer";
 const PRO_DRAFTS: DrawerContext = { page: "pro-drafts" };
@@ -105,7 +105,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
   facts: GameFactBook; // Gol.gg game id -> First Pick mark and each side's bans, from the game records
 }) {
   const params = useSearchParams();
-  const router = useRouter();
+  const panelRef = useRef<HTMLElement>(null);
   const f: Filters = Object.fromEntries(KEYS.map((k) => [k, params.get(k) || undefined]));
   const rows = all.filter((d) => matches(d, f));
   const selected = f.id ? all.find((d) => d.id === f.id) : undefined;
@@ -118,8 +118,25 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
   // Opening another game keeps the filters and carries an open build's role to that row's team.
   const link = (d: ProDraft) => href({ ...f, id: d.id, build: carryBuild(f.build, d) });
   const closeHref = href({ ...f, id: undefined, build: undefined });
+  // Every change on this page is a history write, not a route change (alan, 2026-10-16, interaction polish): the URL and
+  // useSearchParams update at once, nothing is refetched, the scroll stays where it is and every row stays mounted.
+  // Opening and closing a game is a history entry (Back returns to the previous game); filters and builds replace it.
+  const go = (next: Filters, push = false) => {
+    const q = new URLSearchParams(Object.entries(next).filter(([, v]) => v) as [string, string][]);
+    const url = `${window.location.pathname}${q.size ? `?${q}` : ""}`;
+    if (push) window.history.pushState(null, "", url); else window.history.replaceState(null, "", url);
+  };
+  // A plain click on a link to this page becomes a history write; modified clicks (new tab) keep the browser's behaviour.
+  const plain = (e: React.MouseEvent) => !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0);
+  const open = (d: ProDraft) => go(d.id === f.id ? { ...f, id: undefined, build: undefined } : { ...f, id: d.id, build: carryBuild(f.build, d) }, true);
+  // Closing returns focus to the game's own link, so the keyboard stays where the game was.
+  const close = () => {
+    const opener = panelRef.current?.closest("tbody")?.previousElementSibling?.querySelector<HTMLElement>(".cell-link");
+    go({ ...f, id: undefined, build: undefined }, true);
+    opener?.focus({ preventScroll: true });
+  };
   // A new tournament clears its stage, since stages belong to one tournament.
-  const setFilter = (key: keyof Filters, value: string) => router.replace(href({ ...f, ...(key === "tournament" ? { stage: undefined } : {}), [key]: value || undefined, id: undefined, build: undefined }), { scroll: false });
+  const setFilter = (key: keyof Filters, value: string) => go({ ...f, ...(key === "tournament" ? { stage: undefined } : {}), [key]: value || undefined, id: undefined, build: undefined });
   const sel = (key: keyof Filters, label: string, any: string, options: [string, string][]) => (
     <Select showLabel label={label} value={f[key] ?? ""} onChange={(v) => setFilter(key, v)}
       options={[{ value: "", label: any }, ...options.map(([value, l]) => ({ value, label: l }))]} />
@@ -159,7 +176,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
   const view = selected ? gameView(selected, all) : undefined;
   const hasBuilds = !!view && buildGames.includes(view.gameId);
   const target = view ? parseBuildParam(f.build, view) : undefined;
-  const setBuild = (value: string | undefined) => router.replace(href({ ...f, build: value }), { scroll: false });
+  const setBuild = (value: string | undefined) => go({ ...f, build: value });
   useEffect(() => { if (f.build && selected && !target) setBuild(undefined); }, [f.build, selected, target]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [builds, setBuilds] = useState<BuildRow[]>();
@@ -179,13 +196,11 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
   const gameLabel = (d: ProDraft) => { const n = /G\d+$/i.exec(d.seriesGame)?.[0]; return n && d.stage ? `${d.stage} ${n}` : d.seriesGame; };
   const gameMeta = (d: ProDraft) => [shortNames[d.tournament] ?? d.tournament, d.patch && patchLabel(d.patch), d.date && shortDate(d.date)].filter(Boolean).join(" · ");
 
-  return (
-    <ChampionProvider data={drawerData} context={view?.gameId ? { page: "pro-drafts", game: view.gameId } : PRO_DRAFTS}>
-      <PageHeader title="Pro Drafts" />
-      <ProFreshness items={freshness} compact />
-
-      {selected && view && (
-        <section className="panel game-panel" aria-label={`${selected.team} vs ${selected.opponent}, ${selected.seriesGame}`}>
+  // The open game unfolds in place under its own two rows (alan, 2026-10-16), so the rows stay where they were clicked and
+  // the table keeps its scroll; a game the filters hide opens above the table instead.
+  const inTable = !!selected && games.some((g) => g.rows.some((r) => r.d.id === f.id));
+  const panel = selected && view ? (
+        <section ref={panelRef} className="panel game-panel" tabIndex={-1} onKeyDown={(e) => { if (e.key === "Escape" && !e.defaultPrevented) { e.preventDefault(); close(); } }} aria-label={`${selected.team} vs ${selected.opponent}, ${selected.seriesGame}`}>
           <div className="panel-head game-panel-head">
             <div className="game-id">
               <h2>{selected.team} <span className="faint">vs</span> {selected.opponent}</h2>
@@ -193,7 +208,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
             </div>
             <div className="end">
               <Link className="btn sm primary" href={`/?${new URLSearchParams(Object.fromEntries(ROLES.map((r) => [r.toLowerCase(), selected.picks[r]])))}`}>Open in Draft Room</Link>
-              <Link className="btn sm ghost" href={closeHref} aria-label="Close game">×</Link>
+              <Link className="btn sm ghost" href={closeHref} aria-label="Close game" onClick={(e) => { if (plain(e)) { e.preventDefault(); close(); } }}>×</Link>
             </div>
           </div>
           <div className="panel-body">
@@ -246,7 +261,30 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
             ) : <p className="xs muted game-hint">No builds recorded for this game.</p>}
           </div>
         </section>
-      )}
+  ) : null;
+  // Closing folds the game away (a short fade, then unmounted); opening another game swaps at once.
+  const last = useRef<{ key: string; node: React.ReactNode }>(undefined);
+  const [closing, setClosing] = useState<{ key: string; node: React.ReactNode }>();
+  useEffect(() => { if (panel && selected && inTable) last.current = { key: gameKey(selected), node: panel }; });
+  useEffect(() => {
+    if (f.id) { setClosing(undefined); return; }
+    if (last.current) setClosing(last.current);
+    last.current = undefined;
+  }, [f.id]);
+  // A link that names a game (?id=) brings it into view once; clicks inside the page never move the scroll.
+  const linked = useRef(f.id);
+  useEffect(() => {
+    if (!linked.current || !panelRef.current) return;
+    panelRef.current.closest("tbody")?.previousElementSibling?.scrollIntoView({ block: "start" });
+    linked.current = undefined;
+  }, [selected]);
+
+  return (
+    <ChampionProvider data={drawerData} context={view?.gameId ? { page: "pro-drafts", game: view.gameId } : PRO_DRAFTS}>
+      <PageHeader title="Pro Drafts" />
+      <ProFreshness items={freshness} compact />
+
+      {selected && view && !inTable && panel}
 
       <form className="toolbar drafts-tools" method="get">
         {pick("team", "team", uniq(all.map((d) => d.team)).map((t) => [t, t]))}
@@ -277,15 +315,16 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
         <table>
           <thead><tr><th className="game-cell">Game</th><th className="team-cell">Team</th>{ROLES.map((r) => <th key={r}><span className={`role-tag role-${r}`}>{r}</span></th>)}</tr></thead>
           {games.map((g) => {
-            const open = g.rows.some((r) => r.d.id === f.id);
+            const isOpen = g.rows.some((r) => r.d.id === f.id);
             return (
-              <tbody key={g.key} className={`game-rows ${open ? "selected" : ""}`.trim()} aria-label={`${g.rows[0].d.team} vs ${g.rows[0].d.opponent}, ${g.rows[0].d.seriesGame}`}>
+              <Fragment key={g.key}>
+              <tbody className={`game-rows ${isOpen ? "selected" : ""}`.trim()} aria-label={`${g.rows[0].d.team} vs ${g.rows[0].d.opponent}, ${g.rows[0].d.seriesGame}`}>
                 {g.rows.map(({ d, pair, side }, i) => (
                   <tr key={d.id} className={`clickable side-${side} ${pair} ${d.id === f.id ? "selected" : ""}`.replace(/\s+/g, " ").trim()} data-side={side} aria-selected={d.id === f.id}
-                    onClick={(e) => { if ((e.target as HTMLElement).closest("a, button")) return; router.push(link(d)); }}>
+                    onClick={(e) => { if ((e.target as HTMLElement).closest("a, button")) return; open(d); }}>
                     {i === 0 && (
                       <td className="game-cell" rowSpan={g.rows.length}>
-                        <Link className="cell-link" href={link(d)} title={`${d.team} vs ${d.opponent} · ${d.seriesGame}`}>
+                        <Link className="cell-link" href={link(d)} aria-expanded={isOpen} title={`${d.team} vs ${d.opponent} · ${d.seriesGame}`} onClick={(e) => { if (plain(e)) { e.preventDefault(); open(d); } }}>
                           <span className="game-name truncate">{gameLabel(d)}{fresh.has(gameIdOf(d)) && <span className="new-tag">New</span>}</span>
                           <span className="game-meta-line xs muted">{gameMeta(d)}</span>
                         </Link>
@@ -306,6 +345,13 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
                   </tr>
                 ))}
               </tbody>
+              {isOpen && panel && <tbody className="game-expand"><tr><td colSpan={7}><div className="game-expand-inner">{panel}</div></td></tr></tbody>}
+              {!isOpen && closing?.key === g.key && (
+                <tbody className="game-expand closing" aria-hidden="true" inert><tr><td colSpan={7}>
+                  <div className="game-expand-inner" onAnimationEnd={() => setClosing(undefined)}>{closing.node}</div>
+                </td></tr></tbody>
+              )}
+              </Fragment>
             );
           })}
           {!rows.length && <tbody><tr><td colSpan={7} className="muted">No recorded game matches these filters.</td></tr></tbody>}

@@ -69,7 +69,10 @@ export function Sidebar() {
   const path = raw.length > 1 ? raw.replace(/\/$/, "") : raw;
   const [open, setOpen] = useState(false);
   const menuBtn = useRef<HTMLButtonElement>(null);
-  useEffect(() => setOpen(false), [raw]);
+  // The section clicked is shown as current at once (and the phone menu closes), before the next page has rendered;
+  // the route takes over when it arrives (alan, 2026-10-16: immediate active-state feedback).
+  const [pending, setPending] = useState<string>();
+  useEffect(() => { setOpen(false); setPending(undefined); }, [raw]);
   // Phones: Escape closes the navigation like every other overlay and hands focus back to the menu button.
   useEffect(() => {
     if (!open) return;
@@ -78,7 +81,14 @@ export function Sidebar() {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
   const synergies = useSynergiesHref();
-  const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(href.split("/").slice(0, 2).join("/")));
+  const sectionOf = (href: string) => href.split("?")[0].split("/").slice(0, 2).join("/") || "/";
+  const routeActive = (href: string) => (href === "/" ? path === "/" : path.startsWith(sectionOf(href)));
+  const active = (href: string) => (pending ? sectionOf(pending) === sectionOf(href) : routeActive(href));
+  const go = (e: React.MouseEvent, href: string) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0 || routeActive(href)) return;
+    setPending(href);
+    setOpen(false);
+  };
   return (
     <>
       <div className="topbar">
@@ -98,7 +108,7 @@ export function Sidebar() {
             <div key={group} className="nav-group">
               <div className="nav-label">{group}</div>
               {links.map(([section, label, icon]) => { const href = section === "/synergies" ? synergies : section; return (
-                <Link key={section} href={href} className={`nav-item ${active(href) ? "active" : ""}`} aria-current={active(href) ? "page" : undefined}>
+                <Link key={section} href={href} className={`nav-item ${active(href) ? "active" : ""}`} aria-current={active(href) ? "page" : undefined} onClick={(e) => go(e, href)}>
                   <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round">{icon}</svg>
                   {label}
                 </Link>

@@ -2,7 +2,7 @@
 import { ProFreshness } from "@/components/ProFreshness";
 import type { Freshness } from "@/lib/pro-games";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChampIcon } from "@/components/ChampIcon";
 import { ChampionProvider } from "@/components/ChampionInteraction";
@@ -29,13 +29,19 @@ import type { BotPairing, CompShell, MetaStat, MidJunglePairing, PoolEntry, Role
 const GRADE_ORDER = ["A", "A-", "B+", "B", "B-", "C+", "C"];
 const tierOf = (pool: PoolEntry[], id: string) => { const t = poolTier(pool, id, "TOP"); return t ? `${tierLabel(t)} tier` : undefined; };
 
+// Rail filters, patch and report view change only this page's query: a history write, so nothing is refetched and the
+// scroll stays put (alan, 2026-10-16, interaction polish); useSearchParams follows it.
+const replaceQuery = (href: string) => {
+  const q = href.split("?")[1];
+  window.history.replaceState(null, "", `${window.location.pathname}${q ? `?${q}` : ""}`);
+};
+
 export function SynergiesView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top, pool, drawerData, freshness, shells, laneDraft }: {
   drawerData: DrawerData; tab: Tab; names: Record<string, string>; sources: Record<string, Source>; events: EventMap; stats: Record<string, MetaStat & { winRate: number }>;
   draftLabels: Record<string, string>; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; pool: PoolEntry[]; freshness: Freshness[]; shells: CompShell[];
   laneDraft?: TopDraftBundle; // every role: observed draft usage (lib/top-draft.ts)
 }) {
   const params = useSearchParams();
-  const router = useRouter();
   const champ = params.get("champ") || undefined;
   // Lane tab scope and view, all in the URL: patch (26.xx or "all"; none = All patches), event, usage filter, sort, view.
   const topScope = useTopScope(laneDraft, params, tab);
@@ -43,8 +49,8 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
   useEffect(() => {
     if (!topScope) return;
     const restore = patchToRestore(params.get("patch"), readStoredPatch());
-    if (restore) router.replace(topScope.href({ patch: restore }), { scroll: false });
-  }, [topScope, params, router]);
+    if (restore) replaceQuery(topScope.href({ patch: restore }));
+  }, [topScope, params]);
   const [query, setQuery] = useState("");
   const rail = useRef<HTMLUListElement>(null);
   let list: { id: string; label: string; sub: string; proposed?: boolean; short?: string; search?: string }[] = [];
@@ -136,7 +142,7 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
       <div className="split">
         <nav className="pick-rail" aria-label={`${TABS[tab]} champions`}>
           <input type="search" placeholder="Search champions or partners" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search champions" />
-          {topScope && <TopRailTools scope={topScope} set={(k, v) => { if (k === "patch") storePatch(v); router.replace(topScope.href({ [k]: v }), { scroll: false }); }} />}
+          {topScope && <TopRailTools scope={topScope} set={(k, v) => { if (k === "patch") storePatch(v); replaceQuery(topScope.href({ [k]: v })); }} />}
           <ul ref={rail}>
             {shown.map((x) => {
               const active = isSelected(x);
@@ -158,7 +164,7 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
             <ChampionProvider data={drawerData} focus={{ id: selectedId, role: selectedRole! }} context={SYNERGIES}>
               {topScope && laneDraft ? (
                 <TopUsageReport id={selectedId} row={topScope.rows.find((r) => r.champion === selectedId)} prio={topScope.prio[selectedId]} prioLabel={topScope.prioLabel} bundle={laneDraft} names={names}
-                  view={topScope.view} setView={(v) => router.replace(topScope.href({ view: v === "overview" ? undefined : v }), { scroll: false })}
+                  view={topScope.view} setView={(v) => replaceQuery(topScope.href({ view: v === "overview" ? undefined : v }))}
                   scopeLabel={topScope.label} scope={{ patch: topScope.patch, events: topScope.event ? [topScope.event] : undefined }}
                   saved={selected.kind === "top" ? { grade: selected.record.blindGrade, tier: tierOf(pool, selectedId), gives: selected.record.logic.gives, avoid: selected.record.logic.avoid } : undefined}
                   logic={laneDraft.blind[selectedId] ?? []}
