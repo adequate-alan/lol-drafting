@@ -50,12 +50,13 @@ export function playerProfile(rows: BuildRow[], id: PlayerId, filter: PlayerFilt
   for (const r of shown) roleCount.set(r.build.role, (roleCount.get(r.build.role) ?? 0) + 1);
   const role = [...roleCount.entries()].sort((a, b) => b[1] - a[1] || ROLES.indexOf(a[0]) - ROLES.indexOf(b[0]))[0]?.[0];
   const wins = shown.filter((r) => r.won).length;
+  const rank = new Map(shown.map((r, i) => [r, i])); // rows are newest first: a lower index is a more recent game
   return {
     id, name: mine[0]?.build.player ?? fallbackName ?? id, names: [...new Set(mine.map((r) => r.build.player))],
     team: (shown[0] ?? mine[0])?.team, teams: [...new Set(mine.map((r) => r.team))], role: role ?? mine[0]?.build.role,
     games: shown.length, wins, losses: shown.length - wins,
     events: [...new Set(shown.map((r) => r.game.event))],
-    champions: [...champs.values()].sort((a, b) => b.games - a.games || b.last.game.date.localeCompare(a.last.game.date) || a.champion.localeCompare(b.champion)),
+    champions: [...champs.values()].sort((a, b) => b.games - a.games || rank.get(a.last)! - rank.get(b.last)! || a.champion.localeCompare(b.champion)),
     last: shown[0], recent: shown.slice(0, 5).map((r) => r.won),
   };
 }
@@ -133,5 +134,7 @@ export function pinnedOnChampion(rows: BuildRow[], pins: string[], champion: str
     }
   }
   for (const p of out.values()) p.roles.sort((a, b) => ROLES.indexOf(a) - ROLES.indexOf(b));
-  return [...out.values()].sort((a, b) => b.last.game.date.localeCompare(a.last.game.date) || b.last.game.id - a.last.game.id);
+  // Most recent appearance first: rows arrive newest game first (lib/chronology.ts), so a lower row index is newer.
+  const rank = new Map(rows.map((r, i) => [r, i]));
+  return [...out.values()].sort((a, b) => rank.get(a.last)! - rank.get(b.last)!);
 }

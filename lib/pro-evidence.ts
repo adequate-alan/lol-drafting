@@ -7,7 +7,7 @@
 // locked pick). Current enemy picks on the other team make it an observed opposing matchup, never a counter: pick
 // order is not recorded, so no game here can show a draft response. Display only; nothing here feeds any score.
 import { gameKey } from "./draft-side";
-import { comparePatchDesc } from "./evidence";
+import { draftStamp, newestGamesFirst } from "./chronology";
 import { ROLES, type ProDraft, type Role, type Source } from "./schema";
 import type { ProSuggestion } from "./suggest";
 
@@ -36,9 +36,10 @@ export interface EvidenceGame {
 
 const roleOf = (picks: Picks, id: string) => ROLES.find((r) => picks[r] === id);
 
-/** Newest first: date, then patch; undated games after dated ones of the same patch. */
-export const newestFirst = (a: EvidenceGame, b: EvidenceGame) =>
-  (b.date ?? "").localeCompare(a.date ?? "") || comparePatchDesc(a.patch, b.patch) || (a.seriesGame ?? "").localeCompare(b.seriesGame ?? "");
+/** Newest game first (lib/chronology.ts): date, newer patch on a shared date, a series in descending game order;
+ *  undated games after dated ones. */
+export const newestFirst = (games: readonly EvidenceGame[]) => newestGamesFirst(games, (e) =>
+  draftStamp({ tournament: e.event, seriesGame: e.seriesGame ?? e.key, date: e.date, patch: e.patch }, Number(/\/game\/stats\/(\d+)/.exec(e.url ?? "")?.[1] ?? 0)));
 
 export function evidenceGames(pro: ProSuggestion, ctx: {
   drafts: ProDraft[]; sources: Record<string, Source>; enemy?: Partial<Record<Role, string>>;
@@ -47,7 +48,7 @@ export function evidenceGames(pro: ProSuggestion, ctx: {
   const byGame = new Map<string, ProDraft[]>();
   for (const d of ctx.drafts) byGame.set(gameKey(d), [...(byGame.get(gameKey(d)) ?? []), d]);
   const enemyIds = Object.values(ctx.enemy ?? {}).filter((x): x is string => !!x);
-  return pro.evidence.map((e, i): EvidenceGame => {
+  return newestFirst(pro.evidence.map((e, i): EvidenceGame => {
     const d = e.draft ? byId.get(e.draft) : undefined;
     const src = e.source ? ctx.sources[e.source] : d ? d.sources.map((id) => ctx.sources[id]).find((s) => s?.type === "golgg-game") : undefined;
     if (!d) {
@@ -68,5 +69,5 @@ export function evidenceGames(pro: ProSuggestion, ctx: {
       facing: other ? enemyIds.flatMap((id) => { const role = roleOf(other.picks, id); return role ? [{ id, role }] : []; }) : [],
       url: src?.url, verified: src?.refreshStatus === "verified", checked: src?.lastChecked ?? null, pending: false,
     };
-  }).sort(newestFirst);
+  }));
 }

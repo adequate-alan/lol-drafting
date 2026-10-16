@@ -5,6 +5,7 @@
 //   3. no parameters (the sidebar) is the overview. Nothing is reopened from storage: recently viewed entries are
 //      shortcuts on the overview, never a default selection.
 // Observed Pro Evidence only: recorded games, newest patch first; nothing here scores or touches saved pairings.
+import { newestGamesFirst, recordStamp } from "./chronology";
 import { comparePatch, patchKey, samePatch } from "./patch";
 import { samePlayer, type BuildRow, type ChampionBuilds } from "./pro-builds";
 import { ROLES, type Role } from "./schema";
@@ -66,15 +67,15 @@ export function browse(index: ChampionBuilds[], f: HomeFilter, name: (id: string
 }
 
 /**
- * Recent recorded builds, newest patch first, then newest date, then Gol.gg game id. A game without a date sorts after
- * the dated games of its patch: recency is never invented.
+ * Recent recorded builds, newest game first (lib/chronology.ts: date, newer patch on a shared date, a series in
+ * descending game order). A game without a date sorts after every dated game: recency is never invented.
  */
 export function recentBuilds(rows: BuildRow[], f: HomeFilter, name: (id: string) => string): BuildRow[] {
   const q = f.q?.trim().toLowerCase() ?? "";
-  return rows
+  return newestGamesFirst(rows
     .filter((r) => (!f.role || r.build.role === f.role) && (!f.patch || samePatch(r.game.patch, f.patch)) && (!f.game || String(r.game.id) === f.game)
-      && (!q || r.build.player.toLowerCase().includes(q) || name(r.build.champion).toLowerCase().includes(q) || r.team.toLowerCase().includes(q)))
-    .sort((a, b) => comparePatch(b.game.patch, a.game.patch) || (b.game.date ?? "").localeCompare(a.game.date ?? "") || b.game.id - a.game.id);
+      && (!q || r.build.player.toLowerCase().includes(q) || name(r.build.champion).toLowerCase().includes(q) || r.team.toLowerCase().includes(q))),
+    (r) => recordStamp(r.game));
 }
 
 // ---------- recently viewed (this browser only) ----------

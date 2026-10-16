@@ -1,5 +1,6 @@
 // Draft side for Pro Drafts rows. The side is the one recorded for that game (Gol.gg game page, `side` on the draft),
 // never inferred from team, listing order or which team is named first. A draft without a recorded side is neutral.
+import { draftStamp, newestGamesFirst } from "./chronology";
 import type { ProDraft, Source } from "./schema";
 
 export type DraftSide = "blue" | "red" | "none";
@@ -21,10 +22,9 @@ export const gameKey = (d: Pick<ProDraft, "tournament" | "seriesGame" | "team" |
 export const golggGameId = (d: Pick<ProDraft, "sources">) =>
   Math.max(0, ...d.sources.map((s) => Number(/^golgg-game-(\d+)$/.exec(s)?.[1] ?? 0)));
 
-/** Newest game first (alan, 2026-10-12): by date, then by Gol.gg game id, so undated games (the LCK archive) follow by
- *  id and later games of one day or series come first. Both sides of a game share date and id and stay together. */
-export const newestGameFirst = (a: ProDraft, b: ProDraft) =>
-  (b.date ?? "").localeCompare(a.date ?? "") || golggGameId(b) - golggGameId(a);
+/** Newest game first (alan, 2026-10-12; across tournaments since 2026-10-16): the shared order in lib/chronology.ts
+ *  (date, then newer patch, a series kept together in descending game number). Both sides of a game stay together. */
+export const newestGameFirst = (drafts: readonly ProDraft[]) => newestGamesFirst(drafts, (d) => draftStamp(d, golggGameId(d)));
 
 export type PairedRow = { d: ProDraft; pair: "" | "pair-a" | "pair-b"; side: DraftSide };
 

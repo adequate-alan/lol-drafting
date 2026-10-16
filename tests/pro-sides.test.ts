@@ -4,7 +4,8 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { getProDrafts, getProGames, getSources } from "@/lib/data";
-import { gameKey, golggGameId, groupGames, pairRows, sideOf, withGameSides } from "@/lib/draft-side";
+import { gameKey, golggGameId, groupGames, newestGameFirst, pairRows, sideOf, withGameSides } from "@/lib/draft-side";
+import { comparePatch } from "@/lib/patch";
 import type { ProDraft } from "@/lib/schema";
 
 const drafts = getProDrafts();
@@ -182,18 +183,57 @@ describe("stored drafts inherit their game's side", () => {
   });
 });
 
-describe("newest games first (alan, 2026-10-12)", () => {
-  it("lists drafts by date, newest at the top, then by Gol.gg game id; undated games follow", () => {
+describe("newest games first, across tournaments (alan, 2026-10-12; 2026-10-16)", () => {
+  const seriesOf = (d: ProDraft) => `${d.date}|${d.tournament}|${d.seriesGame.replace(/\s*G\d+$/, "")}`;
+  const gameNo = (d: ProDraft) => Number(/G(\d+)$/.exec(d.seriesGame)?.[1] ?? 0);
+
+  it("lists drafts by date, then newer patch on a shared date; undated games follow", () => {
     for (let i = 1; i < drafts.length; i++) {
       const [a, b] = [drafts[i - 1], drafts[i]];
       const order = (b.date ?? "").localeCompare(a.date ?? "");
       expect(order, `${a.id} before ${b.id}`).toBeLessThanOrEqual(0);
-      if (order === 0) expect(golggGameId(a), `${a.id} before ${b.id}`).toBeGreaterThanOrEqual(golggGameId(b));
+      if (order === 0 && a.patch && b.patch) expect(comparePatch(a.patch, b.patch), `${a.id} before ${b.id}`).toBeGreaterThanOrEqual(0);
     }
   });
 
-  it("puts the latest recorded game on the first row of Pro Drafts", () => {
-    const latest = [...games].sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id)[0];
-    expect(golggGameId(pairRows(drafts)[0].d)).toBe(latest.id);
+  it("keeps each series together with its games in descending game order", () => {
+    const seen = new Set<string>();
+    for (let i = 0; i < drafts.length; i++) {
+      const s = seriesOf(drafts[i]);
+      if (i > 0 && seriesOf(drafts[i - 1]) === s) {
+        expect(gameNo(drafts[i - 1]), `${drafts[i - 1].id} before ${drafts[i].id}`).toBeGreaterThanOrEqual(gameNo(drafts[i]));
+        continue;
+      }
+      expect(seen.has(s), `series ${s} split`).toBe(false);
+      seen.add(s);
+    }
+  });
+
+  it("puts a game from the newest recorded date on the first row of Pro Drafts", () => {
+    const newest = games.map((g) => g.date).sort().at(-1);
+    expect(pairRows(drafts)[0].d.date).toBe(newest);
+  });
+
+  it("puts the Worlds 2026 Play-In (26.20) above the Demacia Cup games played the same day (26.18)", () => {
+    const at = (id: number) => drafts.findIndex((d) => golggGameId(d) === id);
+    const worlds = [83593, 83594, 83595, 83598, 83599, 83600, 83601, 83602].map(at);
+    const demacia = [83603, 83608, 83609, 83610, 83611, 83612].map(at);
+    expect([...worlds, ...demacia].every((i) => i >= 0)).toBe(true);
+    expect(Math.max(...worlds)).toBeLessThan(Math.min(...demacia));
+    // C9 vs KC G5 … G1, then FURIA vs MVK G3 … G1 (series tie-break), then WE vs BRO G5 … G1
+    const order = [...new Set(drafts.map(golggGameId))].filter((id) => [...[83593, 83594, 83595, 83598, 83599, 83600, 83601, 83602], 83608, 83609, 83610, 83611, 83612].includes(id));
+    expect(order).toEqual([83602, 83601, 83600, 83599, 83598, 83595, 83594, 83593, 83612, 83611, 83610, 83609, 83608]);
+  });
+
+  it("keeps the order under every filter: a filter only removes rows", () => {
+    const filters: ((d: ProDraft) => boolean)[] = [
+      (d) => d.tournament.startsWith("Demacia"), (d) => d.tournament.startsWith("Worlds"), (d) => d.team === "Gen.G",
+      (d) => d.picks.MID === "ryze", (d) => d.patch === "16.18", (d) => d.stage === "Semifinals",
+    ];
+    for (const f of filters) expect(drafts.filter(f)).toEqual(newestGameFirst(drafts.filter(f)));
+  });
+
+  it("dates the LCK archive drafts from their Gol.gg game records", () => {
+    expect(drafts.filter((d) => d.tournament === "LCK 2026 Season Playoffs").every((d) => /^2026-\d\d-\d\d$/.test(d.date ?? ""))).toBe(true);
   });
 });

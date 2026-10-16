@@ -43,10 +43,10 @@ export const getBotPairings = () => (bots ??= load("bot-pairings.json").map(with
 export const getMidJungle = () => (midJungle ??= load("mid-jungle.json").map(withProAlternatives));
 export const getTopPicks = () => load("top.json");
 // Newest game first everywhere drafts are listed (Pro Drafts, Gen.G).
-export const getProDrafts = () => (drafts ??= [
+export const getProDrafts = () => (drafts ??= newestGameFirst([
   ...withGameSides(load("pro-drafts.json"), Object.fromEntries(getSources().map((s) => [s.id, s]))),
   ...draftsFromGames(getProGames().games),
-].sort(newestGameFirst));
+]));
 export const getCompShells = () => load("comp-shells.json");
 // Comp Library: the hand-written shells plus the weekly discovery's Observed Pro Comps and observed variations.
 let library: Library | undefined;

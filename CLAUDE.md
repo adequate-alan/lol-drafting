@@ -203,8 +203,11 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   Invitational 2026 and Worlds 2026 (main event and play-in names). The LCK playoffs are a frozen archive. Adding a
   tournament (2027 or any other) needs alan's approval. A tournament marked `complete` is not requested again. A Worlds stage Gol.gg
   lists under a name no tracked entry has (main event, Swiss, knockouts) is named in the run report, never imported under a guess.
-- Pro drafts load newest game first (`newestGameFirst` in `lib/draft-side.ts`: date, then Gol.gg game id; alan,
-  2026-10-12), so every match list puts the latest game at the top.
+- Newest game first, across tournaments (alan, 2026-10-12; site-wide 2026-10-16): every game list (Pro Drafts, Gen.G,
+  Pro Builds, Pinned Players histories, drawer and evidence lists) sorts through `newestGamesFirst` in `lib/chronology.ts`:
+  date, then the newer patch on a shared date (Gol.gg records no start times), a series kept together in descending game
+  order, undated games last, and the series' highest Gol.gg id only as a fixed tie-break, never as time. Never import
+  order or tournament priority. Filters only remove rows. `tests/chronology.test.ts`.
 - `data/pro-games.json` is the one game-level dataset (Gol.gg game id is the key; sides, winner, picks by role from the
   full-stats page, bans, patch, date, URL). `lib/pro-games.ts` derives drafts, sources and results at load. Games that
   miss a field or contradict their series are rejected and reported as run warnings, never filled in.
@@ -259,7 +262,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   champion, game or player is the overview: search (champions and players), All + five roles, a patch selector on
   All patches (alan, 2026-10-13: every Pro Builds entry point shows every patch unless a patch is chosen or in the URL;
   a chosen patch carries into the champion), pinned players (to their profiles), this browser's recently
-  viewed builds and recent recorded builds (newest patch, then date, then game id; an undated game never jumps ahead),
+  viewed builds and recent recorded builds (newest game first, `lib/chronology.ts`; an undated game never jumps ahead),
   each opening the exact game. The rail is the champion browser and carries the patch scope into the champion. URL
   parameters always win (champion and role; a game and player without a champion resolve to that record; a game alone
   lists its builds); links from other features are those parameters. Never a default champion, never a selection

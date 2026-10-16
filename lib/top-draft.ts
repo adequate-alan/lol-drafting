@@ -18,6 +18,7 @@
 // between them on the source, so a partner picked in the same turn is "together", never before or after.
 // A response is not a counter. "Repeated" needs the same response in two different series; "supported counter" needs a
 // DPM.LOL matchup row that clears the counter thresholds (lib/counters.ts). Win / loss never decides either.
+import { newestGamesFirst, recordStamp } from "./chronology";
 import { DPM_MIN_GAMES, DPM_MIN_WIN_RATE, DPM_STRONG_WIN_RATE } from "./counters";
 import { comparePatchDesc } from "./evidence";
 import { patchKey } from "./patch";
@@ -216,7 +217,8 @@ export function laneSelections(games: ProGame[], book: RoleBook, role: LaneRole)
       out.push({ ...common, laneSeen, usage: !detail ? "uncertain" : detail === "blind" ? "blind" : "response", why, bot: read });
     }
   }
-  return out.sort((a, b) => b.date.localeCompare(a.date) || b.game - a.game || a.side.localeCompare(b.side));
+  // Newest game first (lib/chronology.ts); both sides of one game blue first.
+  return newestGamesFirst(out.sort((a, b) => a.side.localeCompare(b.side)), (s) => recordStamp({ id: s.game, event: s.event, seriesId: s.seriesId, game: s.gameNo, date: s.date, patch: s.patch }));
 }
 
 /** Both top selections of every recorded game, classified. */

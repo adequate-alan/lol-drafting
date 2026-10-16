@@ -26,7 +26,7 @@ function drawerData(): DrawerData {
   const botPairings = load("bot-pairings.json").map(withProAlternatives);
   const midJungle = load("mid-jungle.json").map(withProAlternatives);
   const topPicks = load("top.json");
-  const proDrafts = [...withGameSides(load("pro-drafts.json"), sources), ...draftsFromGames(proGames.games)].sort(newestGameFirst);
+  const proDrafts = newestGameFirst([...withGameSides(load("pro-drafts.json"), sources), ...draftsFromGames(proGames.games)]);
   const builds = load("pro-builds.json");
   const shells = load("comp-shells.json");
   return {
