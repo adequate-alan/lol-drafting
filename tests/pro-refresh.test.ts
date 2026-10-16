@@ -269,3 +269,12 @@ describe("daily refresh", () => {
     expect(f.map((x) => [x.label, x.listed])).toEqual([["Demacia Cup", false], ["Worlds 2026", false], ["Worlds 2026 Play-In", false]]);
   });
 });
+
+describe("stored draft order", () => {
+  // A pick order is stored only from a page that draws the turns, which always carries the First Pick mark: a team's
+  // role order is never taken for its draft order (alan, 2026-10-16).
+  it("comes with the First Pick mark on every recorded game", async () => {
+    const { getProGames } = await import("@/lib/data");
+    for (const g of getProGames().games) if (g.blue.pickOrder || g.red.pickOrder) expect(g.firstPick, `${g.id}`).toBeDefined();
+  });
+});
