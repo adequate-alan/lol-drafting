@@ -5,6 +5,7 @@
 // there is more room there and scrolls internally.
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
+import { useLeave } from "./useLeave";
 
 export type SelectOption = { value: string; label: string };
 
@@ -147,10 +148,14 @@ export function Select({ label, value, options, onChange, showLabel = false, cla
     </button>
   );
 
-  const menu = open && pos && createPortal(
-    <ul ref={list} id={listId} role="listbox" className={`select-menu ${pos.bottom != null ? "above" : ""}`.trim()} tabIndex={-1}
+  // The menu fades out where it was after closing (components/useLeave.ts); only the open menu is the listbox.
+  const shown = useLeave(open && pos ? pos : undefined);
+  const at = shown.shown;
+  const menu = at && createPortal(
+    <ul ref={shown.leaving ? undefined : list} id={shown.leaving ? undefined : listId} role="listbox" className={`select-menu ${at.bottom != null ? "above" : ""} ${shown.leaving ? "leaving" : ""}`.replace(/ +/g, " ").trim()} tabIndex={-1}
+      aria-hidden={shown.leaving || undefined} inert={shown.leaving || undefined} onAnimationEnd={shown.end}
       {...(showLabel ? { "aria-labelledby": labelId } : { "aria-label": label })}
-      style={{ left: pos.left, width: pos.width, top: pos.top, bottom: pos.bottom, maxHeight: pos.maxHeight }}>
+      style={{ left: at.left, width: at.width, top: at.top, bottom: at.bottom, maxHeight: at.maxHeight }}>
       {options.map((o, i) => (
         <li key={o.value} id={optId(i)} role="option" aria-selected={i === selectedIndex} data-value={o.value}
           className={`select-option ${i === active ? "is-active" : ""}`.trim()}

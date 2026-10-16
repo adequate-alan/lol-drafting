@@ -1,3 +1,4 @@
+import { ScrollKeeper } from "@/components/ScrollKeeper";
 import { Sidebar } from "@/components/Sidebar";
 import { TipLayer } from "@/components/TipLayer";
 import { UpdateNotice } from "@/components/UpdateNotice";
@@ -16,6 +17,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </div>
       <UpdateNotice />
       <TipLayer />
+      <ScrollKeeper />
     </div>
   );
 }

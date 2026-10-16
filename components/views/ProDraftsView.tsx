@@ -23,6 +23,7 @@ import { ChampIcon, ChampionRow, PageHeader, SourceLinks } from "@/components/ui
 import { ROLES, type ProDraft, type Role, type Source } from "@/lib/schema";
 import { groupGames, SIDE_LABEL } from "@/lib/draft-side";
 import { patchLabel } from "@/lib/patch";
+import { resultsToTop } from "@/lib/motion";
 import { shortDate } from "@/lib/evidence";
 import { gameKey } from "@/lib/draft-side";
 import { buildsHref, type BuildRow } from "@/lib/pro-builds";
@@ -136,7 +137,10 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
     opener?.focus({ preventScroll: true });
   };
   // A new tournament clears its stage, since stages belong to one tournament.
-  const setFilter = (key: keyof Filters, value: string) => go({ ...f, ...(key === "tournament" ? { stage: undefined } : {}), [key]: value || undefined, id: undefined, build: undefined });
+  const setFilter = (key: keyof Filters, value: string) => {
+    go({ ...f, ...(key === "tournament" ? { stage: undefined } : {}), [key]: value || undefined, id: undefined, build: undefined });
+    resultsToTop(".drafts-table");
+  };
   const sel = (key: keyof Filters, label: string, any: string, options: [string, string][]) => (
     <Select showLabel label={label} value={f[key] ?? ""} onChange={(v) => setFilter(key, v)}
       options={[{ value: "", label: any }, ...options.map(([value, l]) => ({ value, label: l }))]} />
@@ -295,7 +299,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
         {stages.length > 1 && sel("stage", "Stage", "Every stage", stages.map((x) => [x, x]))}
         {pick("series", "series", uniq(all.map(seriesOf)).map((x) => [x, x]))}
         <noscript><button className="btn primary sm" type="submit">Filter</button></noscript>
-        {active > 0 && <Link className="btn sm ghost" href="/pro-drafts">Clear {active} filter{active > 1 ? "s" : ""}</Link>}
+        {active > 0 && <Link className="btn sm ghost" href="/pro-drafts" onClick={(e) => { if (plain(e)) { e.preventDefault(); go({}); resultsToTop(".drafts-table"); } }}>Clear {active} filter{active > 1 ? "s" : ""}</Link>}
         <span className="count" title={`${rows.length} of ${all.length} team drafts`}>{games.length} of {gameCount} games</span>
         {freshShown > 0 && <span className="new-count" title="Recorded since your last visit to Pro Drafts in this browser">{freshShown} new Worlds game{freshShown > 1 ? "s" : ""}</span>}
         {quick.length > 0 && (

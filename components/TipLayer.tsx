@@ -6,6 +6,7 @@
 // as soon as the pointer leaves. Rich or interactive content uses <Popover> (components/Popover.tsx) instead.
 import { useEffect, useState } from "react";
 import { PopoverSurface } from "./Popover";
+import { useLeave } from "./useLeave";
 
 const SHOW_MS = 350, SWITCH_MS = 60;
 const INTERACTIVE = "a[href], button, input, select, textarea, summary, label, [role='button'], [role='tab'], [tabindex]:not([tabindex='-1'])";
@@ -90,10 +91,11 @@ export function TipLayer() {
       window.removeEventListener("scroll", hide, { capture: true });
     };
   }, []);
-  if (!tip) return null;
+  const shown = useLeave(tip);
+  if (!shown.shown) return null;
   return (
-    <PopoverSurface anchor={tip.el} role="tooltip" className="tip" align="center" onAway={() => setTip(undefined)}>
-      {tip.text}
+    <PopoverSurface anchor={shown.shown.el} role="tooltip" className="tip" align="center" onAway={() => setTip(undefined)} leaving={shown.leaving} onGone={shown.end}>
+      {shown.shown.text}
     </PopoverSurface>
   );
 }

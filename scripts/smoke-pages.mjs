@@ -190,8 +190,8 @@ await page.locator(".fit-filters button", { hasText: "All" }).click();
   const syn = proRow("Nautilus").locator("span.sig.syn").first();
   await syn.hover();
   await page.waitForTimeout(600);
-  check("title hints render as the themed tip", (await page.locator(".popover.tip").count()) === 1 && (await syn.getAttribute("title")) === null,
-    (await page.locator(".popover.tip").textContent().catch(() => "")) ?? "");
+  check("title hints render as the themed tip", (await page.locator(".popover.tip:not(.leaving)").count()) === 1 && (await syn.getAttribute("title")) === null,
+    (await page.locator(".popover.tip:not(.leaving)").textContent().catch(() => "")) ?? "");
   await page.mouse.move(2, 2);
 }
 await open("/?bot=jinx&vs=ornn,jarvan-iv");
@@ -438,7 +438,7 @@ await page.locator(".theme-toggle").click();
   for (const b of await page.locator("#mage-bot-siege .lu-champ, #classic-front-to-back .lu-champ").all()) { await b.hover(); await page.waitForTimeout(30); }
   await naut.hover();
   await page.waitForTimeout(350);
-  const nb = await naut.boundingBox(), cb = await page.locator(".hovercard").boundingBox().catch(() => null);
+  const nb = await naut.boundingBox(), cb = await page.locator(".hovercard:not(.leaving)").boundingBox().catch(() => null);
   // The card opens below (or above) the lineup: it must not cover the hovered champion or any comp-mate's portrait.
   const lineupBox = await page.locator("#mage-bot-siege .lineup").boundingBox();
   check("comps: hover card opens clear of the lineup, inside the viewport", !!cb && !!nb && (cb.y >= nb.y + nb.height || cb.y + cb.height <= lineupBox.y) && cb.y >= 0 && cb.y + cb.height <= 900, JSON.stringify(cb));
@@ -460,7 +460,7 @@ await page.locator(".theme-toggle").click();
   await page.waitForTimeout(300);
   await page.mouse.wheel(0, 120);
   await page.waitForTimeout(250);
-  check("comps: scrolling closes an open hover card", (await page.locator(".hovercard").count()) === 0, "");
+  check("comps: scrolling closes an open hover card", (await page.locator(".hovercard:not(.leaving)").count()) === 0, "");
   await page.evaluate((v) => window.scrollTo(0, v), y);
   await page.waitForTimeout(150);
   await naut.click();
@@ -631,11 +631,11 @@ await page.locator(".theme-toggle").click();
   const lulu = page.locator(".pick-card .champ-btn", { hasText: "Lulu" }).first();
   await lulu.hover();
   // The pointer can cross a neighbouring champion on its way (hover cards swap in place): wait for Lulu's own card.
-  const card = await page.locator(".hovercard", { hasText: "Lulu" }).waitFor({ timeout: 3000 }).then(() => page.locator(".hovercard").textContent()).catch(() => page.locator(".hovercard").textContent().catch(() => ""));
+  const card = await page.locator(".hovercard", { hasText: "Lulu" }).waitFor({ timeout: 3000 }).then(() => page.locator(".hovercard:not(.leaving)").textContent()).catch(() => page.locator(".hovercard:not(.leaving)").textContent().catch(() => ""));
   check("synergies: hovering Lulu shows Synergy · Default with Sivir", /Lulu/.test(card) && /Synergy · Default/.test(card) && /Peel 3/.test(card), card.slice(0, 120));
   await lulu.click();
   await page.locator(".drawer").waitFor({ timeout: 3000 }).catch(() => {});
-  check("synergies: clicking a champion opens the drawer", (await page.locator(".drawer h2").textContent().catch(() => "")) === "Lulu" && (await page.locator(".hovercard").count()) === 0, "");
+  check("synergies: clicking a champion opens the drawer", (await page.locator(".drawer h2").textContent().catch(() => "")) === "Lulu" && (await page.locator(".hovercard:not(.leaving)").count()) === 0, "");
   await page.keyboard.press("Escape");
 }
 // Mobile navigation
@@ -677,7 +677,7 @@ check("draft room at 390px: slots scroll inside their rows, no page overflow", d
   await m.goto(base + "/synergies/bot/?champ=sivir", { waitUntil: "networkidle" });
   await m.locator(".pick-card .champ-btn", { hasText: "Lulu" }).first().tap();
   await m.waitForTimeout(400);
-  check("synergies at 390px: a tap opens the drawer directly", (await m.locator(".drawer").count()) === 1 && (await m.locator(".hovercard").count()) === 0, "");
+  check("synergies at 390px: a tap opens the drawer directly", (await m.locator(".drawer").count()) === 1 && (await m.locator(".hovercard:not(.leaving)").count()) === 0, "");
   await m.close();
 }
 await open("/comps/");
@@ -743,16 +743,16 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await page.waitForTimeout(300);
   const picked = new URL(page.url()).searchParams.get("role");
   const focused = await page.evaluate(() => document.activeElement?.getAttribute("role") === "combobox" && document.activeElement.closest(".select-field")?.textContent.startsWith("Role"));
-  const menuOpen = await page.locator(".select-menu").count();
+  const menuOpen = await page.locator(".select-menu:not(.leaving)").count();
   check("dropdowns: arrows + Enter choose an option, focus stays on the trigger", opened && !!activeId && !!picked && focused && menuOpen === 0, JSON.stringify({ opened, activeId: !!activeId, picked, focused, menuOpen }));
   check("dropdowns: menu uses the display font, tinted selected row with a check, labelled for screen readers", /grotesk/i.test(look.font ?? "") && look.selBg && look.selBg !== "rgba(0, 0, 0, 0)" && look.check === "visible" && !!look.label, JSON.stringify(look));
   await page.keyboard.press("Space");
   await page.keyboard.press("Escape");
   const afterEsc = new URL(page.url()).searchParams.get("role");
-  check("dropdowns: Escape closes without changing the value", (await page.locator(".select-menu").count()) === 0 && afterEsc === picked, "");
+  check("dropdowns: Escape closes without changing the value", (await page.locator(".select-menu:not(.leaving)").count()) === 0 && afterEsc === picked, "");
   await team.click();
   await page.locator("main h1").click();
-  check("dropdowns: clicking outside closes the menu", (await page.locator(".select-menu").count()) === 0, "");
+  check("dropdowns: clicking outside closes the menu", (await page.locator(".select-menu:not(.leaving)").count()) === 0, "");
   await open("/pro-drafts/");
   const champ = page.locator(".select-field", { hasText: "Champion" }).locator("[role=combobox]");
   const tb = await champ.boundingBox();
@@ -764,7 +764,7 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await page.setViewportSize({ width: 390, height: 844 });
   await open("/meta/");
   await page.locator(".hub-tools [role=combobox]").first().click();
-  const mb = await page.locator(".select-menu").boundingBox();
+  const mb = await page.locator(".select-menu:not(.leaving)").boundingBox();
   check("dropdowns at 390px: menu stays inside the viewport", !!mb && mb.x >= 0 && mb.x + mb.width <= 390 && mb.y >= 0 && mb.y + mb.height <= 844, JSON.stringify(mb));
   await page.keyboard.press("Escape");
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -1267,9 +1267,9 @@ if (shots) {
   const player = page.locator("input[aria-label='Player']");
   await player.focus();
   await page.waitForTimeout(150);
-  const onFocus = await page.locator(".player-menu").count();
+  const onFocus = await page.locator(".player-menu:not(.leaving)").count();
   await player.click();
-  const menu = await page.locator(".player-menu").evaluate((m) => ({ parent: m.parentElement?.tagName, pos: getComputedStyle(m).position })).catch(() => null);
+  const menu = await page.locator(".player-menu:not(.leaving)").evaluate((m) => ({ parent: m.parentElement?.tagName, pos: getComputedStyle(m).position })).catch(() => null);
   await page.keyboard.press("Escape");
   check("pro builds: player filter opens on click, not focus, in a fixed portalled menu", onFocus === 0 && menu?.parent === "BODY" && menu?.pos === "fixed", `${onFocus} on focus · ${JSON.stringify(menu)}`);
   // Game strip: arrow keys move between games and the detail follows

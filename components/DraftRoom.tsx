@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { picksOf, profile, RULES, warnings, type Draft, type DraftWarning } from "@/lib/evaluate";
 import { teamNeeds, type Need, type Recommendation } from "@/lib/recommend";
 import { draftCandidates, hasSignal, startingCandidates, type Candidate, type Filter } from "@/lib/candidates";
@@ -17,6 +17,7 @@ import type { DraftData, DrawerData } from "@/lib/data";
 import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
 import { CompCheck, CompStatus, CompSummaryLine, planFlags, usePlanRead, type SiegeCell } from "./CompCheck";
 import { ChampionHoverCard, useHoverIntent } from "./ChampionInteraction";
+import { useLeave } from "./useLeave";
 import { GenRang } from "./GenRang";
 import { PairingCard, type CardRecord } from "./PairingCard";
 import { proposedCard } from "@/lib/proposed";
@@ -117,6 +118,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   const board = useRef<HTMLDivElement>(null);
   const drawerIndex = useDrawerIndex(drawerData);
   const hoverCard = useHoverIntent();
+  const quick = useLeave(hoverCard.card && !drawer ? hoverCard.card : undefined);
   const names = useMemo(() => Object.fromEntries(data.champions.map((c) => [c.id, c.name])), [data.champions]);
   const byName = useMemo(() => {
     const m = new Map<string, string>();
@@ -168,42 +170,53 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
 
   // Everything read from the board is derived once per board change. Hovering a row, opening a card, switching the
   // filter or the role tab re-renders the room without re-ranking the roster (they were 70-160ms long tasks).
-  const { boardHits, enemyIds, taken, picks, prof, warns, needs, enemyDraft, proAll, fits, counters, unified, starting, recs, similar, shells } = useMemo(() => {
-    const enemyIds = enemy.filter((e): e is string => !!e);
-    const picks = picksOf(draft, data.champions);
-    const enemyDraft = enemyDraftOf(enemy);
+  // A lock shows at once (alan, 2026-10-16, interaction polish): the board, slots and tabs follow `draft` / `enemy`
+  // immediately, and the ranking below reads deferred copies, so re-ranking never holds the lock back (it was a 300-400ms
+  // task on a slow phone). Until it catches up the list is marked busy and keeps its previous rows.
+  // Only a lock on a board already in play is deferred: a first pick, a removal or Clear changes which roles and views
+  // exist, so those rank at once rather than show a list for the wrong board.
+  const deferredDraft = useDeferredValue(draft), deferredEnemy = useDeferredValue(enemy);
+  const inPlay = (d: Draft, e: (string | undefined)[]) => Object.values(d).some(Boolean) || e.some(Boolean);
+  const deferOk = inPlay(draft, enemy) && inPlay(deferredDraft, deferredEnemy) && ROLES.every((r) => !(deferredDraft[r] && !draft[r]));
+  const dDraft = deferOk ? deferredDraft : draft, dEnemy = deferOk ? deferredEnemy : enemy;
+  const ranking = dDraft !== draft || dEnemy !== enemy;
+  const takenNow = useMemo(() => [...Object.values(draft), ...enemy].filter((x): x is string => !!x), [draft, enemy]);
+  const { boardHits, enemyIds, picks, prof, warns, needs, enemyDraft, proAll, fits, counters, unified, starting, recs, similar, shells } = useMemo(() => {
+    const enemyIds = dEnemy.filter((e): e is string => !!e);
+    const picks = picksOf(dDraft, data.champions);
+    const enemyDraft = enemyDraftOf(dEnemy);
     // Pro meta starting picks for every open role on the room's patch: the list before any pick, labels after.
-    const taken = [...(Object.values(draft).filter(Boolean) as string[]), ...enemyIds];
+    const taken = [...(Object.values(dDraft).filter(Boolean) as string[]), ...enemyIds];
     const marks = roomPatch ? priorityMarks(drawerData.priority, roomPatch) : {};
-    const starting = Object.fromEntries(ROLES.filter((r) => !draft[r]).map((r) => [r, roomPatch
+    const starting = Object.fromEntries(ROLES.filter((r) => !dDraft[r]).map((r) => [r, roomPatch
       ? startingPicks(drawerData.priority, data.pool, r, roomPatch, { reader }).rows.filter((s) => !taken.includes(s.champion)) : []])) as Partial<Record<Role, StartingPick[]>>;
     // One candidate list per open role (lib/candidates.ts). Pro pairings first: a support seen next to a locked pick in
     // pro games is read for fit even outside the locked bot's saved supports (eligible: false). `fits` is the eligible
     // draft-fit list: picker hints, tab hints, counters' fit rank.
     const started = picks.length > 0 || enemyIds.length > 0;
-    const res = draftCandidates(draft, enemyDraft, { ...data, priority: marks }, sources, starting);
+    const res = draftCandidates(dDraft, enemyDraft, { ...data, priority: marks }, sources, starting);
     const { pro: proAll, fits, counters } = res;
     const unified = started ? res.unified
       : Object.fromEntries(Object.entries(starting).map(([r, rows]) => [r, startingCandidates(rows!, r as Role, marks)])) as typeof res.unified;
     // The enemy board's traits (General Draft Logic from kit facts), for Jungle composition-response labels.
     const boardHits = boardTraits(ROLES.flatMap((r) => (enemyDraft[r] ? [{ champion: enemyDraft[r]!, role: r }] : [])), data.jungleBoard.facts);
     return {
-      boardHits, enemyIds, picks, enemyDraft, proAll, fits, counters, unified, starting, taken,
-      prof: profile(draft, data.champions),
-      warns: warnings(draft, data.champions),
+      boardHits, enemyIds, picks, enemyDraft, proAll, fits, counters, unified, starting,
+      prof: profile(dDraft, data.champions),
+      warns: warnings(dDraft, data.champions),
       needs: picks.length ? teamNeeds(picks) : [],
       recs: Object.fromEntries(Object.entries(fits).map(([r, list]) => [r, list!.slice(0, REC_LIMIT)])) as typeof fits,
-      similar: similarProDrafts(draft, data.proDrafts),
-      shells: similarShells(draft, data.shells),
+      similar: similarProDrafts(dDraft, data.proDrafts),
+      shells: similarShells(dDraft, data.shells),
     };
-  }, [draft, enemy, data, sources, roomPatch, drawerData.priority, reader]);
+  }, [dDraft, dEnemy, data, sources, roomPatch, drawerData.priority, reader]);
   const proCtx: ProCtx = useMemo(() => ({ drafts: data.proDrafts, sources, enemy: enemyDraft, names }), [data.proDrafts, sources, enemyDraft, names]);
   const open = ROLES.filter((r) => !draft[r]);
   const lockedCount = ROLES.length - open.length;
   const started = lockedCount > 0 || enemyIds.length > 0;
   // One plan read for every Comp Check surface (rail, phone line, header badge). The rule warnings above stay for the
   // ?legacy=1 debugging view only.
-  const planRead = usePlanRead(draft, enemyIds, data.champions, data.botPairings);
+  const planRead = usePlanRead(dDraft, enemyIds, data.champions, data.botPairings);
 
   // The role being picked: the one the user chose, else the open lane partner of a locked pick, else the open role
   // with the strongest fit.
@@ -269,7 +282,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   const myEntry = mine && myRole ? buildsEntry(drawerData.builds, mine, myRole) : undefined;
   const myHref = mine && myRole ? myBuildsHref(drawerData.builds, mine, myRole, draftQuery({ draft, vs: enemyParam(enemyDraft), focus, filter })) : undefined;
 
-  const slotProps = { names, byName, champions: data.champions, taken, onOpen: (id: string, role?: Role) => { hoverCard.hide(); setDrawer({ id, role }); },
+  const slotProps = { names, byName, champions: data.champions, taken: takenNow, onOpen: (id: string, role?: Role) => { hoverCard.hide(); setDrawer({ id, role }); },
     onHover: hoverCard.hover, onUnhover: hoverCard.unhover };
 
   return (
@@ -350,7 +363,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                   })}
                 </div>
                 {active && (
-                  <div className={`fit-role role-${active}`} role="tabpanel" aria-label={`${ROLE_LABEL[active]} recommendations`}>
+                  <div className={`fit-role role-${active} ${ranking ? "ranking" : ""}`.trim()} aria-busy={ranking || undefined} role="tabpanel" aria-label={`${ROLE_LABEL[active]} recommendations`}>
                     <div className="fit-context">
                       <div className="seg fit-filters" role="group" aria-label="Show recommendations by signal">
                         {(started ? FILTERS : START_FILTERS).map((f) => {
@@ -393,7 +406,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                           <Fragment key={c.champion}>
                             {c.champion === firstOut && <p className="fit-divider xs faint">Outside your pool</p>}
                             <FitRow c={c} tier={poolTier(data.pool, c.champion, active)} bot={draft.BOT ? names[draft.BOT] ?? draft.BOT : undefined} names={names} proCtx={proCtx} hovered={hover === c.champion}
-                              onHover={(h) => preview(h ? c.champion : undefined)} onPick={() => lock(active, c.champion)} onOpen={() => setDrawer({ id: c.champion, role: active })}
+                              onHover={(h) => preview(h ? c.champion : undefined)} onPick={() => { if (!takenNow.includes(c.champion)) lock(active, c.champion); }} onOpen={() => setDrawer({ id: c.champion, role: active })}
                               top={isLaneRole(active) ? laneCtx(data.laneUsage[active], c.champion, enemyDraft, draft, active === "JUNGLE" ? { hits: boardHits, responses: data.jungleBoard.responses[c.champion] ?? [] } : undefined) : undefined} />
                           </Fragment>
                         ))
@@ -409,7 +422,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
 
         </div>
 
-        <CompCheck read={planRead} legacy={legacyCheck} draft={draft} enemyIds={enemyIds} champions={data.champions} botPairings={data.botPairings} active={active}
+        <CompCheck read={planRead} legacy={legacyCheck} draft={dDraft} enemyIds={enemyIds} champions={data.champions} botPairings={data.botPairings} active={active}
           bestOverall={activeRows.find((c) => !c.theoretical)?.champion} bestFixId={active ? fits[active]?.find((r) => r.bestFix)?.champion : undefined} proIds={proIds} names={names} grid={(siege, disengage) => <Indicators prof={prof} flags={planFlags(planRead)} picks={picks.length} siege={siege} disengage={disengage} />}>
           {legacyCheck && <div className="cc-section">
             <div className="cc-label">Rule checks (debug, ?legacy=1)</div>
@@ -473,9 +486,9 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
         </Disclosure>}
       </div>
 
-      {hoverCard.card && !drawer && (
-        <ChampionHoverCard key={`${hoverCard.card.t.id}-${hoverCard.card.t.role}`} target={hoverCard.card.t} anchor={hoverCard.card.el} swap={hoverCard.card.swap} data={drawerData} index={drawerIndex}
-          onEnter={hoverCard.keep} onLeave={hoverCard.unhover} />
+      {quick.shown && (
+        <ChampionHoverCard key={`${quick.shown.t.id}-${quick.shown.t.role}`} target={quick.shown.t} anchor={quick.shown.el} swap={quick.shown.swap} data={drawerData} index={drawerIndex}
+          leaving={quick.leaving} onGone={quick.end} onEnter={hoverCard.keep} onLeave={hoverCard.unhover} />
       )}
       {drawer && <ChampionDrawer target={drawer} data={drawerData} index={drawerIndex} onClose={() => setDrawer(undefined)} onSelect={setDrawer}
         context={{ page: "draft", locked: [...Object.values(draft), ...enemy].filter((x): x is string => !!x), from: draftQuery({ draft, vs: enemyParam(enemyDraft), focus, filter }) }} />}

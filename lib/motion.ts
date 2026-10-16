@@ -7,3 +7,12 @@ export const prefersReducedMotion = () =>
 
 /** "smooth" for programmatic scrolling, or an instant jump under reduced motion. */
 export const scrollBehavior = (): ScrollBehavior => (prefersReducedMotion() ? "auto" : "smooth");
+
+/**
+ * A new filter, sort or search shows its results from the first row (alan, 2026-10-16): the results' own scroll box goes
+ * back to the top, the page itself stays where it is. Opening a row or a game never calls this.
+ */
+export const resultsToTop = (selector: string) => {
+  const box = typeof document === "undefined" ? null : document.querySelector(selector);
+  if (box && box.scrollTop) box.scrollTop = 0;
+};

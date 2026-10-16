@@ -2,6 +2,7 @@
 import { ProFreshness } from "@/components/ProFreshness";
 import type { Freshness } from "@/lib/pro-games";
 import { useSearchParams } from "next/navigation";
+import { resultsToTop } from "@/lib/motion";
 import { Fragment, useMemo, useState } from "react";
 import type { DrawerData } from "@/lib/data";
 import { ChampionProvider, InteractiveChampion } from "@/components/ChampionInteraction";
@@ -29,6 +30,7 @@ export function MetaView({ names, sources, input, rules, drawerData, freshness }
     if (v) next.set(k, v); else next.delete(k);
     setParams(next);
     window.history.replaceState(null, "", `${window.location.pathname}${next.size ? `?${next}` : ""}`);
+    resultsToTop(".priority-table");
   };
   const hub = useMemo(() => hubData(input), [input]);
   const priority = drawerData.priority;
