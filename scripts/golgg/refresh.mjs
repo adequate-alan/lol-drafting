@@ -46,6 +46,10 @@ async function refreshGames(data, get, { now = new Date() } = {}) {
   const listed = JSON.parse(await get(urls.list, { method: "POST", body: `season=S${Number(today.slice(0, 4)) - 2010}` }));
   if (!Array.isArray(listed)) throw new Error("Gol.gg tournament list is not a list");
   const listedNames = new Set(listed.map((x) => x.trname));
+  // A Worlds stage Gol.gg names differently from our list (a new spelling for the main event, Swiss or knockouts) is
+  // reported, never imported under a guessed event: a person adds the name to `tracked` once it is checked.
+  const known = new Set(proGames.tracked.flatMap((t) => t.names));
+  for (const n of listedNames) if (/\b(worlds|world championship)\b/i.test(n) && n.includes(today.slice(0, 4)) && !known.has(n)) report.push(`Gol.gg lists "${n}", which no tracked tournament names: not imported.`);
 
   for (const t of open) {
     const names = t.names.filter((n) => listedNames.has(n));

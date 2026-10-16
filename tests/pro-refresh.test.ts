@@ -149,6 +149,17 @@ describe("game records", () => {
 });
 
 describe("daily refresh", () => {
+  it("reports a Worlds stage Gol.gg names in a way no tracked tournament does, and imports nothing from it", async () => {
+    const { get: base, asked } = recorder();
+    const get: Get = async (url, init) => {
+      const text = await base(url, init);
+      return url === urls.list ? JSON.stringify([...JSON.parse(text), { trname: "Worlds 2026 Knockout Stage" }]) : text;
+    };
+    const out = await refresh(baseData(), get, { now: NOW, maxBuildGames: 0 });
+    expect(out.report.join("\n")).toMatch(/Gol\.gg lists "Worlds 2026 Knockout Stage", which no tracked tournament names/);
+    expect(asked.join()).not.toMatch(/Knockout/);
+  });
+
   it("imports new completed games from tracked tournaments only", async () => {
     const { get, asked } = recorder();
     const out = await refresh(baseData(), get, { now: NOW, maxBuildGames: 0 });
