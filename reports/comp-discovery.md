@@ -10,9 +10,10 @@ None this week.
 
 None this week.
 
-## Existing compositions seeing new professional play (0)
+## Existing compositions seeing new professional play (1)
 
-None this week.
+- **Caitlyn + Bard Pick**: 1 new game
+  - [Team Vitality vs RED Canids G1](https://gol.gg/game/stats/83523/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-06, win)
 
 ## May be outdated (9)
 
@@ -28,7 +29,7 @@ Observed library comps with no exact or variation game in the tracked tournament
 - **Speed-Up Skirmish** · Top Olaf · Jng Skarner · Mid Locke · Bot Sivir · Sup Karma
 - **Dive + Utility Bot** · Top Camille · Jng Naafiri · Mid Galio · Bot Kalista · Sup Renata Glasc
 
-## Proposed comps for review (104)
+## Proposed comps for review (103)
 
 Not added automatically: each needs more games or a person's call. One line per lineup group, newest games marked.
 
@@ -55,7 +56,6 @@ Not added automatically: each needs more games or a person's call. One line per 
 - Pick + Skirmish · Top Yorick · Jng Xin Zhao · Mid Orianna · Bot Ashe · Sup Seraphine · [Natus Vincere G2 W](https://gol.gg/game/stats/83466/page-game/) · major weak point (No frontline); 1 game from Natus Vincere, and the library already has pick comps
 - Dive + Skirmish · Top Gwen · Jng Lee Sin · Mid Sylas · Bot Kalista · Sup Renata Glasc · [HANJIN BRION G3 W](https://gol.gg/game/stats/83522/page-game/) · major weak point (No frontline); 1 game from HANJIN BRION, and the library already has dive comps
 - Front-to-back + Wombo · Top Sion · Jng Sejuani · Mid Cassiopeia · Bot Ezreal · Sup Karma · [RED Canids G1 L](https://gol.gg/game/stats/83523/page-game/) · 1 game from RED Canids, and the library already has front-to-back comps
-- Poke / siege + Pick · Top Jayce · Jng Qiyana · Mid Syndra · Bot Caitlyn · Sup Bard · [Team Vitality G1 W](https://gol.gg/game/stats/83523/page-game/) · major weak point (No frontline); 1 game from Team Vitality, and the library already has poke / siege comps
 - Front-to-back + Protect · Top Ornn · Jng Lee Sin · Mid Syndra · Bot Sivir · Sup Karma · [LGD Gaming G1 W](https://gol.gg/game/stats/83526/page-game/) · 1 game from LGD Gaming, and the library already has front-to-back comps
 - Pick + Front-to-back · Top Varus · Jng Poppy · Mid Orianna · Bot Lucian · Sup Milio · [LGD Gaming G2 W](https://gol.gg/game/stats/83527/page-game/) · 1 game from LGD Gaming, and the library already has pick comps
 - **New** · Front-to-back · Top K'Sante · Jng Wukong · Mid Orianna · Bot Ezreal · Sup Karma · [FlyQuest G1 W](https://gol.gg/game/stats/83528/page-game/), [FlyQuest G1 W](https://gol.gg/game/stats/83573/page-game/) · 2 games from FlyQuest, and the library already has front-to-back comps

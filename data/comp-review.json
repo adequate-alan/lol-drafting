@@ -1,0 +1,22 @@
+{
+  "proSwaps": [
+    { "comp": "pro-83457-red", "role": "BOT", "champion": "xayah", "approvedOn": "2026-10-16",
+      "games": [{ "game": 83537, "side": "blue" }, { "game": 83563, "side": "blue" }, { "game": 83601, "side": "red" }] },
+    { "comp": "objective-zone", "role": "MID", "champion": "viktor", "approvedOn": "2026-10-16",
+      "games": [{ "game": 83524, "side": "blue" }, { "game": 83574, "side": "red" }, { "game": 83594, "side": "blue" }] },
+    { "comp": "objective-zone", "role": "TOP", "champion": "ksante", "approvedOn": "2026-10-16",
+      "games": [{ "game": 83447, "side": "blue" }, { "game": 83538, "side": "blue" }, { "game": 82396, "side": "blue" }] },
+    { "comp": "pro-83469-blue", "role": "TOP", "champion": "gwen", "approvedOn": "2026-10-16",
+      "games": [{ "game": 83522, "side": "blue" }, { "game": 82623, "side": "red" }] },
+    { "comp": "pro-83469-blue", "role": "MID", "champion": "sylas", "approvedOn": "2026-10-16",
+      "games": [{ "game": 83522, "side": "blue" }, { "game": 83604, "side": "blue" }] }
+  ],
+  "supporting": [
+    { "comp": "caitlyn-bard-pick", "approvedOn": "2026-10-16",
+      "games": [{ "game": 82626, "side": "red" }, { "game": 82410, "side": "blue" }] }
+  ],
+  "historical": [
+    { "comp": "protected-hypercarry", "roles": ["BOT", "SUPPORT"], "approvedOn": "2026-10-16" },
+    { "comp": "weakside-tank-carry-bot", "roles": ["BOT", "SUPPORT"], "approvedOn": "2026-10-16" }
+  ]
+}

@@ -6,6 +6,9 @@
 // General Draft Logic, even on an observed pro comp) and compares it with the original on the comp check.
 // Observed Pro Comps the weekly discovery added (lib/comp-discovery.ts) use the same card; observed variations of any
 // comp (other lineups pro teams played under it, each with its game) sit behind an "N observed variations" control.
+// Pro swaps alan approved (data/comp-review.json) are the one exception to "swaps are general logic": they lead the
+// slot's list under their own pro heading, and the same control lists each with its games, series, teams and patches
+// (a small sample under 3 series). A historical mark names the last patch pros picked a slot's champion there.
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -16,7 +19,7 @@ import { useLeave } from "@/components/useLeave";
 import { CompFreshness } from "@/components/CompFreshness";
 import { ChampIcon, PageHeader, SourceBadge } from "@/components/ui";
 import { jobLabel, WHY_LINE } from "@/lib/comp-copy";
-import type { LibraryExtra, ObservedGame } from "@/lib/comp-library";
+import { PRO_SWAP_SAMPLE, type LibraryExtra, type ObservedGame, type ProSwap } from "@/lib/comp-library";
 import { draftHref, shellDraft, variationDiff } from "@/lib/comp-preview";
 import type { DrawerData } from "@/lib/data";
 import { shortDate } from "@/lib/evidence";
@@ -41,6 +44,10 @@ const LEVEL: Record<CompShell["difficulty"], Level> = { easy: "easy", "easy-medi
 const LEVEL_LABEL: Record<Level, string> = { easy: "Easy", medium: "Medium", hard: "Hard" };
 const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
 const tag = (s: string) => { const t = s.replace(/-/g, " "); return t.charAt(0).toUpperCase() + t.slice(1); };
+const plural = (n: number, w: string) => `${n} ${w}${n === 1 || w === "series" ? "" : "s"}`;
+/** "3 series · 3 teams · 26.20, 26.18": the sample a pro swap stands on. */
+const swapSample = (p: ProSwap) => `${plural(p.series, "series")} · ${plural(p.teams, "team")} · ${p.patches.map(patchLabel).join(", ")}`;
+const proSwapsOf = (x?: LibraryExtra) => ROLES.flatMap((r) => (x?.proSwaps?.[r] ?? []).map((p) => ({ role: r, ...p })));
 
 export function CompsView({ names, sources, drafts, allShells, extras, lastAddition, data }: {
   names: Record<string, string>; sources: Record<string, Source>; drafts: Record<string, ProDraft>; allShells: CompShell[];
@@ -145,7 +152,9 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
           const x = extras[s.id];
           const read = x?.discovered;
           const hasDetails = srcs.length > 0 || whyLine !== s.why || !!read;
-          const nVar = x?.variations.length ?? 0, nGames = x?.games.length ?? 0;
+          const nVar = x?.variations.length ?? 0, nGames = x?.games.length ?? 0, nPro = proSwapsOf(x).length;
+          // Historical slots grouped by patch: "Zeri + Yuumi last seen 26.16".
+          const hist = Object.entries(x?.historical ?? {}).reduce<Record<string, Role[]>>((m, [r, p]) => ({ ...m, [p]: [...(m[p] ?? []), r as Role] }), {});
           const showVar = !!shownVariations[s.id];
           return (
             <article key={s.id} id={s.id} className={`panel shell ${s.kind} ${swapped.length ? "previewing" : ""}`}>
@@ -158,17 +167,23 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
                   </span>
                 </div>
                 <span className="shell-tags xs muted">
-                  {s.kind === "observed" && <span className="shell-by">{read && d ? `${d.team} vs ${d.opponent} · ${d.patch ? patchLabel(d.patch) : ""}` : `${s.observedBy}${d ? ` · ${d.seriesGame} vs ${d.opponent}` : ""}`}</span>}
+                  {s.kind === "observed" && <span className="shell-by">{(read || s.proDraftId?.startsWith("golgg-")) && d ? `${d.team} vs ${d.opponent} · ${d.patch ? patchLabel(d.patch) : ""}` : `${s.observedBy}${d ? ` · ${d.seriesGame} vs ${d.opponent}` : ""}`}</span>}
                   {s.identities.map((i) => <span key={i} className="shell-tag">{tag(i)}</span>)}
+                  {Object.entries(hist).map(([p, roles]) => (
+                    <span key={p} className="shell-tag shell-hist"
+                      title={`No recorded pro game picks ${roles.map((r) => `${names[s.slots[r].champion]} in ${ROLE_LABEL[r]}`).join(" or ")} after patch ${patchLabel(p)}. The comp stays in the library.`}>
+                      {roles.map((r) => names[s.slots[r].champion]).join(" + ")} last seen {patchLabel(p)}
+                    </span>
+                  ))}
                 </span>
               </header>
-              <Lineup shell={s} swaps={swaps} names={names} data={data} index={index}
+              <Lineup shell={s} swaps={swaps} names={names} data={data} index={index} pro={x?.proSwaps ?? {}}
                 active={active?.shell === s.id ? active.role : undefined} selected={open?.shell === s.id ? open.role : undefined}
                 menu={menu?.shell === s.id ? menu.role : undefined}
                 onMenu={(role) => setMenu(role ? { shell: s.id, role } : undefined)}
                 onPreview={(role, champ) => preview(s.id, role, champ)}
                 onOpen={(role, el) => select({ shell: s.id, role }, el)} onHover={(role, el, id) => onHover(s, role, el, id)} />
-              {swapped.length > 0 && <Preview shell={s} swaps={swaps} names={names} data={data} onReset={() => setPreviews((p) => ({ ...p, [s.id]: {} }))} />}
+              {swapped.length > 0 && <Preview shell={s} swaps={swaps} names={names} data={data} pro={x?.proSwaps ?? {}} onReset={() => setPreviews((p) => ({ ...p, [s.id]: {} }))} />}
               <div className="shell-foot">
                 <p className="wc">{s.winCondition}</p>
                 <p className="why">{whyLine}</p>
@@ -179,12 +194,14 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
                         Details{srcs.length > 0 && <span className="faint"> · {srcs.length} source{srcs.length > 1 ? "s" : ""}</span>} <span aria-hidden="true">{showSrc ? "▴" : "▾"}</span>
                       </button>
                     )}
-                    {(nVar > 0 || nGames > 0) && (
-                      <button type="button" className="src-toggle var-toggle" aria-expanded={showVar} onClick={() => setShownVariations((v) => ({ ...v, [s.id]: !showVar }))}>
-                        {nVar > 0 ? `${nVar} observed variation${nVar > 1 ? "s" : ""}` : `${nGames} more game${nGames > 1 ? "s" : ""}`}
-                        {nVar > 0 && nGames > 0 && <span className="faint"> · {nGames} more game{nGames > 1 ? "s" : ""}</span>} <span aria-hidden="true">{showVar ? "▴" : "▾"}</span>
-                      </button>
-                    )}
+                    {(nPro > 0 || nVar > 0 || nGames > 0) && (() => {
+                      const parts = [nPro > 0 && plural(nPro, "pro swap"), nVar > 0 && plural(nVar, "observed variation"), nGames > 0 && plural(nGames, "more game")].filter(Boolean) as string[];
+                      return (
+                        <button type="button" className="src-toggle var-toggle" aria-expanded={showVar} onClick={() => setShownVariations((v) => ({ ...v, [s.id]: !showVar }))}>
+                          {parts[0]}{parts.length > 1 && <span className="faint"> · {parts.slice(1).join(" · ")}</span>} <span aria-hidden="true">{showVar ? "▴" : "▾"}</span>
+                        </button>
+                      );
+                    })()}
                   </span>
                   {swapped.length
                     ? <Link className="btn sm primary" href={draftHref(shellDraft(s, swaps))}>Use variation in Draft Room →</Link>
@@ -217,8 +234,9 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
   );
 }
 
-function Lineup({ shell: s, swaps, names, data, index, active, selected, menu, onMenu, onPreview, onOpen, onHover }: {
+function Lineup({ shell: s, swaps, names, data, index, pro: proSwaps, active, selected, menu, onMenu, onPreview, onOpen, onHover }: {
   shell: CompShell; swaps: Swaps; names: Record<string, string>; data: DrawerData; index: ReturnType<typeof useDrawerIndex>;
+  pro: NonNullable<LibraryExtra["proSwaps"]>;
   active?: Role; selected?: Role; menu?: Role;
   onMenu: (role?: Role) => void; onPreview: (role: Role, champ: string | undefined) => void;
   onOpen: (role: Role, el: HTMLElement) => void; onHover: (role?: Role, el?: HTMLElement, id?: string) => void;
@@ -229,6 +247,17 @@ function Lineup({ shell: s, swaps, names, data, index, active, selected, menu, o
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const byHover = useRef(false);
   useEffect(() => () => clearTimeout(timer.current), []);
+  const item = (x: string, note?: string, hint?: string) => {
+    const r = menu!;
+    return (
+      <button key={x} type="button" role="menuitem" className={`swap-item ${swaps[r] === x ? "on" : ""}`} aria-current={swaps[r] === x || undefined} title={hint}
+        onClick={() => { onHover(undefined); onPreview(r, swaps[r] === x ? undefined : x); }}
+        onPointerEnter={(e) => { if (e.pointerType === "mouse") onHover(r, e.currentTarget, x); }}
+        onPointerLeave={(e) => { if (e.pointerType === "mouse") onHover(undefined); }}>
+        <ChampIcon id={x} name={names[x]} role={r} size="sm" /><span>{names[x]}</span>{note && <span className="xs faint">{note}</span>}
+      </button>
+    );
+  };
   return (
     <div className={`lineup ${active ? "linking" : ""} ${selected ? "selecting" : ""}`}>
       {ROLES.map((r) => {
@@ -237,6 +266,10 @@ function Lineup({ shell: s, swaps, names, data, index, active, selected, menu, o
         const saved = links?.savedRoles.has(r);
         const pro = links?.proRoles.get(r);
         const isSwap = !!swaps[r];
+        // Pro swaps lead; a champion that is also a general-logic swap is listed once, under pro.
+        const proList = proSwaps[r] ?? [];
+        const logicList = slot.swaps.filter((x) => !proList.some((p) => p.champion === x));
+        const nSwaps = proList.length + logicList.length;
         const cls = ["lu-slot", `role-${r}`, `lu-${r.toLowerCase()}`, r === active && "is-active", r === selected && "is-open", saved && "has-saved",
           pro && "has-pro", isSwap && "is-swapped", menu === r && "menu-open"].filter(Boolean).join(" ");
         const mark = saved ? "Saved pairing with the highlighted pick" : pro ? `Pro evidence with the highlighted pick${pro.games.length ? ` (${pro.games.length} game${pro.games.length > 1 ? "s" : ""})` : ""}` : undefined;
@@ -257,9 +290,9 @@ function Lineup({ shell: s, swaps, names, data, index, active, selected, menu, o
               <b className="lu-name">{names[id]}</b>
             </button>
             <p className="lu-job" title={slot.job}>{isSwap ? <span className="lu-for">for {names[slot.champion]}</span> : jobLabel(slot.job)}</p>
-            {slot.swaps.length > 0 && (
-              <button type="button" className="lu-swaps" aria-expanded={menu === r} aria-haspopup="menu"
-                aria-label={isSwap ? `Swapped: swaps for ${names[slot.champion]}` : `${slot.swaps.length} swap${slot.swaps.length > 1 ? "s" : ""} for ${names[slot.champion]}`}
+            {nSwaps > 0 && (
+              <button type="button" className={`lu-swaps ${proList.length ? "has-pro-swap" : ""}`} aria-expanded={menu === r} aria-haspopup="menu"
+                aria-label={isSwap ? `Swapped: swaps for ${names[slot.champion]}` : `${plural(nSwaps, "swap")} for ${names[slot.champion]}${proList.length ? `, ${proList.length} from pro games` : ""}`}
                 onPointerEnter={(e) => {
                   if (e.pointerType !== "mouse" || menu === r) return;
                   clearTimeout(timer.current);
@@ -272,25 +305,21 @@ function Lineup({ shell: s, swaps, names, data, index, active, selected, menu, o
                   byHover.current = false;
                   onMenu(menu === r ? undefined : r);
                 }}>
-                <span className="lu-swaps-n">{isSwap ? "Swapped" : `${slot.swaps.length} swap${slot.swaps.length > 1 ? "s" : ""}`}</span>
+                {proList.length > 0 && !isSwap && <span className="ldot" aria-hidden="true" />}
+                <span className="lu-swaps-n">{isSwap ? "Swapped" : plural(nSwaps, "swap")}</span>
               </button>
             )}
             {menu === r && (
               <div className="swap-menu" role="menu" aria-label={`Swaps for ${names[slot.champion]}`}>
-                <span className="swap-menu-head"><span className="ldot" />Swaps · General logic</span>
                 {isSwap && (
                   <button type="button" role="menuitem" className="swap-item original" onClick={() => onPreview(r, undefined)}>
                     <ChampIcon id={slot.champion} name={names[slot.champion]} role={r} size="sm" /><span>{names[slot.champion]}</span><span className="xs faint">original</span>
                   </button>
                 )}
-                {slot.swaps.map((x) => (
-                  <button key={x} type="button" role="menuitem" className={`swap-item ${swaps[r] === x ? "on" : ""}`} aria-current={swaps[r] === x || undefined}
-                    onClick={() => { onHover(undefined); onPreview(r, swaps[r] === x ? undefined : x); }}
-                    onPointerEnter={(e) => { if (e.pointerType === "mouse") onHover(r, e.currentTarget, x); }}
-                    onPointerLeave={(e) => { if (e.pointerType === "mouse") onHover(undefined); }}>
-                    <ChampIcon id={x} name={names[x]} role={r} size="sm" /><span>{names[x]}</span>{swaps[r] === x && <span className="xs faint">previewing</span>}
-                  </button>
-                ))}
+                {proList.length > 0 && <span className="swap-menu-head pro"><span className="ldot" />Pro swaps · observed</span>}
+                {proList.map((p) => item(p.champion, swaps[r] === p.champion ? "previewing" : plural(p.series, "series"), swapSample(p)))}
+                {logicList.length > 0 && <span className="swap-menu-head"><span className="ldot" />Swaps · General logic</span>}
+                {logicList.map((x) => item(x, swaps[r] === x ? "previewing" : undefined))}
               </div>
             )}
           </div>
@@ -301,11 +330,13 @@ function Lineup({ shell: s, swaps, names, data, index, active, selected, menu, o
 }
 
 /** The preview state: what changed, how the comp check moves, and the way back. General Draft Logic only. */
-function Preview({ shell: s, swaps, names, data, onReset }: {
-  shell: CompShell; swaps: Swaps; names: Record<string, string>; data: DrawerData; onReset: () => void;
+function Preview({ shell: s, swaps, names, data, pro, onReset }: {
+  shell: CompShell; swaps: Swaps; names: Record<string, string>; data: DrawerData; pro: NonNullable<LibraryExtra["proSwaps"]>; onReset: () => void;
 }) {
   const diff = variationDiff(shellDraft(s), shellDraft(s, swaps), data.champions);
   const swapped = ROLES.filter((r) => swaps[r]);
+  const proSwapped = swapped.flatMap((r) => { const p = pro[r]?.find((x) => x.champion === swaps[r]); return p ? [p] : []; });
+  const logicSwapped = swapped.length - proSwapped.length;
   const none = !diff.changes.length && !diff.added.length && !diff.cleared.length;
   return (
     <section className="shell-preview" aria-live="polite">
@@ -314,7 +345,11 @@ function Preview({ shell: s, swaps, names, data, onReset }: {
           {swapped.map((r) => `${names[swaps[r]!]} for ${names[s.slots[r].champion]}`).join(", ")}</span>
         <button type="button" className="btn sm ghost" onClick={onReset}>Reset</button>
       </div>
-      <p className="pv-note">{s.kind === "observed" ? "Not in the observed pro draft. " : ""}Swaps are general draft logic, not pro evidence.</p>
+      {proSwapped.map((p) => (
+        <p key={p.champion} className="pv-note pv-pro">{names[p.champion]} is a pro swap: {swapSample(p)}{p.series < PRO_SWAP_SAMPLE ? ", a small sample" : ""}. A supported alternative, not an established meta pick.</p>
+      ))}
+      {logicSwapped > 0 && <p className="pv-note">{s.kind === "observed" ? "Not in the observed pro draft. " : ""}{proSwapped.length ? "The other swap is" : "Swaps are"} general draft logic, not pro evidence.</p>}
+      {proSwapped.length > 0 && <p className="pv-note">The comp check below is general draft logic.</p>}
       <p className="pv-check">
         {none && <span className="muted">Comp check unchanged.</span>}
         {diff.changes.map((c) => <span key={c.label} className="pv-chg">{c.label} <span className="tnum">{c.from} → {c.to}</span></span>)}
@@ -353,6 +388,16 @@ function GameLink({ g }: { g: ObservedGame }) {
 function Variations({ shell: s, extra, names }: { shell: CompShell; extra: LibraryExtra; names: Record<string, string> }) {
   return (
     <ul className="shell-variations" aria-label={`Observed lineups for ${s.name}`}>
+      {proSwapsOf(extra).map((p) => (
+        <li key={`${p.role}-${p.champion}`} className="var-row var-swap">
+          <span className="var-what">
+            <ChampIcon id={p.champion} name={names[p.champion]} role={p.role} size="xs" />
+            <span>Pro swap: {names[p.champion]} for {names[s.slots[p.role].champion]} <span className="faint">· {ROLE_LABEL[p.role]}</span></span>
+          </span>
+          <span className="var-sample">{swapSample(p)}{p.series < PRO_SWAP_SAMPLE && <span className="faint"> · small sample</span>}</span>
+          <span className="var-games">{p.games.map((g) => <GameLink key={`${g.game}-${g.side}`} g={g} />)}</span>
+        </li>
+      ))}
       {extra.games.length > 0 && (
         <li className="var-row">
           <span className="var-what">Same lineup</span>

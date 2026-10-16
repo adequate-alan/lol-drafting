@@ -365,6 +365,15 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   daily refresh stored for the tracked tournaments (`data/pro-games.json`), runs `lib/comp-discovery.ts` and writes only
   `data/discovered-comps.json` and `reports/comp-discovery.md`, committing (after test/typecheck/build) only when the
   library data changed, then starting `pages.yml`. The report is also the run summary and an artifact.
+- **Reviewed decisions** (alan, 2026-10-16, "Comp Library audit with Worlds games"; `data/comp-review.json`,
+  `CompReview` in `lib/schema.ts`, `tests/comp-review.test.ts`): changed only when alan approves. `proSwaps`: a champion
+  pro teams played in one slot of a comp (2+ series), shown as "Pro swaps · observed" ahead of the slot's General Draft
+  Logic swaps and in the comp's observed list with every game, series, teams and patches ("small sample" under 3
+  series); a supported alternative, never the established pick, never the comp's lineup. `supporting`: recorded lineups
+  (LCK archive included) filed with a comp's observed variations. `historical`: "<champions> last seen <patch>" on a
+  comp whose slot champions pros stopped picking; derived from the records, hidden once they are picked on the newest
+  patch, never a removal. Wukong and Camille (Cloud9, Dive · Kalista) stay observed variations; Ezreal + Karma stays a
+  candidate until a second team plays it; Stable Top + Carry Bot, Jax Skirmish and Weakside Tank are not merged.
 - Deterministic and idempotent, no model calls; every threshold is in `DISCOVERY`. Each lineup joins the closest
   observed shell or discovered comp: five same champions = existing (a replay), same primary identity with 3+ shared
   champions, or same primary + secondary with 4+ roles doing the same job and 2+ shared champions = an observed

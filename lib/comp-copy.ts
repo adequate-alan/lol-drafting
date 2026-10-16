@@ -72,6 +72,8 @@ export const JOB_LABEL: Record<string, string> = {
   "Scaling control damage": "Control mage",
   "Protected ADC": "Protected ADC",
   "Shields and peel for the ADC": "Carry protection",
+  "Pick burst and lane control": "Pick burst",
+  "Roams and lands catches": "Roam + catch",
 };
 
 export const jobLabel = (job: string) => JOB_LABEL[job] ?? job;
@@ -91,4 +93,5 @@ export const WHY_LINE: Record<string, string> = {
   "dive-utility-bot": "Camille and Naafiri get access, Galio follows, Renata saves the diver.",
   "mage-bot-siege": "Ziggs takes the towers; Jarvan IV, Nautilus and Orianna supply the start.",
   "classic-front-to-back": "K'Sante and Jarvan IV start the fight; Viktor and Lulu keep Jinx shooting.",
+  "caitlyn-bard-pick": "Caitlyn and Jayce push lanes; Bard, Qiyana and Syndra land the catches.",
 };
