@@ -371,7 +371,9 @@ await page.locator(".theme-toggle").click();
   check("pool: tournament stats, recorded games and observed pairings render apart", /Tournament stats/.test(pro) && /Recorded games/.test(pro) && /Observed pairings/.test(pro), "");
   await open("/meta/");
   const ev = await page.$$eval(".hub-events tbody tr", (rs) => rs.map((r) => r.textContent));
-  check("meta: tournaments listed newest first, Demacia Cup ongoing", ev.length >= 2 && /Demacia Cup/.test(ev[0]) && /Ongoing/.test(ev[0]) && /LCK Playoffs/.test(ev[1]) && /Completed/.test(ev[1]), ev.map((t) => t.slice(0, 40)).join(" | "));
+  // New tournaments (Worlds 2026 Play-In since 2026-10-16) join above: the archive stays last, completed.
+  const evDem = ev.findIndex((t) => /Demacia Cup/.test(t)), evLck = ev.findIndex((t) => /LCK Playoffs/.test(t));
+  check("meta: tournaments listed newest first, the LCK archive last and completed", ev.length >= 2 && evDem >= 0 && evDem < evLck && evLck === ev.length - 1 && /Completed/.test(ev[evLck]) && /Ongoing|Completed/.test(ev[0]), ev.map((t) => t.slice(0, 40)).join(" | "));
   // Pro priority (alan, 2026-10-12): one patch at a time, newest by default, presence first.
   const patchSel = (await page.locator(".priority .hub-tools [role=combobox]").first().textContent()) ?? "";
   check("meta: Pro priority defaults to the newest patch, never combined", /\(newest\)/.test(patchSel) && /only/.test(await text(".priority .section-header")), patchSel);
@@ -397,7 +399,8 @@ await page.locator(".theme-toggle").click();
   check("meta: comparison, pairings, recent drafts and notes are folded with counts", folded.length >= 5 && folded.every((d) => !d.open && /\d/.test(d.s)) && (await page.locator(".priority-table").isVisible()), folded.map((d) => d.s).join(" | "));
   await open("/meta/?view=changes");
   const moves = await text(".priority-changes");
-  check("meta: Priority changes compare with the previous patch in percentage points", /pp/.test(moves) && /26\.16.*→.*26\.18/.test(await text(".priority .toolbar .count")), moves.slice(0, 80));
+  const span = (await text(".priority .toolbar .count")).match(/26\.(\d+).*→.*26\.(\d+)/);
+  check("meta: Priority changes compare with the previous patch in percentage points", /pp/.test(moves) && !!span && Number(span[1]) < Number(span[2]), moves.slice(0, 80));
   await open("/meta/?patch=all");
   check("meta: All patches is an explicit, labelled choice", /All patches combined/.test(await text(".priority .section-header")), "");
   await open("/meta/");
@@ -587,10 +590,16 @@ await page.locator(".theme-toggle").click();
   await page.locator(".duo-games > li > button").first().click();
   const g = (await page.locator(".duo-games .top-game").first().textContent().catch(() => "")) ?? "";
   check("bot: a duo game opens with first pick, the ten picks and what the pick could see", /picked first|not marked/.test(g) && /Enemy ADC/.test(g), g.slice(0, 160));
-  check("bot: the open duo game lists the bot lane in draft order with each duo's construction", (await page.locator(".duo-games .bot-seq li").count()) >= 3 && /Bot lane in draft order/.test(g), g.slice(0, 160));
-  await open("/?bot=yunara&vs=bot:lucian,support:milio&focus=SUPPORT");
-  const sup = (await page.locator(".fit-row .sig.usage").allTextContents()).join("|");
-  check("draft room: with the enemy bot lane locked, SUPPORT rows say which duos were picked into it", /Picked into Lucian \+ Milio · \d+/.test(sup), sup);
+  check("bot: the open duo game lists the bot lane in draft order with each duo's construction", (await page.locator(".duo-games .bot-seq li").count()) >= 2 && /Bot lane in draft order/.test(g), g.slice(0, 160));
+  // Draft Room labels read the newest patch with 10+ classified selections, so the duo that shows depends on the data:
+  // try a known response on each recent patch (26.18 Demacia, 26.20 Worlds Play-In); a label only ever names the locked duo.
+  const supSeen = [];
+  for (const [bot, adc, support, label] of [["yunara", "lucian", "milio", "Lucian \\+ Milio"], ["xayah", "yunara", "lulu", "Yunara \\+ Lulu"]]) {
+    await open(`/?bot=${bot}&vs=bot:${adc},support:${support}&focus=SUPPORT`);
+    const sup = (await page.locator(".fit-row .sig.usage").allTextContents()).join("|");
+    supSeen.push({ sup, ok: new RegExp(`Picked into ${label} · \\d+`).test(sup), clean: (sup.match(/Picked into [^|·]+ \+ [^|·]+/g) ?? []).every((t) => new RegExp(label).test(t)) });
+  }
+  check("draft room: with the enemy bot lane locked, SUPPORT rows say which duos were picked into it", supSeen.some((x) => x.ok) && supSeen.every((x) => x.clean), supSeen.map((x) => x.sup).join(" || "));
 }
 // Jungle: Mid/Jungle order (who was picked first), partners open their games, the enemy board at the pick
 {
@@ -900,7 +909,8 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     check("builds: an explicit patch stays; the pinned player's older games don't override it", patch.player !== "Ruler" && /26\.18/.test(patch.head) && /patch=26\.18/.test(patch.url), JSON.stringify(patch));
     await page.evaluate(() => localStorage.setItem("pro-builds:pinned-players", "[]"));
     const unpinned = await shown("");
-    check("builds: unpinned, the newest recorded game opens", unpinned.player !== "Ruler" && /26\.18/.test(unpinned.head), JSON.stringify(unpinned));
+    const unpinnedPatch = Number(unpinned.head.match(/26\.(\d+)/)?.[1]);
+    check("builds: unpinned, the newest recorded game opens", unpinned.player !== "Ruler" && unpinnedPatch >= 18, JSON.stringify(unpinned));
     await page.evaluate((v) => { if (v == null) localStorage.removeItem("pro-builds:pinned-players"); else localStorage.setItem("pro-builds:pinned-players", v); }, keep);
   }
   await page.setViewportSize({ width: 390, height: 844 });
