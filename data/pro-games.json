@@ -36,20 +36,20 @@
       "games": 67,
       "recorded": 67,
       "matchlist": "https://gol.gg/tournament/tournament-matchlist/Demacia%20Cup%20Global%20Invitational%202026/",
-      "lastUpdate": "2026-10-16T02:54:02.310Z",
-      "lastCheck": "2026-10-16T02:54:02.310Z"
+      "lastUpdate": "2026-10-16T09:45:43.818Z",
+      "lastCheck": "2026-10-16T09:45:43.818Z"
     },
     {
       "event": "worlds-2026-play-in",
       "golgg": "Worlds 2026 Play-In",
       "status": "ongoing",
-      "series": 2,
+      "series": 4,
       "seriesPlayed": 2,
       "games": 8,
       "recorded": 8,
       "matchlist": "https://gol.gg/tournament/tournament-matchlist/Worlds%202026%20Play-In/",
-      "lastUpdate": "2026-10-16T02:54:02.310Z",
-      "lastCheck": "2026-10-16T02:54:02.310Z"
+      "lastUpdate": "2026-10-16T09:45:43.818Z",
+      "lastCheck": "2026-10-16T09:45:43.818Z"
     }
   ],
   "games": [
@@ -270,13 +270,6 @@
           "rumble",
           "pantheon",
           "qiyana"
-        ],
-        "pickOrder": [
-          "olaf",
-          "vi",
-          "cassiopeia",
-          "caitlyn",
-          "bard"
         ]
       },
       "red": {
@@ -294,19 +287,13 @@
           "lucian",
           "karma",
           "neeko"
-        ],
-        "pickOrder": [
-          "ksante",
-          "naafiri",
-          "anivia",
-          "yunara",
-          "lulu"
         ]
       },
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83450/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83450/page-fullstats/",
-      "checkedOn": "2026-10-11"
+      "checkedOn": "2026-10-11",
+      "firstPick": "blue"
     },
     {
       "id": 83451,
@@ -4045,13 +4032,6 @@
           "nocturne",
           "alistar",
           "seraphine"
-        ],
-        "pickOrder": [
-          "rumble",
-          "jayce",
-          "ryze",
-          "sivir",
-          "karma"
         ]
       },
       "red": {
@@ -4069,19 +4049,13 @@
           "jarvan-iv",
           "skarner",
           "wukong"
-        ],
-        "pickOrder": [
-          "ksante",
-          "lee-sin",
-          "syndra",
-          "ezreal",
-          "neeko"
         ]
       },
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83608/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83608/page-fullstats/",
-      "checkedOn": "2026-10-16"
+      "checkedOn": "2026-10-16",
+      "firstPick": "red"
     },
     {
       "id": 83609,
@@ -4108,13 +4082,6 @@
           "nocturne",
           "ornn",
           "annie"
-        ],
-        "pickOrder": [
-          "renekton",
-          "naafiri",
-          "akali",
-          "caitlyn",
-          "bard"
         ]
       },
       "red": {
@@ -4132,19 +4099,13 @@
           "kalista",
           "skarner",
           "locke"
-        ],
-        "pickOrder": [
-          "gnar",
-          "jarvan-iv",
-          "orianna",
-          "lucian",
-          "milio"
         ]
       },
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83609/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83609/page-fullstats/",
-      "checkedOn": "2026-10-16"
+      "checkedOn": "2026-10-16",
+      "firstPick": "red"
     },
     {
       "id": 83610,
@@ -4171,13 +4132,6 @@
           "nocturne",
           "annie",
           "ahri"
-        ],
-        "pickOrder": [
-          "trundle",
-          "poppy",
-          "viktor",
-          "jhin",
-          "seraphine"
         ]
       },
       "red": {
@@ -4195,19 +4149,13 @@
           "ashe",
           "alistar",
           "maokai"
-        ],
-        "pickOrder": [
-          "olaf",
-          "wukong",
-          "locke",
-          "kalista",
-          "renata-glasc"
         ]
       },
       "winner": "red",
       "url": "https://gol.gg/game/stats/83610/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83610/page-fullstats/",
-      "checkedOn": "2026-10-16"
+      "checkedOn": "2026-10-16",
+      "firstPick": "red"
     },
     {
       "id": 83611,
@@ -4234,13 +4182,6 @@
           "lulu",
           "sylas",
           "lissandra"
-        ],
-        "pickOrder": [
-          "aatrox",
-          "malphite",
-          "ahri",
-          "xayah",
-          "rakan"
         ]
       },
       "red": {
@@ -4258,19 +4199,13 @@
           "gwen",
           "pantheon",
           "ambessa"
-        ],
-        "pickOrder": [
-          "sion",
-          "qiyana",
-          "leblanc",
-          "jinx",
-          "nautilus"
         ]
       },
       "winner": "blue",
       "url": "https://gol.gg/game/stats/83611/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83611/page-fullstats/",
-      "checkedOn": "2026-10-16"
+      "checkedOn": "2026-10-16",
+      "firstPick": "red"
     },
     {
       "id": 83612,
@@ -4297,13 +4232,6 @@
           "lulu",
           "kaisa",
           "vayne"
-        ],
-        "pickOrder": [
-          "ambessa",
-          "chogath",
-          "anivia",
-          "corki",
-          "shen"
         ]
       },
       "red": {
@@ -4321,19 +4249,13 @@
           "yone",
           "galio",
           "aurora"
-        ],
-        "pickOrder": [
-          "zaahen",
-          "nocturne",
-          "annie",
-          "smolder",
-          "alistar"
         ]
       },
       "winner": "red",
       "url": "https://gol.gg/game/stats/83612/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83612/page-fullstats/",
-      "checkedOn": "2026-10-16"
+      "checkedOn": "2026-10-16",
+      "firstPick": "red"
     },
     {
       "id": 83593,
@@ -4616,13 +4538,6 @@
           "qiyana",
           "lucian",
           "rakan"
-        ],
-        "pickOrder": [
-          "camille",
-          "wukong",
-          "akali",
-          "kalista",
-          "renata-glasc"
         ]
       },
       "red": {
@@ -4640,19 +4555,13 @@
           "lulu",
           "olaf",
           "jarvan-iv"
-        ],
-        "pickOrder": [
-          "jayce",
-          "vi",
-          "cassiopeia",
-          "varus",
-          "velkoz"
         ]
       },
       "winner": "red",
       "url": "https://gol.gg/game/stats/83599/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83599/page-fullstats/",
-      "checkedOn": "2026-10-16"
+      "checkedOn": "2026-10-16",
+      "firstPick": "red"
     },
     {
       "id": 83600,

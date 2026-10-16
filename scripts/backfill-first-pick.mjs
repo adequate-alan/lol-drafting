@@ -53,6 +53,7 @@ for (const [file, data] of Object.entries(files)) {
       const got = pickOrderFor(g, parseGamePage(await get(gameUrl(g.id))), resolve);
       if (got.problems) { problems.push(`${g.id} ${g.series} G${g.game}: ${got.problems.join("; ")}`); continue; }
       if (!got.firstPick) { problems.push(`${g.id} ${g.series} G${g.game}: no clear First Pick mark`); continue; }
+      if (!got.blue || !got.red) { problems.push(`${g.id} ${g.series} G${g.game}: the page draws no pick turns`); continue; }
       if (g.blue.pickOrder && g.blue.pickOrder.join() !== got.blue.join()) { problems.push(`${g.id}: blue pick order differs from the stored one`); continue; }
       if (g.red.pickOrder && g.red.pickOrder.join() !== got.red.join()) { problems.push(`${g.id}: red pick order differs from the stored one`); continue; }
       g.blue.pickOrder = got.blue;

@@ -62,10 +62,12 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   newest patch and the champion has picks in that role: a label and a filter only, never a score, never an order.
 - **Top draft usage** (alan, 2026-10-13; `lib/top-draft.ts`, `lib/top-blind.ts`, `components/TopDraft.tsx`,
   `components/TopRail.tsx`, `tests/top-draft.test.ts`, smoke "top:"): when pros picked each top laner. Since 2026 the
-  first-picking team is not always blue: each game stores `firstPick`, the side Gol.gg marks "First Pick" (accepted only
-  with its 1 | 2 | 2 turns against the other side's 2 | 2 | 1; `firstPickOf`), read by the daily refresh and backfilled
-  once (`scripts/backfill-first-pick.mjs`, Demacia and the LCK archive records in `pro-builds.json` `games`, which this
-  analysis reads; game 83450 has no mark). Draft order F1 S1 S2 F2 F3 S3 | bans | S4 F4 F5 S5 (`turnOf`); never inferred
+  first-picking team is not always blue: each game stores `firstPick`, the side Gol.gg marks "First Pick" (`firstPickOf`:
+  exactly one side marked, and turns, when drawn, 1 | 2 | 2 against the other side's 2 | 2 | 1), read by the daily refresh
+  and backfilled once (`scripts/backfill-first-pick.mjs`, Demacia and the LCK archive records in `pro-builds.json`
+  `games`, which this analysis reads). Some pages draw no turns and list picks in role order (the Demacia semifinals,
+  Cloud9 vs KC G2): the mark still counts (alan, 2026-10-16) but no `pickOrder` is stored (`turnsDrawn`), so those games
+  show who picked first and stay out of every turn-based read. Draft order F1 S1 S2 F2 F3 S3 | bans | S4 F4 F5 S5 (`turnOf`); never inferred
   from side, winner or lineup. Each top selection is blind (enemy top not yet picked), response (picked, and every other
   role it plays visibly filled by a one-role champion) or uncertain. A response is never a counter: "repeated" needs two
   series, "supported counter" a DPM row clearing the counter thresholds; win / loss never decides. Labels need 3

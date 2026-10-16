@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parseChampionTable, parseFullstats, parseGamePage, parseMatchlist } from "@/scripts/golgg/parse.mjs";
-import { buildGame, championResolver, firstPickOf, isComplete, seriesProblems } from "@/scripts/golgg/normalize.mjs";
+import { buildGame, championResolver, firstPickOf, isComplete, seriesProblems, turnsDrawn } from "@/scripts/golgg/normalize.mjs";
 import { refresh, urls, type Get } from "@/scripts/golgg/refresh.mjs";
 import { draftsFromGames, freshness, gameSourceId, resultsFromGames, sourcesFromGames, stageLabel } from "@/lib/pro-games";
 import { Files, type ProGames } from "@/lib/schema";
@@ -96,6 +96,17 @@ describe("first pick (draft order since 2026)", () => {
     expect(firstPickOf({ ...page, blue: { ...page.blue, firstPick: false } })).toBeUndefined();
     expect(firstPickOf({ ...page, red: { ...page.red, firstPick: true } })).toBeUndefined();
     expect(firstPickOf({ ...page, blue: { ...page.blue, pickGroups: [2, 2, 1] } })).toBeUndefined();
+  });
+  // Some Gol.gg pages (Demacia semifinals, Oct 15) list each team's picks in role order with no turns drawn, yet show the
+  // First Pick mark (alan, 2026-10-16): the mark is kept, the listed order is never stored as a draft order.
+  it("keeps the mark on a page that draws no turns, and stores no pick order from it", () => {
+    const page = parseGamePage(fixture("game-83542-game.html"));
+    const flat = { ...page, blue: { ...page.blue!, pickGroups: [5] }, red: { ...page.red!, pickGroups: [5] } };
+    expect(firstPickOf(flat)).toBe("blue");
+    expect(turnsDrawn(flat)).toBe(false);
+    expect(turnsDrawn(page)).toBe(true);
+    // Turns drawn only on one side, or against the mark, contradict the page: nothing is accepted.
+    expect(firstPickOf({ ...page, red: { ...page.red!, pickGroups: [5] } })).toBeUndefined();
   });
 });
 
@@ -256,5 +267,14 @@ describe("daily refresh", () => {
   it("freshness says which tournaments are listed, ongoing or finished", () => {
     const f = freshness(empty);
     expect(f.map((x) => [x.label, x.listed])).toEqual([["Demacia Cup", false], ["Worlds 2026", false], ["Worlds 2026 Play-In", false]]);
+  });
+});
+
+describe("stored draft order", () => {
+  // A pick order is stored only from a page that draws the turns, which always carries the First Pick mark: a team's
+  // role order is never taken for its draft order (alan, 2026-10-16).
+  it("comes with the First Pick mark on every recorded game", async () => {
+    const { getProGames } = await import("@/lib/data");
+    for (const g of getProGames().games) if (g.blue.pickOrder || g.red.pickOrder) expect(g.firstPick, `${g.id}`).toBeDefined();
   });
 });

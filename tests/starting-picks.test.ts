@@ -99,11 +99,12 @@ describe("first rotation, first overall and pick order", () => {
     const reader: PickReader = (g, side, role) => {
       if (g.id % 3 === 0) return { situation: "uncertain" };
       const other = side === "blue" ? "red" : "blue";
+      if (!g[side].pickOrder || !g[other].pickOrder) return undefined; // a page that drew no turns stores no order
       const mine = g[side].pickOrder!.indexOf(g[side].picks[role]), theirs = g[other].pickOrder!.indexOf(g[other].picks[role]);
       return { situation: mine < theirs ? "blind" : "response", firstOverall: side === "blue" && mine === 0, laneOpponent: g[other].picks[role] };
     };
     for (const r of startOf("TOP", PATCH, { reader }).rows) {
-      const reads = r.games.map((g) => g.read!);
+      const reads = r.games.flatMap((g) => (g.read ? [g.read] : []));
       expect(r.blind! + r.response!).toBe(r.classified);
       expect(r.classified).toBe(reads.filter((x) => x.situation !== "uncertain").length);
       expect(r.firstOverall ?? 0).toBe(reads.filter((x) => x.firstOverall).length);

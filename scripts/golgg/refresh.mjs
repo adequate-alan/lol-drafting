@@ -97,9 +97,9 @@ async function refreshGames(data, get, { now = new Date() } = {}) {
       const got = pickOrderFor(g, parseGamePage(await get(gameUrl(g.id))), resolve);
       if (got.problems) { rejected.push(`${g.series} game ${g.game} (${gameUrl(g.id)}): pick order not stored, ${got.problems.join("; ")}`); continue; }
       if (!got.firstPick && !g.firstPick) rejected.push(`${g.series} game ${g.game} (${gameUrl(g.id)}): the page does not mark which side picked first.`);
-      const changed = g.blue.pickOrder?.join() !== got.blue.join() || g.red.pickOrder?.join() !== got.red.join() || (!!got.firstPick && g.firstPick !== got.firstPick);
-      g.blue.pickOrder = got.blue;
-      g.red.pickOrder = got.red;
+      // A page that draws no turns lists the picks in role order: that is not a draft order, so none is kept.
+      const changed = g.blue.pickOrder?.join() !== got.blue?.join() || g.red.pickOrder?.join() !== got.red?.join() || (!!got.firstPick && g.firstPick !== got.firstPick);
+      if (got.blue && got.red) { g.blue.pickOrder = got.blue; g.red.pickOrder = got.red; } else { delete g.blue.pickOrder; delete g.red.pickOrder; }
       if (got.firstPick) g.firstPick = got.firstPick;
       if (changed) ordered += 1;
     }
