@@ -798,6 +798,12 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   const wl = await page.$eval(".drafts-table .res.win", (e) => { const cs = getComputedStyle(e); return { color: cs.color, bg: cs.backgroundColor, size: parseFloat(cs.fontSize) }; }).catch(() => null);
   const wlL = await page.$eval(".drafts-table .res.loss", (e) => getComputedStyle(e).color).catch(() => "");
   check("pro drafts: 28px portraits and readable W / L tags in two colours", icon === 28 && !!wl && wl.size >= 11 && wl.color !== wlL, JSON.stringify({ icon, wl, wlL }));
+  // Gol.gg-style rows (alan, 2026-10-16): five small ban portraits per team under its name, smaller than the picks, and
+  // at most one 1st Pick tag per game (Gol.gg's mark; unmarked games show none).
+  const bans = await page.$$eval(".drafts-table tbody.game-rows", (gs) => gs.map((g) => ({ firsts: g.querySelectorAll(".first-pick").length, bans: [...g.querySelectorAll("tr")].map((r) => r.querySelectorAll(".ban-row .ban").length) })));
+  const banIcon = await page.$eval(".drafts-table .ban .champ", (c) => c.getBoundingClientRect().width).catch(() => 0);
+  check("pro drafts: bans show as five small portraits per team, smaller than picks", bans.some((g) => g.bans.every((n) => n === 5)) && bans.every((g) => g.bans.every((n) => n === 0 || n === 5)) && banIcon > 0 && banIcon < icon, `ban ${banIcon}px, pick ${icon}px`);
+  check("pro drafts: at most one 1st Pick tag per game, and some games have one", bans.every((g) => g.firsts <= 1) && bans.some((g) => g.firsts === 1), `${bans.filter((g) => g.firsts).length} games marked`);
   check("pro drafts: no source links or read notes in the table", (await page.locator(".drafts-table .source-links, .drafts-table td.wrap").count()) === 0, "");
   check("pro drafts: the toolbar counts games", /^\d+ of \d+ games$/.test((await page.locator(".drafts-tools .count").textContent()) ?? ""), "");
   // A team seen on both sides, so the filtered view must show both colours.

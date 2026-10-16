@@ -53,3 +53,47 @@ export const carryBuild = (current: string | undefined, next: Pick<ProDraft, "id
   const role = current?.slice(current.lastIndexOf(":") + 1) as Role | undefined;
   return role && ROLES.includes(role) ? buildParam(next, role) : undefined;
 };
+
+// Gol.gg-style match rows (alan, 2026-10-16): each team shows its five bans as small portraits and, when Gol.gg marks it,
+// a 1st Pick tag. Both come from the game record (data/pro-games.json, or the LCK archive records in pro-builds.json
+// `games`), named by Gol.gg game id and the draft's recorded side, and only when that side's team is the draft's team.
+// First pick is Gol.gg's "First Pick" mark, never inferred from side, winner or pick order; a game without it is unknown.
+export interface GameFacts { firstPick?: "blue" | "red"; blue: { team: string; bans: string[] }; red: { team: string; bans: string[] } }
+export type GameFactBook = Record<number, GameFacts>;
+
+export const gameFacts = (records: { id: number; firstPick?: "blue" | "red"; blue: { team: string; bans: string[] }; red: { team: string; bans: string[] } }[]): GameFactBook =>
+  Object.fromEntries(records.map((g) => [g.id, { firstPick: g.firstPick, blue: { team: g.blue.team, bans: g.blue.bans }, red: { team: g.red.team, bans: g.red.bans } }]));
+
+const factsFor = (d: Pick<ProDraft, "id" | "sources" | "side" | "team">, book: GameFactBook) => {
+  const g = book[gameIdOf(d)], side = sideOf(d);
+  return g && side !== "none" && g[side].team === d.team ? { g, side } : undefined;
+};
+
+/** The team's bans in the order Gol.gg lists them (the draft's own, else its game record's); empty when not recorded. */
+export function bansOf(d: Pick<ProDraft, "id" | "sources" | "side" | "team" | "bans">, book: GameFactBook): string[] {
+  if (d.bans?.length) return d.bans;
+  const f = factsFor(d, book);
+  return f ? f.g[f.side].bans : [];
+}
+
+/** true: this team carries Gol.gg's First Pick mark; false: the other team does; undefined: not marked or no record. */
+export function pickedFirst(d: Pick<ProDraft, "id" | "sources" | "side" | "team">, book: GameFactBook): boolean | undefined {
+  const f = factsFor(d, book);
+  return f?.g.firstPick ? f.g.firstPick === f.side : undefined;
+}
+
+/** Gol.gg draws a team's five bans as 3 | 2, the two ban phases, in stored order. Fewer bans have no known split. */
+export const banPhases = (bans: string[]): string[][] => (bans.length === 5 ? [bans.slice(0, 3), bans.slice(3)] : [bans]);
+
+// New Worlds games since the last visit (alan, 2026-10-16). This browser keeps the Gol.gg ids of the Worlds games it has
+// seen (localStorage); a visit flags the ids it had not seen, and keeps that list for the rest of the visit (session), so
+// the next visit starts clean. Nothing leaves the browser. The first visit sets the baseline and flags nothing.
+export const SEEN_KEY = "pro-drafts:seen-worlds";
+export const VISIT_KEY = "pro-drafts:new-worlds";
+
+/** The ids to flag: current ids missing from the stored ones; none when nothing was stored yet. */
+export function newSince(seen: number[] | null, current: number[]): number[] {
+  if (!seen) return [];
+  const have = new Set(seen);
+  return current.filter((id) => !have.has(id));
+}
