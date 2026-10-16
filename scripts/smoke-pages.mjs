@@ -1084,7 +1084,7 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await open("/pro-drafts/?tournament=" + encodeURIComponent("Demacia Cup Global Invitational 2026"));
   await page.locator(".drafts-table tbody.game-rows tr[data-side] .team-cell").first().click();
   await page.locator(".game-panel .game-team").first().waitFor({ timeout: 5000 }).catch(() => {});
-  const teams = await page.$$eval(".game-panel .game-team", (ts) => ts.map((t) => ({ side: t.className.match(/side-(\w+)/)?.[1], name: t.querySelector(".game-team-name")?.textContent, picks: t.querySelectorAll(".pick-btn:not(:disabled)").length, bans: /Bans:/.test(t.textContent) })));
+  const teams = await page.$$eval(".game-panel .game-team", (ts) => ts.map((t) => ({ side: t.className.match(/side-(\w+)/)?.[1], name: t.querySelector(".game-team-name")?.textContent, picks: t.querySelectorAll(".pick-btn:not(:disabled)").length, bans: t.querySelectorAll(".ban-row .ban").length === 5 })));
   check("pro drafts: the open game shows both teams, blue first, five pick buttons and bans each", teams.length === 2 && teams[0].side === "blue" && teams[1].side === "red" && teams.every((t) => t.picks === 5 && t.bans && t.name), JSON.stringify(teams));
   const pick = page.locator(".game-panel .game-team").nth(1).locator(".pick-btn").nth(3);
   const pickName = (await pick.locator(".slot-name").textContent()) ?? "";
