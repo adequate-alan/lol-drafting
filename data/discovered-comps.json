@@ -1,5 +1,5 @@
 {
-  "lastAddition": "2026-10-14",
+  "lastAddition": "2026-10-15",
   "comps": [
     {
       "id": "pro-83448-blue",
@@ -110,6 +110,61 @@
       "games": [
         {
           "game": 83450,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "id": "pro-83452-red",
+      "name": "Front-to-back + Early tempo · Ryze",
+      "addedOn": "2026-10-15",
+      "primary": "front-to-back",
+      "secondary": "tempo",
+      "tags": [
+        "front-to-back",
+        "early-tempo",
+        "hybrid"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "jayce",
+          "job": "Poke"
+        },
+        "JUNGLE": {
+          "champion": "lee-sin",
+          "job": "Catch + damage"
+        },
+        "MID": {
+          "champion": "ryze",
+          "job": "Side-lane carry"
+        },
+        "BOT": {
+          "champion": "miss-fortune",
+          "job": "Poke"
+        },
+        "SUPPORT": {
+          "champion": "nautilus",
+          "job": "Hard engage"
+        }
+      },
+      "winCondition": "Set up first around objectives, let Nautilus start fights, and play front-to-back through Jayce and Miss Fortune. Use the early lanes to set up the first objectives.",
+      "why": "Nautilus in front, Jayce and Miss Fortune dealing damage from range; early-game average 2.4/3.",
+      "timing": "Falls off late. Strongest before first items.",
+      "strengths": [
+        "Fight start: Nautilus",
+        "Side lane: Ryze",
+        "Strong before first items"
+      ],
+      "weaknesses": [
+        {
+          "label": "Thin frontline",
+          "severity": "minor"
+        }
+      ],
+      "difficulty": "medium",
+      "games": [
+        {
+          "game": 83452,
           "side": "red"
         }
       ]
@@ -454,6 +509,62 @@
       ]
     },
     {
+      "id": "pro-83526-blue",
+      "name": "Dive · Ryze",
+      "addedOn": "2026-10-15",
+      "primary": "dive",
+      "secondary": null,
+      "tags": [
+        "dive"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "rumble",
+          "job": "Melee damage"
+        },
+        "JUNGLE": {
+          "champion": "naafiri",
+          "job": "Backline dive"
+        },
+        "MID": {
+          "champion": "ryze",
+          "job": "Side-lane carry"
+        },
+        "BOT": {
+          "champion": "kaisa",
+          "job": "Backline dive"
+        },
+        "SUPPORT": {
+          "champion": "nautilus",
+          "job": "Hard engage"
+        }
+      },
+      "winCondition": "Go in together: Naafiri, Kai'Sa and Nautilus reach the enemy carries at the same time instead of one by one.",
+      "why": "Naafiri, Kai'Sa and Nautilus can all reach the backline.",
+      "timing": "Strongest around two to three items.",
+      "strengths": [
+        "Fight start: Nautilus",
+        "Side lane: Ryze"
+      ],
+      "weaknesses": [
+        {
+          "label": "Short range",
+          "severity": "moderate"
+        },
+        {
+          "label": "Thin frontline",
+          "severity": "minor"
+        }
+      ],
+      "difficulty": "easy",
+      "games": [
+        {
+          "game": 83526,
+          "side": "blue"
+        }
+      ]
+    },
+    {
       "id": "pro-83529-red",
       "name": "Skirmish + Pick · Ryze",
       "addedOn": "2026-10-12",
@@ -560,6 +671,65 @@
       "games": [
         {
           "game": 83542,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "id": "pro-83565-red",
+      "name": "Dive · Kai'Sa",
+      "addedOn": "2026-10-15",
+      "primary": "dive",
+      "secondary": null,
+      "tags": [
+        "dive"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "camille",
+          "job": "Catch + damage"
+        },
+        "JUNGLE": {
+          "champion": "wukong",
+          "job": "Engage + damage"
+        },
+        "MID": {
+          "champion": "ahri",
+          "job": "Catch + damage"
+        },
+        "BOT": {
+          "champion": "kaisa",
+          "job": "Backline dive"
+        },
+        "SUPPORT": {
+          "champion": "nautilus",
+          "job": "Hard engage"
+        }
+      },
+      "winCondition": "Go in together: Camille, Wukong and Ahri reach the enemy carries at the same time instead of one by one.",
+      "why": "Camille, Wukong, Ahri, Kai'Sa and Nautilus can all reach the backline.",
+      "timing": "Weak before first items. Strongest around two to three items.",
+      "strengths": [
+        "Fight start: Wukong and Nautilus",
+        "Frontline: Wukong and Nautilus",
+        "Side lane: Camille",
+        "Tank damage: Camille",
+        "Mixed damage (47% physical)"
+      ],
+      "weaknesses": [
+        {
+          "label": "Short range",
+          "severity": "moderate"
+        },
+        {
+          "label": "Weak waveclear",
+          "severity": "minor"
+        }
+      ],
+      "difficulty": "easy",
+      "games": [
+        {
+          "game": 83565,
           "side": "red"
         }
       ]
@@ -768,6 +938,23 @@
       ]
     },
     {
+      "of": "pro-83452-red",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "lee-sin",
+        "MID": "syndra",
+        "BOT": "miss-fortune",
+        "SUPPORT": "nautilus"
+      },
+      "addedOn": "2026-10-15",
+      "games": [
+        {
+          "game": 83598,
+          "side": "blue"
+        }
+      ]
+    },
+    {
       "of": "pro-83457-red",
       "picks": {
         "TOP": "rumble",
@@ -853,6 +1040,23 @@
       ]
     },
     {
+      "of": "pro-83469-blue",
+      "picks": {
+        "TOP": "camille",
+        "JUNGLE": "wukong",
+        "MID": "akali",
+        "BOT": "kalista",
+        "SUPPORT": "renata-glasc"
+      },
+      "addedOn": "2026-10-15",
+      "games": [
+        {
+          "game": 83599,
+          "side": "blue"
+        }
+      ]
+    },
+    {
       "of": "pro-83521-blue",
       "picks": {
         "TOP": "olaf",
@@ -921,6 +1125,23 @@
       ]
     },
     {
+      "of": "pro-83526-blue",
+      "picks": {
+        "TOP": "ksante",
+        "JUNGLE": "naafiri",
+        "MID": "ryze",
+        "BOT": "kaisa",
+        "SUPPORT": "leona"
+      },
+      "addedOn": "2026-10-15",
+      "games": [
+        {
+          "game": 83595,
+          "side": "red"
+        }
+      ]
+    },
+    {
       "of": "pro-83529-red",
       "picks": {
         "TOP": "olaf",
@@ -938,6 +1159,23 @@
       ]
     },
     {
+      "of": "pro-83529-red",
+      "picks": {
+        "TOP": "olaf",
+        "JUNGLE": "vi",
+        "MID": "cassiopeia",
+        "BOT": "ashe",
+        "SUPPORT": "seraphine"
+      },
+      "addedOn": "2026-10-15",
+      "games": [
+        {
+          "game": 83593,
+          "side": "blue"
+        }
+      ]
+    },
+    {
       "of": "pro-83542-red",
       "picks": {
         "TOP": "kennen",
@@ -950,6 +1188,23 @@
       "games": [
         {
           "game": 83580,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "pro-83565-red",
+      "picks": {
+        "TOP": "ambessa",
+        "JUNGLE": "trundle",
+        "MID": "ahri",
+        "BOT": "kaisa",
+        "SUPPORT": "rell"
+      },
+      "addedOn": "2026-10-15",
+      "games": [
+        {
+          "game": 83602,
           "side": "blue"
         }
       ]

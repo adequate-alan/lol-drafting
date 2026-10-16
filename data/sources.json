@@ -660,7 +660,7 @@
     "url": "https://gol.gg/tournament/tournament-matchlist/Demacia%20Cup%20Global%20Invitational%202026/",
     "type": "golgg-tournament",
     "tournament": "Demacia Cup Global Invitational 2026",
-    "lastChecked": "2026-10-14",
+    "lastChecked": "2026-10-16",
     "refreshStatus": "verified",
     "origin": "golgg-refresh",
     "patch": "16.18"
@@ -670,9 +670,36 @@
     "url": "https://gol.gg/champion/list/season-ALL/split-ALL/tournament-Demacia%20Cup%20Global%20Invitational%202026/",
     "type": "golgg-tournament",
     "tournament": "Demacia Cup Global Invitational 2026",
-    "lastChecked": "2026-10-14",
+    "lastChecked": "2026-10-16",
     "refreshStatus": "verified",
     "origin": "golgg-refresh",
     "patch": "16.18"
+  },
+  {
+    "id": "golgg-tournament-championlist-worlds-2026-play-in",
+    "url": "https://gol.gg/champion/list/season-ALL/split-ALL/tournament-Worlds%202026%20Play-In/",
+    "type": "golgg-tournament",
+    "tournament": "Worlds 2026 Play-In",
+    "lastChecked": "2026-10-16",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh"
+  },
+  {
+    "id": "golgg-tournament-picksandbans-worlds-2026-play-in",
+    "url": "https://gol.gg/tournament/tournament-picksandbans/Worlds%202026%20Play-In/",
+    "type": "golgg-tournament",
+    "tournament": "Worlds 2026 Play-In",
+    "lastChecked": null,
+    "refreshStatus": "not-refreshed",
+    "origin": "golgg-refresh"
+  },
+  {
+    "id": "golgg-tournament-matchlist-worlds-2026-play-in",
+    "url": "https://gol.gg/tournament/tournament-matchlist/Worlds%202026%20Play-In/",
+    "type": "golgg-tournament",
+    "tournament": "Worlds 2026 Play-In",
+    "lastChecked": "2026-10-16",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh"
   }
 ]

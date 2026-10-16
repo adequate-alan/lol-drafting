@@ -2592,6 +2592,28 @@
             "maxrank": 3
           }
         },
+        "jinx": {
+          "Q": {
+            "name": "Switcheroo!",
+            "icon": "JinxQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Zap!",
+            "icon": "JinxW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Flame Chompers!",
+            "icon": "JinxE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Super Mega Death Rocket!",
+            "icon": "JinxR.png",
+            "maxrank": 3
+          }
+        },
         "kaisa": {
           "Q": {
             "name": "Icathian Rain",
@@ -2875,6 +2897,28 @@
           "R": {
             "name": "Wild Growth",
             "icon": "LuluR.png",
+            "maxrank": 3
+          }
+        },
+        "malphite": {
+          "Q": {
+            "name": "Seismic Shard",
+            "icon": "SeismicShard.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Thunderclap",
+            "icon": "Obduracy.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Ground Slam",
+            "icon": "Landslide.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Unstoppable Force",
+            "icon": "UFSlash.png",
             "maxrank": 3
           }
         },
@@ -3535,6 +3579,28 @@
           "R": {
             "name": "Impale",
             "icon": "SkarnerR.png",
+            "maxrank": 3
+          }
+        },
+        "smolder": {
+          "Q": {
+            "name": "Super Scorcher Breath",
+            "icon": "SmolderQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Achooo!",
+            "icon": "SmolderW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Flap, Flap, Flap",
+            "icon": "SmolderE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "MMOOOMMMM!",
+            "icon": "SmolderR.png",
             "maxrank": 3
           }
         },
@@ -7969,6 +8035,3070 @@
           "R": {
             "name": "Lightning Crash",
             "icon": "ZeriR.png",
+            "maxrank": 3
+          }
+        },
+        "ziggs": {
+          "Q": {
+            "name": "Bouncing Bomb",
+            "icon": "ZiggsQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Satchel Charge",
+            "icon": "ZiggsW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Hexplosive Minefield",
+            "icon": "ZiggsE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Mega Inferno Bomb",
+            "icon": "ZiggsR.png",
+            "maxrank": 3
+          }
+        }
+      }
+    },
+    "16.20": {
+      "ddragon": "16.20.1",
+      "items": {
+        "1001": {
+          "name": "Boots",
+          "gold": 300,
+          "stats": ["25 Move Speed"],
+          "text": "Slightly increases Move Speed",
+          "kind": "boots"
+        },
+        "1004": {
+          "name": "Faerie Charm",
+          "gold": 200,
+          "stats": ["50% Base Mana Regen"],
+          "text": "Slightly increases Mana Regen",
+          "kind": "starter-or-component"
+        },
+        "1006": {
+          "name": "Rejuvenation Bead",
+          "gold": 300,
+          "stats": ["100% Base Health Regen"],
+          "text": "Slightly increases Health Regen",
+          "kind": "starter-or-component"
+        },
+        "1011": {
+          "name": "Giant's Belt",
+          "gold": 900,
+          "stats": ["350 Health"],
+          "text": "Greatly increases Health",
+          "from": [1028],
+          "kind": "component"
+        },
+        "1018": {
+          "name": "Cloak of Agility",
+          "gold": 600,
+          "stats": ["15% Critical Strike Chance"],
+          "text": "Increases critical strike chance",
+          "kind": "component"
+        },
+        "1026": {
+          "name": "Blasting Wand",
+          "gold": 850,
+          "stats": ["45 Ability Power"],
+          "text": "Moderately increases Ability Power",
+          "kind": "component"
+        },
+        "1027": {
+          "name": "Sapphire Crystal",
+          "gold": 300,
+          "stats": ["300 Mana"],
+          "text": "Increases Mana",
+          "kind": "starter-or-component"
+        },
+        "1028": {
+          "name": "Ruby Crystal",
+          "gold": 400,
+          "stats": ["150 Health"],
+          "text": "Increases Health",
+          "kind": "starter-or-component"
+        },
+        "1029": {
+          "name": "Cloth Armor",
+          "gold": 300,
+          "stats": ["15 Armor"],
+          "text": "Slightly increases Armor",
+          "kind": "starter-or-component"
+        },
+        "1031": {
+          "name": "Chain Vest",
+          "gold": 800,
+          "stats": ["40 Armor"],
+          "text": "Greatly increases Armor",
+          "from": [1029],
+          "kind": "component"
+        },
+        "1033": {
+          "name": "Null-Magic Mantle",
+          "gold": 400,
+          "stats": ["20 Magic Resist"],
+          "text": "Slightly increases Magic Resist",
+          "kind": "starter-or-component"
+        },
+        "1036": {
+          "name": "Long Sword",
+          "gold": 350,
+          "stats": ["10 Attack Damage"],
+          "text": "Slightly increases Attack Damage",
+          "kind": "starter-or-component"
+        },
+        "1037": {
+          "name": "Pickaxe",
+          "gold": 875,
+          "stats": ["25 Attack Damage"],
+          "text": "Moderately increases Attack Damage",
+          "kind": "component"
+        },
+        "1038": {
+          "name": "B. F. Sword",
+          "gold": 1300,
+          "stats": ["40 Attack Damage"],
+          "text": "Greatly increases Attack Damage",
+          "kind": "component"
+        },
+        "1042": {
+          "name": "Dagger",
+          "gold": 250,
+          "stats": ["10% Attack Speed"],
+          "text": "Slightly increases Attack Speed",
+          "kind": "starter-or-component"
+        },
+        "1043": {
+          "name": "Recurve Bow",
+          "gold": 700,
+          "stats": ["15% Attack Speed"],
+          "text": "Greatly increases Attack Speed",
+          "from": [1042],
+          "kind": "component"
+        },
+        "1052": {
+          "name": "Amplifying Tome",
+          "gold": 400,
+          "stats": ["20 Ability Power"],
+          "text": "Slightly increases Ability Power",
+          "kind": "starter-or-component"
+        },
+        "1053": {
+          "name": "Vampiric Scepter",
+          "gold": 900,
+          "stats": ["15 Attack Damage", "7% Life Steal"],
+          "text": "Basic attacks restore Health",
+          "from": [1036],
+          "kind": "component"
+        },
+        "1054": {
+          "name": "Doran's Shield",
+          "gold": 450,
+          "stats": ["110 Health"],
+          "text": "Good defensive starting item",
+          "kind": "starter-or-component"
+        },
+        "1055": {
+          "name": "Doran's Blade",
+          "gold": 450,
+          "stats": ["10 Attack Damage", "80 Health", "2.5% Omnivamp"],
+          "text": "Good starting item for attackers",
+          "kind": "starter-or-component"
+        },
+        "1056": {
+          "name": "Doran's Ring",
+          "gold": 400,
+          "stats": ["18 Ability Power", "90 Health"],
+          "text": "Good starting item for casters",
+          "kind": "starter-or-component"
+        },
+        "1057": {
+          "name": "Negatron Cloak",
+          "gold": 850,
+          "stats": ["45 Magic Resist"],
+          "text": "Moderately increases Magic Resist",
+          "from": [1033],
+          "kind": "component"
+        },
+        "1058": {
+          "name": "Needlessly Large Rod",
+          "gold": 1200,
+          "stats": ["65 Ability Power"],
+          "text": "Greatly increases Ability Power",
+          "kind": "component"
+        },
+        "1082": {
+          "name": "Dark Seal",
+          "gold": 350,
+          "stats": ["15 Ability Power", "50 Health"],
+          "text": "Provides Ability Power and Mana.  Increases in power as you kill enemies.",
+          "kind": "starter-or-component"
+        },
+        "1083": {
+          "name": "Cull",
+          "gold": 450,
+          "stats": ["7 Attack Damage"],
+          "text": "Provides damage and Life Steal on hit - Killing minions grant bonus Gold",
+          "kind": "starter-or-component"
+        },
+        "1086": {
+          "name": "Doran's Bow",
+          "gold": 400,
+          "stats": ["8 Attack Damage", "15% Attack Speed", "1.5% Omnivamp"],
+          "kind": "starter-or-component"
+        },
+        "1101": {
+          "name": "Scorchclaw Pup",
+          "gold": 450,
+          "kind": "starter-or-component"
+        },
+        "1102": {
+          "name": "Gustwalker Hatchling",
+          "gold": 450,
+          "kind": "starter-or-component"
+        },
+        "1120": {
+          "name": "Doran's Helm",
+          "gold": 450,
+          "stats": ["150 Health", "8 Armor", "8 Magic Resist"],
+          "kind": "starter-or-component"
+        },
+        "2003": {
+          "name": "Health Potion",
+          "gold": 50,
+          "text": "Consume to restore Health over time",
+          "kind": "consumable"
+        },
+        "2010": {
+          "name": "Total Biscuit of Everlasting Will",
+          "gold": 50,
+          "kind": "consumable"
+        },
+        "2019": {
+          "name": "Steel Sigil",
+          "gold": 1100,
+          "stats": ["15 Attack Damage", "30 Armor"],
+          "from": [1029, 1036, 1029],
+          "kind": "component"
+        },
+        "2020": {
+          "name": "The Brutalizer",
+          "gold": 1337,
+          "stats": ["25 Attack Damage", "10 Ability Haste", "5 Lethality"],
+          "from": [2022, 1037],
+          "kind": "component"
+        },
+        "2021": {
+          "name": "Tunneler",
+          "gold": 1150,
+          "stats": ["15 Attack Damage", "250 Health"],
+          "from": [1036, 1028],
+          "kind": "component"
+        },
+        "2022": {
+          "name": "Glowing Mote",
+          "gold": 250,
+          "stats": ["5 Ability Haste"],
+          "kind": "starter-or-component"
+        },
+        "2031": {
+          "name": "Refillable Potion",
+          "gold": 150,
+          "text": "Restores Health over time. Refills at shop.",
+          "kind": "starter-or-component"
+        },
+        "2055": {
+          "name": "Control Ward",
+          "gold": 75,
+          "text": "Used to disable wards and invisible traps in an area.",
+          "kind": "consumable"
+        },
+        "2065": {
+          "name": "Shurelya's Battlesong",
+          "gold": 2200,
+          "stats": ["50 Ability Power", "15 Ability Haste", "4% Move Speed", "125% Base Mana Regen"],
+          "text": "Activate to speed up nearby allies.",
+          "from": [3113, 4642],
+          "kind": "completed"
+        },
+        "2138": {
+          "name": "Elixir of Iron",
+          "gold": 500,
+          "text": "Temporarily increases defenses. Leaves a trail for allies to follow.",
+          "kind": "consumable"
+        },
+        "2139": {
+          "name": "Elixir of Sorcery",
+          "gold": 500,
+          "text": "Temporarily grants Ability Power and Bonus Damage to champions and turrets.",
+          "kind": "consumable"
+        },
+        "2140": {
+          "name": "Elixir of Wrath",
+          "gold": 500,
+          "text": "Temporarily grants Attack Damage and heals you when dealing physical damage to champions.",
+          "kind": "consumable"
+        },
+        "2420": {
+          "name": "Seeker's Armguard",
+          "gold": 1600,
+          "stats": ["40 Ability Power", "25 Armor"],
+          "text": "Activate to become invincible but unable to take actions",
+          "from": [1052, 1029, 1052],
+          "kind": "component"
+        },
+        "2421": {
+          "name": "Shattered Armguard",
+          "gold": 1600,
+          "stats": ["40 Ability Power", "25 Armor"],
+          "text": "Upgrades to stopwatch",
+          "from": [1052, 1029, 1052],
+          "kind": "component"
+        },
+        "2422": {
+          "name": "Slightly Magical Footwear",
+          "gold": 300,
+          "stats": ["25 Move Speed"],
+          "kind": "boots"
+        },
+        "2503": {
+          "name": "Blackfire Torch",
+          "gold": 2800,
+          "stats": ["80 Ability Power", "600 Mana", "20 Ability Haste"],
+          "from": [3802, 2508],
+          "kind": "completed"
+        },
+        "2504": {
+          "name": "Kaenic Rookern",
+          "gold": 2900,
+          "stats": ["400 Health", "80 Magic Resist", "100% Base Health Regen"],
+          "from": [3211, 1057],
+          "kind": "completed"
+        },
+        "2508": {
+          "name": "Fated Ashes",
+          "gold": 900,
+          "stats": ["30 Ability Power"],
+          "from": [1052],
+          "kind": "component"
+        },
+        "2510": {
+          "name": "Dusk and Dawn",
+          "gold": 3100,
+          "stats": ["300 Health", "60 Ability Power", "20 Ability Haste", "20% Attack Speed"],
+          "from": [3057, 1026, 3067, 1042],
+          "kind": "completed"
+        },
+        "2520": {
+          "name": "Bastionbreaker",
+          "gold": 3000,
+          "stats": ["55 Attack Damage", "22 Lethality", "15 Ability Haste"],
+          "from": [2020, 3134],
+          "kind": "completed"
+        },
+        "2523": {
+          "name": "Hexoptics C44",
+          "gold": 2800,
+          "stats": ["55 Attack Damage", "25% Critical Strike Chance"],
+          "from": [1037, 6670, 1036],
+          "kind": "completed"
+        },
+        "2524": {
+          "name": "Bandlepipes",
+          "gold": 2300,
+          "stats": ["200 Health", "15 Ability Haste", "20 Armor", "20 Magic Resist"],
+          "from": [3067, 1029, 1033],
+          "kind": "completed"
+        },
+        "2525": {
+          "name": "Protoplasm Harness",
+          "gold": 2600,
+          "stats": ["600 Health", "20 Ability Haste"],
+          "from": [3067, 1011],
+          "kind": "completed"
+        },
+        "2526": {
+          "name": "Whispering Circlet",
+          "gold": 2250,
+          "stats": ["200 Health", "8% Heal and Shield Power", "75% Base Mana Regen", "300 Mana"],
+          "from": [3114, 1028, 3070],
+          "kind": "component"
+        },
+        "2530": {
+          "name": "Diadem of Songs",
+          "gold": 2250,
+          "stats": ["200 Health", "8% Heal and Shield Power", "1000 Mana", "100% Base Mana Regen"],
+          "kind": "completed"
+        },
+        "3003": {
+          "name": "Archangel's Staff",
+          "gold": 2900,
+          "stats": ["70 Ability Power", "600 Mana", "25 Ability Haste"],
+          "text": "Increases Ability Power based on maximum Mana",
+          "from": [3070, 3802, 3108],
+          "kind": "completed"
+        },
+        "3004": {
+          "name": "Manamune",
+          "gold": 2900,
+          "stats": ["35 Attack Damage", "500 Mana", "15 Ability Haste"],
+          "text": "Increases Attack Damage based on maximum Mana",
+          "from": [3070, 3133, 1036],
+          "kind": "completed"
+        },
+        "3006": {
+          "name": "Berserker's Greaves",
+          "gold": 1100,
+          "stats": ["30% Attack Speed", "45 Move Speed"],
+          "text": "Enhances Move Speed and Attack Speed",
+          "from": [1001, 1042, 1042],
+          "kind": "boots"
+        },
+        "3008": {
+          "name": "Gluttonous Greaves",
+          "gold": 1000,
+          "stats": ["45 Move Speed", "4% Omnivamp"],
+          "text": "Increases Attack Damage based on maximum Mana",
+          "from": [1001],
+          "kind": "boots"
+        },
+        "3009": {
+          "name": "Boots of Swiftness",
+          "gold": 1000,
+          "stats": ["55 Move Speed"],
+          "text": "Enhances Move Speed and reduces the effect of slows",
+          "from": [1001],
+          "kind": "boots"
+        },
+        "3020": {
+          "name": "Sorcerer's Shoes",
+          "gold": 1100,
+          "stats": ["12 Magic Penetration", "45 Move Speed"],
+          "text": "Enhances Move Speed and magic damage",
+          "from": [1001],
+          "kind": "boots"
+        },
+        "3026": {
+          "name": "Guardian Angel",
+          "gold": 3200,
+          "stats": ["55 Attack Damage", "45 Armor"],
+          "text": "Periodically revives champion upon death",
+          "from": [2019, 1038],
+          "kind": "completed"
+        },
+        "3031": {
+          "name": "Infinity Edge",
+          "gold": 3500,
+          "stats": ["75 Attack Damage", "25% Critical Strike Chance", "30% Critical Strike Damage"],
+          "text": "Massively enhances critical strikes",
+          "from": [1038, 1037, 1018],
+          "kind": "completed"
+        },
+        "3032": {
+          "name": "Yun Tal Wildarrows",
+          "gold": 3000,
+          "stats": ["50 Attack Damage", "45% Attack Speed", "0% Critical Strike Chance"],
+          "from": [1038, 3144, 1036],
+          "kind": "completed"
+        },
+        "3035": {
+          "name": "Last Whisper",
+          "gold": 1450,
+          "stats": ["20 Attack Damage", "18% Armor Penetration"],
+          "text": "Overcomes enemies with high Armor",
+          "from": [1036, 1036],
+          "kind": "component"
+        },
+        "3036": {
+          "name": "Lord Dominik's Regards",
+          "gold": 3300,
+          "stats": ["35 Attack Damage", "35% Armor Penetration", "25% Critical Strike Chance"],
+          "text": "Overcomes enemies with high health and armor",
+          "from": [3035, 6670],
+          "kind": "completed"
+        },
+        "3040": {
+          "name": "Seraph's Embrace",
+          "gold": 2900,
+          "stats": ["70 Ability Power", "1000 Mana", "25 Ability Haste"],
+          "kind": "completed"
+        },
+        "3041": {
+          "name": "Mejai's Soulstealer",
+          "gold": 1500,
+          "stats": ["20 Ability Power", "100 Health"],
+          "text": "Grants Ability Power for kills and assists",
+          "from": [1082],
+          "kind": "component"
+        },
+        "3042": {
+          "name": "Muramana",
+          "gold": 2900,
+          "stats": ["35 Attack Damage", "1000 Mana", "15 Ability Haste"],
+          "kind": "completed"
+        },
+        "3044": {
+          "name": "Phage",
+          "gold": 1100,
+          "stats": ["15 Attack Damage", "200 Health"],
+          "text": "Attacks and kills give a small burst of speed",
+          "from": [1028, 1036],
+          "kind": "component"
+        },
+        "3046": {
+          "name": "Phantom Dancer",
+          "gold": 2650,
+          "stats": ["65% Attack Speed", "25% Critical Strike Chance", "10% Move Speed"],
+          "text": "Move faster while attacking enemies and gain a shield when on low health.",
+          "from": [1042, 3086, 1042],
+          "kind": "completed"
+        },
+        "3047": {
+          "name": "Plated Steelcaps",
+          "gold": 1200,
+          "stats": ["25 Armor", "45 Move Speed"],
+          "text": "Enhances Move Speed and reduces incoming basic attack damage",
+          "from": [1001, 1029],
+          "kind": "boots"
+        },
+        "3050": {
+          "name": "Zeke's Convergence",
+          "gold": 2200,
+          "stats": ["300 Health", "25 Armor", "25 Magic Resist", "10 Ability Haste"],
+          "text": "Grants you and your ally bonuses when you cast your ultimate.",
+          "from": [3067, 1029, 1033],
+          "kind": "completed"
+        },
+        "3051": {
+          "name": "Hearthbound Axe",
+          "gold": 1200,
+          "stats": ["20 Attack Damage", "20% Attack Speed"],
+          "from": [1036, 1042, 1036],
+          "kind": "component"
+        },
+        "3053": {
+          "name": "Sterak's Gage",
+          "gold": 3200,
+          "stats": ["400 Health", "20% Tenacity"],
+          "text": "Shields against large bursts of damage",
+          "from": [1037, 2021, 1028],
+          "kind": "completed"
+        },
+        "3057": {
+          "name": "Sheen",
+          "gold": 900,
+          "stats": ["10 Ability Haste"],
+          "text": "Grants a bonus to next attack after spell cast",
+          "from": [2022],
+          "kind": "component"
+        },
+        "3065": {
+          "name": "Spirit Visage",
+          "gold": 2700,
+          "stats": ["400 Health", "50 Magic Resist", "10 Ability Haste", "100% Base Health Regen"],
+          "text": "Increases Health and healing effects",
+          "from": [3211, 3067],
+          "kind": "completed"
+        },
+        "3066": {
+          "name": "Winged Moonplate",
+          "gold": 800,
+          "stats": ["200 Health", "4% Move Speed"],
+          "from": [1028],
+          "kind": "component"
+        },
+        "3067": {
+          "name": "Kindlegem",
+          "gold": 800,
+          "stats": ["200 Health", "10 Ability Haste"],
+          "text": "Increases Health and Cooldown Reduction",
+          "from": [1028, 2022],
+          "kind": "component"
+        },
+        "3070": {
+          "name": "Tear of the Goddess",
+          "gold": 400,
+          "stats": ["240 Mana"],
+          "text": "Increases maximum Mana as Mana is spent",
+          "kind": "starter-or-component"
+        },
+        "3071": {
+          "name": "Black Cleaver",
+          "gold": 3000,
+          "stats": ["45 Attack Damage", "400 Health", "20 Ability Haste"],
+          "text": "Dealing physical damage to enemy champions reduces their Armor",
+          "from": [3044, 3067, 1037],
+          "kind": "completed"
+        },
+        "3072": {
+          "name": "Bloodthirster",
+          "gold": 3400,
+          "stats": ["80 Attack Damage", "15% Life Steal"],
+          "text": "Grants Attack Damage, Life Steal and Life Steal now overheals",
+          "from": [1038, 1037, 1053],
+          "kind": "completed"
+        },
+        "3073": {
+          "name": "Experimental Hexplate",
+          "gold": 3000,
+          "stats": ["40 Attack Damage", "20% Attack Speed", "450 Health"],
+          "text": "Increases maximum Mana as Mana is spent",
+          "from": [2021, 1042, 3044],
+          "kind": "completed"
+        },
+        "3074": {
+          "name": "Ravenous Hydra",
+          "gold": 3300,
+          "stats": ["65 Attack Damage", "15 Ability Haste", "12% Life Steal"],
+          "text": "Melee attacks hit nearby enemies, dealing damage and restoring Health",
+          "from": [3077, 1053, 3133],
+          "kind": "completed"
+        },
+        "3076": {
+          "name": "Bramble Vest",
+          "gold": 800,
+          "stats": ["30 Armor"],
+          "from": [1029, 1029],
+          "kind": "component"
+        },
+        "3077": {
+          "name": "Tiamat",
+          "gold": 1200,
+          "stats": ["25 Attack Damage"],
+          "text": "Melee attacks hit nearby enemies",
+          "from": [1036, 1036],
+          "kind": "component"
+        },
+        "3078": {
+          "name": "Trinity Force",
+          "gold": 3333,
+          "stats": ["36 Attack Damage", "30% Attack Speed", "333 Health", "15 Ability Haste"],
+          "text": "Tons of Damage",
+          "from": [3057, 3044, 3051],
+          "kind": "completed"
+        },
+        "3082": {
+          "name": "Warden's Mail",
+          "gold": 1000,
+          "stats": ["40 Armor"],
+          "from": [1029, 1029],
+          "kind": "component"
+        },
+        "3085": {
+          "name": "Runaan's Hurricane",
+          "gold": 2650,
+          "stats": ["40% Attack Speed", "25% Critical Strike Chance", "5% Move Speed"],
+          "text": "Ranged attacks fire two bolts at nearby enemies",
+          "from": [3086, 3144],
+          "kind": "completed"
+        },
+        "3086": {
+          "name": "Zeal",
+          "gold": 1200,
+          "stats": ["15% Attack Speed", "15% Critical Strike Chance", "4% Move Speed"],
+          "text": "Slight bonuses to Critical Strike Chance, Move Speed and Attack Speed",
+          "from": [1018, 1042],
+          "kind": "component"
+        },
+        "3087": {
+          "name": "Statikk Shiv",
+          "gold": 3000,
+          "stats": ["45 Attack Damage", "45 Ability Power", "30% Attack Speed", "4% Move Speed"],
+          "text": "Movement builds charges that release chain lightning on basic attack",
+          "from": [3144, 3113, 1037],
+          "kind": "completed"
+        },
+        "3089": {
+          "name": "Rabadon's Deathcap",
+          "gold": 3500,
+          "stats": ["130 Ability Power"],
+          "text": "Massively increases Ability Power",
+          "from": [1058, 1058],
+          "kind": "completed"
+        },
+        "3091": {
+          "name": "Wit's End",
+          "gold": 2800,
+          "stats": ["50% Attack Speed", "45 Magic Resist", "20% Tenacity"],
+          "text": "Resist magic damage and claw your way back to life.",
+          "from": [1043, 1057, 1043],
+          "kind": "completed"
+        },
+        "3094": {
+          "name": "Rapid Firecannon",
+          "gold": 2650,
+          "stats": ["35% Attack Speed", "25% Critical Strike Chance", "4% Move Speed"],
+          "text": "Movement builds charges that release a sieging fire attack on release",
+          "from": [3086, 3144],
+          "kind": "completed"
+        },
+        "3100": {
+          "name": "Lich Bane",
+          "gold": 2900,
+          "stats": ["100 Ability Power", "6% Move Speed", "10 Ability Haste"],
+          "text": "Grants a bonus to next attack after spell cast",
+          "from": [3057, 3113, 1026],
+          "kind": "completed"
+        },
+        "3108": {
+          "name": "Fiendish Codex",
+          "gold": 850,
+          "stats": ["25 Ability Power", "10 Ability Haste"],
+          "text": "Increases Ability Power and Cooldown Reduction",
+          "from": [1052, 2022],
+          "kind": "component"
+        },
+        "3109": {
+          "name": "Knight's Vow",
+          "gold": 2300,
+          "stats": ["200 Health", "40 Armor", "10 Ability Haste", "100% Base Health Regen"],
+          "text": "Partner with an ally to protect each other",
+          "from": [3067, 1031, 1006],
+          "kind": "completed"
+        },
+        "3110": {
+          "name": "Frozen Heart",
+          "gold": 2500,
+          "stats": ["75 Armor", "400 Mana", "20 Ability Haste"],
+          "text": "Massively increases Armor and slows enemy basic attacks",
+          "from": [3082, 3024],
+          "kind": "completed"
+        },
+        "3111": {
+          "name": "Mercury's Treads",
+          "gold": 1250,
+          "stats": ["20 Magic Resist", "45 Move Speed", "30% Tenacity"],
+          "text": "Increases Move Speed and reduces duration of disabling effects",
+          "from": [1001, 1033],
+          "kind": "boots"
+        },
+        "3113": {
+          "name": "Aether Wisp",
+          "gold": 900,
+          "stats": ["30 Ability Power", "4% Move Speed"],
+          "text": "Increases Ability Power and Move Speed",
+          "from": [1052],
+          "kind": "component"
+        },
+        "3114": {
+          "name": "Forbidden Idol",
+          "gold": 600,
+          "stats": ["50% Base Mana Regen", "8% Heal and Shield Power"],
+          "text": "Increases Heal and Shield Power, Mana Regeneration, and Cooldown Reduction",
+          "from": [1004],
+          "kind": "component"
+        },
+        "3115": {
+          "name": "Nashor's Tooth",
+          "gold": 2900,
+          "stats": ["80 Ability Power", "50% Attack Speed", "15 Ability Haste"],
+          "text": "Increases Attack Speed, Ability Power, and Cooldown Reduction",
+          "from": [1043, 1026, 3108],
+          "kind": "completed"
+        },
+        "3118": {
+          "name": "Malignance",
+          "gold": 2700,
+          "stats": ["90 Ability Power", "600 Mana", "15 Ability Haste"],
+          "text": "Partner with an ally to protect each other",
+          "from": [3802, 1026],
+          "kind": "completed"
+        },
+        "3124": {
+          "name": "Guinsoo's Rageblade",
+          "gold": 3000,
+          "stats": ["30 Attack Damage", "30 Ability Power", "25% Attack Speed"],
+          "from": [1052, 1043, 1037],
+          "kind": "completed"
+        },
+        "3133": {
+          "name": "Caulfield's Warhammer",
+          "gold": 1050,
+          "stats": ["20 Attack Damage", "10 Ability Haste"],
+          "text": "Attack Damage and Cooldown Reduction",
+          "from": [1036, 2022, 1036],
+          "kind": "component"
+        },
+        "3134": {
+          "name": "Serrated Dirk",
+          "gold": 1000,
+          "stats": ["20 Attack Damage", "10 Lethality"],
+          "text": "Increases Attack Damage and Lethality",
+          "from": [1036, 1036],
+          "kind": "component"
+        },
+        "3135": {
+          "name": "Void Staff",
+          "gold": 3000,
+          "stats": ["95 Ability Power", "40% Magic Penetration"],
+          "text": "Increases magic damage",
+          "from": [4630, 1026],
+          "kind": "completed"
+        },
+        "3137": {
+          "name": "Cryptbloom",
+          "gold": 3000,
+          "stats": ["75 Ability Power", "30% Magic Penetration", "20 Ability Haste"],
+          "text": "Activate to remove all debuffs and grant massive Move Speed",
+          "from": [4630, 3108, 3108],
+          "kind": "completed"
+        },
+        "3139": {
+          "name": "Mercurial Scimitar",
+          "gold": 3200,
+          "stats": ["50 Attack Damage", "35 Magic Resist", "10% Life Steal"],
+          "text": "Activate to remove all crowd control debuffs and grant massive Move Speed",
+          "from": [3140, 1037, 1053],
+          "kind": "completed"
+        },
+        "3140": {
+          "name": "Quicksilver Sash",
+          "gold": 1300,
+          "stats": ["30 Magic Resist"],
+          "text": "Activate to remove all crowd control debuffs",
+          "from": [1033],
+          "kind": "component"
+        },
+        "3143": {
+          "name": "Randuin's Omen",
+          "gold": 2700,
+          "stats": ["350 Health", "75 Armor"],
+          "text": "Greatly increases defenses, activate to slow nearby enemies",
+          "from": [3082, 1011],
+          "kind": "completed"
+        },
+        "3144": {
+          "name": "Scout's Slingshot",
+          "gold": 600,
+          "stats": ["20% Attack Speed"],
+          "text": "Activate to deal magic damage and slow target champion",
+          "from": [1042, 1042],
+          "kind": "component"
+        },
+        "3145": {
+          "name": "Hextech Alternator",
+          "gold": 1100,
+          "stats": ["45 Ability Power"],
+          "text": "Increases Ability Power. Deal bonus magic damage on attack periodically.",
+          "from": [1052, 1052],
+          "kind": "component"
+        },
+        "3146": {
+          "name": "Hextech Gunblade",
+          "gold": 3000,
+          "stats": ["80 Ability Power", "40 Attack Damage", "10% Omnivamp"],
+          "text": "Increases Attack Damage and Ability Power, activate to slow a target",
+          "from": [1053, 3145, 1052],
+          "kind": "completed"
+        },
+        "3147": {
+          "name": "Haunting Guise",
+          "gold": 1300,
+          "stats": ["30 Ability Power", "200 Health"],
+          "text": "Deals additional physical damage when ambushing enemies",
+          "from": [1052, 1028],
+          "kind": "component"
+        },
+        "3152": {
+          "name": "Hextech Rocketbelt",
+          "gold": 2650,
+          "stats": ["60 Ability Power", "350 Health", "10 Ability Haste"],
+          "text": "Activate to dash forward and unleash a fiery explosion",
+          "from": [3145, 3067, 1028],
+          "kind": "completed"
+        },
+        "3153": {
+          "name": "Blade of The Ruined King",
+          "gold": 3200,
+          "stats": ["40 Attack Damage", "25% Attack Speed", "10% Life Steal"],
+          "text": "Deals damage based on target's Health, can steal Move Speed",
+          "from": [1053, 1043, 1037],
+          "kind": "completed"
+        },
+        "3155": {
+          "name": "Hexdrinker",
+          "gold": 1300,
+          "stats": ["25 Attack Damage", "25 Magic Resist"],
+          "text": "Increases Attack Damage and Magic Resist",
+          "from": [1036, 1033, 1036],
+          "kind": "component"
+        },
+        "3157": {
+          "name": "Zhonya's Hourglass",
+          "gold": 3250,
+          "stats": ["105 Ability Power", "50 Armor"],
+          "text": "Activate to become invincible but unable to take actions",
+          "from": [1058, 2420],
+          "kind": "completed"
+        },
+        "3158": {
+          "name": "Ionian Boots of Lucidity",
+          "gold": 900,
+          "stats": ["10 Ability Haste", "45 Move Speed"],
+          "text": "Increases Move Speed and Cooldown Reduction",
+          "from": [1001, 2022],
+          "kind": "boots"
+        },
+        "3161": {
+          "name": "Spear of Shojin",
+          "gold": 3100,
+          "stats": ["45 Attack Damage", "450 Health"],
+          "text": "Reduce damage taken from champions by a flat amount. Attack while near multiple enemy champions to increase this amount for a short time.",
+          "from": [1037, 2021, 1028],
+          "kind": "completed"
+        },
+        "3170": {
+          "name": "Swiftmarch",
+          "gold": 1000,
+          "stats": ["65 Move Speed"],
+          "text": "Improves defense and reduces duration of disabling effects",
+          "from": [3009],
+          "kind": "boots"
+        },
+        "3171": {
+          "name": "Crimson Lucidity",
+          "gold": 900,
+          "stats": ["20 Ability Haste", "45 Move Speed"],
+          "from": [3158],
+          "kind": "boots"
+        },
+        "3172": {
+          "name": "Gunmetal Greaves",
+          "gold": 1100,
+          "stats": ["45% Attack Speed", "45 Move Speed", "5% Life Steal"],
+          "text": "Mobility and Tenacity",
+          "from": [3006],
+          "kind": "component"
+        },
+        "3173": {
+          "name": "Chainlaced Crushers",
+          "gold": 1250,
+          "stats": ["25 Magic Resist", "45 Move Speed", "30% Tenacity"],
+          "text": "Increases Move Speed and Cooldown Reduction",
+          "from": [3111],
+          "kind": "boots"
+        },
+        "3174": {
+          "name": "Armored Advance",
+          "gold": 1200,
+          "stats": ["35 Armor", "45 Move Speed"],
+          "text": "Deal damage to empower your heals and shields",
+          "from": [3047],
+          "kind": "boots"
+        },
+        "3175": {
+          "name": "Spellslinger's Shoes",
+          "gold": 1100,
+          "stats": ["20 Magic Penetration", "8% Magic Penetration", "45 Move Speed"],
+          "from": [3020],
+          "kind": "boots"
+        },
+        "3190": {
+          "name": "Locket of the Iron Solari",
+          "gold": 2200,
+          "stats": ["200 Health", "30 Armor", "30 Magic Resist", "10 Ability Haste"],
+          "text": "Activate to shield nearby allies from damage",
+          "from": [3067, 1029, 1033],
+          "kind": "completed"
+        },
+        "3211": {
+          "name": "Spectre's Cowl",
+          "gold": 1250,
+          "stats": ["200 Health", "35 Magic Resist", "100% Base Health Regen"],
+          "text": "Improves defense and grants regeneration upon being damaged",
+          "from": [1028, 1033, 1006],
+          "kind": "component"
+        },
+        "3222": {
+          "name": "Mikael's Blessing",
+          "gold": 2300,
+          "stats": ["250 Health", "100% Base Mana Regen", "12% Heal and Shield Power", "15 Ability Haste"],
+          "text": "Activate to remove all disabling effects from an allied champion",
+          "from": [3067, 3114],
+          "kind": "completed"
+        },
+        "3302": {
+          "name": "Terminus",
+          "gold": 3000,
+          "stats": ["30 Attack Damage", "35% Attack Speed"],
+          "text": "Kill minions periodically to heal and grant gold to a nearby ally",
+          "from": [3051, 1043],
+          "kind": "completed"
+        },
+        "3340": {
+          "name": "Stealth Ward",
+          "gold": 0,
+          "text": "Periodically place a Stealth Ward",
+          "kind": "trinket"
+        },
+        "3363": {
+          "name": "Farsight Alteration",
+          "gold": 0,
+          "text": "Grants increased range and reveals the targetted area",
+          "kind": "trinket"
+        },
+        "3364": {
+          "name": "Oracle Lens",
+          "gold": 0,
+          "text": "Disables nearby invisible wards and traps for a duration",
+          "kind": "trinket"
+        },
+        "3504": {
+          "name": "Ardent Censer",
+          "gold": 2200,
+          "stats": ["45 Ability Power", "10% Heal and Shield Power", "125% Base Mana Regen", "4% Move Speed"],
+          "text": "Shield and heal effects on other units grant both of you Attack Speed and their attacks deal additional on-hit magic damage.",
+          "from": [3113, 3114],
+          "kind": "completed"
+        },
+        "3508": {
+          "name": "Essence Reaver",
+          "gold": 3050,
+          "stats": ["50 Attack Damage", "20 Ability Haste", "25% Critical Strike Chance"],
+          "from": [3057, 3133, 1018],
+          "kind": "completed"
+        },
+        "3742": {
+          "name": "Dead Man's Plate",
+          "gold": 2900,
+          "stats": ["350 Health", "55 Armor", "4% Move Speed"],
+          "text": "Build momentum as you move around then smash into enemies.",
+          "from": [3066, 1028, 1031],
+          "kind": "completed"
+        },
+        "3748": {
+          "name": "Titanic Hydra",
+          "gold": 3300,
+          "stats": ["40 Attack Damage", "600 Health"],
+          "text": "Deals area of effect damage based on owner's health",
+          "from": [3077, 2021, 1011],
+          "kind": "completed"
+        },
+        "3802": {
+          "name": "Lost Chapter",
+          "gold": 1200,
+          "stats": ["40 Ability Power", "300 Mana", "10 Ability Haste"],
+          "text": "Restores Mana upon levelling up.",
+          "from": [1052, 1027, 2022],
+          "kind": "component"
+        },
+        "3803": {
+          "name": "Catalyst of Aeons",
+          "gold": 1300,
+          "stats": ["300 Health", "375 Mana"],
+          "from": [1028, 1028, 1027],
+          "kind": "component"
+        },
+        "3814": {
+          "name": "Edge of Night",
+          "gold": 3000,
+          "stats": ["50 Attack Damage", "15 Lethality", "250 Health"],
+          "text": "Periodically blocks enemy abilities",
+          "from": [3134, 2021],
+          "kind": "completed"
+        },
+        "3869": {
+          "name": "Celestial Opposition",
+          "gold": 400,
+          "stats": ["200 Health", "75% Base Health Regen", "75% Base Mana Regen", "9 Gold Per 10 Seconds"],
+          "from": [3867],
+          "kind": "component"
+        },
+        "3870": {
+          "name": "Dream Maker",
+          "gold": 400,
+          "stats": ["200 Health", "75% Base Health Regen", "75% Base Mana Regen", "9 Gold Per 10 Seconds"],
+          "from": [3867],
+          "kind": "component"
+        },
+        "3871": {
+          "name": "Zaz'Zak's Realmspike",
+          "gold": 400,
+          "stats": ["200 Health", "75% Base Health Regen", "75% Base Mana Regen", "9 Gold Per 10 Seconds"],
+          "from": [3867],
+          "kind": "component"
+        },
+        "3877": {
+          "name": "Bloodsong",
+          "gold": 400,
+          "stats": ["200 Health", "75% Base Health Regen", "75% Base Mana Regen", "9 Gold Per 10 Seconds"],
+          "from": [3867],
+          "kind": "component"
+        },
+        "3916": {
+          "name": "Oblivion Orb",
+          "gold": 800,
+          "stats": ["25 Ability Power"],
+          "text": "Increases magic damage",
+          "from": [1052],
+          "kind": "component"
+        },
+        "4005": {
+          "name": "Imperial Mandate",
+          "gold": 2400,
+          "stats": ["60 Ability Power", "15 Ability Haste", "150% Base Mana Regen"],
+          "text": "Defer damage until later.",
+          "from": [1052, 4642, 1052],
+          "kind": "completed"
+        },
+        "4628": {
+          "name": "Horizon Focus",
+          "gold": 2700,
+          "stats": ["75 Ability Power", "25 Ability Haste"],
+          "text": "Immobilizing a champion causes lightning to strike them",
+          "from": [3108, 3108, 1052],
+          "kind": "completed"
+        },
+        "4629": {
+          "name": "Cosmic Drive",
+          "gold": 3000,
+          "stats": ["70 Ability Power", "350 Health", "25 Ability Haste", "4% Move Speed"],
+          "text": "Massive amounts of Cooldown Reduction",
+          "from": [3067, 3113, 3108],
+          "kind": "completed"
+        },
+        "4630": {
+          "name": "Blighting Jewel",
+          "gold": 1100,
+          "stats": ["25 Ability Power", "13% Magic Penetration"],
+          "from": [1052],
+          "kind": "component"
+        },
+        "4632": {
+          "name": "Verdant Barrier",
+          "gold": 1600,
+          "stats": ["40 Ability Power", "25 Magic Resist"],
+          "from": [1052, 1033, 1052],
+          "kind": "component"
+        },
+        "4633": {
+          "name": "Riftmaker",
+          "gold": 3100,
+          "stats": ["70 Ability Power", "350 Health", "15 Ability Haste"],
+          "from": [3147, 3108],
+          "kind": "completed"
+        },
+        "4642": {
+          "name": "Bandleglass Mirror",
+          "gold": 900,
+          "stats": ["20 Ability Power", "100% Base Mana Regen", "10 Ability Haste"],
+          "from": [1004, 1052, 2022],
+          "kind": "component"
+        },
+        "4645": {
+          "name": "Shadowflame",
+          "gold": 3200,
+          "stats": ["110 Ability Power", "15 Magic Penetration"],
+          "from": [3145, 1058],
+          "kind": "completed"
+        },
+        "4646": {
+          "name": "Stormsurge",
+          "gold": 2800,
+          "stats": ["90 Ability Power", "15 Magic Penetration", "6% Move Speed"],
+          "from": [3145, 3113],
+          "kind": "completed"
+        },
+        "6333": {
+          "name": "Death's Dance",
+          "gold": 3300,
+          "stats": ["60 Attack Damage", "50 Armor", "15 Ability Haste"],
+          "from": [2019, 1037, 3133],
+          "kind": "completed"
+        },
+        "6610": {
+          "name": "Sundered Sky",
+          "gold": 3100,
+          "stats": ["40 Attack Damage", "400 Health", "10 Ability Haste"],
+          "from": [2021, 3133],
+          "kind": "completed"
+        },
+        "6617": {
+          "name": "Moonstone Renewer",
+          "gold": 2200,
+          "stats": ["25 Ability Power", "200 Health", "20 Ability Haste", "125% Base Mana Regen"],
+          "text": "Your heals and shields cool down faster and have greater effect on low health allies",
+          "from": [3067, 4642],
+          "kind": "completed"
+        },
+        "6620": {
+          "name": "Echoes of Helia",
+          "gold": 2200,
+          "stats": ["35 Ability Power", "200 Health", "20 Ability Haste", "125% Base Mana Regen"],
+          "text": "Damage low-health enemies to trigger a cursed explosion, dealing damage and slowing nearby foes",
+          "from": [3067, 4642],
+          "kind": "completed"
+        },
+        "6631": {
+          "name": "Stridebreaker",
+          "gold": 3300,
+          "stats": ["40 Attack Damage", "25% Attack Speed", "450 Health"],
+          "from": [3077, 3044, 1042],
+          "kind": "completed"
+        },
+        "6653": {
+          "name": "Liandry's Torment",
+          "gold": 3000,
+          "stats": ["60 Ability Power", "300 Health"],
+          "text": "Charge up in combat to deal high damage over time, especially against durable enemies",
+          "from": [3147, 2508],
+          "kind": "completed"
+        },
+        "6655": {
+          "name": "Luden's Echo",
+          "gold": 2750,
+          "stats": ["100 Ability Power", "600 Mana", "10 Ability Haste"],
+          "text": "High burst damage, good against fragile foes",
+          "from": [3802, 3145],
+          "kind": "completed"
+        },
+        "6657": {
+          "name": "Rod of Ages",
+          "gold": 2600,
+          "stats": ["45 Ability Power", "350 Health", "500 Mana"],
+          "from": [1026, 3803],
+          "kind": "completed"
+        },
+        "6662": {
+          "name": "Iceborn Gauntlet",
+          "gold": 2900,
+          "stats": ["300 Health", "50 Armor", "15 Ability Haste"],
+          "text": "High Magic Resist.Passively slow nearby enemies. When spells are cast near you, release a wave of energy that damages and slows.",
+          "from": [3057, 1028, 1031],
+          "kind": "completed"
+        },
+        "6665": {
+          "name": "Jak'Sho, The Protean",
+          "gold": 3200,
+          "stats": ["350 Health", "45 Armor", "45 Magic Resist"],
+          "from": [1011, 1031, 1057],
+          "kind": "completed"
+        },
+        "6670": {
+          "name": "Noonquiver",
+          "gold": 1300,
+          "stats": ["15 Attack Damage", "20% Critical Strike Chance"],
+          "from": [1036, 1018],
+          "kind": "component"
+        },
+        "6672": {
+          "name": "Kraken Slayer",
+          "gold": 3000,
+          "stats": ["45 Attack Damage", "40% Attack Speed", "4% Move Speed"],
+          "from": [6690, 3051, 1043],
+          "kind": "completed"
+        },
+        "6673": {
+          "name": "Immortal Shieldbow",
+          "gold": 3000,
+          "stats": ["55 Attack Damage", "25% Critical Strike Chance"],
+          "from": [1037, 6670],
+          "kind": "completed"
+        },
+        "6675": {
+          "name": "Navori Flickerblade",
+          "gold": 2650,
+          "stats": ["40% Attack Speed", "25% Critical Strike Chance", "4% Move Speed"],
+          "from": [1042, 3086, 1042],
+          "kind": "completed"
+        },
+        "6676": {
+          "name": "The Collector",
+          "gold": 3000,
+          "stats": ["50 Attack Damage", "10 Lethality", "25% Critical Strike Chance"],
+          "from": [1037, 3134, 1018],
+          "kind": "completed"
+        },
+        "6690": {
+          "name": "Rectrix",
+          "gold": 775,
+          "stats": ["15 Attack Damage", "4% Move Speed"],
+          "from": [1036],
+          "kind": "component"
+        },
+        "6692": {
+          "name": "Eclipse",
+          "gold": 2900,
+          "stats": ["60 Attack Damage", "15 Ability Haste"],
+          "from": [3133, 1037, 1036],
+          "kind": "completed"
+        },
+        "6694": {
+          "name": "Serylda's Grudge",
+          "gold": 3000,
+          "stats": ["45 Attack Damage", "35% Armor Penetration", "15 Ability Haste"],
+          "from": [3133, 3035],
+          "kind": "completed"
+        },
+        "6695": {
+          "name": "Serpent's Fang",
+          "gold": 2500,
+          "stats": ["55 Attack Damage", "15 Lethality"],
+          "from": [3134, 1037],
+          "kind": "completed"
+        },
+        "6697": {
+          "name": "Hubris",
+          "gold": 2800,
+          "stats": ["55 Attack Damage", "18 Lethality", "10 Ability Haste"],
+          "from": [3134, 3133],
+          "kind": "completed"
+        },
+        "6699": {
+          "name": "Voltaic Cyclosword",
+          "gold": 3000,
+          "stats": ["55 Attack Damage", "10 Lethality", "10 Ability Haste"],
+          "from": [2020, 1036, 1036],
+          "kind": "completed"
+        }
+      },
+      "runes": {
+        "5001": {
+          "name": "Health Scaling",
+          "icon": "perk-images/StatMods/StatModsHealthPlusIcon.png",
+          "short": "+10-180 Health (based on level)",
+          "shard": true
+        },
+        "5005": {
+          "name": "Attack Speed",
+          "icon": "perk-images/StatMods/StatModsAttackSpeedIcon.png",
+          "short": "+10% Attack Speed",
+          "shard": true
+        },
+        "5007": {
+          "name": "Ability Haste",
+          "icon": "perk-images/StatMods/StatModsCDRScalingIcon.png",
+          "short": "+8 Ability Haste",
+          "shard": true
+        },
+        "5008": {
+          "name": "Adaptive Force",
+          "icon": "perk-images/StatMods/StatModsAdaptiveForceIcon.png",
+          "short": "+9 Adaptive Force",
+          "shard": true
+        },
+        "5010": {
+          "name": "Move Speed",
+          "icon": "perk-images/StatMods/StatModsMovementSpeedIcon.png",
+          "short": "+2.5% Move Speed",
+          "shard": true
+        },
+        "5011": {
+          "name": "Health",
+          "icon": "perk-images/StatMods/StatModsHealthScalingIcon.png",
+          "short": "+65 Health",
+          "shard": true
+        },
+        "8005": {
+          "name": "Press the Attack",
+          "icon": "perk-images/Styles/Precision/PressTheAttack/PressTheAttack.png",
+          "short": "Hitting an enemy champion 3 consecutive times deals bonus damage and amplifies your damage until you leave combat with champions."
+        },
+        "8008": {
+          "name": "Lethal Tempo",
+          "icon": "perk-images/Styles/Precision/LethalTempo/LethalTempoTemp.png",
+          "short": "Attacking an enemy champion grants you Attack Speed, up to 6 stacks. At max stacks, deal bonus adaptive damage On-Attack."
+        },
+        "8009": {
+          "name": "Presence of Mind",
+          "icon": "perk-images/Styles/Precision/PresenceOfMind/PresenceOfMind.png",
+          "short": "Restore a small amount of mana or energy when damaging an enemy champion. Takedowns restore mana or energy."
+        },
+        "8010": {
+          "name": "Conqueror",
+          "icon": "perk-images/Styles/Precision/Conqueror/Conqueror.png",
+          "short": "Gain stacks of adaptive force when attacking enemy champions. After reaching 12 stacks, heal for a portion of damage you deal to champions."
+        },
+        "8014": {
+          "name": "Coup de Grace",
+          "icon": "perk-images/Styles/Precision/CoupDeGrace/CoupDeGrace.png",
+          "short": "Deal more damage to low health enemy champions."
+        },
+        "8017": {
+          "name": "Cut Down",
+          "icon": "perk-images/Styles/Precision/CutDown/CutDown.png",
+          "short": "Deal more damage to high health enemy champions."
+        },
+        "8021": {
+          "name": "Fleet Footwork",
+          "icon": "perk-images/Styles/Precision/FleetFootwork/FleetFootwork.png",
+          "short": "Attacking and moving builds Energy stacks. At 100 stacks, your next attack heals you and grants increased MS."
+        },
+        "8105": {
+          "name": "Relentless Hunter",
+          "icon": "perk-images/Styles/Domination/RelentlessHunter/RelentlessHunter.png",
+          "short": "Unique takedowns grant permanent out of combat MS."
+        },
+        "8106": {
+          "name": "Ultimate Hunter",
+          "icon": "perk-images/Styles/Domination/UltimateHunter/UltimateHunter.png",
+          "short": "Unique takedowns grant permanent cooldown reduction on your Ultimate."
+        },
+        "8112": {
+          "name": "Electrocute",
+          "icon": "perk-images/Styles/Domination/Electrocute/Electrocute.png",
+          "short": "Hitting a champion with 3 separate attacks or abilities in 3s deals bonus adaptive damage."
+        },
+        "8126": {
+          "name": "Cheap Shot",
+          "icon": "perk-images/Styles/Domination/CheapShot/CheapShot.png",
+          "short": "Deal bonus true damage to enemy champions with impaired movement or actions."
+        },
+        "8128": {
+          "name": "Dark Harvest",
+          "icon": "perk-images/Styles/Domination/DarkHarvest/DarkHarvest.png",
+          "short": "Damaging a low health champion inflicts adaptive damage and harvests a soul from the victim."
+        },
+        "8135": {
+          "name": "Treasure Hunter",
+          "icon": "perk-images/Styles/Domination/TreasureHunter/TreasureHunter.png",
+          "short": "Unique takedowns grant additional gold the first time they are collected."
+        },
+        "8137": {
+          "name": "Sixth Sense",
+          "icon": "perk-images/Styles/Domination/SixthSense/SixthSense.png",
+          "short": "On a long Cooldown, automatically sense a nearby untracked and unseen ward, tracking it for the team. Level 11: Also reveal the ward for 10s."
+        },
+        "8139": {
+          "name": "Taste of Blood",
+          "icon": "perk-images/Styles/Domination/TasteOfBlood/GreenTerror_TasteOfBlood.png",
+          "short": "Heal when you damage an enemy champion."
+        },
+        "8140": {
+          "name": "Grisly Mementos",
+          "icon": "perk-images/Styles/Domination/GrislyMementos/GrislyMementos.png",
+          "short": "Collect 1 memento on champion takedowns, up to 18 total. Gain 6 Trinket Haste for each collected."
+        },
+        "8141": {
+          "name": "Deep Ward",
+          "icon": "perk-images/Styles/Domination/DeepWard/DeepWard.png",
+          "short": "Your wards in the enemy jungle are Deep, gaining Health and Duration. Level 9: Wards in the river are also Deep."
+        },
+        "8143": {
+          "name": "Sudden Impact",
+          "icon": "perk-images/Styles/Domination/SuddenImpact/SuddenImpact.png",
+          "short": "Damaging basic attacks and abilities deal bonus true damage to enemy champions after using a dash, leap, blink, teleport, or when leaving stealth."
+        },
+        "8210": {
+          "name": "Transcendence",
+          "icon": "perk-images/Styles/Sorcery/Transcendence/Transcendence.png",
+          "short": "Gain bonuses upon reaching the following levels: Level 5: +5 Ability Haste Level 8: +5 Ability Haste Level 11: On Champion takedown, reduce the remaining cooldown of basic abilities by 20%."
+        },
+        "8214": {
+          "name": "Summon Aery",
+          "icon": "perk-images/Styles/Sorcery/SummonAery/SummonAery.png",
+          "short": "Your attacks and abilities send Aery to a target, damaging enemies or shielding allies."
+        },
+        "8224": {
+          "name": "Axiom Arcanist",
+          "icon": "perk-images/Styles/Sorcery/NullifyingOrb/Axiom_Arcanist.png",
+          "short": "Your Ultimate has increased damage, healing, and shielding. Scoring a takedown on an enemy champion reduces your Ultimate's current cooldown."
+        },
+        "8226": {
+          "name": "Manaflow Band",
+          "icon": "perk-images/Styles/Sorcery/ManaflowBand/ManaflowBand.png",
+          "short": "Hitting an enemy champion with an ability permanently increases your maximum mana by 25, up to 250 mana. After reaching 250 bonus mana, restore 1% of your missing mana every 5 seconds."
+        },
+        "8229": {
+          "name": "Arcane Comet",
+          "icon": "perk-images/Styles/Sorcery/ArcaneComet/ArcaneComet.png",
+          "short": "Damaging a champion with an ability hurls a damaging comet at their location."
+        },
+        "8230": {
+          "name": "Stormraider's Surge",
+          "icon": "perk-images/Styles/Sorcery/PhaseRush/StormraidersSurgeRuneIcon2.png",
+          "short": "Dealing 25% of a champion's maximum health grants a burst of MS and Slow Resist."
+        },
+        "8232": {
+          "name": "Waterwalking",
+          "icon": "perk-images/Styles/Sorcery/Waterwalking/Waterwalking.png",
+          "short": "Gain MS and AP or AD, adaptive in the river."
+        },
+        "8233": {
+          "name": "Absolute Focus",
+          "icon": "perk-images/Styles/Sorcery/AbsoluteFocus/AbsoluteFocus.png",
+          "short": "While above 70% health, gain extra adaptive damage."
+        },
+        "8234": {
+          "name": "Celerity",
+          "icon": "perk-images/Styles/Sorcery/Celerity/CelerityTemp.png",
+          "short": "All Move Speed bonuses are 7% more effective on you and gain 1% Move Speed."
+        },
+        "8236": {
+          "name": "Gathering Storm",
+          "icon": "perk-images/Styles/Sorcery/GatheringStorm/GatheringStorm.png",
+          "short": "Gain increasing amounts of AD or AP, adaptive over the course of the game."
+        },
+        "8237": {
+          "name": "Scorch",
+          "icon": "perk-images/Styles/Sorcery/Scorch/Scorch.png",
+          "short": "Your first damaging ability hit every 10s burns champions."
+        },
+        "8242": {
+          "name": "Unflinching",
+          "icon": "perk-images/Styles/Sorcery/Unflinching/Unflinching.png",
+          "short": "Gain Armor and Magic Resist when receiving crowd control."
+        },
+        "8275": {
+          "name": "Nimbus Cloak",
+          "icon": "perk-images/Styles/Sorcery/NimbusCloak/6361.png",
+          "short": "After casting a Summoner Spell, gain a short Move Speed increase that allows you to pass through units."
+        },
+        "8299": {
+          "name": "Last Stand",
+          "icon": "perk-images/Styles/Sorcery/LastStand/LastStand.png",
+          "short": "Deal more damage to champions while you are low on health."
+        },
+        "8304": {
+          "name": "Magical Footwear",
+          "icon": "perk-images/Styles/Inspiration/MagicalFootwear/MagicalFootwear.png",
+          "short": "You get free boots at 12 min but you cannot buy boots before then. Each takedown you get makes your boots come 45s sooner."
+        },
+        "8306": {
+          "name": "Hextech Flashtraption",
+          "icon": "perk-images/Styles/Inspiration/HextechFlashtraption/HextechFlashtraption.png",
+          "short": "While Flash is on cooldown it is replaced by Hexflash. Hexflash: Channel, then blink to a new location."
+        },
+        "8313": {
+          "name": "Triple Tonic",
+          "icon": "perk-images/Styles/Inspiration/PerfectTiming/AlchemistCabinet.png",
+          "short": "Upon reaching level 3, gain an Elixir of Avarice. Upon reaching level 6, gain an Elixir of Force. Upon reaching level 9, gain an Elixir of Skill."
+        },
+        "8316": {
+          "name": "Jack Of All Trades",
+          "icon": "perk-images/Styles/Inspiration/JackOfAllTrades/JackofAllTrades2.png",
+          "short": "For each different stat gained from items, gain one Jack stack. Each stack grants you 1 Ability Haste. Gain bonus Adaptive Force at 5 and 10 stacks."
+        },
+        "8321": {
+          "name": "Cash Back",
+          "icon": "perk-images/Styles/Inspiration/CashBack/CashBack2.png",
+          "short": "Get some gold back when you purchase Legendary Items."
+        },
+        "8345": {
+          "name": "Biscuit Delivery",
+          "icon": "perk-images/Styles/Inspiration/BiscuitDelivery/BiscuitDelivery.png",
+          "short": "Gain a free Biscuit every 2 min, until 6 min. Consuming or selling a Biscuit permanently increases your max health and restores health."
+        },
+        "8347": {
+          "name": "Cosmic Insight",
+          "icon": "perk-images/Styles/Inspiration/CosmicInsight/CosmicInsight.png",
+          "short": "+18 Summoner Spell Haste +10 Item Haste"
+        },
+        "8351": {
+          "name": "Glacial Augment",
+          "icon": "perk-images/Styles/Inspiration/GlacialAugment/GlacialAugment.png",
+          "short": "Immobilizing an enemy champion will cause 3 glacial rays that slow nearby enemies and reduce their damage to your allies."
+        },
+        "8352": {
+          "name": "Time Warp Tonic",
+          "icon": "perk-images/Styles/Inspiration/TimeWarpTonic/TimeWarpTonic.png",
+          "short": "Potions grant some restoration immediately."
+        },
+        "8360": {
+          "name": "Unsealed Spellbook",
+          "icon": "perk-images/Styles/Inspiration/UnsealedSpellbook/UnsealedSpellbook.png",
+          "short": "Swap Summoner Spells while out of combat. Swapping to unique Summoner Spells will increase the rate at which you can make future swaps."
+        },
+        "8369": {
+          "name": "First Strike",
+          "icon": "perk-images/Styles/Inspiration/FirstStrike/FirstStrike.png",
+          "short": "When you initiate champion combat, deal 7% extra damage for 3 seconds and gain gold based on damage dealt."
+        },
+        "8401": {
+          "name": "Shield Bash",
+          "icon": "perk-images/Styles/Resolve/MirrorShell/MirrorShell.png",
+          "short": "Whenever you gain a shield, your next basic attack against a champion deals bonus adaptive damage."
+        },
+        "8410": {
+          "name": "Approach Velocity",
+          "icon": "perk-images/Styles/Resolve/ApproachVelocity/ApproachVelocity.png",
+          "short": "Bonus MS towards nearby enemy champions that are movement impaired, increased for enemy champions that you impair."
+        },
+        "8429": {
+          "name": "Conditioning",
+          "icon": "perk-images/Styles/Resolve/Conditioning/Conditioning.png",
+          "short": "After 12 min gain +8 Armor and +8 Magic Resist and increase your Armor and Magic Resist by 3%."
+        },
+        "8437": {
+          "name": "Grasp of the Undying",
+          "icon": "perk-images/Styles/Resolve/GraspOfTheUndying/GraspOfTheUndying.png",
+          "short": "Every 4s your next attack on a champion deals bonus magic damage, heals you, and permanently increases your health."
+        },
+        "8439": {
+          "name": "Aftershock",
+          "icon": "perk-images/Styles/Resolve/VeteranAftershock/VeteranAftershock.png",
+          "short": "After immobilizing an enemy champion gain defenses and later deal a burst of magic damage around you."
+        },
+        "8444": {
+          "name": "Second Wind",
+          "icon": "perk-images/Styles/Resolve/SecondWind/SecondWind.png",
+          "short": "After taking damage from an enemy champion heal back some missing health over time."
+        },
+        "8446": {
+          "name": "Demolish",
+          "icon": "perk-images/Styles/Resolve/Demolish/Demolish.png",
+          "short": "Your third attack against turrets deals bonus damage."
+        },
+        "8451": {
+          "name": "Overgrowth",
+          "icon": "perk-images/Styles/Resolve/Overgrowth/Overgrowth.png",
+          "short": "Gain permanent max health when minions or monsters die near you."
+        },
+        "8453": {
+          "name": "Revitalize",
+          "icon": "perk-images/Styles/Resolve/Revitalize/Revitalize.png",
+          "short": "Gain 5% Heal and Shield Power. Heals and shields you cast or receive are 10% stronger on targets below 40% health."
+        },
+        "8463": {
+          "name": "Font of Life",
+          "icon": "perk-images/Styles/Resolve/FontOfLife/FontOfLife.png",
+          "short": "Impairing the movement of an enemy champion heals nearby allied champions."
+        },
+        "8465": {
+          "name": "Guardian",
+          "icon": "perk-images/Styles/Resolve/Guardian/Guardian.png",
+          "short": "Guard allies you cast spells on and those that are very nearby. If you or a guarded ally would take damage based on level, you're both granted a shield."
+        },
+        "8473": {
+          "name": "Bone Plating",
+          "icon": "perk-images/Styles/Resolve/BonePlating/BonePlating.png",
+          "short": "After taking damage from an enemy champion, the next 3 spells or attacks you receive from them deal 30-60 (based on level) less damage. Duration: 1.5s Cooldown: 55s"
+        },
+        "8992": {
+          "name": "Deathfire Touch",
+          "icon": "perk-images/Styles/Sorcery/DeathfireTouch/DEATHFIRE_TOUCH_KEYSTONE.png",
+          "short": "Damaging a champion with an ability burns them over time."
+        },
+        "9101": {
+          "name": "Absorb Life",
+          "icon": "perk-images/Styles/Precision/AbsorbLife/AbsorbLife.png",
+          "short": "Killing a target heals you."
+        },
+        "9103": {
+          "name": "Legend: Bloodline",
+          "icon": "perk-images/Styles/Precision/LegendBloodline/LegendBloodline.png",
+          "short": "Takedowns on enemies grant permanent Life Steal, up to a cap. Once the cap is reached, increase your max health. Weaker earlier but stronger later game than other Legend Runes."
+        },
+        "9104": {
+          "name": "Legend: Alacrity",
+          "icon": "perk-images/Styles/Precision/LegendAlacrity/LegendAlacrity.png",
+          "short": "Takedowns on enemies grant permanent Attack Speed."
+        },
+        "9105": {
+          "name": "Legend: Haste",
+          "icon": "perk-images/Styles/Precision/LegendHaste/LegendHaste.png",
+          "short": "Takedowns on enemies grant permanent Basic Ability Haste."
+        },
+        "9111": {
+          "name": "Triumph",
+          "icon": "perk-images/Styles/Precision/Triumph.png",
+          "short": "Takedowns restore 5% of your missing health and grant an additional 20 gold."
+        },
+        "9923": {
+          "name": "Hail of Blades",
+          "icon": "perk-images/Styles/Domination/HailOfBlades/HailOfBlades.png",
+          "short": "Gain a large amount of Attack Speed and bonus true damage for the first 3 attacks made against enemy champions."
+        }
+      },
+      "trees": {
+        "8000": {
+          "name": "Precision",
+          "icon": "perk-images/Styles/7201_Precision.png",
+          "rows": [
+            [8005, 8008, 8021, 8010],
+            [9101, 9111, 8009],
+            [9104, 9105, 9103],
+            [8014, 8017, 8299]
+          ]
+        },
+        "8100": {
+          "name": "Domination",
+          "icon": "perk-images/Styles/7200_Domination.png",
+          "rows": [
+            [8112, 8128, 9923],
+            [8126, 8139, 8143],
+            [8137, 8140, 8141],
+            [8135, 8105, 8106]
+          ]
+        },
+        "8200": {
+          "name": "Sorcery",
+          "icon": "perk-images/Styles/7202_Sorcery.png",
+          "rows": [
+            [8214, 8229, 8230, 8992],
+            [8224, 8226, 8275],
+            [8210, 8234, 8233],
+            [8237, 8232, 8236]
+          ]
+        },
+        "8300": {
+          "name": "Inspiration",
+          "icon": "perk-images/Styles/7203_Whimsy.png",
+          "rows": [
+            [8351, 8360, 8369],
+            [8306, 8304, 8321],
+            [8313, 8352, 8345],
+            [8347, 8410, 8316]
+          ]
+        },
+        "8400": {
+          "name": "Resolve",
+          "icon": "perk-images/Styles/7204_Resolve.png",
+          "rows": [
+            [8437, 8439, 8465],
+            [8446, 8463, 8401],
+            [8429, 8444, 8473],
+            [8451, 8453, 8242]
+          ]
+        }
+      },
+      "spells": {
+        "1": {
+          "name": "Cleanse",
+          "icon": "SummonerBoost.png",
+          "cooldown": "240"
+        },
+        "3": {
+          "name": "Exhaust",
+          "icon": "SummonerExhaust.png",
+          "cooldown": "240"
+        },
+        "4": {
+          "name": "Flash",
+          "icon": "SummonerFlash.png",
+          "cooldown": "300"
+        },
+        "6": {
+          "name": "Ghost",
+          "icon": "SummonerHaste.png",
+          "cooldown": "240"
+        },
+        "7": {
+          "name": "Heal",
+          "icon": "SummonerHeal.png",
+          "cooldown": "240"
+        },
+        "11": {
+          "name": "Smite",
+          "icon": "SummonerSmite.png",
+          "cooldown": "15"
+        },
+        "12": {
+          "name": "Teleport",
+          "icon": "SummonerTeleport.png",
+          "cooldown": "300"
+        },
+        "14": {
+          "name": "Ignite",
+          "icon": "SummonerDot.png",
+          "cooldown": "180"
+        },
+        "21": {
+          "name": "Barrier",
+          "icon": "SummonerBarrier.png",
+          "cooldown": "180"
+        }
+      },
+      "abilities": {
+        "ahri": {
+          "Q": {
+            "name": "Orb of Deception",
+            "icon": "AhriQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Fox-Fire",
+            "icon": "AhriW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Charm",
+            "icon": "AhriE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Spirit Rush",
+            "icon": "AhriR.png",
+            "maxrank": 3
+          }
+        },
+        "akali": {
+          "Q": {
+            "name": "Five Point Strike",
+            "icon": "AkaliQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Twilight Shroud",
+            "icon": "AkaliW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Shuriken Flip",
+            "icon": "AkaliE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Perfect Execution",
+            "icon": "AkaliR.png",
+            "maxrank": 3
+          }
+        },
+        "alistar": {
+          "Q": {
+            "name": "Pulverize",
+            "icon": "Pulverize.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Headbutt",
+            "icon": "Headbutt.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Trample",
+            "icon": "AlistarE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Unbreakable Will",
+            "icon": "FerociousHowl.png",
+            "maxrank": 3
+          }
+        },
+        "ambessa": {
+          "Q": {
+            "name": "Cunning Sweep / Sundering Slam",
+            "icon": "AmbessaQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Repudiation",
+            "icon": "AmbessaW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Lacerate",
+            "icon": "AmbessaE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Public Execution",
+            "icon": "AmbessaR.png",
+            "maxrank": 3
+          }
+        },
+        "anivia": {
+          "Q": {
+            "name": "Flash Frost",
+            "icon": "FlashFrost.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Crystallize",
+            "icon": "Crystallize.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Frostbite",
+            "icon": "Frostbite.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Glacial Storm",
+            "icon": "GlacialStorm.png",
+            "maxrank": 3
+          }
+        },
+        "annie": {
+          "Q": {
+            "name": "Disintegrate",
+            "icon": "AnnieQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Incinerate",
+            "icon": "AnnieW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Molten Shield",
+            "icon": "AnnieE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Summon: Tibbers",
+            "icon": "AnnieR.png",
+            "maxrank": 3
+          }
+        },
+        "ashe": {
+          "Q": {
+            "name": "Ranger's Focus",
+            "icon": "AsheQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Volley",
+            "icon": "Volley.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Hawkshot",
+            "icon": "AsheSpiritOfTheHawk.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Enchanted Crystal Arrow",
+            "icon": "EnchantedCrystalArrow.png",
+            "maxrank": 3
+          }
+        },
+        "camille": {
+          "Q": {
+            "name": "Precision Protocol",
+            "icon": "CamilleQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Tactical Sweep",
+            "icon": "CamilleW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Hookshot",
+            "icon": "CamilleE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "The Hextech Ultimatum",
+            "icon": "CamilleR.png",
+            "maxrank": 3
+          }
+        },
+        "cassiopeia": {
+          "Q": {
+            "name": "Noxious Blast",
+            "icon": "CassiopeiaQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Miasma",
+            "icon": "CassiopeiaW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Twin Fang",
+            "icon": "CassiopeiaE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Petrifying Gaze",
+            "icon": "CassiopeiaR.png",
+            "maxrank": 3
+          }
+        },
+        "ezreal": {
+          "Q": {
+            "name": "Mystic Shot",
+            "icon": "EzrealQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Essence Flux",
+            "icon": "EzrealW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Arcane Shift",
+            "icon": "EzrealE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Trueshot Barrage",
+            "icon": "EzrealR.png",
+            "maxrank": 3
+          }
+        },
+        "galio": {
+          "Q": {
+            "name": "Winds of War",
+            "icon": "GalioQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Shield of Durand",
+            "icon": "GalioW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Justice Punch",
+            "icon": "GalioE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Hero's Entrance",
+            "icon": "GalioR.png",
+            "maxrank": 3
+          }
+        },
+        "gnar": {
+          "Q": {
+            "name": "Boomerang Throw / Boulder Toss",
+            "icon": "GnarQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Hyper / Wallop",
+            "icon": "GnarW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Hop / Crunch",
+            "icon": "GnarE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "GNAR!",
+            "icon": "GnarR.png",
+            "maxrank": 3
+          }
+        },
+        "jarvan-iv": {
+          "Q": {
+            "name": "Dragon Strike",
+            "icon": "JarvanIVDragonStrike.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Golden Aegis",
+            "icon": "JarvanIVGoldenAegis.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Demacian Standard",
+            "icon": "JarvanIVDemacianStandard.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Cataclysm",
+            "icon": "JarvanIVCataclysm.png",
+            "maxrank": 3
+          }
+        },
+        "jax": {
+          "Q": {
+            "name": "Leap Strike",
+            "icon": "JaxQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Empower",
+            "icon": "JaxW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Counter Strike",
+            "icon": "JaxE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Grandmaster-at-Arms",
+            "icon": "JaxR.png",
+            "maxrank": 3
+          }
+        },
+        "jayce": {
+          "Q": {
+            "name": "To the Skies! / Shock Blast",
+            "icon": "JayceToTheSkies.png",
+            "maxrank": 6
+          },
+          "W": {
+            "name": "Lightning Field / Hyper Charge",
+            "icon": "JayceStaticField.png",
+            "maxrank": 6
+          },
+          "E": {
+            "name": "Thundering Blow / Acceleration Gate",
+            "icon": "JayceThunderingBlow.png",
+            "maxrank": 6
+          },
+          "R": {
+            "name": "Mercury Cannon / Mercury Hammer",
+            "icon": "JayceStanceHtG.png",
+            "maxrank": 1
+          }
+        },
+        "jhin": {
+          "Q": {
+            "name": "Dancing Grenade",
+            "icon": "JhinQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Deadly Flourish",
+            "icon": "JhinW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Captive Audience",
+            "icon": "JhinE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Curtain Call",
+            "icon": "JhinR.png",
+            "maxrank": 3
+          }
+        },
+        "kaisa": {
+          "Q": {
+            "name": "Icathian Rain",
+            "icon": "KaisaQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Void Seeker",
+            "icon": "KaisaW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Supercharge",
+            "icon": "KaisaE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Killer Instinct",
+            "icon": "KaisaR.png",
+            "maxrank": 3
+          }
+        },
+        "kalista": {
+          "Q": {
+            "name": "Pierce",
+            "icon": "KalistaMysticShot.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Sentinel",
+            "icon": "KalistaW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Rend",
+            "icon": "KalistaExpungeWrapper.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Fate's Call",
+            "icon": "KalistaRx.png",
+            "maxrank": 3
+          }
+        },
+        "karma": {
+          "Q": {
+            "name": "Inner Flame",
+            "icon": "KarmaQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Focused Resolve",
+            "icon": "KarmaSpiritBind.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Inspire",
+            "icon": "KarmaSolKimShield.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Mantra",
+            "icon": "KarmaMantra.png",
+            "maxrank": 4
+          }
+        },
+        "kled": {
+          "Q": {
+            "name": "Bear Trap on a Rope",
+            "icon": "KledQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Violent Tendencies",
+            "icon": "KledW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Jousting",
+            "icon": "KledE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Chaaaaaaaarge!!!",
+            "icon": "KledR.png",
+            "maxrank": 3
+          }
+        },
+        "kog-maw": {
+          "Q": {
+            "name": "Caustic Spittle",
+            "icon": "KogMawQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Bio-Arcane Barrage",
+            "icon": "KogMawBioArcaneBarrage.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Void Ooze",
+            "icon": "KogMawVoidOoze.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Living Artillery",
+            "icon": "KogMawLivingArtillery.png",
+            "maxrank": 3
+          }
+        },
+        "ksante": {
+          "Q": {
+            "name": "Ntofo Strikes",
+            "icon": "KSanteQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Path Maker",
+            "icon": "KSanteW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Footwork",
+            "icon": "KSanteE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "All Out",
+            "icon": "KSanteR.png",
+            "maxrank": 3
+          }
+        },
+        "lee-sin": {
+          "Q": {
+            "name": "Sonic Wave / Resonating Strike",
+            "icon": "LeeSinQOne.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Safeguard / Iron Will",
+            "icon": "LeeSinWOne.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Tempest / Cripple",
+            "icon": "LeeSinEOne.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Dragon's Rage",
+            "icon": "LeeSinR.png",
+            "maxrank": 3
+          }
+        },
+        "leona": {
+          "Q": {
+            "name": "Shield of Daybreak",
+            "icon": "LeonaShieldOfDaybreak.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Eclipse",
+            "icon": "LeonaSolarBarrier.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Zenith Blade",
+            "icon": "LeonaZenithBlade.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Solar Flare",
+            "icon": "LeonaSolarFlare.png",
+            "maxrank": 3
+          }
+        },
+        "lillia": {
+          "Q": {
+            "name": "Blooming Blows",
+            "icon": "LilliaQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Watch Out! Eep!",
+            "icon": "LilliaW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Swirlseed",
+            "icon": "LilliaE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Lilting Lullaby",
+            "icon": "LilliaR.png",
+            "maxrank": 3
+          }
+        },
+        "locke": {
+          "Q": {
+            "name": "Ritual Nails",
+            "icon": "LockeQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Soul Ignition",
+            "icon": "LockeW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Ashen Pursuit",
+            "icon": "LockeE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Purgatory",
+            "icon": "LockeR.png",
+            "maxrank": 3
+          }
+        },
+        "lucian": {
+          "Q": {
+            "name": "Piercing Light",
+            "icon": "LucianQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Ardent Blaze",
+            "icon": "LucianW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Relentless Pursuit",
+            "icon": "LucianE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "The Culling",
+            "icon": "LucianR.png",
+            "maxrank": 3
+          }
+        },
+        "lulu": {
+          "Q": {
+            "name": "Glitterlance",
+            "icon": "LuluQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Whimsy",
+            "icon": "LuluW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Help, Pix!",
+            "icon": "LuluE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Wild Growth",
+            "icon": "LuluR.png",
+            "maxrank": 3
+          }
+        },
+        "milio": {
+          "Q": {
+            "name": "Ultra Mega Fire Kick",
+            "icon": "MilioQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Cozy Campfire",
+            "icon": "MilioW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Warm Hugs",
+            "icon": "MilioE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Breath of Life",
+            "icon": "MilioR.png",
+            "maxrank": 3
+          }
+        },
+        "miss-fortune": {
+          "Q": {
+            "name": "Double Up",
+            "icon": "MissFortuneRicochetShot.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Strut",
+            "icon": "MissFortuneViciousStrikes.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Make It Rain",
+            "icon": "MissFortuneScattershot.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Bullet Time",
+            "icon": "MissFortuneBulletTime.png",
+            "maxrank": 3
+          }
+        },
+        "naafiri": {
+          "Q": {
+            "name": "Darkin Daggers",
+            "icon": "NaafiriQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "The Call of the Pack",
+            "icon": "NaafiriR.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Eviscerate",
+            "icon": "NaafiriE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Hounds' Pursuit",
+            "icon": "NaafiriW.png",
+            "maxrank": 3
+          }
+        },
+        "nami": {
+          "Q": {
+            "name": "Aqua Prison",
+            "icon": "NamiQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Ebb and Flow",
+            "icon": "NamiW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Tidecaller's Blessing",
+            "icon": "NamiE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Tidal Wave",
+            "icon": "NamiR.png",
+            "maxrank": 3
+          }
+        },
+        "nautilus": {
+          "Q": {
+            "name": "Dredge Line",
+            "icon": "NautilusAnchorDrag.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Titan's Wrath",
+            "icon": "NautilusPiercingGaze.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Riptide",
+            "icon": "NautilusSplashZone.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Depth Charge",
+            "icon": "NautilusGrandLine.png",
+            "maxrank": 3
+          }
+        },
+        "olaf": {
+          "Q": {
+            "name": "Undertow",
+            "icon": "OlafAxeThrowCast.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Tough It Out",
+            "icon": "OlafFrenziedStrikes.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Reckless Swing",
+            "icon": "OlafRecklessStrike.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Ragnarok",
+            "icon": "OlafRagnarok.png",
+            "maxrank": 3
+          }
+        },
+        "orianna": {
+          "Q": {
+            "name": "Command: Attack",
+            "icon": "OrianaIzunaCommand.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Command: Dissonance",
+            "icon": "OrianaDissonanceCommand.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Command: Protect",
+            "icon": "OrianaRedactCommand.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Command: Shockwave",
+            "icon": "OrianaDetonateCommand.png",
+            "maxrank": 3
+          }
+        },
+        "ornn": {
+          "Q": {
+            "name": "Volcanic Rupture",
+            "icon": "OrnnQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Bellows Breath",
+            "icon": "OrnnW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Searing Charge",
+            "icon": "OrnnE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Call of the Forge God",
+            "icon": "OrnnR.png",
+            "maxrank": 3
+          }
+        },
+        "qiyana": {
+          "Q": {
+            "name": "Elemental Wrath / Edge of Ixtal",
+            "icon": "QiyanaQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Terrashape",
+            "icon": "QiyanaW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Audacity",
+            "icon": "QiyanaE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Supreme Display of Talent",
+            "icon": "QiyanaR.png",
+            "maxrank": 3
+          }
+        },
+        "rakan": {
+          "Q": {
+            "name": "Gleaming Quill",
+            "icon": "RakanQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Grand Entrance",
+            "icon": "RakanW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Battle Dance",
+            "icon": "RakanE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "The Quickness",
+            "icon": "RakanR.png",
+            "maxrank": 3
+          }
+        },
+        "rell": {
+          "Q": {
+            "name": "Shattering Strike",
+            "icon": "RellQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Ferromancy: Crash Down",
+            "icon": "RellW_Dismount.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Full Tilt",
+            "icon": "RellE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Magnet Storm",
+            "icon": "RellR.png",
+            "maxrank": 3
+          }
+        },
+        "renata-glasc": {
+          "Q": {
+            "name": "Handshake",
+            "icon": "RenataQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Bailout",
+            "icon": "RenataW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Loyalty Program",
+            "icon": "RenataE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Hostile Takeover",
+            "icon": "RenataR.png",
+            "maxrank": 3
+          }
+        },
+        "renekton": {
+          "Q": {
+            "name": "Cull the Meek",
+            "icon": "RenektonCleave.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Ruthless Predator",
+            "icon": "RenektonPreExecute.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Slice and Dice",
+            "icon": "RenektonSliceAndDice.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Dominus",
+            "icon": "RenektonReignOfTheTyrant.png",
+            "maxrank": 3
+          }
+        },
+        "rumble": {
+          "Q": {
+            "name": "Flamespitter",
+            "icon": "RumbleFlameThrower.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Scrap Shield",
+            "icon": "RumbleShield.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Electro Harpoon",
+            "icon": "RumbleGrenade.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "The Equalizer",
+            "icon": "RumbleCarpetBomb.png",
+            "maxrank": 3
+          }
+        },
+        "ryze": {
+          "Q": {
+            "name": "Overload",
+            "icon": "RyzeQWrapper.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Rune Prison",
+            "icon": "RyzeW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Spell Flux",
+            "icon": "RyzeE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Realm Warp",
+            "icon": "RyzeR.png",
+            "maxrank": 3
+          }
+        },
+        "sejuani": {
+          "Q": {
+            "name": "Arctic Assault",
+            "icon": "SejuaniQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Winter's Wrath",
+            "icon": "SejuaniW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Permafrost",
+            "icon": "SejuaniE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Glacial Prison",
+            "icon": "SejuaniR.png",
+            "maxrank": 3
+          }
+        },
+        "seraphine": {
+          "Q": {
+            "name": "High Note",
+            "icon": "SeraphineQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Surround Sound",
+            "icon": "SeraphineW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Beat Drop",
+            "icon": "SeraphineE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Encore",
+            "icon": "SeraphineR.png",
+            "maxrank": 3
+          }
+        },
+        "shen": {
+          "Q": {
+            "name": "Twilight Assault",
+            "icon": "ShenQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Spirit's Refuge",
+            "icon": "ShenW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Shadow Dash",
+            "icon": "ShenE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Stand United",
+            "icon": "ShenR.png",
+            "maxrank": 3
+          }
+        },
+        "sylas": {
+          "Q": {
+            "name": "Chain Lash",
+            "icon": "SylasQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Kingslayer",
+            "icon": "SylasW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Abscond / Abduct",
+            "icon": "SylasE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Hijack",
+            "icon": "SylasR.png",
+            "maxrank": 3
+          }
+        },
+        "syndra": {
+          "Q": {
+            "name": "Dark Sphere",
+            "icon": "SyndraQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Force of Will",
+            "icon": "SyndraW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Scatter the Weak",
+            "icon": "SyndraE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Unleashed Power",
+            "icon": "SyndraR.png",
+            "maxrank": 3
+          }
+        },
+        "trundle": {
+          "Q": {
+            "name": "Chomp",
+            "icon": "TrundleTrollSmash.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Frozen Domain",
+            "icon": "trundledesecrate.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Pillar of Ice",
+            "icon": "TrundleCircle.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Subjugate",
+            "icon": "TrundlePain.png",
+            "maxrank": 3
+          }
+        },
+        "varus": {
+          "Q": {
+            "name": "Piercing Arrow",
+            "icon": "VarusQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Blighted Quiver",
+            "icon": "VarusW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Hail of Arrows",
+            "icon": "VarusE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Chain of Corruption",
+            "icon": "VarusR.png",
+            "maxrank": 3
+          }
+        },
+        "velkoz": {
+          "Q": {
+            "name": "Plasma Fission",
+            "icon": "VelkozQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Void Rift",
+            "icon": "VelkozW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Tectonic Disruption",
+            "icon": "VelkozE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Life Form Disintegration Ray",
+            "icon": "VelkozR.png",
+            "maxrank": 3
+          }
+        },
+        "vi": {
+          "Q": {
+            "name": "Vault Breaker",
+            "icon": "ViQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Denting Blows",
+            "icon": "ViW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Relentless Force",
+            "icon": "ViE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Cease and Desist",
+            "icon": "ViR.png",
+            "maxrank": 3
+          }
+        },
+        "viktor": {
+          "Q": {
+            "name": "Siphon Power",
+            "icon": "ViktorQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Gravity Field",
+            "icon": "ViktorW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Hextech Ray",
+            "icon": "ViktorE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Arcane Storm",
+            "icon": "ViktorR.png",
+            "maxrank": 3
+          }
+        },
+        "wukong": {
+          "Q": {
+            "name": "Crushing Blow",
+            "icon": "MonkeyKingDoubleAttack.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Warrior Trickster",
+            "icon": "MonkeyKingDecoy.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Nimbus Strike",
+            "icon": "MonkeyKingNimbus.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Cyclone",
+            "icon": "MonkeyKingSpinToWin.png",
+            "maxrank": 3
+          }
+        },
+        "xayah": {
+          "Q": {
+            "name": "Double Daggers",
+            "icon": "XayahQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Deadly Plumage",
+            "icon": "XayahW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Bladecaller",
+            "icon": "XayahE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Featherstorm",
+            "icon": "XayahR.png",
+            "maxrank": 3
+          }
+        },
+        "xin-zhao": {
+          "Q": {
+            "name": "Three Talon Strike",
+            "icon": "XinZhaoQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Wind Becomes Lightning",
+            "icon": "XinZhaoW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Audacious Charge",
+            "icon": "XinZhaoE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Crescent Guard",
+            "icon": "XinZhaoR.png",
+            "maxrank": 3
+          }
+        },
+        "yone": {
+          "Q": {
+            "name": "Mortal Steel",
+            "icon": "YoneQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Spirit Cleave",
+            "icon": "YoneW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Soul Unbound",
+            "icon": "YoneE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Fate Sealed",
+            "icon": "YoneR.png",
+            "maxrank": 3
+          }
+        },
+        "yunara": {
+          "Q": {
+            "name": "Cultivation of Spirit",
+            "icon": "YunaraQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Arc of Judgment | Arc of Ruin",
+            "icon": "YunaraW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Kanmei's Steps | Untouchable Shadow",
+            "icon": "YunaraE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Transcend One's Self",
+            "icon": "YunaraR.png",
+            "maxrank": 3
+          }
+        },
+        "zaahen": {
+          "Q": {
+            "name": "The Darkin Glaive",
+            "icon": "ZaahenQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Dreaded Return",
+            "icon": "ZaahenW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Aureate Rush",
+            "icon": "ZaahenE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Grim Deliverance",
+            "icon": "ZaahenR.png",
             "maxrank": 3
           }
         },
