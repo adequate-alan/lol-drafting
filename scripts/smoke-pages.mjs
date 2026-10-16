@@ -983,7 +983,8 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     await page.waitForTimeout(200);
     check("builds: choosing a player filters the games to that player", (await page.locator(".build-pick b").allTextContents()).every((p) => p === pinned) && page.url().includes("player="), page.url());
     // Pinned Players hub: the pinned player is listed, their profile shows champions and match history, a game opens
-    // the exact Pro Builds view, and the pin survives a reload.
+    // the exact Pro Builds view, and the pin survives a reload. The player is whoever played the newest game, so counts
+    // come from their own recorded total, never a fixed number.
     const ids = JSON.parse(saved ?? "[]");
     await open("/pro-builds/pinned/");
     await page.locator(".pinned-table tbody tr").first().waitFor({ timeout: 8000 }).catch(() => {});
@@ -998,7 +999,7 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     check("pinned: Overview | Champions | Match history | Builds tabs, Overview first", (await tabs.allInnerTexts()).map((t) => t.replace(/\s*\d+$/, "")).join("|") === "Overview|Champions|Match history|Builds" && (await tabs.first().getAttribute("aria-selected")) === "true", "");
     await tabs.nth(2).click();
     await page.waitForTimeout(150);
-    check("pinned: Match history keeps the player and lists every recorded game with its filters", page.url().includes(`player=${ids[0]}`) && /view=matches/.test(page.url()) && (await page.locator(".match-history tbody tr.match-row").count()) >= 5 && (await page.locator(".builds-tools.inner .select-trigger").count()) === 2, page.url());
+    check("pinned: Match history keeps the player and lists every recorded game with its filters", page.url().includes(`player=${ids[0]}`) && /view=matches/.test(page.url()) && (await page.locator(".match-history tbody tr.match-row").count()) === Number(await page.locator(".player-facts dd").first().textContent()) && (await page.locator(".match-history tbody tr.match-row").count()) > 0 && (await page.locator(".builds-tools.inner .select-trigger").count()) === 2, page.url());
     await tabs.nth(3).click();
     await page.waitForTimeout(150);
     check("pinned: Builds opens the most played champion's build lines", /view=builds/.test(page.url()) && (await page.locator(".build-lines li").count()) > 0, page.url());
