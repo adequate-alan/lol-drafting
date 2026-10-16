@@ -89,6 +89,16 @@ describe("Pro Drafts rows", () => {
     expect(one.some((g) => g.rows[0].side === "red")).toBe(true);
   });
 
+  // Demacia Cup 2026: Team WE and HANJIN BRION met in two series with the same label (2026-10-15 refresh), so a game is
+  // keyed by its Gol.gg id, never by tournament, series label and teams alone.
+  it("a rematch with the same series label and game number stays two games", () => {
+    const [blue, red] = drafts.filter((d) => d.id.startsWith(`golgg-${games[0].id}-`));
+    const rematch = [blue, red].map((d) => ({ ...d, id: d.id.replace(/^golgg-\d+/, "golgg-1"), sources: ["golgg-game-1"] }));
+    const units = groupGames([blue, red, ...rematch]);
+    expect(units.map((g) => g.rows.length)).toEqual([2, 2]);
+    expect(new Set(units.map((g) => g.key)).size).toBe(2);
+  });
+
   it("the listing order does not decide the side", () => {
     const game = games[0];
     const two = drafts.filter((d) => d.id.startsWith(`golgg-${game.id}-`));
