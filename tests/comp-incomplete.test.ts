@@ -51,10 +51,9 @@ describe("incomplete read for a pick without a kit", () => {
 
 describe("Yone's kit (approved 2026-10-16)", () => {
   const yone = kits.find((k) => k.id === "yone");
-  it("has a kit; Locke and Zaahen still wait for review", () => {
+  it("has a kit, and so does every champion since Locke and Zaahen (2026-10-16)", () => {
     expect(yone).toBeDefined();
-    const roster = getDraftData().champions;
-    for (const id of ["locke", "zaahen"]) if (roster.some((c) => c.id === id)) expect(kits.some((k) => k.id === id), id).toBe(false);
+    for (const c of getDraftData().champions) expect(kits.some((k) => k.id === c.id), c.id).toBe(true);
   });
 
   it("every recorded Yone lineup is read, with no critical gap", () => {

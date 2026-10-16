@@ -265,9 +265,8 @@ describe("default Comp Check states (alan, 2026-10-14 rollout)", () => {
   });
 
   it("a champion without a kit is not counted and never breaks the read", () => {
-    const noKit = getDraftData().champions.find((c) => !kits.some((k) => k.id === c.id));
-    expect(noKit).toBeDefined();
-    const r = plan({ TOP: noKit!.id, JUNGLE: "sejuani", MID: "orianna" });
+    // Every champion has a kit since 2026-10-16; a made-up id stands in for one without.
+    const r = plan({ TOP: "not-a-kit", JUNGLE: "sejuani", MID: "orianna" });
     expect(r.picks).toBe(2);
     expect(r.confidence).toBe("early");
   });

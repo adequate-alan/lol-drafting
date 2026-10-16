@@ -402,6 +402,9 @@ export const CompReview = z.object({
   // Named variants: a comp shown inside its parent's card (same win condition, different execution), keeping its own
   // lineup, swaps, sources and evidence. Never deleted, never merged into the parent's lineup.
   variants: z.array(z.object({ comp: id, parent: id, name: z.string(), approvedOn: Day })).default([]),
+  // Champions whose lineups discovery keeps out of new comps and variations until alan reviews what they unlock
+  // (alan, 2026-10-16, after Locke's and Zaahen's kits). Comp Check still reads them; only the library waits.
+  heldChampions: z.array(z.object({ champion: ChampionId, since: Day, reason: z.string() })).default([]),
 });
 export type CompReview = z.infer<typeof CompReview>;
 

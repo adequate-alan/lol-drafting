@@ -32,7 +32,7 @@ export interface LibraryExtra {
   variantOf?: { parent: string; name: string }; // shown inside the parent's card, never as its own card
   variants?: { id: string; name: string }[];    // a parent's named variants, in review order
 }
-const NO_REVIEW: CompReview = { proSwaps: [], supporting: [], historical: [], variants: [] };
+const NO_REVIEW: CompReview = { proSwaps: [], supporting: [], historical: [], variants: [], heldChampions: [] };
 
 export function gameView(g: ProGame, side: "blue" | "red"): ObservedGame {
   const them = side === "blue" ? "red" : "blue";
