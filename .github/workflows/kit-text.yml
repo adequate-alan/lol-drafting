@@ -1,0 +1,28 @@
+name: Champion ability text
+
+# Prints Riot's official ability text (scripts/kit-text.mjs) to the job log and summary so kit proposals for alan's
+# review are written from it. Read-only: commits nothing.
+on:
+  workflow_dispatch:
+    inputs:
+      champions:
+        description: "Champion names, space separated"
+        default: "Locke Zaahen"
+  push:
+    branches: ["claude/**"]
+    paths: ["scripts/kit-text.mjs", ".github/workflows/kit-text.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  text:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - env:
+          CHAMPIONS: ${{ inputs.champions || 'Locke Zaahen' }}
+        run: node scripts/kit-text.mjs $CHAMPIONS | tee -a "$GITHUB_STEP_SUMMARY"

@@ -1,4 +1,4 @@
-// v2 kit conversions for every champion except Locke and Zaahen (kits not yet reviewed). UNREVIEWED
+// v2 kit conversions for every champion except Locke and Zaahen (kits not yet reviewed). UNREVIEWED except Yone
 // per champion; alan approved the model at checkpoint 2. fightStart and damageByRole for the 18 champions already in
 // samples.ts are reused unchanged; everything else here is new. v1 attributes are copied from data/champions.json.
 import type { Champion, Role } from "../schema";
@@ -110,6 +110,12 @@ export const KITS: Record<string, KitEntry> = {
   olaf: { kit: K(1, 0, 3, 2, 0, 0, 2, 0, 1, 2, 0, [3, 3, 1]), why: "CC-immune diver who runs at the backline; early and mid game." },
   sylas: { fightStart: "follow-up", damageByRole: { MID: D(3, S(0, 1)), JUNGLE: D(3, S(0, 1)) }, kit: K(2, 0, 1, 2, 0, 1, 2, 1, 2, 2, 0, [2, 3, 2]),
     why: "Burst bruiser mage; stolen ultimate decides what he brings; E chain follows an engage." },
+  // alan approved 2026-10-16 as an initial kit ("Comp Library audit"). The 60/40 physical / magic split is a heuristic
+  // from his mixed-damage basic attacks, W, E and R, not a measured share; it moves with build and fight pattern.
+  // setupDependency 0 on the same definition as Irelia, Riven, Sylas and Jax: he creates his own angle (Q3, R); it
+  // does not mean allied crowd control is wasted on him (followUp 3 is that).
+  yone: { fightStart: "follow-up", damageByRole: { MID: D(3, S(0.6, 0.4)), TOP: D(3, S(0.6, 0.4)) }, kit: K(2, 0, 2, 2, 0, 1, 3, 2, 3, 2, 0, [2, 3, 3]),
+    why: "Mixed-damage skirmisher; Q3 and the ultimate's line knockup follow an engage; E reaches the backline and returns." },
 
   // ---------- mid ----------
   orianna: { kit: K(3, 2, 1, 1, 1, 1, 3, 3, 2, 2, 2, [1, 3, 3]), why: "Shockwave is the best follow-up in the pool once someone carries the ball in." },

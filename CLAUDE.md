@@ -174,7 +174,9 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   environments) are `rosterOnly: true` with every attribute 0: lockable, searchable and usable as enemies, never
   recommended, never in the pool. Reviewing one means setting its attributes and removing `rosterOnly`. Never type a
   roster from memory. On 2026-10-10 every roster-only champion except Zaahen got attributes and a v2 kit
-  (`lib/model-v2/kits.ts`, unreviewed by alan); Zaahen and Locke wait for a kit review. Role audit (2026-10-10): Talon
+  (`lib/model-v2/kits.ts`, unreviewed by alan); Yone's kit was approved by alan on 2026-10-16 (60/40 damage split a
+  heuristic, setupDependency 0 as for Irelia / Riven / Sylas / Jax); Zaahen and Locke wait for alan's review of kit
+  proposals from Riot's official ability text (Data Dragon, read on a runner), never typed from memory. Role audit (2026-10-10): Talon
   also MID, Ziggs also MID, Jayce also MID.
 
 ## Gol.gg research rules
@@ -373,7 +375,10 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   (LCK archive included) filed with a comp's observed variations. `historical`: "<champions> last seen <patch>" on a
   comp whose slot champions pros stopped picking; derived from the records, hidden once they are picked on the newest
   patch, never a removal. Wukong and Camille (Cloud9, Dive · Kalista) stay observed variations; Ezreal + Karma stays a
-  candidate until a second team plays it; Stable Top + Carry Bot, Jax Skirmish and Weakside Tank are not merged.
+  candidate until a second team plays it; Stable Top + Carry Bot and Jax Skirmish stay separate comps (alan, 2026-10-16). Named
+  variants (`variants`): a comp shown inside its parent's card with a Main | variant switch, still its own comp for
+  Draft Room links (Weakside Tank inside Protected Hypercarry, 2026-10-16). Yunara Protect is "Pick · Protected Yunara"
+  (id `yunara-protect` kept).
 - Deterministic and idempotent, no model calls; every threshold is in `DISCOVERY`. Each lineup joins the closest
   observed shell or discovered comp: five same champions = existing (a replay), same primary identity with 3+ shared
   champions, or same primary + secondary with 4+ roles doing the same job and 2+ shared champions = an observed
@@ -643,7 +648,11 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   the rail, the phone line (`lib/comp-summary.ts`), the header badge (`CompStatus`) and which grid cells are marked
   (`planFlags`; the numbers stay kit facts), so no two surfaces disagree. Best fix / Best overall stay the ranking's and
   say "From the recommendation ranking"; candidate-row reasons stay the ranking's. The previous rule list and the
-  `lib/evaluate.ts` rule checks show only with `?legacy=1` (debugging). Known limitation: the shared identity engine
+  `lib/evaluate.ts` rule checks show only with `?legacy=1` (debugging). **Incomplete read** (alan, 2026-10-16): a locked
+  pick with no kit is never an empty slot. `analyzePlan` lists it in `unread`, keeps only gaps that stand whoever plays
+  that role (one unread pick; none with two), marks plan jobs it could cover "Not read yet" and counts the rest in
+  `withheld`; the badge, phone line and rail say "Incomplete read", never "No major weak points". Display only, no
+  score change. Known limitation: the shared identity engine
   reads Gen.G Gwen / Aatrox / Akali / Ashe / Seraphine as split (three side laners) though it was drafted to skirmish; it
   keeps its critical stall gap (test), never a lineup exception; the fix is a plan-local reading of ambiguous
   identities, never a change to the shared identity engine without alan. The read asks whether the comp is missing something its own win condition needs. Jobs per plan

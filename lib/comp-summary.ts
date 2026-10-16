@@ -10,6 +10,7 @@ export interface CompSummary {
   needs: string[];                                            // the open role's top needs, highest priority first
   weak?: { label: string; text: string; severity: "major" | "moderate" }; // the top weak point worth acting on
   clean: boolean;                                             // a read with nothing to act on
+  incomplete?: boolean;                                       // a locked pick has no kit: never called clean
 }
 
 // A missing plan job reads "Missing <job>" on its own; the plan's name is already in the headline.
@@ -18,7 +19,8 @@ const labelOf = (x: PlanFinding, plan: string | undefined) =>
 
 export function compSummary(p: PlanRead, active?: Role): CompSummary {
   const picks = p.picks;
-  if (p.confidence === "none") return { state: "none", picks, needs: [], clean: false };
+  const incomplete = p.unread.length > 0;
+  if (p.confidence === "none") return { state: "none", picks, needs: [], clean: false, incomplete };
   // Critical, needed and non-minor weaknesses are worth acting on; accepted tradeoffs never are.
   const top = [...p.weaknesses, ...p.more].find((w) => w.tier === "critical" || w.tier === "needed" || w.severity !== "minor");
   const needs = active ? (p.roleNeeds[active] ?? []).slice(0, 2).map((n) => n.label) : [];
@@ -27,7 +29,8 @@ export function compSummary(p: PlanRead, active?: Role): CompSummary {
     picks,
     needs,
     weak: top ? { label: labelOf(top, p.plan?.label), text: top.why, severity: top.tier === "critical" || top.tier === "needed" ? "major" : "moderate" } : undefined,
-    clean: !top && !needs.length,
+    clean: !top && !needs.length && !incomplete,
+    incomplete,
   };
 }
 
@@ -38,5 +41,5 @@ export function summaryText(s: CompSummary): string {
     ...(s.needs.length ? [`Needs ${s.needs.map((n, i) => (i ? n.toLowerCase() : n)).join(" + ")}`] : []),
     ...(s.weak ? [s.weak.label] : []),
   ];
-  return parts.length ? parts.join(" · ") : "No major weak points";
+  return parts.length ? parts.join(" · ") : s.incomplete ? "Incomplete read" : "No major weak points";
 }

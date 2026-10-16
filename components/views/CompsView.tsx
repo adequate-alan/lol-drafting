@@ -8,7 +8,9 @@
 // comp (other lineups pro teams played under it, each with its game) sit behind an "N observed variations" control.
 // Pro swaps alan approved (data/comp-review.json) are the one exception to "swaps are general logic": they lead the
 // slot's list under their own pro heading, and the same control lists each with its games, series, teams and patches
-// (a small sample under 3 series). A historical mark names the last patch pros picked a slot's champion there.
+// (a small sample under 3 series). A historical mark names the last patch pros picked a slot's champion there. A named
+// variant (alan, 2026-10-16) has no card of its own: its parent's card switches to it in place, with its own lineup,
+// swaps, win condition, sources and evidence; links to the variant's id open the parent on that variant.
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -60,6 +62,7 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
   const [previews, setPreviews] = useState<Record<string, Swaps>>({});
   const [shownSources, setShownSources] = useState<Record<string, boolean>>({});
   const [shownVariations, setShownVariations] = useState<Record<string, boolean>>({});
+  const [variantShown, setVariantShown] = useState<Record<string, string | undefined>>({});
   const opener = useRef<HTMLElement | null>(null);
   const openShell = open && allShells.find((s) => s.id === open.shell);
   const swapsOf = (id: string) => previews[id] ?? {};
@@ -103,12 +106,15 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
   // The cards render in the browser, after the browser's own jump to #shell-id has already run.
   // A link to a card the default Pro filter hides (a template) opens on All instead.
   useEffect(() => {
-    const id = decodeURIComponent(window.location.hash.slice(1));
+    let id = decodeURIComponent(window.location.hash.slice(1));
     if (!id) return;
+    // A named variant lives inside its parent's card: open the parent on it.
+    const parent = extras[id]?.variantOf?.parent;
+    if (parent) { setVariantShown((v) => ({ ...v, [parent]: id })); id = parent; }
     const el = document.getElementById(id);
     if (el) el.scrollIntoView();
     else if (!rawKind && allShells.some((s) => s.id === id)) window.location.replace(`${window.location.pathname}?kind=all#${id}`);
-  }, [rawKind, allShells]);
+  }, [rawKind, allShells, extras]);
   // An open swap list closes on Escape or a press anywhere outside its slot.
   useEffect(() => {
     if (!menu) return;
@@ -118,7 +124,8 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
     document.addEventListener("pointerdown", onDown);
     return () => { document.removeEventListener("keydown", onKey); document.removeEventListener("pointerdown", onDown); };
   }, [menu]);
-  const shells = [...allShells]
+  const cards = allShells.filter((s) => !extras[s.id]?.variantOf);
+  const shells = [...cards]
     .filter((s) => !kind || s.kind === kind)
     .filter((s) => !level || LEVEL[s.difficulty] === level)
     .sort((a, b) => DIFF_ORDER.indexOf(a.difficulty) - DIFF_ORDER.indexOf(b.difficulty));
@@ -139,10 +146,13 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
         <span className="filter-group"><span className="filter-label">Difficulty</span>
           <nav className="seg" aria-label="Difficulty">{LEVELS.map(([d, l]) => <Link key={l} href={href({ difficulty: d })} className={level === d ? "active" : undefined}>{l}</Link>)}</nav>
         </span>
-        <span className="count">{shells.length} of {allShells.length} comps</span>
+        <span className="count">{shells.length} of {cards.length} comps</span>
       </div>
       <div className="shell-grid">
-        {shells.map((s) => {
+        {shells.map((card) => {
+          const named = extras[card.id]?.variants ?? [];
+          const shownId = variantShown[card.id];
+          const s = (shownId && allShells.find((x) => x.id === shownId)) || card;
           const d = s.proDraftId ? drafts[s.proDraftId] : undefined;
           const swaps = swapsOf(s.id);
           const swapped = ROLES.filter((r) => swaps[r]);
@@ -157,10 +167,10 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
           const hist = Object.entries(x?.historical ?? {}).reduce<Record<string, Role[]>>((m, [r, p]) => ({ ...m, [p]: [...(m[p] ?? []), r as Role] }), {});
           const showVar = !!shownVariations[s.id];
           return (
-            <article key={s.id} id={s.id} className={`panel shell ${s.kind} ${swapped.length ? "previewing" : ""}`}>
+            <article key={card.id} id={card.id} className={`panel shell ${s.kind} ${swapped.length ? "previewing" : ""}`}>
               <header className="shell-head">
                 <div className="row between">
-                  <h2>{s.name}</h2>
+                  <h2>{card.name}</h2>
                   <span className="row tight shell-kind">
                     {s.kind === "observed" ? <SourceBadge layer="pro" label="Pro" /> : <span className="src logic"><span className="ldot" />Template</span>}
                     <span className="xs muted">{LEVEL_LABEL[LEVEL[s.difficulty]]}</span>
@@ -176,6 +186,14 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
                     </span>
                   ))}
                 </span>
+                {named.length > 0 && (
+                  <div className="seg shell-variants" role="group" aria-label={`${card.name} variants`}>
+                    {[{ id: card.id, name: "Main" }, ...named].map((v) => (
+                      <button key={v.id} type="button" className={s.id === v.id ? "active" : undefined} aria-pressed={s.id === v.id}
+                        onClick={() => { setMenu(undefined); setVariantShown((x) => ({ ...x, [card.id]: v.id === card.id ? undefined : v.id })); }}>{v.name}</button>
+                    ))}
+                  </div>
+                )}
               </header>
               <Lineup shell={s} swaps={swaps} names={names} data={data} index={index} pro={x?.proSwaps ?? {}}
                 active={active?.shell === s.id ? active.role : undefined} selected={open?.shell === s.id ? open.role : undefined}
