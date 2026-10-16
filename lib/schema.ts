@@ -389,6 +389,18 @@ export const DiscoveredComps = z.object({
 });
 export type DiscoveredComps = z.infer<typeof DiscoveredComps>;
 
+// ---------- comp-review.json (alan's reviewed Comp Library decisions; changed only when he approves) ----------
+// Pro swaps: champion substitutions pro teams played inside a library comp, approved by alan with the games behind them.
+// Observed Pro Evidence, kept apart from a slot's `swaps` (General Draft Logic). Supporting lineups: recorded lineups
+// alan accepted as evidence for a comp outside the tracked tournaments (the discovery files the tracked ones itself).
+// Historical: slots whose champion pros have stopped picking in that role; the page shows the last patch it was picked.
+export const CompReview = z.object({
+  proSwaps: z.array(z.object({ comp: id, role: Role, champion: ChampionId, approvedOn: Day, games: z.array(LineupRef).min(2) })),
+  supporting: z.array(z.object({ comp: id, approvedOn: Day, games: z.array(LineupRef).min(1) })),
+  historical: z.array(z.object({ comp: id, roles: z.array(Role).min(1), approvedOn: Day })),
+});
+export type CompReview = z.infer<typeof CompReview>;
+
 // ---------- pool.json ----------
 export const PoolEntry = z.object({
   role: Role,
@@ -567,6 +579,7 @@ export const Files = {
   "build-assets.json": BuildAssets,
   "comp-shells.json": z.array(CompShell),
   "discovered-comps.json": DiscoveredComps,
+  "comp-review.json": CompReview,
   "pool.json": z.array(PoolEntry),
   "meta.json": Meta,
   "geng.json": z.array(GenGPattern),

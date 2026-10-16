@@ -1799,7 +1799,8 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .var-lineup { display: inline-flex; gap: 3px; }
 .var-pick { opacity: .45; }
 .var-pick.diff { opacity: 1; }
-.var-what { color: var(--text); }
+.var-what { display: inline-flex; align-items: center; gap: var(--s3); color: var(--text); }
+.var-sample { color: var(--pro); }
 .var-games { display: flex; flex-wrap: wrap; gap: 2px var(--s4); color: var(--text-muted); }
 .var-game { display: inline-flex; gap: var(--s2); }
 .var-game a, .var-draft { color: var(--pro); }
@@ -1826,6 +1827,9 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 @media (hover: none) { .lu-swaps { opacity: 1; } } /* no hover to reveal it on touch */
 .lu-slot:hover .lu-swaps, .lu-swaps:focus-visible { opacity: 1; color: var(--text-muted); }
 .lu-swaps:hover, .lu-swaps[aria-expanded="true"] { opacity: 1; color: var(--logic); background: var(--logic-subtle); }
+/* A slot with pro swaps: a teal dot, readable without hover (Observed Pro Evidence) */
+.lu-swaps.has-pro-swap { opacity: 1; }
+.lu-swaps.has-pro-swap .ldot { width: 5px; height: 5px; color: var(--pro); }
 .lu-slot:hover, .lu-slot.is-active { background: var(--surface-hover); }
 .lu-slot.is-open { background: var(--accent-subtle); }
 .lu-slot.is-open .champ { box-shadow: 0 0 0 2px var(--accent); }
@@ -1843,6 +1847,8 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .lu-top .swap-menu, .lu-jungle .swap-menu { left: 0; transform: none; }
 .lu-bot .swap-menu, .lu-support .swap-menu { left: auto; right: 0; transform: none; }
 .swap-menu-head { display: flex; align-items: center; gap: 5px; padding: 0 var(--s2) var(--s2); font-size: var(--fs-2xs); color: var(--logic); }
+.swap-menu-head.pro { color: var(--pro); }
+.swap-menu-head + .swap-item ~ .swap-menu-head { margin-top: var(--s2); padding-top: var(--s3); border-top: 1px solid var(--border); }
 .swap-item { display: flex; align-items: center; gap: var(--s4); width: 100%; padding: 3px var(--s2); border: 0; border-radius: var(--r); background: none; color: inherit; font: inherit; font-size: var(--fs-sm); text-align: left; cursor: pointer; }
 .swap-item .faint { margin-left: auto; }
 .swap-item:hover, .swap-item:focus-visible { background: var(--surface-hover); box-shadow: none; }

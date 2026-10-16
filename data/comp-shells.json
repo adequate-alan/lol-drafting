@@ -895,5 +895,65 @@
     "sources": [
       "golgg-tournament-picksandbans"
     ]
+  },
+  {
+    "id": "caitlyn-bard-pick",
+    "name": "Caitlyn + Bard Pick",
+    "kind": "observed",
+    "observedBy": "Team Vitality",
+    "proDraftId": "golgg-83523-red",
+    "slots": {
+      "TOP": {
+        "champion": "jayce",
+        "job": "Ranged lane pressure and poke",
+        "swaps": [
+          "ambessa",
+          "ksante"
+        ]
+      },
+      "JUNGLE": {
+        "champion": "qiyana",
+        "job": "Catch engage on poked targets",
+        "swaps": [
+          "lee-sin",
+          "pantheon"
+        ]
+      },
+      "MID": {
+        "champion": "syndra",
+        "job": "Pick burst and lane control",
+        "swaps": [
+          "ahri",
+          "orianna"
+        ]
+      },
+      "BOT": {
+        "champion": "caitlyn",
+        "job": "Lane-dominant bot carry",
+        "swaps": [
+          "varus",
+          "ashe"
+        ]
+      },
+      "SUPPORT": {
+        "champion": "bard",
+        "job": "Roams and lands catches",
+        "swaps": [
+          "thresh"
+        ]
+      }
+    },
+    "identities": [
+      "pick",
+      "poke",
+      "lane-pressure"
+    ],
+    "winCondition": "Win lanes with range, push first, then catch whoever walks into fog before the objective.",
+    "why": "Engage and catch: Bard's Cosmic Binding and Tempered Fate, Qiyana's terrain stun and Syndra's stun pick off a target; nobody has a front-line hard engage, so fights start from a catch, never head-on. Lane pressure: Caitlyn and Jayce push and siege early, Syndra holds mid, and Bard roams once bot is pushed. Follow-up: Caitlyn's traps and Jayce's poke punish the catch from range, so every pick needs vision first. Weaknesses: no frontline and little anti-engage, so a hard-engage or dive comp that reaches the backline wins a straight 5v5, and the lead falls off if catches stop. Substitutions that keep the plan: Ambessa or K'Sante top (a sturdier top; Hanwha Life played Ambessa), Lee Sin or Pantheon jungle, Ahri or Orianna mid, Varus or Ashe bot, Thresh support.",
+    "difficulty": "medium",
+    "sources": [
+      "golgg-game-83523",
+      "golgg-game-82626"
+    ]
   }
 ]

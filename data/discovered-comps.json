@@ -1,5 +1,5 @@
 {
-  "lastAddition": "2026-10-15",
+  "lastAddition": "2026-10-16",
   "comps": [
     {
       "id": "pro-83448-blue",
@@ -1120,6 +1120,23 @@
       "games": [
         {
           "game": 83574,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "caitlyn-bard-pick",
+      "picks": {
+        "TOP": "jayce",
+        "JUNGLE": "qiyana",
+        "MID": "syndra",
+        "BOT": "caitlyn",
+        "SUPPORT": "bard"
+      },
+      "addedOn": "2026-10-16",
+      "games": [
+        {
+          "game": 83523,
           "side": "red"
         }
       ]

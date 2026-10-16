@@ -48,9 +48,11 @@ export const getProDrafts = () => (drafts ??= newestGameFirst([
   ...draftsFromGames(getProGames().games),
 ]));
 export const getCompShells = () => load("comp-shells.json");
+export const getCompReview = () => load("comp-review.json");
 // Comp Library: the hand-written shells plus the weekly discovery's Observed Pro Comps and observed variations.
 let library: Library | undefined;
-export const getLibrary = () => (library ??= buildLibrary(getCompShells(), load("discovered-comps.json"), getProGames().games));
+export const getLibrary = () => (library ??= buildLibrary(getCompShells(), load("discovered-comps.json"), getProGames().games,
+  getCompReview(), getBuildGameRecords()));
 export const getPool = () => load("pool.json");
 export const getMeta = () => load("meta.json");
 export const getGenG = () => load("geng.json");
