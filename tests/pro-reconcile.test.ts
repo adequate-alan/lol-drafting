@@ -27,6 +27,14 @@ describe("recorded games", () => {
     }
   });
 
+  it("files every game under the tracked tournament whose Gol.gg name it carries (Worlds never as Demacia Cup)", () => {
+    for (const g of games) {
+      const t = file.tracked.find((x) => x.event === g.event);
+      expect(t?.names, `game ${g.id}`).toContain(g.tournament);
+      expect(file.tracked.filter((x) => x.names.includes(g.tournament)).map((x) => x.event), `game ${g.id}`).toEqual([g.event]);
+    }
+  });
+
   it("the LCK archive stays apart from the refresh: no LCK game in the refreshed file", () => {
     expect(games.some((g) => g.event === "lck-2026-playoffs")).toBe(false);
     expect(file.tracked.map((t) => t.event)).not.toContain("lck-2026-playoffs");

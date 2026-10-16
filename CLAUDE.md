@@ -199,7 +199,8 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   (it answers there; robots.txt allows these pages) and stops, writing nothing, on any refusal or challenge. Never bypass one.
 - Only the tournaments in `data/pro-games.json` `tracked` are requested, by exact Gol.gg name: Demacia Cup Global
   Invitational 2026 and Worlds 2026 (main event and play-in names). The LCK playoffs are a frozen archive. Adding a
-  tournament (2027 or any other) needs alan's approval. A tournament marked `complete` is not requested again.
+  tournament (2027 or any other) needs alan's approval. A tournament marked `complete` is not requested again. A Worlds stage Gol.gg
+  lists under a name no tracked entry has (main event, Swiss, knockouts) is named in the run report, never imported under a guess.
 - Pro drafts load newest game first (`newestGameFirst` in `lib/draft-side.ts`: date, then Gol.gg game id; alan,
   2026-10-12), so every match list puts the latest game at the top.
 - `data/pro-games.json` is the one game-level dataset (Gol.gg game id is the key; sides, winner, picks by role from the
