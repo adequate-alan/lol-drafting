@@ -9,8 +9,13 @@ export const sideOf = (d: Pick<ProDraft, "side">): DraftSide => d.side ?? "none"
 export const SIDE_LABEL: Record<DraftSide, string> = { blue: "Blue side", red: "Red side", none: "Side not recorded" };
 
 /** One game's identity: tournament, series game and both teams, so the two sides of a game share it. */
-export const gameKey = (d: Pick<ProDraft, "tournament" | "seriesGame" | "team" | "opponent">) =>
-  `${d.tournament}|${d.seriesGame}|${[d.team, d.opponent].sort().join("|")}`;
+/** One key per game: the Gol.gg game id when the draft cites one, since the same teams can meet twice in a tournament
+ *  with the same series label and game number (a group-stage game and a bracket rematch); otherwise tournament, series
+ *  game and both teams. */
+export const gameKey = (d: Pick<ProDraft, "tournament" | "seriesGame" | "team" | "opponent" | "sources">) => {
+  const id = golggGameId(d);
+  return id ? `golgg-${id}` : `${d.tournament}|${d.seriesGame}|${[d.team, d.opponent].sort().join("|")}`;
+};
 
 /** The Gol.gg game id a draft cites (`golgg-game-<id>`); Gol.gg numbers games in the order it records them. */
 export const golggGameId = (d: Pick<ProDraft, "sources">) =>
