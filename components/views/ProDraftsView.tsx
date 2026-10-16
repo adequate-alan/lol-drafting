@@ -26,15 +26,16 @@ import { patchLabel } from "@/lib/patch";
 import { shortDate } from "@/lib/evidence";
 import { gameKey } from "@/lib/draft-side";
 import { buildsHref, type BuildRow } from "@/lib/pro-builds";
-import { buildFor, buildParam, carryBuild, gameView, parseBuildParam } from "@/lib/pro-drafts-game";
+import { banPhases, bansOf, buildFor, buildParam, carryBuild, gameIdOf, gameView, newSince, parseBuildParam, pickedFirst, SEEN_KEY, VISIT_KEY, type GameFactBook } from "@/lib/pro-drafts-game";
 
-type Filters = { team?: string; champion?: string; role?: string; tournament?: string; series?: string; id?: string; build?: string };
+type Filters = { team?: string; champion?: string; role?: string; tournament?: string; stage?: string; series?: string; id?: string; build?: string };
 
 const seriesOf = (d: ProDraft) => d.seriesGame.replace(/\s*G\d+$/i, "");
 
 function matches(d: ProDraft, f: Filters) {
   if (f.team && d.team !== f.team) return false;
   if (f.tournament && d.tournament !== f.tournament) return false;
+  if (f.stage && d.stage !== f.stage) return false;
   if (f.series && seriesOf(d) !== f.series) return false;
   if (f.champion) {
     const roles = f.role ? [f.role as Role] : ROLES;
@@ -43,19 +44,65 @@ function matches(d: ProDraft, f: Filters) {
   return true;
 }
 
-const KEYS = ["team", "champion", "role", "tournament", "series", "id", "build"] as const;
+const KEYS = ["team", "champion", "role", "tournament", "stage", "series", "id", "build"] as const;
 const FILTER_KEYS = KEYS.filter((k) => k !== "id" && k !== "build");
 
 // The build rows load as their own chunk the first time a recorded game is opened (lib/pro-builds-bundle.ts).
 let loaded: Promise<BuildRow[]> | undefined;
 const load = () => (loaded ??= import("@/lib/pro-builds-bundle").then((m) => m.rows));
 
-export function ProDraftsView({ names, sources, all, freshness, drawerData, buildGames, events, shortNames, eventIds }: {
+const readIds = (store: Storage, key: string): number[] | null => {
+  try { const v = JSON.parse(store.getItem(key) ?? "null"); return Array.isArray(v) ? v.filter((x) => typeof x === "number") : null; } catch { return null; }
+};
+const writeIds = (store: Storage, key: string, ids: number[]) => { try { store.setItem(key, JSON.stringify(ids)); } catch { /* storage unavailable: no flags */ } };
+
+/** The Worlds games this browser had not seen before this visit (see lib/pro-drafts-game.ts newSince). */
+function useNewGames(current: number[]): Set<number> {
+  const [ids, setIds] = useState<number[]>([]);
+  const sig = current.join();
+  useEffect(() => {
+    try {
+      const visit = readIds(sessionStorage, VISIT_KEY);
+      const fresh = visit ?? newSince(readIds(localStorage, SEEN_KEY), current);
+      if (!visit) writeIds(sessionStorage, VISIT_KEY, fresh);
+      writeIds(localStorage, SEEN_KEY, [...new Set([...(readIds(localStorage, SEEN_KEY) ?? []), ...current])]);
+      setIds(fresh.filter((id) => current.includes(id)));
+    } catch { /* storage unavailable: no flags */ }
+  }, [sig]); // eslint-disable-line react-hooks/exhaustive-deps
+  return new Set(ids);
+}
+
+/** A team's bans: small muted portraits, secondary to the picks, split 3 | 2 as Gol.gg draws the two ban phases.
+ *  Each is named for screen readers and in its hint (the portrait alone does not name it). */
+function Bans({ ids, names, team }: { ids: string[]; names: Record<string, string>; team: string }) {
+  if (!ids.length) return null;
+  return (
+    <span className="ban-row" role="list" aria-label={`${team} bans`}>
+      {banPhases(ids).map((phase, p) => (
+        <span key={p} className="ban-phase">
+          {phase.map((b) => (
+            <span key={b} className="ban" role="listitem" title={`Banned: ${names[b] ?? b}`}>
+              <ChampIcon id={b} name={names[b] ?? b} size="xs" /><span className="sr-only">{names[b] ?? b}</span>
+            </span>
+          ))}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/** Gol.gg's First Pick mark for this team; nothing when the team did not pick first or the game has no mark. */
+const FirstPick = ({ on }: { on?: boolean }) => on
+  ? <span className="first-pick" title="Picked first in this game (Gol.gg First Pick mark)"><span aria-hidden="true">1st</span><span className="sr-only">First pick</span></span>
+  : null;
+
+export function ProDraftsView({ names, sources, all, freshness, drawerData, buildGames, events, shortNames, eventIds, facts }: {
   names: Record<string, string>; sources: Record<string, Source>; all: ProDraft[]; freshness: Freshness[]; drawerData: DrawerData;
   buildGames: number[]; // recorded games with Pro Builds (data/pro-builds.json)
   events: Record<string, string>; // meta.json event id -> short name, for the build header
   shortNames: Record<string, string>; // tournament name -> short name, for the game cell
   eventIds: Record<string, string>; // tournament name -> meta.json event id, so tournament pins are shared with Pro Builds
+  facts: GameFactBook; // Gol.gg game id -> First Pick mark and each side's bans, from the game records
 }) {
   const params = useSearchParams();
   const router = useRouter();
@@ -71,7 +118,8 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
   // Opening another game keeps the filters and carries an open build's role to that row's team.
   const link = (d: ProDraft) => href({ ...f, id: d.id, build: carryBuild(f.build, d) });
   const closeHref = href({ ...f, id: undefined, build: undefined });
-  const setFilter = (key: keyof Filters, value: string) => router.replace(href({ ...f, [key]: value || undefined, id: undefined, build: undefined }), { scroll: false });
+  // A new tournament clears its stage, since stages belong to one tournament.
+  const setFilter = (key: keyof Filters, value: string) => router.replace(href({ ...f, ...(key === "tournament" ? { stage: undefined } : {}), [key]: value || undefined, id: undefined, build: undefined }), { scroll: false });
   const sel = (key: keyof Filters, label: string, any: string, options: [string, string][]) => (
     <Select showLabel label={label} value={f[key] ?? ""} onChange={(v) => setFilter(key, v)}
       options={[{ value: "", label: any }, ...options.map(([value, l]) => ({ value, label: l }))]} />
@@ -100,6 +148,12 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
   // One game is one unit: its blue row then its red row under a shared game cell; a one-sided view keeps the game cell.
   const games = groupGames(rows);
   const gameCount = new Set(all.map(gameKey)).size;
+  // Stages of the chosen tournament (Worlds: Play-In is its own Gol.gg tournament; Swiss and knockout rounds are stages).
+  const stages = f.tournament ? uniq(all.filter((d) => d.tournament === f.tournament && d.stage).map((d) => d.stage)) : [];
+  // Worlds games new since this browser's last visit: a small marker on the game and a count in the toolbar.
+  const worlds = [...new Set(all.filter((d) => eventIds[d.tournament]?.startsWith("worlds")).map(gameIdOf).filter(Boolean))];
+  const fresh = useNewGames(worlds);
+  const freshShown = new Set(rows.map(gameIdOf).filter((id) => fresh.has(id))).size;
 
   // The open game and its open build. Choosing a champion changes only the build target, in place.
   const view = selected ? gameView(selected, all) : undefined;
@@ -149,7 +203,8 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
                   <span className="side-tag label">{side === "none" ? "Side not recorded" : side === "blue" ? "Blue side" : "Red side"}</span>
                   <b className="game-team-name">{d.team}</b>
                   {d.won != null && <span className={`xs ${d.won ? "win" : "loss"}`}>{d.won ? "Win" : "Loss"}</span>}
-                  {d.bans?.length ? <span className="xs muted game-bans">Bans: {d.bans.map((b) => names[b] ?? b).join(", ")}</span> : null}
+                  <FirstPick on={pickedFirst(d, facts)} />
+                  <Bans ids={bansOf(d, facts)} names={names} team={d.team} />
                 </div>
                 <div className="draft-slots" role="group" aria-label={`${d.team} picks`}>
                   {ROLES.map((r) => {
@@ -172,6 +227,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
               </div>
             ))}
             {view.teams.length === 1 && <p className="xs muted">The other team's draft for this game is not stored.</p>}
+            {view.teams.every((t) => pickedFirst(t.d, facts) === undefined) && <p className="xs muted">Gol.gg does not mark which team picked first in this game.</p>}
             {hasBuilds ? (
               target ? (
                 <div className="game-build" aria-live="polite">
@@ -198,10 +254,12 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
         {sel("role", "Role", "Any role", ROLES.map((r) => [r, r]))}
         <label className="select-field"><span>Tournament</span>
           <PinPicker kind="event" value={tournamentValue} options={tournamentOptions} onChange={(v) => setFilter("tournament", tournamentName(v))} /></label>
+        {stages.length > 1 && sel("stage", "Stage", "Every stage", stages.map((x) => [x, x]))}
         {pick("series", "series", uniq(all.map(seriesOf)).map((x) => [x, x]))}
         <noscript><button className="btn primary sm" type="submit">Filter</button></noscript>
         {active > 0 && <Link className="btn sm ghost" href="/pro-drafts">Clear {active} filter{active > 1 ? "s" : ""}</Link>}
         <span className="count" title={`${rows.length} of ${all.length} team drafts`}>{games.length} of {gameCount} games</span>
+        {freshShown > 0 && <span className="new-count" title="Recorded since your last visit to Pro Drafts in this browser">{freshShown} new Worlds game{freshShown > 1 ? "s" : ""}</span>}
         {quick.length > 0 && (
           <div className="pinned-filters" role="group" aria-label="Pinned filters">
             <span className="label"><PinIcon on />Pinned</span>
@@ -228,7 +286,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
                     {i === 0 && (
                       <td className="game-cell" rowSpan={g.rows.length}>
                         <Link className="cell-link" href={link(d)} title={`${d.team} vs ${d.opponent} · ${d.seriesGame}`}>
-                          <span className="game-name truncate">{gameLabel(d)}</span>
+                          <span className="game-name truncate">{gameLabel(d)}{fresh.has(gameIdOf(d)) && <span className="new-tag">New</span>}</span>
                           <span className="game-meta-line xs muted">{gameMeta(d)}</span>
                         </Link>
                       </td>
@@ -239,7 +297,9 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
                       <span className="team-line">
                         {teamPins.isPinned(d.team) && <PinIcon on />}<span className="team-name truncate">{d.team}</span>
                         {d.won != null && <span className={`res ${d.won ? "win" : "loss"}`} title={d.won ? "Won" : "Lost"}>{d.won ? "W" : "L"}</span>}
+                        <FirstPick on={pickedFirst(d, facts)} />
                       </span>
+                      <Bans ids={bansOf(d, facts)} names={names} team={d.team} />
                       {!g.paired && <span className="team-vs xs muted truncate">vs {d.opponent}</span>}
                     </td>
                     {ROLES.map((r) => <td key={r} className="pick-cell"><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={d.picks[r] === f.champion} /></td>)}
