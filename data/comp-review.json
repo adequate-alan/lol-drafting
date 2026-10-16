@@ -21,5 +21,9 @@
   ],
   "variants": [
     { "comp": "weakside-tank-carry-bot", "parent": "protected-hypercarry", "name": "Weakside tank · Gen.G", "approvedOn": "2026-10-16" }
+  ],
+  "heldChampions": [
+    { "champion": "locke", "since": "2026-10-16", "reason": "kit added 2026-10-16; comps and variations from his lineups wait for alan's review" },
+    { "champion": "zaahen", "since": "2026-10-16", "reason": "kit added 2026-10-16; comps and variations from his lineups wait for alan's review" }
   ]
 }

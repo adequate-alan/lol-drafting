@@ -175,8 +175,10 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   recommended, never in the pool. Reviewing one means setting its attributes and removing `rosterOnly`. Never type a
   roster from memory. On 2026-10-10 every roster-only champion except Zaahen got attributes and a v2 kit
   (`lib/model-v2/kits.ts`, unreviewed by alan); Yone's kit was approved by alan on 2026-10-16 (60/40 damage split a
-  heuristic, setupDependency 0 as for Irelia / Riven / Sylas / Jax); Zaahen and Locke wait for alan's review of kit
-  proposals from Riot's official ability text (Data Dragon, read on a runner), never typed from memory. Role audit (2026-10-10): Talon
+  heuristic, setupDependency 0 as for Irelia / Riven / Sylas / Jax); Locke's and Zaahen's on 2026-10-16 from Riot's
+  official ability text (`scripts/kit-text.mjs` on a runner, never typed from memory): Locke AP (30/70 heuristic),
+  backline access 2; Zaahen's attributes too, no longer roster-only, recommended in Top only (his one Jungle game stays
+  pro evidence). Every champion now has a kit. Role audit (2026-10-10): Talon
   also MID, Ziggs also MID, Jayce also MID.
 
 ## Gol.gg research rules
@@ -378,7 +380,8 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   candidate until a second team plays it; Stable Top + Carry Bot and Jax Skirmish stay separate comps (alan, 2026-10-16). Named
   variants (`variants`): a comp shown inside its parent's card with a Main | variant switch, still its own comp for
   Draft Room links (Weakside Tank inside Protected Hypercarry, 2026-10-16). Yunara Protect is "Pick · Protected Yunara"
-  (id `yunara-protect` kept).
+  (id `yunara-protect` kept). `heldChampions` (alan, 2026-10-16): discovery treats lineups with a held champion
+  as unread ("Held for review" in the report) until alan reviews what their new kit unlocks; Comp Check reads them.
 - Deterministic and idempotent, no model calls; every threshold is in `DISCOVERY`. Each lineup joins the closest
   observed shell or discovered comp: five same champions = existing (a replay), same primary identity with 3+ shared
   champions, or same primary + secondary with 4+ roles doing the same job and 2+ shared champions = an observed

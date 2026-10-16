@@ -1,4 +1,4 @@
-// v2 kit conversions for every champion except Locke and Zaahen (kits not yet reviewed). UNREVIEWED except Yone
+// v2 kit conversions for every champion. UNREVIEWED except Yone, Locke and Zaahen (alan, 2026-10-16)
 // per champion; alan approved the model at checkpoint 2. fightStart and damageByRole for the 18 champions already in
 // samples.ts are reused unchanged; everything else here is new. v1 attributes are copied from data/champions.json.
 import type { Champion, Role } from "../schema";
@@ -22,6 +22,9 @@ const SELF_PEEL: Record<string, Kit["selfPeel"]> = {
   sivir: 1, ezreal: 2, kaisa: 2, corki: 1, caitlyn: 1, ziggs: 1, jhin: 0, jinx: 0,
   ahri: 2, akali: 2, syndra: 1, viktor: 1, orianna: 1, azir: 2, ryze: 1, "twisted-fate": 1, fiora: 2, gwen: 2, camille: 2, jayce: 1,
   xayah: 2, zeri: 2, kalista: 1, lucian: 1, yunara: 1, mel: 1, cassiopeia: 1, anivia: 1, vex: 1, sylas: 1, yone: 1,
+  // Locke: W Move Speed and E teleport. Zaahen: Q knock-up and W pull stop a diver; his healing, R damage reduction and
+  // revive are survivability, not peel (alan, 2026-10-16).
+  locke: 1, zaahen: 1,
   jax: 2, aatrox: 1, ambessa: 1, naafiri: 1,
   // roster conversion
   akshan: 2, "aurelion-sol": 1, aurora: 2, belveth: 1, ekko: 2, elise: 1, evelynn: 1, fizz: 2, gangplank: 1, garen: 1, graves: 1, irelia: 1, kassadin: 2, katarina: 2, kayle: 1, kayn: 2, kennen: 1, khazix: 1, kindred: 2, leblanc: 2, lillia: 1, malzahar: 1, "master-yi": 2, nidalee: 1, nilah: 1, quinn: 1, riven: 1, samira: 1, senna: 1, shaco: 2, singed: 1, smolder: 1, talon: 1, tristana: 2, tryndamere: 2, vayne: 2, viego: 1, vladimir: 2, yasuo: 1, zed: 2, zoe: 1,
@@ -116,6 +119,15 @@ export const KITS: Record<string, KitEntry> = {
   // does not mean allied crowd control is wasted on him (followUp 3 is that).
   yone: { fightStart: "follow-up", damageByRole: { MID: D(3, S(0.6, 0.4)), TOP: D(3, S(0.6, 0.4)) }, kit: K(2, 0, 2, 2, 0, 1, 3, 2, 3, 2, 0, [2, 3, 3]),
     why: "Mixed-damage skirmisher; Q3 and the ultimate's line knockup follow an engage; E reaches the backline and returns." },
+  // Locke and Zaahen: alan approved 2026-10-16 from Riot's official ability text (Data Dragon 16.20.1, printed by
+  // .github/workflows/kit-text.yml). Damage splits are heuristics read from which abilities deal which damage, not
+  // measured shares. Locke follows up (R area slow and execute) rather than starting fights; backline access 2, not
+  // Akali's 3, because his teleport is short (425) and the reset needs a takedown.
+  locke: { fightStart: "none", damageByRole: { MID: D(3, S(0.3, 0.7)) }, kit: K(2, 0, 1, 2, 0, 0, 2, 1, 2, 2, 0, [2, 3, 3]),
+    why: "Magic-damage assassin: E teleports in and dashes to his next target; the ultimate's execute threshold grows with each seal." },
+  // Zaahen is recommended in Top only; his one recorded Jungle game stays pro evidence (alan, 2026-10-16).
+  zaahen: { fightStart: "catch", damageByRole: { TOP: D(2, S(0.9, 0.1)) }, kit: K(2, 0, 2, 2, 0, 1, 2, 1, 2, 1, 0, [2, 3, 2]),
+    why: "Sustained fighter: W pulls enemies hit and Q recast knocks one up (a catch, not a 5v5 start); E dashes in." },
 
   // ---------- mid ----------
   orianna: { kit: K(3, 2, 1, 1, 1, 1, 3, 3, 2, 2, 2, [1, 3, 3]), why: "Shockwave is the best follow-up in the pool once someone carries the ball in." },

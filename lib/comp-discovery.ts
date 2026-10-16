@@ -235,6 +235,7 @@ export interface DiscoveryInput {
   nameOf: (id: string) => string;
   previous: DiscoveredFile;
   today: string; // YYYY-MM-DD, America/New_York
+  held?: { champion: string; reason: string }[]; // comp-review.json heldChampions: their lineups stay unread here
 }
 
 const conceptLabel = (r: Pick<CompRead, "primary" | "secondary">) => `${SHORT[r.primary]}${r.secondary ? ` + ${SHORT[r.secondary]}` : ""}`;
@@ -244,7 +245,14 @@ export function discover(input: DiscoveryInput): DiscoveryResult {
   const { kits, nameOf, previous, today } = input;
   const observations = observationsFrom(input.games, input.events);
   const reads = new Map<string, ReadResult>();
-  const readOf = (p: Picks) => { const k = lineupKey(p); if (!reads.has(k)) reads.set(k, readLineup(p, kits, nameOf)); return reads.get(k)!; };
+  // A held champion's lineups are treated as unread (as before their kit), so they never open or join a comp by their
+  // read; the report lists them with the reason.
+  const heldIn = (p: Picks) => (input.held ?? []).filter((h) => ROLES.some((r) => p[r] === h.champion));
+  const readLineupHeld = (p: Picks): ReadResult => {
+    const h = heldIn(p);
+    return h.length ? { ok: false, reason: h.map((x) => `${nameOf(x.champion)} is held for review: ${x.reason}`).join("; ") } : readLineup(p, kits, nameOf);
+  };
+  const readOf = (p: Picks) => { const k = lineupKey(p); if (!reads.has(k)) reads.set(k, readLineupHeld(p)); return reads.get(k)!; };
   const okRead = (p: Picks) => { const r = readOf(p); return r.ok ? r.read : null; };
 
   const shellReads: Record<string, ReadResult> = {};
@@ -425,7 +433,7 @@ export function weeklyReport({ result, previous, shells, lck, nameOf, today, tou
     const fresh = c.games.some((o) => o.date >= weekAgo);
     out.push(`- ${fresh ? "**New** · " : ""}${c.read ? conceptLabel(c.read) : "Unread"} · ${lineup(c.picks)} · ${c.games.map(short).join(", ")} · ${c.reason}`);
   }
-  for (const u of unread) out.push(`- ${u.obs.date >= weekAgo ? "**New** · " : ""}Cannot be read · ${lineup(u.obs.picks)} · ${short(u.obs)} · ${u.reason}`);
+  for (const u of unread) out.push(`- ${u.obs.date >= weekAgo ? "**New** · " : ""}${/is held for review/.test(u.reason) ? "Held for review" : "Cannot be read"} · ${lineup(u.obs.picks)} · ${short(u.obs)} · ${u.reason}`);
   out.push("");
   if (kept.length) {
     out.push("## Earlier additions that would not pass today", "", "Kept in the library; review by hand.", "");

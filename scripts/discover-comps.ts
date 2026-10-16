@@ -30,12 +30,14 @@ const empty: DiscoveredComps = { lastAddition: null, comps: [], variations: [] }
 const champions = read("champions.json");
 const proGames = read("pro-games.json");
 const shells = read("comp-shells.json");
+const review = read("comp-review.json");
 const previous = existsSync(OUT) ? read("discovered-comps.json") : empty;
 const names = new Map(champions.map((c) => [c.id, c.name]));
 const nameOf = (id: string) => names.get(id) ?? id;
 
 const result = discover({
   games: proGames.games, events: proGames.tracked.map((t) => t.event), shells, kits: convertKits(champions), nameOf, previous, today,
+  held: review.heldChampions,
 });
 const file = Files["discovered-comps.json"].parse(result.file);
 const text = JSON.stringify(file, null, 2) + "\n";

@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { discover, lineupKey, readLineup, refKey, relation, shellPicks, weeklyReport, type DiscoveredFile, type DiscoveryInput, type Picks } from "@/lib/comp-discovery";
 import { buildLibrary } from "@/lib/comp-library";
-import { getChampions, getCompShells, getDraftData, getLibrary, getProDrafts, getProGames, getSources } from "@/lib/data";
+import { getChampions, getCompReview, getCompShells, getDraftData, getLibrary, getProDrafts, getProGames, getSources } from "@/lib/data";
 import { convertKits } from "@/lib/model-v2/kits";
 import { Files, ROLES, type ProGame } from "@/lib/schema";
 
@@ -96,12 +96,24 @@ describe("weekly comp discovery", () => {
   });
 
   it("never adds a lineup the engine cannot read or flags with a major weak point", () => {
+    // Every champion has a kit since 2026-10-16, so the unread case takes Locke's kit out of the input.
     const locke: Picks = { TOP: "ornn", JUNGLE: "sejuani", MID: "locke", BOT: "jinx", SUPPORT: "lulu" };
-    const r = discover({ ...base, games: onlyBlue([game(locke, "A"), game(locke, "B")]) });
+    const r = discover({ ...base, kits: kits.filter((k) => k.id !== "locke"), games: onlyBlue([game(locke, "A"), game(locke, "B")]) });
     expect(r.file.comps).toHaveLength(0);
     expect(r.unread.length).toBe(2);
     expect(r.unread[0].reason).toMatch(/Locke has no reviewed kit/);
     for (const c of discover(base).file.comps) expect(c.weaknesses.filter((w) => w.severity === "major"), c.id).toEqual([]);
+  });
+
+  it("a held champion's lineups never open or join a comp by their read until alan's review (comp-review.json)", () => {
+    const clean: Picks = { TOP: "ornn", JUNGLE: "sejuani", MID: "locke", BOT: "jinx", SUPPORT: "lulu" };
+    const held = [{ champion: "locke", reason: "kit added 2026-10-16" }];
+    const r = discover({ ...base, held, games: onlyBlue([game(clean, "A"), game(clean, "B")]) });
+    expect(r.file.comps).toHaveLength(0);
+    expect(r.unread[0].reason).toMatch(/Locke is held for review/);
+    const stored = getCompReview().heldChampions.map((h) => h.champion);
+    const now = discover({ ...base, held: getCompReview().heldChampions });
+    for (const c of now.file.comps) for (const role of ROLES) expect(stored, c.id).not.toContain(c.slots[role].champion);
   });
 
   it("adding comps never edits the previous ones' dates, and a quiet week keeps the last addition", () => {

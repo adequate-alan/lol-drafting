@@ -1797,7 +1797,7 @@
     "roles": [
       "MID"
     ],
-    "damage": "mixed",
+    "damage": "AP",
     "attrs": {
       "engage": 1,
       "frontline": 0,
@@ -1812,7 +1812,7 @@
     },
     "flags": [],
     "reviewed": false,
-    "note": "Established pro mid, not an unknown: LCK 2026 playoffs 3 picks / 5 bans / 66.7% WR (26.16), Demacia Cup 2026 3 mid picks / 1 ban / 66.7% WR (26.18, reported). Role and pro status are settled; the attribute values below are still unreviewed."
+    "note": "Established pro mid, not an unknown: LCK 2026 playoffs 3 picks / 5 bans / 66.7% WR (26.16), Demacia Cup 2026 3 mid picks / 1 ban / 66.7% WR (26.18, reported). Role and pro status are settled; the attribute values below are still unreviewed. Damage type AP (alan, 2026-10-16): Riot lists him as magic damage; only his basic attacks are physical."
   },
   {
     "id": "lucian",
@@ -4019,21 +4019,20 @@
     ],
     "damage": "AD",
     "attrs": {
-      "engage": 0,
-      "frontline": 0,
+      "engage": 1,
+      "frontline": 2,
       "peel": 0,
-      "sustainedDps": 0,
-      "burst": 0,
+      "sustainedDps": 2,
+      "burst": 2,
       "poke": 0,
-      "scaling": 0,
-      "lanePressure": 0,
-      "sidePressure": 0,
-      "objectiveControl": 0
+      "scaling": 2,
+      "lanePressure": 2,
+      "sidePressure": 2,
+      "objectiveControl": 1
     },
     "flags": [],
-    "reviewed": false,
-    "rosterOnly": true,
-    "note": "Roster entry from Data Dragon 16.20.1. Roles from Data Dragon class tags; damage type from Data Dragon ratings. Attributes not reviewed."
+    "reviewed": true,
+    "note": "Roster entry from Data Dragon 16.20.1. Attributes approved by alan on 2026-10-16 from Riot's official ability text (fighter: Q knock-up, W pull, E dash, R heal and damage reduction). Recommended in Top only; his one recorded Jungle game stays pro evidence."
   },
   {
     "id": "zac",

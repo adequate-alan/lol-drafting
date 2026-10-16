@@ -1539,6 +1539,51 @@
    ]
   },
   {
+   "champion": "zaahen",
+   "role": "TOP",
+   "identity": "Sustained catch fighter: W pulls enemies into him, Q recast knocks one up, and he heals through extended fights.",
+   "partners": [
+    {
+     "role": "JUNGLE",
+     "preferred": [
+      {
+       "id": "sejuani",
+       "confidence": "moderate",
+       "reason": "Sejuani's Permafrost and Glacial Prison hold targets in place, so Zaahen's W pull and Q recast knock-up land on a target that cannot walk out."
+      },
+      {
+       "id": "jarvan-iv",
+       "confidence": "moderate",
+       "reason": "Cataclysm walls enemies in, keeping them inside the edge of Zaahen's E slice for its % max Health damage."
+      }
+     ],
+     "alternatives": [
+      {
+       "id": "maokai",
+       "confidence": "moderate",
+       "reason": "Maokai's point-click Twisted Advance root lets Zaahen walk up and land Q recast's knock-up during a top-side gank."
+      },
+      {
+       "id": "vi",
+       "confidence": "moderate",
+       "reason": "Vi's point-click ultimate pins one target, and Zaahen's W pull and Q knock-up keep it pinned after Vi lands."
+      }
+     ]
+    },
+    {
+     "role": "MID",
+     "preferred": [
+      {
+       "id": "orianna",
+       "confidence": "moderate",
+       "reason": "With the ball on Zaahen as he dashes in with E, Shockwave pulls enemies to him for W and the E edge damage."
+      }
+     ],
+     "alternatives": []
+    }
+   ]
+  },
+  {
    "champion": "zac",
    "role": "SUPPORT",
    "identity": "Engage tank support: Elastic Slingshot dives from long range and Let's Bounce knocks up the group.",

@@ -42,7 +42,6 @@ describe("proposed synergy records", () => {
   it("every playable champion has partners in every role it plays", () => {
     const missing: string[] = [];
     for (const c of playable) for (const role of c.roles) {
-      if (c.id === "locke") continue; // confirmed MID record only; no kit to propose from yet
       const confirmed = role === "BOT" ? data.botPairings.some((b) => b.champion === c.id)
         : role === "TOP" ? data.topPicks.some((t) => t.champion === c.id)
         : role === "SUPPORT" ? false
