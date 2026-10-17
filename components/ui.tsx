@@ -74,6 +74,21 @@ export function Panel({ title, meta, end, children, className = "", bodyClass = 
 }
 
 export type Severity = "critical" | "caution" | "healthy";
+/** The one checkbox: native input (keyboard, label click, screen readers) drawn as the `.check` box with a gold tick. */
+export function Checkbox({ checked, onChange, title, className = "", children }: {
+  checked: boolean; onChange: (checked: boolean) => void; title?: string; className?: string; children: React.ReactNode;
+}) {
+  return (
+    <label className={`check ${className}`.trim()} title={title}>
+      <span className="check-ctl">
+        <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+        <svg className="check-mark" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M2.5 6.2 5 8.6 9.6 3.6" /></svg>
+      </span>
+      <span>{children}</span>
+    </label>
+  );
+}
+
 export function WarningBadge({ severity }: { severity: Severity }) {
   const cls = severity === "critical" ? "danger" : severity === "caution" ? "caution" : "success";
   const label = severity === "critical" ? "Critical" : severity === "caution" ? "Caution" : "Covered";

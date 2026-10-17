@@ -27,7 +27,7 @@ import { Select } from "./Select";
 import { Popover } from "./Popover";
 import { AUTO_BUILDS_KEY, MY_ROLE_KEY, buildsEntry, draftQuery, markOwnQuery, myBuildsHref, opensBuilds, parseRole } from "@/lib/my-role";
 import { noteDraftRole, restoredDraftRole, sessionStore } from "@/lib/synergy-nav";
-import { ChampIcon, ChampionRow, WarningBadge, type Severity } from "./ui";
+import { ChampIcon, ChampionRow, Checkbox, WarningBadge, type Severity } from "./ui";
 import { scrollBehavior } from "@/lib/motion";
 import { rovingIndex, rovingKeys } from "./roving";
 import { isLaneRole, PAIR_LABEL, USAGE_LABEL, type MidPair, type TopUsageMark, type TopUsageMarks } from "@/lib/top-draft";
@@ -308,9 +308,8 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
           ))}
         </div>
         {myRole && (
-          <label className="check xs" title="Only a confirmed lock in your own role opens Pro Builds; your draft is kept for the way back">
-            <input type="checkbox" checked={autoBuilds} onChange={(e) => setAutoBuilds(e.target.checked)} /> Open Pro Builds when I lock
-          </label>
+          <Checkbox className="xs" checked={autoBuilds} onChange={setAutoBuilds}
+            title="Only a confirmed lock in your own role opens Pro Builds; your draft is kept for the way back">Open Pro Builds when I lock</Checkbox>
         )}
         {mine && myRole && myHref && (
           <span className="my-builds">
