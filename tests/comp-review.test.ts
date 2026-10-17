@@ -89,7 +89,54 @@ describe("historical marks", () => {
     const shells = getCompShells();
     const s = shells.find((x) => x.id === "protected-hypercarry")!;
     const fresh = { ...newest, id: 999001, blue: { ...newest.blue, picks: { ...newest.blue.picks, BOT: s.slots.BOT.champion } } };
-    const lib = buildLibrary(shells, discovered, [...games, fresh], { proSwaps: [], supporting: [], historical: [{ comp: s.id, roles: ["BOT"], approvedOn: "2026-10-16" }], variants: [], heldChampions: [] });
+    const lib = buildLibrary(shells, discovered, [...games, fresh], { proSwaps: [], supporting: [], historical: [{ comp: s.id, roles: ["BOT"], approvedOn: "2026-10-16" }], variants: [], heldChampions: [], namedVariations: [], held: [], families: [] });
     expect(lib.extras[s.id]?.historical?.BOT).toBeUndefined();
+  });
+});
+
+// alan's 2026-10-17 decisions on the comps Locke's and Zaahen's lineups unlocked: two named variations, four holds, and a
+// light Yunara protection family. Nothing here changes a lineup, a saved pairing or a score.
+describe("named variations, holds and families (2026-10-17)", () => {
+  const library = getLibrary();
+  const review = getCompReview();
+  const key = (p: Record<string, string>) => ROLES.map((r) => p[r]).join("|");
+
+  it("Shopify's Ornn + Jarvan IV lineup is a named variation of Protect + Front-to-back · Yunara, with FlyQuest's lineup beside it", () => {
+    const v = library.extras["pro-83450-red"]?.variations.find((x) => x.named);
+    expect(v?.named?.name).toMatch(/Shopify Rebellion/);
+    expect(key(v!.picks)).toBe("ornn|jarvan-iv|locke|yunara|lulu");
+    expect(v!.games.map((g) => `${g.game}-${g.side}`)).toEqual(["83468-red"]);
+    expect(v!.named!.alike.map((a) => key(a.picks))).toEqual(["ornn|nocturne|syndra|yunara|lulu"]);
+    expect(v!.named!.read?.identity).toBeTruthy();
+    // FlyQuest's lineup is listed once, under the named variation only.
+    expect(library.extras["pro-83450-red"].variations.filter((x) => key(x.picks) === "ornn|nocturne|syndra|yunara|lulu")).toHaveLength(0);
+  });
+
+  it("LGD's Jax + Aphelios lineup is a named variation of Speed-Up Skirmish, and the comp's own lineup is unchanged", () => {
+    const x = library.extras["speed-up-skirmish"];
+    const v = x?.variations[0];
+    expect(v?.named?.name).toMatch(/LGD/);
+    expect(key(v!.picks)).toBe("jax|skarner|locke|aphelios|karma");
+    const s = library.shells.find((y) => y.id === "speed-up-skirmish")!;
+    expect(ROLES.map((r) => s.slots[r].champion).join("|")).toBe("olaf|skarner|locke|sivir|karma");
+  });
+
+  it("a family links distinct comps that each keep their card; Pick · Protected Yunara keeps its lineup", () => {
+    const f = review.families.find((x) => x.id === "yunara-protection")!;
+    for (const id of f.comps) {
+      expect(library.shells.some((s) => s.id === id), id).toBe(true);
+      expect(library.extras[id]?.family?.others.map((o) => o.id).sort()).toEqual(f.comps.filter((c) => c !== id).sort());
+      expect(library.extras[id]?.variantOf, id).toBeUndefined();
+    }
+    const pick = library.shells.find((s) => s.id === "yunara-protect")!;
+    expect(ROLES.map((r) => pick.slots[r].champion).join("|")).toBe("rumble|pantheon|syndra|yunara|lulu");
+  });
+
+  it("held lineups are recorded games and filed under no comp", () => {
+    const games = new Map(getProGames().games.map((g) => [g.id, g]));
+    for (const h of review.held) for (const r of h.games) {
+      expect(games.has(r.game), h.name).toBe(true);
+      for (const x of Object.values(library.extras)) for (const v of x.variations) expect(v.games.some((g) => g.game === r.game && g.side === r.side), h.name).toBe(false);
+    }
   });
 });

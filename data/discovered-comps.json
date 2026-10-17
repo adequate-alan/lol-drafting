@@ -1,5 +1,5 @@
 {
-  "lastAddition": "2026-10-16",
+  "lastAddition": "2026-10-17",
   "comps": [
     {
       "id": "pro-83448-blue",
@@ -1422,6 +1422,23 @@
       "games": [
         {
           "game": 83604,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "speed-up-skirmish",
+      "picks": {
+        "TOP": "jax",
+        "JUNGLE": "skarner",
+        "MID": "locke",
+        "BOT": "aphelios",
+        "SUPPORT": "karma"
+      },
+      "addedOn": "2026-10-17",
+      "games": [
+        {
+          "game": 83454,
           "side": "red"
         }
       ]

@@ -105,15 +105,43 @@ describe("weekly comp discovery", () => {
     for (const c of discover(base).file.comps) expect(c.weaknesses.filter((w) => w.severity === "major"), c.id).toEqual([]);
   });
 
-  it("a held champion's lineups never open or join a comp by their read until alan's review (comp-review.json)", () => {
-    const clean: Picks = { TOP: "ornn", JUNGLE: "sejuani", MID: "locke", BOT: "jinx", SUPPORT: "lulu" };
+  it("a held champion's lineups join existing comps as evidence but never open a new comp (alan, 2026-10-17)", () => {
     const held = [{ champion: "locke", reason: "kit added 2026-10-16" }];
-    const r = discover({ ...base, held, games: onlyBlue([game(clean, "A"), game(clean, "B")]) });
-    expect(r.file.comps).toHaveLength(0);
-    expect(r.unread[0].reason).toMatch(/Locke is held for review/);
-    const stored = getCompReview().heldChampions.map((h) => h.champion);
-    const now = discover({ ...base, held: getCompReview().heldChampions });
-    for (const c of now.file.comps) for (const role of ROLES) expect(stored, c.id).not.toContain(c.slots[role].champion);
+    // Two teams with the same new Locke lineup: enough for a comp by the usual rule, but it waits for review.
+    const clean: Picks = { TOP: "ornn", JUNGLE: "sejuani", MID: "locke", BOT: "jinx", SUPPORT: "lulu" };
+    const fresh = discover({ ...base, held, games: onlyBlue([game(clean, "A"), game(clean, "B")]) });
+    expect(fresh.file.comps).toHaveLength(0);
+    expect(fresh.awaiting).toHaveLength(2);
+    expect(fresh.awaiting[0].reason).toMatch(/Locke lineup: no existing comp matches/);
+    // A Locke lineup one champion off a curated comp is filed under it.
+    const speed = shellPicks(shells.find((x) => x.id === "speed-up-skirmish")!);
+    const near = discover({ ...base, held, games: onlyBlue([game({ ...speed, BOT: "jinx" }, "A")]) });
+    expect(near.file.variations.map((v) => v.of)).toContain("speed-up-skirmish");
+    expect(near.awaiting).toHaveLength(0);
+  });
+
+  it("a held candidate's games join nothing, and later lineups closest to it are listed beside it, not filed", () => {
+    const heldPicks: Picks = { TOP: "ornn", JUNGLE: "sejuani", MID: "orianna", BOT: "jinx", SUPPORT: "lulu" };
+    const [first, later] = onlyBlue([game(heldPicks, "A", { date: "2026-10-01" }), game(heldPicks, "B", { date: "2026-10-02" })]);
+    const r = discover({ ...base, games: [first, later], heldLineups: [{ name: "Test hold", note: "", games: [{ game: first.id, side: "blue" }] }] });
+    expect(r.heldCandidates[0].games.map((o) => o.game)).toEqual([first.id]);
+    expect(r.heldCandidates[0].closest.map((o) => o.game)).toEqual([later.id]);
+    const filed = [...r.file.comps.flatMap((c) => c.games), ...r.file.variations.flatMap((v) => v.games), ...r.candidates.flatMap((c) => c.games)].map(refKey);
+    expect(filed).not.toContain(`${first.id}-blue`);
+    expect(filed).not.toContain(`${later.id}-blue`);
+  });
+
+  it("the stored library is exactly what discovery gives with alan's review inputs, and no comp grows from a held champion", () => {
+    const review = getCompReview();
+    const r = discover({ ...base, previous: stored, today: stored.lastAddition ?? "2026-10-17", held: review.heldChampions, heldLineups: review.held });
+    expect(r.file).toEqual(stored);
+    const curated = new Set(shells.map((x) => x.id));
+    for (const c of r.file.comps) for (const role of ROLES) expect(review.heldChampions.map((h) => h.champion), c.id).not.toContain(c.slots[role].champion);
+    // alan's holds stay unfiled; the approved LGD lineup is a Speed-Up Skirmish variation.
+    const heldRefs = new Set(review.held.flatMap((h) => h.games.map(refKey)));
+    for (const v of r.file.variations) for (const g of v.games) expect(heldRefs.has(refKey(g)), `${v.of} ${refKey(g)}`).toBe(false);
+    expect(r.file.variations.some((v) => v.of === "speed-up-skirmish" && v.games.some((g) => refKey(g) === "83454-red"))).toBe(true);
+    expect(curated.has("speed-up-skirmish")).toBe(true);
   });
 
   it("adding comps never edits the previous ones' dates, and a quiet week keeps the last addition", () => {

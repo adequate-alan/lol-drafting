@@ -6,8 +6,10 @@
 // `swaps`, which are General Draft Logic), supporting lineups (filed with the comp's variations, LCK archive included)
 // a historical mark (the last patch pros picked a slot's champion in that role, shown only once it is not the newest) and
 // named variants (a comp shown inside its parent's card; every shell stays in `shells`, so Draft Room links still work).
+// Since 2026-10-17 also named variations (one observed lineup with a name, alan's note and the comp check's read, plus
+// lineups that play the same way) and families (distinct comps with one strategic thread, linked from each card).
 import { newestGamesFirst, recordStamp } from "./chronology";
-import { lineupKey, shellPicks, type LineupRef, type Picks } from "./comp-discovery";
+import { IDENTITY_LABEL, lineupKey, refKey, shellPicks, type LineupRef, type Picks, type ReadResult, type Weak } from "./comp-discovery";
 import { comparePatch } from "./patch";
 import { gameSourceId } from "./pro-games";
 import { ROLES, type CompReview, type CompShell, type DiscoveredComp, type DiscoveredComps, type ProGame, type Role } from "./schema";
@@ -17,7 +19,11 @@ export interface ObservedGame {
   game: number; side: "blue" | "red"; team: string; opponent: string; won: boolean;
   date: string; patch: string; tournament: string; url: string;
 }
-export interface ObservedLineup { picks: Picks; games: ObservedGame[] }
+export interface ObservedLineup { picks: Picks; games: ObservedGame[]; named?: NamedVariation }
+/** The comp check's read of a lineup (General Draft Logic), for a named variation. */
+export interface LineupRead { identity: string; winCondition: string; timing: string; strengths: string[]; weaknesses: Weak[] }
+export interface NamedVariation { name: string; note: string; read?: LineupRead; alike: ObservedLineup[] }
+export interface CompFamily { id: string; name: string; note: string; others: { id: string; name: string }[] }
 /** A champion pro teams played in one slot of a comp, approved by alan as a supported alternative. Never "the" meta pick:
  *  the series, team and patch counts travel with it so a two-series swap reads as two series. */
 export interface ProSwap { champion: string; games: ObservedGame[]; series: number; teams: number; patches: string[] }
@@ -31,8 +37,13 @@ export interface LibraryExtra {
   historical?: Partial<Record<Role, string>>; // role → last patch pros picked the slot's champion there, when older than the newest
   variantOf?: { parent: string; name: string }; // shown inside the parent's card, never as its own card
   variants?: { id: string; name: string }[];    // a parent's named variants, in review order
+  family?: CompFamily;
 }
-const NO_REVIEW: CompReview = { proSwaps: [], supporting: [], historical: [], variants: [], heldChampions: [] };
+const NO_REVIEW: CompReview = { proSwaps: [], supporting: [], historical: [], variants: [], heldChampions: [], namedVariations: [], held: [], families: [] };
+const readView = (r: ReadResult): LineupRead | undefined => r.ok ? {
+  identity: [r.read.primary, r.read.secondary].filter((x): x is NonNullable<typeof x> => !!x).map((i) => IDENTITY_LABEL[i]).join(" + "),
+  winCondition: r.read.winCondition, timing: r.read.timing, strengths: r.read.strengths, weaknesses: r.read.weaknesses,
+} : undefined;
 
 export function gameView(g: ProGame, side: "blue" | "red"): ObservedGame {
   const them = side === "blue" ? "red" : "blue";
@@ -54,7 +65,9 @@ export function discoveredShell(c: DiscoveredComp, games: Map<number, ProGame>):
 }
 
 /** `records`: every recorded game the review may cite (the tracked games plus the LCK archive records); defaults to `proGames`. */
-export function buildLibrary(shells: CompShell[], file: DiscoveredComps, proGames: ProGame[], review: CompReview = NO_REVIEW, records: ProGame[] = proGames) {
+/** `readOf`: the comp check's read of a lineup, shown with a named variation (left out when not given). */
+export function buildLibrary(shells: CompShell[], file: DiscoveredComps, proGames: ProGame[], review: CompReview = NO_REVIEW, records: ProGame[] = proGames,
+  readOf?: (p: Picks) => ReadResult) {
   const games = new Map([...records, ...proGames].map((g) => [g.id, g]));
   const view = (refs: LineupRef[]) => newestGamesFirst(refs.flatMap((r) => { const g = games.get(r.game); return g ? [{ g, v: gameView(g, r.side) }] : []; }),
     (x) => recordStamp(x.g)).map((x) => x.v);
@@ -88,8 +101,40 @@ export function buildLibrary(shells: CompShell[], file: DiscoveredComps, proGame
       if (row) lineups[lineups.indexOf(row)] = { ...row, games: [...row.games, ref] };
       else if (lineupKey(picks) !== own) lineups.push({ picks, games: [ref] });
     }
-    const variations = lineups.map((v) => ({ picks: v.picks, games: view(v.games) })).filter((v) => v.games.length)
+    // Named variations: the named lineup's row (added when nothing filed it), and the lineups that play the same way
+    // moved under it. Named rows lead, in review order.
+    const named: { key: string; n: CompReview["namedVariations"][number] }[] = [];
+    for (const n of review.namedVariations.filter((x) => x.comp === s.id)) {
+      const g = games.get(n.game.game);
+      if (!g) continue;
+      const picks = g[n.game.side].picks as Picks, key = lineupKey(picks);
+      if (key === own) continue;
+      const row = lineups.find((v) => lineupKey(v.picks) === key);
+      if (!row) lineups.push({ picks, games: [n.game] });
+      else if (!row.games.some((x) => refKey(x) === refKey(n.game))) row.games.push(n.game);
+      named.push({ key, n });
+    }
+    const alikeKeys = new Set(named.flatMap(({ n }) => n.supporting.flatMap((r) => { const g = games.get(r.game); return g ? [lineupKey(g[r.side].picks as Picks)] : []; })));
+    const rows = lineups.map((v) => ({ picks: v.picks, games: view(v.games) })).filter((v) => v.games.length);
+    const plain = rows.filter((v) => !named.some((x) => x.key === lineupKey(v.picks)) && !alikeKeys.has(lineupKey(v.picks)))
       .sort((a, b) => b.games.length - a.games.length || b.games[0].date.localeCompare(a.games[0].date));
+    const variations: ObservedLineup[] = [...named.flatMap(({ key, n }) => {
+      const row = rows.find((v) => lineupKey(v.picks) === key);
+      if (!row) return [];
+      // Supporting games, grouped by lineup with any games discovery already filed for that lineup here.
+      const refs = new Map<string, { picks: Picks; games: LineupRef[] }>();
+      for (const r of n.supporting) {
+        const g = games.get(r.game);
+        if (!g) continue;
+        const picks = g[r.side].picks as Picks, k = lineupKey(picks);
+        if (!refs.has(k)) refs.set(k, { picks, games: [...(lineups.find((v) => lineupKey(v.picks) === k)?.games ?? [])] });
+        const at = refs.get(k)!;
+        if (!at.games.some((x) => refKey(x) === refKey(r))) at.games.push(r);
+      }
+      const alike: ObservedLineup[] = [...refs.values()].map((v) => ({ picks: v.picks, games: view(v.games) }));
+      const read = readOf ? readView(readOf(row.picks)) : undefined;
+      return [{ ...row, named: { name: n.name, note: n.note, ...(read ? { read } : {}), alike } }];
+    }), ...plain];
     const proSwaps: Partial<Record<Role, ProSwap[]>> = {};
     for (const x of review.proSwaps.filter((p) => p.comp === s.id)) {
       const rows = x.games.flatMap((r) => { const g = games.get(r.game); return g ? [{ g, r }] : []; });
@@ -108,10 +153,14 @@ export function buildLibrary(shells: CompShell[], file: DiscoveredComps, proGame
     const hasSwaps = Object.keys(proSwaps).length > 0, hasHist = Object.keys(historical).length > 0;
     const parent = review.variants.find((v) => v.comp === s.id);
     const children = review.variants.filter((v) => v.parent === s.id && all.some((x) => x.id === v.comp)).map((v) => ({ id: v.comp, name: v.name }));
-    if (!d && !replays.length && !variations.length && !hasSwaps && !hasHist && !parent && !children.length) continue;
+    const fam = review.families.find((f) => f.comps.includes(s.id));
+    const family = fam && { id: fam.id, name: fam.name, note: fam.note,
+      others: fam.comps.filter((c) => c !== s.id).flatMap((c) => { const x = all.find((y) => y.id === c); return x ? [{ id: x.id, name: x.name }] : []; }) };
+    if (!d && !replays.length && !variations.length && !hasSwaps && !hasHist && !parent && !children.length && !family) continue;
     const { slots: _s, games: _g, winCondition: _w, why: _y, ...read } = d ?? ({} as DiscoveredComp);
     extras[s.id] = { ...(d ? { discovered: read } : {}), games: replays, variations, ...(hasSwaps ? { proSwaps } : {}), ...(hasHist ? { historical } : {}),
-      ...(parent ? { variantOf: { parent: parent.parent, name: parent.name } } : {}), ...(children.length ? { variants: children } : {}) };
+      ...(parent ? { variantOf: { parent: parent.parent, name: parent.name } } : {}), ...(children.length ? { variants: children } : {}),
+      ...(family ? { family } : {}) };
   }
   return { shells: all, extras, lastAddition: file.lastAddition };
 }

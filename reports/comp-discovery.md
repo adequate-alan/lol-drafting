@@ -1,32 +1,22 @@
-# Comp Library review · 2026-10-16
+# Comp Library review · 2026-10-17
 
 Read 164 lineups from 82 recorded games (latest 2026-10-16). Demacia Cup: 67/67 games recorded, ongoing; Worlds 2026: not on Gol.gg yet; Worlds 2026 Play-In: 15/15 games recorded, ongoing. LCK 2026 playoff drafts are used for comparison only.
 
-## New compositions (2)
+## New compositions (0)
 
-- **Skirmish + Pick · Lucian** · Top Galio · Jng Qiyana · Mid Ahri · Bot Lucian · Sup Milio · Easy
-  - Qiyana, Ahri and Lucian win short fights before items; catch from Qiyana and Ahri, burst from Lucian. Fight short 2v2s and 3v3s around the jungle before items stack up, and snowball the leads into objectives. Between objectives, look for catches with Qiyana and Ahri.
-  - Strengths: Fight start: Galio; Peel and disengage: Galio and Milio; Mixed damage (60% physical); Strong before first items.
-  - Weak points: Little tank damage (moderate); Short range (moderate); Thin frontline (minor).
-  - [Team WE vs GAM Esports G1](https://gol.gg/game/stats/83451/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-03, win)
-  - 1 observed variation: Top Rumble · Jng Qiyana · Mid Syndra · Bot Lucian · Sup Milio
-- **Front-to-back + Split · Yunara** · Top Yorick · Jng Sejuani · Mid Akali · Bot Yunara · Sup Lulu · Easy
-  - Sejuani in front, Yunara dealing damage from range; Yorick and Akali can hold a side lane alone. Set up first around objectives, let Sejuani start fights, and play front-to-back through Yunara. Between fights, Yorick and Akali pressure a side lane.
-  - Strengths: Fight start: Sejuani; Side lane: Yorick and Akali; Mixed damage (44% physical); Scales into the late game.
-  - [Team WE vs HANJIN BRION G2](https://gol.gg/game/stats/83460/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-04, loss)
-  - 1 observed variation: Top Olaf · Jng Sejuani · Mid Akali · Bot Yunara · Sup Lulu
+None this week.
 
 ## New variations of existing compositions (1)
 
-- **Skirmish + Front-to-back · Jax**: Yorick for Jax, Kog'Maw for Viktor
-  - [MVK Esports vs Karmine Corp G3](https://gol.gg/game/stats/83630/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-16, loss)
+- **Speed-Up Skirmish**: Jax for Olaf, Aphelios for Sivir
+  - [LGD Gaming vs BNK FearX G2](https://gol.gg/game/stats/83454/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-04, win)
 
 ## Existing compositions seeing new professional play (1)
 
-- **Skirmish + Front-to-back · Jax**: 1 new game
-  - [MVK Esports vs Karmine Corp G3](https://gol.gg/game/stats/83630/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-16, loss)
+- **Speed-Up Skirmish**: 1 new game
+  - [LGD Gaming vs BNK FearX G2](https://gol.gg/game/stats/83454/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-04, win)
 
-## May be outdated (9)
+## May be outdated (8)
 
 Observed library comps with no exact or variation game in the tracked tournaments (newest patch 16.20). Report only; nothing is removed.
 
@@ -37,10 +27,9 @@ Observed library comps with no exact or variation game in the tracked tournament
 - **Side Carry Scaling** · Top Gwen · Jng Trundle · Mid Viktor · Bot Corki · Sup Alistar
 - **Stable Top + Carry Bot** · Top Gnar · Jng Vi · Mid Taliyah · Bot Lucian · Sup Milio
 - **Control Siege** · Top Jayce · Jng Qiyana · Mid Anivia · Bot Mel · Sup Alistar
-- **Speed-Up Skirmish** · Top Olaf · Jng Skarner · Mid Locke · Bot Sivir · Sup Karma
 - **Dive + Utility Bot** · Top Camille · Jng Naafiri · Mid Galio · Bot Kalista · Sup Renata Glasc
 
-## Proposed comps for review (112)
+## Proposed comps for review (93)
 
 Not added automatically: each needs more games or a person's call. One line per lineup group, newest games marked.
 
@@ -78,7 +67,7 @@ Not added automatically: each needs more games or a person's call. One line per 
 - Dive · Top Olaf · Jng Wukong · Mid Sylas · Bot Mel · Sup Rakan · [Shopify Rebellion G2 W](https://gol.gg/game/stats/83535/page-game/) · 1 game from Shopify Rebellion, and the library already has dive comps
 - Front-to-back + Scaling · Top Tristana · Jng Shyvana · Mid Annie · Bot Yunara · Sup Lulu · [FlyQuest G3 W](https://gol.gg/game/stats/83536/page-game/) · 1 game from FlyQuest, and the library already has front-to-back comps
 - Front-to-back · Top Gnar · Jng Naafiri · Mid Anivia · Bot Miss Fortune · Sup Nautilus · [Shopify Rebellion G3 L](https://gol.gg/game/stats/83536/page-game/) · major weak point (Anivia is unprotected); 1 game from Shopify Rebellion, and the library already has front-to-back comps
-- Front-to-back + Scaling · Top Ornn · Jng Nocturne · Mid Syndra · Bot Yunara · Sup Lulu · [FlyQuest G1 W](https://gol.gg/game/stats/83537/page-game/) · 1 game from FlyQuest, and the library already has front-to-back comps
+- Front-to-back + Scaling · Top Ornn · Jng Nocturne · Mid Syndra · Bot Yunara · Sup Lulu · [FlyQuest G1 W](https://gol.gg/game/stats/83537/page-game/) · 1 game from FlyQuest, and the library already has front-to-back comps · filed by review under Protect + Front-to-back · Yunara (Ornn + Jarvan IV engage · Shopify Rebellion)
 - Front-to-back + Skirmish · Top Rumble · Jng Jarvan IV · Mid Ryze · Bot Jhin · Sup Nautilus · [Natus Vincere G1 W](https://gol.gg/game/stats/83540/page-game/) · 1 game from Natus Vincere, and the library already has front-to-back comps
 - Dive · Top Jax · Jng Nocturne · Mid Taliyah · Bot Xayah · Sup Rakan · [JD Gaming G3 W](https://gol.gg/game/stats/83542/page-game/) · major weak point (No frontline); 1 game from JD Gaming, and the library already has dive comps
 - **New** · Pick + Front-to-back · Top K'Sante · Jng Pantheon · Mid Ryze · Bot Kalista · Sup Renata Glasc · [KT Rolster G1 L](https://gol.gg/game/stats/83563/page-game/) · 1 game from KT Rolster, and the library already has pick comps
@@ -119,10 +108,8 @@ Not added automatically: each needs more games or a person's call. One line per 
 - **New** · Poke / siege · Top Jayce · Jng Vi · Mid Cassiopeia · Bot Varus · Sup Vel'Koz · [Karmine Corp G2 W](https://gol.gg/game/stats/83599/page-game/) · major weak point (No frontline); 1 game from Karmine Corp, and the library already has poke / siege comps
 - **New** · Skirmish + Pick · Top Kled · Jng Naafiri · Mid Anivia · Bot Lucian · Sup Nami · [Karmine Corp G3 L](https://gol.gg/game/stats/83600/page-game/) · major weak point (No frontline); 1 game from Karmine Corp, and the library already has skirmish comps
 - **New** · Dive + Skirmish · Top Olaf · Jng Jarvan IV · Mid Annie · Bot Jhin · Sup Alistar · [Cloud9 G3 W](https://gol.gg/game/stats/83600/page-game/) · 1 game from Cloud9, and the library already has dive comps
-- **New** · Dive + Wombo · Top Renekton · Jng Qiyana · Mid Orianna · Bot Xayah · Sup Rakan · [Karmine Corp G4 W](https://gol.gg/game/stats/83601/page-game/) · 1 game from Karmine Corp, and the library already has dive comps
 - **New** · Front-to-back + Pick · Top K'Sante · Jng Lillia · Mid Yone · Bot Ziggs · Sup Shen · [Cloud9 G5 L](https://gol.gg/game/stats/83602/page-game/) · 1 game from Cloud9, and the library already has front-to-back comps
 - **New** · Split · Top Rumble · Jng Jayce · Mid Ryze · Bot Sivir · Sup Karma · [Team WE G1 W](https://gol.gg/game/stats/83608/page-game/) · major weak point (Follow-up without engage, No frontline); 1 game from Team WE, and the library already has split comps
-- **New** · Pick + Poke / siege · Top K'Sante · Jng Lee Sin · Mid Syndra · Bot Ezreal · Sup Neeko · [HANJIN BRION G1 L](https://gol.gg/game/stats/83608/page-game/) · 1 game from HANJIN BRION, and the library already has pick comps
 - **New** · Skirmish + Pick · Top Renekton · Jng Naafiri · Mid Akali · Bot Caitlyn · Sup Bard · [Team WE G2 W](https://gol.gg/game/stats/83609/page-game/) · 1 game from Team WE, and the library already has skirmish comps
 - **New** · Wombo + Front-to-back · Top Gnar · Jng Jarvan IV · Mid Orianna · Bot Lucian · Sup Milio · [HANJIN BRION G2 L](https://gol.gg/game/stats/83609/page-game/) · 1 game from HANJIN BRION, and the library already has wombo comps
 - **New** · Front-to-back + Protect · Top Trundle · Jng Poppy · Mid Viktor · Bot Jhin · Sup Seraphine · [Team WE G3 L](https://gol.gg/game/stats/83610/page-game/) · 1 game from Team WE, and the library already has front-to-back comps
@@ -139,23 +126,38 @@ Not added automatically: each needs more games or a person's call. One line per 
 - **New** · Pick + Skirmish · Top Galio · Jng Lee Sin · Mid Ahri · Bot Ashe · Sup Seraphine · [Karmine Corp G2 W](https://gol.gg/game/stats/83629/page-game/) · 1 game from Karmine Corp, and the library already has pick comps
 - **New** · Pick + Skirmish · Top Twisted Fate · Jng Qiyana · Mid Rumble · Bot Ezreal · Sup Pyke · [MVK Esports G2 L](https://gol.gg/game/stats/83629/page-game/) · major weak point (No frontline); 1 game from MVK Esports, and the library already has pick comps
 - **New** · Dive + Wombo · Top Kennen · Jng Jarvan IV · Mid Viktor · Bot Xayah · Sup Rakan · [Karmine Corp G3 W](https://gol.gg/game/stats/83630/page-game/) · 1 game from Karmine Corp, and the library already has dive comps
-- Held for review · Top Jax · Jng Skarner · Mid Locke · Bot Aphelios · Sup Karma · [LGD Gaming G2 W](https://gol.gg/game/stats/83454/page-game/) · Locke is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
-- Held for review · Top Ornn · Jng Naafiri · Mid Locke · Bot Jhin · Sup Bard · [Team WE G3 W](https://gol.gg/game/stats/83461/page-game/) · Locke is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
-- Held for review · Top Ornn · Jng Jarvan IV · Mid Locke · Bot Yunara · Sup Lulu · [Shopify Rebellion G1 L](https://gol.gg/game/stats/83468/page-game/) · Locke is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
-- Held for review · Top Zaahen · Jng Pantheon · Mid Orianna · Bot Xayah · Sup Rakan · [Shopify Rebellion G2 L](https://gol.gg/game/stats/83469/page-game/) · Zaahen is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
-- Held for review · Top Ambessa · Jng Jarvan IV · Mid Locke · Bot Jhin · Sup Karma · [HANJIN BRION G1 L](https://gol.gg/game/stats/83520/page-game/) · Locke is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
-- Held for review · Top K'Sante · Jng Zaahen · Mid Syndra · Bot Miss Fortune · Sup Neeko · [Natus Vincere G3 L](https://gol.gg/game/stats/83522/page-game/) · Zaahen is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
-- Held for review · Top Galio · Jng Qiyana · Mid Locke · Bot Ashe · Sup Seraphine · [JD Gaming G1 L](https://gol.gg/game/stats/83540/page-game/) · Locke is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
-- **New** · Held for review · Top Yorick · Jng Skarner · Mid Locke · Bot Yunara · Sup Lulu · [KT Rolster G4 W](https://gol.gg/game/stats/83566/page-game/) · Locke is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
-- **New** · Held for review · Top Rumble · Jng Pantheon · Mid Locke · Bot Kalista · Sup Renata Glasc · [BNK FearX G1 W](https://gol.gg/game/stats/83568/page-game/) · Locke is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
-- **New** · Held for review · Top Rumble · Jng Vi · Mid Locke · Bot Yunara · Sup Lulu · [HANJIN BRION G1 L](https://gol.gg/game/stats/83578/page-game/) · Locke is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
-- **New** · Held for review · Top K'Sante · Jng Jayce · Mid Locke · Bot Jhin · Sup Camille · [BNK FearX G3 W](https://gol.gg/game/stats/83605/page-game/) · Locke is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
-- **New** · Held for review · Top Zaahen · Jng Jarvan IV · Mid Kog'Maw · Bot Jhin · Sup Camille · [MVK Esports G3 W](https://gol.gg/game/stats/83595/page-game/) · Zaahen is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
-- **New** · Held for review · Top Gnar · Jng Xin Zhao · Mid Locke · Bot Ezreal · Sup Karma · [Cloud9 G1 W](https://gol.gg/game/stats/83598/page-game/) · Locke is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
-- **New** · Held for review · Top Zaahen · Jng Sejuani · Mid Sylas · Bot Yunara · Sup Lulu · [Cloud9 G4 L](https://gol.gg/game/stats/83601/page-game/) · Zaahen is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
-- **New** · Held for review · Top Olaf · Jng Wukong · Mid Locke · Bot Kalista · Sup Renata Glasc · [HANJIN BRION G3 W](https://gol.gg/game/stats/83610/page-game/) · Locke is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
-- **New** · Held for review · Top Zaahen · Jng Nocturne · Mid Annie · Bot Smolder · Sup Alistar · [Team WE G5 W](https://gol.gg/game/stats/83612/page-game/) · Zaahen is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
-- **New** · Held for review · Top Aatrox · Jng Trundle · Mid Locke · Bot Ziggs · Sup Nautilus · [Cloud9 G4 L](https://gol.gg/game/stats/83626/page-game/) · Locke is held for review: kit added 2026-10-16; comps and variations from his lineups wait for alan's review
+
+## Awaiting review: new comps from held champions (12)
+
+Read by the comp check; these join existing comps when one matches, and never open a new comp without review.
+
+- Top Ornn · Jng Naafiri · Mid Locke · Bot Jhin · Sup Bard · [Team WE G3 W](https://gol.gg/game/stats/83461/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
+- Top Ornn · Jng Jarvan IV · Mid Locke · Bot Yunara · Sup Lulu · [Shopify Rebellion G1 L](https://gol.gg/game/stats/83468/page-game/) · filed by review under Protect + Front-to-back · Yunara (Ornn + Jarvan IV engage · Shopify Rebellion)
+- Top Ambessa · Jng Jarvan IV · Mid Locke · Bot Jhin · Sup Karma · [HANJIN BRION G1 L](https://gol.gg/game/stats/83520/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
+- Top Galio · Jng Qiyana · Mid Locke · Bot Ashe · Sup Seraphine · [JD Gaming G1 L](https://gol.gg/game/stats/83540/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
+- **New** · Top Rumble · Jng Pantheon · Mid Locke · Bot Kalista · Sup Renata Glasc · [BNK FearX G1 W](https://gol.gg/game/stats/83568/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
+- **New** · Top Rumble · Jng Vi · Mid Locke · Bot Yunara · Sup Lulu · [HANJIN BRION G1 L](https://gol.gg/game/stats/83578/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
+- **New** · Top K'Sante · Jng Jayce · Mid Locke · Bot Jhin · Sup Camille · [BNK FearX G3 W](https://gol.gg/game/stats/83605/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
+- **New** · Top Zaahen · Jng Jarvan IV · Mid Kog'Maw · Bot Jhin · Sup Camille · [MVK Esports G3 W](https://gol.gg/game/stats/83595/page-game/) · Zaahen lineup: no existing comp matches, and a new comp from it waits for review
+- **New** · Top Gnar · Jng Xin Zhao · Mid Locke · Bot Ezreal · Sup Karma · [Cloud9 G1 W](https://gol.gg/game/stats/83598/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
+- **New** · Top Olaf · Jng Wukong · Mid Locke · Bot Kalista · Sup Renata Glasc · [HANJIN BRION G3 W](https://gol.gg/game/stats/83610/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
+- **New** · Top Zaahen · Jng Nocturne · Mid Annie · Bot Smolder · Sup Alistar · [Team WE G5 W](https://gol.gg/game/stats/83612/page-game/) · Zaahen lineup: no existing comp matches, and a new comp from it waits for review
+- **New** · Top Aatrox · Jng Trundle · Mid Locke · Bot Ziggs · Sup Nautilus · [Cloud9 G4 L](https://gol.gg/game/stats/83626/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
+
+## Held candidates (4)
+
+Kept as recorded evidence after review, filed under no comp. Lineups closest to one are listed under it; reconsider when they add independent series.
+
+- **Front-to-back · Yunara with Zaahen (Cloud9)** · 1 series from 1 team · Zaahen, Sejuani and Sylas around Yunara + Lulu; kept apart from Team WE's Yorick and Akali split lineup, which it does not play like.
+  - Top Zaahen · Jng Sejuani · Mid Sylas · Bot Yunara · Sup Lulu · [Cloud9 vs Karmine Corp G4](https://gol.gg/game/stats/83601/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-15, loss)
+- **Dive · Xayah** · 2 series from 2 teams · Shopify Rebellion's Zaahen and Pantheon lineup and Karmine Corp's Renekton and Qiyana version; to be checked against the Dive comps and the Orianna + Xayah + Rakan lineups under Wombo + Front-to-back · Corki.
+  - Top Zaahen · Jng Pantheon · Mid Orianna · Bot Xayah · Sup Rakan · [Shopify Rebellion vs JD Gaming G2](https://gol.gg/game/stats/83469/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-05, loss)
+  - Top Renekton · Jng Qiyana · Mid Orianna · Bot Xayah · Sup Rakan · [Karmine Corp vs Cloud9 G4](https://gol.gg/game/stats/83601/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-15, win)
+- **Pick + Front-to-back · Syndra** · 2 series from 2 teams · Natus Vincere's Zaahen jungle draft and HANJIN BRION's Lee Sin version. Zaahen stays a Top recommendation only.
+  - Top K'Sante · Jng Zaahen · Mid Syndra · Bot Miss Fortune · Sup Neeko · [Natus Vincere vs HANJIN BRION G3](https://gol.gg/game/stats/83522/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-06, loss)
+  - Top K'Sante · Jng Lee Sin · Mid Syndra · Bot Ezreal · Sup Neeko · [HANJIN BRION vs Team WE G1](https://gol.gg/game/stats/83608/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-15, loss)
+- **Scaling + Front-to-back · Yunara** · 1 series from 1 team · KT Rolster's Yorick, Skarner and Locke lineup; to be checked against the scaling, split and protect comps.
+  - Top Yorick · Jng Skarner · Mid Locke · Bot Yunara · Sup Lulu · [KT Rolster vs Team Vitality G4](https://gol.gg/game/stats/83566/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-12, win)
 
 ## Limits
 

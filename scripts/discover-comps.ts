@@ -34,10 +34,11 @@ const review = read("comp-review.json");
 const previous = existsSync(OUT) ? read("discovered-comps.json") : empty;
 const names = new Map(champions.map((c) => [c.id, c.name]));
 const nameOf = (id: string) => names.get(id) ?? id;
+const compName = (id: string) => shells.find((s) => s.id === id)?.name ?? previous.comps.find((c) => c.id === id)?.name ?? id;
 
 const result = discover({
   games: proGames.games, events: proGames.tracked.map((t) => t.event), shells, kits: convertKits(champions), nameOf, previous, today,
-  held: review.heldChampions,
+  held: review.heldChampions, heldLineups: review.held,
 });
 const file = Files["discovered-comps.json"].parse(result.file);
 const text = JSON.stringify(file, null, 2) + "\n";
@@ -46,9 +47,13 @@ const changed = !existsSync(OUT) || readFileSync(OUT, "utf8") !== text;
 const report = weeklyReport({
   result, previous, shells, lck: read("pro-drafts.json"), nameOf, today,
   tournaments: freshness(proGames).map((t) => ({ label: t.label, status: t.status, recorded: t.recorded, games: t.games, listed: t.listed })),
+  reviewed: new Map([
+    ...review.namedVariations.flatMap((n) => [n.game, ...n.supporting].map((r) => [`${r.game}-${r.side}`, `filed by review under ${compName(n.comp)} (${n.name})`] as const)),
+    ...review.supporting.flatMap((x) => x.games.map((r) => [`${r.game}-${r.side}`, `filed by review under ${compName(x.comp)}`] as const)),
+  ]),
 });
 const summary = [
-  `${file.comps.length} discovered comps (${file.comps.filter((c) => !previous.comps.some((p) => p.id === c.id)).length} new), ${file.variations.length} observed variation lineups, ${result.candidates.length + result.unread.length} proposed for review.`,
+  `${file.comps.length} discovered comps (${file.comps.filter((c) => !previous.comps.some((p) => p.id === c.id)).length} new), ${file.variations.length} observed variation lineups, ${result.candidates.length + result.unread.length + result.awaiting.length} proposed for review, ${result.heldCandidates.length} held candidates.`,
   changed ? "Library data changed." : "No library change; nothing written.",
 ].join(" ");
 console.log(report);

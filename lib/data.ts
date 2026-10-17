@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { z } from "zod";
 import { buildLibrary, type Library } from "./comp-library";
+import { lineupReader } from "./comp-discovery";
 import { withProAlternatives } from "./pro-alternatives";
 import { golggGameId, newestGameFirst, withGameSides } from "./draft-side";
 import { draftsFromGames, freshness, resultsFromGames, sourcesFromGames } from "./pro-games";
@@ -52,7 +53,7 @@ export const getCompReview = () => load("comp-review.json");
 // Comp Library: the hand-written shells plus the weekly discovery's Observed Pro Comps and observed variations.
 let library: Library | undefined;
 export const getLibrary = () => (library ??= buildLibrary(getCompShells(), load("discovered-comps.json"), getProGames().games,
-  getCompReview(), getBuildGameRecords()));
+  getCompReview(), getBuildGameRecords(), lineupReader(getChampions())));
 export const getPool = () => load("pool.json");
 export const getMeta = () => load("meta.json");
 export const getGenG = () => load("geng.json");
