@@ -508,10 +508,25 @@ input, select {
 input::placeholder { color: var(--text-faint); }
 input:hover { border-color: var(--text-faint); }
 input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-subtle); border-radius: var(--r); }
-/* Checkbox with its label: native box in the accent colour, no text-input chrome */
-.check { display: inline-flex; align-items: center; gap: var(--s3); color: var(--text-muted); cursor: pointer; }
-.check input { width: 14px; height: 14px; margin: 0; padding: 0; accent-color: var(--accent); cursor: pointer; }
+/* Checkbox (`Checkbox` in components/ui.tsx): the native input drawn as a token box; checked = gold fill, dark tick */
+.check { display: inline-flex; align-items: center; gap: var(--s3); min-height: 22px; color: var(--text-muted); cursor: pointer; transition: color var(--t-fast); }
 .check:hover { color: var(--text); }
+.check-ctl { position: relative; display: inline-grid; flex: none; width: 14px; height: 14px; }
+.check input {
+  appearance: none; width: 14px; height: 14px; margin: 0; padding: 0; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--r-sm);
+  transition: background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.check:hover input { border-color: var(--accent); }
+.check input:checked { background: var(--accent); border-color: var(--accent); }
+.check:hover input:checked { background: var(--accent-hover); border-color: var(--accent-hover); }
+.check input:focus-visible { border-color: var(--accent); box-shadow: var(--focus-ring); border-radius: var(--r-sm); }
+.check-mark {
+  position: absolute; inset: 0; width: 14px; height: 14px; pointer-events: none;
+  fill: none; stroke: var(--accent-contrast); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+  opacity: 0; transform: scale(.6); transition: opacity var(--t-fast), transform var(--t-med);
+}
+.check input:checked + .check-mark { opacity: 1; transform: none; }
 .btn {
   display: inline-flex; align-items: center; gap: var(--s3); height: var(--control-h); padding: 0 var(--s5);
   font: inherit; color: var(--text); white-space: nowrap; cursor: pointer;
@@ -2178,6 +2193,8 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
   .seg a, .seg button { height: 32px; }
   .tabs a { height: 40px; }
   .btn.sm { height: 32px; }
+  .check { min-height: 32px; }
+  .check-ctl, .check input, .check-mark { width: 18px; height: 18px; }
   .select-trigger { height: 32px; }
   .select-option { min-height: 36px; }
   .pop-trigger, .src-toggle, .pn-src, .role-switch { position: relative; }
@@ -2206,6 +2223,7 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
     .sidebar { opacity: 0; transition: opacity var(--dur-panel-out) ease-out, visibility 0s linear var(--dur-panel-out); }
     .sidebar.open { opacity: 1; transition: opacity var(--dur-panel) ease-out, visibility 0s; }
   }
+  .check-mark { transform: none; }
   .select-chevron, .disclosure > summary::before, .fit-toggle svg, .match-row .row-chevron { transition: none; }
   html { scroll-behavior: auto; }
 }
