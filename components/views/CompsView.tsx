@@ -11,6 +11,9 @@
 // (a small sample under 3 series). A historical mark names the last patch pros picked a slot's champion there. A named
 // variant (alan, 2026-10-16) has no card of its own: its parent's card switches to it in place, with its own lineup,
 // swaps, win condition, sources and evidence; links to the variant's id open the parent on that variant.
+// Named variations (alan, 2026-10-17) lead the observed list: one lineup with its name, alan's approved note, the comp
+// check's read and the lineups that play the same way. A family line names the comp's strategic family and links the
+// other comps in it; each keeps its own card.
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -21,7 +24,7 @@ import { useLeave } from "@/components/useLeave";
 import { CompFreshness } from "@/components/CompFreshness";
 import { ChampIcon, PageHeader, SourceBadge } from "@/components/ui";
 import { jobLabel, WHY_LINE } from "@/lib/comp-copy";
-import { PRO_SWAP_SAMPLE, type LibraryExtra, type ObservedGame, type ProSwap } from "@/lib/comp-library";
+import { PRO_SWAP_SAMPLE, type LibraryExtra, type NamedVariation, type ObservedGame, type ObservedLineup, type ProSwap } from "@/lib/comp-library";
 import { draftHref, shellDraft, variationDiff } from "@/lib/comp-preview";
 import type { DrawerData } from "@/lib/data";
 import { shortDate } from "@/lib/evidence";
@@ -186,6 +189,11 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
                     </span>
                   ))}
                 </span>
+                {x?.family && (
+                  <p className="shell-family xs muted" title={x.family.note}>
+                    {x.family.name} family: {x.family.others.map((o, i) => <span key={o.id}>{i > 0 && ", "}<a href={`#${o.id}`}>{o.name}</a></span>)}
+                  </p>
+                )}
                 {named.length > 0 && (
                   <div className="seg shell-variants" role="group" aria-label={`${card.name} variants`}>
                     {[{ id: card.id, name: "Main" }, ...named].map((v) => (
@@ -395,7 +403,7 @@ function ReadDetails({ read }: { read: NonNullable<LibraryExtra["discovered"]> }
 function GameLink({ g }: { g: ObservedGame }) {
   return (
     <span className="var-game">
-      <a href={g.url} target="_blank" rel="noopener noreferrer">{g.team} vs {g.opponent}</a>
+      <a href={g.url} target="_blank" rel="noopener noreferrer" title={g.tournament}>{g.team} vs {g.opponent}</a>
       <span className={g.won ? "var-w" : "var-l"}>{g.won ? "W" : "L"}</span>
       <span className="faint">{shortDate(g.date)} · {patchLabel(g.patch)}</span>
     </span>
@@ -424,6 +432,7 @@ function Variations({ shell: s, extra, names }: { shell: CompShell; extra: Libra
       )}
       {extra.variations.map((v) => {
         const changed = ROLES.filter((r) => v.picks[r] !== s.slots[r].champion);
+        if (v.named) return <NamedRow key={ROLES.map((r) => v.picks[r]).join("|")} shell={s} v={v} n={v.named} names={names} />;
         return (
           <li key={ROLES.map((r) => v.picks[r]).join("|")} className="var-row">
             <span className="var-lineup" aria-label={ROLES.map((r) => names[v.picks[r]]).join(", ")}>
@@ -438,6 +447,34 @@ function Variations({ shell: s, extra, names }: { shell: CompShell; extra: Libra
         );
       })}
     </ul>
+  );
+}
+
+function NamedRow({ shell: s, v, n, names }: { shell: CompShell; v: ObservedLineup; n: NamedVariation; names: Record<string, string> }) {
+  const changed = ROLES.filter((r) => v.picks[r] !== s.slots[r].champion);
+  return (
+    <li className="var-row var-named">
+      <span className="var-lineup" aria-label={ROLES.map((r) => names[v.picks[r]]).join(", ")}>
+        {ROLES.map((r) => <span key={r} className={changed.includes(r) ? "var-pick diff" : "var-pick"}><ChampIcon id={v.picks[r]} name={names[v.picks[r]]} role={r} size="xs" /></span>)}
+      </span>
+      <span className="var-what"><b>{n.name}</b> <span className="faint">· {changed.map((r) => `${names[v.picks[r]]} for ${names[s.slots[r].champion]}`).join(", ")}</span></span>
+      <span className="var-games">
+        {v.games.map((x) => <GameLink key={`${x.game}-${x.side}`} g={x} />)}
+        <Link className="var-draft" href={draftHref(v.picks)}>Draft Room →</Link>
+      </span>
+      <div className="var-note">
+        <p>{n.note}</p>
+        {n.read && (
+          <p className="faint">Comp check read: {n.read.identity}. {n.read.timing}{n.read.weaknesses.length ? ` Weak points: ${n.read.weaknesses.map((w) => `${w.label} (${w.severity})`).join(", ")}.` : " No weak points."}</p>
+        )}
+        {n.alike.map((a) => (
+          <p key={ROLES.map((r) => a.picks[r]).join("|")} className="var-alike">
+            <span className="faint">Plays the same way:</span> {ROLES.map((r) => names[a.picks[r]]).join(", ")}{" "}
+            {a.games.map((x) => <GameLink key={`${x.game}-${x.side}`} g={x} />)}
+          </p>
+        ))}
+      </div>
+    </li>
   );
 }
 

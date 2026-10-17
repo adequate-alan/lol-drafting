@@ -23,7 +23,28 @@
     { "comp": "weakside-tank-carry-bot", "parent": "protected-hypercarry", "name": "Weakside tank · Gen.G", "approvedOn": "2026-10-16" }
   ],
   "heldChampions": [
-    { "champion": "locke", "since": "2026-10-16", "reason": "kit added 2026-10-16; comps and variations from his lineups wait for alan's review" },
-    { "champion": "zaahen", "since": "2026-10-16", "reason": "kit added 2026-10-16; comps and variations from his lineups wait for alan's review" }
+    { "champion": "locke", "since": "2026-10-16", "reason": "kit added 2026-10-16; his lineups join existing comps as evidence, new comps from them wait for alan's review" },
+    { "champion": "zaahen", "since": "2026-10-16", "reason": "kit added 2026-10-16; his lineups join existing comps as evidence, new comps from them wait for alan's review" }
+  ],
+  "namedVariations": [
+    { "comp": "pro-83450-red", "name": "Ornn + Jarvan IV engage · Shopify Rebellion", "game": { "game": 83468, "side": "red" },
+      "supporting": [{ "game": 83537, "side": "red" }], "approvedOn": "2026-10-17",
+      "note": "Same Yunara + Lulu bot lane, but Ornn and Jarvan IV start fights in front of it instead of K'Sante and Anivia holding space, which covers the main comp's missing on-demand engage. Locke trades Anivia's zone control for close-range damage and costs waveclear. FlyQuest's Ornn, Nocturne and Syndra lineup plays the same way: Ornn starts, Syndra and Yunara deal damage from behind." },
+    { "comp": "speed-up-skirmish", "name": "Jax + Aphelios · LGD Gaming", "game": { "game": 83454, "side": "red" }, "approvedOn": "2026-10-17",
+      "note": "Keeps the plan: Skarner starts, Jax and Locke go in with him, Karma speeds the dive. Tradeoffs: Sivir's team-wide speed-up is gone, Jax is a side-lane diver rather than a second frontliner beside Skarner, and Aphelios needs items, so the comp gives up its early edge and leans later." }
+  ],
+  "held": [
+    { "name": "Front-to-back · Yunara with Zaahen (Cloud9)", "games": [{ "game": 83601, "side": "blue" }], "decidedOn": "2026-10-17",
+      "note": "Zaahen, Sejuani and Sylas around Yunara + Lulu; kept apart from Team WE's Yorick and Akali split lineup, which it does not play like." },
+    { "name": "Dive · Xayah", "games": [{ "game": 83469, "side": "red" }, { "game": 83601, "side": "red" }], "decidedOn": "2026-10-17",
+      "note": "Shopify Rebellion's Zaahen and Pantheon lineup and Karmine Corp's Renekton and Qiyana version; to be checked against the Dive comps and the Orianna + Xayah + Rakan lineups under Wombo + Front-to-back · Corki." },
+    { "name": "Pick + Front-to-back · Syndra", "games": [{ "game": 83522, "side": "red" }, { "game": 83608, "side": "red" }], "decidedOn": "2026-10-17",
+      "note": "Natus Vincere's Zaahen jungle draft and HANJIN BRION's Lee Sin version. Zaahen stays a Top recommendation only." },
+    { "name": "Scaling + Front-to-back · Yunara", "games": [{ "game": 83566, "side": "blue" }], "decidedOn": "2026-10-17",
+      "note": "KT Rolster's Yorick, Skarner and Locke lineup; to be checked against the scaling, split and protect comps." }
+  ],
+  "families": [
+    { "id": "yunara-protection", "name": "Yunara protection", "comps": ["yunara-protect", "pro-83450-red", "pro-83521-blue"], "approvedOn": "2026-10-17",
+      "note": "Comps that protect Yunara with Lulu, each with its own plan: a pick comp (Pantheon and Syndra), protect and front-to-back, and protect." }
   ]
 }

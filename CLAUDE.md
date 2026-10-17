@@ -380,8 +380,18 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   candidate until a second team plays it; Stable Top + Carry Bot and Jax Skirmish stay separate comps (alan, 2026-10-16). Named
   variants (`variants`): a comp shown inside its parent's card with a Main | variant switch, still its own comp for
   Draft Room links (Weakside Tank inside Protected Hypercarry, 2026-10-16). Yunara Protect is "Pick · Protected Yunara"
-  (id `yunara-protect` kept). `heldChampions` (alan, 2026-10-16): discovery treats lineups with a held champion
-  as unread ("Held for review" in the report) until alan reviews what their new kit unlocks; Comp Check reads them.
+  (id `yunara-protect` kept). `heldChampions` (Locke, Zaahen; alan, 2026-10-16 / 2026-10-17): their lineups are read
+  and may join an existing comp (variation or replay, Observed Pro Evidence), never open a new comp or count toward one
+  ("Awaiting review" in the report); swaps only ever come from `proSwaps`. `namedVariations` (2026-10-17): one lineup
+  filed under a comp with a name, alan's approved note and the comp check's read, plus `supporting` lineups that play
+  the same way ("Plays the same way"); Shopify's Ornn + Jarvan IV under Protect + Front-to-back · Yunara (FlyQuest
+  beside it), LGD's Jax + Aphelios under Speed-Up Skirmish. `held` (2026-10-17): lineups alan kept as evidence only
+  (Cloud9 Zaahen Yunara, Dive · Xayah, Pick + Front-to-back · Syndra, KT's Scaling + Front-to-back · Yunara): filed
+  under no comp, and a later lineup closest to one is listed under it in the report ("Held candidates") to reconsider
+  with new independent series; never auto-added. A hold never takes a lineup the library already files. `families`
+  (2026-10-17): a light grouping of distinct comps (Yunara protection: Pick · Protected Yunara, Protect + Front-to-back ·
+  Yunara, Protect · Yunara); each card names its family and links the others, nothing merges. Not every Yunara + Lulu
+  lineup belongs under Pick · Protected Yunara.
 - Deterministic and idempotent, no model calls; every threshold is in `DISCOVERY`. Each lineup joins the closest
   observed shell or discovered comp: five same champions = existing (a replay), same primary identity with 3+ shared
   champions, or same primary + secondary with 4+ roles doing the same job and 2+ shared champions = an observed

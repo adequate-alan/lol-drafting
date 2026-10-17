@@ -402,9 +402,23 @@ export const CompReview = z.object({
   // Named variants: a comp shown inside its parent's card (same win condition, different execution), keeping its own
   // lineup, swaps, sources and evidence. Never deleted, never merged into the parent's lineup.
   variants: z.array(z.object({ comp: id, parent: id, name: z.string(), approvedOn: Day })).default([]),
-  // Champions whose lineups discovery keeps out of new comps and variations until alan reviews what they unlock
-  // (alan, 2026-10-16, after Locke's and Zaahen's kits). Comp Check still reads them; only the library waits.
+  // Champions whose lineups discovery reads and may attach to existing comps (variations and replays, as Observed Pro
+  // Evidence) but never turns into a new comp: new comps from them wait for alan's review (alan, 2026-10-16 after
+  // Locke's and Zaahen's kits; attaching allowed 2026-10-17). Swaps only ever come from `proSwaps`.
   heldChampions: z.array(z.object({ champion: ChampionId, since: Day, reason: z.string() })).default([]),
+  // Named variations (alan, 2026-10-17): one observed lineup filed under a comp with a name and a short note on how it
+  // differs (General Draft Logic); `supporting` adds games whose lineup plays the same way. The comp check's read of
+  // the lineup is derived at load. Never the comp's lineup, never a saved pairing.
+  namedVariations: z.array(z.object({
+    comp: id, name: z.string(), game: LineupRef, supporting: z.array(LineupRef).default([]), note: z.string(), approvedOn: Day,
+  })).default([]),
+  // Held candidates (alan, 2026-10-17): lineups alan reviewed and kept as recorded evidence only. Discovery files them
+  // under no comp and opens no comp from them; a later lineup closest to one is listed beside it in the report, so the
+  // candidate is reconsidered when new independent series appear. Never deleted.
+  held: z.array(z.object({ name: z.string(), games: z.array(LineupRef).min(1), decidedOn: Day, note: z.string() })).default([]),
+  // Families (alan, 2026-10-17): a light grouping of distinct comps with one strategic thread. Each comp keeps its own
+  // card, lineup, variants and evidence; the card only names its family and links the others.
+  families: z.array(z.object({ id, name: z.string(), comps: z.array(id).min(2), note: z.string(), approvedOn: Day })).default([]),
 });
 export type CompReview = z.infer<typeof CompReview>;
 

@@ -1823,6 +1823,14 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .var-game a, .var-draft { color: var(--pro); }
 .var-w { color: var(--success); }
 .var-l { color: var(--danger); }
+/* A named variation (alan's review): its name leads, then the note, the comp check's read and lineups that play alike */
+.var-named .var-what { flex-wrap: wrap; gap: 0 var(--s2); }
+.var-note { display: grid; gap: 2px; line-height: 1.45; color: var(--text-muted); }
+.var-note p { margin: 0; text-wrap: pretty; }
+.var-alike { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px var(--s3); }
+/* Family line: names the comp's strategic family and links its other comps */
+.shell-family { margin: 0; line-height: 1.35; }
+.shell-family a { color: var(--pro); }
 .shell-read { display: grid; gap: 3px; font-size: var(--fs-xs); line-height: 1.45; color: var(--text-muted); }
 .shell-read p { margin: 0; }
 /* Lineup: five champions across, role above, name and job below; highlights only change colors and rings */

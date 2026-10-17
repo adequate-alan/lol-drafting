@@ -9,8 +9,9 @@
 // Draft Logic, and is labelled that way on the page. Saved synergy, pool tiers and proposed synergy are never read or
 // written here. Win/loss is shown, never used to decide anything.
 import { analyze, IDENTITY_LABEL, names, slotsOf, type IdentityId, type Slot } from "./model-v2/analyze";
+import { convertKits } from "./model-v2/kits";
 import type { ChampionKit } from "./model-v2/schema";
-import { ROLES, type CompShell, type ProDraft, type ProGame, type Role } from "./schema";
+import { ROLES, type Champion, type CompShell, type ProDraft, type ProGame, type Role } from "./schema";
 import { patchLabel } from "./patch";
 
 export type Picks = Record<Role, string>;
@@ -161,6 +162,12 @@ export function readLineup(picks: Picks, kits: ChampionKit[], nameOf: (id: strin
   };
 }
 
+/** The comp check's read of any lineup, from the roster's kits (Comp Library shows it beside a named variation). */
+export function lineupReader(champions: Champion[]) {
+  const kits = convertKits(champions), names = new Map(champions.map((c) => [c.id, c.name]));
+  return (p: Picks) => readLineup(p, kits, (id) => names.get(id) ?? id);
+}
+
 // ---------- grouping ----------
 
 export type Match = "exact" | "variation";
@@ -222,6 +229,8 @@ export interface DiscoveryResult {
   file: DiscoveredFile;
   candidates: Candidate[]; // groups not added (the Proposed comps report)
   unread: { obs: Observation; reason: string }[]; // lineups the engine cannot read and no comp matches
+  awaiting: { obs: Observation; reason: string }[]; // held-champion lineups no existing comp takes: new comps wait for review
+  heldCandidates: { name: string; note: string; games: Observation[]; closest: Observation[] }[]; // alan's holds and what came since
   kept: { id: string; reason: string }[]; // comps added earlier that would not pass today; kept, never silently removed
   shellReads: Record<string, ReadResult>;
   observations: Observation[];
@@ -235,8 +244,10 @@ export interface DiscoveryInput {
   nameOf: (id: string) => string;
   previous: DiscoveredFile;
   today: string; // YYYY-MM-DD, America/New_York
-  held?: { champion: string; reason: string }[]; // comp-review.json heldChampions: their lineups stay unread here
+  held?: { champion: string; reason: string }[]; // comp-review.json heldChampions: attach to existing comps, never open one
+  heldLineups?: HeldCandidate[]; // comp-review.json held: lineups alan kept as evidence only
 }
+export interface HeldCandidate { name: string; games: LineupRef[]; note: string }
 
 const conceptLabel = (r: Pick<CompRead, "primary" | "secondary">) => `${SHORT[r.primary]}${r.secondary ? ` + ${SHORT[r.secondary]}` : ""}`;
 export const shellPicks = (s: CompShell): Picks => Object.fromEntries(ROLES.map((r) => [r, s.slots[r].champion])) as Picks;
@@ -245,14 +256,10 @@ export function discover(input: DiscoveryInput): DiscoveryResult {
   const { kits, nameOf, previous, today } = input;
   const observations = observationsFrom(input.games, input.events);
   const reads = new Map<string, ReadResult>();
-  // A held champion's lineups are treated as unread (as before their kit), so they never open or join a comp by their
-  // read; the report lists them with the reason.
+  // A held champion's lineups are read like any other and may join an existing comp (a variation or a replay, Observed
+  // Pro Evidence), but never open a group: a new comp from them waits for alan's review (alan, 2026-10-17).
   const heldIn = (p: Picks) => (input.held ?? []).filter((h) => ROLES.some((r) => p[r] === h.champion));
-  const readLineupHeld = (p: Picks): ReadResult => {
-    const h = heldIn(p);
-    return h.length ? { ok: false, reason: h.map((x) => `${nameOf(x.champion)} is held for review: ${x.reason}`).join("; ") } : readLineup(p, kits, nameOf);
-  };
-  const readOf = (p: Picks) => { const k = lineupKey(p); if (!reads.has(k)) reads.set(k, readLineupHeld(p)); return reads.get(k)!; };
+  const readOf = (p: Picks) => { const k = lineupKey(p); if (!reads.has(k)) reads.set(k, readLineup(p, kits, nameOf)); return reads.get(k)!; };
   const okRead = (p: Picks) => { const r = readOf(p); return r.ok ? r.read : null; };
 
   const shellReads: Record<string, ReadResult> = {};
@@ -260,14 +267,35 @@ export function discover(input: DiscoveryInput): DiscoveryResult {
   const anchors: Anchor[] = input.shells.filter((s) => s.kind === "observed").map((s) => ({ id: s.id, picks: shellPicks(s), read: okRead(shellPicks(s)) }));
   for (const s of input.shells) shellReads[s.id] = readOf(shellPicks(s));
   const shellIds = new Set(anchors.map((a) => a.id));
+  // alan's held candidates: their own games join nothing, and a later lineup closest to one is listed beside it (in the
+  // report, for reconsidering) instead of opening a comp or a variation around the same idea.
+  const heldGame = new Set((input.heldLineups ?? []).flatMap((h) => h.games.map(refKey)));
+  const byRef = new Map(observations.map((o) => [refKey(o), o]));
+  const heldCandidates: DiscoveryResult["heldCandidates"] = (input.heldLineups ?? []).map((h) => ({
+    name: h.name, note: h.note, games: h.games.flatMap((r) => byRef.get(refKey(r)) ?? []), closest: [],
+  }));
+  const heldAnchors: (Anchor & { held: number })[] = heldCandidates.flatMap((h, i) => h.games.map((o) => ({ id: `held-${i}-${refKey(o)}`, picks: o.picks, read: okRead(o.picks), held: i })));
+  // Lineups the library already files (a comp's games or a variation) stay where they are: a hold never takes them.
+  const filed = new Set([...previous.comps.flatMap((c) => c.games), ...previous.variations.flatMap((v) => v.games)].map(refKey));
+  const withHeld = (obs: Observation, list: Anchor[]) => filed.has(refKey(obs)) ? list : [...list, ...heldAnchors];
+  const toHeld = (obs: Observation, a: Anchor) => {
+    const h = heldAnchors.find((x) => x.id === a.id);
+    if (!h) return false;
+    heldCandidates[h.held].closest.push(obs);
+    return true;
+  };
 
   // Group: every lineup joins the closest library comp (curated first, then groups in the order they were opened),
   // or opens a new group. Lineups the engine cannot read never open a group.
   const groups = new Map<string, { anchor: Anchor; members: { obs: Observation; m: Match }[] }>();
   const unread: DiscoveryResult["unread"] = [];
+  const deferred: Observation[] = [];
   for (const obs of observations) {
+    if (heldGame.has(refKey(obs))) continue;
+    if (heldIn(obs.picks).length) { deferred.push(obs); continue; }
     const read = okRead(obs.picks);
-    const hit = bestAnchor(obs.picks, read, anchors);
+    const hit = bestAnchor(obs.picks, read, withHeld(obs, anchors));
+    if (hit && toHeld(obs, hit.a)) continue;
     if (hit) {
       if (!groups.has(hit.a.id)) groups.set(hit.a.id, { anchor: hit.a, members: [] });
       groups.get(hit.a.id)!.members.push({ obs, m: hit.m });
@@ -317,8 +345,28 @@ export function discover(input: DiscoveryInput): DiscoveryResult {
     });
   }
 
-  // Variations: every lineup under a curated shell (an exact replay included) or under an added comp (other lineups).
+  // Held-champion lineups join only what is already a library comp (a curated shell or a comp kept above), or sit
+  // beside a held candidate; everything else waits for review.
   const added = new Set(comps.map((c) => c.id));
+  const awaiting: DiscoveryResult["awaiting"] = [];
+  const order = new Map(observations.map((o, i) => [refKey(o), i]));
+  for (const obs of deferred) {
+    const open = withHeld(obs, anchors.filter((a) => shellIds.has(a.id) || added.has(a.id)));
+    const hit = bestAnchor(obs.picks, okRead(obs.picks), open);
+    if (hit && toHeld(obs, hit.a)) continue;
+    const who = heldIn(obs.picks).map((h) => nameOf(h.champion)).join(" and ");
+    if (!hit) {
+      const r = readOf(obs.picks);
+      awaiting.push({ obs, reason: r.ok ? `${who} lineup: no existing comp matches, and a new comp from it waits for review` : r.reason });
+      continue;
+    }
+    groups.get(hit.a.id) ?? groups.set(hit.a.id, { anchor: hit.a, members: [] });
+    groups.get(hit.a.id)!.members.push({ obs, m: hit.m });
+    const c = comps.find((x) => x.id === hit.a.id);
+    if (c && hit.m === "exact") c.games = [...c.games, { game: obs.game, side: obs.side }].sort((a, b) => order.get(refKey(a))! - order.get(refKey(b))!);
+  }
+
+  // Variations: every lineup under a curated shell (an exact replay included) or under an added comp (other lineups).
   const prevVar = new Map(previous.variations.map((v) => [`${v.of}#${lineupKey(v.picks)}`, v]));
   const byKey = new Map<string, ObservedVariation>();
   for (const [id, g] of groups) {
@@ -337,7 +385,7 @@ export function discover(input: DiscoveryInput): DiscoveryResult {
   const grew = nowIds.some((x) => !prevIds.has(x));
   return {
     file: { lastAddition: grew ? today : previous.lastAddition, comps, variations },
-    candidates, unread, kept, shellReads, observations,
+    candidates, unread, awaiting, heldCandidates, kept, shellReads, observations,
   };
 }
 
@@ -353,11 +401,12 @@ export interface ReportInput {
   nameOf: (id: string) => string;
   today: string;
   tournaments: { label: string; status?: string; recorded: number; games?: number; listed: boolean }[];
+  reviewed?: Map<string, string>; // game ref → what alan's review filed it as (comp-review.json), named in the report
 }
 
 /** A short markdown report: what was added, what grew, what may be outdated and what still needs a person. */
-export function weeklyReport({ result, previous, shells, lck, nameOf, today, tournaments }: ReportInput): string {
-  const { file, candidates, unread, kept, observations } = result;
+export function weeklyReport({ result, previous, shells, lck, nameOf, today, tournaments, reviewed = new Map() }: ReportInput): string {
+  const { file, candidates, unread, awaiting, heldCandidates, kept, observations } = result;
   const obs = new Map(observations.map((o) => [refKey(o), o]));
   const lineup = (p: Picks) => ROLES.map((r) => `${ROLE_SHORT[r]} ${nameOf(p[r])}`).join(" · ");
   const game = (o: Observation) => `[${o.team} vs ${o.opponent} G${o.gameNo}](${o.url}) (${o.tournament}, ${patchLabel(o.patch)}, ${o.date}, ${o.won ? "win" : "loss"})`;
@@ -431,10 +480,29 @@ export function weeklyReport({ result, previous, shells, lck, nameOf, today, tou
   out.push("Not added automatically: each needs more games or a person's call. One line per lineup group, newest games marked.", "");
   for (const c of candidates) {
     const fresh = c.games.some((o) => o.date >= weekAgo);
-    out.push(`- ${fresh ? "**New** · " : ""}${c.read ? conceptLabel(c.read) : "Unread"} · ${lineup(c.picks)} · ${c.games.map(short).join(", ")} · ${c.reason}`);
+    const filedBy = [...new Set(c.games.flatMap((o) => reviewed.get(refKey(o)) ?? []))];
+    out.push(`- ${fresh ? "**New** · " : ""}${c.read ? conceptLabel(c.read) : "Unread"} · ${lineup(c.picks)} · ${c.games.map(short).join(", ")} · ${c.reason}${filedBy.length ? ` · ${filedBy.join("; ")}` : ""}`);
   }
-  for (const u of unread) out.push(`- ${u.obs.date >= weekAgo ? "**New** · " : ""}${/is held for review/.test(u.reason) ? "Held for review" : "Cannot be read"} · ${lineup(u.obs.picks)} · ${short(u.obs)} · ${u.reason}`);
+  for (const u of unread) out.push(`- ${u.obs.date >= weekAgo ? "**New** · " : ""}Cannot be read · ${lineup(u.obs.picks)} · ${short(u.obs)} · ${u.reason}`);
   out.push("");
+  if (awaiting.length) {
+    out.push(`## Awaiting review: new comps from held champions (${awaiting.length})`, "");
+    out.push("Read by the comp check; these join existing comps when one matches, and never open a new comp without review.", "");
+    for (const u of awaiting) out.push(`- ${u.obs.date >= weekAgo ? "**New** · " : ""}${lineup(u.obs.picks)} · ${short(u.obs)} · ${reviewed.get(refKey(u.obs)) ?? u.reason}`);
+    out.push("");
+  }
+  if (heldCandidates.length) {
+    out.push(`## Held candidates (${heldCandidates.length})`, "");
+    out.push("Kept as recorded evidence after review, filed under no comp. Lineups closest to one are listed under it; reconsider when they add independent series.", "");
+    for (const h of heldCandidates) {
+      const series = new Set([...h.games, ...h.closest].map((o) => o.series)).size;
+      const teams = new Set([...h.games, ...h.closest].map((o) => o.team)).size;
+      out.push(`- **${h.name}** · ${series} series from ${teams} team${teams > 1 ? "s" : ""}${h.closest.some((o) => o.date >= weekAgo) ? " · **new evidence**" : ""} · ${h.note}`);
+      for (const o of h.games) out.push(`  - ${lineup(o.picks)} · ${game(o)}`);
+      for (const o of h.closest) out.push(`  - Closest since: ${lineup(o.picks)} · ${game(o)}`);
+    }
+    out.push("");
+  }
   if (kept.length) {
     out.push("## Earlier additions that would not pass today", "", "Kept in the library; review by hand.", "");
     for (const k of kept) out.push(`- **${nameOfComp(k.id)}**: ${k.reason}.`);
