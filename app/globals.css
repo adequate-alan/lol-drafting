@@ -1096,21 +1096,21 @@ button.link:focus-visible { box-shadow: var(--focus-ring); border-radius: var(--
 
 /* One game: who, against whom, where, and the summoner spells */
 .game-detail { display: grid; gap: var(--s5); min-width: 0; }
-.game-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s2) var(--s5); align-items: center; }
-.game-who { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2) var(--s4); }
+.game-head { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s2); }
+.game-who { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s5); }
 .game-player { display: inline-flex; align-items: center; gap: var(--s3); font-family: var(--font-display); font-size: var(--fs-xl); }
 .game-player b { font-weight: var(--w-strong); }
 .game-vs { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
 .game-vs .champ-btn { display: inline-flex; align-items: center; gap: var(--s2); }
-.game-meta { grid-column: 1; display: flex; flex-wrap: wrap; gap: var(--s1) var(--s4); }
-.game-spells { grid-column: 2; grid-row: 1 / span 2; display: flex; gap: var(--s5); }
-.game-missing { grid-column: 1 / -1; }
+.game-meta { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s4); }
+/* Spells sit with the player they belong to: one compact group, names and casts secondary */
+.game-spells { display: inline-flex; align-items: center; gap: var(--s4); }
+.game-spells .build-spell { gap: var(--s2); }
+.game-spells .build-spell-text .small { font-size: var(--fs-xs); color: var(--text-muted); }
 .side-tag { display: inline-flex; align-items: center; gap: var(--s2); }
 .side-tag::before { content: ""; width: 8px; height: 8px; border-radius: 1px; background: var(--border-strong); }
 .side-blue .side-tag::before { background: var(--team-blue); }
 .side-red .side-tag::before { background: var(--team-red); }
-.game-head.compact { grid-template-columns: minmax(0, 1fr); }
-.game-head.compact .game-spells { grid-column: 1; grid-row: auto; }
 .build-spell { display: inline-flex; align-items: center; gap: var(--s3); }
 .build-spell-text { display: grid; line-height: 1.25; }
 
@@ -1194,8 +1194,7 @@ button.link:focus-visible { box-shadow: var(--focus-ring); border-radius: var(--
 }
 @media (max-width: 620px) {
   .rune-page, .compare-pick { grid-template-columns: minmax(0, 1fr); }
-  .game-head { grid-template-columns: minmax(0, 1fr); }
-  .game-spells { grid-column: 1; grid-row: auto; }
+  .game-spells { flex-basis: 100%; }
   .builds-tools .seg.push { margin-left: 0; }
 }
 
