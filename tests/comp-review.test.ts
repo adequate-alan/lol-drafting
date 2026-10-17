@@ -89,7 +89,7 @@ describe("historical marks", () => {
     const shells = getCompShells();
     const s = shells.find((x) => x.id === "protected-hypercarry")!;
     const fresh = { ...newest, id: 999001, blue: { ...newest.blue, picks: { ...newest.blue.picks, BOT: s.slots.BOT.champion } } };
-    const lib = buildLibrary(shells, discovered, [...games, fresh], { proSwaps: [], supporting: [], historical: [{ comp: s.id, roles: ["BOT"], approvedOn: "2026-10-16" }], variants: [], heldChampions: [], namedVariations: [], held: [], families: [] });
+    const lib = buildLibrary(shells, discovered, [...games, fresh], { proSwaps: [], supporting: [], historical: [{ comp: s.id, roles: ["BOT"], approvedOn: "2026-10-16" }], variants: [], heldChampions: [], approvedComps: [], namedVariations: [], held: [], families: [] });
     expect(lib.extras[s.id]?.historical?.BOT).toBeUndefined();
   });
 });
@@ -130,6 +130,14 @@ describe("named variations, holds and families (2026-10-17)", () => {
     }
     const pick = library.shells.find((s) => s.id === "yunara-protect")!;
     expect(ROLES.map((r) => pick.slots[r].champion).join("|")).toBe("rumble|pantheon|syndra|yunara|lulu");
+  });
+
+  it("Front-to-back + Split · Yunara is held, not a card: Team WE's and FURIA's games stay recorded evidence", () => {
+    expect(library.shells.some((s) => s.id === "pro-83460-blue")).toBe(false);
+    const h = review.held.find((x) => x.name === "Front-to-back + Split · Yunara")!;
+    expect(h.games.map((g) => `${g.game}-${g.side}`)).toEqual(["83460-blue", "83624-red"]);
+    const games = new Map(getProGames().games.map((g) => [g.id, g]));
+    for (const g of h.games) expect(games.get(g.game)?.[g.side].picks.JUNGLE).toBe("sejuani");
   });
 
   it("held lineups are recorded games and filed under no comp", () => {

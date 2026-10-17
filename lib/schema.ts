@@ -406,6 +406,9 @@ export const CompReview = z.object({
   // Evidence) but never turns into a new comp: new comps from them wait for alan's review (alan, 2026-10-16 after
   // Locke's and Zaahen's kits; attaching allowed 2026-10-17). Swaps only ever come from `proSwaps`.
   heldChampions: z.array(z.object({ champion: ChampionId, since: Day, reason: z.string() })).default([]),
+  // New comps alan approved from the weekly report's "Ready for approval" list (2026-10-17: discovery proposes, he
+  // adds). Comps added before that rule stay; a held candidate's game never forms one.
+  approvedComps: z.array(z.object({ comp: id, approvedOn: Day })).default([]),
   // Named variations (alan, 2026-10-17): one observed lineup filed under a comp with a name and a short note on how it
   // differs (General Draft Logic); `supporting` adds games whose lineup plays the same way. The comp check's read of
   // the lineup is derived at load. Never the comp's lineup, never a saved pairing.

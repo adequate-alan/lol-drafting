@@ -343,57 +343,6 @@
       ]
     },
     {
-      "id": "pro-83460-blue",
-      "name": "Front-to-back + Split · Yunara",
-      "addedOn": "2026-10-16",
-      "primary": "front-to-back",
-      "secondary": "split",
-      "tags": [
-        "front-to-back",
-        "split-pressure",
-        "hybrid"
-      ],
-      "slots": {
-        "TOP": {
-          "champion": "yorick",
-          "job": "Side-lane carry"
-        },
-        "JUNGLE": {
-          "champion": "sejuani",
-          "job": "Hard engage"
-        },
-        "MID": {
-          "champion": "akali",
-          "job": "Backline dive"
-        },
-        "BOT": {
-          "champion": "yunara",
-          "job": "Ranged DPS"
-        },
-        "SUPPORT": {
-          "champion": "lulu",
-          "job": "Peel"
-        }
-      },
-      "winCondition": "Set up first around objectives, let Sejuani start fights, and play front-to-back through Yunara. Between fights, Yorick and Akali pressure a side lane.",
-      "why": "Sejuani in front, Yunara dealing damage from range; Yorick and Akali can hold a side lane alone.",
-      "timing": "Weak before first items. Strongest around two to three items.",
-      "strengths": [
-        "Fight start: Sejuani",
-        "Side lane: Yorick and Akali",
-        "Mixed damage (44% physical)",
-        "Scales into the late game"
-      ],
-      "weaknesses": [],
-      "difficulty": "easy",
-      "games": [
-        {
-          "game": 83460,
-          "side": "blue"
-        }
-      ]
-    },
-    {
       "id": "pro-83462-red",
       "name": "Pick + Skirmish · Ryze",
       "addedOn": "2026-10-14",
@@ -1133,23 +1082,6 @@
       "games": [
         {
           "game": 83520,
-          "side": "red"
-        }
-      ]
-    },
-    {
-      "of": "pro-83460-blue",
-      "picks": {
-        "TOP": "olaf",
-        "JUNGLE": "sejuani",
-        "MID": "akali",
-        "BOT": "yunara",
-        "SUPPORT": "lulu"
-      },
-      "addedOn": "2026-10-16",
-      "games": [
-        {
-          "game": 83624,
           "side": "red"
         }
       ]

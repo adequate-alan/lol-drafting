@@ -3,8 +3,9 @@ name: Discover comps
 # Weekly Comp Library review. Reads the pro games already stored by the daily refresh (data/pro-games.json: the tracked
 # tournaments only, Demacia Cup Global Invitational 2026 and Worlds 2026 with its Play-In; the LCK playoffs are a frozen
 # archive used for comparison). Nothing is downloaded. scripts/discover-comps.ts compares every recorded lineup with the
-# Comp Library, adds Observed Pro Comps and observed variations that pass its fixed rules, and writes a report of the
-# rest. Deterministic, no model calls. Tests, typecheck and build run, and it commits and deploys only when the library
+# Comp Library, files new games under approved comps as replays and observed variations, lists new comps that pass
+# its fixed rules as "Ready for approval" (added only once alan approves them in data/comp-review.json), and writes a
+# report of the rest. Deterministic, no model calls. Tests, typecheck and build run, and it commits and deploys only when the library
 # data changed. Saved synergy, pool tiers and proposed synergy are never touched.
 #
 # Sunday 9:17 AM Eastern all year (minute 17 avoids GitHub's late top-of-the-hour starts): cron is UTC, so both 13:17 UTC

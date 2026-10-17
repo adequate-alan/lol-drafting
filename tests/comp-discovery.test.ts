@@ -1,4 +1,5 @@
 // Weekly Comp Library discovery (lib/comp-discovery.ts, scripts/discover-comps.ts, .github/workflows/discover-comps.yml).
+// Since 2026-10-17 discovery proposes and alan adds: a new comp needs his approval (comp-review.json approvedComps).
 // Deterministic, idempotent, selective: only verified lineups from tracked tournaments, never a duplicate, never a comp
 // the engine cannot explain or flags with a major weak point, and nothing outside data/discovered-comps.json changes.
 import { readFileSync } from "node:fs";
@@ -89,10 +90,28 @@ describe("weekly comp discovery", () => {
     expect(once.candidates.map((c) => lineupKey(c.picks))).toContain(lineupKey(clean));
     const sameTeam = discover({ ...base, games: onlyBlue([game(clean, "A"), game(clean, "A")]) });
     expect(sameTeam.file.comps).toHaveLength(0);
-    const twice = discover({ ...base, games: onlyBlue([game(clean, "A"), game(clean, "B")]) });
-    expect(twice.file.comps.map((c) => c.slots.MID.champion)).toEqual(["orianna"]);
-    expect(twice.file.comps[0].games).toHaveLength(2);
-    expect(twice.file.lastAddition).toBe("2026-10-12");
+    // Passing every check makes a comp ready for approval, never a library comp by itself (alan, 2026-10-17).
+    const gs = onlyBlue([game(clean, "A"), game(clean, "B")]);
+    const twice = discover({ ...base, games: gs });
+    expect(twice.file.comps).toHaveLength(0);
+    const ready = twice.candidates.find((c) => c.ready)!;
+    expect(lineupKey(ready.picks)).toBe(lineupKey(clean));
+    const approved = discover({ ...base, games: gs, approved: [ready.id] });
+    expect(approved.file.comps.map((c) => c.slots.MID.champion)).toEqual(["orianna"]);
+    expect(approved.file.comps[0].games).toHaveLength(2);
+    expect(approved.file.lastAddition).toBe("2026-10-12");
+  });
+
+  it("two teams are necessary, not sufficient: a fifth champion that changes the strategy is not the same comp's evidence", () => {
+    // Team WE's Yorick split lineup and FURIA's Olaf skirmish lineup share four champions but read differently.
+    const yorick: Picks = { TOP: "yorick", JUNGLE: "sejuani", MID: "akali", BOT: "yunara", SUPPORT: "lulu" };
+    const olaf: Picks = { ...yorick, TOP: "olaf" };
+    const a = readLineup(yorick, kits, nameOf), b = readLineup(olaf, kits, nameOf);
+    expect(a.ok && b.ok && a.read.secondary !== b.read.secondary).toBe(true);
+    const r = discover({ ...base, games: onlyBlue([game(yorick, "A"), game(olaf, "B")]) });
+    const c = r.candidates.find((x) => lineupKey(x.picks) === lineupKey(yorick))!;
+    expect(c.ready).toBeFalsy();
+    expect(c.reason).toMatch(/1 game from A with this strategy \(1 more with a lineup that reads differently\)/);
   });
 
   it("never adds a lineup the engine cannot read or flags with a major weak point", () => {
@@ -133,7 +152,7 @@ describe("weekly comp discovery", () => {
 
   it("the stored library is exactly what discovery gives with alan's review inputs, and no comp grows from a held champion", () => {
     const review = getCompReview();
-    const r = discover({ ...base, previous: stored, today: stored.lastAddition ?? "2026-10-17", held: review.heldChampions, heldLineups: review.held });
+    const r = discover({ ...base, previous: stored, today: stored.lastAddition ?? "2026-10-17", held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp) });
     expect(r.file).toEqual(stored);
     const curated = new Set(shells.map((x) => x.id));
     for (const c of r.file.comps) for (const role of ROLES) expect(review.heldChampions.map((h) => h.champion), c.id).not.toContain(c.slots[role].champion);
@@ -188,7 +207,8 @@ describe("stored discovered comps", () => {
 
 describe("Comp Library integration", () => {
   // A run on today's data, so these checks hold for real discoveries even before the stored file has any.
-  const fresh = discover(base).file;
+  const review = getCompReview();
+  const fresh = discover({ ...base, previous: stored, held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp) }).file;
   const lib = buildLibrary(shells, fresh, pro.games);
 
   it("the site reads the stored library, Draft Room included", () => {
