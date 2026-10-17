@@ -39,7 +39,7 @@ export interface LibraryExtra {
   variants?: { id: string; name: string }[];    // a parent's named variants, in review order
   family?: CompFamily;
 }
-const NO_REVIEW: CompReview = { proSwaps: [], supporting: [], historical: [], variants: [], heldChampions: [], namedVariations: [], held: [], families: [] };
+const NO_REVIEW: CompReview = { proSwaps: [], supporting: [], historical: [], variants: [], heldChampions: [], approvedComps: [], namedVariations: [], held: [], families: [] };
 const readView = (r: ReadResult): LineupRead | undefined => r.ok ? {
   identity: [r.read.primary, r.read.secondary].filter((x): x is NonNullable<typeof x> => !!x).map((i) => IDENTITY_LABEL[i]).join(" + "),
   winCondition: r.read.winCondition, timing: r.read.timing, strengths: r.read.strengths, weaknesses: r.read.weaknesses,

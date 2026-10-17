@@ -36,6 +36,11 @@ export const DISCOVERY = {
   // Repeated, independent evidence: at least this many games from at least this many different teams. A single game
   // still qualifies when no library comp has its primary identity at all (a distinct strategy).
   repeated: { games: 2, teams: 2 },
+  // Two teams are necessary, not sufficient (alan, 2026-10-17): a game counts as evidence for a new comp only when its
+  // lineup reads the same strategy as the comp's first lineup: same primary and secondary identity (same win
+  // condition) and at least this many roles doing the same job (comparable responsibilities). Four shared champions
+  // with a fifth that changes how the team wins (Yorick split pressure for Olaf skirmishing) is not the same comp.
+  sameStrategy: { sameJobs: 4 },
   // Team totals that add the descriptive tags "Counter-engage" and "Objective control" (engine facts, 0–3 scales).
   counterEngage: 8,
   objective: 11,
@@ -224,6 +229,7 @@ export interface DiscoveredFile {
 
 export interface Candidate {
   id: string; picks: Picks; read: CompRead | null; reason: string; games: Observation[];
+  ready?: boolean; // passes every check: listed for alan's approval, never added without it
 }
 export interface DiscoveryResult {
   file: DiscoveredFile;
@@ -246,6 +252,7 @@ export interface DiscoveryInput {
   today: string; // YYYY-MM-DD, America/New_York
   held?: { champion: string; reason: string }[]; // comp-review.json heldChampions: attach to existing comps, never open one
   heldLineups?: HeldCandidate[]; // comp-review.json held: lineups alan kept as evidence only
+  approved?: string[]; // comp-review.json approvedComps: new comps alan approved; nothing else is added
 }
 export interface HeldCandidate { name: string; games: LineupRef[]; note: string }
 
@@ -319,16 +326,25 @@ export function discover(input: DiscoveryInput): DiscoveryResult {
     if (shellIds.has(id)) continue;
     const read = g.anchor.read!;
     const games = g.members.map((x) => x.obs);
-    const teams = new Set(games.map((o) => o.team));
+    // Independent evidence: games whose own read is the same strategy as the first lineup's.
+    const alike = games.filter((o) => { const r = okRead(o.picks); return !!r && r.primary === read.primary && r.secondary === read.secondary && sameJobs(r, read) >= DISCOVERY.sameStrategy.sameJobs; });
+    const teams = new Set(alike.map((o) => o.team));
     const why: string[] = [];
     const major = read.weaknesses.filter((w) => w.severity === "major");
     if (major.length) why.push(`major weak point (${major.map((w) => w.label).join(", ")})`);
     if (clashes(read.primary, read.secondary)) why.push(`${conceptLabel(read).toLowerCase()} pull in different directions, so the win condition is ambiguous`);
-    const repeated = games.length >= DISCOVERY.repeated.games && teams.size >= DISCOVERY.repeated.teams;
+    const repeated = alike.length >= DISCOVERY.repeated.games && teams.size >= DISCOVERY.repeated.teams;
     const distinct = !primaries.has(read.primary);
-    if (!repeated && !distinct) why.push(`${games.length} game${games.length > 1 ? "s" : ""} from ${[...teams].join(", ")}, and the library already has ${SHORT[read.primary].toLowerCase()} comps`);
+    const others = games.length - alike.length;
+    if (!repeated && !distinct) why.push(`${alike.length} game${alike.length > 1 ? "s" : ""} from ${[...teams].join(", ")} with this strategy${others ? ` (${others} more with ${others > 1 ? "lineups that read" : "a lineup that reads"} differently)` : ""}, and the library already has ${SHORT[read.primary].toLowerCase()} comps`);
     const before = prevComps.get(id);
     if (why.length && !before) { candidates.push({ id, picks: g.anchor.picks, read, reason: why.join("; "), games }); continue; }
+    // A new comp that passes every check still waits for alan's approval (2026-10-17): discovery proposes, he adds.
+    if (!before && !(input.approved ?? []).includes(id)) {
+      candidates.push({ id, picks: g.anchor.picks, read, games, ready: true,
+        reason: `passes every check (${repeated ? `${alike.length} games from ${teams.size} teams with the same strategy` : `a primary identity no observed library comp has`}, no major weak point, a clear win condition); waiting for approval` });
+      continue;
+    }
     if (why.length && before) kept.push({ id, reason: why.join("; ") });
     primaries.add(read.primary);
     // Named by its read and its main threat ("Protect · Yunara"); the first team's name breaks a tie.
@@ -476,9 +492,21 @@ export function weeklyReport({ result, previous, shells, lck, nameOf, today, tou
   }
   out.push("");
 
-  out.push(`## Proposed comps for review (${candidates.length + unread.length})`, "");
+  const ready = candidates.filter((c) => c.ready);
+  out.push(`## Ready for approval (${ready.length})`, "");
+  out.push(ready.length ? "Pass every discovery check. Not in the library until alan approves (comp-review.json `approvedComps`)." : "None this week.", "");
+  for (const c of ready) {
+    const r = c.read!;
+    out.push(`- **${conceptLabel(r)} · ${nameOf(r.mainCarry)}** · ${lineup(c.picks)} · ${cap(r.difficulty)} · id \`${c.id}\``);
+    out.push(`  - ${r.why} ${r.winCondition}`);
+    if (r.strengths.length) out.push(`  - Strengths: ${r.strengths.join("; ")}.`);
+    if (r.weaknesses.length) out.push(`  - Weak points: ${r.weaknesses.map((w) => `${w.label} (${w.severity})`).join("; ")}.`);
+    out.push(`  - ${c.reason}.`, ...c.games.map((o) => `  - ${game(o)}`));
+  }
+  out.push("");
+  out.push(`## Proposed comps for review (${candidates.length - ready.length + unread.length})`, "");
   out.push("Not added automatically: each needs more games or a person's call. One line per lineup group, newest games marked.", "");
-  for (const c of candidates) {
+  for (const c of candidates.filter((x) => !x.ready)) {
     const fresh = c.games.some((o) => o.date >= weekAgo);
     const filedBy = [...new Set(c.games.flatMap((o) => reviewed.get(refKey(o)) ?? []))];
     out.push(`- ${fresh ? "**New** · " : ""}${c.read ? conceptLabel(c.read) : "Unread"} · ${lineup(c.picks)} · ${c.games.map(short).join(", ")} · ${c.reason}${filedBy.length ? ` · ${filedBy.join("; ")}` : ""}`);
@@ -493,13 +521,15 @@ export function weeklyReport({ result, previous, shells, lck, nameOf, today, tou
   }
   if (heldCandidates.length) {
     out.push(`## Held candidates (${heldCandidates.length})`, "");
-    out.push("Kept as recorded evidence after review, filed under no comp. Lineups closest to one are listed under it; reconsider when they add independent series.", "");
+    out.push("Kept as recorded evidence after review, filed under no comp. Lineups closest to one are listed under it (not evidence for it by themselves); reconsider when another team plays a comparable strategy.", "");
     for (const h of heldCandidates) {
-      const series = new Set([...h.games, ...h.closest].map((o) => o.series)).size;
-      const teams = new Set([...h.games, ...h.closest].map((o) => o.team)).size;
-      out.push(`- **${h.name}** · ${series} series from ${teams} team${teams > 1 ? "s" : ""}${h.closest.some((o) => o.date >= weekAgo) ? " · **new evidence**" : ""} · ${h.note}`);
+      const series = new Set(h.games.map((o) => o.series)).size;
+      const teams = new Set(h.games.map((o) => o.team)).size;
+      const all = h.games;
+      const core = all.length > 1 ? ROLES.filter((r) => all.every((o) => o.picks[r] === all[0].picks[r])).map((r) => nameOf(all[0].picks[r])) : [];
+      out.push(`- **${h.name}** · ${series} series from ${teams} team${teams > 1 ? "s" : ""}${core.length >= 3 ? ` · shared core ${core.join(", ")}` : ""}${h.closest.length ? ` · ${h.closest.length} close lineup${h.closest.length > 1 ? "s" : ""}` : ""}${h.closest.some((o) => o.date >= weekAgo) ? " · **new evidence**" : ""} · ${h.note}`);
       for (const o of h.games) out.push(`  - ${lineup(o.picks)} · ${game(o)}`);
-      for (const o of h.closest) out.push(`  - Closest since: ${lineup(o.picks)} · ${game(o)}`);
+      for (const o of h.closest) out.push(`  - Close: ${lineup(o.picks)} · ${game(o)}`);
     }
     out.push("");
   }

@@ -386,7 +386,8 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   filed under a comp with a name, alan's approved note and the comp check's read, plus `supporting` lineups that play
   the same way ("Plays the same way"); Shopify's Ornn + Jarvan IV under Protect + Front-to-back · Yunara (FlyQuest
   beside it), LGD's Jax + Aphelios under Speed-Up Skirmish. `held` (2026-10-17): lineups alan kept as evidence only
-  (Cloud9 Zaahen Yunara, Dive · Xayah, Pick + Front-to-back · Syndra, KT's Scaling + Front-to-back · Yunara): filed
+  (Front-to-back + Split · Yunara, Team WE + FURIA, shared core Sejuani / Akali / Yunara / Lulu; Cloud9 Zaahen Yunara;
+  Dive · Xayah; Pick + Front-to-back · Syndra; KT's Scaling + Front-to-back · Yunara): filed
   under no comp, and a later lineup closest to one is listed under it in the report ("Held candidates") to reconsider
   with new independent series; never auto-added. A hold never takes a lineup the library already files. `families`
   (2026-10-17): a light grouping of distinct comps (Yunara protection: Pick · Protected Yunara, Protect + Front-to-back ·
@@ -395,11 +396,17 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 - Deterministic and idempotent, no model calls; every threshold is in `DISCOVERY`. Each lineup joins the closest
   observed shell or discovered comp: five same champions = existing (a replay), same primary identity with 3+ shared
   champions, or same primary + secondary with 4+ roles doing the same job and 2+ shared champions = an observed
-  variation, otherwise a new group. Templates never take observed lineups. A new group becomes an Observed Pro Comp only
-  when the comp check reads all five champions (Locke / Zaahen lineups go to the report), finds an identity and no major
-  weak point, the identities don't clash, and it has 2+ games from 2+ teams or a primary identity no observed library
-  comp has. Everything else is "Proposed comps for review" in the report. Win/loss never decides. Additions are sticky
-  (a comp that later fails is listed in the report, never removed).
+  variation, otherwise a new group. Templates never take observed lineups. **Discovery proposes, alan adds** (alan,
+  2026-10-17, permanent): a new group that passes every check (the comp check reads all five champions, finds an
+  identity and no major weak point, the identities don't clash, and it has 2+ games from 2+ teams with the same strategy
+  or a primary identity no observed library comp has) is listed under "Ready for approval" and joins the library only
+  once its id is in `comp-review.json` `approvedComps`; the daily refresh and the weekly run never promote a comp on
+  their own. Two teams are necessary, not sufficient: a game counts toward a new comp only when its own read has the
+  same primary and secondary identity and 4+ roles doing the same job (`DISCOVERY.sameStrategy`); four shared
+  champions with a fifth that changes how the team wins is not the same comp (Team WE's Yorick split vs FURIA's Olaf
+  skirmish, held 2026-10-17). Approved comps and variants keep receiving new verified games as replays and variations.
+  Everything else is "Proposed comps for review" in the report. Win/loss never decides. Additions are sticky (a comp
+  that later fails is listed in the report, never removed), except a comp alan returns to `held`.
 - Discovered comps render as Pro cards in Comp Library (`lib/comp-library.ts`); their identity, jobs, win condition,
   strengths, weak points and difficulty are the comp check's read (General Draft Logic, labelled "Comp check read" in
   Details). Observed variations of any comp sit behind "N observed variations". The page shows "Library reviewed" (last

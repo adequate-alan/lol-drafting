@@ -26,6 +26,7 @@
     { "champion": "locke", "since": "2026-10-16", "reason": "kit added 2026-10-16; his lineups join existing comps as evidence, new comps from them wait for alan's review" },
     { "champion": "zaahen", "since": "2026-10-16", "reason": "kit added 2026-10-16; his lineups join existing comps as evidence, new comps from them wait for alan's review" }
   ],
+  "approvedComps": [],
   "namedVariations": [
     { "comp": "pro-83450-red", "name": "Ornn + Jarvan IV engage · Shopify Rebellion", "game": { "game": 83468, "side": "red" },
       "supporting": [{ "game": 83537, "side": "red" }], "approvedOn": "2026-10-17",
@@ -34,6 +35,8 @@
       "note": "Keeps the plan: Skarner starts, Jax and Locke go in with him, Karma speeds the dive. Tradeoffs: Sivir's team-wide speed-up is gone, Jax is a side-lane diver rather than a second frontliner beside Skarner, and Aphelios needs items, so the comp gives up its early edge and leans later." }
   ],
   "held": [
+    { "name": "Front-to-back + Split · Yunara", "games": [{ "game": 83460, "side": "blue" }, { "game": 83624, "side": "red" }], "decidedOn": "2026-10-17",
+      "note": "Team WE's Yorick lineup and FURIA's Olaf lineup share a Sejuani + Akali + Yunara + Lulu core, but Yorick's split pressure and Olaf's skirmishing win differently, so FURIA's game does not confirm the split comp. Reconsider when another team plays a comparable split-push lineup." },
     { "name": "Front-to-back · Yunara with Zaahen (Cloud9)", "games": [{ "game": 83601, "side": "blue" }], "decidedOn": "2026-10-17",
       "note": "Zaahen, Sejuani and Sylas around Yunara + Lulu; kept apart from Team WE's Yorick and Akali split lineup, which it does not play like." },
     { "name": "Dive · Xayah", "games": [{ "game": 83469, "side": "red" }, { "game": 83601, "side": "red" }], "decidedOn": "2026-10-17",
