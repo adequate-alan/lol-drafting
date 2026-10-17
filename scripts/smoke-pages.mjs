@@ -558,13 +558,23 @@ await page.locator(".theme-toggle").click();
   check("top: Jax into Olaf opens BNK FearX vs LGD with first pick, both picks and no counter claim",
     /BNK FearX.*picked first/.test(game) && /pick 7 of 10/.test(game) && (await page.locator(".top-game .draft-seq li").count()) === 10 && !/Supported counter/.test(game), game.slice(0, 160));
   check("top: the open game links to its builds", (await page.locator(".top-game a[href*='/pro-builds/']").count()) === 2, "");
-  await page.locator(".top-use button", { hasText: "Response" }).click();
-  await page.waitForTimeout(300);
-  const rail = await page.locator(".pick-rail .rail-name").allTextContents();
-  check("top: Response filter keeps response-leaning tops (K'Sante) and drops Rumble", rail.some((n) => /Sante/.test(n)) && !rail.includes("Rumble"), rail.join(","));
-  await open("/?jungle=vi&focus=TOP&vs=top:rumble");
-  const sigs = (await page.locator(".fit-row .sig.usage").allTextContents()).join("|");
-  check("draft room: with the enemy top locked, TOP rows say what was picked into it", /Picked into Rumble · \d+/.test(sigs), sigs);
+  // Which tops lean response moves as games arrive, so the filters are checked against each other: Response and Blind
+  // never share a champion, and Rumble (blind-leaning on 26.18) is never a response.
+  const railFor = async (label) => {
+    await page.locator(".top-use button", { hasText: label }).first().click();
+    await page.waitForTimeout(300);
+    return page.locator(".pick-rail .rail-name").allTextContents();
+  };
+  const responses = await railFor("Response"), blinds = await railFor("Blind");
+  check("top: Response and Blind filters split the tops (Rumble never a response)", responses.length > 0 && blinds.length > 0 && !responses.some((n) => blinds.includes(n)) && !responses.includes("Rumble"), `${responses.join(",")} | ${blinds.join(",")}`);
+  // Draft Room labels read the newest patch with 10+ classified selections: try a top picked into on each recent patch.
+  const topSeen = [];
+  for (const [id, name] of [["rumble", "Rumble"], ["jayce", "Jayce"], ["olaf", "Olaf"]]) {
+    await open(`/?jungle=vi&focus=TOP&vs=top:${id}`);
+    const sigs = (await page.locator(".fit-row .sig.usage").allTextContents()).join("|");
+    topSeen.push({ sigs, ok: new RegExp(`Picked into ${name} · \\d+`).test(sigs), clean: (sigs.match(/Picked into [^|·]+/g) ?? []).every((t) => t.trim() === `Picked into ${name}`) });
+  }
+  check("draft room: with the enemy top locked, TOP rows say what was picked into it", topSeen.some((x) => x.ok) && topSeen.every((x) => x.clean), topSeen.map((x) => x.sigs).join(" || "));
 }
 // Mid, Bot and Support draft usage (alan, 2026-10-13): All patches by default, a chosen patch kept while browsing, an
 // explicit URL patch wins; Mid shows the enemy jungler as context; Bot and Support read the bot lane as a duo.
