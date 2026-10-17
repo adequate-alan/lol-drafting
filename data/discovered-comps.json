@@ -115,6 +115,70 @@
       ]
     },
     {
+      "id": "pro-83451-blue",
+      "name": "Skirmish + Pick · Lucian",
+      "addedOn": "2026-10-16",
+      "primary": "skirmish",
+      "secondary": "pick",
+      "tags": [
+        "skirmish",
+        "pick-catch",
+        "hybrid"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "galio",
+          "job": "Hard engage"
+        },
+        "JUNGLE": {
+          "champion": "qiyana",
+          "job": "Catch + damage"
+        },
+        "MID": {
+          "champion": "ahri",
+          "job": "Catch + damage"
+        },
+        "BOT": {
+          "champion": "lucian",
+          "job": "Melee damage"
+        },
+        "SUPPORT": {
+          "champion": "milio",
+          "job": "Peel"
+        }
+      },
+      "winCondition": "Fight short 2v2s and 3v3s around the jungle before items stack up, and snowball the leads into objectives. Between objectives, look for catches with Qiyana and Ahri.",
+      "why": "Qiyana, Ahri and Lucian win short fights before items; catch from Qiyana and Ahri, burst from Lucian.",
+      "timing": "Falls off late. Strongest around two to three items.",
+      "strengths": [
+        "Fight start: Galio",
+        "Peel and disengage: Galio and Milio",
+        "Mixed damage (60% physical)",
+        "Strong before first items"
+      ],
+      "weaknesses": [
+        {
+          "label": "Little tank damage",
+          "severity": "moderate"
+        },
+        {
+          "label": "Short range",
+          "severity": "moderate"
+        },
+        {
+          "label": "Thin frontline",
+          "severity": "minor"
+        }
+      ],
+      "difficulty": "easy",
+      "games": [
+        {
+          "game": 83451,
+          "side": "blue"
+        }
+      ]
+    },
+    {
       "id": "pro-83452-red",
       "name": "Front-to-back + Early tempo · Ryze",
       "addedOn": "2026-10-15",
@@ -274,6 +338,57 @@
       "games": [
         {
           "game": 83459,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "id": "pro-83460-blue",
+      "name": "Front-to-back + Split · Yunara",
+      "addedOn": "2026-10-16",
+      "primary": "front-to-back",
+      "secondary": "split",
+      "tags": [
+        "front-to-back",
+        "split-pressure",
+        "hybrid"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "yorick",
+          "job": "Side-lane carry"
+        },
+        "JUNGLE": {
+          "champion": "sejuani",
+          "job": "Hard engage"
+        },
+        "MID": {
+          "champion": "akali",
+          "job": "Backline dive"
+        },
+        "BOT": {
+          "champion": "yunara",
+          "job": "Ranged DPS"
+        },
+        "SUPPORT": {
+          "champion": "lulu",
+          "job": "Peel"
+        }
+      },
+      "winCondition": "Set up first around objectives, let Sejuani start fights, and play front-to-back through Yunara. Between fights, Yorick and Akali pressure a side lane.",
+      "why": "Sejuani in front, Yunara dealing damage from range; Yorick and Akali can hold a side lane alone.",
+      "timing": "Weak before first items. Strongest around two to three items.",
+      "strengths": [
+        "Fight start: Sejuani",
+        "Side lane: Yorick and Akali",
+        "Mixed damage (44% physical)",
+        "Scales into the late game"
+      ],
+      "weaknesses": [],
+      "difficulty": "easy",
+      "games": [
+        {
+          "game": 83460,
           "side": "blue"
         }
       ]
@@ -938,6 +1053,23 @@
       ]
     },
     {
+      "of": "pro-83451-blue",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "qiyana",
+        "MID": "syndra",
+        "BOT": "lucian",
+        "SUPPORT": "milio"
+      },
+      "addedOn": "2026-10-16",
+      "games": [
+        {
+          "game": 83623,
+          "side": "red"
+        }
+      ]
+    },
+    {
       "of": "pro-83452-red",
       "picks": {
         "TOP": "rumble",
@@ -1001,6 +1133,23 @@
       "games": [
         {
           "game": 83520,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "pro-83460-blue",
+      "picks": {
+        "TOP": "olaf",
+        "JUNGLE": "sejuani",
+        "MID": "akali",
+        "BOT": "yunara",
+        "SUPPORT": "lulu"
+      },
+      "addedOn": "2026-10-16",
+      "games": [
+        {
+          "game": 83624,
           "side": "red"
         }
       ]
@@ -1121,6 +1270,23 @@
         {
           "game": 83574,
           "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "pro-83521-red",
+      "picks": {
+        "TOP": "yorick",
+        "JUNGLE": "wukong",
+        "MID": "kog-maw",
+        "BOT": "lucian",
+        "SUPPORT": "milio"
+      },
+      "addedOn": "2026-10-16",
+      "games": [
+        {
+          "game": 83630,
+          "side": "blue"
         }
       ]
     },

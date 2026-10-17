@@ -8365,6 +8365,13 @@
           "stats": ["25 Move Speed"],
           "kind": "boots"
         },
+        "2502": {
+          "name": "Unending Despair",
+          "gold": 2800,
+          "stats": ["400 Health", "50 Armor", "15 Ability Haste"],
+          "from": [1031, 3067, 1028],
+          "kind": "completed"
+        },
         "2503": {
           "name": "Blackfire Torch",
           "gold": 2800,
@@ -8391,6 +8398,13 @@
           "gold": 3100,
           "stats": ["300 Health", "60 Ability Power", "20 Ability Haste", "20% Attack Speed"],
           "from": [3057, 1026, 3067, 1042],
+          "kind": "completed"
+        },
+        "2517": {
+          "name": "Endless Hunger",
+          "gold": 3100,
+          "stats": ["65 Attack Damage", "5% Omnivamp", "20% Tenacity"],
+          "from": [3133, 1037, 1036],
           "kind": "completed"
         },
         "2520": {
@@ -8482,6 +8496,14 @@
           "from": [1001],
           "kind": "boots"
         },
+        "3024": {
+          "name": "Glacial Buckler",
+          "gold": 900,
+          "stats": ["25 Armor", "300 Mana", "10 Ability Haste"],
+          "text": "Increases Armor and Cooldown Reduction",
+          "from": [1029, 1027, 2022],
+          "kind": "component"
+        },
         "3026": {
           "name": "Guardian Angel",
           "gold": 3200,
@@ -8503,6 +8525,14 @@
           "gold": 3000,
           "stats": ["50 Attack Damage", "45% Attack Speed", "0% Critical Strike Chance"],
           "from": [1038, 3144, 1036],
+          "kind": "completed"
+        },
+        "3033": {
+          "name": "Mortal Reminder",
+          "gold": 3000,
+          "stats": ["35 Attack Damage", "30% Armor Penetration", "25% Critical Strike Chance"],
+          "text": "Overcomes enemies with high Health recovery and Armor",
+          "from": [3123, 3035, 1018],
           "kind": "completed"
         },
         "3035": {
@@ -8688,6 +8718,14 @@
           "from": [1029, 1029],
           "kind": "component"
         },
+        "3084": {
+          "name": "Heartsteel",
+          "gold": 3000,
+          "stats": ["900 Health", "100% Base Health Regen"],
+          "text": "Restores Health on kill or assist",
+          "from": [1011, 3801, 1011],
+          "kind": "completed"
+        },
         "3085": {
           "name": "Runaan's Hurricane",
           "gold": 2650,
@@ -8734,6 +8772,14 @@
           "stats": ["35% Attack Speed", "25% Critical Strike Chance", "4% Move Speed"],
           "text": "Movement builds charges that release a sieging fire attack on release",
           "from": [3086, 3144],
+          "kind": "completed"
+        },
+        "3095": {
+          "name": "Stormrazor",
+          "gold": 3200,
+          "stats": ["50 Attack Damage", "25% Attack Speed", "25% Critical Strike Chance"],
+          "text": "Tremendously empower other Energized effects.",
+          "from": [1038, 1018, 3144],
           "kind": "completed"
         },
         "3100": {
@@ -8807,6 +8853,27 @@
           "text": "Partner with an ally to protect each other",
           "from": [3802, 1026],
           "kind": "completed"
+        },
+        "3119": {
+          "name": "Winter's Approach",
+          "gold": 2400,
+          "stats": ["550 Health", "500 Mana", "15 Ability Haste"],
+          "from": [3070, 1011, 3067],
+          "kind": "completed"
+        },
+        "3121": {
+          "name": "Fimbulwinter",
+          "gold": 2400,
+          "stats": ["550 Health", "1000 Mana", "15 Ability Haste"],
+          "kind": "completed"
+        },
+        "3123": {
+          "name": "Executioner's Calling",
+          "gold": 800,
+          "stats": ["15 Attack Damage"],
+          "text": "Overcomes enemies with high health gain",
+          "from": [1036],
+          "kind": "component"
         },
         "3124": {
           "name": "Guinsoo's Rageblade",
@@ -8927,6 +8994,14 @@
           "from": [1036, 1033, 1036],
           "kind": "component"
         },
+        "3156": {
+          "name": "Maw of Malmortius",
+          "gold": 3100,
+          "stats": ["60 Attack Damage", "15 Ability Haste", "40 Magic Resist"],
+          "text": "Grants bonus Attack Damage when Health is low",
+          "from": [3155, 3133],
+          "kind": "completed"
+        },
         "3157": {
           "name": "Zhonya's Hourglass",
           "gold": 3250,
@@ -8996,6 +9071,14 @@
           "stats": ["20 Magic Penetration", "8% Magic Penetration", "45 Move Speed"],
           "from": [3020],
           "kind": "boots"
+        },
+        "3179": {
+          "name": "Umbral Glaive",
+          "gold": 2800,
+          "stats": ["60 Attack Damage", "18 Lethality", "15 Ability Haste"],
+          "text": "Provides trap and ward detection periodically",
+          "from": [3134, 3133],
+          "kind": "completed"
         },
         "3190": {
           "name": "Locket of the Iron Solari",
@@ -9122,6 +9205,13 @@
           "from": [3867],
           "kind": "component"
         },
+        "3876": {
+          "name": "Solstice Sleigh",
+          "gold": 400,
+          "stats": ["200 Health", "75% Base Health Regen", "75% Base Mana Regen", "9 Gold Per 10 Seconds"],
+          "from": [3867],
+          "kind": "component"
+        },
         "3877": {
           "name": "Bloodsong",
           "gold": 400,
@@ -9143,6 +9233,14 @@
           "stats": ["60 Ability Power", "15 Ability Haste", "150% Base Mana Regen"],
           "text": "Defer damage until later.",
           "from": [1052, 4642, 1052],
+          "kind": "completed"
+        },
+        "4401": {
+          "name": "Force of Nature",
+          "gold": 2800,
+          "stats": ["400 Health", "55 Magic Resist", "4% Move Speed"],
+          "text": "Move Speed, Magic Resist, and max Health Regeneration",
+          "from": [1057, 1028, 3066],
           "kind": "completed"
         },
         "4628": {
@@ -9353,6 +9451,13 @@
           "gold": 3000,
           "stats": ["55 Attack Damage", "10 Lethality", "10 Ability Haste"],
           "from": [2020, 1036, 1036],
+          "kind": "completed"
+        },
+        "8010": {
+          "name": "Bloodletter's Curse",
+          "gold": 2900,
+          "stats": ["65 Ability Power", "400 Health", "15 Ability Haste"],
+          "from": [3147, 3108],
           "kind": "completed"
         }
       },
@@ -9804,6 +9909,28 @@
         }
       },
       "abilities": {
+        "aatrox": {
+          "Q": {
+            "name": "The Darkin Blade",
+            "icon": "AatroxQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Infernal Chains",
+            "icon": "AatroxW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Umbral Dash",
+            "icon": "AatroxE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "World Ender",
+            "icon": "AatroxR.png",
+            "maxrank": 3
+          }
+        },
         "ahri": {
           "Q": {
             "name": "Orb of Deception",
@@ -9958,6 +10085,50 @@
             "maxrank": 3
           }
         },
+        "bard": {
+          "Q": {
+            "name": "Cosmic Binding",
+            "icon": "BardQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Caretaker's Shrine",
+            "icon": "BardW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Magical Journey",
+            "icon": "BardE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Tempered Fate",
+            "icon": "BardR.png",
+            "maxrank": 3
+          }
+        },
+        "caitlyn": {
+          "Q": {
+            "name": "Piltover Peacemaker",
+            "icon": "CaitlynQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Yordle Snap Trap",
+            "icon": "CaitlynW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "90 Caliber Net",
+            "icon": "CaitlynE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Ace in the Hole",
+            "icon": "CaitlynR.png",
+            "maxrank": 3
+          }
+        },
         "camille": {
           "Q": {
             "name": "Precision Protocol",
@@ -9999,6 +10170,50 @@
           "R": {
             "name": "Petrifying Gaze",
             "icon": "CassiopeiaR.png",
+            "maxrank": 3
+          }
+        },
+        "chogath": {
+          "Q": {
+            "name": "Rupture",
+            "icon": "Rupture.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Feral Scream",
+            "icon": "FeralScream.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Vorpal Spikes",
+            "icon": "VorpalSpikes.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Feast",
+            "icon": "Feast.png",
+            "maxrank": 3
+          }
+        },
+        "draven": {
+          "Q": {
+            "name": "Spinning Axe",
+            "icon": "DravenSpinning.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Blood Rush",
+            "icon": "DravenFury.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Stand Aside",
+            "icon": "DravenDoubleShot.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Whirling Death",
+            "icon": "DravenRCast.png",
             "maxrank": 3
           }
         },
@@ -10222,6 +10437,28 @@
             "maxrank": 4
           }
         },
+        "kennen": {
+          "Q": {
+            "name": "Thundering Shuriken",
+            "icon": "KennenShurikenHurlMissile1.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Electrical Surge",
+            "icon": "KennenBringTheLight.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Lightning Rush",
+            "icon": "KennenLightningRush.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Slicing Maelstrom",
+            "icon": "KennenShurikenStorm.png",
+            "maxrank": 3
+          }
+        },
         "kled": {
           "Q": {
             "name": "Bear Trap on a Rope",
@@ -10420,6 +10657,28 @@
             "maxrank": 3
           }
         },
+        "maokai": {
+          "Q": {
+            "name": "Bramble Smash",
+            "icon": "MaokaiQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Twisted Advance",
+            "icon": "MaokaiW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Sapling Toss",
+            "icon": "MaokaiE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Nature's Grasp",
+            "icon": "MaokaiR.png",
+            "maxrank": 3
+          }
+        },
         "milio": {
           "Q": {
             "name": "Ultra Mega Fire Kick",
@@ -10593,6 +10852,28 @@
           "R": {
             "name": "Call of the Forge God",
             "icon": "OrnnR.png",
+            "maxrank": 3
+          }
+        },
+        "pyke": {
+          "Q": {
+            "name": "Bone Skewer",
+            "icon": "PykeQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Ghostwater Dive",
+            "icon": "PykeW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Phantom Undertow",
+            "icon": "PykeE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Death From Below",
+            "icon": "PykeR.png",
             "maxrank": 3
           }
         },
@@ -10816,6 +11097,28 @@
             "maxrank": 3
           }
         },
+        "sivir": {
+          "Q": {
+            "name": "Boomerang Blade",
+            "icon": "SivirQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Ricochet",
+            "icon": "SivirW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Spell Shield",
+            "icon": "SivirE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "On The Hunt",
+            "icon": "SivirR.png",
+            "maxrank": 3
+          }
+        },
         "sylas": {
           "Q": {
             "name": "Chain Lash",
@@ -10860,6 +11163,28 @@
             "maxrank": 3
           }
         },
+        "tristana": {
+          "Q": {
+            "name": "Rapid Fire",
+            "icon": "TristanaQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Rocket Jump",
+            "icon": "TristanaW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Explosive Charge",
+            "icon": "TristanaE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Buster Shot",
+            "icon": "TristanaR.png",
+            "maxrank": 3
+          }
+        },
         "trundle": {
           "Q": {
             "name": "Chomp",
@@ -10879,6 +11204,28 @@
           "R": {
             "name": "Subjugate",
             "icon": "TrundlePain.png",
+            "maxrank": 3
+          }
+        },
+        "twisted-fate": {
+          "Q": {
+            "name": "Wild Cards",
+            "icon": "WildCards.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Pick a Card",
+            "icon": "PickACard.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Stacked Deck",
+            "icon": "CardmasterStack.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Destiny",
+            "icon": "Destiny.png",
             "maxrank": 3
           }
         },
@@ -10970,6 +11317,28 @@
             "maxrank": 3
           }
         },
+        "volibear": {
+          "Q": {
+            "name": "Thundering Smash",
+            "icon": "VolibearQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Frenzied Maul",
+            "icon": "VolibearW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Sky Splitter",
+            "icon": "VolibearE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Stormbringer",
+            "icon": "VolibearR.png",
+            "maxrank": 3
+          }
+        },
         "wukong": {
           "Q": {
             "name": "Crushing Blow",
@@ -11055,6 +11424,28 @@
           "R": {
             "name": "Fate Sealed",
             "icon": "YoneR.png",
+            "maxrank": 3
+          }
+        },
+        "yorick": {
+          "Q": {
+            "name": "Last Rites",
+            "icon": "YorickQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Dark Procession",
+            "icon": "YorickW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Mourning Mist",
+            "icon": "YorickE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Eulogy of the Isles",
+            "icon": "YorickR.png",
             "maxrank": 3
           }
         },
