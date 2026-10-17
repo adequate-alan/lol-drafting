@@ -20,6 +20,9 @@ export function GameHeader({ r, name, evName, compact, end }: { r: BuildRow; nam
     <div className={`game-head side-${r.side} ${compact ? "compact" : ""}`}>
       <div className="game-who">
         <span className="game-player"><PlayerAvatar id={b.playerId} name={b.player} size={compact ? "sm" : "lg"} /><Link href={profileHref(String(b.playerId))} title={`${b.player}'s recorded games, champions and builds`}><b>{b.player}</b></Link> <span className="muted">{r.team}</span></span>
+        {b.spells ? (
+          <span className="game-spells">{b.spells.map((s, i) => <Spell key={s} a={r.assets} id={s} casts={b.spellCasts?.[i]} size={compact ? "sm" : "md"} />)}</span>
+        ) : <span className="xs muted">Summoner spells not recorded</span>}
         {r.opponent && (
           <span className="small game-vs"><span className="faint">vs</span>
             <InteractiveChampion id={r.opponent.champion} role={b.role}><ChampIcon id={r.opponent.champion} name={name(r.opponent.champion)} size="xs" /> {name(r.opponent.champion)}</InteractiveChampion>
@@ -36,9 +39,6 @@ export function GameHeader({ r, name, evName, compact, end }: { r: BuildRow; nam
           title={`Gol.gg builds page for this game\nRead ${b.checkedOn}`}>Gol.gg source ↗</a>
         {end}
       </div>
-      {b.spells ? (
-        <div className="game-spells">{b.spells.map((s, i) => <Spell key={s} a={r.assets} id={s} casts={b.spellCasts?.[i]} size={compact ? "sm" : "md"} />)}</div>
-      ) : <span className="xs muted">Summoner spells not recorded</span>}
       {b.missing && <p className="xs caution-text game-missing">Partial record: {b.missing.join(", ")} not given by the source for this game.</p>}
     </div>
   );
