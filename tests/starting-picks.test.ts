@@ -2,7 +2,7 @@
 // patch, first rotation from each team's recorded pick order (never the lineup), blind / response only from the
 // pick-order engine, pool tiers shown and never changed, and pro meta never moving a row once picks are locked.
 import { describe, expect, it } from "vitest";
-import { getDraftData, getMeta, getPool, getPriority, getProGames, getSources } from "@/lib/data";
+import { getDraftData, getMeta, getPool, getProGames, getSources } from "@/lib/data";
 import { draftCandidates, hasSignal, startingCandidates } from "@/lib/candidates";
 import { poolTier } from "@/lib/counters";
 import { savedSupports } from "@/lib/recommend";
@@ -12,9 +12,13 @@ import {
   defaultPatch, engineReader, FIRST_ROTATION, hasStart, rotationLabel, sortForView, startingOrder, startingPicks, type PickReader, type StartingPick,
 } from "@/lib/starting-picks";
 import { laneSelections, roleBook, topSelections } from "@/lib/top-draft";
-import { ROLES, type ProGame, type ProGames, type Role } from "@/lib/schema";
+import { ROLES, type ProGame, type Role } from "@/lib/schema";
 
-const prio = getPriority(), pool = getPool(), file = getProGames(), data = getDraftData();
+const pool = getPool(), file = getProGames(), data = getDraftData();
+// Every stored game counted from its record: these checks read the game records themselves. While a tournament has a
+// game Gol.gg's page can't give yet, the live Pro Priority counts it from its table instead (tests/pro-priority.test.ts).
+const counted = (games: ProGame[]) => priorityData(getMeta(), { ...file, games, tournaments: file.tournaments.map((t) => ({ ...t, games: games.filter((g) => g.event === t.event).length })) });
+const prio = counted(file.games);
 const sources = Object.fromEntries(getSources().map((s) => [s.id, s]));
 const DEMACIA = "demacia-cup-2026", LCK = "lck-2026-playoffs";
 const PATCH = "16.18"; // Demacia Cup: every game recorded with pick order
@@ -86,7 +90,7 @@ describe("first rotation, first overall and pick order", () => {
     const g = demacia.find((x) => x.blue.picks.TOP === "rumble")!;
     const stripped: ProGame = { ...g, blue: { ...g.blue, pickOrder: undefined }, red: { ...g.red, pickOrder: undefined } };
     const games = file.games.map((x) => (x.id === g.id ? stripped : x));
-    const d = priorityData(getMeta(), { ...file, games } as ProGames);
+    const d = counted(games);
     const before = startOf("TOP").rows.find((r) => r.champion === "rumble")!;
     const after = startingPicks(d, pool, "TOP", PATCH).rows.find((r) => r.champion === "rumble")!;
     expect(after.rolePicks).toBe(before.rolePicks);

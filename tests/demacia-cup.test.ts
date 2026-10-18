@@ -96,7 +96,7 @@ describe("freshness display", () => {
     const [karma] = groupObserved(bot("ezreal").observedProPairings, events, sources).filter((g) => g.champion === "karma");
     expect(karma.lines.map((l) => l.patch)).toEqual(["16.18", "16.16"]);
     expect(describeLine(karma.lines[0])).toBe("1 game · Demacia Cup · 26.18 · Oct 3");
-    expect(karma.lines[0].ongoing).toBe(true);
+    expect(karma.lines[0].ongoing).toBe(events["demacia-cup-2026"].status === "ongoing");
   });
 
   it("Draft Room pro pairings rank the 16.18 game first and keep older evidence", () => {
