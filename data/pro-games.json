@@ -30,26 +30,26 @@
     {
       "event": "demacia-cup-2026",
       "golgg": "Demacia Cup Global Invitational 2026",
-      "status": "ongoing",
+      "status": "complete",
       "series": 27,
-      "seriesPlayed": 26,
-      "games": 67,
-      "recorded": 67,
+      "seriesPlayed": 27,
+      "games": 71,
+      "recorded": 70,
       "matchlist": "https://gol.gg/tournament/tournament-matchlist/Demacia%20Cup%20Global%20Invitational%202026/",
-      "lastUpdate": "2026-10-16T09:45:43.818Z",
-      "lastCheck": "2026-10-17T02:25:14.981Z"
+      "lastUpdate": "2026-10-18T15:50:54.834Z",
+      "lastCheck": "2026-10-18T15:50:54.834Z"
     },
     {
       "event": "worlds-2026-play-in",
       "golgg": "Worlds 2026 Play-In",
       "status": "ongoing",
-      "series": 4,
-      "seriesPlayed": 4,
-      "games": 15,
-      "recorded": 15,
+      "series": 6,
+      "seriesPlayed": 5,
+      "games": 19,
+      "recorded": 19,
       "matchlist": "https://gol.gg/tournament/tournament-matchlist/Worlds%202026%20Play-In/",
-      "lastUpdate": "2026-10-17T02:25:14.981Z",
-      "lastCheck": "2026-10-17T02:25:14.981Z"
+      "lastUpdate": "2026-10-18T15:50:54.834Z",
+      "lastCheck": "2026-10-18T15:50:54.834Z"
     }
   ],
   "games": [
@@ -4258,6 +4258,198 @@
       "firstPick": "red"
     },
     {
+      "id": 83618,
+      "event": "demacia-cup-2026",
+      "tournament": "Demacia Cup Global Invitational 2026",
+      "seriesId": 83618,
+      "series": "BNK FearX vs Team WE",
+      "game": 1,
+      "stage": "FINALS",
+      "date": "2026-10-17",
+      "patch": "16.18",
+      "blue": {
+        "team": "Team WE",
+        "picks": {
+          "TOP": "rumble",
+          "JUNGLE": "jarvan-iv",
+          "MID": "syndra",
+          "BOT": "lucian",
+          "SUPPORT": "milio"
+        },
+        "bans": [
+          "cassiopeia",
+          "vi",
+          "nocturne",
+          "ksante",
+          "yorick"
+        ],
+        "pickOrder": [
+          "lucian",
+          "milio",
+          "rumble",
+          "jarvan-iv",
+          "syndra"
+        ]
+      },
+      "red": {
+        "team": "BNK FearX",
+        "picks": {
+          "TOP": "jayce",
+          "JUNGLE": "lee-sin",
+          "MID": "ryze",
+          "BOT": "yunara",
+          "SUPPORT": "lulu"
+        },
+        "bans": [
+          "poppy",
+          "pantheon",
+          "qiyana",
+          "skarner",
+          "wukong"
+        ],
+        "pickOrder": [
+          "lee-sin",
+          "yunara",
+          "lulu",
+          "ryze",
+          "jayce"
+        ]
+      },
+      "winner": "red",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83618/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83618/page-fullstats/",
+      "checkedOn": "2026-10-18"
+    },
+    {
+      "id": 83619,
+      "event": "demacia-cup-2026",
+      "tournament": "Demacia Cup Global Invitational 2026",
+      "seriesId": 83618,
+      "series": "BNK FearX vs Team WE",
+      "game": 2,
+      "stage": "FINALS",
+      "date": "2026-10-17",
+      "patch": "16.18",
+      "blue": {
+        "team": "BNK FearX",
+        "picks": {
+          "TOP": "renekton",
+          "JUNGLE": "qiyana",
+          "MID": "orianna",
+          "BOT": "kaisa",
+          "SUPPORT": "camille"
+        },
+        "bans": [
+          "cassiopeia",
+          "vi",
+          "akali",
+          "caitlyn",
+          "seraphine"
+        ],
+        "pickOrder": [
+          "orianna",
+          "qiyana",
+          "renekton",
+          "camille",
+          "kaisa"
+        ]
+      },
+      "red": {
+        "team": "Team WE",
+        "picks": {
+          "TOP": "yorick",
+          "JUNGLE": "nocturne",
+          "MID": "locke",
+          "BOT": "corki",
+          "SUPPORT": "shen"
+        },
+        "bans": [
+          "kalista",
+          "ezreal",
+          "twisted-fate",
+          "alistar",
+          "nautilus"
+        ],
+        "pickOrder": [
+          "nocturne",
+          "locke",
+          "yorick",
+          "corki",
+          "shen"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83619/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83619/page-fullstats/",
+      "checkedOn": "2026-10-18"
+    },
+    {
+      "id": 83621,
+      "event": "demacia-cup-2026",
+      "tournament": "Demacia Cup Global Invitational 2026",
+      "seriesId": 83618,
+      "series": "BNK FearX vs Team WE",
+      "game": 4,
+      "stage": "FINALS",
+      "date": "2026-10-17",
+      "patch": "16.18",
+      "blue": {
+        "team": "Team WE",
+        "picks": {
+          "TOP": "nasus",
+          "JUNGLE": "maokai",
+          "MID": "viktor",
+          "BOT": "jhin",
+          "SUPPORT": "rell"
+        },
+        "bans": [
+          "cassiopeia",
+          "vi",
+          "olaf",
+          "sylas",
+          "skarner"
+        ],
+        "pickOrder": [
+          "viktor",
+          "maokai",
+          "nasus",
+          "jhin",
+          "rell"
+        ]
+      },
+      "red": {
+        "team": "BNK FearX",
+        "picks": {
+          "TOP": "varus",
+          "JUNGLE": "nidalee",
+          "MID": "galio",
+          "BOT": "ashe",
+          "SUPPORT": "seraphine"
+        },
+        "bans": [
+          "naafiri",
+          "trundle",
+          "jax",
+          "kalista",
+          "nautilus"
+        ],
+        "pickOrder": [
+          "varus",
+          "ashe",
+          "seraphine",
+          "nidalee",
+          "galio"
+        ]
+      },
+      "winner": "red",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83621/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83621/page-fullstats/",
+      "checkedOn": "2026-10-18"
+    },
+    {
       "id": 83593,
       "event": "worlds-2026-play-in",
       "tournament": "Worlds 2026 Play-In",
@@ -5202,6 +5394,248 @@
       "url": "https://gol.gg/game/stats/83630/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83630/page-fullstats/",
       "checkedOn": "2026-10-17"
+    },
+    {
+      "id": 83631,
+      "event": "worlds-2026-play-in",
+      "tournament": "Worlds 2026 Play-In",
+      "seriesId": 83631,
+      "series": "MVK Esports vs FURIA",
+      "game": 1,
+      "stage": "ROUND2",
+      "date": "2026-10-17",
+      "patch": "16.20",
+      "blue": {
+        "team": "MVK Esports",
+        "picks": {
+          "TOP": "zaahen",
+          "JUNGLE": "jarvan-iv",
+          "MID": "cassiopeia",
+          "BOT": "ezreal",
+          "SUPPORT": "lulu"
+        },
+        "bans": [
+          "karma",
+          "vi",
+          "olaf",
+          "akali",
+          "jax"
+        ]
+      },
+      "red": {
+        "team": "FURIA",
+        "picks": {
+          "TOP": "camille",
+          "JUNGLE": "sejuani",
+          "MID": "syndra",
+          "BOT": "lucian",
+          "SUPPORT": "milio"
+        },
+        "bans": [
+          "nocturne",
+          "pyke",
+          "lee-sin",
+          "jayce",
+          "renekton"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83631/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83631/page-fullstats/",
+      "checkedOn": "2026-10-18"
+    },
+    {
+      "id": 83632,
+      "event": "worlds-2026-play-in",
+      "tournament": "Worlds 2026 Play-In",
+      "seriesId": 83631,
+      "series": "MVK Esports vs FURIA",
+      "game": 2,
+      "stage": "ROUND2",
+      "date": "2026-10-17",
+      "patch": "16.20",
+      "blue": {
+        "team": "MVK Esports",
+        "picks": {
+          "TOP": "gnar",
+          "JUNGLE": "vi",
+          "MID": "kog-maw",
+          "BOT": "jhin",
+          "SUPPORT": "bard"
+        },
+        "bans": [
+          "akali",
+          "renata-glasc",
+          "olaf",
+          "locke",
+          "jax"
+        ],
+        "pickOrder": [
+          "vi",
+          "kog-maw",
+          "jhin",
+          "gnar",
+          "bard"
+        ]
+      },
+      "red": {
+        "team": "FURIA",
+        "picks": {
+          "TOP": "ambessa",
+          "JUNGLE": "nasus",
+          "MID": "viktor",
+          "BOT": "xayah",
+          "SUPPORT": "rakan"
+        },
+        "bans": [
+          "nocturne",
+          "caitlyn",
+          "seraphine",
+          "neeko",
+          "rumble"
+        ],
+        "pickOrder": [
+          "xayah",
+          "rakan",
+          "nasus",
+          "viktor",
+          "ambessa"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "blue",
+      "url": "https://gol.gg/game/stats/83632/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83632/page-fullstats/",
+      "checkedOn": "2026-10-18"
+    },
+    {
+      "id": 83633,
+      "event": "worlds-2026-play-in",
+      "tournament": "Worlds 2026 Play-In",
+      "seriesId": 83631,
+      "series": "MVK Esports vs FURIA",
+      "game": 3,
+      "stage": "ROUND2",
+      "date": "2026-10-17",
+      "patch": "16.20",
+      "blue": {
+        "team": "MVK Esports",
+        "picks": {
+          "TOP": "ksante",
+          "JUNGLE": "jayce",
+          "MID": "mel",
+          "BOT": "ziggs",
+          "SUPPORT": "leona"
+        },
+        "bans": [
+          "renata-glasc",
+          "olaf",
+          "pantheon",
+          "jax",
+          "naafiri"
+        ],
+        "pickOrder": [
+          "ziggs",
+          "jayce",
+          "mel",
+          "leona",
+          "ksante"
+        ]
+      },
+      "red": {
+        "team": "FURIA",
+        "picks": {
+          "TOP": "rumble",
+          "JUNGLE": "skarner",
+          "MID": "twisted-fate",
+          "BOT": "miss-fortune",
+          "SUPPORT": "seraphine"
+        },
+        "bans": [
+          "nocturne",
+          "pyke",
+          "lee-sin",
+          "nautilus",
+          "maokai"
+        ],
+        "pickOrder": [
+          "seraphine",
+          "miss-fortune",
+          "twisted-fate",
+          "rumble",
+          "skarner"
+        ]
+      },
+      "winner": "red",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83633/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83633/page-fullstats/",
+      "checkedOn": "2026-10-18"
+    },
+    {
+      "id": 83634,
+      "event": "worlds-2026-play-in",
+      "tournament": "Worlds 2026 Play-In",
+      "seriesId": 83631,
+      "series": "MVK Esports vs FURIA",
+      "game": 4,
+      "stage": "ROUND2",
+      "date": "2026-10-17",
+      "patch": "16.20",
+      "blue": {
+        "team": "MVK Esports",
+        "picks": {
+          "TOP": "olaf",
+          "JUNGLE": "wukong",
+          "MID": "ryze",
+          "BOT": "corki",
+          "SUPPORT": "shen"
+        },
+        "bans": [
+          "renata-glasc",
+          "akali",
+          "trundle",
+          "kaisa",
+          "sylas"
+        ],
+        "pickOrder": [
+          "olaf",
+          "corki",
+          "shen",
+          "wukong",
+          "ryze"
+        ]
+      },
+      "red": {
+        "team": "FURIA",
+        "picks": {
+          "TOP": "jax",
+          "JUNGLE": "pantheon",
+          "MID": "taliyah",
+          "BOT": "sivir",
+          "SUPPORT": "alistar"
+        },
+        "bans": [
+          "nocturne",
+          "lee-sin",
+          "karma",
+          "zyra",
+          "maokai"
+        ],
+        "pickOrder": [
+          "jax",
+          "pantheon",
+          "alistar",
+          "sivir",
+          "taliyah"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "blue",
+      "url": "https://gol.gg/game/stats/83634/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83634/page-fullstats/",
+      "checkedOn": "2026-10-18"
     }
   ]
 }

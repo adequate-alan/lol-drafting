@@ -3032,6 +3032,28 @@
             "maxrank": 3
           }
         },
+        "nasus": {
+          "Q": {
+            "name": "Siphoning Strike",
+            "icon": "NasusQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Wither",
+            "icon": "NasusW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Spirit Fire",
+            "icon": "NasusE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Fury of the Sands",
+            "icon": "NasusR.png",
+            "maxrank": 3
+          }
+        },
         "nautilus": {
           "Q": {
             "name": "Dredge Line",
@@ -8261,6 +8283,11 @@
           "gold": 450,
           "kind": "starter-or-component"
         },
+        "1103": {
+          "name": "Mosstomper Seedling",
+          "gold": 450,
+          "kind": "starter-or-component"
+        },
         "1120": {
           "name": "Doran's Helm",
           "gold": 450,
@@ -8412,6 +8439,13 @@
           "gold": 3000,
           "stats": ["55 Attack Damage", "22 Lethality", "15 Ability Haste"],
           "from": [2020, 3134],
+          "kind": "completed"
+        },
+        "2522": {
+          "name": "Actualizer",
+          "gold": 2800,
+          "stats": ["90 Ability Power", "300 Mana", "10 Ability Haste"],
+          "from": [3802, 1026],
           "kind": "completed"
         },
         "2523": {
@@ -8790,6 +8824,14 @@
           "from": [3057, 3113, 1026],
           "kind": "completed"
         },
+        "3102": {
+          "name": "Banshee's Veil",
+          "gold": 3000,
+          "stats": ["105 Ability Power", "40 Magic Resist"],
+          "text": "Periodically blocks enemy abilities",
+          "from": [1058, 4632],
+          "kind": "completed"
+        },
         "3108": {
           "name": "Fiendish Codex",
           "gold": 850,
@@ -8844,6 +8886,14 @@
           "stats": ["80 Ability Power", "50% Attack Speed", "15 Ability Haste"],
           "text": "Increases Attack Speed, Ability Power, and Cooldown Reduction",
           "from": [1043, 1026, 3108],
+          "kind": "completed"
+        },
+        "3116": {
+          "name": "Rylai's Crystal Scepter",
+          "gold": 2600,
+          "stats": ["65 Ability Power", "400 Health"],
+          "text": "Abilities slow enemies",
+          "from": [1026, 1011, 1052],
           "kind": "completed"
         },
         "3118": {
@@ -10195,6 +10245,28 @@
             "maxrank": 3
           }
         },
+        "corki": {
+          "Q": {
+            "name": "Phosphorus Bomb",
+            "icon": "PhosphorusBomb.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Valkyrie",
+            "icon": "CarpetBomb.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Gatling Gun",
+            "icon": "GGun.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Missile Barrage",
+            "icon": "MissileBarrage.png",
+            "maxrank": 3
+          }
+        },
         "draven": {
           "Q": {
             "name": "Spinning Axe",
@@ -10679,6 +10751,28 @@
             "maxrank": 3
           }
         },
+        "mel": {
+          "Q": {
+            "name": "Radiant Volley",
+            "icon": "MelQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Rebuttal",
+            "icon": "MelW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Solar Snare",
+            "icon": "MelE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Golden Eclipse",
+            "icon": "MelR.png",
+            "maxrank": 3
+          }
+        },
         "milio": {
           "Q": {
             "name": "Ultra Mega Fire Kick",
@@ -10767,6 +10861,28 @@
             "maxrank": 3
           }
         },
+        "nasus": {
+          "Q": {
+            "name": "Siphoning Strike",
+            "icon": "NasusQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Wither",
+            "icon": "NasusW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Spirit Fire",
+            "icon": "NasusE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Fury of the Sands",
+            "icon": "NasusR.png",
+            "maxrank": 3
+          }
+        },
         "nautilus": {
           "Q": {
             "name": "Dredge Line",
@@ -10852,6 +10968,28 @@
           "R": {
             "name": "Call of the Forge God",
             "icon": "OrnnR.png",
+            "maxrank": 3
+          }
+        },
+        "pantheon": {
+          "Q": {
+            "name": "Comet Spear",
+            "icon": "PantheonQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Shield Vault",
+            "icon": "PantheonW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Aegis Assault",
+            "icon": "PantheonE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Grand Starfall",
+            "icon": "PantheonR.png",
             "maxrank": 3
           }
         },
@@ -11119,6 +11257,28 @@
             "maxrank": 3
           }
         },
+        "skarner": {
+          "Q": {
+            "name": "Shattered Earth / Upheaval",
+            "icon": "SkarnerQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Seismic Bastion",
+            "icon": "SkarnerW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Ixtal's Impact",
+            "icon": "SkarnerE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Impale",
+            "icon": "SkarnerR.png",
+            "maxrank": 3
+          }
+        },
         "sylas": {
           "Q": {
             "name": "Chain Lash",
@@ -11160,6 +11320,28 @@
           "R": {
             "name": "Unleashed Power",
             "icon": "SyndraR.png",
+            "maxrank": 3
+          }
+        },
+        "taliyah": {
+          "Q": {
+            "name": "Threaded Volley",
+            "icon": "TaliyahQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Seismic Shove",
+            "icon": "TaliyahWVC.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Unraveled Earth",
+            "icon": "TaliyahE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Weaver's Wall",
+            "icon": "TaliyahR.png",
             "maxrank": 3
           }
         },
