@@ -23,6 +23,10 @@ const clone = <T,>(x: T): T => structuredClone(x);
 const withGames = (games: ProGame[], over: Partial<ProGames["tournaments"][number]> = {}): ProGames => ({
   ...file, games, tournaments: file.tournaments.map((t) => (t.event === DEMACIA ? { ...t, games: games.filter((g) => g.event === DEMACIA).length, ...over } : t)),
 });
+// Every stored Demacia game counted from its record. A game whose Gol.gg page can't be imported moves the live data to
+// the tournament table (checked under "contributions"); the checks that read the game records themselves use this.
+const recorded = priorityData(meta, withGames(file.games));
+const demaciaState = file.tournaments.find((t) => t.event === DEMACIA)!;
 
 describe("patch notation", () => {
   it("shows Riot's 26.xx for Gol.gg's 16.xx and reads either", () => {
@@ -34,10 +38,18 @@ describe("patch notation", () => {
 });
 
 describe("contributions", () => {
-  it("counts Demacia from its game records and the LCK playoffs from their single-patch Gol.gg table", () => {
+  it("counts Demacia from its game records (its single-patch table while a game is missing) and the LCK playoffs from their table", () => {
     const dem = data.contributions.filter((c) => c.event === DEMACIA);
-    expect(dem.every((c) => c.kind === "games")).toBe(true);
-    expect(dem.reduce((n, c) => n + c.games, 0)).toBe(file.games.filter((g) => g.event === DEMACIA).length);
+    if (demaciaState.recorded === demaciaState.games) {
+      expect(dem.every((c) => c.kind === "games")).toBe(true);
+      expect(dem.reduce((n, c) => n + c.games, 0)).toBe(file.games.filter((g) => g.event === DEMACIA).length);
+    } else {
+      expect(dem).toHaveLength(1);
+      expect(dem[0]).toMatchObject({ kind: "table", games: demaciaState.games });
+    }
+    const all = recorded.contributions.filter((c) => c.event === DEMACIA);
+    expect(all.every((c) => c.kind === "games")).toBe(true);
+    expect(all.reduce((n, c) => n + c.games, 0)).toBe(file.games.filter((g) => g.event === DEMACIA).length);
     const l = data.contributions.filter((c) => c.event === LCK);
     expect(l).toHaveLength(1);
     expect(l[0]).toMatchObject({ kind: "table", patch: "16.16", games: 41 });
@@ -103,7 +115,7 @@ describe("denominators", () => {
 });
 
 describe("roles", () => {
-  const b = bucket(data, { patch: "16.18", ...demacia });
+  const b = bucket(recorded, { patch: "16.18", ...demacia });
   it("lists a champion under a role only with recorded picks there; bans have no role", () => {
     const jungle = forRole(b.rows, "JUNGLE");
     expect(jungle.every((r) => (r.rolePicks.JUNGLE ?? 0) > 0)).toBe(true);
@@ -190,7 +202,7 @@ describe("priority changes", () => {
 
 describe("pick order", () => {
   it("is omitted when not stored, never rebuilt from the lineup", () => {
-    const b = bucket(data, { patch: "16.18", ...demacia });
+    const b = bucket(recorded, { patch: "16.18", ...demacia });
     const ordered = file.games.filter((g) => g.event === DEMACIA && g.blue.pickOrder && g.red.pickOrder && g.firstPick).length;
     expect(b.orderGames).toBe(ordered);
     if (!ordered) expect(b.rows.every((r) => r.order.known === 0 && orderRead(r.order) === undefined)).toBe(true);
@@ -231,7 +243,7 @@ describe("pick order", () => {
 
 describe("supporting games", () => {
   it("lists exactly the recorded games behind a champion's picks and bans", () => {
-    const b = bucket(data, { patch: "16.18", ...demacia });
+    const b = bucket(recorded, { patch: "16.18", ...demacia });
     const r = sortRows(b.rows, "presence")[0];
     const games = supportingGames(b, r.id);
     expect(games.filter((x) => !x.banned)).toHaveLength(r.picks);
@@ -262,7 +274,7 @@ describe("Draft Room label", () => {
       expect(marks[id].patch).toBe(patchesOf(data)[0]);
       expect(marks[id].presence).toBeGreaterThanOrEqual(0.3);
     }
-    const demacia18 = priorityMarks(data, "16.18"); // a fixed patch, so a new patch can't move the champion
+    const demacia18 = priorityMarks(recorded, "16.18"); // a fixed patch, so a new patch can't move the champion
     expect(markFor(demacia18, "nocturne", "JUNGLE")).toBeDefined();
     expect(markFor(demacia18, "nocturne", "MID")).toBeUndefined();
   });
