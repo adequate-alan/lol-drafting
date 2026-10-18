@@ -27,6 +27,7 @@ import { Select } from "./Select";
 import { Popover } from "./Popover";
 import { AUTO_BUILDS_KEY, MY_ROLE_KEY, buildsEntry, draftQuery, markOwnQuery, myBuildsHref, opensBuilds, parseRole } from "@/lib/my-role";
 import { noteDraftRole, restoredDraftRole, sessionStore } from "@/lib/synergy-nav";
+import { localStore, writeBoard } from "@/lib/draft-persist";
 import { ChampIcon, ChampionRow, Checkbox, WarningBadge, type Severity } from "./ui";
 import { scrollBehavior } from "@/lib/motion";
 import { rovingIndex, rovingKeys } from "./roving";
@@ -66,7 +67,7 @@ const enemyDraftOf = (list: (string | undefined)[]): EnemyDraft => Object.fromEn
 const ORDER_NOTE = "Order: your preferred pairing first, then comp fit (synergy with your picks, team needs, matchups and risks). "
   + "Synergy, Pro, Counter, First rotation and Pro priority are labels on each row; pro game counts, counters and presence never move a row. Ties go to the row with more signals.";
 
-export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, initialFocus, initialFilter = "all", initialPatch, metaPicks, legacyCheck = false }: {
+export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, initialFocus, initialFilter = "all", initialPatch, restored = false, metaPicks, legacyCheck = false }: {
   data: DraftData;
   sources: Record<string, Source>;
   drawerData: DrawerData;
@@ -74,6 +75,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   initialEnemy: EnemyDraft; // roles from ?vs=top:aatrox, or detected for bare ids
   initialFocus?: Role; initialFilter?: Filter; // restored on the way back from Pro Builds
   initialPatch?: string; // ?patch=: the pro meta patch, when chosen
+  restored?: boolean; // the board came back from this browser's storage (lib/draft-persist.ts), not from the URL
   metaPicks: Record<string, { picks: number; winRate: number; lowSample: boolean }>;
   legacyCheck?: boolean; // ?legacy=1: a debugging switch that adds the previous Comp Check rules under Full analysis
 }) {
@@ -242,6 +244,16 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
     writeUrl(draft, enemy, chosenPatch, focus);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focus]);
+  // The room is a workspace (alan, 2026-10-18): every board change is kept in this browser, so leaving, refreshing or
+  // reopening the site brings it back; Clear draft empties it. A restored board also goes back in the URL so it can be
+  // shared and Back / refresh read it as before.
+  useEffect(() => {
+    writeBoard(localStore(), { ally: draft, enemy: enemyDraftOf(enemy), focus, filter, patch: chosenPatch });
+  }, [draft, enemy, focus, filter, chosenPatch]);
+  useEffect(() => {
+    if (restored) writeUrl(draft, enemy, chosenPatch, focus);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   // Nothing locked: only the starting views apply, each in its own order (real counts, lib/starting-picks.ts).
   const startView: StartView = START_FILTERS.some((f) => f.key === filter) ? filter as StartView : "all";
   const viewFilter: Filter = started ? filter : startView;
