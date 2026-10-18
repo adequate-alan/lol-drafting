@@ -652,6 +652,12 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   keys). Hover cards swap in place between neighbours. Draft Room derives everything from the board in one `useMemo`
   and never re-keys on its own URL writes (`markOwnQuery`), so a lock keeps the tab, filter, open rows, focus and undo.
   Coarse pointers get 32-40px controls and invisible hit margins; desktop density is unchanged.
+- **Persistent Draft Room** (alan, 2026-10-18; `lib/draft-persist.ts`, `tests/draft-persist.test.ts`, smoke "persistent
+  room"): the room is a workspace. Both teams' slots, the highlighted role tab, the list filter and a chosen pro meta patch
+  are kept in localStorage (`draft-room:board`) on every change, so other sections, a refresh or reopening the site bring
+  the draft back (a restored board is written back to the URL). A URL naming a board (a role slot, `?vs=`, `?shell=`)
+  always wins and replaces what was stored; only a bare room URL restores. Clear draft empties the stored picks. Stored ids
+  are checked against the roster, each champion once, allies first. "I'm playing" keeps its own key; nothing here scores.
 - **Phone Comp Check line** (alan, 2026-10-12): below 1180px the Draft Room shows one line under the board and in the
   pinned mini board (`CompSummaryLine`, `lib/comp-summary.ts`, `tests/comp-summary.test.ts`): the open role's top needs
   and the worst non-minor weak point, "No major weak points" when clean, "Early read" with two picks, nothing actionable

@@ -5,7 +5,8 @@ const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? "playwright")
 const base = process.argv[2].replace(/\/$/, "");
 const shots = process.argv[3];
 const browser = await chromium.launch();
-const page = await browser.newPage();
+const context = await browser.newContext(); // one browser profile, so a second tab shares its storage
+const page = await context.newPage();
 const problems = [];
 page.on("console", (m) => m.type() === "error" && !/Failed to load resource/.test(m.text()) && problems.push(`console: ${m.text()}`));
 page.on("pageerror", (e) => problems.push(`pageerror: ${e.message}`));
@@ -33,6 +34,11 @@ async function openBuildsChampion() {
   const counts = subs.map((t) => Number(/(\d+) game/.exec(t)?.[1] ?? 0));
   await page.locator(".pick-rail li button").nth(counts.indexOf(Math.max(...counts))).click();
   await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
+}
+// Draft Room keeps its board in this browser (lib/draft-persist.ts); checks that need an empty board start from one.
+async function openEmptyRoom() {
+  await page.evaluate(() => localStorage.removeItem("draft-room:board")).catch(() => {});
+  return open("/");
 }
 async function h1() { return (await page.locator("main h1").first().textContent())?.trim(); }
 
@@ -78,7 +84,7 @@ check("Champion Synergies page title names the role", (await page.title()) === "
 }
 
 // CSS applied (dark navy nav)
-await open("/");
+await openEmptyRoom();
 const navBg = await page.locator("aside.sidebar").evaluate((e) => getComputedStyle(e).backgroundColor);
 check("CSS loads under base path", navBg !== "rgba(0, 0, 0, 0)" && navBg !== "rgb(255, 255, 255)", navBg);
 
@@ -133,7 +139,7 @@ check("Champion Synergies ?champ=ziggs selects Ziggs", (await page.locator("main
 const recNames = async (role) => page.locator(`.recs .fit-role.role-${role} .fit-head .name`).allTextContents();
 const text = async (sel) => (await page.locator(sel).allTextContents()).join(" ");
 // Pro meta starting picks (alan, 2026-10-13): an empty board already lists the role's pro picks with real counts.
-await open("/");
+await openEmptyRoom();
 const startRows = await page.locator(".recs .fit-role.role-TOP .fit-row").count();
 const startText = await text(".recs .fit-role.role-TOP");
 check("empty Draft Room lists pro meta starting picks for Top", startRows > 0 && (await page.locator(".rec-empty.start").count()) === 0
@@ -240,7 +246,7 @@ await page.waitForTimeout(400);
 check("scrolled: condensed draft bar stays visible", await page.locator(".draft-mini.show").isVisible(), "");
 check("no repeated layer-explainer line", !/stay separate on every page/.test(await text("body")), "");
 // Locking through the UI keeps the base path in the URL and survives a refresh
-await open("/");
+await openEmptyRoom();
 await page.locator('input[aria-label="BOT champion"]').fill("Sivi");
 await page.locator('#champs-BOT [role="option"]').first().waitFor();
 await page.keyboard.press("Enter");
@@ -249,6 +255,45 @@ const afterLock = page.url();
 await page.reload({ waitUntil: "networkidle" });
 const lockedText = await text(".draft-slot.role-BOT .slot-name");
 check("UI lock writes ?bot= under base path and survives refresh", afterLock.includes("/lol-drafting/?bot=sivir") && lockedText.includes("Sivir"), afterLock);
+
+// Persistent Draft Room (alan, 2026-10-18): the board survives other sections, a refresh and reopening the site; an
+// explicit draft link replaces it; Clear draft empties it.
+{
+  const allyNames = async (p = page) => (await p.locator(".team-row.ally .slot-name").allInnerTexts()).join(",");
+  const enemyNames = async (p = page) => (await p.locator(".team-row.enemy .slot-name").allInnerTexts()).join(",");
+  await openEmptyRoom();
+  await open("/?top=aatrox&bot=jhin&vs=top:renekton,mid:ahri");
+  await page.locator(".role-tab.role-MID").first().click();
+  await page.waitForTimeout(200);
+  for (const label of ["Pro Drafts", "Pro Builds", "Comp Library"]) {
+    await page.locator(".nav a", { hasText: label }).first().click();
+    await page.waitForFunction((l) => document.querySelector("main h1")?.textContent?.trim() === l, label, { timeout: 8000 }).catch(() => {});
+  }
+  await page.locator(".nav a", { hasText: "Draft Room" }).first().click();
+  await page.locator(".team-row.ally .slot-name").first().waitFor({ timeout: 8000 }).catch(() => {});
+  check("persistent room: back from other sections, every pick and the highlighted Mid tab remain",
+    (await allyNames()) === "Aatrox,Jhin" && (await enemyNames()) === "Renekton,Ahri" && (await page.locator(".role-tab.role-MID.active").count()) === 1 && page.url().includes("top=aatrox"),
+    `${await allyNames()} | ${await enemyNames()} | ${page.url()}`);
+  await open("/");
+  await page.reload({ waitUntil: "networkidle" });
+  check("persistent room: a refresh of the bare room URL keeps the draft", (await allyNames()) === "Aatrox,Jhin" && (await enemyNames()) === "Renekton,Ahri", await allyNames());
+  const reopened = await context.newPage();
+  await reopened.goto(base + "/", { waitUntil: "networkidle" });
+  check("persistent room: reopening the site in a new tab brings the draft back", (await allyNames(reopened)) === "Aatrox,Jhin" && (await enemyNames(reopened)) === "Renekton,Ahri", await allyNames(reopened));
+  await reopened.close();
+  await open("/?support=nautilus");
+  check("persistent room: an explicit draft link wins over the stored draft", (await allyNames()) === "Nautilus" && (await enemyNames()) === "", await allyNames());
+  await open("/");
+  check("persistent room: the loaded link becomes the kept draft", (await allyNames()) === "Nautilus", await allyNames());
+  await page.locator("button", { hasText: "Clear draft" }).click();
+  await page.waitForTimeout(200);
+  await open("/");
+  check("persistent room: Clear draft empties the kept draft", (await allyNames()) === "" && (await enemyNames()) === "", `${await allyNames()} ${page.url()}`);
+  await page.evaluate(() => localStorage.setItem("draft-room:board", JSON.stringify({ ally: { TOP: "aatrox", MID: "aatrox", JUNGLE: "not-a-champion" }, enemy: { BOT: "aatrox", SUPPORT: "lulu" } })));
+  await open("/");
+  check("persistent room: invalid or duplicate stored champions are dropped", (await allyNames()) === "Aatrox" && (await enemyNames()) === "Lulu", `${await allyNames()} | ${await enemyNames()}`);
+  await page.evaluate(() => localStorage.removeItem("draft-room:board"));
+}
 
 // Picker: a long list scrolls inside itself, not the page, and arrow keys keep the highlight in view
 await open("/?bot=ziggs");
@@ -318,7 +363,7 @@ for (const theme of ["light", "dark"]) {
 }
 await page.evaluate(() => localStorage.removeItem("theme"));
 // Theme toggle persists across reloads
-await open("/");
+await openEmptyRoom();
 const before = await page.evaluate(() => document.documentElement.dataset.theme);
 await page.locator(".theme-toggle").click();
 const after = await page.evaluate(() => document.documentElement.dataset.theme);
@@ -698,7 +743,7 @@ const sheetOverflow = await page.evaluate(() => document.documentElement.scrollW
 check("comps at 390px: drawer is a bottom sheet with no page overflow", !!sheet && sheet.width === 390 && sheet.y > 100 && Math.round(sheet.y + sheet.height) === 844 && sheetOverflow <= 0, JSON.stringify(sheet));
 await page.setViewportSize({ width: 1440, height: 900 });
 // Fonts: Space Grotesk (titles, nav, champion names) and Inter (body) load from this site, never from a font CDN
-await open("/");
+await openEmptyRoom();
 const fonts = await page.evaluate(async () => {
   await document.fonts.ready;
   const h1 = getComputedStyle(document.querySelector("main h1")).fontFamily;
@@ -712,7 +757,7 @@ const fonts = await page.evaluate(async () => {
 });
 check("Space Grotesk is self-hosted, preloaded and used for titles; Inter for body", !!fonts.family && fonts.h1.replace(/['"]/g, "").startsWith(fonts.family) && fonts.grotesk.length > 0 && /^"?Inter Variable/.test(fonts.body) && fonts.cdn.length === 0 && fonts.preload.some((h) => h.includes("/lol-drafting/")), JSON.stringify(fonts).slice(0, 300));
 // Refresh prompt: no prompt while the open tab matches the deploy; a newer version.json shows it
-await open("/");
+await openEmptyRoom();
 const ver = await page.evaluate(async (b) => (await fetch(`${b}/version.json`, { cache: "no-store" })).status, new URL(base).pathname.replace(/\/$/, ""));
 await page.waitForTimeout(800);
 const noPrompt = (await page.locator(".update-notice").count()) === 0;
@@ -723,7 +768,7 @@ await page.unroute("**/version.json*");
 check("refresh prompt only appears after a new deploy", ver === 200 && noPrompt && prompt, `version.json ${ver}, prompt before ${!noPrompt}, after ${prompt}`);
 // Branding: custom mark and name in the sidebar, the fan-project notice in the footer
 await page.setViewportSize({ width: 1440, height: 900 });
-await open("/");
+await openEmptyRoom();
 check("sidebar brand is the custom Draft Assistant mark", /^Draft Assistant/.test((await text("aside.sidebar .brand-name")) ?? "") && (await page.locator("aside.sidebar svg.brand-mark").count()) === 1, "");
 check("fan-project notice in the footer", /Legal Jibber Jabber/.test((await text("footer.site-foot")) ?? "") && /does not endorse or sponsor/.test(await text("footer.site-foot")), "");
 check("Gen.G trademark line in the footer", /Gen\.G and GenRang are trademarks of Gen\.G Esports/.test((await text("footer.site-foot")) ?? ""), "");
