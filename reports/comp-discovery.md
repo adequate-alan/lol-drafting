@@ -1,6 +1,6 @@
 # Comp Library review · 2026-10-18
 
-Read 178 lineups from 89 recorded games (latest 2026-10-17). Demacia Cup: 70/71 games recorded, complete; Worlds 2026: not on Gol.gg yet; Worlds 2026 Play-In: 19/19 games recorded, ongoing. LCK 2026 playoff drafts are used for comparison only.
+Read 184 lineups from 92 recorded games (latest 2026-10-18). Demacia Cup: 70/71 games recorded, complete; Worlds 2026: not on Gol.gg yet; Worlds 2026 Play-In: 22/22 games recorded, ongoing. LCK 2026 playoff drafts are used for comparison only.
 
 ## New compositions (0)
 
@@ -8,34 +8,42 @@ None this week.
 
 ## New variations of existing compositions (2)
 
-- **Objective Zone**: Jarvan IV for Vi, Syndra for Ryze
-  - [Team WE vs BNK FearX G1](https://gol.gg/game/stats/83618/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-17, loss)
-- **Counter-Engage Front-to-Back**: Ambessa for Gnar, Nasus for Cho'Gath
-  - [FURIA vs MVK Esports G2](https://gol.gg/game/stats/83632/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-17, loss)
+- **Objective Zone**: Malphite for Vi, Hwei for Ryze
+  - [MVK Esports vs Karmine Corp G2](https://gol.gg/game/stats/83636/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-18, loss)
+- **Weakside Tank + Carry Bot**: Jayce for Sion, Cassiopeia for Sylas
+  - [Karmine Corp vs MVK Esports G1](https://gol.gg/game/stats/83635/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-18, win)
 
 ## Existing compositions seeing new professional play (2)
 
 - **Objective Zone**: 1 new game
-  - [Team WE vs BNK FearX G1](https://gol.gg/game/stats/83618/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-17, loss)
-- **Counter-Engage Front-to-Back**: 1 new game
-  - [FURIA vs MVK Esports G2](https://gol.gg/game/stats/83632/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-17, loss)
+  - [MVK Esports vs Karmine Corp G2](https://gol.gg/game/stats/83636/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-18, loss)
+- **Weakside Tank + Carry Bot**: 1 new game
+  - [Karmine Corp vs MVK Esports G1](https://gol.gg/game/stats/83635/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-18, win)
 
-## May be outdated (8)
+## May be outdated (7)
 
 Observed library comps with no exact or variation game in the tracked tournaments (newest patch 16.20). Report only; nothing is removed.
 
-- **Protected Hypercarry** · Top K'Sante · Jng Vi · Mid Akali · Bot Zeri · Sup Yuumi · not picked in tracked games: Zeri, Yuumi
+- **Protected Hypercarry** · Top K'Sante · Jng Vi · Mid Akali · Bot Zeri · Sup Yuumi
 - **Pick · Protected Yunara** · Top Rumble · Jng Pantheon · Mid Syndra · Bot Yunara · Sup Lulu
 - **Pick Tempo** · Top Varus · Jng Nocturne · Mid Lissandra · Bot Kalista · Sup Renata Glasc
-- **Weakside Tank + Carry Bot** · Top Sion · Jng Lee Sin · Mid Sylas · Bot Zeri · Sup Yuumi · not picked in tracked games: Zeri, Yuumi
 - **Side Carry Scaling** · Top Gwen · Jng Trundle · Mid Viktor · Bot Corki · Sup Alistar
 - **Stable Top + Carry Bot** · Top Gnar · Jng Vi · Mid Taliyah · Bot Lucian · Sup Milio
 - **Control Siege** · Top Jayce · Jng Qiyana · Mid Anivia · Bot Mel · Sup Alistar
 - **Dive + Utility Bot** · Top Camille · Jng Naafiri · Mid Galio · Bot Kalista · Sup Renata Glasc
 
-## Ready for approval (0)
+## Ready for approval (1)
 
-None this week.
+Pass every discovery check. Not in the library until alan approves (comp-review.json `approvedComps`).
+
+- **Protect · Cassiopeia** · Top Jayce · Jng Poppy · Mid Cassiopeia · Bot Yunara · Sup Lulu · Easy · id `pro-83453-blue`
+  - Poppy and Lulu protect Yunara. Play around Yunara: Poppy and Lulu stay with Yunara and let the enemy dive into you.
+  - Strengths: Catch: Poppy; Peel and disengage: Poppy and Lulu; Mixed damage (58% physical); Scales into the late game.
+  - Weak points: No on-demand engage (moderate); Thin frontline (minor).
+  - passes every check (3 games from 2 teams with the same strategy, no major weak point, a clear win condition); waiting for approval.
+  - [BNK FearX vs LGD Gaming G1](https://gol.gg/game/stats/83453/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-04, win)
+  - [BNK FearX vs Team WE G1](https://gol.gg/game/stats/83618/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-17, win)
+  - [Karmine Corp vs MVK Esports G2](https://gol.gg/game/stats/83636/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-18, win)
 
 ## Proposed comps for review (99)
 
@@ -46,7 +54,6 @@ Not added automatically: each needs more games or a person's call. One line per 
 - Front-to-back + Pick · Top Rumble · Jng Pantheon · Mid Orianna · Bot Varus · Sup Nautilus · [Shopify Rebellion G1 L](https://gol.gg/game/stats/83449/page-game/) · 1 game from Shopify Rebellion with this strategy, and the library already has front-to-back comps
 - Skirmish + Early tempo · Top Olaf · Jng Vi · Mid Cassiopeia · Bot Caitlyn · Sup Bard · [BNK FearX G1 W](https://gol.gg/game/stats/83450/page-game/), [BNK FearX G2 L](https://gol.gg/game/stats/83454/page-game/) · 1 game from BNK FearX with this strategy (1 more with a lineup that reads differently), and the library already has skirmish comps
 - Skirmish + Split · Top Yorick · Jng Pantheon · Mid Twisted Fate · Bot Ezreal · Sup Karma · [JD Gaming G1 L](https://gol.gg/game/stats/83452/page-game/) · major weak point (No frontline); 1 game from JD Gaming with this strategy, and the library already has skirmish comps
-- **New** · Protect · Top Jayce · Jng Poppy · Mid Cassiopeia · Bot Yunara · Sup Lulu · [BNK FearX G1 W](https://gol.gg/game/stats/83453/page-game/), [BNK FearX G1 W](https://gol.gg/game/stats/83618/page-game/) · 2 games from BNK FearX with this strategy, and the library already has protect comps
 - Skirmish + Split · Top Yorick · Jng Pantheon · Mid Akali · Bot Lucian · Sup Milio · [LGD Gaming G1 L](https://gol.gg/game/stats/83453/page-game/), [Natus Vincere G2 L](https://gol.gg/game/stats/83541/page-game/) · major weak point (No frontline); 1 game from LGD Gaming with this strategy (1 more with a lineup that reads differently), and the library already has skirmish comps
 - Front-to-back + Skirmish · Top Ambessa · Jng Shyvana · Mid Orianna · Bot Corki · Sup Rell · [LGD Gaming G3 L](https://gol.gg/game/stats/83455/page-game/) · 1 game from LGD Gaming with this strategy, and the library already has front-to-back comps
 - Pick + Skirmish · Top Rumble · Jng Qiyana · Mid Sylas · Bot Jhin · Sup Camille · [BNK FearX G3 W](https://gol.gg/game/stats/83455/page-game/) · major weak point (No frontline); 1 game from BNK FearX with this strategy, and the library already has pick comps
@@ -140,8 +147,9 @@ Not added automatically: each needs more games or a person's call. One line per 
 - **New** · Front-to-back + Early tempo · Top Rumble · Jng Skarner · Mid Twisted Fate · Bot Miss Fortune · Sup Seraphine · [FURIA G3 W](https://gol.gg/game/stats/83633/page-game/) · 1 game from FURIA with this strategy, and the library already has front-to-back comps
 - **New** · Front-to-back + Split · Top Olaf · Jng Wukong · Mid Ryze · Bot Corki · Sup Shen · [MVK Esports G4 W](https://gol.gg/game/stats/83634/page-game/) · 1 game from MVK Esports with this strategy, and the library already has front-to-back comps
 - **New** · Dive + Skirmish · Top Jax · Jng Pantheon · Mid Taliyah · Bot Sivir · Sup Alistar · [FURIA G4 L](https://gol.gg/game/stats/83634/page-game/) · 1 game from FURIA with this strategy, and the library already has dive comps
+- **New** · Skirmish + Split · Top Yorick · Jng Jarvan IV · Mid Akali · Bot Ashe · Sup Seraphine · [MVK Esports G1 L](https://gol.gg/game/stats/83635/page-game/) · 1 game from MVK Esports with this strategy, and the library already has skirmish comps
 
-## Awaiting review: new comps from held champions (14)
+## Awaiting review: new comps from held champions (16)
 
 Read by the comp check; these join existing comps when one matches, and never open a new comp without review.
 
@@ -159,6 +167,8 @@ Read by the comp check; these join existing comps when one matches, and never op
 - **New** · Top Aatrox · Jng Trundle · Mid Locke · Bot Ziggs · Sup Nautilus · [Cloud9 G4 L](https://gol.gg/game/stats/83626/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
 - **New** · Top Yorick · Jng Nocturne · Mid Locke · Bot Corki · Sup Shen · [Team WE G2 L](https://gol.gg/game/stats/83619/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
 - **New** · Top Zaahen · Jng Jarvan IV · Mid Cassiopeia · Bot Ezreal · Sup Lulu · [MVK Esports G1 W](https://gol.gg/game/stats/83631/page-game/) · Zaahen lineup: no existing comp matches, and a new comp from it waits for review
+- **New** · Top Yone · Jng Aatrox · Mid Locke · Bot Twitch · Sup Camille · [MVK Esports G3 L](https://gol.gg/game/stats/83637/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
+- **New** · Top Zaahen · Jng Naafiri · Mid Viktor · Bot Ezreal · Sup Leona · [Karmine Corp G3 W](https://gol.gg/game/stats/83637/page-game/) · Zaahen lineup: no existing comp matches, and a new comp from it waits for review
 
 ## Held candidates (5)
 

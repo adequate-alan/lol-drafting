@@ -968,6 +968,23 @@
       ]
     },
     {
+      "of": "objective-zone",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "malphite",
+        "MID": "hwei",
+        "BOT": "lucian",
+        "SUPPORT": "milio"
+      },
+      "addedOn": "2026-10-18",
+      "games": [
+        {
+          "game": 83636,
+          "side": "red"
+        }
+      ]
+    },
+    {
       "of": "poke-catch",
       "picks": {
         "TOP": "ksante",
@@ -1389,6 +1406,23 @@
         {
           "game": 83632,
           "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "weakside-tank-carry-bot",
+      "picks": {
+        "TOP": "jayce",
+        "JUNGLE": "lee-sin",
+        "MID": "cassiopeia",
+        "BOT": "zeri",
+        "SUPPORT": "yuumi"
+      },
+      "addedOn": "2026-10-18",
+      "games": [
+        {
+          "game": 83635,
+          "side": "blue"
         }
       ]
     },

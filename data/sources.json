@@ -680,7 +680,7 @@
     "url": "https://gol.gg/champion/list/season-ALL/split-ALL/tournament-Worlds%202026%20Play-In/",
     "type": "golgg-tournament",
     "tournament": "Worlds 2026 Play-In",
-    "lastChecked": "2026-10-18",
+    "lastChecked": "2026-10-19",
     "refreshStatus": "verified",
     "origin": "golgg-refresh"
   },
@@ -698,7 +698,7 @@
     "url": "https://gol.gg/tournament/tournament-matchlist/Worlds%202026%20Play-In/",
     "type": "golgg-tournament",
     "tournament": "Worlds 2026 Play-In",
-    "lastChecked": "2026-10-18",
+    "lastChecked": "2026-10-19",
     "refreshStatus": "verified",
     "origin": "golgg-refresh"
   }

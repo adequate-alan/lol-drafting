@@ -8683,6 +8683,14 @@
           "from": [1028, 2022],
           "kind": "component"
         },
+        "3068": {
+          "name": "Sunfire Aegis",
+          "gold": 2800,
+          "stats": ["350 Health", "50 Armor", "10 Ability Haste"],
+          "text": "High armor. Constantly deals damage to nearby enemies. Immobilize enemies to release a wave of damaging flame",
+          "from": [6660, 1031, 1028],
+          "kind": "completed"
+        },
         "3070": {
           "name": "Tear of the Goddess",
           "gold": 400,
@@ -8979,6 +8987,14 @@
           "text": "Activate to remove all crowd control debuffs",
           "from": [1033],
           "kind": "component"
+        },
+        "3142": {
+          "name": "Youmuu's Ghostblade",
+          "gold": 2800,
+          "stats": ["55 Attack Damage", "18 Lethality", "4% Move Speed"],
+          "text": "Activate to greatly increase Move Speed",
+          "from": [3134, 6690, 1036],
+          "kind": "completed"
         },
         "3143": {
           "name": "Randuin's Omen",
@@ -9411,12 +9427,27 @@
           "from": [1026, 3803],
           "kind": "completed"
         },
+        "6660": {
+          "name": "Bami's Cinder",
+          "gold": 900,
+          "stats": ["150 Health", "5 Ability Haste"],
+          "from": [1028, 2022],
+          "kind": "component"
+        },
         "6662": {
           "name": "Iceborn Gauntlet",
           "gold": 2900,
           "stats": ["300 Health", "50 Armor", "15 Ability Haste"],
           "text": "High Magic Resist.Passively slow nearby enemies. When spells are cast near you, release a wave of energy that damages and slows.",
           "from": [3057, 1028, 1031],
+          "kind": "completed"
+        },
+        "6664": {
+          "name": "Hollow Radiance",
+          "gold": 2800,
+          "stats": ["400 Health", "40 Magic Resist", "10 Ability Haste", "100% Base Health Regen"],
+          "text": "Immobilize enemies to gain a shield. Activate to run faster at opponents.",
+          "from": [6660, 3211],
           "kind": "completed"
         },
         "6665": {
@@ -10355,6 +10386,28 @@
             "maxrank": 3
           }
         },
+        "hwei": {
+          "Q": {
+            "name": "Subject: Disaster",
+            "icon": "HweiQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Subject: Serenity",
+            "icon": "HweiW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Subject: Torment",
+            "icon": "HweiE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Spiraling Despair",
+            "icon": "HweiR.png",
+            "maxrank": 3
+          }
+        },
         "jarvan-iv": {
           "Q": {
             "name": "Dragon Strike",
@@ -10726,6 +10779,28 @@
           "R": {
             "name": "Wild Growth",
             "icon": "LuluR.png",
+            "maxrank": 3
+          }
+        },
+        "malphite": {
+          "Q": {
+            "name": "Seismic Shard",
+            "icon": "SeismicShard.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Thunderclap",
+            "icon": "Obduracy.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Ground Slam",
+            "icon": "Landslide.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Unstoppable Force",
+            "icon": "UFSlash.png",
             "maxrank": 3
           }
         },
@@ -11411,6 +11486,28 @@
             "maxrank": 3
           }
         },
+        "twitch": {
+          "Q": {
+            "name": "Ambush",
+            "icon": "TwitchHideInShadows.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Venom Cask",
+            "icon": "TwitchVenomCask.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Contaminate",
+            "icon": "TwitchExpunge.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Spray and Pray",
+            "icon": "TwitchFullAutomatic.png",
+            "maxrank": 3
+          }
+        },
         "varus": {
           "Q": {
             "name": "Piercing Arrow",
@@ -11653,6 +11750,28 @@
             "maxrank": 3
           }
         },
+        "yuumi": {
+          "Q": {
+            "name": "Prowling Projectile",
+            "icon": "YuumiQ.png",
+            "maxrank": 6
+          },
+          "W": {
+            "name": "You and Me!",
+            "icon": "YuumiW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Zoomies",
+            "icon": "YuumiE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Final Chapter",
+            "icon": "YuumiR.png",
+            "maxrank": 3
+          }
+        },
         "zaahen": {
           "Q": {
             "name": "The Darkin Glaive",
@@ -11672,6 +11791,28 @@
           "R": {
             "name": "Grim Deliverance",
             "icon": "ZaahenR.png",
+            "maxrank": 3
+          }
+        },
+        "zeri": {
+          "Q": {
+            "name": "Burst Fire",
+            "icon": "ZeriQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Ultrashock Laser",
+            "icon": "ZeriW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Spark Surge",
+            "icon": "ZeriE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Lightning Crash",
+            "icon": "ZeriR.png",
             "maxrank": 3
           }
         },

@@ -44,12 +44,12 @@
       "golgg": "Worlds 2026 Play-In",
       "status": "ongoing",
       "series": 6,
-      "seriesPlayed": 5,
-      "games": 19,
-      "recorded": 19,
+      "seriesPlayed": 6,
+      "games": 22,
+      "recorded": 22,
       "matchlist": "https://gol.gg/tournament/tournament-matchlist/Worlds%202026%20Play-In/",
-      "lastUpdate": "2026-10-18T15:50:54.834Z",
-      "lastCheck": "2026-10-18T15:50:54.834Z"
+      "lastUpdate": "2026-10-19T03:09:27.143Z",
+      "lastCheck": "2026-10-19T03:09:27.143Z"
     }
   ],
   "games": [
@@ -5636,6 +5636,198 @@
       "url": "https://gol.gg/game/stats/83634/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83634/page-fullstats/",
       "checkedOn": "2026-10-18"
+    },
+    {
+      "id": 83635,
+      "event": "worlds-2026-play-in",
+      "tournament": "Worlds 2026 Play-In",
+      "seriesId": 83635,
+      "series": "KC vs MVK Esports",
+      "game": 1,
+      "stage": "ROUND3",
+      "date": "2026-10-18",
+      "patch": "16.20",
+      "blue": {
+        "team": "Karmine Corp",
+        "picks": {
+          "TOP": "jayce",
+          "JUNGLE": "lee-sin",
+          "MID": "cassiopeia",
+          "BOT": "zeri",
+          "SUPPORT": "yuumi"
+        },
+        "bans": [
+          "nocturne",
+          "olaf",
+          "ezreal",
+          "viktor",
+          "ksante"
+        ],
+        "pickOrder": [
+          "lee-sin",
+          "jayce",
+          "cassiopeia",
+          "zeri",
+          "yuumi"
+        ]
+      },
+      "red": {
+        "team": "MVK Esports",
+        "picks": {
+          "TOP": "yorick",
+          "JUNGLE": "jarvan-iv",
+          "MID": "akali",
+          "BOT": "ashe",
+          "SUPPORT": "seraphine"
+        },
+        "bans": [
+          "syndra",
+          "rumble",
+          "vi",
+          "nautilus",
+          "jhin"
+        ],
+        "pickOrder": [
+          "ashe",
+          "seraphine",
+          "jarvan-iv",
+          "yorick",
+          "akali"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "blue",
+      "url": "https://gol.gg/game/stats/83635/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83635/page-fullstats/",
+      "checkedOn": "2026-10-19"
+    },
+    {
+      "id": 83636,
+      "event": "worlds-2026-play-in",
+      "tournament": "Worlds 2026 Play-In",
+      "seriesId": 83635,
+      "series": "KC vs MVK Esports",
+      "game": 2,
+      "stage": "ROUND3",
+      "date": "2026-10-18",
+      "patch": "16.20",
+      "blue": {
+        "team": "Karmine Corp",
+        "picks": {
+          "TOP": "galio",
+          "JUNGLE": "qiyana",
+          "MID": "ryze",
+          "BOT": "yunara",
+          "SUPPORT": "lulu"
+        },
+        "bans": [
+          "olaf",
+          "vi",
+          "nocturne",
+          "kog-maw",
+          "yone"
+        ],
+        "pickOrder": [
+          "qiyana",
+          "galio",
+          "ryze",
+          "lulu",
+          "yunara"
+        ]
+      },
+      "red": {
+        "team": "MVK Esports",
+        "picks": {
+          "TOP": "rumble",
+          "JUNGLE": "malphite",
+          "MID": "hwei",
+          "BOT": "lucian",
+          "SUPPORT": "milio"
+        },
+        "bans": [
+          "syndra",
+          "renata-glasc",
+          "nautilus",
+          "caitlyn",
+          "jhin"
+        ],
+        "pickOrder": [
+          "rumble",
+          "lucian",
+          "milio",
+          "malphite",
+          "hwei"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83636/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83636/page-fullstats/",
+      "checkedOn": "2026-10-19"
+    },
+    {
+      "id": 83637,
+      "event": "worlds-2026-play-in",
+      "tournament": "Worlds 2026 Play-In",
+      "seriesId": 83635,
+      "series": "KC vs MVK Esports",
+      "game": 3,
+      "stage": "ROUND3",
+      "date": "2026-10-18",
+      "patch": "16.20",
+      "blue": {
+        "team": "MVK Esports",
+        "picks": {
+          "TOP": "yone",
+          "JUNGLE": "aatrox",
+          "MID": "locke",
+          "BOT": "twitch",
+          "SUPPORT": "camille"
+        },
+        "bans": [
+          "renata-glasc",
+          "syndra",
+          "jax",
+          "renekton",
+          "trundle"
+        ],
+        "pickOrder": [
+          "camille",
+          "locke",
+          "twitch",
+          "yone",
+          "aatrox"
+        ]
+      },
+      "red": {
+        "team": "Karmine Corp",
+        "picks": {
+          "TOP": "zaahen",
+          "JUNGLE": "naafiri",
+          "MID": "viktor",
+          "BOT": "ezreal",
+          "SUPPORT": "leona"
+        },
+        "bans": [
+          "olaf",
+          "vi",
+          "nocturne",
+          "rakan",
+          "wukong"
+        ],
+        "pickOrder": [
+          "viktor",
+          "ezreal",
+          "leona",
+          "naafiri",
+          "zaahen"
+        ]
+      },
+      "winner": "red",
+      "firstPick": "blue",
+      "url": "https://gol.gg/game/stats/83637/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83637/page-fullstats/",
+      "checkedOn": "2026-10-19"
     }
   ]
 }
