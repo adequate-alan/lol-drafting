@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Fragment, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useDeferredValue, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import { picksOf, profile, RULES, warnings, type Draft, type DraftWarning } from "@/lib/evaluate";
 import { teamNeeds, type Need, type Recommendation } from "@/lib/recommend";
-import { draftCandidates, hasSignal, startingCandidates, type Candidate, type Filter } from "@/lib/candidates";
+import { blank, compFitOf, draftCandidates, hasSignal, startingCandidates, type Candidate, type Filter } from "@/lib/candidates";
 import { ROLES, type Attr, type Role, type Source } from "@/lib/schema";
 import type { Tier } from "@/lib/pool-stats";
 import type { PriorityData } from "@/lib/pro-priority";
@@ -15,7 +15,7 @@ import { describeEvidence, describePro, enemyParam, poolTier, tierLabel, type Co
 import { similarProDrafts, similarShells, type ProSuggestion, type SuggestData } from "@/lib/suggest";
 import type { DraftData, DrawerData } from "@/lib/data";
 import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
-import { CompCheck, CompStatus, CompSummaryLine, planFlags, usePlanRead, type SiegeCell } from "./CompCheck";
+import { CompCheck, CompStatus, CompSummaryLine, planFlags, useCandidateReads, usePlanRead, type SiegeCell } from "./CompCheck";
 import { ChampionHoverCard, useHoverIntent } from "./ChampionInteraction";
 import { useLeave } from "./useLeave";
 import { GenRang } from "./GenRang";
@@ -34,6 +34,8 @@ import { rovingIndex, rovingKeys } from "./roving";
 import { isLaneRole, PAIR_LABEL, USAGE_LABEL, type MidPair, type TopUsageMark, type TopUsageMarks } from "@/lib/top-draft";
 import { boardTraits, TRAIT_LABEL, type CompResponse, type TraitHit } from "@/lib/jungle-context";
 import { comparePatch } from "@/lib/patch";
+import { COMPARE_MAX, effectLine, pruneCompare, readCompare, sameCompare, tabStore, toggleCompare, writeCompare, type CompareState, type PreviewEffect } from "@/lib/candidate-preview";
+import { ComparePanel, EffectList, PreviewBlock } from "./CandidateCompare";
 import type { BlindLine } from "@/lib/top-blind";
 
 const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
@@ -53,6 +55,9 @@ const REC_LIMIT = 8; // picker and role-tab hints: the top of the draft-fit list
 const ROW_LIMIT = 12; // unified list rows shown before "Show all"
 const FILTERS: { key: Filter; label: string }[] = [
   { key: "all", label: "All" }, { key: "synergy", label: "Synergy" }, { key: "pro", label: "Pro" }, { key: "fit", label: "Best fit" }, { key: "counter", label: "Counters" },
+];
+// The pro meta filters sit in one menu once drafting starts (alan, 2026-10-19): the labels stay on every row.
+const META_FILTERS: { key: Filter; label: string }[] = [
   { key: "rotation", label: "First rotation" }, { key: "blind", label: "Blind" }, { key: "priority", label: "Pro priority" },
 ];
 // Before anything is locked: the pro meta starting picks and their own views (lib/starting-picks.ts).
@@ -110,8 +115,15 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   const store = (k: string, v: string | undefined) => { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch { /* see above */ } };
   const router = useRouter();
   const [showAll, setShowAll] = useState(false);
+  // Candidate preview and comparison (alan, 2026-10-19; lib/candidate-preview.ts): a row click previews, only a Lock
+  // button (or Shift+Enter) locks. Neither is ever part of the board, its URL or its stored copy; the comparison is kept
+  // for this browser tab under its own key.
+  const [previewed, setPreviewed] = useState<{ role: Role; id: string }>();
+  const [compare, setCompareState] = useState<CompareState>({});
+  const [cmpFolded, setCmpFolded] = useState(false);
+  const setCompare = (next: CompareState) => { setCompareState(next); writeCompare(tabStore(), next); };
   // Clear draft keeps the last board for a few seconds so one misclick in champion select is recoverable.
-  const [cleared, setCleared] = useState<{ draft: Draft; enemy: (string | undefined)[] }>();
+  const [cleared, setCleared] = useState<{ draft: Draft; enemy: (string | undefined)[]; compare: CompareState }>();
   useEffect(() => {
     if (!cleared) return;
     const t = setTimeout(() => setCleared(undefined), 8000);
@@ -161,6 +173,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   const lock = (role: Role, id: string | undefined) => {
     clearTimeout(previewTimer.current);
     setHover(undefined);
+    setPreviewed(undefined);
     setFresh(`ally:${role}`);
     const next = { ...draft, [role]: id };
     update(next);
@@ -220,6 +233,18 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   // ?legacy=1 debugging view only.
   const planRead = usePlanRead(dDraft, enemyIds, data.champions, data.botPairings);
 
+  // The comparison follows the real board: a champion locked on either team leaves it, a locked role's list closes.
+  // Read once from this tab's storage, then kept in step with every board change.
+  const championIds = useMemo(() => new Set(data.champions.map((c) => c.id)), [data.champions]);
+  const compareLoaded = useRef(false);
+  useEffect(() => {
+    const base = compareLoaded.current ? compare : readCompare(tabStore(), championIds);
+    compareLoaded.current = true;
+    const next = pruneCompare(base, draft, takenNow);
+    if (!sameCompare(next, compare)) setCompare(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draft, enemy]);
+
   // The role being picked: the one the user chose, else the open lane partner of a locked pick, else the open role
   // with the strongest fit.
   const topScore = (r: Role) => recs[r]?.[0]?.score ?? (started ? -99 : -99 - ROLES.indexOf(r)); // nothing locked: Top first
@@ -227,6 +252,19 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   const active: Role | undefined = focus && open.includes(focus) ? focus
     : [...(partnered.length ? partnered : open)].sort((a, b) => topScore(b) - topScore(a))[0];
   const activeRows = active ? unified[active] ?? [] : [];
+  const previewId = previewed && previewed.role === active && !takenNow.includes(previewed.id) ? previewed.id : undefined;
+  const compared = useMemo(() => (active ? (compare[active] ?? []).filter((id) => !takenNow.includes(id)) : []), [active, compare, takenNow]);
+  // Each candidate's read is the board with it in the open role, read by the Comp Check itself (useCandidateReads) from
+  // the same deferred board as the ranking, so a lock never waits on it. Hovering never reads; only a preview or the
+  // comparison does.
+  const wanted = useMemo(() => [...new Set([...(previewId ? [previewId] : []), ...compared])], [previewId, compared]);
+  const simIds = useDeferredValue(wanted);
+  const effects = useCandidateReads(planRead, dDraft, active, simIds, enemyIds, data.champions, data.botPairings);
+  const simBusy = ranking || wanted.some((id) => !effects[id]);
+  const previewLine = previewId && effects[previewId] && effects[previewId].plan.kind !== "none" ? { name: names[previewId] ?? previewId, text: effectLine(effects[previewId]) } : undefined;
+  const togglePreview = (id: string) => { if (active) setPreviewed(previewId === id ? undefined : { role: active, id }); };
+  const toggleCompareOf = (id: string) => { if (active) { setCompare(toggleCompare(compare, active, id)); setCmpFolded(false); } };
+  const lockCandidate = (id: string) => { if (active && !takenNow.includes(id)) lock(active, id); };
   // Back on an empty board in this tab (the sidebar's Draft Room link): highlight the role left highlighted (read before
   // the effect below records this render's role).
   useEffect(() => {
@@ -272,6 +310,8 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   const proIds = active ? (proAll[active] ?? []).map((s) => s.champion) : [];
   const proSourceLine = `Recorded Gol.gg games next to your picks: ${(data.events ?? []).map((e) => `${e.short} ${patchLabel(e.patch)}${e.status === "ongoing" ? " (ongoing)" : ""}`).join(" · ")}. Evidence, never part of the order.`;
   const laneFoes = active ? LANE[active].map((r) => enemy[ROLES.indexOf(r)]).filter((e): e is string => !!e) : [];
+  const countOf = (f: Filter) => !active ? 0 : started ? (f === "all" ? activeRows.length : activeRows.filter((c) => hasSignal(c, f)).length)
+    : sortForView(starting[active] ?? [], f as StartView).length;
 
   const cards: CardRecord[] = ROLES.flatMap((role): CardRecord[] => {
     const id = draft[role];
@@ -305,8 +345,8 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
           <span className="xs muted tnum">{lockedCount}/5 locked{enemyIds.length ? ` · ${enemyIds.length} enemy` : ""}</span>
           {lockedCount >= 2 && <CompStatus read={planRead} />}
           {cleared
-            ? <button className="btn sm" onClick={() => { update(cleared.draft, cleared.enemy); setCleared(undefined); }}>Draft cleared · Undo</button>
-            : <button className="btn sm" title="Unlock every pick on both teams" onClick={() => { setCleared({ draft, enemy }); setFocus(undefined); update({}, ROLES.map(() => undefined)); }} disabled={!started}>Clear draft</button>}
+            ? <button className="btn sm" onClick={() => { update(cleared.draft, cleared.enemy); setCompare(cleared.compare); setCleared(undefined); }}>Draft cleared · Undo</button>
+            : <button className="btn sm" title="Unlock every pick on both teams" onClick={() => { setCleared({ draft, enemy, compare }); setFocus(undefined); setPreviewed(undefined); setCompare({}); update({}, ROLES.map(() => undefined)); }} disabled={!started && !Object.keys(compare).length}>Clear draft</button>}
         </div>
       </header>
 
@@ -337,7 +377,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
           <div className="team-label">My team</div>
           <div className="draft-slots">
             {ROLES.map((role) => (
-              <DraftSlot key={role} side="ally" role={role} value={draft[role]} fresh={fresh === `ally:${role}`} active={role === active} mine={role === myRole} builds={role === myRole ? myHref : undefined} preview={role === active ? hover : undefined}
+              <DraftSlot key={role} side="ally" role={role} value={draft[role]} fresh={fresh === `ally:${role}`} active={role === active} mine={role === myRole} builds={role === myRole ? myHref : undefined} preview={role === active ? hover ?? previewId : undefined}
                 onActivate={() => setFocus(role)} onLock={(id) => lock(role, id)} suggested={recs[role]} {...slotProps} />
             ))}
           </div>
@@ -353,9 +393,9 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
       </div>
 
       {/* Narrow screens put Comp Check below the list: one line says what the draft is missing, here and pinned */}
-      <CompSummaryLine read={planRead} active={active} className="cc-summary-board" />
+      <CompSummaryLine read={planRead} active={active} className="cc-summary-board" preview={previewLine} />
       <MiniBoard show={pinned} draft={draft} enemy={enemy} active={active} names={names} onActivate={setFocus}
-        summary={<CompSummaryLine read={planRead} active={active} className="cc-summary-mini" />} />
+        summary={<CompSummaryLine read={planRead} active={active} className="cc-summary-mini" preview={previewLine} />} />
 
       <div className="draft-layout">
         <div className="draft-main">
@@ -374,12 +414,11 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                   })}
                 </div>
                 {active && (
-                  <div className={`fit-role role-${active} ${ranking ? "ranking" : ""}`.trim()} aria-busy={ranking || undefined} role="tabpanel" aria-label={`${ROLE_LABEL[active]} recommendations`}>
+                  <div className={`fit-role role-${active} ${ranking ? "ranking" : ""}`.trim()} aria-busy={ranking || undefined} role="tabpanel" aria-label={`${ROLE_LABEL[active]} recommendations`} onKeyDown={rowKeys}>
                     <div className="fit-context">
                       <div className="seg fit-filters" role="group" aria-label="Show recommendations by signal">
                         {(started ? FILTERS : START_FILTERS).map((f) => {
-                          const n = started ? (f.key === "all" ? activeRows.length : activeRows.filter((c) => hasSignal(c, f.key)).length)
-                            : sortForView(starting[active] ?? [], f.key as StartView).length;
+                          const n = countOf(f.key);
                           const off = (f.key === "counter" && !activeCounters) || (f.key === "blind" && !n && !(starting[active] ?? []).some((s) => s.blind != null));
                           return (
                             <button key={f.key} type="button" className={viewFilter === f.key ? "active" : undefined} aria-pressed={viewFilter === f.key} disabled={off}
@@ -389,6 +428,11 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                           );
                         })}
                       </div>
+                      {started && (
+                        <Select label="Pro meta filters" className={`fit-meta ${META_FILTERS.some((f) => f.key === filter) ? "on" : ""}`.trim()} value={META_FILTERS.some((f) => f.key === filter) ? filter : ""}
+                          options={[{ value: "", label: "Pro meta" }, ...META_FILTERS.map((f) => ({ value: f.key, label: `${f.label} · ${countOf(f.key)}` }))]}
+                          onChange={(v) => setFilter((v || "all") as Filter)} />
+                      )}
                       {laneFoes.length
                         ? <span className="vs">vs {laneFoes.map((id, i) => <span key={id}>{i > 0 && " + "}<b>{names[id]}</b></span>)}</span>
                         : enemyIds.length ? <span className="vs muted">vs {enemyIds.map((id) => names[id]).join(" · ")}</span> : null}
@@ -410,6 +454,11 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                         {activeCounters.note ? ` ${activeCounters.note}` : ""}
                       </p>
                     )}
+                    {compared.length > 0 && (
+                      <ComparePanel entries={compared.map((id) => ({ c: activeRows.find((x) => x.champion === id) ?? standIn(id, active, fits[active]), e: effects[id], tier: poolTier(data.pool, id, active) }))}
+                        names={names} proCtx={proCtx} busy={simBusy} collapsed={cmpFolded} onCollapse={setCmpFolded} onLock={lockCandidate}
+                        onRemove={(id) => setCompare(toggleCompare(compare, active, id))} onClear={() => setCompare({ ...compare, [active]: [] })} onOpen={(id) => setDrawer({ id, role: active })} />
+                    )}
                     {!started && !visibleRows.length && startView === "all"
                       ? <div className="rec-empty start"><GenRang size={44} /><span>No recorded pro picks for {ROLE_LABEL[active]}{scope ? ` on patch ${scope}` : ""}. Lock a pick and recommendations for the open role appear here.</span></div>
                       : visibleRows.length
@@ -417,7 +466,9 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                           <Fragment key={c.champion}>
                             {c.champion === firstOut && <p className="fit-divider xs faint">Outside your pool</p>}
                             <FitRow c={c} tier={poolTier(data.pool, c.champion, active)} bot={draft.BOT ? names[draft.BOT] ?? draft.BOT : undefined} names={names} proCtx={proCtx} hovered={hover === c.champion}
-                              onHover={(h) => preview(h ? c.champion : undefined)} onPick={() => { if (!takenNow.includes(c.champion)) lock(active, c.champion); }} onOpen={() => setDrawer({ id: c.champion, role: active })}
+                              previewed={previewId === c.champion} compareAt={compared.indexOf(c.champion) + 1} compareFull={compared.length >= COMPARE_MAX} effect={previewId === c.champion ? effects[c.champion] : undefined}
+                              onPreview={() => togglePreview(c.champion)} onCompare={() => toggleCompareOf(c.champion)}
+                              onHover={(h) => preview(h ? c.champion : undefined)} onPick={() => lockCandidate(c.champion)} onOpen={() => setDrawer({ id: c.champion, role: active })}
                               top={isLaneRole(active) ? laneCtx(data.laneUsage[active], c.champion, enemyDraft, draft, active === "JUNGLE" ? { hits: boardHits, responses: data.jungleBoard.responses[c.champion] ?? [] } : undefined) : undefined} />
                           </Fragment>
                         ))
@@ -433,7 +484,9 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
 
         </div>
 
-        <CompCheck read={planRead} legacy={legacyCheck} draft={dDraft} enemyIds={enemyIds} champions={data.champions} botPairings={data.botPairings} active={active}
+        <CompCheck preview={previewId && active ? <PreviewBlock name={names[previewId] ?? previewId} effect={effects[previewId]} busy={simBusy}
+            compared={compared.includes(previewId)} full={compared.length >= COMPARE_MAX} onLock={() => lockCandidate(previewId)} onCompare={() => toggleCompareOf(previewId)} /> : undefined}
+          read={planRead} legacy={legacyCheck} draft={dDraft} enemyIds={enemyIds} champions={data.champions} botPairings={data.botPairings} active={active}
           bestOverall={activeRows.find((c) => !c.theoretical)?.champion} bestFixId={active ? fits[active]?.find((r) => r.bestFix)?.champion : undefined} proIds={proIds} names={names} grid={(siege, disengage) => <Indicators prof={prof} flags={planFlags(planRead)} picks={picks.length} siege={siege} disengage={disengage} />}>
           {legacyCheck && <div className="cc-section">
             <div className="cc-label">Rule checks (debug, ?legacy=1)</div>
@@ -508,6 +561,25 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
 }
 
 // ---------- recommendation rows ----------
+
+/** A compared champion the list no longer shows (a filter or the board moved it out): its draft-fit read, no labels. */
+const standIn = (id: string, role: Role, fits: Recommendation[] | undefined): Candidate => {
+  const fit = fits?.find((r) => r.champion === id) ?? blank(id, role, true);
+  return { champion: id, role, fit, compFit: compFitOf(fit), pro: null, counter: null, priority: null, meta: null, bestFit: false, theoretical: !fit.eligible, signals: [] };
+};
+
+/** Up / Down move between the candidates' names (focus only: a preview is a choice, never a side effect of moving). */
+function rowKeys(e: KeyboardEvent<HTMLElement>) {
+  if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+  const t = e.target as HTMLElement;
+  if (!t.classList.contains("fit-lock")) return;
+  const items = Array.from(e.currentTarget.querySelectorAll<HTMLElement>(".fit-row .fit-lock"));
+  const i = items.indexOf(t);
+  const next = items[i + (e.key === "ArrowDown" ? 1 : -1)];
+  if (!next) return;
+  e.preventDefault();
+  next.focus();
+}
 
 type Chip = { key: string; label: string; title?: string; href?: string };
 // Under five classified games the usage word stays neutral: the counts, flagged (alan, 2026-10-13: Nocturne 3/3 on 26.18).
@@ -625,9 +697,26 @@ function reasonOf(c: Candidate): { benefit: string; drawback?: string } {
   return { benefit, drawback: r.tradeoffs[0] ?? risk?.text };
 }
 
-function FitRow({ c, tier, bot, names, proCtx, hovered, onHover, onPick, onOpen, top }: {
+/** Why the row is here, in one line: the saved or proposed link first, then pro games, then its strongest reason. */
+function whyOf(c: Candidate): string | undefined {
+  const r = c.fit;
+  const bonus = r.eligible ? r.parts.find((p) => BONUS.has(p.kind)) : undefined;
+  if (bonus) return bonus.text;
+  if (c.pro) return `Pro: ${proLine(c.pro)}`;
+  const lead = r.parts.find((p) => p.points > 0 && !BONUS.has(p.kind));
+  if (lead) return lead.text;
+  if (c.counter) return `Counter: ${describeEvidence(c.counter.evidence)}`;
+  if (c.meta) return `Patch ${patchLabel(c.meta.patch)}: ${startLine(c.meta, ROLE_LABEL[c.role], false)}`;
+  return undefined;
+}
+
+// A click anywhere on a row previews it; its controls (the name, portrait, evidence labels, score, buttons) handle their own.
+const OWN = "button, a, input, summary, [role='button'], .fit-detail, .fit-preview";
+
+function FitRow({ c, tier, bot, names, proCtx, hovered, previewed, compareAt, compareFull, effect, onHover, onPick, onOpen, onPreview, onCompare, top }: {
   c: Candidate; tier?: Tier | null; bot?: string; names: Record<string, string>; proCtx: ProCtx; hovered: boolean; top?: TopCtx;
-  onHover: (on: boolean) => void; onPick: () => void; onOpen: () => void;
+  previewed: boolean; compareAt: number; compareFull: boolean; effect?: PreviewEffect;
+  onHover: (on: boolean) => void; onPick: () => void; onOpen: () => void; onPreview: () => void; onCompare: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const rec = c.fit;
@@ -638,16 +727,26 @@ function FitRow({ c, tier, bot, names, proCtx, hovered, onHover, onPick, onOpen,
   const { benefit, drawback } = reasonOf(c);
   const counter = c.counter;
   const read = rec.parts.length > 0;
+  const canCompare = compareAt > 0 || !compareFull;
+  const why = previewed ? whyOf(c) : undefined;
+  const onRow = (e: MouseEvent<HTMLDivElement>) => { if (!(e.target as HTMLElement).closest(OWN)) onPreview(); };
+  // Enter / Space preview (the button's own click); Shift+Enter locks; C compares; Escape ends the preview.
+  const onNameKey = (e: KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "Enter" && e.shiftKey) { e.preventDefault(); onPick(); }
+    else if ((e.key === "c" || e.key === "C") && !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey) { e.preventDefault(); if (canCompare) onCompare(); }
+    else if (e.key === "Escape" && previewed) { e.preventDefault(); e.stopPropagation(); onPreview(); }
+  };
   return (
-    <div className={`fit-row ${open ? "open" : ""} ${hovered ? "hovered" : ""} ${c.theoretical ? "ref" : ""}`} onMouseEnter={() => onHover(true)} onMouseLeave={() => onHover(false)}>
+    <div className={`fit-row ${open ? "open" : ""} ${hovered ? "hovered" : ""} ${previewed ? "previewed" : ""} ${c.theoretical ? "ref" : ""}`} onMouseEnter={() => onHover(true)} onMouseLeave={() => onHover(false)} onClick={onRow}>
       <button className="fit-icon" onClick={onOpen} aria-label={`${name} details`} title={`${name}: details`}>
         <ChampIcon id={c.champion} name={name} role={c.role} size="md" />
       </button>
-      {/* The lock button covers the whole head (stretched); the evidence labels sit above it so they open their own cards. */}
+      {/* The preview button covers the whole head (stretched); the evidence labels sit above it so they open their own cards. */}
       <div className="fit-head">
         <span className="fit-line">
-          <button type="button" className="name fit-lock" onClick={onPick} onFocus={() => onHover(true)} onBlur={() => onHover(false)}
-            aria-label={`Lock ${name} at ${ROLE_LABEL[c.role]}`}>{name}</button>
+          <button type="button" className="name fit-lock" onClick={onPreview} onKeyDown={onNameKey} onFocus={() => onHover(true)} onBlur={() => onHover(false)}
+            aria-pressed={previewed} aria-keyshortcuts="Shift+Enter C" aria-label={`Preview ${name} at ${ROLE_LABEL[c.role]}`}>{name}</button>
+          {compareAt > 0 && <span className="cmp-n" aria-label={`Compared, column ${compareAt}`}>{compareAt}</span>}
           {chips.length > 0 && <span className="sig-line">{chips.map((s) => s.key === "pro" && c.pro
             ? <ProEvidenceTrigger key={s.key} pro={c.pro} champion={c.champion} role={c.role} ctx={proCtx}
               mate={tctx?.mid && tctx.allyMid ? { name: names[tctx.allyMid] ?? tctx.allyMid, games: tctx.mid.games } : undefined} />
@@ -661,9 +760,25 @@ function FitRow({ c, tier, bot, names, proCtx, hovered, onHover, onPick, onOpen,
       {read ? <FitScore c={c} />
         : c.meta && !c.fit.parts.length && !c.pro && !c.counter ? <span className="fit-score" aria-hidden="true" />
           : <span className="fit-score" title="No champion attributes yet, so no comp fit">—</span>}
+      <button type="button" className="btn sm primary fit-lock-btn" onClick={onPick} tabIndex={previewed ? 0 : -1} aria-label={`Lock ${name} at ${ROLE_LABEL[c.role]}`}>Lock</button>
       <button className="fit-toggle" aria-expanded={open} aria-label={`Why ${name}`} title={`${rec.parts.length} reasons`} onClick={() => setOpen((o) => !o)}>
         <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
       </button>
+      {previewed && (
+        <div className="fit-preview">
+          <dl className="cmp-effect">
+            {why && <><dt>Why</dt><dd>{why}</dd></>}
+            {rec.tradeoffs.length > 0 && <><dt>Tradeoff</dt><dd className="bad">{rec.tradeoffs.join("; ")}</dd></>}
+          </dl>
+          {effect ? <EffectList e={effect} /> : <p className="xs faint">Reading the comp…</p>}
+          <div className="cmp-actions">
+            <button type="button" className="btn sm" aria-pressed={compareAt > 0} disabled={!canCompare} onClick={onCompare}
+              title={!canCompare ? "Three candidates are being compared: remove one first" : undefined}>{compareAt > 0 ? "Comparing" : "Compare"}</button>
+            <button type="button" className="btn sm ghost" onClick={onOpen}>Details</button>
+            <span className="xs faint hide-phone">Shift+Enter locks · C compares</span>
+          </div>
+        </div>
+      )}
       <div className="fit-detail">
         {(rec.fixes.length > 0 || rec.also.length > 0 || rec.tradeoffs.length > 0) && (
           <dl className="fit-read">

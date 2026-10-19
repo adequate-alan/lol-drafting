@@ -4,11 +4,12 @@
 // alan's approval, 2026-10-14). The plan and its jobs, critical gaps, weaknesses and accepted tradeoffs, what the open
 // role should bring, and the timing curve up front; enemy opportunities and identity scores behind "Full analysis".
 // Explanatory only: pro evidence never feeds it and it never feeds a score.
-import { useMemo, type ReactNode } from "react";
+import { useMemo, useRef, type ReactNode } from "react";
 import { analyze, bestFix, CONFIDENCE_LABEL, IDENTITY_LABEL, SIEGE_LABEL, type Insight } from "@/lib/model-v2/analyze";
 import type { Draft } from "@/lib/model-v2/analyze";
 import { convertKits } from "@/lib/model-v2/kits";
 import { analyzePlan, type PlanFinding, type PlanRead } from "@/lib/model-v2/plan";
+import { previewEffect, type PreviewEffect } from "@/lib/candidate-preview";
 import type { BotPairing, Champion, Role } from "@/lib/schema";
 import { SourceBadge } from "./ui";
 import { compSummary, summaryText } from "@/lib/comp-summary";
@@ -64,6 +65,29 @@ export function usePlanRead(draft: Draft, enemyIds: string[], champions: Champio
   return useMemo(() => analyzePlan(draft, kits, enemyIds, botPairings), [draft, kits, vs, botPairings]);
 }
 
+/** Candidate previews (alan, 2026-10-19; lib/candidate-preview.ts): the plan read of the board with each candidate in
+ *  the open role, against the board's own read. Cached per board, so going back to a candidate costs nothing; the
+ *  board passed in is never changed and nothing here reaches a score. */
+export function useCandidateReads(read: PlanRead, draft: Draft, role: Role | undefined, ids: string[], enemyIds: string[], champions: Champion[],
+  botPairings: BotPairing[]): Record<string, PreviewEffect> {
+  const kits = useMemo(() => convertKits(champions), [champions]);
+  const cache = useRef<{ key: string; map: Map<string, PreviewEffect> }>({ key: "", map: new Map() });
+  const vs = enemyIds.join(",");
+  return useMemo(() => {
+    const out: Record<string, PreviewEffect> = {};
+    if (!role || draft[role]) return out;
+    const key = `${JSON.stringify(draft)}|${vs}|${role}`;
+    if (cache.current.key !== key) cache.current = { key, map: new Map() };
+    for (const id of ids) {
+      let e = cache.current.map.get(id);
+      if (!e) { e = previewEffect(read, draft, role, id, kits, enemyIds, botPairings); cache.current.map.set(id, e); }
+      out[id] = e;
+    }
+    return out;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [read, draft, role, ids, vs, kits, botPairings]);
+}
+
 /** Which Comp Check grid cells the plan read flags, with the reason: a real (not accepted, not minor) finding that
  *  asks for that kind of champion. The grid's numbers are kit facts; only this read colours them. */
 const CELL_NEEDS: Record<string, string[]> = {
@@ -103,8 +127,10 @@ export function CompStatus({ read: p }: { read: PlanRead }) {
  *  condition needs? Plan jobs, critical gaps, weaknesses, accepted tradeoffs, what the open role should bring, and
  *  enemy-exposure tags. Explanatory only: it never feeds a score. Best fix / Best overall come from the
  *  recommendation ranking and say so. `legacy` (?legacy=1, a debugging switch) adds the previous rule list. */
-export function CompCheck({ read: p, legacy = false, draft, enemyIds, champions, botPairings, active, bestOverall, bestFixId, proIds = [], names, grid, children }: {
-  read: PlanRead; legacy?: boolean; draft: Draft; enemyIds: string[]; champions: Champion[]; botPairings: BotPairing[]; active?: Role; bestOverall?: string;
+export function CompCheck({ read: p, legacy = false, draft, enemyIds, champions, botPairings, active, bestOverall, bestFixId, proIds = [], names, grid, preview, children }: {
+  read: PlanRead;
+  preview?: ReactNode; // a previewed candidate's read (components/CandidateCompare.tsx), under the real read's head, never mixed into it
+  legacy?: boolean; draft: Draft; enemyIds: string[]; champions: Champion[]; botPairings: BotPairing[]; active?: Role; bestOverall?: string;
   bestFixId?: string; // the ranking's best fix, so the rail and the list name the same champion
   proIds?: string[]; // candidates the list already shows through their pro games: not repeated as theoretical
   names: Record<string, string>; grid?: (siege: SiegeCell, disengage: SiegeCell) => ReactNode; children?: ReactNode;
@@ -141,6 +167,7 @@ export function CompCheck({ read: p, legacy = false, draft, enemyIds, champions,
         </span>
       </div>
       {p.unread.length > 0 && <p className="xs muted cc-unread">{unreadText(p, names)}</p>}
+      {preview}
 
       {p.confidence === "none" ? <p className="xs muted">{r.facts.n ? "The full read starts at two picks." : "Lock a pick to start."}</p> : (
         <>
@@ -243,7 +270,9 @@ export function unreadText(p: PlanRead, names: Record<string, string>): string {
 
 /** Narrow screens, where the rail sits below the list: one line naming what the draft is missing; tap to jump to the
  *  full Comp Check. Same analysis, nothing added. */
-export function CompSummaryLine({ read: p, active, className = "" }: { read: PlanRead; active?: Role; className?: string }) {
+export function CompSummaryLine({ read: p, active, className = "", preview }: { read: PlanRead; active?: Role; className?: string;
+  preview?: { name: string; text: string }; // a previewed candidate: its read replaces the line until it is locked or dropped
+}) {
   // The same plan read as the rail (usePlanRead), so the line and the full Comp Check describe one comp.
   const s = compSummary(p, active);
   const line = summaryText(s);
@@ -252,6 +281,14 @@ export function CompSummaryLine({ read: p, active, className = "" }: { read: Pla
     el?.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
     el?.focus({ preventScroll: true });
   };
+  if (preview) return (
+    <button type="button" className={`cc-summary preview ${className}`} onClick={jump} aria-label={`Preview, not locked: ${preview.name}, ${preview.text}. Open the full Comp Check`}>
+      <span className="cc-sum-k">Comp Check</span>
+      <span className="cc-sum-tag preview-tag">Preview</span>
+      <span className="cc-sum-t truncate"><b>{preview.name}</b>: {preview.text}</span>
+      <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M3.5 2 6.5 5 3.5 8" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
+    </button>
+  );
   return (
     <button type="button" className={`cc-summary ${s.state} ${className}`} onClick={jump} title={s.weak ? `${s.weak.label}: ${s.weak.text}` : line}
       aria-label={`Comp Check: ${line}${s.state === "early" ? " (early read)" : ""}. Open the full Comp Check`}>

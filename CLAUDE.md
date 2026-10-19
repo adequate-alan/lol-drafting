@@ -150,6 +150,20 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   filters) and bring in eligible champions who already play the role, never moving another row or passing the saved-bot
   support rule. Each label opens the games behind it (`MetaEvidenceTrigger`, links to Pro Drafts with the player's build).
   Similar pro drafts / Similar comps are hidden while empty.
+- **Candidate preview and comparison** (alan, 2026-10-19; `lib/candidate-preview.ts`, `components/CandidateCompare.tsx`,
+  `useCandidateReads` in `components/CompCheck.tsx`, `tests/candidate-preview.test.ts`, smoke "compare:"): a click or tap
+  on a candidate row previews it (gold, ghost in the slot, Why / Tradeoff / plan read under the row, a "Preview · not
+  locked" block in the Comp Check rail, the phone Comp Check line); only the row's Lock button, Shift+Enter on the row,
+  the comparison's Lock or the slot picker lock. Enter / Space preview, C compares, Escape ends the preview, Up / Down
+  move between rows. Up to three candidates per role side by side (a fourth replaces the oldest): plan kept / shifted /
+  started, Improves, Still open, Creates, Only this one, Gives up (what the others improve), then the row's Tradeoff,
+  Synergy, Pro, Pro meta, Counter and pool · fit with their own evidence cards; empty rows hidden, equal rows muted. Each
+  read is `analyzePlan` on a copy of the board with the candidate, compared with the board's read (a gap that goes only
+  because the plan changed is never a fix), cached per board and read from the deferred board; hover never reads. Never
+  a score, never the order, never the board, its URL or `draft-room:board`: the comparison lives in sessionStorage
+  (`draft-room:compare`), follows the real board (locked champions leave, a locked role's list closes) and Clear draft
+  empties it. Once drafting starts the filters are All / Synergy / Pro / Best fit / Counters plus one "Pro meta" menu
+  (First rotation, Blind, Pro priority); the empty room keeps its four starting views.
 - **Synergy · Proposed** (alan, 2026-10-10, "Complete Champion Synergy Expansion"): `data/proposed-synergy.json` holds
   Claude's kit-based partners for every playable champion and role (preferred / alternatives, a specific reason and a
   kit-fit confidence `strong` / `moderate` / `provisional` per partner). It sits inside Synergy but apart from alan's

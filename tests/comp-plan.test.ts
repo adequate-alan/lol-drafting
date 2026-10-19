@@ -294,7 +294,8 @@ describe("separation", () => {
       const p = join(dir, f);
       return statSync(p).isDirectory() ? files(p) : /\.tsx?$/.test(p) ? [p] : [];
     });
-    const allowed = ["lib/model-v2/plan.ts", "lib/comp-summary.ts", "components/CompCheck.tsx"];
+    // lib/candidate-preview.ts: the Comp Check read of a previewed candidate (alan, 2026-10-19), never a score.
+    const allowed = ["lib/model-v2/plan.ts", "lib/comp-summary.ts", "lib/candidate-preview.ts", "components/CompCheck.tsx"];
     for (const f of [...files("lib"), ...files("components"), ...files("app")].filter((f) => !allowed.includes(f)))
       expect(readFileSync(f, "utf8"), f).not.toMatch(/model-v2\/plan|from "\.\/plan"|analyzePlan/);
   });
