@@ -187,12 +187,23 @@ function jobsFor(id: IdentityId, slots: Slot[], f: Facts): Job[] {
     }
     case "skirmish": {
       const jg = slots.find((s) => s.role === "JUNGLE");
-      const partners = slots.filter((s) => s.role !== "JUNGLE" && s.role !== "SUPPORT" && s.c.kit.curve.early >= 3 && s.threat >= 2);
+      // Three questions kept apart (alan, 2026-10-19): can a laner fight beside the jungler (early damage, or setup:
+      // a lane engage or catch with crowd control or follow-up that is not a pure scaler), does a lane have the priority
+      // to move first (the "Early pressure" need), and who wins the 2v2 into these enemies, which this read never claims.
+      const laners = slots.filter((s) => s.role !== "JUNGLE" && s.role !== "SUPPORT");
+      const fighter = (s: Slot) => s.c.kit.curve.early >= 3 && s.threat >= 2;
+      const setup = (s: Slot) => (starter(s) || catcher(s)) && (s.c.kit.aoeCc >= 2 || s.c.kit.followUp >= 2) && s.c.kit.curve.early >= 2;
+      const partners = laners.filter((s) => fighter(s) || setup(s));
+      const movers = laners.filter((s) => NEEDS.early.test(s.c, s.role));
+      const openLanes = (["TOP", "MID", "BOT"] as Role[]).filter((r) => !slots.some((s) => s.role === r)).map((r) => r[0] + r.slice(1).toLowerCase());
+      const still = openLanes.length ? `; ${openLanes.join(" or ")} can still bring it` : "";
       const enchanters = slots.filter((s) => s.c.attrs.peel >= PLAN.enchanter);
       const enchanted = hold >= 0.5 && enchanters.length > 0;
       return [
         J("jungle", "A jungler who wins early fights", !!jg && jg.c.kit.curve.early >= 3, jg ? [jg] : [], `${jg ? `${jg.c.name} is not an early skirmisher` : "no jungler yet"}`, ["early"], false),
-        J("partner", "A laner who joins and wins the 2v2", partners.length >= 1, partners, "no laner can follow the jungler into an early fight", ["early"], false),
+        J("partner", "A laner who can fight beside the jungler", partners.length >= 1, partners, `no laner brings early damage or fight setup for ${jg ? jg.c.name : "the jungler"}${partners.length || movers.length ? "" : " or wins lane early"}${still}`, ["early"], false),
+        // With neither, the partner line already says both: one gap, one finding.
+        ...(partners.length || movers.length ? [J("priority", "Lane priority to move first", movers.length >= 1, movers, `${partners.length ? `${nm(partners)} can fight beside ${jg ? jg.c.name : "the jungler"} but ${partners.length > 1 ? "have" : "has"} little early lane priority` : "no lane has early priority"}, so the enemy can move first${still}`, ["early"], false)] : []),
         // A lone bruiser kept up by an enchanter (Rumble with Lulu or Milio) is thin, not missing.
         J("durable", "Someone who survives the first rotation", hold >= PLAN.hold.any, fronts, enchanted ? `only ${nm(fronts)} can take hits, kept up by ${nm(enchanters)}; a long fight runs out of bodies` : "nobody can take the first rotation in a short fight", ["frontline"], !enchanted),
       ];
