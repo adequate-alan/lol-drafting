@@ -717,6 +717,11 @@ await page.locator(".theme-toggle").click();
   check("draft room: with a mid locked, Jungle rows link their pro games with that mid", /With Syndra · \d+ games?/.test(mate), mate.slice(0, 120));
   const href = (await page.locator(".fit-row .sig.mate").first().getAttribute("href").catch(() => "")) ?? "";
   check("draft room: the Mid/Jungle label opens the pair on the Jungle page", /synergies\/jungle\/\?champ=[a-z-]+&view=mates&mate=syndra/.test(href), href);
+  // The themed tip parks a title while its element is hovered or focused: move the pointer off the rows first (the
+  // previous page's click can leave it resting on this label).
+  await page.mouse.move(0, 0);
+  await page.locator(".fit-row .sig.mate").first().evaluate((el) => el.blur());
+  await page.waitForTimeout(150);
   const tip = (await page.locator(".fit-row .sig.mate").first().getAttribute("title").catch(() => "")) ?? "";
   check("draft room: the Mid/Jungle hover separates every recorded game from the narrower Pro label", /^Every recorded pro game with Syndra at mid/.test(tip) && tip.includes("The Pro label is narrower"), tip.slice(0, 120));
 }
