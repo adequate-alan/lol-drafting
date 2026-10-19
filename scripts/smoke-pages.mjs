@@ -384,7 +384,9 @@ await page.locator(".theme-toggle").click();
   check("pool: tier filter", r.length > 0 && r.every((x) => x[2] === "Core"), `${r.length} rows`);
   await open("/pool/?event=demacia-cup-2026");
   r = (await rows()).filter((x) => !/No verified data/.test(x[8]));
-  check("pool: tournament filter shows Demacia marked ongoing", r.length > 0 && r.every((x) => /Demacia Cup/.test(x[8]) && /ongoing/i.test(x[8])), `${r.length} rows`);
+  // Every row names Demacia and carries one status: "Ongoing" until the final is in, then none (the Cup finished Oct 17).
+  const ongoing = r.filter((x) => /ongoing/i.test(x[8])).length;
+  check("pool: tournament filter shows Demacia with one status on every row", r.length > 0 && r.every((x) => /Demacia Cup/.test(x[8])) && (ongoing === 0 || ongoing === r.length), `${r.length} rows, ${ongoing} ongoing`);
   await open("/pool/?patch=16.16");
   r = (await rows()).filter((x) => x[9] !== "—");
   check("pool: patch filter (old 16.16 link shows 26.16)", r.length > 0 && r.every((x) => x[9] === "26.16"), `${r.length} rows`);
