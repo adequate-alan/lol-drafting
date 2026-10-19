@@ -56,8 +56,11 @@ describe("Yone's kit (approved 2026-10-16)", () => {
     for (const c of getDraftData().champions) expect(kits.some((k) => k.id === c.id), c.id).toBe(true);
   });
 
-  it("every recorded Yone lineup is read, with no critical gap", () => {
-    const withYone = lineups.filter((l) => Object.values(l.picks).includes("yone") && Object.values(l.picks).every((p) => kits.some((k) => k.id === p)));
+  it("every Yone lineup recorded when the kit was approved is read, with no critical gap", () => {
+    // Scoped to the lineups alan reviewed the kit against (through 2026-10-16): a later pro lineup may lack what he
+    // needs (MVK's Yone / Aatrox / Locke / Twitch / Camille on Oct 18 reads "carry unprotected"), and that read stands.
+    const reviewed = (l: (typeof lineups)[number]) => l.date === null || l.date <= "2026-10-16";
+    const withYone = lineups.filter((l) => reviewed(l) && Object.values(l.picks).includes("yone") && Object.values(l.picks).every((p) => kits.some((k) => k.id === p)));
     expect(withYone.length).toBeGreaterThanOrEqual(5);
     for (const l of withYone) {
       const r = analyzePlan(l.picks, kits);
