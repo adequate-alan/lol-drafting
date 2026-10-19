@@ -4,10 +4,10 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { getDraftData } from "@/lib/data";
-import { analyze, type Draft } from "@/lib/model-v2/analyze";
+import { analyze, slotsOf, type Draft } from "@/lib/model-v2/analyze";
 import { ARCHETYPES } from "@/lib/model-v2/archetypes";
 import { convertKits } from "@/lib/model-v2/kits";
-import { analyzePlan, fifthPick, type PlanFinding } from "@/lib/model-v2/plan";
+import { analyzePlan, checkPlan, fifthPick, type PlanFinding } from "@/lib/model-v2/plan";
 import { savedSupports } from "@/lib/recommend";
 import { lineups as allLineups } from "../scripts/diagnostics/load";
 
@@ -298,5 +298,53 @@ describe("separation", () => {
     const allowed = ["lib/model-v2/plan.ts", "lib/comp-summary.ts", "lib/candidate-preview.ts", "components/CompCheck.tsx"];
     for (const f of [...files("lib"), ...files("components"), ...files("app")].filter((f) => !allowed.includes(f)))
       expect(readFileSync(f, "utf8"), f).not.toMatch(/model-v2\/plan|from "\.\/plan"|analyzePlan/);
+  });
+});
+
+// alan, 2026-10-19: a skirmish read keeps three questions apart. Can a laner fight beside the jungler (early damage,
+// or setup from an engage or catch that is not a pure scaler), does a lane have the priority to move first, and who
+// wins the 2v2 into the revealed enemies, which the read never claims (enemy picks only tag exposure).
+describe("skirmish: fighting beside the jungler is not lane priority", () => {
+  const skirmish = (d: Draft) => checkPlan("skirmish", slotsOf(d, kits));
+  const job = (d: Draft, id: string) => skirmish(d).jobs.find((j) => j.id === id);
+
+  it("alan's draft: Galio sets up Naafiri's fights; the gap is lane priority, and Top can still bring it", () => {
+    const r = analyzePlan({ JUNGLE: "naafiri", MID: "galio" }, kits, ["kayle", "nocturne", "orianna"]);
+    expect(r.plan!.identity).toBe("skirmish");
+    const partner = r.plan!.jobs.find((j) => j.id === "partner")!, priority = r.plan!.jobs.find((j) => j.id === "priority")!;
+    expect(partner.met).toBe(true);
+    expect(partner.by).toBe("Galio");
+    expect(priority.met).toBe(false);
+    expect(priority.missing).toMatch(/^Galio can fight beside Naafiri but has little early lane priority/);
+    expect(priority.missing).toMatch(/Top or Bot can still bring it$/);
+    expect(JSON.stringify(r)).not.toMatch(/no laner can follow|no lane can follow|wins the 2v2/i);
+    // The open Top is asked for the same thing the priority line names.
+    expect(r.needs.map((n) => n.id)).toContain("early");
+  });
+
+  it("a Top with early pressure gives the lane priority Galio does not", () => {
+    expect(job({ TOP: "renekton", JUNGLE: "naafiri", MID: "galio" }, "priority")).toMatchObject({ met: true, by: "Renekton" });
+    const full = analyzePlan({ TOP: "renekton", JUNGLE: "naafiri", MID: "galio", BOT: "lucian", SUPPORT: "nautilus" }, kits);
+    expect(full.plan!.jobs.every((j) => j.met)).toBe(true);
+  });
+
+  it("an early-damage laner still counts as before", () => {
+    expect(job({ JUNGLE: "naafiri", MID: "leblanc" }, "partner")).toMatchObject({ met: true, by: "LeBlanc" });
+    expect(job({ JUNGLE: "naafiri", MID: "leblanc" }, "priority")).toMatchObject({ met: true });
+  });
+
+  it("scalers neither fight beside the jungler nor move first, and that is said once", () => {
+    // Orianna's follow-up is late-game setup (early 1); Kayle scales (early 0).
+    const jobs = skirmish({ TOP: "kayle", JUNGLE: "naafiri", MID: "orianna" }).jobs;
+    const partner = jobs.find((j) => j.id === "partner")!;
+    expect(partner.met).toBe(false);
+    expect(partner.missing).toMatch(/no laner brings early damage or fight setup for Naafiri or wins lane early; Bot can still bring it/);
+    expect(jobs.find((j) => j.id === "priority")).toBeUndefined();
+  });
+
+  it("a full lineup names no open lane", () => {
+    const p = job({ TOP: "kayle", JUNGLE: "naafiri", MID: "galio", BOT: "ashe", SUPPORT: "lulu" }, "priority")!;
+    expect(p.met).toBe(false);
+    expect(p.missing).not.toMatch(/can still bring it/);
   });
 });
