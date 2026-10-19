@@ -1365,8 +1365,9 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 
 /* One recommendation row: portrait, name + status + signals, one reason line, score, expand */
 .fit-row {
-  display: grid; grid-template-columns: 36px minmax(0, 1fr) auto 24px; align-items: center; column-gap: var(--s4);
+  display: grid; grid-template-columns: 36px minmax(0, 1fr) auto auto 24px; align-items: center; column-gap: var(--s4);
   padding: 5px var(--s3); border-bottom: 1px solid var(--border); transition: background var(--t-fast), box-shadow var(--t-fast);
+  cursor: pointer;
 }
 .fit-row:hover, .fit-row.hovered { background: var(--surface-hover); }
 .fit-row.open { background: var(--surface-subtle); box-shadow: inset 1px 0 0 var(--accent); }
@@ -1430,6 +1431,54 @@ button.fit-score:hover, button.fit-score.is-open { color: var(--text); }
 .fit-read { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1px var(--s4); margin: 0; font-size: var(--fs-xs); }
 .fit-read dt { font-family: var(--font-display); color: var(--text-faint); }
 .fit-read dd { margin: 0; color: var(--text-muted); }
+/* Candidate preview and comparison (alan, 2026-10-19; components/CandidateCompare.tsx). A previewed row is selected
+   (gold), never locked: only its Lock button, Shift+Enter or the comparison's Lock locks. */
+.fit-row.previewed, .fit-row.previewed:hover { background: var(--accent-subtle); box-shadow: inset 1px 0 0 var(--accent); }
+.fit-row.previewed .name { color: var(--accent-text); }
+.fit-lock-btn { visibility: hidden; }
+.fit-row.previewed .fit-lock-btn { visibility: visible; }
+@media (hover: hover) { .fit-row:hover .fit-lock-btn { visibility: visible; } }
+/* Touch screens have no hover: the Lock column exists only on the previewed row, so the other rows keep their width. */
+@media (hover: none) { .fit-row:not(.previewed) .fit-lock-btn { display: none; } }
+.fit-preview { grid-column: 2 / -1; display: grid; gap: var(--s3); padding: var(--s3) 0 var(--s2); cursor: default; animation: pop-in var(--dur-pop) var(--ease-out); }
+.cmp-effect { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1px var(--s4); margin: 0; font-size: var(--fs-xs); }
+.cmp-effect:empty { display: none; }
+.cmp-effect dt { font-family: var(--font-display); color: var(--text-faint); }
+.cmp-effect dd { margin: 0; color: var(--text-muted); }
+.cmp-effect .good, .cmp-table td.good { color: var(--success); }
+.cmp-effect .bad, .cmp-table td.bad { color: var(--caution); }
+.cmp-effect .crit { font-weight: var(--w-strong); }
+.cmp-actions { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s3); }
+.cmp-n {
+  display: inline-grid; place-items: center; flex: none; width: 16px; height: 16px; border: 1px solid var(--accent); border-radius: 50%;
+  font-family: var(--font-mono); font-size: var(--fs-2xs); color: var(--accent-text); line-height: 1;
+}
+.preview-tag { color: var(--accent-text); font-weight: var(--w-strong); }
+.cc-preview { padding: var(--s4); background: var(--accent-subtle); border-radius: var(--r); transition: opacity var(--dur-hover) ease-out; }
+.cc-preview.busy, .cmp.busy { opacity: .6; transition: opacity var(--dur-select) ease-out var(--dur-select); }
+.cc-summary.preview .cc-sum-tag { color: var(--accent-text); }
+.cmp { display: grid; gap: var(--s3); padding: var(--s3); border-bottom: 1px solid var(--border); background: var(--surface-subtle); transition: opacity var(--dur-hover) ease-out; }
+.cmp-head { display: flex; align-items: center; gap: var(--s3); min-width: 0; font-size: var(--fs-sm); }
+.cmp-title { flex: none; font-family: var(--font-display); font-weight: var(--w-strong); }
+.cmp-names { flex: 1; min-width: 0; color: var(--text-muted); }
+.cmp-hint { margin: 0; }
+.cmp-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: var(--fs-xs); }
+.cmp-table col.cmp-k { width: 92px; }
+.cmp-table th, .cmp-table td { padding: 3px var(--s3) 3px 0; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border); overflow-wrap: anywhere; }
+.cmp-table tbody th { font-family: var(--font-display); font-weight: var(--w-control); color: var(--text-faint); }
+.cmp-table td { color: var(--text-muted); }
+.cmp-table td.syn { color: var(--clash); }
+.cmp-table td.muted, .cmp-table tr.same td { color: var(--text-faint); }
+.cmp-table tr.cmp-lock th, .cmp-table tr.cmp-lock td { border-bottom: 0; padding-top: var(--s3); }
+.cmp-who { display: flex; align-items: center; gap: var(--s2); min-width: 0; }
+.cmp-champ { display: inline-flex; align-items: center; gap: var(--s2); min-width: 0; padding: 0; border: 0; background: none; font: inherit; font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--w-strong); color: var(--text); cursor: pointer; }
+.cmp-champ:hover .truncate { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+.cmp-x { flex: none; margin-left: auto; width: 20px; height: 20px; padding: 0; border: 0; border-radius: var(--r-sm); background: none; color: var(--text-faint); font: inherit; cursor: pointer; }
+.cmp-x:hover { background: var(--surface-sunken); color: var(--text); }
+@media (max-width: 760px) {
+  .cmp-table col.cmp-k { width: 64px; }
+  .cmp-champ .champ, .cmp-table .cmp-who .cmp-n { display: none; }
+}
 .fit-why { display: grid; gap: 1px; margin: 0; padding: 0; list-style: none; }
 .fit-why li, .fit-pro, .fit-counter, .fit-logic { display: grid; grid-template-columns: 62px minmax(0, 1fr) auto; gap: var(--s3); font-size: var(--fs-xs); color: var(--text-muted); line-height: 1.35; }
 .fit-why .k, .fit-pro .k, .fit-counter .k, .fit-logic .k { font-family: var(--font-display); color: var(--text-faint); }
@@ -1593,7 +1642,7 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
   .mini-slot { width: 28px; height: 28px; }
   .mini-slot .champ.md { --size: 26px; }
   .draft-mini { gap: var(--s3); }
-  .fit-row { grid-template-columns: 32px minmax(0, 1fr) auto 22px; column-gap: var(--s3); }
+  .fit-row { grid-template-columns: 32px minmax(0, 1fr) auto auto 22px; column-gap: var(--s3); }
   .fit-icon .champ.md { --size: var(--icon-md); }
   .fit-line { flex-wrap: wrap; row-gap: 0; }
   .fit-why li, .fit-pro, .fit-counter { grid-template-columns: 52px minmax(0, 1fr) auto; }

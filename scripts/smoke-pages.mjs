@@ -295,6 +295,51 @@ check("UI lock writes ?bot= under base path and survives refresh", afterLock.inc
   await page.evaluate(() => localStorage.removeItem("draft-room:board"));
 }
 
+// Candidate preview and comparison (alan, 2026-10-19): a row click previews and never locks; Lock, Shift+Enter or the
+// comparison's Lock lock; up to three candidates side by side, kept in this tab and emptied by Clear draft.
+{
+  await page.evaluate(() => sessionStorage.removeItem("draft-room:compare"));
+  await open("/?top=ksante&mid=ahri&bot=lucian&support=milio&focus=jungle");
+  const rows = page.locator(".recs .fit-role.role-JUNGLE .fit-row");
+  await rows.first().waitFor({ timeout: 8000 }).catch(() => {});
+  const primary = await page.locator(".fit-filters button").allInnerTexts();
+  check("compare: five filters stay buttons, the pro meta ones sit in one menu",
+    primary.length === 5 && (await page.locator("[role=combobox][aria-label='Pro meta filters']").count()) === 1, primary.join(" | "));
+  await rows.nth(0).locator(".fit-head .name").click();
+  await page.locator(".cc-preview .cmp-effect, .fit-row.previewed .cmp-effect").first().waitFor({ timeout: 8000 }).catch(() => {});
+  check("compare: a row click previews without locking",
+    !/[?&]jungle=/.test(page.url()) && (await page.locator(".fit-row.previewed").count()) === 1 && /Preview · not locked/.test(await text(".cc-preview")) && /Plan/.test(await text(".cc-preview")),
+    `${page.url()} | ${(await text(".cc-preview")).slice(0, 120)}`);
+  for (const i of [0, 1, 2]) {
+    if (i) await rows.nth(i).locator(".fit-head .name").click();
+    await page.locator(".fit-row.previewed .fit-preview button", { hasText: /^Compare$/ }).click();
+  }
+  await page.locator(".cmp-table").waitFor({ timeout: 8000 }).catch(() => {});
+  const cols = await page.locator(".cmp-table thead th").count();
+  check("compare: three candidates side by side with a Lock each, nothing locked", cols === 4 && (await page.locator(".cmp-table .cmp-lock button").count()) === 3 && !/[?&]jungle=/.test(page.url()),
+    `${cols - 1} columns | ${(await page.locator(".cmp-table tbody th").allInnerTexts()).join(", ")}`);
+  await page.reload({ waitUntil: "networkidle" });
+  check("compare: the comparison survives a refresh in this tab", (await page.locator(".cmp-table thead th").count()) === 4, await text(".cmp-head"));
+  const fourth = rows.nth(3).locator(".fit-head .name");
+  const who = (await fourth.innerText()).toLowerCase().replace(/[^a-z]/g, "");
+  await fourth.focus();
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(150);
+  const previewOnly = !/[?&]jungle=/.test(page.url()) && (await page.locator(".fit-row.previewed").count()) === 1;
+  await page.keyboard.press("Shift+Enter");
+  await page.waitForTimeout(400);
+  check("compare: Enter previews, Shift+Enter locks, and the locked role's comparison closes",
+    previewOnly && /[?&]jungle=/.test(page.url()) && (await page.locator(".cmp").count()) === 0, `${who} ${page.url()}`);
+  await open("/?top=ksante&mid=ahri&bot=lucian&support=milio&focus=jungle");
+  await rows.first().waitFor({ timeout: 8000 }).catch(() => {});
+  await rows.nth(0).locator(".fit-head .name").click();
+  await page.locator(".fit-row.previewed .fit-preview button", { hasText: /^Compare$/ }).click();
+  await page.locator("button", { hasText: "Clear draft" }).click();
+  await page.waitForTimeout(200);
+  check("compare: Clear draft also clears the comparison", (await page.evaluate(() => sessionStorage.getItem("draft-room:compare"))) === null, "");
+  await page.evaluate(() => localStorage.removeItem("draft-room:board"));
+}
+
 // Picker: a long list scrolls inside itself, not the page, and arrow keys keep the highlight in view
 await open("/?bot=ziggs");
 await page.locator('input[aria-label="TOP champion"]').click();
