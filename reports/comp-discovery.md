@@ -1,4 +1,4 @@
-# Comp Library review · 2026-10-18
+# Comp Library review · 2026-10-19
 
 Read 184 lineups from 92 recorded games (latest 2026-10-18). Demacia Cup: 70/71 games recorded, complete; Worlds 2026: not on Gol.gg yet; Worlds 2026 Play-In: 22/22 games recorded, ongoing. LCK 2026 playoff drafts are used for comparison only.
 
@@ -6,19 +6,13 @@ Read 184 lineups from 92 recorded games (latest 2026-10-18). Demacia Cup: 70/71 
 
 None this week.
 
-## New variations of existing compositions (2)
+## New variations of existing compositions (0)
 
-- **Objective Zone**: Malphite for Vi, Hwei for Ryze
-  - [MVK Esports vs Karmine Corp G2](https://gol.gg/game/stats/83636/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-18, loss)
-- **Weakside Tank + Carry Bot**: Jayce for Sion, Cassiopeia for Sylas
-  - [Karmine Corp vs MVK Esports G1](https://gol.gg/game/stats/83635/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-18, win)
+None this week.
 
-## Existing compositions seeing new professional play (2)
+## Existing compositions seeing new professional play (0)
 
-- **Objective Zone**: 1 new game
-  - [MVK Esports vs Karmine Corp G2](https://gol.gg/game/stats/83636/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-18, loss)
-- **Weakside Tank + Carry Bot**: 1 new game
-  - [Karmine Corp vs MVK Esports G1](https://gol.gg/game/stats/83635/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-18, win)
+None this week.
 
 ## May be outdated (7)
 
