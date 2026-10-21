@@ -152,8 +152,13 @@ describe("weekly comp discovery", () => {
 
   it("the stored library is exactly what discovery gives with alan's review inputs, and no comp grows from a held champion", () => {
     const review = getCompReview();
-    const r = discover({ ...base, previous: stored, today: stored.lastAddition ?? "2026-10-17", held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp) });
+    const r = discover({ ...base, previous: stored, today: stored.lastAddition ?? "2026-10-17", held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), pending: review.pendingComps.map((p) => p.comp) });
     expect(r.file).toEqual(stored);
+    // A comp sent back to Ready for approval is proposed again with its games, never kept as a card.
+    for (const p of review.pendingComps) {
+      expect(r.file.comps.some((c) => c.id === p.comp), p.comp).toBe(false);
+      expect(r.candidates.some((c) => c.id === p.comp), p.comp).toBe(true);
+    }
     const curated = new Set(shells.map((x) => x.id));
     for (const c of r.file.comps) for (const role of ROLES) expect(review.heldChampions.map((h) => h.champion), c.id).not.toContain(c.slots[role].champion);
     // alan's holds stay unfiled; the approved LGD lineup is a Speed-Up Skirmish variation.
@@ -208,7 +213,7 @@ describe("stored discovered comps", () => {
 describe("Comp Library integration", () => {
   // A run on today's data, so these checks hold for real discoveries even before the stored file has any.
   const review = getCompReview();
-  const fresh = discover({ ...base, previous: stored, held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp) }).file;
+  const fresh = discover({ ...base, previous: stored, held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), pending: review.pendingComps.map((p) => p.comp) }).file;
   const lib = buildLibrary(shells, fresh, pro.games);
 
   it("the site reads the stored library, Draft Room included", () => {

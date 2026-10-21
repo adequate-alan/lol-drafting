@@ -38,7 +38,7 @@ const compName = (id: string) => shells.find((s) => s.id === id)?.name ?? previo
 
 const result = discover({
   games: proGames.games, events: proGames.tracked.map((t) => t.event), shells, kits: convertKits(champions), nameOf, previous, today,
-  held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp),
+  held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), pending: review.pendingComps.map((p) => p.comp),
 });
 const file = Files["discovered-comps.json"].parse(result.file);
 const text = JSON.stringify(file, null, 2) + "\n";

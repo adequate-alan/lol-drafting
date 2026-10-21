@@ -409,6 +409,9 @@ export const CompReview = z.object({
   // New comps alan approved from the weekly report's "Ready for approval" list (2026-10-17: discovery proposes, he
   // adds). Comps added before that rule stay; a held candidate's game never forms one.
   approvedComps: z.array(z.object({ comp: id, approvedOn: Day })).default([]),
+  // Comps an automated run added before that rule that alan sent back to "Ready for approval" (2026-10-21): no card
+  // until approved; their games and variations stay recorded and listed in the report.
+  pendingComps: z.array(z.object({ comp: id, decidedOn: Day, note: z.string() })).default([]),
   // Named variations (alan, 2026-10-17): one observed lineup filed under a comp with a name and a short note on how it
   // differs (General Draft Logic); `supporting` adds games whose lineup plays the same way. The comp check's read of
   // the lineup is derived at load. Never the comp's lineup, never a saved pairing.

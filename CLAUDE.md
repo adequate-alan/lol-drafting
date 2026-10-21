@@ -420,7 +420,9 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   champions with a fifth that changes how the team wins is not the same comp (Team WE's Yorick split vs FURIA's Olaf
   skirmish, held 2026-10-17). Approved comps and variants keep receiving new verified games as replays and variations.
   Everything else is "Proposed comps for review" in the report. Win/loss never decides. Additions are sticky (a comp
-  that later fails is listed in the report, never removed), except a comp alan returns to `held`.
+  that later fails is listed in the report, never removed), except a comp alan returns to `held` or sends back to
+  "Ready for approval" (`pendingComps`: Skirmish + Pick · Lucian, 2026-10-21, until it is compared with Objective Zone,
+  Stable Top + Carry Bot and the other skirmish / pick comps). Passing the checks earns a review, never a card.
 - Discovered comps render as Pro cards in Comp Library (`lib/comp-library.ts`); their identity, jobs, win condition,
   strengths, weak points and difficulty are the comp check's read (General Draft Logic, labelled "Comp check read" in
   Details). Observed variations of any comp sit behind "N observed variations". The page shows "Library reviewed" (last
