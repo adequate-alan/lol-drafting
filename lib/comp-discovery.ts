@@ -253,6 +253,7 @@ export interface DiscoveryInput {
   held?: { champion: string; reason: string }[]; // comp-review.json heldChampions: attach to existing comps, never open one
   heldLineups?: HeldCandidate[]; // comp-review.json held: lineups alan kept as evidence only
   approved?: string[]; // comp-review.json approvedComps: new comps alan approved; nothing else is added
+  pending?: string[]; // comp-review.json pendingComps: earlier additions sent back to "Ready for approval"
 }
 export interface HeldCandidate { name: string; games: LineupRef[]; note: string }
 
@@ -337,7 +338,7 @@ export function discover(input: DiscoveryInput): DiscoveryResult {
     const distinct = !primaries.has(read.primary);
     const others = games.length - alike.length;
     if (!repeated && !distinct) why.push(`${alike.length} game${alike.length > 1 ? "s" : ""} from ${[...teams].join(", ")} with this strategy${others ? ` (${others} more with ${others > 1 ? "lineups that read" : "a lineup that reads"} differently)` : ""}, and the library already has ${SHORT[read.primary].toLowerCase()} comps`);
-    const before = prevComps.get(id);
+    const before = (input.pending ?? []).includes(id) ? undefined : prevComps.get(id);
     if (why.length && !before) { candidates.push({ id, picks: g.anchor.picks, read, reason: why.join("; "), games }); continue; }
     // A new comp that passes every check still waits for alan's approval (2026-10-17): discovery proposes, he adds.
     if (!before && !(input.approved ?? []).includes(id)) {

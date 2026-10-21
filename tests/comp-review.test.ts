@@ -89,7 +89,7 @@ describe("historical marks", () => {
     const shells = getCompShells();
     const s = shells.find((x) => x.id === "protected-hypercarry")!;
     const fresh = { ...newest, id: 999001, blue: { ...newest.blue, picks: { ...newest.blue.picks, BOT: s.slots.BOT.champion } } };
-    const lib = buildLibrary(shells, discovered, [...games, fresh], { proSwaps: [], supporting: [], historical: [{ comp: s.id, roles: ["BOT"], approvedOn: "2026-10-16" }], variants: [], heldChampions: [], approvedComps: [], namedVariations: [], held: [], families: [] });
+    const lib = buildLibrary(shells, discovered, [...games, fresh], { proSwaps: [], supporting: [], historical: [{ comp: s.id, roles: ["BOT"], approvedOn: "2026-10-16" }], variants: [], heldChampions: [], approvedComps: [], pendingComps: [], namedVariations: [], held: [], families: [] });
     expect(lib.extras[s.id]?.historical?.BOT).toBeUndefined();
   });
 });
@@ -138,6 +138,14 @@ describe("named variations, holds and families (2026-10-17)", () => {
     expect(h.games.map((g) => `${g.game}-${g.side}`)).toEqual(["83460-blue", "83624-red"]);
     const games = new Map(getProGames().games.map((g) => [g.id, g]));
     for (const g of h.games) expect(games.get(g.game)?.[g.side].picks.JUNGLE).toBe("sejuani");
+  });
+
+  it("Skirmish + Pick · Lucian waits in Ready for approval (2026-10-21): no card, its games still recorded and proposed", () => {
+    expect(review.pendingComps.map((p) => p.comp)).toContain("pro-83451-blue");
+    expect(library.shells.some((s) => s.id === "pro-83451-blue")).toBe(false);
+    const games = new Map(getProGames().games.map((g) => [g.id, g]));
+    expect(games.get(83451)?.blue.picks.TOP).toBe("galio");
+    expect(games.get(83623)?.red.picks.TOP).toBe("rumble");
   });
 
   it("held lineups are recorded games and filed under no comp", () => {

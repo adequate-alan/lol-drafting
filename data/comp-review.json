@@ -27,6 +27,10 @@
     { "champion": "zaahen", "since": "2026-10-16", "reason": "kit added 2026-10-16; his lineups join existing comps as evidence, new comps from them wait for alan's review" }
   ],
   "approvedComps": [],
+  "pendingComps": [
+    { "comp": "pro-83451-blue", "decidedOn": "2026-10-21",
+      "note": "Skirmish + Pick · Lucian (Team WE's Galio / Qiyana / Ahri / Lucian / Milio, with a Rumble / Syndra version) was added by the Oct 17 refresh without approval. A legitimate candidate; compare it with Objective Zone, Stable Top + Carry Bot and the other skirmish and pick comps before approving." }
+  ],
   "namedVariations": [
     { "comp": "pro-83450-red", "name": "Ornn + Jarvan IV engage · Shopify Rebellion", "game": { "game": 83468, "side": "red" },
       "supporting": [{ "game": 83537, "side": "red" }], "approvedOn": "2026-10-17",
