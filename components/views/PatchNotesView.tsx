@@ -18,6 +18,7 @@ import { shortDate } from "@/lib/evidence";
 import { comparePatch, parsePatch, patchKey } from "@/lib/patch";
 import { CATEGORY_LABEL } from "@/lib/patch-changes";
 import type { Implications } from "@/lib/patch-implications";
+import type { KitReviewItem } from "@/lib/kit-review";
 import type { PatchEntry, PatchNote, PatchNotes } from "@/lib/schema";
 
 type Kind = PatchEntry["kind"];
@@ -29,8 +30,8 @@ const RUNE_ORDER = ["keystone", "minor", "shard"];
 
 const lineText = (e: PatchEntry) => [e.subject, e.context ?? "", ...e.groups.flatMap((g) => [g.title ?? "", ...g.changes.map((c) => c.text)])].join(" ").toLowerCase();
 
-export function PatchNotesView({ notes, names, implications, drawerData }: {
-  notes: PatchNotes; names: Record<string, string>; implications: Record<string, Implications>; drawerData: DrawerData;
+export function PatchNotesView({ notes, names, implications, kitReview = {}, drawerData }: {
+  notes: PatchNotes; names: Record<string, string>; implications: Record<string, Implications>; kitReview?: Record<string, KitReviewItem>; drawerData: DrawerData;
 }) {
   // Filters live in the URL so a view can be shared; window.location keeps the GitHub Pages base path.
   const initial = useSearchParams();
@@ -111,7 +112,7 @@ export function PatchNotesView({ notes, names, implications, drawerData }: {
       </div>
 
       {view === "compare" ? <Compare range={range} names={names} />
-        : champion ? <History id={champion} patches={patches} names={names} implications={implications} />
+        : champion ? <History id={champion} patches={patches} names={names} implications={implications} kitReview={kitReview} />
         : (
           <div className="pn-body">
             {KINDS.filter(([k]) => visible.some((e) => e.kind === k)).map(([k, label]) => {
@@ -119,7 +120,7 @@ export function PatchNotesView({ notes, names, implications, drawerData }: {
               return (
                 <section key={k} className="pn-section" aria-label={label}>
                   <SectionHeader title={label} meta={`${list.length} ${list.length === 1 ? "change" : "changes"}`} />
-                  <Grouped kind={k} entries={list} render={(e) => <EntryRow key={e.id} e={e} patch={current} names={names} imp={implications[`${current.patch}/${e.id}`]} />} />
+                  <Grouped kind={k} entries={list} render={(e) => <EntryRow key={e.id} e={e} patch={current} names={names} imp={implications[`${current.patch}/${e.id}`]} kit={kitReview[`${current.patch}/${e.id}`]} />} />
                 </section>
               );
             })}
@@ -189,7 +190,7 @@ function Verdict({ e }: { e: PatchEntry }) {
   return <span className="pn-tags">{cats.map((c) => <span key={c} className="pn-tag">{CATEGORY_LABEL[c] ?? c}</span>)}</span>;
 }
 
-export function EntryRow({ e, patch, names, imp, showPatch }: { e: PatchEntry; patch: PatchNote; names: Record<string, string>; imp?: Implications; showPatch?: boolean }) {
+export function EntryRow({ e, patch, names, imp, kit, showPatch }: { e: PatchEntry; patch: PatchNote; names: Record<string, string>; imp?: Implications; kit?: KitReviewItem; showPatch?: boolean }) {
   const anyImp = imp && (imp.saved.length || imp.pool.length || imp.pro.length);
   return (
     <article className="pn-entry" id={e.id} data-kind={e.kind}>
@@ -221,6 +222,13 @@ export function EntryRow({ e, patch, names, imp, showPatch }: { e: PatchEntry; p
           {imp!.pro.map((t) => <p key={t}><span className="src pro"><span className="ldot" />Pro</span> {t}</p>)}
         </Disclosure>
       ) : null}
+      {kit && (
+        <Disclosure className="pn-fold pn-imp" summary={<>Kit values to recheck <span className="pn-analysis">analysis</span></>} meta={`${kit.values.length}`} lazy>
+          <p><span className="src logic"><span className="ldot" />Logic</span> {[...new Set(kit.flags.flatMap((f) => f.areas))].join(", ")} changed: {kit.flags.slice(0, 3).map((f) => `${f.ability ? `${f.ability}: ` : ""}${f.text}`).join("; ")}{kit.flags.length > 3 ? ` (+${kit.flags.length - 3} more)` : ""}.</p>
+          {kit.values.length > 0 && <p>Stored values: {kit.values.map((v) => <span key={v.key} className="nowrap">{v.label} <span className="mono">{v.value}</span>{" "}</span>)}</p>}
+          <p className="muted">{kit.suggestion}</p>
+        </Disclosure>
+      )}
     </article>
   );
 }
@@ -239,13 +247,13 @@ const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? "" : "s"}`;
 const titleCase = (s: string) => (s === s.toUpperCase() ? s.toLowerCase().replace(/(^|\s)\S/g, (m) => m.toUpperCase()) : s);
 
 /** One champion across every archived patch, newest first. */
-function History({ id, patches, names, implications }: { id: string; patches: PatchNote[]; names: Record<string, string>; implications: Record<string, Implications> }) {
+function History({ id, patches, names, implications, kitReview }: { id: string; patches: PatchNote[]; names: Record<string, string>; implications: Record<string, Implications>; kitReview: Record<string, KitReviewItem> }) {
   const rows = patches.flatMap((p) => p.entries.filter((e) => (e.kind === "champion" && e.ref === id) || (e.kind === "system" && e.affects?.includes(id))).map((e) => ({ p, e })));
   return (
     <div className="pn-body">
       <SectionHeader title={names[id] ?? id} meta={`${rows.length} ${rows.length === 1 ? "change" : "changes"} in ${new Set(rows.map((r) => r.p.patch)).size} patches`} />
       <div className="pn-list">
-        {rows.map(({ p, e }) => <EntryRow key={`${p.patch}/${e.id}`} e={e} patch={p} names={names} imp={implications[`${p.patch}/${e.id}`]} showPatch />)}
+        {rows.map(({ p, e }) => <EntryRow key={`${p.patch}/${e.id}`} e={e} patch={p} names={names} imp={implications[`${p.patch}/${e.id}`]} kit={kitReview[`${p.patch}/${e.id}`]} showPatch />)}
       </div>
       {!rows.length && <p className="muted small">No recorded change since the archive began.</p>}
     </div>

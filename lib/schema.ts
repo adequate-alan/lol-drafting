@@ -593,6 +593,15 @@ export type PatchNote = z.infer<typeof PatchNote>;
 export const PatchNotes = z.object({ firstPatch: PatchLabel, source: z.string().url(), patches: z.array(PatchNote) });
 export type PatchNotes = z.infer<typeof PatchNotes>;
 
+// ---------- kit-review.json (alan's decisions on flagged kits) ----------
+// lib/kit-review.ts flags a champion whose crowd control, mobility, range, damage profile or mechanics Riot changed.
+// A flag leaves the queue only through a decision recorded here, after alan reviewed it; nothing writes this file on its own.
+export const KitDecision = z.object({
+  champion: ChampionId, patch: z.string(), decision: z.enum(["unchanged", "changed"]), note: z.string().min(1), decidedOn: Day,
+});
+export const KitReview = z.object({ decisions: z.array(KitDecision) });
+export type KitReview = z.infer<typeof KitReview>;
+
 export const Files = {
   "champions.json": z.array(Champion),
   "sources.json": z.array(Source),
@@ -614,4 +623,5 @@ export const Files = {
   "counters.json": Counters,
   "proposed-synergy.json": ProposedSynergy,
   "patch-notes.json": PatchNotes,
+  "kit-review.json": KitReview,
 } as const;

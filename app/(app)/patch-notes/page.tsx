@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { PageLoading } from "@/components/ui";
 import { PatchNotesView } from "@/components/views/PatchNotesView";
-import { getBotPairings, getDrawerData, getMeta, getMidJungle, getPatchNotes, getPool, getProDrafts, getTopPicks } from "@/lib/data";
+import { getBotPairings, getDrawerData, getKitQueue, getMeta, getMidJungle, getPatchNotes, getPool, getProDrafts, getTopPicks } from "@/lib/data";
 import { nameMap, sourceMap } from "@/lib/lookup";
 import { implicationContext, implicationsFor, type Implications } from "@/lib/patch-implications";
 
@@ -16,9 +16,11 @@ export default function PatchNotes() {
   const implications: Record<string, Implications> = {};
   for (const p of notes.patches) for (const e of p.entries)
     if (e.kind === "champion" && e.ref) implications[`${p.patch}/${e.id}`] = implicationsFor(e.ref, p.patch, ctx, (id) => names[id] ?? id);
+  // Kit values to recheck (analysis): champion changes that touch crowd control, mobility, range, damage type or mechanics.
+  const kitReview = Object.fromEntries(getKitQueue().map((k) => [`${k.patch}/${k.entryId}`, k]));
   return (
     <Suspense fallback={<PageLoading title="Patch Notes" />}>
-      <PatchNotesView notes={notes} names={names} implications={implications} drawerData={getDrawerData()} />
+      <PatchNotesView notes={notes} names={names} implications={implications} kitReview={kitReview} drawerData={getDrawerData()} />
     </Suspense>
   );
 }

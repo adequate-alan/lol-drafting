@@ -387,6 +387,12 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   `changedSince`, `patchHref`. The champion drawer's "Patch changes" block and the hover card's latest-patch line use
   them; `components/ChangedSince.tsx` (`ChangedSince`, `PatchTag`) is the "Changed since this game" control for Pro
   Builds. It never calls an old build current or optimal.
+- **Kit review queue** (alan, 2026-10-22; `lib/kit-review.ts`, `scripts/kit-review.ts`, `tests/kit-review.test.ts`): a
+  champion change touching crowd control, mobility, range, damage type or mechanics (a rework flags every line; plain
+  number tuning and presentation lines never) flags that champion's stored attributes and kit values: "Kit values to
+  recheck" (analysis) under the entry on Patch Notes and in each patch-notes run summary, with the changed lines, the
+  stored values and what to recheck. Never a new value, never an edit to a kit, attribute, coefficient or ranking; a flag
+  leaves the queue only through alan's decision in `data/kit-review.json`.
 - Daily check: `.github/workflows/refresh-patch-notes.yml`, 8:47 AM Eastern (crons 12:47 / 13:47 UTC, same offset gate as the pro refresh) and
   `workflow_dispatch` (dry run, force). `scripts/refresh-patch-notes.mjs` reads Riot's patch-notes tag page and each
   tracked patch page from the runner (leagueoflegends.com is unreachable from Claude's environments; robots.txt allows
