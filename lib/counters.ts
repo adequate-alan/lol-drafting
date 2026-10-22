@@ -13,7 +13,7 @@
 // averaged in. Nothing here changes the draft-fit score: a counter is shown beside the overall ranking, never above it.
 import type { Draft } from "./evaluate";
 import { comparePatchDesc } from "./evidence";
-import { patchLabel } from "./patch";
+import { comparePatch, patchLabel } from "./patch";
 import { TIERS, type Tier } from "./pool-stats";
 import { savedSupports, type Recommendation, type Recommendations } from "./recommend";
 import { ROLES, type BotPairing, type Champion, type Counters, type PoolEntry, type ProDraft, type Role } from "./schema";
@@ -107,6 +107,7 @@ export interface CounterEvidence {
   rank?: string;
   url: string;
   note?: string; // why the claim is held back (jungle head-to-head, one bot-lane champion, role instead of duo)
+  stale?: boolean; // collected on a patch older than the newest recognised one: historical, shown as such, strength unchanged
 }
 
 /** Recorded pro games of the same matchup. Context beside the DPM signal; never a counter by itself, never averaged. */
@@ -211,7 +212,32 @@ export interface RoleCounters {
   scope: "lane" | "duo";
   counters: Counter[];
   note?: string; // how the read is qualified (role matchup instead of duo, jungle head-to-head)
+  coverage: CounterCoverage; // what the lane data holds against this opponent, so an empty list says why
 }
+
+/**
+ * Why a Counters list is empty (alan, 2026-10-22): never "no counters exist", only what our data shows.
+ *   no-data          no DPM row against this opponent in this role
+ *   small-sample     rows exist, none with DPM_MIN_GAMES games
+ *   below-threshold  rows with enough games exist, none at DPM_MIN_WIN_RATE
+ *   unavailable      qualifying rows exist, but every one is a champion already taken or not playable here
+ */
+export type EmptyReason = "no-data" | "small-sample" | "below-threshold" | "unavailable";
+
+/** A favourable row under the sample bar: preliminary evidence, shown as such, never a Counter label. */
+export interface Preliminary { champion: string; winRate: number; games: number; patch: string; url: string }
+
+export interface CounterCoverage {
+  rows: number; // lane rows against the opponent in this role, any champion
+  sampled: number; // of those, rows with DPM_MIN_GAMES+ games
+  favorable: number; // sampled rows at DPM_MIN_WIN_RATE+
+  preliminary: Preliminary[]; // up to PRELIMINARY_SHOWN favourable rows under the sample bar, most games first, playable here
+  patch?: string; // newest patch among those rows
+  stale: boolean; // that patch is older than the newest recognised patch
+  reason?: EmptyReason; // set only when no counter is listed
+}
+
+export const PRELIMINARY_SHOWN = 3;
 
 export interface CounterInput {
   champions: Champion[];
@@ -219,7 +245,27 @@ export interface CounterInput {
   pool: PoolEntry[];
   counters: Counters;
   botPairings?: BotPairing[];
+  /** The newest patch the site recognises (patch notes, pro games); DPM rows from an older patch are marked stale. */
+  newestPatch?: string;
 }
+
+/** True when `patch` is older than `newest`. Unknown on either side: not stale. */
+export const olderPatch = (patch: string | undefined, newest: string | undefined) => !!patch && !!newest && comparePatch(patch, newest) < 0;
+
+/** What the lane rows hold against `opponent` in `role`; `playable` decides which champions could still be picked. */
+export function laneCoverage(rows: Counters["dpm"], role: Role, opponent: string, playable: (id: string) => boolean, newest?: string): CounterCoverage {
+  const mine = rows.filter((r) => r.role === role && r.enemy === opponent);
+  const sampled = mine.filter((r) => r.games >= DPM_MIN_GAMES);
+  const favorable = sampled.filter((r) => r.winRate >= DPM_MIN_WIN_RATE);
+  const patch = mine.map((r) => r.patch).sort(comparePatchDesc)[0];
+  const preliminary = mine.filter((r) => r.games < DPM_MIN_GAMES && r.winRate >= DPM_MIN_WIN_RATE && playable(r.champion))
+    .sort((a, b) => b.games - a.games || b.winRate - a.winRate).slice(0, PRELIMINARY_SHOWN)
+    .map((r) => ({ champion: r.champion, winRate: r.winRate, games: r.games, patch: r.patch, url: r.url }));
+  return { rows: mine.length, sampled: sampled.length, favorable: favorable.length, preliminary, patch, stale: olderPatch(patch, newest) };
+}
+
+export const emptyReason = (c: CounterCoverage): EmptyReason =>
+  !c.rows ? "no-data" : !c.sampled ? "small-sample" : !c.favorable ? "below-threshold" : "unavailable";
 
 const TIER_RANK: Record<Tier, number> = { core: 0, depth: 1, flex: 2 };
 const STRENGTH_RANK: Record<Strength, number> = { confirmed: 0, strong: 1, favorable: 2 };
@@ -289,6 +335,11 @@ export function counterPicks(draft: Draft, enemy: EnemyDraft, input: CounterInpu
 
     const vs = scope === "duo" ? [enemy.BOT!, enemy.SUPPORT!] : opponent ? [opponent] : [];
     if (!vs.length) continue;
+    for (const { evidence } of found.values()) if (olderPatch(evidence.patch, input.newestPatch)) evidence.stale = true;
+    const coverage: CounterCoverage = opponent
+      ? laneCoverage(input.counters.dpm, role, opponent, valid, input.newestPatch)
+      : { rows: 0, sampled: 0, favorable: 0, preliminary: [], stale: false };
+    if (!found.size) coverage.reason = emptyReason(coverage);
     const fitList = fits[role] ?? [];
     const counters: Counter[] = [...found].map(([champion, { evidence, pro }]) => {
       const tier = poolTier(input.pool, champion, role);
@@ -309,16 +360,35 @@ export function counterPicks(draft: Draft, enemy: EnemyDraft, input: CounterInpu
       || STRENGTH_RANK[a.strength] - STRENGTH_RANK[b.strength]
       || b.evidence.games - a.evidence.games
       || a.champion.localeCompare(b.champion));
-    out[role] = { role, vs, scope, counters, note };
+    out[role] = { role, vs, scope, counters, note, coverage };
   }
   return out;
 }
 
-/** "DPM · 55.2% matchup · +2.1 · 4,120 games · 26.18" */
+/** "DPM · 55.2% matchup · +2.1 · 4,120 games · 26.18", and "· older patch" when the row is stale. */
 export function describeEvidence(e: CounterEvidence): string {
   return ["DPM", `${(e.winRate * 100).toFixed(1)}% matchup`, e.delta !== undefined ? `${e.delta > 0 ? "+" : ""}${e.delta.toFixed(1)}` : undefined,
-    `${e.games.toLocaleString("en-US")} games`, e.patch && patchLabel(e.patch)].filter(Boolean).join(" · ");
+    `${e.games.toLocaleString("en-US")} games`, e.patch && patchLabel(e.patch), e.stale ? "older patch" : undefined].filter(Boolean).join(" · ");
 }
+
+/**
+ * Why the Counters list for `vs` is empty, in words. Says what our data holds, never that no counter exists.
+ * `newest` names the current patch when the rows are older.
+ */
+export function emptyText(c: CounterCoverage, vs: string, newest?: string): string {
+  const base = {
+    "no-data": `No DPM.LOL matchup data against ${vs} in this role yet.`,
+    "small-sample": `DPM.LOL has ${c.rows} matchup${c.rows === 1 ? "" : "s"} against ${vs}, none with ${DPM_MIN_GAMES} games yet: too few to call a counter.`,
+    "below-threshold": `${c.sampled} matchup${c.sampled === 1 ? "" : "s"} against ${vs} ${c.sampled === 1 ? "has" : "have"} ${DPM_MIN_GAMES}+ games, none at a ${Math.round(DPM_MIN_WIN_RATE * 100)}% win rate or better.`,
+    unavailable: `The favourable matchups against ${vs} are champions already taken or not playable here.`,
+  }[c.reason ?? "no-data"];
+  const stale = c.stale && c.patch ? ` The data is from patch ${patchLabel(c.patch)}${newest ? `, older than ${patchLabel(newest)}` : ""}.` : "";
+  return `${base}${stale} This is a gap in our data, not proof that ${vs} has no counters.`;
+}
+
+/** "Preliminary, under 300 games: Jayce 57.7% of 106 (26.20)". Never a Counter label. */
+export const preliminaryText = (c: CounterCoverage, name: (id: string) => string) =>
+  c.preliminary.length ? `Preliminary, under ${DPM_MIN_GAMES} games: ${c.preliminary.map((p) => `${name(p.champion)} ${(p.winRate * 100).toFixed(1)}% of ${p.games}`).join(", ")} (DPM.LOL ${patchLabel(c.preliminary[0].patch)}).` : "";
 
 /** "Pro · 3 games · 3–0 · 26.18 · agrees" */
 export function describePro(p: ProSample): string {

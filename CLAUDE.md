@@ -182,6 +182,14 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   label on the candidate row, with pool tier and draft-fit rank in the row detail. DPM rows come from alan as structured facts
   (`origin: "externally-provided"`); dpm.lol answers Claude's environments with a Cloudflare challenge. Never invent a
   counter or a game result.
+  **Freshness and empty states** (alan, 2026-10-22; `lib/counter-freshness.ts`, `tests/counter-freshness.test.ts`): the DPM
+  data's patch is compared with the newest recognised patch (patch notes, pro games; `getCounterFreshness`); an older row
+  is marked "older patch" with Riot's changes to its champions since, strength unchanged. An empty Counters list says why
+  (`CounterCoverage.reason`: no data, small sample, below threshold, taken) and never that no counter exists; favourable
+  rows under 300 games show as "Preliminary", never a Counter label. Labels only, never the score or the order. GitHub
+  runners get the same Cloudflare challenge (`dpm-probe.yml`, 2026-10-22), so DPM stays a browser collection on alan's
+  Mac; dpm.lol's robots.txt disallows every agent from `/*/champions/versus` and the players' versus / synergy API, so a
+  collection reads the champion Build pages only.
 
 - **Roster**: `data/champions.json` holds every champion in Riot's Data Dragon. Champions added by
   `scripts/sync-champions.mjs` (run by `.github/workflows/sync-champions.yml`; Data Dragon is unreachable from Claude's

@@ -9,6 +9,7 @@ import { golggGameId, newestGameFirst, withGameSides } from "./draft-side";
 import { draftsFromGames, freshness, resultsFromGames, sourcesFromGames } from "./pro-games";
 import { priorityData, priorityMarks, type PriorityData } from "./pro-priority";
 import { buildPatchIndex } from "./patch-changes";
+import { counterFreshness, newestPatch, type CounterFreshness } from "./counter-freshness";
 import { championIndex, type ChampionBuilds } from "./pro-builds";
 import { withoutConfirmed } from "./proposed";
 import { Files, ROLES, type Role } from "./schema";
@@ -70,6 +71,10 @@ export const getProposed = () => (proposed ??= withoutConfirmed(load("proposed-s
 export const getPatchNotes = () => load("patch-notes.json");
 let patchIndex: ReturnType<typeof buildPatchIndex> | undefined;
 export const getPatchIndex = () => (patchIndex ??= buildPatchIndex(getPatchNotes()));
+let counterFresh: CounterFreshness | undefined;
+/** The DPM data's patch against the newest patch the site recognises (Riot's patch notes and recorded pro games). */
+export const getCounterFreshness = () => (counterFresh ??= counterFreshness(getCounters(), getPatchIndex(),
+  newestPatch(getPatchNotes().patches.map((p) => p.patch), getProGames().games.map((g) => g.patch))));
 
 // Pro Builds: the full records load in the browser on /pro-builds/ (lib/pro-builds-bundle.ts); pages get only the
 // per-champion summary (games, players, newest patch) the drawer shows beside its "View Pro Builds" link.
@@ -104,6 +109,8 @@ export function getDraftData() {
     pool: getPool(),
     events: getMeta().events,
     counters: getCounters(),
+    newestPatch: getCounterFreshness().newest ?? undefined, // DPM rows older than this are marked historical
+    counterFreshness: getCounterFreshness(),
     proposed: getProposed().records,
     priority: priorityMarks(getPriority()), // a label on rows, never read by the ranking
     // Lane row labels (Top, Mid, Bot, Support), never read by the ranking.
