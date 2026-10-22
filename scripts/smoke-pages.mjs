@@ -213,13 +213,14 @@ const vsLine = await text(".recs .fit-context .vs");
 check("open role is linked to its lane opponent (Top vs Ornn)", /vs Ornn/.test(vsLine), vsLine);
 await page.locator(".fit-filters button", { hasText: "Counters" }).click();
 const counterText = await text(".recs .fit-note");
-check("Counters filter reads the lane opponent and never invents a counter", /(vs|for) Ornn/.test(counterText)
-  && ((await page.locator(".recs .fit-row .sig.counter").count()) > 0 || /No reliable counter data for Ornn/.test(counterText)), counterText.slice(0, 160));
+// An empty list says why and never that no counter exists (lib/counters.ts emptyText).
+check("Counters filter reads the lane opponent and never invents a counter", /Ornn/.test(counterText)
+  && ((await page.locator(".recs .fit-row .sig.counter").count()) > 0 || /not proof that Ornn has no counters/.test(counterText)), counterText.slice(0, 160));
 // Real DPM rows: Top into Aatrox has stored matchups that clear the thresholds (Fiora, Gwen, Gragas, Ornn).
 await open("/?vs=top:aatrox");
 await page.locator(".role-tab.role-TOP").click();
 const dpmCounters = await page.locator(".recs .fit-row .sig.counter").count();
-check("Counters show stored DPM matchups (Top vs Aatrox)", dpmCounters > 0 && !/No reliable counter data/.test(await text(".recs")), `${dpmCounters} counters`);
+check("Counters show stored DPM matchups (Top vs Aatrox)", dpmCounters > 0 && !/not proof that .* has no counters/.test(await text(".recs")), `${dpmCounters} counters`);
 check("no Clash wording on the Draft Room", !/Clash/.test(await text("body")), "");
 // Draft Room workspace: the open role drives the list, one row per champion, Comp Check rail, pinned draft bar
 await open("/?bot=sivir&vs=renekton,,,ezreal,karma");
