@@ -13,7 +13,7 @@
 // averaged in. Nothing here changes the draft-fit score: a counter is shown beside the overall ranking, never above it.
 import type { Draft } from "./evaluate";
 import { comparePatchDesc } from "./evidence";
-import { patchLabel } from "./patch";
+import { comparePatch, patchLabel } from "./patch";
 import { TIERS, type Tier } from "./pool-stats";
 import { savedSupports, type Recommendation, type Recommendations } from "./recommend";
 import { ROLES, type BotPairing, type Champion, type Counters, type PoolEntry, type ProDraft, type Role } from "./schema";
@@ -107,6 +107,7 @@ export interface CounterEvidence {
   rank?: string;
   url: string;
   note?: string; // why the claim is held back (jungle head-to-head, one bot-lane champion, role instead of duo)
+  stale?: boolean; // collected on a patch older than the newest recognised one: historical, shown as such, strength unchanged
 }
 
 /** Recorded pro games of the same matchup. Context beside the DPM signal; never a counter by itself, never averaged. */
@@ -120,6 +121,8 @@ export interface ProSample {
   patch?: string; // newest patch in the sample
   gameIds: string[]; // Gol.gg game source ids
   verdict: ProVerdict;
+  current?: number; // games on the newest recognised patch (when known); the rest are recent cross-patch games
+  historical?: boolean; // the archived LCK playoffs: shown with its counts, never lifts or cautions a counter
 }
 
 interface Side { team: string; picks: ProDraft["picks"]; patch?: string; game: string }
@@ -148,9 +151,9 @@ const patchWeights = (games: Game[]) => {
   return (p?: string) => (p ? PATCH_DECAY ** Math.max(0, patches.indexOf(p)) : PATCH_DECAY ** patches.length);
 };
 
-interface Tally { games: number; wins: number; wGames: number; wWins: number; patch?: string; gameIds: string[] }
+interface Tally { games: number; wins: number; wGames: number; wWins: number; patch?: string; gameIds: string[]; current?: number }
 
-function proTallies(games: Game[], match: (enemy: Side) => boolean, key: (mine: Side) => string | undefined): Map<string, Tally> {
+function proTallies(games: Game[], match: (enemy: Side) => boolean, key: (mine: Side) => string | undefined, newest?: string): Map<string, Tally> {
   const weight = patchWeights(games);
   const out = new Map<string, Tally>();
   for (const g of games) {
@@ -158,9 +161,10 @@ function proTallies(games: Game[], match: (enemy: Side) => boolean, key: (mine: 
       if (!match(enemy)) continue;
       const k = key(mine);
       if (!k) continue;
-      const t = out.get(k) ?? { games: 0, wins: 0, wGames: 0, wWins: 0, gameIds: [] };
+      const t: Tally = out.get(k) ?? { games: 0, wins: 0, wGames: 0, wWins: 0, gameIds: [], current: newest ? 0 : undefined };
       const w = weight(g.patch);
       t.games++; t.wGames += w;
+      if (newest && g.patch && comparePatch(g.patch, newest) === 0) t.current = (t.current ?? 0) + 1;
       if (g.winner === mine.team) { t.wins++; t.wWins += w; }
       if (g.patch && (!t.patch || comparePatchDesc(g.patch, t.patch) < 0)) t.patch = g.patch;
       t.gameIds.push(mine.game);
@@ -170,11 +174,13 @@ function proTallies(games: Game[], match: (enemy: Side) => boolean, key: (mine: 
   return out;
 }
 
-function proSample(t: Tally | undefined, base: Pick<ProSample, "scope" | "vs" | "with">): ProSample | null {
-  if (!t || t.games < PRO_MIN_GAMES) return null;
+function proSample(t: Tally | undefined, base: Pick<ProSample, "scope" | "vs" | "with">, historical = false): ProSample | null {
+  // Recent games need a repeated matchup to say anything; archived games are listed with their counts from one game.
+  if (!t || t.games < (historical ? 1 : PRO_MIN_GAMES)) return null;
   const share = t.wWins / t.wGames;
   const verdict: ProVerdict = share >= PRO_AGREE_SHARE ? "agrees" : share <= PRO_DISAGREE_SHARE ? "disagrees" : "mixed";
-  return { ...base, games: t.games, wins: t.wins, winShare: Math.round(share * 1000) / 1000, patch: t.patch, gameIds: t.gameIds, verdict };
+  return { ...base, games: t.games, wins: t.wins, winShare: Math.round(share * 1000) / 1000, patch: t.patch, gameIds: t.gameIds, verdict,
+    current: t.current, ...(historical ? { historical: true } : {}) };
 }
 
 function dpmEvidence(row: { winRate: number; delta?: number; games: number; patch: string; updated: string; rank?: string; url: string },
@@ -198,6 +204,7 @@ export interface Counter {
   strength: Strength; // the DPM signal, lifted one step when pro games agree
   evidence: CounterEvidence; // the DPM matchup (always present: no DPM row, no counter)
   pro: ProSample | null; // the same matchup in recorded pro games, when it repeats; shown separately
+  archive: ProSample | null; // the same matchup in the archived LCK playoffs: historical context only, never lifts it
   tier: Tier | null; // my pool tier in this role; null = out of pool, reference only
   theoretical: boolean; // a support outside the locked bot's saved supports: shown for reference, never recommended
   fit: Recommendation | null; // the same champion on the overall draft-fit list
@@ -211,7 +218,32 @@ export interface RoleCounters {
   scope: "lane" | "duo";
   counters: Counter[];
   note?: string; // how the read is qualified (role matchup instead of duo, jungle head-to-head)
+  coverage: CounterCoverage; // what the lane data holds against this opponent, so an empty list says why
 }
+
+/**
+ * Why a Counters list is empty (alan, 2026-10-22): never "no counters exist", only what our data shows.
+ *   no-data          no DPM row against this opponent in this role
+ *   small-sample     rows exist, none with DPM_MIN_GAMES games
+ *   below-threshold  rows with enough games exist, none at DPM_MIN_WIN_RATE
+ *   unavailable      qualifying rows exist, but every one is a champion already taken or not playable here
+ */
+export type EmptyReason = "no-data" | "small-sample" | "below-threshold" | "unavailable";
+
+/** A favourable row under the sample bar: preliminary evidence, shown as such, never a Counter label. */
+export interface Preliminary { champion: string; winRate: number; games: number; patch: string; url: string }
+
+export interface CounterCoverage {
+  rows: number; // lane rows against the opponent in this role, any champion
+  sampled: number; // of those, rows with DPM_MIN_GAMES+ games
+  favorable: number; // sampled rows at DPM_MIN_WIN_RATE+
+  preliminary: Preliminary[]; // up to PRELIMINARY_SHOWN favourable rows under the sample bar, most games first, playable here
+  patch?: string; // newest patch among those rows
+  stale: boolean; // that patch is older than the newest recognised patch
+  reason?: EmptyReason; // set only when no counter is listed
+}
+
+export const PRELIMINARY_SHOWN = 3;
 
 export interface CounterInput {
   champions: Champion[];
@@ -219,7 +251,32 @@ export interface CounterInput {
   pool: PoolEntry[];
   counters: Counters;
   botPairings?: BotPairing[];
+  /** The newest patch the site recognises (patch notes, pro games); DPM rows from an older patch are marked stale. */
+  newestPatch?: string;
+  /**
+   * Winners of the archived LCK 2026 playoff games (alan, 2026-10-22): historical professional evidence, tallied apart
+   * from the tracked events' games. It never establishes a counter, never lifts its strength and never adds a caution.
+   */
+  archiveResults?: Counters["proResults"];
 }
+
+/** True when `patch` is older than `newest`. Unknown on either side: not stale. */
+export const olderPatch = (patch: string | undefined, newest: string | undefined) => !!patch && !!newest && comparePatch(patch, newest) < 0;
+
+/** What the lane rows hold against `opponent` in `role`; `playable` decides which champions could still be picked. */
+export function laneCoverage(rows: Counters["dpm"], role: Role, opponent: string, playable: (id: string) => boolean, newest?: string): CounterCoverage {
+  const mine = rows.filter((r) => r.role === role && r.enemy === opponent);
+  const sampled = mine.filter((r) => r.games >= DPM_MIN_GAMES);
+  const favorable = sampled.filter((r) => r.winRate >= DPM_MIN_WIN_RATE);
+  const patch = mine.map((r) => r.patch).sort(comparePatchDesc)[0];
+  const preliminary = mine.filter((r) => r.games < DPM_MIN_GAMES && r.winRate >= DPM_MIN_WIN_RATE && playable(r.champion))
+    .sort((a, b) => b.games - a.games || b.winRate - a.winRate).slice(0, PRELIMINARY_SHOWN)
+    .map((r) => ({ champion: r.champion, winRate: r.winRate, games: r.games, patch: r.patch, url: r.url }));
+  return { rows: mine.length, sampled: sampled.length, favorable: favorable.length, preliminary, patch, stale: olderPatch(patch, newest) };
+}
+
+export const emptyReason = (c: CounterCoverage): EmptyReason =>
+  !c.rows ? "no-data" : !c.sampled ? "small-sample" : !c.favorable ? "below-threshold" : "unavailable";
 
 const TIER_RANK: Record<Tier, number> = { core: 0, depth: 1, flex: 2 };
 const STRENGTH_RANK: Record<Strength, number> = { confirmed: 0, strong: 1, favorable: 2 };
@@ -241,6 +298,8 @@ export function counterPicks(draft: Draft, enemy: EnemyDraft, input: CounterInpu
   const name = (id: string) => byId.get(id)?.name ?? id;
   const taken = new Set([...Object.values(draft), ...Object.values(enemy)].filter(Boolean) as string[]);
   const games = resultGames(input.proDrafts, input.counters.proResults);
+  const archived = resultGames(input.proDrafts, input.archiveResults ?? []);
+  const newest = input.newestPatch;
   const out: Partial<Record<Role, RoleCounters>> = {};
   const eligibleSupports = savedSupports(draft, input.botPairings ?? []);
 
@@ -248,7 +307,7 @@ export function counterPicks(draft: Draft, enemy: EnemyDraft, input: CounterInpu
     const bot = role === "BOT" || role === "SUPPORT";
     const partner: Role | undefined = role === "BOT" ? "SUPPORT" : role === "SUPPORT" ? "BOT" : undefined;
     const fullEnemyDuo = bot && !!enemy.BOT && !!enemy.SUPPORT;
-    const found = new Map<string, { evidence: CounterEvidence; pro: ProSample | null }>();
+    const found = new Map<string, { evidence: CounterEvidence; pro: ProSample | null; archive: ProSample | null }>();
     const valid = (id: string) => !taken.has(id) && !!byId.get(id)?.roles.includes(role);
     let scope: RoleCounters["scope"] = "lane";
     let note: string | undefined;
@@ -259,12 +318,16 @@ export function counterPicks(draft: Draft, enemy: EnemyDraft, input: CounterInpu
       const mineOk = (d: { bot: string; support: string }) => !partner || !draft[partner] || d[partner === "BOT" ? "bot" : "support"] === draft[partner];
       const self = role === "BOT" ? "bot" : "support";
       const other = role === "BOT" ? "support" : "bot";
-      const pro = proTallies(games, (e) => e.picks.BOT === vs[0] && e.picks.SUPPORT === vs[1], (m) => `${m.picks.BOT}|${m.picks.SUPPORT}`);
+      const duoMatch = (e: Side) => e.picks.BOT === vs[0] && e.picks.SUPPORT === vs[1];
+      const duoKey = (m: Side) => `${m.picks.BOT}|${m.picks.SUPPORT}`;
+      const pro = proTallies(games, duoMatch, duoKey, newest);
+      const old = proTallies(archived, duoMatch, duoKey, newest);
       for (const row of input.counters.dpmDuos) {
         if (row.enemy.bot !== vs[0] || row.enemy.support !== vs[1] || !mineOk(row.duo)) continue;
         const id = row.duo[self];
         const evidence = valid(id) && !found.has(id) && dpmEvidence(row, { scope: "duo", vs, with: row.duo[other] }, DPM_MIN_DUO_GAMES);
-        if (evidence) found.set(id, { evidence, pro: proSample(pro.get(`${row.duo.bot}|${row.duo.support}`), { scope: "duo", vs, with: row.duo[other] }) });
+        const k = `${row.duo.bot}|${row.duo.support}`, base = { scope: "duo" as const, vs, with: row.duo[other] };
+        if (evidence) found.set(id, { evidence, pro: proSample(pro.get(k), base), archive: proSample(old.get(k), base, true) });
       }
       if (found.size) scope = "duo";
       else note = `No duo-vs-duo data for ${vs.map(name).join(" + ")}; role matchup against ${name(enemy[role]!)} only.`;
@@ -276,21 +339,28 @@ export function counterPicks(draft: Draft, enemy: EnemyDraft, input: CounterInpu
       const botNote = !bot ? undefined : fullEnemyDuo ? "Role matchup only, not duo vs duo." : "Only one enemy bot-lane champion is known; read with caution.";
       const jungleNote = role === "JUNGLE" ? "SoloQ head-to-head only; tempo, invades and objective control are not measured." : undefined;
       const why = botNote ?? jungleNote;
-      const pro = proTallies(games, (e) => e.picks[role] === opponent, (m) => m.picks[role]);
+      const pro = proTallies(games, (e) => e.picks[role] === opponent, (m) => m.picks[role], newest);
+      const old = proTallies(archived, (e) => e.picks[role] === opponent, (m) => m.picks[role], newest);
       for (const row of input.counters.dpm) {
         if (row.role !== role || row.enemy !== opponent || found.has(row.champion)) continue;
         const evidence = valid(row.champion) && dpmEvidence(row, { scope: "lane", vs: [opponent] }, DPM_MIN_GAMES);
         if (!evidence) continue;
         if (why) { evidence.strength = "favorable"; evidence.note = why; }
-        found.set(row.champion, { evidence, pro: proSample(pro.get(row.champion), { scope: "lane", vs: [opponent] }) });
+        found.set(row.champion, { evidence, pro: proSample(pro.get(row.champion), { scope: "lane", vs: [opponent] }),
+          archive: proSample(old.get(row.champion), { scope: "lane", vs: [opponent] }, true) });
       }
       if (!note) note = botNote ?? (found.size ? jungleNote : undefined);
     }
 
     const vs = scope === "duo" ? [enemy.BOT!, enemy.SUPPORT!] : opponent ? [opponent] : [];
     if (!vs.length) continue;
+    for (const { evidence } of found.values()) if (olderPatch(evidence.patch, input.newestPatch)) evidence.stale = true;
+    const coverage: CounterCoverage = opponent
+      ? laneCoverage(input.counters.dpm, role, opponent, valid, input.newestPatch)
+      : { rows: 0, sampled: 0, favorable: 0, preliminary: [], stale: false };
+    if (!found.size) coverage.reason = emptyReason(coverage);
     const fitList = fits[role] ?? [];
-    const counters: Counter[] = [...found].map(([champion, { evidence, pro }]) => {
+    const counters: Counter[] = [...found].map(([champion, { evidence, pro, archive }]) => {
       const tier = poolTier(input.pool, champion, role);
       const idx = fitList.findIndex((r) => r.champion === champion);
       const fit = idx >= 0 ? fitList[idx] : null;
@@ -301,7 +371,7 @@ export function counterPicks(draft: Draft, enemy: EnemyDraft, input: CounterInpu
       if (pro?.verdict === "disagrees") cautions.push(`Pro games disagree: ${pro.wins}–${pro.games - pro.wins} in this matchup`);
       for (const p of fit?.parts ?? []) if (p.kind === "risk") cautions.push(p.text);
       if (idx > 0) cautions.push(`#${idx + 1} on overall draft fit; ${name(fitList[0].champion)} fits the draft better`);
-      return { champion, role, strength: combined(evidence, pro), evidence, pro, tier, theoretical, fit, fitRank: idx >= 0 ? idx + 1 : null, cautions };
+      return { champion, role, strength: combined(evidence, pro), evidence, pro, archive, tier, theoretical, fit, fitRank: idx >= 0 ? idx + 1 : null, cautions };
     });
     counters.sort((a, b) =>
       Number(a.theoretical) - Number(b.theoretical)
@@ -309,18 +379,91 @@ export function counterPicks(draft: Draft, enemy: EnemyDraft, input: CounterInpu
       || STRENGTH_RANK[a.strength] - STRENGTH_RANK[b.strength]
       || b.evidence.games - a.evidence.games
       || a.champion.localeCompare(b.champion));
-    out[role] = { role, vs, scope, counters, note };
+    out[role] = { role, vs, scope, counters, note, coverage };
   }
   return out;
 }
 
-/** "DPM · 55.2% matchup · +2.1 · 4,120 games · 26.18" */
+/** "DPM · 55.2% matchup · +2.1 · 4,120 games · 26.18", and "· older patch" when the row is stale. */
 export function describeEvidence(e: CounterEvidence): string {
   return ["DPM", `${(e.winRate * 100).toFixed(1)}% matchup`, e.delta !== undefined ? `${e.delta > 0 ? "+" : ""}${e.delta.toFixed(1)}` : undefined,
-    `${e.games.toLocaleString("en-US")} games`, e.patch && patchLabel(e.patch)].filter(Boolean).join(" · ");
+    `${e.games.toLocaleString("en-US")} games`, e.patch && patchLabel(e.patch), e.stale ? "older patch" : undefined].filter(Boolean).join(" · ");
 }
 
-/** "Pro · 3 games · 3–0 · 26.18 · agrees" */
-export function describePro(p: ProSample): string {
-  return ["Pro", `${p.games} games`, `${p.wins}–${p.games - p.wins}`, p.patch && patchLabel(p.patch), p.verdict].filter(Boolean).join(" · ");
+/**
+ * Why the Counters list for `vs` is empty, in words. Says what our data holds, never that no counter exists.
+ * `newest` names the current patch when the rows are older.
+ */
+export function emptyText(c: CounterCoverage, vs: string, newest?: string): string {
+  const base = {
+    "no-data": `No DPM.LOL matchup data against ${vs} in this role yet.`,
+    "small-sample": `DPM.LOL has ${c.rows} matchup${c.rows === 1 ? "" : "s"} against ${vs}, none with ${DPM_MIN_GAMES} games yet: too few to call a counter.`,
+    "below-threshold": `${c.sampled} matchup${c.sampled === 1 ? "" : "s"} against ${vs} ${c.sampled === 1 ? "has" : "have"} ${DPM_MIN_GAMES}+ games, none at a ${Math.round(DPM_MIN_WIN_RATE * 100)}% win rate or better.`,
+    unavailable: `The favourable matchups against ${vs} are champions already taken or not playable here.`,
+  }[c.reason ?? "no-data"];
+  const stale = c.stale && c.patch ? ` The data is from patch ${patchLabel(c.patch)}${newest ? `, older than ${patchLabel(newest)}` : ""}.` : "";
+  return `${base}${stale} This is a gap in our data, not proof that ${vs} has no counters.`;
 }
+
+/** "Preliminary, under 300 games: Jayce 57.7% of 106 (26.20)". Never a Counter label. */
+export const preliminaryText = (c: CounterCoverage, name: (id: string) => string) =>
+  c.preliminary.length ? `Preliminary, under ${DPM_MIN_GAMES} games: ${c.preliminary.map((p) => `${name(p.champion)} ${(p.winRate * 100).toFixed(1)}% of ${p.games}`).join(", ")} (DPM.LOL ${patchLabel(c.preliminary[0].patch)}).` : "";
+
+/** "Pro · 3 games (1 on the current patch) · 3–0 · 26.18 · agrees"; archived: "Historical LCK · 2 games · 1–1 · 26.16". */
+export function describePro(p: ProSample): string {
+  if (p.historical) return ["Historical LCK", `${p.games} game${p.games === 1 ? "" : "s"}`, `${p.wins}–${p.games - p.wins}`, p.patch && patchLabel(p.patch)].filter(Boolean).join(" · ");
+  return ["Pro", `${p.games} games${p.current == null ? "" : p.current ? ` (${p.current} on the current patch)` : " (none on the current patch)"}`, `${p.wins}–${p.games - p.wins}`, p.patch && patchLabel(p.patch), p.verdict].filter(Boolean).join(" · ");
+}
+
+// ---------- lane matchups on the board ----------
+//
+// Both sides of a lane are locked: does the matchup data favour one of them? (alan, 2026-10-22). Read only from DPM rows
+// (my champion's page against theirs); when only the enemy's page lists the pair, its row is read the other way round,
+// the same sample, marked `inverted` and never counted as a second source. No row with DPM_MIN_GAMES games is
+// "insufficient" (its numbers shown as preliminary); no row at all is "no-data". Never from popularity, pro results or
+// kits, never scored, never the order of any list.
+
+export type LaneVerdict = "us" | "them" | "even" | "insufficient" | "no-data";
+export const LANE_EVEN_BAND = 0.02; // 48–52%: relatively even
+
+export interface LaneMatchup {
+  role: Role;
+  mine: string;
+  theirs: string;
+  verdict: LaneVerdict;
+  strong: boolean; // 54%+ either way, with the full sample
+  winRate?: number; // my side's matchup win rate
+  games?: number;
+  patch?: string;
+  rank?: string;
+  url?: string;
+  updated?: string;
+  inverted: boolean; // read from the enemy champion's row: the same sample seen from the other side
+  stale: boolean;
+  note?: string; // what the read can't say (jungle head-to-head, bot lane without duo data)
+}
+
+export function laneMatchups(draft: Draft, enemy: EnemyDraft, rows: Counters["dpm"], newestPatch?: string): LaneMatchup[] {
+  const out: LaneMatchup[] = [];
+  for (const role of ROLES) {
+    const mine = draft[role], theirs = enemy[role];
+    if (!mine || !theirs) continue;
+    const direct = rows.find((r) => r.role === role && r.champion === mine && r.enemy === theirs);
+    const back = direct ? undefined : rows.find((r) => r.role === role && r.champion === theirs && r.enemy === mine);
+    const row = direct ?? back;
+    const note = role === "JUNGLE" ? "SoloQ head-to-head only; tempo, invades and objective control are not measured."
+      : role === "BOT" || role === "SUPPORT" ? "One champion against one, not the whole bot lane: no duo-vs-duo data." : undefined;
+    if (!row) { out.push({ role, mine, theirs, verdict: "no-data", strong: false, inverted: false, stale: false, note }); continue; }
+    const winRate = Math.round((direct ? row.winRate : 1 - row.winRate) * 10000) / 10000;
+    const full = row.games >= DPM_MIN_GAMES;
+    const verdict: LaneVerdict = !full ? "insufficient" : winRate >= 0.5 + LANE_EVEN_BAND ? "us" : winRate <= 0.5 - LANE_EVEN_BAND ? "them" : "even";
+    const strong = full && Math.abs(winRate - 0.5) >= DPM_STRONG_WIN_RATE - 0.5;
+    out.push({ role, mine, theirs, verdict, strong, winRate, games: row.games, patch: row.patch, rank: row.rank, url: row.url, updated: row.updated,
+      inverted: !direct, stale: olderPatch(row.patch, newestPatch), note });
+  }
+  return out;
+}
+
+export const LANE_VERDICT_LABEL: Record<LaneVerdict, string> = {
+  us: "Favors us", them: "Favors them", even: "Relatively even", insufficient: "Insufficient evidence", "no-data": "No matchup data",
+};

@@ -268,3 +268,43 @@ describe("no counter without enough evidence", () => {
     for (const r of stored.proResults) expect(r.sources.length).toBeGreaterThan(0);
   });
 });
+
+describe("historical LCK games (alan, 2026-10-22)", () => {
+  const archived = (games: ReturnType<typeof game>[], dpmRows: DpmMatchup[], recent: ReturnType<typeof game>[] = []): CounterInput => ({
+    ...input(recent, { dpm: dpmRows }),
+    proDrafts: [...recent, ...games].flatMap((g) => g.drafts),
+    archiveResults: games.map((g) => g.result),
+  });
+  it("archived games show with their counts but never lift a counter", () => {
+    const res = run({}, { TOP: "aatrox" }, archived(wins("TOP", "jayce", "aatrox", 4, "16.16"), [dpm("TOP", "aatrox", "jayce", 0.55)]));
+    const c = res.TOP!.counters[0];
+    expect(c.pro).toBeNull();
+    expect(c.archive).toMatchObject({ games: 4, wins: 4, historical: true });
+    expect(c.strength).toBe("strong");
+    expect(describePro(c.archive!)).toBe("Historical LCK · 4 games · 4–0 · 26.16");
+  });
+  it("archived losses add no caution; recent games still decide", () => {
+    const losses = Array.from({ length: 3 }, () => game({ TOP: "jayce" }, { TOP: "aatrox" }, "Red", "16.16"));
+    const res = run({}, { TOP: "aatrox" }, archived(losses, [dpm("TOP", "aatrox", "jayce", 0.55)], wins("TOP", "jayce", "aatrox")));
+    const c = res.TOP!.counters[0];
+    expect(c.pro).toMatchObject({ games: 3, verdict: "agrees" });
+    expect(c.archive).toMatchObject({ games: 3, wins: 0 });
+    expect(c.strength).toBe("confirmed");
+    expect(c.cautions.join(" ")).not.toMatch(/disagree/);
+  });
+  it("archived games never make a counter without a DPM row", () => {
+    const res = run({}, { TOP: "aatrox" }, archived(wins("TOP", "jayce", "aatrox", 5, "16.16"), []));
+    expect(res.TOP!.counters).toEqual([]);
+  });
+  it("recent samples name how many games are on the current patch", () => {
+    const inp = { ...input([...wins("TOP", "jayce", "aatrox", 2, "16.20"), ...wins("TOP", "jayce", "aatrox", 1, "16.18")], { dpm: [dpm("TOP", "aatrox", "jayce", 0.55)] }), newestPatch: "26.20" };
+    const c = run({}, { TOP: "aatrox" }, inp).TOP!.counters[0];
+    expect(c.pro!.current).toBe(2);
+    expect(describePro(c.pro!)).toMatch(/^Pro · 3 games \(2 on the current patch\)/);
+  });
+  it("the stored archive is the LCK playoff games, apart from the tracked events", () => {
+    const tracked = new Set(getProGames().games.map((g) => `golgg-game-${g.id}`));
+    expect(data.archiveResults.length).toBeGreaterThan(0);
+    for (const r of data.archiveResults) expect(tracked.has(r.game)).toBe(false);
+  });
+});

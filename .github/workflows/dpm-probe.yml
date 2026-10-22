@@ -1,0 +1,23 @@
+name: DPM.LOL access test
+
+# One-time check (alan, 2026-10-22): does dpm.lol answer an ordinary request from a GitHub runner? Prints what came back
+# to the job log and summary and stops at the first refusal or challenge, never working around one. Read-only: commits
+# nothing. If it works, a per-patch DPM refresh can run here; if not, DPM stays a browser collection on alan's Mac.
+on:
+  workflow_dispatch:
+  push:
+    branches: ["claude/**"]
+    paths: ["scripts/dpm-probe.mjs", ".github/workflows/dpm-probe.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/dpm-probe.mjs | tee -a "$GITHUB_STEP_SUMMARY"

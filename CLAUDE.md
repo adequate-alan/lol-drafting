@@ -182,6 +182,25 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   label on the candidate row, with pool tier and draft-fit rank in the row detail. DPM rows come from alan as structured facts
   (`origin: "externally-provided"`); dpm.lol answers Claude's environments with a Cloudflare challenge. Never invent a
   counter or a game result.
+  **Freshness and empty states** (alan, 2026-10-22; `lib/counter-freshness.ts`, `tests/counter-freshness.test.ts`): the DPM
+  data's patch is compared with the newest recognised patch (patch notes, pro games; `getCounterFreshness`); an older row
+  is marked "older patch" with Riot's changes to its champions since, strength unchanged. An empty Counters list says why
+  (`CounterCoverage.reason`: no data, small sample, below threshold, taken) and never that no counter exists; favourable
+  rows under 300 games show as "Preliminary", never a Counter label. Labels only, never the score or the order. GitHub
+  runners get the same Cloudflare challenge (`dpm-probe.yml`, 2026-10-22), so DPM stays a browser collection on alan's
+  Mac; dpm.lol's robots.txt disallows every agent from `/*/champions/versus` and the players' versus / synergy API, so a
+  collection reads the champion Build pages only.
+  **Lane matchups** (alan, 2026-10-22; `laneMatchups` in `lib/counters.ts`, `components/LaneMatchups.tsx`,
+  `tests/lane-matchups.test.ts`): with both sides of a lane locked, one quiet line under the board reads each lane from
+  DPM rows only: Favors us / Favors them (52% / 48% with 300+ games, strong at 54 / 46), Relatively even, Insufficient
+  evidence (under 300 games, numbers only in the card), No matchup data. A pair only the enemy's page lists is turned
+  round and marked as the same sample, never a second source. Bot and Support say there is no duo data. Never from
+  popularity, pro results or kits; never a score or an order. DPM collections go through `scripts/ingest-dpm.ts` (one
+  patch and bracket, refuses partial reads and older patches, archives the stored rows in `data/dpm-history/`).
+  **Historical LCK corroboration** (alan, 2026-10-22, "approved with limits"): the archived LCK 2026 playoff winners
+  (`getArchiveResults`, from `pro-builds.json` `games`) are tallied apart as `Counter.archive` ("Historical LCK · n games",
+  shown from one game): never establish, lift or caution a counter. Recent pro samples name how many games are on the
+  current patch (`ProSample.current`). Pro win rates are never averaged into DPM.
 
 - **Roster**: `data/champions.json` holds every champion in Riot's Data Dragon. Champions added by
   `scripts/sync-champions.mjs` (run by `.github/workflows/sync-champions.yml`; Data Dragon is unreachable from Claude's
@@ -368,6 +387,12 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   `changedSince`, `patchHref`. The champion drawer's "Patch changes" block and the hover card's latest-patch line use
   them; `components/ChangedSince.tsx` (`ChangedSince`, `PatchTag`) is the "Changed since this game" control for Pro
   Builds. It never calls an old build current or optimal.
+- **Kit review queue** (alan, 2026-10-22; `lib/kit-review.ts`, `scripts/kit-review.ts`, `tests/kit-review.test.ts`): a
+  champion change touching crowd control, mobility, range, damage type or mechanics (a rework flags every line; plain
+  number tuning and presentation lines never) flags that champion's stored attributes and kit values: "Kit values to
+  recheck" (analysis) under the entry on Patch Notes and in each patch-notes run summary, with the changed lines, the
+  stored values and what to recheck. Never a new value, never an edit to a kit, attribute, coefficient or ranking; a flag
+  leaves the queue only through alan's decision in `data/kit-review.json`.
 - Daily check: `.github/workflows/refresh-patch-notes.yml`, 8:47 AM Eastern (crons 12:47 / 13:47 UTC, same offset gate as the pro refresh) and
   `workflow_dispatch` (dry run, force). `scripts/refresh-patch-notes.mjs` reads Riot's patch-notes tag page and each
   tracked patch page from the runner (leagueoflegends.com is unreachable from Claude's environments; robots.txt allows

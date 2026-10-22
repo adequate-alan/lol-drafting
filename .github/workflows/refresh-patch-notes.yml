@@ -69,6 +69,14 @@ jobs:
       - if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
         run: npm run build
 
+      # Kit review queue (alan, 2026-10-22): champions whose changes touch their stored kit values, for a person to recheck.
+      # Summary only; it never edits a kit or anything that scores.
+      - if: steps.gate.outputs.run == 'true'
+        name: Kit review queue
+        run: |
+          [ -d node_modules ] || npm ci
+          npx tsx scripts/kit-review.ts | tee -a "$GITHUB_STEP_SUMMARY"
+
       - id: commit
         if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
         name: Commit refreshed patch notes

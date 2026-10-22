@@ -465,9 +465,9 @@ async function main() {
   // ---------- write + validate ----------
   // counters.json, proposed-synergy.json, pro-games.json, pro-builds.json and build-assets.json (the daily Gol.gg
   // refresh), discovered-comps.json (the weekly comp discovery) and patch-notes.json (the daily Riot check) are not in
-  // the workbook, nor is player-portraits.json (checked portraits) or comp-review.json (alan's Comp Library decisions);
+  // the workbook, nor is player-portraits.json (checked portraits) or comp-review.json (alan's Comp Library decisions) and kit-review.json (his kit decisions);
   // the importer leaves them alone.
-  const out: Record<Exclude<keyof typeof Files, "comp-review.json" | "counters.json" | "proposed-synergy.json" | "pro-games.json" | "pro-builds.json" | "build-assets.json" | "discovered-comps.json" | "patch-notes.json" | "player-portraits.json">, unknown> = {
+  const out: Record<Exclude<keyof typeof Files, "comp-review.json" | "counters.json" | "proposed-synergy.json" | "pro-games.json" | "pro-builds.json" | "build-assets.json" | "discovered-comps.json" | "patch-notes.json" | "player-portraits.json" | "kit-review.json">, unknown> = {
     "champions.json": champions,
     "sources.json": [...sources.values()],
     "bot-pairings.json": botPairings,

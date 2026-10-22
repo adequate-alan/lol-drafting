@@ -9,6 +9,8 @@ import { golggGameId, newestGameFirst, withGameSides } from "./draft-side";
 import { draftsFromGames, freshness, resultsFromGames, sourcesFromGames } from "./pro-games";
 import { priorityData, priorityMarks, type PriorityData } from "./pro-priority";
 import { buildPatchIndex } from "./patch-changes";
+import { counterFreshness, newestPatch, type CounterFreshness } from "./counter-freshness";
+import { storedKitQueue } from "./kit-review";
 import { championIndex, type ChampionBuilds } from "./pro-builds";
 import { withoutConfirmed } from "./proposed";
 import { Files, ROLES, type Role } from "./schema";
@@ -70,12 +72,23 @@ export const getProposed = () => (proposed ??= withoutConfirmed(load("proposed-s
 export const getPatchNotes = () => load("patch-notes.json");
 let patchIndex: ReturnType<typeof buildPatchIndex> | undefined;
 export const getPatchIndex = () => (patchIndex ??= buildPatchIndex(getPatchNotes()));
+/** Champions whose Riot changes touch their stored kit values and that alan has not reviewed yet (lib/kit-review.ts). */
+export const getKitQueue = () => storedKitQueue(getPatchNotes(), getChampions(), load("kit-review.json").decisions);
+let counterFresh: CounterFreshness | undefined;
+/** The DPM data's patch against the newest patch the site recognises (Riot's patch notes and recorded pro games). */
+export const getCounterFreshness = () => (counterFresh ??= counterFreshness(getCounters(), getPatchIndex(),
+  newestPatch(getPatchNotes().patches.map((p) => p.patch), getProGames().games.map((g) => g.patch))));
 
 // Pro Builds: the full records load in the browser on /pro-builds/ (lib/pro-builds-bundle.ts); pages get only the
 // per-champion summary (games, players, newest patch) the drawer shows beside its "View Pro Builds" link.
 let buildIndex: ChampionBuilds[] | undefined;
 export const getBuildGames = () => [...new Set(load("pro-builds.json").builds.map((b) => b.game))];
 /** Every game a stored build belongs to: the tracked games plus the archive records kept with the builds (LCK playoffs). */
+/** Winners of the archived game records (LCK 2026 playoffs, stored with Pro Builds), apart from the tracked events. */
+export const getArchiveResults = () => {
+  const tracked = new Set(getProGames().games.map((g) => g.id));
+  return resultsFromGames((load("pro-builds.json").games ?? []).filter((g) => !tracked.has(g.id)), []);
+};
 export const getBuildGameRecords = () => [...getProGames().games, ...(load("pro-builds.json").games ?? [])];
 /** Players of one team in the recorded builds (latest team per player id), by role, with their recorded game count. */
 export function getTeamPlayers(team: string) {
@@ -104,6 +117,9 @@ export function getDraftData() {
     pool: getPool(),
     events: getMeta().events,
     counters: getCounters(),
+    newestPatch: getCounterFreshness().newest ?? undefined, // DPM rows older than this are marked historical
+    archiveResults: getArchiveResults(), // LCK playoff winners: historical context on counters, never lifts one
+    counterFreshness: getCounterFreshness(),
     proposed: getProposed().records,
     priority: priorityMarks(getPriority()), // a label on rows, never read by the ranking
     // Lane row labels (Top, Mid, Bot, Support), never read by the ranking.

@@ -11,7 +11,7 @@ import type { PriorityData } from "@/lib/pro-priority";
 import { describeLine } from "@/lib/evidence";
 import { patchKey, patchLabel, patchesOf, priorityMarks } from "@/lib/pro-priority";
 import { blindLabel, defaultPatch, engineReader, rotationLabel, sortForView, startLine, startingPicks, type StartView, type StartingPick } from "@/lib/starting-picks";
-import { describeEvidence, describePro, enemyParam, poolTier, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
+import { describeEvidence, describePro, emptyText, enemyParam, laneMatchups, poolTier, preliminaryText, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
 import { similarProDrafts, similarShells, type ProSuggestion, type SuggestData } from "@/lib/suggest";
 import type { DraftData, DrawerData } from "@/lib/data";
 import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
@@ -22,6 +22,7 @@ import { GenRang } from "./GenRang";
 import { PairingCard, type CardRecord } from "./PairingCard";
 import { proposedCard } from "@/lib/proposed";
 import { Disclosure } from "./Disclosure";
+import { LaneMatchups } from "./LaneMatchups";
 import { CounterTrigger, MetaEvidenceTrigger, ProEvidenceTrigger, type ProCtx } from "./EvidenceCards";
 import { Select } from "./Select";
 import { Popover } from "./Popover";
@@ -225,7 +226,9 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
       shells: similarShells(dDraft, data.shells),
     };
   }, [dDraft, dEnemy, data, sources, roomPatch, drawerData.priority, reader]);
-  const proCtx: ProCtx = useMemo(() => ({ drafts: data.proDrafts, sources, enemy: enemyDraft, names }), [data.proDrafts, sources, enemyDraft, names]);
+  const proCtx: ProCtx = useMemo(() => ({ drafts: data.proDrafts, sources, enemy: enemyDraft, names, counterFresh: data.counterFreshness }), [data.proDrafts, sources, enemyDraft, names, data.counterFreshness]);
+  // Lane matchups: both sides of a lane locked, read from DPM rows only (labels, never the ranking).
+  const laneReads = useMemo(() => laneMatchups(draft, enemyDraft, data.counters.dpm, data.newestPatch), [draft, enemyDraft, data.counters.dpm, data.newestPatch]);
   const open = ROLES.filter((r) => !draft[r]);
   const lockedCount = ROLES.length - open.length;
   const started = lockedCount > 0 || enemyIds.length > 0;
@@ -392,6 +395,8 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
         </div>
       </div>
 
+      <LaneMatchups reads={laneReads} names={names} fresh={data.counterFreshness} />
+
       {/* Narrow screens put Comp Check below the list: one line says what the draft is missing, here and pinned */}
       <CompSummaryLine read={planRead} active={active} className="cc-summary-board" preview={previewLine} />
       <MiniBoard show={pinned} draft={draft} enemy={enemy} active={active} names={names} onActivate={setFocus}
@@ -450,8 +455,10 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                     )}
                     {activeCounters && (filter === "counter" || activeCounters.note) && (
                       <p className="fit-note xs muted">
-                        {activeCounters.counters.length ? `Counters vs ${vsNames(activeCounters.vs, names)}${activeCounters.scope === "duo" ? " (duo)" : ""}.` : `No reliable counter data for ${vsNames(activeCounters.vs, names)}.`}
+                        {activeCounters.counters.length ? `Counters vs ${vsNames(activeCounters.vs, names)}${activeCounters.scope === "duo" ? " (duo)" : ""}.` : emptyText(activeCounters.coverage, vsNames(activeCounters.vs, names), data.newestPatch)}
                         {activeCounters.note ? ` ${activeCounters.note}` : ""}
+                        {activeCounters.counters.some((c) => c.evidence.stale) ? ` From DPM.LOL patch ${patchLabel(activeCounters.counters[0].evidence.patch)}, older than ${patchLabel(data.newestPatch!)}: historical matchups that may no longer reflect current balance.` : ""}
+                        {filter === "counter" && activeCounters.coverage.preliminary.length > 0 ? ` ${preliminaryText(activeCounters.coverage, (id) => names[id] ?? id)}` : ""}
                       </p>
                     )}
                     {compared.length > 0 && (
@@ -472,7 +479,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                               top={isLaneRole(active) ? laneCtx(data.laneUsage[active], c.champion, enemyDraft, draft, active === "JUNGLE" ? { hits: boardHits, responses: data.jungleBoard.responses[c.champion] ?? [] } : undefined) : undefined} />
                           </Fragment>
                         ))
-                        : <p className="rec-empty">{viewFilter === "all" ? "Nothing stands out yet." : viewFilter === "counter" && activeCounters?.counters.length === 0 ? "No counters to show." : "No candidate has this signal yet."}</p>}
+                        : <p className="rec-empty">{viewFilter === "all" ? "Nothing stands out yet." : viewFilter === "counter" && activeCounters?.counters.length === 0 ? "No counter found in our matchup data (why above)." : "No candidate has this signal yet."}</p>}
                     {visibleRows.length < shownRows.length && (
                       <button type="button" className="btn sm fit-more" onClick={() => setShowAll(true)}>Show all {shownRows.length}</button>
                     )}
@@ -750,7 +757,7 @@ function FitRow({ c, tier, bot, names, proCtx, hovered, previewed, compareAt, co
           {chips.length > 0 && <span className="sig-line">{chips.map((s) => s.key === "pro" && c.pro
             ? <ProEvidenceTrigger key={s.key} pro={c.pro} champion={c.champion} role={c.role} ctx={proCtx}
               mate={tctx?.mid && tctx.allyMid ? { name: names[tctx.allyMid] ?? tctx.allyMid, games: tctx.mid.games } : undefined} />
-            : s.key === "counter" && counter ? <CounterTrigger key={s.key} c={counter} names={names} />
+            : s.key === "counter" && counter ? <CounterTrigger key={s.key} c={counter} names={names} fresh={proCtx.counterFresh} />
               : metaChip.has(s.key) && c.meta ? <MetaEvidenceTrigger key={s.key} s={c.meta} label={s.label} cls={s.key} names={names} />
               : s.href ? <Link key={s.key} className={`sig ${s.key} sig-link`} href={s.href} title={s.title}>{s.label}</Link>
                 : <span key={s.key} className={`sig ${s.key}`} title={s.title}>{s.label}</span>)}</span>}

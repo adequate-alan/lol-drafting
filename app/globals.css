@@ -1240,6 +1240,14 @@ button.link:focus-visible { box-shadow: var(--focus-ring); border-radius: var(--
    research below. Gold = my team and the role being picked; oxblood = the enemy. ===== */
 .draft-head { align-items: center; margin-bottom: var(--s4); }
 .board { position: relative; z-index: 7; display: grid; gap: var(--s3); margin-bottom: var(--s6); }
+/* Lane matchups under the board (DPM.LOL evidence, counter styling only on the lane that favors them). */
+.lane-reads { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s1) var(--s4); margin: calc(-1 * var(--s4)) 0 var(--s5); font-size: var(--fs-xs); color: var(--text-muted); }
+.lane-reads-k { font-family: var(--font-display); font-weight: var(--w-control); color: var(--text); }
+.lane-read { font-weight: var(--w-control); }
+.lane-read-role { color: var(--text); }
+.lane-read.them { color: var(--counter); }
+.lane-read.us { color: var(--accent-text); }
+.lane-read.insufficient, .lane-read.no-data { color: var(--text-faint); }
 .team-row { position: relative; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: var(--s4); align-items: stretch; }
 .team-row.ally { z-index: 2; }
 .team-row.enemy { z-index: 1; }

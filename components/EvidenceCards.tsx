@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { FIRST_ROTATION, type StartGame, type StartingPick } from "@/lib/starting-picks";
 import { describePro, type Counter } from "@/lib/counters";
+import type { CounterFreshness } from "@/lib/counter-freshness";
 import { shortDate } from "@/lib/evidence";
 import { evidenceGames, type EvidenceGame, type Picks } from "@/lib/pro-evidence";
 import { ROLES, type ProDraft, type Role, type Source } from "@/lib/schema";
@@ -22,7 +23,10 @@ const HOVER_GAMES = 3; // games shown before "View all"
 const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? "" : "s"}`;
 const list = (xs: string[]) => (xs.length < 3 ? xs.join(" and ") : `${xs.slice(0, -1).join(", ")} and ${xs.at(-1)}`);
 
-export interface ProCtx { drafts: ProDraft[]; sources: Record<string, Source>; enemy: Partial<Record<Role, string>>; names: Record<string, string> }
+export interface ProCtx {
+  drafts: ProDraft[]; sources: Record<string, Source>; enemy: Partial<Record<Role, string>>; names: Record<string, string>;
+  counterFresh?: CounterFreshness; // the Counter card's patch line: the DPM data's patch against the newest one
+}
 
 // `mate`: the Jungle row's "With <mid> · n games" label, which counts every recorded game (LCK archive included); the
 // card says how its own narrower count differs (alan, 2026-10-14).
@@ -134,7 +138,7 @@ function MiniDraft({ team, opponent, ours, theirs, hl, vs, n }: {
 
 const STRENGTH = { confirmed: "Strong · pro agrees", strong: "Strong", favorable: "Favorable" } as const;
 
-export function CounterTrigger({ c, names }: { c: Counter; names: Record<string, string> }) {
+export function CounterTrigger({ c, names, fresh }: { c: Counter; names: Record<string, string>; fresh?: CounterFreshness }) {
   const n = (id: string) => names[id] ?? id;
   const e = c.evidence;
   return (
@@ -145,8 +149,10 @@ export function CounterTrigger({ c, names }: { c: Counter; names: Record<string,
           <p className="pop-sub">{n(c.champion)} into {list(e.vs.map(n))}{e.with ? ` with ${n(e.with)}` : ""}: a statistically favourable {e.scope === "duo" ? "duo" : "lane"} matchup.</p>
           <dl className="pop-kv">
             <dt>Matchup</dt><dd><a href={e.url} target="_blank" rel="noopener noreferrer" title={`DPM.LOL, updated ${e.updated}`}>DPM.LOL</a> <span className="mono">{(e.winRate * 100).toFixed(1)}%</span> over <span className="mono">{e.games.toLocaleString("en-US")}</span> games · <span className="mono">{patchLabel(e.patch)}</span>{e.rank ? ` · ${e.rank}` : ""}</dd>
+            {e.stale && <><dt>Older patch</dt><dd>Collected on patch <span className="mono">{patchLabel(e.patch)}</span>{fresh?.newest ? <> (current <span className="mono">{patchLabel(fresh.newest)}</span>)</> : ""}: a historical matchup that may no longer reflect current balance. Strength is unchanged.<StaleChanges ids={[c.champion, ...e.vs, ...(e.with ? [e.with] : [])]} fresh={fresh} n={n} /></dd></>}
             {e.note && <><dt>Held back</dt><dd>{e.note}</dd></>}
             <dt>Pro games</dt><dd>{c.pro ? describePro(c.pro).replace(/^Pro · /, "") : "No repeated pro sample; shown separately when there is one, never averaged."}</dd>
+            {c.archive && <><dt>Historical</dt><dd>{describePro(c.archive).replace(/^Historical LCK · /, "")} in the archived LCK 2026 playoffs: older-patch context only, never lifts or weakens this counter.</dd></>}
             {c.cautions.length > 0 && <><dt>Caution</dt><dd>{c.cautions.join("; ")}</dd></>}
           </dl>
           <footer className="pop-foot"><span>Counter signal only, never part of the order. Opposite sides in pro games alone never make a counter.</span></footer>
@@ -156,6 +162,22 @@ export function CounterTrigger({ c, names }: { c: Counter; names: Record<string,
   );
 }
 
+
+/** Riot's changes since the DPM patch to the champions in a counter, each linking to its Patch Notes entry. */
+function StaleChanges({ ids, fresh, n }: { ids: string[]; fresh?: CounterFreshness; n: (id: string) => string }) {
+  const changed = ids.filter((id) => fresh?.changes[id]?.length);
+  if (!fresh) return null;
+  if (!changed.length) return <> No recorded patch-note change to {list(ids.map(n))} since then.</>;
+  return (
+    <> Changed since:{" "}
+      {changed.map((id, i) => (
+        <span key={id}>{i ? "; " : ""}{n(id)} {fresh.changes[id].map((ch, j) => (
+          <span key={`${ch.patch}${j}`}>{j ? ", " : ""}<Link href={ch.href}>{patchLabel(ch.patch)}{ch.via ? " (system)" : ch.category ? ` ${ch.category}` : ""}</Link></span>
+        ))}</span>
+      ))}
+    </>
+  );
+}
 
 // ---------- Pro meta (starting picks) ----------
 
