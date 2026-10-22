@@ -152,6 +152,7 @@ export function CounterTrigger({ c, names, fresh }: { c: Counter; names: Record<
             {e.stale && <><dt>Older patch</dt><dd>Collected on patch <span className="mono">{patchLabel(e.patch)}</span>{fresh?.newest ? <> (current <span className="mono">{patchLabel(fresh.newest)}</span>)</> : ""}: a historical matchup that may no longer reflect current balance. Strength is unchanged.<StaleChanges ids={[c.champion, ...e.vs, ...(e.with ? [e.with] : [])]} fresh={fresh} n={n} /></dd></>}
             {e.note && <><dt>Held back</dt><dd>{e.note}</dd></>}
             <dt>Pro games</dt><dd>{c.pro ? describePro(c.pro).replace(/^Pro · /, "") : "No repeated pro sample; shown separately when there is one, never averaged."}</dd>
+            {c.archive && <><dt>Historical</dt><dd>{describePro(c.archive).replace(/^Historical LCK · /, "")} in the archived LCK 2026 playoffs: older-patch context only, never lifts or weakens this counter.</dd></>}
             {c.cautions.length > 0 && <><dt>Caution</dt><dd>{c.cautions.join("; ")}</dd></>}
           </dl>
           <footer className="pop-foot"><span>Counter signal only, never part of the order. Opposite sides in pro games alone never make a counter.</span></footer>

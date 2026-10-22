@@ -81,6 +81,11 @@ export const getCounterFreshness = () => (counterFresh ??= counterFreshness(getC
 let buildIndex: ChampionBuilds[] | undefined;
 export const getBuildGames = () => [...new Set(load("pro-builds.json").builds.map((b) => b.game))];
 /** Every game a stored build belongs to: the tracked games plus the archive records kept with the builds (LCK playoffs). */
+/** Winners of the archived game records (LCK 2026 playoffs, stored with Pro Builds), apart from the tracked events. */
+export const getArchiveResults = () => {
+  const tracked = new Set(getProGames().games.map((g) => g.id));
+  return resultsFromGames((load("pro-builds.json").games ?? []).filter((g) => !tracked.has(g.id)), []);
+};
 export const getBuildGameRecords = () => [...getProGames().games, ...(load("pro-builds.json").games ?? [])];
 /** Players of one team in the recorded builds (latest team per player id), by role, with their recorded game count. */
 export function getTeamPlayers(team: string) {
@@ -110,6 +115,7 @@ export function getDraftData() {
     events: getMeta().events,
     counters: getCounters(),
     newestPatch: getCounterFreshness().newest ?? undefined, // DPM rows older than this are marked historical
+    archiveResults: getArchiveResults(), // LCK playoff winners: historical context on counters, never lifts one
     counterFreshness: getCounterFreshness(),
     proposed: getProposed().records,
     priority: priorityMarks(getPriority()), // a label on rows, never read by the ranking

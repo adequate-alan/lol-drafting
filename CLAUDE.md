@@ -197,6 +197,10 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   round and marked as the same sample, never a second source. Bot and Support say there is no duo data. Never from
   popularity, pro results or kits; never a score or an order. DPM collections go through `scripts/ingest-dpm.ts` (one
   patch and bracket, refuses partial reads and older patches, archives the stored rows in `data/dpm-history/`).
+  **Historical LCK corroboration** (alan, 2026-10-22, "approved with limits"): the archived LCK 2026 playoff winners
+  (`getArchiveResults`, from `pro-builds.json` `games`) are tallied apart as `Counter.archive` ("Historical LCK · n games",
+  shown from one game): never establish, lift or caution a counter. Recent pro samples name how many games are on the
+  current patch (`ProSample.current`). Pro win rates are never averaged into DPM.
 
 - **Roster**: `data/champions.json` holds every champion in Riot's Data Dragon. Champions added by
   `scripts/sync-champions.mjs` (run by `.github/workflows/sync-champions.yml`; Data Dragon is unreachable from Claude's
