@@ -190,6 +190,13 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   runners get the same Cloudflare challenge (`dpm-probe.yml`, 2026-10-22), so DPM stays a browser collection on alan's
   Mac; dpm.lol's robots.txt disallows every agent from `/*/champions/versus` and the players' versus / synergy API, so a
   collection reads the champion Build pages only.
+  **Lane matchups** (alan, 2026-10-22; `laneMatchups` in `lib/counters.ts`, `components/LaneMatchups.tsx`,
+  `tests/lane-matchups.test.ts`): with both sides of a lane locked, one quiet line under the board reads each lane from
+  DPM rows only: Favors us / Favors them (52% / 48% with 300+ games, strong at 54 / 46), Relatively even, Insufficient
+  evidence (under 300 games, numbers only in the card), No matchup data. A pair only the enemy's page lists is turned
+  round and marked as the same sample, never a second source. Bot and Support say there is no duo data. Never from
+  popularity, pro results or kits; never a score or an order. DPM collections go through `scripts/ingest-dpm.ts` (one
+  patch and bracket, refuses partial reads and older patches, archives the stored rows in `data/dpm-history/`).
 
 - **Roster**: `data/champions.json` holds every champion in Riot's Data Dragon. Champions added by
   `scripts/sync-champions.mjs` (run by `.github/workflows/sync-champions.yml`; Data Dragon is unreachable from Claude's

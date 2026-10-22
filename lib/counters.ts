@@ -394,3 +394,56 @@ export const preliminaryText = (c: CounterCoverage, name: (id: string) => string
 export function describePro(p: ProSample): string {
   return ["Pro", `${p.games} games`, `${p.wins}–${p.games - p.wins}`, p.patch && patchLabel(p.patch), p.verdict].filter(Boolean).join(" · ");
 }
+
+// ---------- lane matchups on the board ----------
+//
+// Both sides of a lane are locked: does the matchup data favour one of them? (alan, 2026-10-22). Read only from DPM rows
+// (my champion's page against theirs); when only the enemy's page lists the pair, its row is read the other way round,
+// the same sample, marked `inverted` and never counted as a second source. No row with DPM_MIN_GAMES games is
+// "insufficient" (its numbers shown as preliminary); no row at all is "no-data". Never from popularity, pro results or
+// kits, never scored, never the order of any list.
+
+export type LaneVerdict = "us" | "them" | "even" | "insufficient" | "no-data";
+export const LANE_EVEN_BAND = 0.02; // 48–52%: relatively even
+
+export interface LaneMatchup {
+  role: Role;
+  mine: string;
+  theirs: string;
+  verdict: LaneVerdict;
+  strong: boolean; // 54%+ either way, with the full sample
+  winRate?: number; // my side's matchup win rate
+  games?: number;
+  patch?: string;
+  rank?: string;
+  url?: string;
+  updated?: string;
+  inverted: boolean; // read from the enemy champion's row: the same sample seen from the other side
+  stale: boolean;
+  note?: string; // what the read can't say (jungle head-to-head, bot lane without duo data)
+}
+
+export function laneMatchups(draft: Draft, enemy: EnemyDraft, rows: Counters["dpm"], newestPatch?: string): LaneMatchup[] {
+  const out: LaneMatchup[] = [];
+  for (const role of ROLES) {
+    const mine = draft[role], theirs = enemy[role];
+    if (!mine || !theirs) continue;
+    const direct = rows.find((r) => r.role === role && r.champion === mine && r.enemy === theirs);
+    const back = direct ? undefined : rows.find((r) => r.role === role && r.champion === theirs && r.enemy === mine);
+    const row = direct ?? back;
+    const note = role === "JUNGLE" ? "SoloQ head-to-head only; tempo, invades and objective control are not measured."
+      : role === "BOT" || role === "SUPPORT" ? "One champion against one, not the whole bot lane: no duo-vs-duo data." : undefined;
+    if (!row) { out.push({ role, mine, theirs, verdict: "no-data", strong: false, inverted: false, stale: false, note }); continue; }
+    const winRate = Math.round((direct ? row.winRate : 1 - row.winRate) * 10000) / 10000;
+    const full = row.games >= DPM_MIN_GAMES;
+    const verdict: LaneVerdict = !full ? "insufficient" : winRate >= 0.5 + LANE_EVEN_BAND ? "us" : winRate <= 0.5 - LANE_EVEN_BAND ? "them" : "even";
+    const strong = full && Math.abs(winRate - 0.5) >= DPM_STRONG_WIN_RATE - 0.5;
+    out.push({ role, mine, theirs, verdict, strong, winRate, games: row.games, patch: row.patch, rank: row.rank, url: row.url, updated: row.updated,
+      inverted: !direct, stale: olderPatch(row.patch, newestPatch), note });
+  }
+  return out;
+}
+
+export const LANE_VERDICT_LABEL: Record<LaneVerdict, string> = {
+  us: "Favors us", them: "Favors them", even: "Relatively even", insufficient: "Insufficient evidence", "no-data": "No matchup data",
+};

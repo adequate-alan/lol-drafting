@@ -11,7 +11,7 @@ import type { PriorityData } from "@/lib/pro-priority";
 import { describeLine } from "@/lib/evidence";
 import { patchKey, patchLabel, patchesOf, priorityMarks } from "@/lib/pro-priority";
 import { blindLabel, defaultPatch, engineReader, rotationLabel, sortForView, startLine, startingPicks, type StartView, type StartingPick } from "@/lib/starting-picks";
-import { describeEvidence, describePro, emptyText, enemyParam, poolTier, preliminaryText, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
+import { describeEvidence, describePro, emptyText, enemyParam, laneMatchups, poolTier, preliminaryText, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
 import { similarProDrafts, similarShells, type ProSuggestion, type SuggestData } from "@/lib/suggest";
 import type { DraftData, DrawerData } from "@/lib/data";
 import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
@@ -22,6 +22,7 @@ import { GenRang } from "./GenRang";
 import { PairingCard, type CardRecord } from "./PairingCard";
 import { proposedCard } from "@/lib/proposed";
 import { Disclosure } from "./Disclosure";
+import { LaneMatchups } from "./LaneMatchups";
 import { CounterTrigger, MetaEvidenceTrigger, ProEvidenceTrigger, type ProCtx } from "./EvidenceCards";
 import { Select } from "./Select";
 import { Popover } from "./Popover";
@@ -226,6 +227,8 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
     };
   }, [dDraft, dEnemy, data, sources, roomPatch, drawerData.priority, reader]);
   const proCtx: ProCtx = useMemo(() => ({ drafts: data.proDrafts, sources, enemy: enemyDraft, names, counterFresh: data.counterFreshness }), [data.proDrafts, sources, enemyDraft, names, data.counterFreshness]);
+  // Lane matchups: both sides of a lane locked, read from DPM rows only (labels, never the ranking).
+  const laneReads = useMemo(() => laneMatchups(draft, enemyDraft, data.counters.dpm, data.newestPatch), [draft, enemyDraft, data.counters.dpm, data.newestPatch]);
   const open = ROLES.filter((r) => !draft[r]);
   const lockedCount = ROLES.length - open.length;
   const started = lockedCount > 0 || enemyIds.length > 0;
@@ -391,6 +394,8 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
           </div>
         </div>
       </div>
+
+      <LaneMatchups reads={laneReads} names={names} fresh={data.counterFreshness} />
 
       {/* Narrow screens put Comp Check below the list: one line says what the draft is missing, here and pinned */}
       <CompSummaryLine read={planRead} active={active} className="cc-summary-board" preview={previewLine} />
