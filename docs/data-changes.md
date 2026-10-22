@@ -2,6 +2,35 @@
 
 `data/` is canonical. Changes made by hand after the import are logged here; re-running the importer would undo them.
 
+## 2026-10-22: DPM.LOL lane matchups refreshed (counters)
+
+`data/counters.json` now holds 6,792 DPM.LOL lane-matchup rows for the same 87 pool champion/roles (patch 16.20 / Riot's
+26.20, ranked solo queue, Emerald+, all regions), collected on 2026-10-22 in the desktop app's built-in browser from each
+champion's Build page: the page's own data request after clicking "Full List" (`scripts/dpm-collect/README.md`). The
+2026-10-10 rows are archived whole in `data/dpm-history/16.20-2026-10-10.json.gz`. Stored by `scripts/ingest-dpm.ts`
+after `scripts/dpm-validate.ts` (87/87 pages, 0 problems; 709 reciprocal pairs sum to 100% within 0.06 points on
+average, one jungle pair under 300 games 1.5 points off) and `scripts/dpm-compare.ts`.
+
+Two fields are new: `shown` (DPM's Full List displayed the row; 3,468 of 6,792) and `delta` (the +/- DPM shows beside
+those rows: DPM's own relative figure, stored apart from the win rate and never read as one). By role: TOP 1,815,
+MID 1,639, SUPPORT 1,335, JUNGLE 1,102, BOT 901.
+
+| | 2026-10-10 | 2026-10-22 |
+| --- | --- | --- |
+| Matchup rows | 4,212 | 6,792 |
+| Rows with 300+ games | 1,817 | 4,184 |
+| Qualifying counters (300+ games, 52%+) | 408 | 956 |
+| Strong counters (300+ games, 54%+) | 173 | 376 |
+| Pool champion/roles with a qualifying counter | 68 | 84 |
+| Enemy champion/roles with a qualifying response | 154 | 263 |
+
+692 counters are newly supported, almost all because their samples crossed 300 games (games on shared rows grew ×6 at
+the median: the first collection was three days into the patch, this one twelve days later); 144 disappeared (the
+early win rate drifted under 52% on the larger sample), 65 weakened from strong to favourable and 26 strengthened. The
+largest moves among rows with 300+ games in both (Nocturne vs Vi 43.9% → 51.2%, Galio vs Hwei 50.4% → 43.9%) are
+regression of early samples of 300–400 games (standard error about 2.7 points), not read as meta shifts. Thresholds,
+scoring, saved pairings, pool tiers and kits are unchanged; rows under 300 games stay preliminary.
+
 ## 2026-10-10: DPM.LOL lane matchups (counters)
 
 `data/counters.json` holds 4,212 DPM.LOL lane-matchup rows for the 87 pool champions (patch 16.20, ranked solo queue,

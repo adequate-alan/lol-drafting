@@ -42,7 +42,7 @@ Recommendations start from alan's own saved pairings and pool, not from global w
 
 ## Evidence on Hand
 
-- data/*.json: champions (173, Data Dragon 16.20.1), saved and proposed synergy, pro-games, meta, sources, counters (4,212 DPM lane rows, patch 16.20).
+- data/*.json: champions (173, Data Dragon 16.20.1), saved and proposed synergy, pro-games, meta, sources, counters (6,792 DPM lane rows, patch 16.20, collected 2026-10-22; the 2026-10-10 snapshot archived in data/dpm-history).
 - workbook/ and /mnt/project-files/Clash_LCK_2026_Playoffs_FULL_Revamp.xlsx: the original drafting workbook (archive).
 - Absent, never to be fabricated: lane-matchup data beyond DPM rows, duo counter rows, LCK game dates, Demacia full tournament aggregates where Gol.gg lacks them, kits for Locke and Zaahen.
 

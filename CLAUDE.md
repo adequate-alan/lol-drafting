@@ -197,6 +197,23 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   round and marked as the same sample, never a second source. Bot and Support say there is no duo data. Never from
   popularity, pro results or kits; never a score or an order. DPM collections go through `scripts/ingest-dpm.ts` (one
   patch and bracket, refuses partial reads and older patches, archives the stored rows in `data/dpm-history/`).
+  **DPM collection of 2026-10-22** (alan; `scripts/dpm-collect/README.md`, `lib/dpm-export.ts`, `tests/dpm-export.test.ts`):
+  6,792 rows for the 87 pool champion/roles, patch 26.20 (stored 16.20), ranked, Emerald+, all regions, collected in
+  the desktop app's built-in browser from each champion's Build page: the page's own data request
+  (`/v1/builds/<Slug>?lane=…&tier=emerald_plus&timeframe=16.20&gameMode=ranked`, `enemyMatchups.<LANE>`) after clicking
+  "Full List". Every row is the page champion's actual win rate against that opponent, DPM's own fraction, never
+  computed; every opponent the request lists is kept. `shown` marks the rows DPM's Full List displayed (its own games
+  threshold); `delta` is the +/- DPM shows beside those rows, DPM's own baseline (Jayce vs Singed: 49.9% win rate,
+  "+3.2%" shown), stored apart from the win rate, named as DPM's wherever it appears and never read as a win rate.
+  A hidden browser pane gets no animation frame and dpm.lol's app boots on one: a tiny screenshot after each
+  navigation unblocks it. Before storing: `scripts/dpm-validate.ts` (every pool page, roster names including DPM's
+  `MonkeyKing` / `Nunu` / `Renata`, no duplicates, Full List counts against `shown`, reciprocal pairs summing to 100%:
+  709 pairs, 0.06 points off on average) and `scripts/dpm-compare.ts` (before-and-after counts at the site's
+  thresholds, new / lost / weakened counters, largest moves; `--old` reads an archived snapshot). The 2026-10-10 rows
+  (4,212) are `data/dpm-history/16.20-2026-10-10.json.gz`. `scripts/dpm-freshness.ts` runs in the daily patch-notes
+  workflow: the summary names the data's patch against the newest recognised one, and an issue labelled `dpm-stale`
+  is opened the day a newer patch is recognised (closed on its own once fresh rows are stored). The runner probe
+  (`dpm-probe.yml`, 2026-10-22) was answered with a Cloudflare challenge, so the browser collection stays the method.
   **Historical LCK corroboration** (alan, 2026-10-22, "approved with limits"): the archived LCK 2026 playoff winners
   (`getArchiveResults`, from `pro-builds.json` `games`) are tallied apart as `Counter.archive` ("Historical LCK · n games",
   shown from one game): never establish, lift or caution a counter. Recent pro samples name how many games are on the

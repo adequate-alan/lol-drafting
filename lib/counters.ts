@@ -101,7 +101,7 @@ export interface CounterEvidence {
   strength: "favorable" | "strong"; // from DPM alone, after holding jungle / half-known bot lanes to favorable
   games: number;
   winRate: number; // the counter side's matchup win rate
-  delta?: number;
+  delta?: number; // the +/- DPM displays beside the row (DPM's own baseline): shown as DPM's, never read as a win rate
   patch: string;
   updated: string;
   rank?: string;
@@ -384,9 +384,12 @@ export function counterPicks(draft: Draft, enemy: EnemyDraft, input: CounterInpu
   return out;
 }
 
-/** "DPM · 55.2% matchup · +2.1 · 4,120 games · 26.18", and "· older patch" when the row is stale. */
+/**
+ * "DPM · 55.2% matchup · 4,120 games · 26.18", and "· older patch" when the row is stale. DPM's displayed delta, when
+ * the row carries one, is named as DPM's ("DPM shows +2.1"): its baseline is DPM's own, so it never reads as a win rate.
+ */
 export function describeEvidence(e: CounterEvidence): string {
-  return ["DPM", `${(e.winRate * 100).toFixed(1)}% matchup`, e.delta !== undefined ? `${e.delta > 0 ? "+" : ""}${e.delta.toFixed(1)}` : undefined,
+  return ["DPM", `${(e.winRate * 100).toFixed(1)}% matchup`, e.delta !== undefined ? `DPM shows ${e.delta > 0 ? "+" : ""}${e.delta.toFixed(1)}` : undefined,
     `${e.games.toLocaleString("en-US")} games`, e.patch && patchLabel(e.patch), e.stale ? "older patch" : undefined].filter(Boolean).join(" · ");
 }
 

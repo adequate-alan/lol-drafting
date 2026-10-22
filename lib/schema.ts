@@ -514,8 +514,9 @@ export type Rule = z.infer<typeof Rule>;
 // rows are SoloQ matchup data ingested into the repo (never fetched by the browser) and always labelled DPM.
 const DuoPair = z.object({ bot: ChampionId, support: ChampionId });
 const DpmFields = {
-  winRate: z.number().min(0).max(1), // the counter side's win rate in this matchup
-  delta: z.number().optional(), // win-rate points above the counter's own average, when DPM shows it
+  winRate: z.number().min(0).max(1), // the counter side's win rate in this matchup, DPM's own figure, never computed here
+  delta: z.number().optional(), // the +/- (win-rate points) DPM shows beside the row in its Full List: DPM's own baseline, kept apart from winRate, never a win rate
+  shown: z.boolean().optional(), // DPM's visible Full List showed the row (the list applies its own games threshold); false = only in the page's data request
   games: z.number().int().positive(),
   patch: z.string(),
   rank: z.string().optional(), // DPM's rank filter, e.g. "Emerald+"
@@ -539,6 +540,23 @@ export const Counters = z.object({
   dpmDuos: z.array(DpmDuoMatchup),
 });
 export type Counters = z.infer<typeof Counters>;
+
+// The export a browser collection writes (scripts/dpm-collect/), checked by scripts/dpm-validate.ts and stored by
+// scripts/ingest-dpm.ts (lib/dpm-export.ts). Champion names as DPM writes them; winRate in percent or as a fraction;
+// delta as DPM shows it ("+3.2%"); inFullList = the Full List displayed the row. Unknown fields are kept and ignored.
+export const DpmExportMatchup = z.object({
+  enemy: z.string().min(1), winRate: z.number(), games: z.number().int().positive(),
+  delta: z.union([z.string(), z.number()]).optional(), inFullList: z.boolean().optional(),
+}).passthrough();
+export const DpmExportPage = z.object({
+  champion: z.string().min(1), role: z.string().min(1), url: z.string().url(), lane: z.string().optional(),
+  dataRequest: z.string().url().optional(), fullListRows: z.number().int().nonnegative().optional(), matchups: z.array(DpmExportMatchup),
+}).passthrough();
+export const DpmExport = z.object({
+  source: z.literal("dpm.lol"), collectedOn: Day, patch: z.string().min(1), rank: z.string().min(1), note: z.string().optional(), pages: z.array(DpmExportPage).min(1),
+}).passthrough();
+export type DpmExport = z.infer<typeof DpmExport>;
+export type DpmExportPage = z.infer<typeof DpmExportPage>;
 
 
 // ---------- patch-notes.json (official facts from Riot's patch notes) ----------
