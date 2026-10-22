@@ -27,6 +27,24 @@ async function get(path) {
   }
 }
 
+/** Disallow lines of the "User-agent: *" group. */
+function disallowedForAll(txt) {
+  const out = [];
+  let inStar = false, sawRule = false;
+  for (const raw of txt.split(/\r?\n/)) {
+    const line = raw.replace(/#.*/, "").trim();
+    const m = line.match(/^([A-Za-z-]+)\s*:\s*(.*)$/);
+    if (!m) continue;
+    const [, k, v] = m;
+    if (/^user-agent$/i.test(k)) { if (sawRule) { inStar = false; sawRule = false; } inStar ||= v === "*"; continue; }
+    sawRule = true;
+    if (inStar && /^disallow$/i.test(k) && v) out.push(v);
+  }
+  return out;
+}
+/** Google-style match: "*" is any run of characters, "$" ends the path. */
+const robotsMatch = (rule, path) => new RegExp(`^${rule.replace(/[.+?^{}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*").replace(/\\\$$/, "$")}`).test(path);
+
 say("## DPM.LOL access test from a GitHub runner");
 say();
 let verdict = "works";
@@ -41,8 +59,10 @@ for (const path of ["/robots.txt", "/champions/Jayce/build"]) {
     say("```");
     say(r.body.slice(0, 1500).trim());
     say("```");
-    const blocked = /Disallow:\s*\/champions/i.test(r.body) || /Disallow:\s*\/\s*$/im.test(r.body);
-    if (blocked) { verdict = "robots.txt disallows champion pages"; say("- robots.txt disallows the champion pages: stopping."); break; }
+    // Only the rules for every agent ("User-agent: *") apply to this request.
+    const rules = disallowedForAll(r.body);
+    say(`- Rules for every agent: ${rules.length ? rules.map((x) => `\`${x}\``).join(", ") : "none"}`);
+    if (rules.some((x) => robotsMatch(x, "/champions/Jayce/build"))) { verdict = "robots.txt disallows the champion Build page"; say("- robots.txt disallows the Build page: stopping."); break; }
   } else {
     // What the page carries, so a collector could be written from the same data the 2026-10-10 browser read used.
     const next = r.body.includes("__NEXT_DATA__");
