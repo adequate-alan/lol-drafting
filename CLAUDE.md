@@ -214,6 +214,17 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   workflow: the summary names the data's patch against the newest recognised one, and an issue labelled `dpm-stale`
   is opened the day a newer patch is recognised (closed on its own once fresh rows are stored). The runner probe
   (`dpm-probe.yml`, 2026-10-22) was answered with a Cloudflare challenge, so the browser collection stays the method.
+  **Kit read** (alan, 2026-10-22; `lib/matchup-read.ts` pure, `lib/matchup-kits.ts` builds the book, `KitRead` in
+  `components/EvidenceCards.tsx`, `tests/matchup-read.test.ts`): the Counter card ends with "Kit read · analysis" (General
+  Draft Logic styling): which stored kit interactions plausibly explain the DPM edge, read from the v2 kit values and
+  champion attributes only (range, poke, waveclear, lane pressure / early curve, reach against a kit with no disengage,
+  crowd control against a stored low self-peel, mobility against a catch, tank damage against frontline, burst against a
+  target neither durable nor mobile, disengage against an on-demand start, late scaling), each line naming the values it
+  rests on; at most three lines in a fixed order, what the kits give the opponent listed beside them, a comparison that
+  holds both ways dropped from both sides, and "no clear reason" when nothing is one-sided (sustain, cooldowns and item
+  paths are not stored, so never cited). Self-peel is carried only where it was set or the champion is a carry threat in
+  the role (a tank's default 0 is "not stored", never "immobile"). The read never sees the win rate, never grades, scores
+  or orders anything, and every block says it is a reading, not proof.
   **Historical LCK corroboration** (alan, 2026-10-22, "approved with limits"): the archived LCK 2026 playoff winners
   (`getArchiveResults`, from `pro-builds.json` `games`) are tallied apart as `Counter.archive` ("Historical LCK · n games",
   shown from one game): never establish, lift or caution a counter. Recent pro samples name how many games are on the

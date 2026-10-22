@@ -226,7 +226,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
       shells: similarShells(dDraft, data.shells),
     };
   }, [dDraft, dEnemy, data, sources, roomPatch, drawerData.priority, reader]);
-  const proCtx: ProCtx = useMemo(() => ({ drafts: data.proDrafts, sources, enemy: enemyDraft, names, counterFresh: data.counterFreshness }), [data.proDrafts, sources, enemyDraft, names, data.counterFreshness]);
+  const proCtx: ProCtx = useMemo(() => ({ drafts: data.proDrafts, sources, enemy: enemyDraft, names, counterFresh: data.counterFreshness, matchupBook: data.matchupBook }), [data.proDrafts, sources, enemyDraft, names, data.counterFreshness, data.matchupBook]);
   // Lane matchups: both sides of a lane locked, read from DPM rows only (labels, never the ranking).
   const laneReads = useMemo(() => laneMatchups(draft, enemyDraft, data.counters.dpm, data.newestPatch), [draft, enemyDraft, data.counters.dpm, data.newestPatch]);
   const open = ROLES.filter((r) => !draft[r]);
@@ -757,7 +757,7 @@ function FitRow({ c, tier, bot, names, proCtx, hovered, previewed, compareAt, co
           {chips.length > 0 && <span className="sig-line">{chips.map((s) => s.key === "pro" && c.pro
             ? <ProEvidenceTrigger key={s.key} pro={c.pro} champion={c.champion} role={c.role} ctx={proCtx}
               mate={tctx?.mid && tctx.allyMid ? { name: names[tctx.allyMid] ?? tctx.allyMid, games: tctx.mid.games } : undefined} />
-            : s.key === "counter" && counter ? <CounterTrigger key={s.key} c={counter} names={names} fresh={proCtx.counterFresh} />
+            : s.key === "counter" && counter ? <CounterTrigger key={s.key} c={counter} names={names} fresh={proCtx.counterFresh} book={proCtx.matchupBook} />
               : metaChip.has(s.key) && c.meta ? <MetaEvidenceTrigger key={s.key} s={c.meta} label={s.label} cls={s.key} names={names} />
               : s.href ? <Link key={s.key} className={`sig ${s.key} sig-link`} href={s.href} title={s.title}>{s.label}</Link>
                 : <span key={s.key} className={`sig ${s.key}`} title={s.title}>{s.label}</span>)}</span>}

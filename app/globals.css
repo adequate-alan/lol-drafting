@@ -668,6 +668,17 @@ input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--a
 .pop-points .pts.neg { color: var(--danger); }
 .popover.fs { width: 320px; }
 .popover.ce { width: 320px; }
+/* Counter card kit read: General Draft Logic (neutral gray, dashed rule), after the statistic, never styled as evidence */
+.ce-read { margin-top: var(--s4); padding-top: var(--s3); border-top: 1px dashed var(--logic-line); font-size: var(--fs-xs); }
+.ce-read-title { display: flex; align-items: center; gap: var(--s2); margin: 0; font-family: var(--font-display); font-size: var(--fs-xs); font-weight: var(--w-control); color: var(--logic); }
+.ce-read-tag { padding: 0 4px; font-size: var(--fs-2xs); font-weight: 400; color: var(--logic); border: 1px dashed var(--logic-line); border-radius: var(--r-sm); }
+.ce-read-lead { margin: var(--s2) 0 0; color: var(--text-muted); }
+.ce-read-lines { display: grid; gap: var(--s2); margin: var(--s2) 0 0; padding: 0; list-style: none; }
+.ce-read-lines li { padding-left: var(--s4); position: relative; }
+.ce-read-lines li::before { content: "·"; position: absolute; left: 0; color: var(--logic); }
+.ce-read-lines .mono { font-size: var(--fs-2xs); }
+.ce-read-against { margin: var(--s3) 0 0; color: var(--text-muted); }
+.ce-read-note { margin: var(--s3) 0 0; font-size: var(--fs-2xs); color: var(--text-faint); }
 /* Pro evidence card: games newest first, grouped by event; a mini draft per game */
 .popover.pe { width: 352px; }
 .popover.pe.sheet { width: 100%; }

@@ -408,6 +408,9 @@ export function emptyText(c: CounterCoverage, vs: string, newest?: string): stri
   return `${base}${stale} This is a gap in our data, not proof that ${vs} has no counters.`;
 }
 
+/** The enemy champion in the counter's own role: the lane opponent, or that half of an enemy duo. */
+export const laneOpponent = (c: Counter) => (c.evidence.scope === "duo" ? c.evidence.vs[c.role === "BOT" ? 0 : 1] : c.evidence.vs[0]);
+
 /** "Preliminary, under 300 games: Jayce 57.7% of 106 (26.20)". Never a Counter label. */
 export const preliminaryText = (c: CounterCoverage, name: (id: string) => string) =>
   c.preliminary.length ? `Preliminary, under ${DPM_MIN_GAMES} games: ${c.preliminary.map((p) => `${name(p.champion)} ${(p.winRate * 100).toFixed(1)}% of ${p.games}`).join(", ")} (DPM.LOL ${patchLabel(c.preliminary[0].patch)}).` : "";

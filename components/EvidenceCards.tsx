@@ -8,7 +8,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { FIRST_ROTATION, type StartGame, type StartingPick } from "@/lib/starting-picks";
-import { describePro, type Counter } from "@/lib/counters";
+import { describePro, laneOpponent, type Counter } from "@/lib/counters";
+import { matchupRead, NO_READ_TEXT, READ_DISCLAIMER, UNREAD_TEXT, type MatchupBook } from "@/lib/matchup-read";
 import type { CounterFreshness } from "@/lib/counter-freshness";
 import { shortDate } from "@/lib/evidence";
 import { evidenceGames, type EvidenceGame, type Picks } from "@/lib/pro-evidence";
@@ -26,6 +27,7 @@ const list = (xs: string[]) => (xs.length < 3 ? xs.join(" and ") : `${xs.slice(0
 export interface ProCtx {
   drafts: ProDraft[]; sources: Record<string, Source>; enemy: Partial<Record<Role, string>>; names: Record<string, string>;
   counterFresh?: CounterFreshness; // the Counter card's patch line: the DPM data's patch against the newest one
+  matchupBook?: MatchupBook; // the Counter card's kit read: stored kit facts, General Draft Logic, never the statistic
 }
 
 // `mate`: the Jungle row's "With <mid> · n games" label, which counts every recorded game (LCK archive included); the
@@ -138,7 +140,7 @@ function MiniDraft({ team, opponent, ours, theirs, hl, vs, n }: {
 
 const STRENGTH = { confirmed: "Strong · pro agrees", strong: "Strong", favorable: "Favorable" } as const;
 
-export function CounterTrigger({ c, names, fresh }: { c: Counter; names: Record<string, string>; fresh?: CounterFreshness }) {
+export function CounterTrigger({ c, names, fresh, book }: { c: Counter; names: Record<string, string>; fresh?: CounterFreshness; book?: MatchupBook }) {
   const n = (id: string) => names[id] ?? id;
   const e = c.evidence;
   return (
@@ -156,6 +158,7 @@ export function CounterTrigger({ c, names, fresh }: { c: Counter; names: Record<
             {c.archive && <><dt>Historical</dt><dd>{describePro(c.archive).replace(/^Historical LCK · /, "")} in the archived LCK 2026 playoffs: older-patch context only, never lifts or weakens this counter.</dd></>}
             {c.cautions.length > 0 && <><dt>Caution</dt><dd>{c.cautions.join("; ")}</dd></>}
           </dl>
+          {book && <KitRead c={c} book={book} n={n} />}
           <footer className="pop-foot"><span>Counter signal only, never part of the order. Opposite sides in pro games alone never make a counter.</span></footer>
         </div>
       )}
@@ -163,6 +166,28 @@ export function CounterTrigger({ c, names, fresh }: { c: Counter; names: Record<
   );
 }
 
+/**
+ * Kit read (alan, 2026-10-22): which stored kit interactions plausibly explain the DPM edge, General Draft Logic styling,
+ * after the statistic and the pro sample and apart from both. Read from the stored kit values only (lib/matchup-read.ts),
+ * never from the win rate; says so when the kits give no clear reason. Never a grade, never a score.
+ */
+function KitRead({ c, book, n }: { c: Counter; book: MatchupBook; n: (id: string) => string }) {
+  const them = laneOpponent(c);
+  const read = matchupRead(book, c.champion, them, c.role, n);
+  return (
+    <section className="ce-read" aria-label="Kit read">
+      <h4 className="ce-read-title">Kit read <span className="ce-read-tag">analysis</span></h4>
+      {read.status === "read" ? (
+        <>
+          <p className="ce-read-lead">Plausibly, from the stored kits:</p>
+          <ul className="ce-read-lines">{read.lines.map((l) => <li key={l.kind}>{l.text} <span className="mono faint">{l.values}</span></li>)}</ul>
+        </>
+      ) : <p className="ce-read-lead">{read.status === "none" ? NO_READ_TEXT : UNREAD_TEXT}</p>}
+      {read.against.length > 0 && <p className="ce-read-against">The kits also give {n(them)}: {read.against.map((l) => l.text).join(" ")}</p>}
+      <p className="ce-read-note">{READ_DISCLAIMER}</p>
+    </section>
+  );
+}
 
 /** Riot's changes since the DPM patch to the champions in a counter, each linking to its Patch Notes entry. */
 function StaleChanges({ ids, fresh, n }: { ids: string[]; fresh?: CounterFreshness; n: (id: string) => string }) {
