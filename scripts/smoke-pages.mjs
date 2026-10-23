@@ -660,18 +660,62 @@ await page.locator(".theme-toggle").click();
   };
   const responses = await railFor("Response"), blinds = await railFor("Blind");
   check("top: Response and Blind filters split the tops (Rumble never a response)", responses.length > 0 && blinds.length > 0 && !responses.some((n) => blinds.includes(n)) && !responses.includes("Rumble"), `${responses.join(",")} | ${blinds.join(",")}`);
-  // Draft Room labels read the newest patch with 10+ classified selections: try a top picked into on each recent patch.
-  // The list shows 12 rows before "Show all"; the champion carrying the label can sit past them (Ambessa into Jayce
-  // on 26.20 moved to the 13th row when Fiora joined the list as a DPM counter, 2026-10-23), so the whole list is read.
-  const topSeen = [];
-  for (const [id, name] of [["rumble", "Rumble"], ["jayce", "Jayce"], ["olaf", "Olaf"]]) {
-    await open(`/?jungle=vi&focus=TOP&vs=top:${id}`);
-    const more = page.locator(".fit-more");
-    if (await more.count()) { await more.first().click(); await page.waitForTimeout(200); }
-    const sigs = (await page.locator(".fit-row .sig.usage").allTextContents()).join("|");
-    topSeen.push({ sigs, ok: new RegExp(`Picked into ${name} · \\d+`).test(sigs), clean: (sigs.match(/Picked into [^|·]+/g) ?? []).every((t) => t.trim() === `Picked into ${name}`) });
+  // Draft Room labels read the newest patch with 10+ classified top selections (defaultTopPatch), and which top was
+  // picked into which enemy changes as pro games are imported (the fixed Rumble / Jayce / Olaf fixtures went stale when
+  // 26.20 became that patch, alan 2026-10-23). So the expectation is read from the site's own Synergies Top report on
+  // that patch: a recorded response with its full draft, which the Draft Room must label exactly, and an enemy no team
+  // answered, which must get no label. The list shows 12 rows before "Show all", so every visit reads the whole list.
+  // A live smoke check verifies behaviour against the current data; fixed champion scenarios belong in the unit tests
+  // with synthetic fixtures.
+  const openTop = async (q) => { await open(`/?jungle=vi&focus=TOP${q}`); const more = page.locator(".fit-more"); if (await more.count()) { await more.first().click(); await page.waitForTimeout(300); } };
+  await openTop("");
+  const tip = (await page.locator(".fit-row .sig.usage").first().getAttribute("title").catch(() => "")) ?? "";
+  const labelPatch = /Patch (\d+\.\d+)/.exec(tip)?.[1];
+  check("draft room: TOP usage labels name the pro-game patch they read", !!labelPatch, tip.slice(0, 120));
+  await open(`/synergies/top/?patch=${labelPatch}`);
+  const railTops = await page.locator(".pick-rail ul li a").evaluateAll((as) => as.map((a) => ({ id: new URL(a.href).searchParams.get("champ"), name: a.querySelector(".rail-name")?.textContent?.trim() })));
+  const byName = (name) => railTops.find((r) => r.name === name)?.id;
+  const responders = await railFor("Response");
+  let found;
+  for (const name of responders.slice(0, 8)) {
+    const id = byName(name);
+    if (!id) continue;
+    await open(`/synergies/top/?champ=${id}&view=matchups&patch=${labelPatch}`);
+    const li = page.locator(".scout-sec").filter({ hasText: new RegExp(`^\\s*${name} picked into`) }).locator(".pair-list > li").first();
+    if (!(await li.count())) continue;
+    const enemyName = ((await li.locator(".pl-name").textContent()) ?? "").trim();
+    const games = Number(/(\d+) games?/.exec((await li.textContent()) ?? "")?.[1]);
+    await li.locator("> button").click();
+    await li.locator(".top-games > li > button").first().click();
+    const evidence = (await page.locator(".top-game").first().textContent().catch(() => "")) ?? "";
+    found = { top: name, enemy: enemyName, enemyId: byName(enemyName), games, picks: await page.locator(".top-game .draft-seq li").count(), turn: /pick \d+ of 10/.test(evidence) };
+    break;
   }
-  check("draft room: with the enemy top locked, TOP rows say what was picked into it", topSeen.some((x) => x.ok) && topSeen.every((x) => x.clean), topSeen.map((x) => x.sigs).join(" || "));
+  check(`top: on patch ${labelPatch} the report records a top picked into a revealed enemy top, with its full draft`,
+    !!found && found.picks === 10 && found.turn && found.games > 0 && !!found.enemyId, JSON.stringify(found ?? responders));
+  if (found?.enemyId) {
+    await openTop(`&vs=top:${found.enemyId}`);
+    const rows = await page.locator(".fit-row").evaluateAll((els) => els.map((r) => ({ name: r.querySelector(".name")?.textContent?.trim(), usage: [...r.querySelectorAll(".sig.usage")].map((s) => s.textContent.trim()) })));
+    const mine = rows.find((r) => r.name === found.top);
+    const shown = rows.filter((r) => r.usage.length);
+    check("draft room: with that enemy top locked, the top's row says Picked into it with the recorded game count",
+      !!mine && mine.usage.includes(`Picked into ${found.enemy} · ${found.games}`), `${found.top} into ${found.enemy} · ${found.games}: ${JSON.stringify(shown)}`);
+    check("draft room: every Picked into label names the locked enemy top and nothing else",
+      rows.every((r) => r.usage.every((u) => !/^Picked into/.test(u) || u.startsWith(`Picked into ${found.enemy} ·`))), JSON.stringify(shown));
+  }
+  // An enemy top no team answered on that patch: the report says so and the Draft Room invents no label for it.
+  let quiet;
+  for (const r of railTops.filter((x) => x.id && x.id !== found?.enemyId).slice(0, 10)) {
+    await open(`/synergies/top/?champ=${r.id}&view=matchups&patch=${labelPatch}`);
+    const sec = (await page.locator(".scout-sec").filter({ hasText: new RegExp(`^\\s*Picked into ${r.name}`) }).textContent().catch(() => "")) ?? "";
+    if (/No team picked its top after this champion was revealed/.test(sec)) { quiet = r; break; }
+  }
+  if (quiet) {
+    await openTop(`&vs=top:${quiet.id}`);
+    const usage = await page.locator(".fit-row .sig.usage").allTextContents();
+    check(`draft room: ${quiet.name}, whom no team answered on ${labelPatch}, gets no Picked into label`,
+      (await page.locator(".fit-row").count()) > 0 && usage.every((u) => !/^Picked into/.test(u)), usage.join("|") || "(no usage labels)");
+  } else check("top: the report lists at least one enemy top no team answered on the label patch", false, railTops.slice(0, 10).map((r) => r.name).join(","));
 }
 // Mid, Bot and Support draft usage (alan, 2026-10-13): All patches by default, a chosen patch kept while browsing, an
 // explicit URL patch wins; Mid shows the enemy jungler as context; Bot and Support read the bot lane as a duo.
