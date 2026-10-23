@@ -171,6 +171,9 @@ async function refreshGames(data, get, { now = new Date() } = {}) {
   return { proGames, meta, sources, changed: [...changed], report, rejected };
 }
 
+/** A connection that failed or timed out (after the caller's retries), as opposed to an answer: a refusal, an HTTP error or a challenge page. */
+export const isNetworkFault = (e) => e?.name === "TimeoutError" || e?.name === "AbortError" || (e?.name === "TypeError" && /fetch failed/i.test(e?.message ?? ""));
+
 /** The event id of a discovered stage: the parent's id plus the stage words of the Gol.gg name ("worlds-2026-knockout-stage"). */
 export function stageEvent(parent, name, tracked) {
   const year = parent.match(/\d{4}/)?.[0] ?? "";
@@ -244,11 +247,16 @@ export async function refreshBuilds(data, get, today, maxBuildGames, { only } = 
     && !(waiting.has(g.id) && daysBetween(waiting.get(g.id).checkedOn, today) < RETRY_DAYS)));
   const batch = todo.slice(0, maxBuildGames);
 
-  let added = 0, completed = 0;
+  let added = 0, completed = 0, fault;
   for (const g of batch) {
-    const players = parsePlayers(await get(gameUrl(g.id)));
+    // Builds are read after the games: a dropped connection here (Gol.gg drops sockets; a run on 2026-10-23 lost every
+    // new Worlds game to one reset during builds) ends the builds pass and keeps the games and builds read so far. The
+    // games left wait for the next run. A refusal or challenge still stops everything.
+    let players;
+    try { players = parsePlayers(await get(gameUrl(g.id))); } catch (e) { if (!isNetworkFault(e)) throw e; fault = e; break; }
     const fresh = [], problems = [];
     for (const side of ["blue", "red"]) {
+      if (fault) break;
       const list = players?.[side] ?? [];
       if (list.length !== 5) { problems.push(`${side} side: ${list.length} players on the game page`); continue; }
       for (const p of list) {
@@ -257,13 +265,15 @@ export async function refreshBuilds(data, get, today, maxBuildGames, { only } = 
         if (!champion || !role) { problems.push(`${side} side: ${p.champion} is not one of the recorded picks`); continue; }
         const who = { game: g.id, side, role, champion, player: p.player, playerId: p.playerId };
         // A failed request stops the run (nothing written); an answer that is not JSON is a missing build.
-        const body = await get(buildUrl, { method: "POST", body: `game_id=${g.id}&player_id=${p.playerId}` });
+        let body;
+        try { body = await get(buildUrl, { method: "POST", body: `game_id=${g.id}&player_id=${p.playerId}` }); } catch (e) { if (!isNetworkFault(e)) throw e; fault = e; break; }
         let answer;
         try { answer = JSON.parse(body); } catch { answer = undefined; }
         const built = buildFromAnswer(answer, who);
         fresh.push(built.build ?? { ...who, missing: ["build"] });
       }
     }
+    if (fault) break; // this game's builds are incomplete: nothing of it is kept
     if (have.has(g.id)) {
       // Re-read of a partial record: the stored builds stand unless the new answer is more complete; either way the
       // game was checked today, so it waits RETRY_DAYS before the next read.
@@ -289,6 +299,7 @@ export async function refreshBuilds(data, get, today, maxBuildGames, { only } = 
   if (added) { report.push(`Pro builds: ${added} game${added > 1 ? "s" : ""} added (${proBuilds.builds.length} player builds stored).`); changed.add("pro-builds"); }
   if (completed) { report.push(`Pro builds: ${completed} partial game${completed > 1 ? "s" : ""} completed with fields Gol.gg has since published.`); changed.add("pro-builds"); }
   if (!same(proBuilds.builds, data.proBuilds?.builds ?? [])) changed.add("pro-builds");
+  if (fault) report.push(`Pro builds: the connection to Gol.gg failed (${fault.cause?.code ?? fault.name}) after ${added + completed} game${added + completed === 1 ? "" : "s"}; the other games are read on the next run.`);
   if (todo.length > batch.length) report.push(`Pro builds: ${todo.length - batch.length} more game${todo.length - batch.length > 1 ? "s" : ""} left for the next run.`);
   if (!same(proBuilds.unavailable, data.proBuilds?.unavailable ?? [])) changed.add("pro-builds");
 
