@@ -18,6 +18,8 @@ import { brief, duoSelections, LANE_ROLES, laneSelections, roleBook, topUsageMar
 import { blindReads } from "./top-blind";
 import { boardTraits, compResponses, type CompResponse, type FactBook } from "./jungle-context";
 import { factBook } from "./jungle-kits";
+import { matchupBook } from "./matchup-kits";
+import type { MatchupBook } from "./matchup-read";
 import { bucket, patchesOf } from "./pro-priority";
 
 // Data lives in /data and is read at build time; the static export embeds what each page renders.
@@ -125,11 +127,15 @@ export function getDraftData() {
     // Lane row labels (Top, Mid, Bot, Support), never read by the ranking.
     laneUsage: Object.fromEntries(LANE_ROLES.map((r) => [r, ((t) => topUsageMarks(t.selections, t.dpm, t.blind, undefined, t.duos))(getLaneDraft(r))])) as Record<LaneRole, TopUsageMarks>,
     jungleBoard: getJungleBoard(), // Jungle composition responses (a label, General Draft Logic over the enemy board)
+    matchupBook: getMatchupBook(), // the Counter card's kit read (General Draft Logic over the stored kits, never a score)
   };
 }
 
 let facts: FactBook | undefined;
 const getFactBook = () => (facts ??= factBook(getChampions()));
+let matchups: MatchupBook | undefined;
+/** The stored kit facts the Counter card's kit read compares (lib/matchup-read.ts). */
+export const getMatchupBook = () => (matchups ??= matchupBook(getChampions()));
 
 /** The kit facts the Draft Room reads the enemy board with, and each jungler's observed composition responses (all patches). */
 export function getJungleBoard(): { facts: FactBook; responses: Record<string, CompResponse[]> } {

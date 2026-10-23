@@ -110,7 +110,7 @@ export function ComparePanel({ entries, names, proCtx, busy, collapsed, onCollap
     if (!label) return { text: "—", cls: "muted" };
     return { text: label, node: x.c.meta ? <MetaEvidenceTrigger s={x.c.meta} label={label} cls={rot ? "rot" : "prio"} names={names} /> : <span className="sig prio">{label}</span> };
   } });
-  if (entries.some((x) => x.c.counter)) rows.push({ k: "Counter", cells: (x) => x.c.counter ? { text: "counter", node: <CounterTrigger c={x.c.counter} names={names} fresh={proCtx.counterFresh} /> } : { text: "—", cls: "muted" } });
+  if (entries.some((x) => x.c.counter)) rows.push({ k: "Counter", cells: (x) => x.c.counter ? { text: "counter", node: <CounterTrigger c={x.c.counter} names={names} fresh={proCtx.counterFresh} book={proCtx.matchupBook} /> } : { text: "—", cls: "muted" } });
   rows.push({ k: "Pool · fit", cells: (x) => ({ text: `${tierLabel(x.tier)}${x.c.fit.parts.length ? ` · ${x.c.compFit > 0 ? "+" : ""}${x.c.compFit}` : ""}` }) });
 
   return (
