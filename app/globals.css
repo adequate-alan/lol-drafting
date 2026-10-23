@@ -1772,7 +1772,13 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .usage-tag.uncertain, .pair-tag.observed { color: var(--text-muted); background: transparent; box-shadow: inset 0 0 0 1px var(--border-strong); }
 .pair-tag.supported { color: var(--counter); background: var(--counter-subtle); box-shadow: inset 0 0 0 1px var(--counter-line); }
 .usage-bar { display: flex; gap: 2px; height: 8px; margin: var(--s2) 0 var(--s4); }
-.usage-bar span { min-width: 4px; border-radius: var(--r-sm); }
+.usage-bar span { position: relative; min-width: 4px; border-radius: var(--r-sm); cursor: default; transition: opacity var(--dur-hover) ease-out, box-shadow var(--dur-hover) ease-out; }
+/* An invisible hit margin above and below the 8px bar; no layout change. */
+.usage-bar span::before { content: ""; position: absolute; inset: -6px 0; }
+/* The segment the tip describes stays full strength with a hairline ring; its neighbours recede. */
+.usage-bar:hover span:not(:hover), .usage-bar:focus-within span:not(:focus) { opacity: 0.45; }
+.usage-bar span:hover, .usage-bar span:focus { box-shadow: 0 0 0 1px var(--text-muted); outline: none; }
+.usage-bar span:focus-visible { box-shadow: var(--focus-ring); }
 .usage-bar .blind { background: var(--pro); }
 .usage-bar .response { background: var(--pro-line); }
 .usage-bar .uncertain { background: var(--border-strong); }
