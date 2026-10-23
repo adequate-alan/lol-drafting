@@ -4,8 +4,10 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { laneOpponent, type Counter } from "@/lib/counters";
-import { getChampions, getCounters, getDraftData, getMatchupBook } from "@/lib/data";
+import { counterPicks, DPM_MIN_GAMES, DPM_MIN_WIN_RATE, DPM_STRONG_WIN_RATE, laneOpponent, type Counter } from "@/lib/counters";
+import { KITS } from "@/lib/model-v2/kits";
+import { recommend } from "@/lib/recommend";
+import { getBotPairings, getChampions, getCounters, getDraftData, getMatchupBook, getPool } from "@/lib/data";
 import { matchupBook } from "@/lib/matchup-kits";
 import { AGAINST_LIMIT, factOf, matchupRead, NO_READ_TEXT, READ_DISCLAIMER, READ_LIMIT, type MatchupBook, type MatchupFacts } from "@/lib/matchup-read";
 import type { Role } from "@/lib/schema";
@@ -20,12 +22,14 @@ describe("each rule reads one stored difference and names it", () => {
     const book = bookOf({ art: { TOP: f({ range: 3, poke: 3, waveclear: 3, lanePressure: 3 }) }, brawler: { TOP: f({ range: 0 }) } });
     const r = matchupRead(book, "art", "brawler", "TOP", (id) => id.toUpperCase());
     expect(r.status).toBe("read");
-    // At most READ_LIMIT lines, in the fixed order (never ranked by any score).
-    expect(r.lines.map((l) => l.kind)).toEqual(["range", "poke", "early"]);
+    // At most READ_LIMIT lines, in the fixed order (never ranked by any score): specific interactions before the curves.
+    expect(r.lines.map((l) => l.kind)).toEqual(["range", "poke", "wave"]);
     expect(r.lines[0]).toMatchObject({ text: expect.stringContaining("ART trades from further out"), values: "range 3 vs 0" });
-    expect(r.lines[2].text).toMatch(/lane pressure is the stronger/);
-    expect(r.lines[2].values).toBe("early 2 vs 2, lane pressure 3 vs 1");
     expect(kinds(book, "art", "brawler").length).toBeLessThanOrEqual(READ_LIMIT);
+    const early = matchupRead(bookOf({ a: { TOP: f({ lanePressure: 3 }) }, b: { TOP: f({}) } }), "a", "b", "TOP").lines;
+    expect(early.map((l) => l.kind)).toEqual(["early"]);
+    expect(early[0].text).toMatch(/lane pressure is the stronger/);
+    expect(early[0].values).toBe("early 2 vs 2, lane pressure 3 vs 1");
     expect(kinds(bookOf({ a: { TOP: f({ waveclear: 3 }) }, b: { TOP: f({}) } }), "a", "b")).toEqual(["wave"]);
   });
   it("range, poke and waveclear are not read in the jungle; early skirmishes are", () => {
@@ -42,6 +46,7 @@ describe("each rule reads one stored difference and names it", () => {
     });
     expect(kinds(book, "diver", "open")).toEqual(["allin"]);
     expect(kinds(book, "diver", "squishy")).toEqual(["cc", "burst"]);
+    expect(kinds(bookOf({ a: { TOP: f({ reach: 2, early: 3, late: 3 }) }, b: { TOP: f({ disengage: 0, counterEngage: 0, early: 1, late: 1 }) } }), "a", "b")).toEqual(["allin", "early", "scaling"]);
     expect(matchupRead(book, "diver", "squishy", "TOP").lines[0].values).toBe("catch start; squishy self-peel 1");
   });
   it("mobility against a catch, tank damage against a frontliner, an answer to an on-demand start, late scaling", () => {
@@ -131,5 +136,46 @@ describe("the stored book", () => {
     expect(read).toMatch(/analysis/);
     expect(read).not.toMatch(/winRate|\.games|describeEvidence/);
     expect(src).not.toMatch(/Claude|\bAI\b/);
+  });
+});
+
+describe("scoring isolation (alan, 2026-10-23)", () => {
+  const data = getDraftData();
+  it("the draft-fit ranking, the counters and their thresholds are the same with or without the book", () => {
+    const draft = { JUNGLE: "vi", MID: "ahri" } as const;
+    const enemy = { TOP: "aatrox", BOT: "ezreal" } as const;
+    const fits = recommend(draft, Object.values(enemy), data, Infinity);
+    const { matchupBook: _book, ...without } = data;
+    expect(recommend(draft, Object.values(enemy), without as typeof data, Infinity)).toEqual(fits);
+    const counters = counterPicks(draft, enemy, data, fits);
+    expect(counterPicks(draft, enemy, without as typeof data, fits)).toEqual(counters);
+    // A counter carries no kit read field: the read lives in the card only, computed from the pair at render time.
+    for (const rc of Object.values(counters)) for (const c of rc!.counters) expect(Object.keys(c)).not.toContain("read");
+    expect([DPM_MIN_GAMES, DPM_MIN_WIN_RATE, DPM_STRONG_WIN_RATE]).toEqual([300, 0.52, 0.54]);
+  });
+  it("building and reading the book changes no kit, attribute, saved pairing or pool tier", () => {
+    const kits = JSON.stringify(KITS), champs = JSON.stringify(getChampions()), bots = JSON.stringify(getBotPairings()), pool = JSON.stringify(getPool());
+    const book = matchupBook(getChampions());
+    for (const r of getCounters().dpm.slice(0, 200)) matchupRead(book, r.champion, r.enemy, r.role);
+    expect(JSON.stringify(KITS)).toBe(kits);
+    expect(JSON.stringify(getChampions())).toBe(champs);
+    expect(JSON.stringify(getBotPairings())).toBe(bots);
+    expect(JSON.stringify(getPool())).toBe(pool);
+  });
+  it("the book holds stored 0–3 values and fight starts only: no win rate, sample or score anywhere", () => {
+    const allowed = new Set(["range", "poke", "waveclear", "lanePressure", "early", "late", "reach", "mobility", "disengage", "counterEngage", "start", "frontline", "tankDamage", "burst"]);
+    for (const byRole of Object.values(getMatchupBook())) for (const facts of Object.values(byRole)) {
+      for (const [k, v] of Object.entries(facts)) {
+        expect(allowed.has(k), k).toBe(true);
+        if (k === "start") expect(["primary", "catch", "follow-up", "none"]).toContain(v);
+        else expect(Number.isInteger(v) && (v as number) >= 0 && (v as number) <= 3, `${k}=${v}`).toBe(true);
+      }
+    }
+    // A read line never carries a percentage, a game count or a verdict word: it describes stored values only.
+    const book = getMatchupBook();
+    for (const r of getCounters().dpm.filter((x) => x.games >= DPM_MIN_GAMES && x.winRate >= DPM_MIN_WIN_RATE)) {
+      const x = matchupRead(book, r.champion, r.enemy, r.role);
+      for (const l of [...x.lines, ...x.against]) expect(`${l.text} ${l.values}`).not.toMatch(/%|\bwin(s|ning)?\b|\bgames\b|favou?rable|\bcounters?\b(?!-)|proves?\b/i);
+    }
   });
 });

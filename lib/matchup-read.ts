@@ -49,7 +49,8 @@ export interface MatchupRead {
 export const READ_LIMIT = 3;
 export const AGAINST_LIMIT = 2;
 const LANE: Role[] = ["TOP", "MID", "BOT"];
-const ORDER: ReadKind[] = ["range", "poke", "early", "wave", "allin", "cc", "mobility", "tank", "burst", "answer", "scaling"];
+// Specific interactions first, the generic curve comparisons last, so the three-line cap keeps the more telling lines.
+const ORDER: ReadKind[] = ["range", "poke", "allin", "cc", "mobility", "tank", "burst", "answer", "wave", "early", "scaling"];
 
 export function factOf(book: MatchupBook, champion: string, role: Role): MatchupFacts | undefined {
   const byRole = book[champion];
@@ -62,15 +63,16 @@ const startWord = (s: FightStart, verb: boolean) => (s === "primary" ? (verb ? "
 /**
  * Lines for `a` over `b` in `role`. Each rule compares stored values and names them, so a reader can see what the line
  * rests on. Rules read what matters where the two meet: range, poke, waveclear and lane pressure in a lane; early
- * skirmishes in the jungle; crowd control against mobility, reach against disengage, tank damage against frontline,
- * burst against a target that is neither durable nor mobile, disengage against an on-demand start, and late scaling.
+ * skirmishes in the jungle; crowd control against mobility, backline access against disengage, tank damage against
+ * frontline, burst against a target with no frontline and little self-peel, disengage against an on-demand start, and
+ * late scaling. The text hedges on purpose: "can", "stored", "rewards"; it never says the matchup is won.
  */
 function linesFor(a: MatchupFacts, b: MatchupFacts, role: Role, me: string, them: string): ReadLine[] {
   const lane = LANE.includes(role), jungle = role === "JUNGLE";
   const out: ReadLine[] = [];
   const add = (kind: ReadKind, text: string, values: string) => out.push({ kind, text, values });
   if (!jungle && a.range >= 2 && a.range > b.range)
-    add("range", `Reach: ${me} trades from further out, so ${them} has to close the distance to answer.`, `range ${a.range} vs ${b.range}`);
+    add("range", `Range: ${me} trades from further out, so ${them} has to close the distance to answer.`, `range ${a.range} vs ${b.range}`);
   if (!jungle && a.poke >= 2 && a.poke > b.poke)
     add("poke", `Poke: ${me} can chip ${them} from range without committing.`, `poke ${a.poke} vs ${b.poke}`);
   if (jungle) {
@@ -89,13 +91,13 @@ function linesFor(a: MatchupFacts, b: MatchupFacts, role: Role, me: string, them
   if (a.mobility !== undefined && a.mobility >= 2 && catches(b.start))
     add("mobility", `Mobility against crowd control: ${me}'s stored self-peel (dashes, spell shield or untargetability) makes ${them}'s ${startWord(b.start, false)} harder to land.`, `self-peel ${a.mobility}; ${them} ${b.start} start`);
   if (role !== "SUPPORT" && a.tankDamage >= 2 && b.frontline >= 2)
-    add("tank", `Tank damage: ${me}'s %HP, true or sustained damage is built for a durable target like ${them}.`, `tank damage ${a.tankDamage}; ${them} frontline ${b.frontline}`);
+    add("tank", `Tank damage: ${me}'s kit is stored as a tank killer and ${them}'s as frontline.`, `tank damage ${a.tankDamage}; ${them} frontline ${b.frontline}`);
   if (a.burst >= 2 && b.frontline === 0 && b.mobility !== undefined && b.mobility <= 1)
-    add("burst", `Burst onto a target that is neither durable nor mobile.`, `burst ${a.burst}; ${them} frontline 0, self-peel ${b.mobility}`);
+    add("burst", `Burst: ${them} is stored with no frontline and little self-peel, which ${me}'s burst can punish.`, `burst ${a.burst}; ${them} frontline 0, self-peel ${b.mobility}`);
   if (catches(b.start) && (a.disengage >= 2 || a.counterEngage >= 2))
     add("answer", `Answers the engage: ${me} stores disengage or counter-engage against ${them}'s on-demand ${startWord(b.start, true)}.`, `disengage ${a.disengage}, counter-engage ${a.counterEngage}; ${them} ${b.start} start`);
   if (a.late >= 3 && a.late > b.late)
-    add("scaling", `Scaling: ${me}'s stored late curve is the higher, so the ${jungle ? "early game" : "lane"} only has to be survived.`, `late ${a.late} vs ${b.late}`);
+    add("scaling", `Scaling: ${me}'s stored late curve is the higher, which rewards playing the ${jungle ? "early game" : "lane"} for later.`, `late ${a.late} vs ${b.late}`);
   return out.sort((x, y) => ORDER.indexOf(x.kind) - ORDER.indexOf(y.kind));
 }
 
