@@ -701,5 +701,32 @@
     "lastChecked": "2026-10-19",
     "refreshStatus": "verified",
     "origin": "golgg-refresh"
+  },
+  {
+    "id": "golgg-tournament-championlist-worlds-2026",
+    "url": "https://gol.gg/champion/list/season-ALL/split-ALL/tournament-Worlds%202026%20Main%20Event/",
+    "type": "golgg-tournament",
+    "tournament": "Worlds 2026 Main Event",
+    "lastChecked": "2026-10-23",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh"
+  },
+  {
+    "id": "golgg-tournament-picksandbans-worlds-2026",
+    "url": "https://gol.gg/tournament/tournament-picksandbans/Worlds%202026%20Main%20Event/",
+    "type": "golgg-tournament",
+    "tournament": "Worlds 2026 Main Event",
+    "lastChecked": null,
+    "refreshStatus": "not-refreshed",
+    "origin": "golgg-refresh"
+  },
+  {
+    "id": "golgg-tournament-matchlist-worlds-2026",
+    "url": "https://gol.gg/tournament/tournament-matchlist/Worlds%202026%20Main%20Event/",
+    "type": "golgg-tournament",
+    "tournament": "Worlds 2026 Main Event",
+    "lastChecked": "2026-10-23",
+    "refreshStatus": "verified",
+    "origin": "golgg-refresh"
   }
 ]

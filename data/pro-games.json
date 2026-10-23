@@ -52,7 +52,19 @@
       "recorded": 22,
       "matchlist": "https://gol.gg/tournament/tournament-matchlist/Worlds%202026%20Play-In/",
       "lastUpdate": "2026-10-19T03:09:27.143Z",
-      "lastCheck": "2026-10-19T03:09:27.143Z"
+      "lastCheck": "2026-10-23T20:23:07.275Z"
+    },
+    {
+      "event": "worlds-2026",
+      "golgg": "Worlds 2026 Main Event",
+      "status": "ongoing",
+      "series": 8,
+      "seriesPlayed": 3,
+      "games": 3,
+      "recorded": 3,
+      "matchlist": "https://gol.gg/tournament/tournament-matchlist/Worlds%202026%20Main%20Event/",
+      "lastUpdate": "2026-10-23T20:23:07.275Z",
+      "lastCheck": "2026-10-23T20:23:07.275Z"
     }
   ],
   "games": [
@@ -4451,6 +4463,198 @@
       "url": "https://gol.gg/game/stats/83621/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83621/page-fullstats/",
       "checkedOn": "2026-10-18"
+    },
+    {
+      "id": 83638,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83638,
+      "series": "Gen.G vs IG",
+      "game": 1,
+      "stage": "ROUND1",
+      "date": "2026-10-23",
+      "patch": "16.20",
+      "blue": {
+        "team": "Invictus Gaming",
+        "picks": {
+          "TOP": "rumble",
+          "JUNGLE": "jarvan-iv",
+          "MID": "aurora",
+          "BOT": "jhin",
+          "SUPPORT": "alistar"
+        },
+        "bans": [
+          "vi",
+          "lee-sin",
+          "cassiopeia",
+          "renata-glasc",
+          "lucian"
+        ],
+        "pickOrder": [
+          "jarvan-iv",
+          "rumble",
+          "aurora",
+          "jhin",
+          "alistar"
+        ]
+      },
+      "red": {
+        "team": "Gen.G",
+        "picks": {
+          "TOP": "ornn",
+          "JUNGLE": "qiyana",
+          "MID": "akali",
+          "BOT": "corki",
+          "SUPPORT": "nautilus"
+        },
+        "bans": [
+          "nocturne",
+          "syndra",
+          "galio",
+          "lulu",
+          "ezreal"
+        ],
+        "pickOrder": [
+          "qiyana",
+          "ornn",
+          "akali",
+          "corki",
+          "nautilus"
+        ]
+      },
+      "winner": "red",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83638/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83638/page-fullstats/",
+      "checkedOn": "2026-10-23"
+    },
+    {
+      "id": 83642,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83642,
+      "series": "HLE vs Top Esports",
+      "game": 1,
+      "stage": "ROUND1",
+      "date": "2026-10-23",
+      "patch": "16.20",
+      "blue": {
+        "team": "Top Esports",
+        "picks": {
+          "TOP": "ksante",
+          "JUNGLE": "lee-sin",
+          "MID": "orianna",
+          "BOT": "ezreal",
+          "SUPPORT": "alistar"
+        },
+        "bans": [
+          "olaf",
+          "vi",
+          "jayce",
+          "nautilus",
+          "bard"
+        ],
+        "pickOrder": [
+          "orianna",
+          "lee-sin",
+          "alistar",
+          "ezreal",
+          "ksante"
+        ]
+      },
+      "red": {
+        "team": "Hanwha Life Esports",
+        "picks": {
+          "TOP": "ambessa",
+          "JUNGLE": "nocturne",
+          "MID": "locke",
+          "BOT": "jhin",
+          "SUPPORT": "shen"
+        },
+        "bans": [
+          "cassiopeia",
+          "qiyana",
+          "akali",
+          "corki",
+          "renekton"
+        ],
+        "pickOrder": [
+          "nocturne",
+          "locke",
+          "jhin",
+          "shen",
+          "ambessa"
+        ]
+      },
+      "winner": "red",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83642/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83642/page-fullstats/",
+      "checkedOn": "2026-10-23"
+    },
+    {
+      "id": 83645,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83645,
+      "series": "BLG vs MKOI",
+      "game": 1,
+      "stage": "ROUND1",
+      "date": "2026-10-23",
+      "patch": "16.20",
+      "blue": {
+        "team": "Movistar KOI",
+        "picks": {
+          "TOP": "renekton",
+          "JUNGLE": "jarvan-iv",
+          "MID": "sylas",
+          "BOT": "ezreal",
+          "SUPPORT": "karma"
+        },
+        "bans": [
+          "vi",
+          "rumble",
+          "cassiopeia",
+          "lee-sin",
+          "skarner"
+        ],
+        "pickOrder": [
+          "jarvan-iv",
+          "ezreal",
+          "karma",
+          "sylas",
+          "renekton"
+        ]
+      },
+      "red": {
+        "team": "Bilibili Gaming",
+        "picks": {
+          "TOP": "ambessa",
+          "JUNGLE": "pantheon",
+          "MID": "akali",
+          "BOT": "ashe",
+          "SUPPORT": "seraphine"
+        },
+        "bans": [
+          "galio",
+          "nocturne",
+          "qiyana",
+          "twisted-fate",
+          "olaf"
+        ],
+        "pickOrder": [
+          "seraphine",
+          "ashe",
+          "akali",
+          "pantheon",
+          "ambessa"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83645/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83645/page-fullstats/",
+      "checkedOn": "2026-10-23"
     },
     {
       "id": 83593,

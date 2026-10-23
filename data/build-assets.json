@@ -8730,6 +8730,13 @@
           "from": [3077, 1053, 3133],
           "kind": "completed"
         },
+        "3075": {
+          "name": "Thornmail",
+          "gold": 2450,
+          "stats": ["150 Health", "75 Armor"],
+          "from": [3076, 1031, 1028],
+          "kind": "completed"
+        },
         "3076": {
           "name": "Bramble Vest",
           "gold": 800,
@@ -9527,6 +9534,13 @@
           "from": [3134, 3133],
           "kind": "completed"
         },
+        "6698": {
+          "name": "Profane Hydra",
+          "gold": 2850,
+          "stats": ["55 Attack Damage", "18 Lethality", "10 Ability Haste"],
+          "from": [3077, 2020],
+          "kind": "completed"
+        },
         "6699": {
           "name": "Voltaic Cyclosword",
           "gold": 3000,
@@ -10163,6 +10177,28 @@
           "R": {
             "name": "Enchanted Crystal Arrow",
             "icon": "EnchantedCrystalArrow.png",
+            "maxrank": 3
+          }
+        },
+        "aurora": {
+          "Q": {
+            "name": "Twofold Hex",
+            "icon": "AuroraQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Across the Veil",
+            "icon": "AuroraW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "The Weirding",
+            "icon": "AuroraE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Between Worlds",
+            "icon": "AuroraR.png",
             "maxrank": 3
           }
         },
@@ -10977,6 +11013,28 @@
           "R": {
             "name": "Depth Charge",
             "icon": "NautilusGrandLine.png",
+            "maxrank": 3
+          }
+        },
+        "nocturne": {
+          "Q": {
+            "name": "Duskbringer",
+            "icon": "NocturneDuskbringer.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Shroud of Darkness",
+            "icon": "NocturneShroudofDarkness.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Unspeakable Horror",
+            "icon": "NocturneUnspeakableHorror.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Paranoia",
+            "icon": "NocturneParanoia.png",
             "maxrank": 3
           }
         },
