@@ -342,6 +342,21 @@ describe("refresh step", () => {
     expect(next.proBuilds.games).toEqual([lck]);
   });
 
+  it("a dropped connection during builds keeps the games and stops only the builds pass; a refusal still stops the run", async () => {
+    const r = recorder();
+    let n = 0;
+    const flaky: Get = async (url, init) => {
+      if (url === buildUrl && ++n === 4) throw Object.assign(new TypeError("fetch failed"), { cause: { code: "ECONNRESET" } });
+      return r.get(url, init);
+    };
+    const out = await refresh(data(), flaky, { now: new Date("2026-10-12T12:00:00Z"), buildsOnly: true });
+    expect(out.proBuilds.builds).toEqual([]); // the half-read game keeps nothing
+    expect(out.proBuilds.unavailable).toEqual([]); // and is not marked as having no builds
+    expect(out.report.join("\n")).toMatch(/connection to Gol\.gg failed \(ECONNRESET\) after 0 games/);
+    const refused: Get = async (url, init) => { if (url === buildUrl) throw new Error(`${url}: HTTP 403. Nothing written.`); return r.get(url, init); };
+    await expect(refresh(data(), refused, { now: new Date("2026-10-12T12:00:00Z"), buildsOnly: true })).rejects.toThrow(/403/);
+  });
+
   it("a game with no builds yet is noted and asked again only after a few days", async () => {
     const empty: Get = async (url) => (url === buildUrl ? "[[],[]]" : read("tests/fixtures/golgg/game-83452-game.html"));
     const out = await refresh(data(), empty, { now: new Date("2026-10-12T12:00:00Z"), buildsOnly: true });
