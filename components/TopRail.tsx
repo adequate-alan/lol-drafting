@@ -9,7 +9,8 @@ import { Select } from "./Select";
 import { rovingIndex, rovingKeys } from "./roving";
 import { isPriority, laneViews, type TopView } from "./TopDraft";
 import { patchKey, patchLabel } from "@/lib/patch";
-import { topPatches, topRows, type PriorityBrief, type TopDraftBundle, type TopRow } from "@/lib/top-draft";
+import { inTopScope, topPatches, topRows, type PriorityBrief, type TopDraftBundle, type TopRow } from "@/lib/top-draft";
+import { resolveScope, scopeChoices, scopeKey, scopeLabel } from "@/lib/tournament-scope";
 
 const BASE_FILTERS: [UseFilter, string][] = [["", "All"], ["blind", "Blind"], ["response", "Response"], ["both", "Both"]];
 export type UseFilter = "" | "blind" | "response" | "both" | "duo" | "meta";
@@ -43,7 +44,11 @@ export function useTopScope(bundle: TopDraftBundle | undefined, params: Readonly
     const patches = topPatches(bundle.selections);
     const raw = p.get("patch");
     const patch = raw && raw !== "all" ? patchKey(raw) : undefined;
-    const event = p.get("event") || undefined;
+    // Tournament scopes over the recorded games of this lane: each tournament, each Worlds stage, All Worlds.
+    const gamesByKey = new Map<string, Set<number>>();
+    for (const s of bundle.selections) { const k = scopeKey(s.event, s.stage); (gamesByKey.get(k) ?? gamesByKey.set(k, new Set()).get(k)!).add(s.game); }
+    const choices = scopeChoices([...gamesByKey].map(([key, g]) => ({ key, games: g.size })), bundle.events);
+    const event = resolveScope(p.get("event") || undefined, choices);
     const duo = !!bundle.duos;
     const use = (useFilters(duo).find(([k]) => k === p.get("use"))?.[0] ?? "") as UseFilter;
     const sort = (TOP_SORTS.find(([k]) => k === p.get("sort"))?.[0] ?? "") as TopSort;
@@ -54,10 +59,10 @@ export function useTopScope(bundle: TopDraftBundle | undefined, params: Readonly
     const prioPatch = patch ? patches.find((x) => patchKey(x) === patch) ?? patch : patches[0];
     const prio = (prioPatch && bundle.priority[prioPatch]?.rows) || {};
     const prioLabel = prioPatch ? `${patchLabel(prioPatch)}${patch ? "" : ", newest patch"}` : "no patch";
-    const evName = event ? bundle.events.find((e) => e.id === event)?.short ?? event : undefined;
+    const evName = event ? scopeLabel(event, bundle.events) : undefined;
     const range = patches.length > 1 ? ` (${patchLabel(patches.at(-1)!)}–${patchLabel(patches[0])})` : "";
     const label = [patch ? patchLabel(patch) : `All patches${range}`, evName].filter(Boolean).join(" · ");
-    const inScope = (d: { patch: string; event: string }) => (!patch || patchKey(d.patch) === patch) && (!event || d.event === event);
+    const inScope = (d: { patch: string; event: string; stage?: string }) => inTopScope(d, scope);
     const duoUsers = new Set((bundle.duos ?? []).filter((d) => inScope(d) && (d.shape === "full" || d.shape === "split")).map((d) => (bundle.role === "SUPPORT" ? d.support : d.adc)));
     const href: TopScopeState["href"] = (next) => {
       const out = new URLSearchParams(q);
@@ -65,7 +70,7 @@ export function useTopScope(bundle: TopDraftBundle | undefined, params: Readonly
       if (out.get("patch") && out.get("patch") !== "all") out.set("patch", patchLabel(out.get("patch")!));
       return `/synergies/${tab}${out.size ? `?${out}` : ""}`;
     };
-    return { patch, patchParam: patch ? patchLabel(patch) : "all", event, use, sort, view, rows, prio, prioLabel, label, patches, events: bundle.events, duo, duoUsers, href };
+    return { patch, patchParam: patch ? patchLabel(patch) : "all", event, use, sort, view, rows, prio, prioLabel, label, patches, events: choices.map((c) => ({ id: c.value, short: c.label })), duo, duoUsers, href };
   }, [bundle, q, tab]);
 }
 

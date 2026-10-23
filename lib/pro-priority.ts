@@ -17,6 +17,7 @@ import { newestGamesFirst, recordStamp } from "./chronology";
 import { comparePatchDesc } from "./evidence";
 import { turnOf } from "./top-draft";
 import { patchLabel, shortPatch } from "./patch";
+import { inTournament, scopeChoices, scopeKey, type ScopeChoice } from "./tournament-scope";
 import { ROLES, type Meta, type MetaStat, type ProDraft, type ProGame, type ProGames, type Role } from "./schema";
 
 // ---------- patches ----------
@@ -26,10 +27,11 @@ export { patchLabel };
 
 // ---------- contributions ----------
 
-export interface PriorityTournament { id: string; name: string; short: string; status: "ongoing" | "complete"; group: string }
+export interface PriorityTournament { id: string; name: string; short: string; status: "ongoing" | "complete" }
 
 export interface Contribution {
   event: string;
+  key: string; // the narrowest tournament scope (lib/tournament-scope.ts): the event, or the Worlds main event's stage
   patch: string;
   kind: "games" | "table";
   games: number; // games this tournament played on this patch
@@ -47,9 +49,6 @@ export interface PriorityData {
   withheld: Withheld[];
 }
 
-// Every Worlds stage (play-in, main event, a later stage Gol.gg lists apart) belongs to one Worlds group.
-const groupOf = (id: string) => id.replace(/^(worlds-\d{4})-.+$/, "$1");
-
 /**
  * Splits the stored data into per-tournament, per-patch contributions. Runs at build time. `drafts` are the hand-recorded
  * drafts (pro-drafts.json): they only name roles for a table's champions, never add to a count.
@@ -58,7 +57,7 @@ export function priorityData(meta: Meta, file: ProGames, drafts: ProDraft[] = []
   const contributions: Contribution[] = [], withheld: Withheld[] = [];
   const tournaments: PriorityTournament[] = [];
   for (const e of meta.events) {
-    tournaments.push({ id: e.id, name: e.name, short: e.short, status: e.status, group: groupOf(e.id) });
+    tournaments.push({ id: e.id, name: e.name, short: e.short, status: e.status });
     // One record per Gol.gg game id, whatever the file holds.
     const records = [...new Map(file.games.filter((g) => g.event === e.id).map((g) => [g.id, g])).values()];
     const state = file.tournaments.find((t) => t.event === e.id);
@@ -66,9 +65,10 @@ export function priorityData(meta: Meta, file: ProGames, drafts: ProDraft[] = []
     const patches = [...new Set(records.map((g) => patchKey(g.patch)))].sort(comparePatchDesc);
     const table = e.name === meta.tournament.name ? [...meta.stats, ...e.stats] : e.stats;
     if (total && records.length === total) {
-      for (const p of patches) {
-        const mine = records.filter((g) => patchKey(g.patch) === p);
-        contributions.push({ event: e.id, patch: p, kind: "games", games: mine.length, records: mine, sources: e.sources });
+      // Complete records split by stage where the event has stages (Worlds Swiss and Knockouts), then by patch.
+      for (const key of [...new Set(records.map((g) => scopeKey(e.id, g.stage)))]) for (const p of patches) {
+        const mine = records.filter((g) => patchKey(g.patch) === p && scopeKey(e.id, g.stage) === key);
+        if (mine.length) contributions.push({ event: e.id, key, patch: p, kind: "games", games: mine.length, records: mine, sources: e.sources });
       }
     } else if (e.statsComplete && e.games && table.length && records.every((g) => patchKey(g.patch) === patchKey(e.patch))) {
       const seenRoles: Record<string, Role[]> = {};
@@ -76,7 +76,7 @@ export function priorityData(meta: Meta, file: ProGames, drafts: ProDraft[] = []
         const id = d.picks[r];
         if (!(seenRoles[id] ??= []).includes(r)) seenRoles[id].push(r);
       }
-      contributions.push({ event: e.id, patch: patchKey(e.patch), kind: "table", games: e.games, records, table, seenRoles, sources: e.sources });
+      contributions.push({ event: e.id, key: e.id, patch: patchKey(e.patch), kind: "table", games: e.games, records, table, seenRoles, sources: e.sources });
     } else if (records.length || total) {
       withheld.push({ event: e.id, patches, recorded: records.length, games: total,
         reason: records.length > (total ?? Infinity) ? "more games stored than the match list shows" : "not every game is recorded and the tournament table covers more than one patch" });
@@ -84,6 +84,9 @@ export function priorityData(meta: Meta, file: ProGames, drafts: ProDraft[] = []
   }
   return { tournaments, contributions, withheld };
 }
+
+/** The tournament menu: each tournament, each Worlds main-event stage and All Worlds, with the games each one counts. */
+export const priorityScopes = (d: PriorityData): ScopeChoice[] => scopeChoices(d.contributions.map((c) => ({ key: c.key, games: c.games })), d.tournaments);
 
 // ---------- buckets ----------
 
@@ -134,9 +137,8 @@ const hasOrder = (g: ProGame) => !!g.blue.pickOrder && !!g.red.pickOrder && !!g.
 
 export function inScope(c: Contribution, d: PriorityData, s: Scope): boolean {
   if (s.patch && c.patch !== patchKey(s.patch)) return false;
-  if (!s.tournaments?.length) return true;
-  const group = d.tournaments.find((t) => t.id === c.event)?.group ?? c.event;
-  return s.tournaments.includes(c.event) || s.tournaments.includes(group);
+  // A table covers its whole tournament, so a stage scope never takes it (inTournament on the event id alone).
+  return !s.tournaments?.length || s.tournaments.some((t) => inTournament(t, c.key));
 }
 
 export function bucket(d: PriorityData, s: Scope): Bucket {

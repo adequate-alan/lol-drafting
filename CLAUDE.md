@@ -60,6 +60,14 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   (`orderText`, "8/10 first rotation (80%)"), and never a blind-safety, counter or meta-priority claim. Patches show Riot's 26.xx (`patchLabel`; data keeps Gol.gg's 16.xx). Shown in the champion drawer
   (history chart, per-patch table) and as a "Pro priority · N%" label in the Draft Room when presence ≥ 30% on the
   newest patch and the champion has picks in that role: a label and a filter only, never a score, never an order.
+- **Tournament scopes** (alan, 2026-10-23; `lib/tournament-scope.ts`, `tests/tournament-scope.test.ts`): Pro priority
+  (Meta) and every Synergies lane rail offer each tournament, the Worlds main event by stage (Worlds Swiss, Worlds
+  Knockouts, from each game's Gol.gg stage: quarter / semi / final / knockout / playoff rounds are Knockouts, the rest
+  Swiss; the whole main event once both exist), Worlds Play-In and All Worlds (every Worlds stage), beside All
+  tournaments. A scope only selects games and every count is taken inside it; a whole-tournament Gol.gg table never
+  enters a stage scope. Old `?event=worlds-2026` links open the one stage offered. Pro Drafts and Pro Builds keep their
+  per-tournament menus (the main event's rounds sit in the Pro Drafts Stage menu); Champion Pool keeps per-event
+  tournament tables (never summed into All Worlds).
 - **Top draft usage** (alan, 2026-10-13; `lib/top-draft.ts`, `lib/top-blind.ts`, `components/TopDraft.tsx`,
   `components/TopRail.tsx`, `tests/top-draft.test.ts`, smoke "top:"): when pros picked each top laner. Since 2026 the
   first-picking team is not always blue: each game stores `firstPick`, the side Gol.gg marks "First Pick" (`firstPickOf`:

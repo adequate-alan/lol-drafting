@@ -1,6 +1,7 @@
 // Champion Pool stats: role-aware Observed Pro Evidence next to alan's pool tiers. Built only from recorded pro drafts,
 // game pages supplied during review (pending refresh) and Gol.gg tournament stats in meta.json. Never from champion
 // attributes or saved pairings, and nothing here changes a pool tier.
+import { scopeKey } from "./tournament-scope";
 import { fresher } from "./evidence";
 import type { BotPairing, Meta, MetaEvent, MetaStat, PoolEntry, ProDraft, Role, Source } from "./schema";
 
@@ -14,6 +15,7 @@ export interface ProGame {
   key: string;
   event: MetaEvent | undefined;
   eventName: string;
+  scope?: string; // tournament scope key (lib/tournament-scope.ts): the event, or the Worlds main event's stage
   label: string; // "Gen.G Finals G1" or "JDG vs BRO"
   team?: string; // the side these picks belong to, when known
   opponent?: string;
@@ -58,7 +60,7 @@ export function proGames({ meta, proDrafts, botPairings, sources }: Omit<PoolInp
   const out: ProGame[] = proDrafts.map((d) => {
     const ev = eventByName(meta.events, d.tournament);
     const game = d.sources.map((id) => sources[id]).find((s) => s?.type === "golgg-game");
-    return { key: d.id, event: ev, eventName: ev?.short ?? d.tournament, label: `${d.team} ${d.seriesGame}`, team: d.team, opponent: d.opponent, gameSource: game?.id,
+    return { key: d.id, event: ev, eventName: ev?.short ?? d.tournament, scope: ev && scopeKey(ev.id, d.stage), label: `${d.team} ${d.seriesGame}`, team: d.team, opponent: d.opponent, gameSource: game?.id,
       patch: d.patch ?? ev?.patch, date: d.date ?? game?.date, picks: d.picks, draftId: d.id, pending: false, sources: d.sources };
   });
   const recorded = new Set(proDrafts.flatMap((d) => d.sources));

@@ -11,28 +11,20 @@ import { Select } from "@/components/Select";
 import { ChampIcon, LayerBlock, SectionHeader, SourceLinks, pct } from "@/components/ui";
 import { shortDate } from "@/lib/evidence";
 import {
-  PRIORITY_SORTS, SMALL_SAMPLE, bucket, championHistory, forRole, orderText, patchLabel, patchesOf, previousPatch, priorityChanges,
+  PRIORITY_SORTS, SMALL_SAMPLE, priorityScopes, bucket, championHistory, forRole, orderText, patchLabel, patchesOf, previousPatch, priorityChanges,
   rolePicksOf, rolesOf, sortRows, supportingGames, teamsFor,
   type Bucket, type HistoryPoint, type Move, type PriorityData, type PriorityRow, type PrioritySort, type RoleTab,
 } from "@/lib/pro-priority";
 import { ROLES, type Role, type Source } from "@/lib/schema";
+import { inTournament, resolveScope, scopeLabel } from "@/lib/tournament-scope";
 
 const DASH = <span className="faint">—</span>;
 const pp = (x: number) => `${x > 0 ? "+" : x < 0 ? "−" : "±"}${Math.abs(Math.round(x * 100))} pp`;
 
 type Params = { get: (k: string) => string | undefined; set: (k: string, v: string | undefined) => void };
 
-/** Tournament choices: Worlds main event and play-in are one choice. */
 function tournamentOptions(d: PriorityData) {
-  const groups = new Map<string, { label: string; ongoing: boolean; games: number }>();
-  for (const t of d.tournaments) {
-    const games = d.contributions.filter((c) => c.event === t.id).reduce((n, c) => n + c.games, 0);
-    const g = groups.get(t.group) ?? { label: t.group === t.id ? t.short : t.short.replace(/ Play-In$/, ""), ongoing: false, games: 0 };
-    g.ongoing ||= t.status === "ongoing";
-    g.games += games;
-    groups.set(t.group, g);
-  }
-  return [...groups.entries()].filter(([, g]) => g.games).map(([value, g]) => ({ value, label: `${g.label} · ${g.games} games${g.ongoing ? " · ongoing" : ""}` }));
+  return priorityScopes(d).map((c) => ({ value: c.value, label: `${c.label} · ${c.games} games${c.ongoing ? " · ongoing" : ""}` }));
 }
 
 export function ProPrioritySection({ data, patchIndex, names, sources, params, Champ }: {
@@ -41,7 +33,7 @@ export function ProPrioritySection({ data, patchIndex, names, sources, params, C
 }) {
   const { get, set } = params;
   const tOptions = tournamentOptions(data);
-  const tournament = tOptions.some((o) => o.value === get("event")) ? get("event") : undefined;
+  const tournament = resolveScope(get("event"), tOptions);
   const tournaments = tournament ? [tournament] : undefined;
   const patches = patchesOf(data, tournaments);
   const rawPatch = get("patch");
@@ -172,17 +164,19 @@ export function PresenceBar({ value, max = 1 }: { value: number; max?: number })
 /** "39/39 games recorded · 39/39 with all bans · pick order 0/39", plus what each tournament contributes. */
 function Coverage({ b, data, tournaments, sources }: { b: Bucket; data: PriorityData; tournaments?: string[]; sources: Record<string, Source> }) {
   const names = Object.fromEntries(data.tournaments.map((t) => [t.id, t]));
-  const per = [...new Set(b.contributions.map((c) => c.event))].map((id) => {
-    const cs = b.contributions.filter((c) => c.event === id);
-    return { t: names[id], games: cs.reduce((n, c) => n + c.games, 0), table: cs.some((c) => c.kind === "table"), sources: cs.flatMap((c) => c.sources) };
+  // One part per scope (a Worlds main-event stage is named apart: "Worlds Swiss 16").
+  const per = [...new Set(b.contributions.map((c) => c.key))].map((key) => {
+    const cs = b.contributions.filter((c) => c.key === key);
+    return { key, label: scopeLabel(key, data.tournaments), t: names[cs[0].event], games: cs.reduce((n, c) => n + c.games, 0), table: cs.some((c) => c.kind === "table"), sources: cs.flatMap((c) => c.sources) };
   });
   const gameGames = b.games - b.tableGames;
-  const withheld = data.withheld.filter((w) => !tournaments?.length || tournaments.some((t) => w.event === t || names[w.event]?.group === t));
+  // A withheld tournament is named under any scope inside it (a Worlds stage) or holding it (All Worlds).
+  const withheld = data.withheld.filter((w) => !tournaments?.length || tournaments.some((t) => inTournament(t, w.event) || t.split(":")[0] === w.event));
   return (
     <p className="priority-coverage xs muted tnum">
       <b className="text">{b.games} games</b>
       {per.map((x) => (
-        <span key={x.t.id}> · {x.t.short} {x.games}{x.t.status === "ongoing" ? <span className="badge pro ongoing">Ongoing</span> : <span className="faint"> (completed)</span>}
+        <span key={x.key}> · {x.label} {x.games}{x.t.status === "ongoing" ? <span className="badge pro ongoing">Ongoing</span> : <span className="faint"> (completed)</span>}
           {x.table && <span title="Picks, bans and wins from the tournament's Gol.gg table; per-game records are not stored, so there are no sides, dates or pick order"> · Gol.gg table <SourceLinks ids={x.sources.slice(0, 1)} sources={sources} /></span>}</span>
       ))}
       {gameGames > 0 && <>
@@ -191,7 +185,7 @@ function Coverage({ b, data, tournaments, sources }: { b: Bucket; data: Priority
         <span title="Games with each team's pick order stored"> · pick order {b.orderGames}/{gameGames}</span>
       </>}
       {b.games > 0 && b.games < SMALL_SAMPLE && <span className="caution-text"> · small sample</span>}
-      {withheld.map((w) => <span key={w.event} title={w.reason}> · {names[w.event]?.short ?? w.event} not counted ({w.recorded}{w.games ? `/${w.games}` : ""} games recorded)</span>)}
+      {withheld.map((w) => <span key={w.event} title={w.reason}> · {scopeLabel(w.event, data.tournaments)} not counted ({w.recorded}{w.games ? `/${w.games}` : ""} games recorded)</span>)}
     </p>
   );
 }
@@ -201,7 +195,7 @@ function Changes({ data, patch, older, tournaments, role, setRole, Champ, patchI
   Champ: (p: { id: string; r?: Role; size?: "xs" | "sm" | "md" }) => React.ReactNode;
 }) {
   const c = priorityChanges(data, patch, older, tournaments, role);
-  const short = (bk: Bucket) => [...new Set(bk.contributions.map((x) => data.tournaments.find((t) => t.id === x.event)?.short ?? x.event))].join(" + ");
+  const short = (bk: Bucket) => [...new Set(bk.contributions.map((x) => scopeLabel(x.key, data.tournaments)))].join(" + ");
   const sameField = short(c.newer) === short(c.older);
   const List = ({ title, moves }: { title: string; moves: Move[] }) => (
     <div className="table-wrap hub-table mid">
