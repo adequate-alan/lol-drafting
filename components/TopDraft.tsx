@@ -11,6 +11,7 @@ import { ChampIcon } from "./ChampIcon";
 import { rovingIndex, rovingKeys } from "./roving";
 import { shortDate } from "@/lib/evidence";
 import { patchLabel } from "@/lib/patch";
+import { scopeKey, scopeLabel } from "@/lib/tournament-scope";
 import { buildsHref } from "@/lib/pro-builds";
 import { DRAFT_LABEL_MIN, orderText } from "@/lib/pro-priority";
 import { BoardContext, ContextView, MatesView } from "./JungleDraft";
@@ -85,7 +86,7 @@ export function TopGameDetail({ game, focus, names, bundle, pair }: { game: Game
   const role = focus.role as LaneRole;
   const lane = new Set((isBot(role) ? (["BOT", "SUPPORT"] as const) : [role]).flatMap((r) => [game.blue.picks[r], game.red.picks[r]]));
   const first = game.firstPick ? game[game.firstPick].team : undefined;
-  const event = bundle.events.find((e) => e.id === game.event)?.short ?? game.tournament;
+  const event = /^worlds-/.test(game.event) ? scopeLabel(scopeKey(game.event, game.stage), bundle.events) : bundle.events.find((e) => e.id === game.event)?.short ?? game.tournament;
   const draftId = (side: "blue" | "red") => bundle.drafts[`${game.id}:${side}`];
   const anyDraft = draftId(focus.side) ?? draftId(focus.side === "blue" ? "red" : "blue");
   return (

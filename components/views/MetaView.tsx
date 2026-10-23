@@ -12,7 +12,8 @@ import { Disclosure } from "@/components/Disclosure";
 import { ChampIcon, PageHeader, SectionHeader, SourceBadge, SourceLinks, pct } from "@/components/ui";
 import { shortDate } from "@/lib/evidence";
 import { comparison, eventSummary, hubData, pairings, recentDrafts, type HubInput, type Pairing } from "@/lib/meta-hub";
-import { patchKey, patchLabel, patchesOf } from "@/lib/pro-priority";
+import { patchKey, patchLabel, patchesOf, priorityScopes } from "@/lib/pro-priority";
+import { inTournament, resolveScope, scopeLabel as scopeName } from "@/lib/tournament-scope";
 import { ROLES, type Role, type Rule, type Source } from "@/lib/schema";
 import { ProPrioritySection } from "@/components/ProPriority";
 
@@ -36,8 +37,8 @@ export function MetaView({ names, sources, input, rules, drawerData, freshness }
   const priority = drawerData.priority;
   // Pro Priority sets the page's scope: one patch (newest by default, never combined unless "All patches" is picked)
   // and a tournament (all by default; the patch already keeps samples apart). The sections below follow that scope.
-  const tournament = get("event");
-  const eventId = hub.events.find((e) => e.id === tournament)?.id;
+  // A tournament, a Worlds main-event stage or All Worlds (lib/tournament-scope.ts), as Pro priority resolves it.
+  const eventId = resolveScope(get("event"), priorityScopes(priority));
   const patchParam = get("patch");
   const patches = patchesOf(priority, eventId ? [eventId] : undefined);
   const patch = patchParam === "all" ? undefined : patches.find((p) => p === patchParam || patchLabel(p) === patchParam) ?? patches[0];
@@ -52,8 +53,8 @@ export function MetaView({ names, sources, input, rules, drawerData, freshness }
   const drafts = recentDrafts(scoped, eventId);
   const [openKey, setOpenKey] = useState<string>();
   const toggle = (k: string) => setOpenKey((o) => (o === k ? undefined : k));
-  const selected = eventId ? hub.events.filter((e) => e.id === eventId) : hub.events;
-  const scopeLabel = `${patch ? `Patch ${patchLabel(patch)}` : "All patches"}${eventId ? ` · ${hub.events.find((e) => e.id === eventId)!.short}` : ""}`;
+  const selected = eventId ? hub.events.filter((e) => inTournament(eventId, e.id) || eventId.split(":")[0] === e.id) : hub.events;
+  const scopeLabel = `${patch ? `Patch ${patchLabel(patch)}` : "All patches"}${eventId ? ` · ${scopeName(eventId, hub.events)}` : ""}`;
 
   const Champ = ({ id, r, size = "sm" }: { id: string; r?: Role; size?: "xs" | "sm" | "md" }) => (
     <InteractiveChampion id={id} role={r} className="champ-link">
@@ -78,7 +79,7 @@ export function MetaView({ names, sources, input, rules, drawerData, freshness }
             {hub.events.map((e) => {
               const s = eventSummary(hub, e, sources);
               return (
-                <tr key={e.id} className={e.id === eventId ? "selected" : undefined}>
+                <tr key={e.id} className={eventId && selected.includes(e) ? "selected" : undefined}>
                   <td className="nowrap"><b>{e.short}</b> <span className="xs muted hide-sm">{e.name}</span></td>
                   <td className="num">{patchLabel(e.patch)}</td>
                   <td className="hide-sm nowrap">{e.startDate ? `${shortDate(e.startDate)}–${shortDate(e.endDate)}` : DASH}</td>

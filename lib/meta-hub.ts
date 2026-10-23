@@ -1,6 +1,7 @@
 // Meta / Research hub: what is being played, by role and tournament, from the same evidence Champion Pool uses
 // (meta.json event stats, recorded drafts, supplied game pages). Display only: nothing here touches saved pairings, and
 // nothing is computed from champion attributes. Where the data cannot support a number, the number is left out.
+import { inTournament } from "./tournament-scope";
 import { comparePatchDesc, fresher } from "./evidence";
 import { eventStats, listsRole, presenceOf, proGames, type EventStat, type ProGame } from "./pool-stats";
 import { ROLES, type BotPairing, type Meta, type MetaEvent, type ProDraft, type Role, type Source } from "./schema";
@@ -22,7 +23,9 @@ export function hubData(input: HubInput): HubData {
   };
 }
 
-const inEvent = (eventId?: string) => (x: { event?: MetaEvent }) => !eventId || x.event?.id === eventId;
+// A tournament scope (lib/tournament-scope.ts): a recorded game by its own scope (a Worlds stage), an aggregate by its
+// event, so a stage scope never takes a whole-tournament table.
+const inEvent = (scope?: string) => (x: { event?: MetaEvent; scope?: string }) => !scope || inTournament(scope, x.scope ?? x.event?.id ?? "");
 
 // ---------- event summary ----------
 

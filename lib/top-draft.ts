@@ -18,6 +18,7 @@
 // between them on the source, so a partner picked in the same turn is "together", never before or after.
 // A response is not a counter. "Repeated" needs the same response in two different series; "supported counter" needs a
 // DPM.LOL matchup row that clears the counter thresholds (lib/counters.ts). Win / loss never decides either.
+import { inTournament, scopeKey } from "./tournament-scope";
 import { newestGamesFirst, recordStamp } from "./chronology";
 import { DPM_MIN_GAMES, DPM_MIN_WIN_RATE, DPM_STRONG_WIN_RATE } from "./counters";
 import { comparePatchDesc } from "./evidence";
@@ -353,8 +354,9 @@ export function mateRows(jungle: TopSelection[], role: Role, scope: TopScope): M
 
 export interface TopScope { patch?: string; events?: string[] } // no patch = every patch (explicit)
 
-export const inTopScope = (s: Pick<TopSelection, "patch" | "event">, scope: TopScope) =>
-  (!scope.patch || patchKey(s.patch) === patchKey(scope.patch)) && (!scope.events?.length || scope.events.includes(s.event));
+// `events`: tournament scopes (lib/tournament-scope.ts): an event, a Worlds main-event stage or All Worlds.
+export const inTopScope = (s: Pick<TopSelection, "patch" | "event"> & { stage?: string }, scope: TopScope) =>
+  (!scope.patch || patchKey(s.patch) === patchKey(scope.patch)) && (!scope.events?.length || scope.events.some((v) => inTournament(v, scopeKey(s.event, s.stage))));
 
 export const topPatches = (sel: Pick<TopSelection, "patch">[]) => [...new Set(sel.map((s) => s.patch))].sort(comparePatchDesc);
 
