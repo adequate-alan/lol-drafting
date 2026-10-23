@@ -211,8 +211,10 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   709 pairs, 0.06 points off on average) and `scripts/dpm-compare.ts` (before-and-after counts at the site's
   thresholds, new / lost / weakened counters, largest moves; `--old` reads an archived snapshot). The 2026-10-10 rows
   (4,212) are `data/dpm-history/16.20-2026-10-10.json.gz`. `scripts/dpm-freshness.ts` runs in the daily patch-notes
-  workflow: the summary names the data's patch against the newest recognised one, and an issue labelled `dpm-stale`
-  is opened the day a newer patch is recognised (closed on its own once fresh rows are stored). The runner probe
+  workflow: the summary names the data's patch, its collection date and the newest recognised patch. Data from an older
+  patch is expected (alan, 2026-10-23: collections are deliberately rare), so the workflow opens no issue and never asks
+  for a collection; the site's "older patch" marks carry that information. A failing read of the data files fails the
+  step, which is the one actionable case (a broken pipeline, not old data). The runner probe
   (`dpm-probe.yml`, 2026-10-22) was answered with a Cloudflare challenge, so the browser collection stays the method.
   **Kit read** (alan, 2026-10-22; `lib/matchup-read.ts` pure, `lib/matchup-kits.ts` builds the book, `KitRead` in
   `components/EvidenceCards.tsx`, `tests/matchup-read.test.ts`): the Counter card ends with "Kit read · analysis" (General

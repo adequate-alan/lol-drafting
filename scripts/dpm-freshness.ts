@@ -1,8 +1,10 @@
-// Is the stored DPM.LOL counter data from the current patch? (alan, 2026-10-22). Prints a short Markdown note for a run
-// summary and, under GitHub Actions, writes stale=true|false (and the patches) to GITHUB_OUTPUT so the patch-notes
-// workflow can raise an issue the day a newer patch is recognised. Read-only; the site itself marks older-patch rows.
+// Is the stored DPM.LOL counter data from the current patch? (alan, 2026-10-22). Prints a short Markdown note for the
+// daily patch-notes run summary: the data's patch, its collection date and the newest recognised patch. Data from an
+// older patch is an expected condition between the rare browser collections (alan, 2026-10-23): the site marks every such
+// row, so this note asks for nothing and the workflow opens no issue. A missing or invalid data file throws, which fails
+// the workflow step: a broken pipeline is the actionable case. Read-only.
 //   npx tsx scripts/dpm-freshness.ts
-import { appendFileSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { counterFreshness, newestPatch } from "../lib/counter-freshness";
 import { buildPatchIndex } from "../lib/patch-changes";
@@ -19,6 +21,5 @@ const changed = Object.keys(f.changes).length;
 const lines = [`## DPM.LOL counter data`, "",
   f.patch ? `- Stored rows: ${counters.dpm.length} lane matchups, patch ${patchLabel(f.patch)}, collected ${f.collected}` : "- No DPM rows stored",
   `- Newest recognised patch: ${newest ? patchLabel(newest) : "none"}`,
-  f.stale ? `- **Older patch**: the counters are from ${patchLabel(f.patch!)} while ${patchLabel(newest!)} is current; ${changed} champion${changed === 1 ? "" : "s"} in the rows changed since. The site marks every such row; a fresh browser collection (scripts/dpm-collect/) and \`npx tsx scripts/ingest-dpm.ts\` bring it up to date.` : "- Current: the counters are from the newest recognised patch.", ""];
+  f.stale ? `- Older patch (expected between collections): the counters are from ${patchLabel(f.patch!)}, collected ${f.collected}, while ${patchLabel(newest!)} is current; ${changed} champion${changed === 1 ? "" : "s"} in the rows changed since. The site marks every such row "older patch"; strength and scoring are unchanged. Refresh procedure, when wanted: scripts/dpm-collect/README.md.` : "- Current: the counters are from the newest recognised patch.", ""];
 console.log(lines.join("\n"));
-if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `stale=${f.stale}\ndpm_patch=${f.patch ? patchLabel(f.patch) : ""}\nnewest_patch=${newest ? patchLabel(newest) : ""}\ncollected=${f.collected ?? ""}\n`);

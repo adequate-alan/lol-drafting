@@ -51,5 +51,6 @@ rate is DPM's fraction shown as a percentage with two decimals.
 
 Thresholds (300 games, 52% favourable, 54% strong) live in `lib/counters.ts` and are not part of the collection. Rows
 under 300 games stay "Preliminary" on the site, never a Counter label. The daily patch-notes workflow prints the data's
-patch against the newest recognised one (`scripts/dpm-freshness.ts`) and opens an issue labelled `dpm-stale` when a
-newer patch is recognised: time to collect again.
+patch, its collection date and the newest recognised patch in its run summary (`scripts/dpm-freshness.ts`). An older
+patch there is expected: collections are deliberately rare (alan, 2026-10-23), the site marks every such row, and no
+issue is opened. Collect again when you decide to, not because the summary says the patch moved on.
