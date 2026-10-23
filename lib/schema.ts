@@ -234,8 +234,12 @@ export const ProGame = z.object({
 });
 export type ProGame = z.infer<typeof ProGame>;
 export const ProGames = z.object({
-  // The only tournaments the daily refresh may request, by exact Gol.gg name (alan, 2026-10-11).
-  tracked: z.array(z.object({ event: id, label: z.string(), names: z.array(z.string()).min(1) })),
+  // The only tournaments the daily refresh may request, by exact Gol.gg name (alan, 2026-10-11). `discover` (alan,
+  // 2026-10-23): a pattern for the later stages of the same tournament (Worlds 2026 knockouts) that Gol.gg may list
+  // under a name of their own; a listed name it matches is tracked as its own event (`auto`). `untilFinal`: finished
+  // only once a final is played, never because the listed series are a week old (a gap between Swiss and knockouts).
+  tracked: z.array(z.object({ event: id, label: z.string(), names: z.array(z.string()).min(1), discover: z.string().optional(),
+    untilFinal: z.boolean().optional(), auto: z.boolean().optional() })),
   tournaments: z.array(z.object({
     event: id, golgg: z.string(), status: z.enum(["ongoing", "complete"]),
     series: z.number().int(), seriesPlayed: z.number().int(), games: z.number().int(), recorded: z.number().int(),

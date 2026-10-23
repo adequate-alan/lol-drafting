@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parseChampionTable, parseFullstats, parseGamePage, parseMatchlist } from "@/scripts/golgg/parse.mjs";
 import { buildGame, championResolver, firstPickOf, isComplete, seriesProblems, turnsDrawn } from "@/scripts/golgg/normalize.mjs";
-import { refresh, urls, type Get } from "@/scripts/golgg/refresh.mjs";
+import { refresh, stageEvent, urls, type Get } from "@/scripts/golgg/refresh.mjs";
 import { draftsFromGames, freshness, gameSourceId, resultsFromGames, sourcesFromGames, stageLabel } from "@/lib/pro-games";
 import { Files, type ProGames } from "@/lib/schema";
 import { lastCheckedRun } from "@/components/ProFreshness";
@@ -160,15 +160,30 @@ describe("game records", () => {
 });
 
 describe("daily refresh", () => {
-  it("reports a Worlds stage Gol.gg names in a way no tracked tournament does, and imports nothing from it", async () => {
+  it("tracks a later Worlds stage Gol.gg lists under its own name as its own event, and reports other unknown names", async () => {
     const { get: base, asked } = recorder();
+    const KO = "Worlds 2026 Knockout Stage";
     const get: Get = async (url, init) => {
+      if (url === urls.matchlist(KO)) { asked.push(url); return `<table><caption>${KO} results</caption></table>`; }
       const text = await base(url, init);
-      return url === urls.list ? JSON.stringify([...JSON.parse(text), { trname: "Worlds 2026 Knockout Stage" }]) : text;
+      return url === urls.list ? JSON.stringify([...JSON.parse(text), { trname: KO }, { trname: "Worlds Qualifying Series 2026" }]) : text;
     };
     const out = await refresh(baseData(), get, { now: NOW, maxBuildGames: 0 });
-    expect(out.report.join("\n")).toMatch(/Gol\.gg lists "Worlds 2026 Knockout Stage", which no tracked tournament names/);
-    expect(asked.join()).not.toMatch(/Knockout/);
+    expect(out.proGames.tracked.at(-1)).toEqual({ event: "worlds-2026-knockout-stage", label: KO, names: [KO], auto: true });
+    expect(out.changed).toContain("worlds-2026-knockout-stage");
+    expect(out.report.join("\n")).toMatch(/Gol\.gg lists "Worlds 2026 Knockout Stage": tracked from now on as a stage of Worlds 2026 Main Event/);
+    expect(out.report.join("\n")).toMatch(/Gol\.gg lists "Worlds Qualifying Series 2026", which no tracked tournament names: not imported/);
+    expect(asked).toContain(urls.matchlist(KO));
+    expect(asked.join()).not.toMatch(/Qualifying/);
+    // A second run knows the stage and adds nothing.
+    const again = await refresh({ ...baseData(), proGames: out.proGames, meta: out.meta, sources: out.sources }, get, { now: NOW, maxBuildGames: 0 });
+    expect(again.proGames.tracked.filter((t) => t.names.includes(KO))).toHaveLength(1);
+  });
+
+  it("names a discovered stage after its parent and never reuses an id", () => {
+    expect(stageEvent("worlds-2026", "Worlds 2026 Knockout Stage", [])).toBe("worlds-2026-knockout-stage");
+    expect(stageEvent("worlds-2026", "Worlds Playoffs 2026", [])).toBe("worlds-2026-playoffs");
+    expect(stageEvent("worlds-2026", "Worlds 2026 Playoffs", [{ event: "worlds-2026-playoffs" }])).toBe("worlds-2026-playoffs-2");
   });
 
   it("imports new completed games from tracked tournaments only", async () => {
@@ -176,7 +191,7 @@ describe("daily refresh", () => {
     const out = await refresh(baseData(), get, { now: NOW, maxBuildGames: 0 });
     expect(out.proGames.games.map((g) => g.id)).toEqual([83452]);
     expect(out.changed).toEqual(["demacia-cup-2026"]);
-    expect(out.report.join("\n")).toMatch(/Worlds 2026: not listed on Gol.gg yet/);
+    expect(out.report.join("\n")).toMatch(/Worlds 2026 Main Event: not listed on Gol.gg yet/);
     // Every request is the season list or a Demacia Cup page; nothing for the LCK playoffs or any other event.
     for (const u of asked) expect(u === urls.list || u.includes("Demacia%20Cup") || /game\/stats\/83452\//.test(u), u).toBe(true);
     expect(asked.join()).not.toMatch(/LCK/);
@@ -234,6 +249,9 @@ describe("daily refresh", () => {
     expect(isComplete([s("FINAL"), s("SEMIFINALS", [3, 0])], "2026-10-17")).toBe(false);
     expect(isComplete([s("ROUND4", [1, 0], "2026-10-01")], "2026-10-09")).toBe(true);
     expect(isComplete([s("ROUND4", [1, 0], "2026-10-08")], "2026-10-09")).toBe(false);
+    // The Worlds main event: Swiss can end a week before the knockouts are listed, so only a final finishes it.
+    expect(isComplete([s("ROUND4", [1, 0], "2026-10-01")], "2026-10-09", { untilFinal: true })).toBe(false);
+    expect(isComplete([s("FINAL", [3, 2]), s("SEMIFINALS", [3, 0])], "2026-10-17", { untilFinal: true })).toBe(true);
   });
 
   it("only ever writes pro-evidence files", () => {
@@ -260,13 +278,16 @@ describe("daily refresh", () => {
 
   it("follows only Demacia Cup 2026 and Worlds 2026", () => {
     const tracked = Files["pro-games.json"].parse(raw("pro-games.json")).tracked;
-    expect(tracked.map((t) => t.event)).toEqual(["demacia-cup-2026", "worlds-2026", "worlds-2026-play-in"]);
+    expect(tracked.filter((t) => !t.auto).map((t) => t.event)).toEqual(["demacia-cup-2026", "worlds-2026", "worlds-2026-play-in"]);
+    // Gol.gg's own name for the 2026 main event (alan, 2026-10-23); later stages are found through its pattern.
+    expect(tracked.find((t) => t.event === "worlds-2026")).toMatchObject({ names: expect.arrayContaining(["Worlds 2026 Main Event"]), untilFinal: true });
+    for (const t of tracked.filter((x) => x.auto)) expect(t.event).toMatch(/^worlds-2026-/);
     for (const n of tracked.flatMap((t) => t.names)) expect(n).toMatch(/^(Demacia Cup Global Invitational 2026|World(s| Championship)\b.*2026.*)$/);
   });
 
   it("freshness says which tournaments are listed, ongoing or finished", () => {
     const f = freshness(empty);
-    expect(f.map((x) => [x.label, x.listed])).toEqual([["Demacia Cup", false], ["Worlds 2026", false], ["Worlds 2026 Play-In", false]]);
+    expect(f.map((x) => [x.label, x.listed])).toEqual([["Demacia Cup", false], ["Worlds 2026 Main Event", false], ["Worlds 2026 Play-In", false]]);
   });
 });
 

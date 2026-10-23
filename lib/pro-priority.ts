@@ -47,8 +47,8 @@ export interface PriorityData {
   withheld: Withheld[];
 }
 
-// Worlds main event and its play-in are one tournament choice ("Worlds 2026, including Play-Ins").
-const groupOf = (id: string) => id.replace(/-play-in$/, "");
+// Every Worlds stage (play-in, main event, a later stage Gol.gg lists apart) belongs to one Worlds group.
+const groupOf = (id: string) => id.replace(/^(worlds-\d{4})-.+$/, "$1");
 
 /**
  * Splits the stored data into per-tournament, per-patch contributions. Runs at build time. `drafts` are the hand-recorded

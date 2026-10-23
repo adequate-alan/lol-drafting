@@ -267,9 +267,13 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   GitHub started the 12:00 cron 9 hours late on 2026-10-12) and on `workflow_dispatch`. It reads Gol.gg with plain requests from the GitHub runner
   (it answers there; robots.txt allows these pages) and stops, writing nothing, on any refusal or challenge. Never bypass one.
 - Only the tournaments in `data/pro-games.json` `tracked` are requested, by exact Gol.gg name: Demacia Cup Global
-  Invitational 2026 and Worlds 2026 (main event and play-in names). The LCK playoffs are a frozen archive. Adding a
-  tournament (2027 or any other) needs alan's approval. A tournament marked `complete` is not requested again. A Worlds stage Gol.gg
-  lists under a name no tracked entry has (main event, Swiss, knockouts) is named in the run report, never imported under a guess.
+  Invitational 2026 and Worlds 2026 (Gol.gg's "Worlds 2026 Play-In" and "Worlds 2026 Main Event", Swiss Stage from
+  2026-10-23). The LCK playoffs are a frozen archive. Adding a tournament (2027 or any other) needs alan's approval. A
+  tournament marked `complete` is not requested again; the main event is `untilFinal` (finished only by a played final,
+  never by a week without listed series). Later Worlds stages without a code change (alan, 2026-10-23): a listed name
+  the main event's `discover` pattern matches (stage words only: "Worlds 2026 Knockout Stage", "Worlds 2026 Playoffs")
+  becomes its own tracked event (`auto`, id `worlds-2026-<stage>`, `stageEvent`), grouped with every Worlds stage;
+  any other Worlds name (a qualifier) is named in the run report, never imported under a guess.
 - Newest game first, across tournaments (alan, 2026-10-12; site-wide 2026-10-16): every game list (Pro Drafts, Gen.G,
   Pro Builds, Pinned Players histories, drawer and evidence lists) sorts through `newestGamesFirst` in `lib/chronology.ts`:
   date, then the newer patch on a shared date (Gol.gg records no start times), a series kept together in descending game
