@@ -661,9 +661,13 @@ await page.locator(".theme-toggle").click();
   const responses = await railFor("Response"), blinds = await railFor("Blind");
   check("top: Response and Blind filters split the tops (Rumble never a response)", responses.length > 0 && blinds.length > 0 && !responses.some((n) => blinds.includes(n)) && !responses.includes("Rumble"), `${responses.join(",")} | ${blinds.join(",")}`);
   // Draft Room labels read the newest patch with 10+ classified selections: try a top picked into on each recent patch.
+  // The list shows 12 rows before "Show all"; the champion carrying the label can sit past them (Ambessa into Jayce
+  // on 26.20 moved to the 13th row when Fiora joined the list as a DPM counter, 2026-10-23), so the whole list is read.
   const topSeen = [];
   for (const [id, name] of [["rumble", "Rumble"], ["jayce", "Jayce"], ["olaf", "Olaf"]]) {
     await open(`/?jungle=vi&focus=TOP&vs=top:${id}`);
+    const more = page.locator(".fit-more");
+    if (await more.count()) { await more.first().click(); await page.waitForTimeout(200); }
     const sigs = (await page.locator(".fit-row .sig.usage").allTextContents()).join("|");
     topSeen.push({ sigs, ok: new RegExp(`Picked into ${name} · \\d+`).test(sigs), clean: (sigs.match(/Picked into [^|·]+/g) ?? []).every((t) => t.trim() === `Picked into ${name}`) });
   }
@@ -699,6 +703,8 @@ await page.locator(".theme-toggle").click();
   const supSeen = [];
   for (const [bot, adc, support, label] of [["yunara", "lucian", "milio", "Lucian \\+ Milio"], ["xayah", "yunara", "lulu", "Yunara \\+ Lulu"]]) {
     await open(`/?bot=${bot}&vs=bot:${adc},support:${support}&focus=SUPPORT`);
+    const more = page.locator(".fit-more");
+    if (await more.count()) { await more.first().click(); await page.waitForTimeout(200); }
     const sup = (await page.locator(".fit-row .sig.usage").allTextContents()).join("|");
     supSeen.push({ sup, ok: new RegExp(`Picked into ${label} · \\d+`).test(sup), clean: (sup.match(/Picked into [^|·]+ \+ [^|·]+/g) ?? []).every((t) => new RegExp(label).test(t)) });
   }
