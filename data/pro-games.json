@@ -9,12 +9,15 @@
     },
     {
       "event": "worlds-2026",
-      "label": "Worlds 2026",
+      "label": "Worlds 2026 Main Event",
       "names": [
+        "Worlds 2026 Main Event",
         "World Championship 2026",
         "Worlds 2026",
         "Worlds Main Event 2026"
-      ]
+      ],
+      "discover": "^(?:Worlds 2026 (?:Main Event |Swiss |Knockout |Bracket )?(?:Stage|Swiss|Knockouts?|Playoffs|Bracket|Quarterfinals|Semifinals|Finals?)|Worlds (?:Swiss|Knockouts?|Playoffs) 2026)$",
+      "untilFinal": true
     },
     {
       "event": "worlds-2026-play-in",

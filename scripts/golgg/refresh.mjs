@@ -38,18 +38,30 @@ async function refreshGames(data, get, { now = new Date() } = {}) {
   const resolve = championResolver(data.champions);
   const report = [], rejected = [], changed = new Set();
 
-  const open = proGames.tracked.filter((t) => proGames.tournaments.find((x) => x.event === t.event)?.status !== "complete");
-  for (const t of proGames.tracked) if (!open.includes(t)) report.push(`${t.label}: finished, not requested again.`);
-  if (!open.length) return { proGames, meta, sources, changed: [], report, rejected };
+  const isOpen = (t) => proGames.tournaments.find((x) => x.event === t.event)?.status !== "complete";
+  for (const t of proGames.tracked) if (!isOpen(t)) report.push(`${t.label}: finished, not requested again.`);
+  if (!proGames.tracked.some(isOpen)) return { proGames, meta, sources, changed: [], report, rejected };
 
   // Which tracked names Gol.gg lists this season (one request for every tournament).
   const listed = JSON.parse(await get(urls.list, { method: "POST", body: `season=S${Number(today.slice(0, 4)) - 2010}` }));
   if (!Array.isArray(listed)) throw new Error("Gol.gg tournament list is not a list");
   const listedNames = new Set(listed.map((x) => x.trname));
-  // A Worlds stage Gol.gg names differently from our list (a new spelling for the main event, Swiss or knockouts) is
-  // reported, never imported under a guessed event: a person adds the name to `tracked` once it is checked.
+  // A later stage of a tracked tournament (alan, 2026-10-23: Worlds 2026 knockouts without another code change): a
+  // listed name the tournament's `discover` pattern matches becomes its own tracked event, kept in the file. Any other
+  // Worlds name no tracked tournament names is reported, never imported under a guessed event.
   const known = new Set(proGames.tracked.flatMap((t) => t.names));
-  for (const n of listedNames) if (/\b(worlds|world championship)\b/i.test(n) && n.includes(today.slice(0, 4)) && !known.has(n)) report.push(`Gol.gg lists "${n}", which no tracked tournament names: not imported.`);
+  for (const n of [...listedNames].sort()) {
+    if (known.has(n)) continue;
+    const parent = proGames.tracked.find((t) => t.discover && isOpen(t) && new RegExp(t.discover).test(n));
+    if (parent) {
+      const event = stageEvent(parent.event, n, proGames.tracked);
+      proGames.tracked.push({ event, label: n, names: [n], auto: true });
+      known.add(n);
+      changed.add(event);
+      report.push(`Gol.gg lists "${n}": tracked from now on as a stage of ${parent.label} (${event}).`);
+    } else if (/\b(worlds|world championship)\b/i.test(n) && n.includes(today.slice(0, 4))) report.push(`Gol.gg lists "${n}", which no tracked tournament names: not imported.`);
+  }
+  const open = proGames.tracked.filter(isOpen);
 
   for (const t of open) {
     const names = t.names.filter((n) => listedNames.has(n));
@@ -139,7 +151,7 @@ async function refreshGames(data, get, { now = new Date() } = {}) {
     for (const g of added) confirmClaims(sources, g, data.botPairings, today, rejected);
 
     const series = ml.series;
-    const done = isComplete(series, today);
+    const done = isComplete(series, today, { untilFinal: t.untilFinal });
     if (event && done && event.status !== "complete") { event.status = "complete"; event.endDate = series.map((s) => s.date).filter(Boolean).sort().at(-1); }
     const state = { event: t.event, golgg: name, status: done ? "complete" : "ongoing", series: series.length, seriesPlayed: played.length, games: totalGames,
       recorded: proGames.games.filter((g) => g.event === t.event).length, matchlist: urls.matchlist(name) };
@@ -157,6 +169,15 @@ async function refreshGames(data, get, { now = new Date() } = {}) {
   // The check time is stored only alongside a data change, so a quiet day writes nothing.
   if (changed.size) for (const x of proGames.tournaments) if (open.some((t) => t.event === x.event)) x.lastCheck = now.toISOString();
   return { proGames, meta, sources, changed: [...changed], report, rejected };
+}
+
+/** The event id of a discovered stage: the parent's id plus the stage words of the Gol.gg name ("worlds-2026-knockout-stage"). */
+export function stageEvent(parent, name, tracked) {
+  const year = parent.match(/\d{4}/)?.[0] ?? "";
+  const words = name.toLowerCase().replace(/\b(worlds|world championship)\b/g, "").replace(year, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  let id = `${parent}-${words || "stage"}`, n = 2;
+  while (tracked.some((t) => t.event === id)) id = `${parent}-${words || "stage"}-${n++}`;
+  return id;
 }
 
 async function draftMode(get, id) {

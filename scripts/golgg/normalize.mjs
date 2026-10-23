@@ -167,10 +167,14 @@ export function buildAggregates(table, totalGames, games, resolve, sourceIds, pr
   return { stats, rolesVerified: complete };
 }
 
-/** Finished: every listed series is played and either a final was played or the last game is a week old. */
-export function isComplete(series, today) {
+/**
+ * Finished: every listed series is played and either a final was played or the last game is a week old. `untilFinal`:
+ * only a played final finishes it (a tournament whose next stage may not be listed yet, the Worlds main event).
+ */
+export function isComplete(series, today, { untilFinal = false } = {}) {
   if (!series.length || series.some((s) => !s.score)) return false;
   if (series.some((s) => /^(grand )?finals?$/i.test(s.stage))) return true;
+  if (untilFinal) return false;
   const last = series.map((s) => s.date).filter(Boolean).sort().at(-1);
   return !!last && (Date.parse(today) - Date.parse(last)) / 86400000 >= 7;
 }

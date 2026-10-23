@@ -11,4 +11,5 @@ export function refreshBuilds(
   get: Get, today: string, maxBuildGames: number, opts?: { only?: ProGame[] },
 ): Promise<{ proBuilds: ProBuilds; buildAssets: BuildAssets; changed: string[]; report: string[]; rejected: string[] }>;
 export const MAX_BUILD_GAMES: number;
+export function stageEvent(parent: string, name: string, tracked: { event: string }[]): string;
 export const CDRAGON_PERKS: string;
