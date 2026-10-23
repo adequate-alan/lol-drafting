@@ -667,7 +667,15 @@ await page.locator(".theme-toggle").click();
   // answered, which must get no label. The list shows 12 rows before "Show all", so every visit reads the whole list.
   // A live smoke check verifies behaviour against the current data; fixed champion scenarios belong in the unit tests
   // with synthetic fixtures.
-  const openTop = async (q) => { await open(`/?jungle=vi&focus=TOP${q}`); const more = page.locator(".fit-more"); if (await more.count()) { await more.first().click(); await page.waitForTimeout(300); } };
+  const openTop = async (q) => {
+    await open(`/?jungle=vi&focus=TOP${q}`);
+    const more = page.locator(".fit-more");
+    if (await more.count()) {
+      const shown = await page.locator(".fit-row").count();
+      await more.first().click();
+      await page.waitForFunction((n) => document.querySelectorAll(".fit-row").length > n, shown, { timeout: 5000 }).catch(() => {});
+    }
+  };
   await openTop("");
   const tip = (await page.locator(".fit-row .sig.usage").first().getAttribute("title").catch(() => "")) ?? "";
   const labelPatch = /Patch (\d+\.\d+)/.exec(tip)?.[1];
