@@ -26,6 +26,7 @@ on:
 permissions:
   contents: write # commit refreshed patch notes
   actions: write # start the Pages deploy (a push made with GITHUB_TOKEN does not trigger workflows)
+  issues: write # the dpm-stale issue when the DPM.LOL counter data is from an older patch
 
 concurrency:
   group: refresh-patch-notes
@@ -76,6 +77,38 @@ jobs:
         run: |
           [ -d node_modules ] || npm ci
           npx tsx scripts/kit-review.ts | tee -a "$GITHUB_STEP_SUMMARY"
+
+      # DPM.LOL counter freshness (alan, 2026-10-22): the counters are a browser collection for one patch (scripts/dpm-collect/).
+      # The day a newer patch is recognised, one issue labelled dpm-stale tells alan to collect again; it is closed on its
+      # own once fresh rows are stored. Summary and issue only: nothing here edits data, kits or anything that scores.
+      - id: dpm
+        if: steps.gate.outputs.run == 'true'
+        name: DPM counter freshness
+        run: |
+          [ -d node_modules ] || npm ci
+          npx tsx scripts/dpm-freshness.ts | tee -a "$GITHUB_STEP_SUMMARY"
+      - if: steps.dpm.outcome == 'success' && !inputs.dry_run
+        name: Notify when the DPM data is from an older patch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STALE: ${{ steps.dpm.outputs.stale }}
+          DPM_PATCH: ${{ steps.dpm.outputs.dpm_patch }}
+          NEWEST: ${{ steps.dpm.outputs.newest_patch }}
+          COLLECTED: ${{ steps.dpm.outputs.collected }}
+        run: |
+          gh label create dpm-stale --description "DPM.LOL counter data is from an older patch" --color D93F0B 2>/dev/null || true
+          open=$(gh issue list --label dpm-stale --state open --json number --jq '.[].number')
+          if [ "$STALE" = "true" ]; then
+            if [ -z "$open" ]; then
+              gh issue create --label dpm-stale --title "DPM.LOL counters are from patch $DPM_PATCH; $NEWEST is current" \
+                --body "The stored lane matchups (data/counters.json) were collected on $COLLECTED for patch $DPM_PATCH, and patch $NEWEST is now the newest the site recognises. Every Counter from this data is marked \"older patch\" on the site; strength and scoring are unchanged. To refresh: collect in the browser (scripts/dpm-collect/README.md), then dpm-validate, dpm-compare and ingest-dpm. This issue closes itself once fresh rows are stored."
+              echo "Opened the dpm-stale issue."
+            else
+              echo "A dpm-stale issue is already open: #$open"
+            fi
+          elif [ -n "$open" ]; then
+            for n in $open; do gh issue close "$n" --comment "The stored DPM.LOL counters are from the newest recognised patch ($DPM_PATCH, collected $COLLECTED)."; done
+          fi
 
       - id: commit
         if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
