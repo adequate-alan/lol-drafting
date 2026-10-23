@@ -66,7 +66,8 @@ export function TipLayer() {
     const down = (e: PointerEvent) => {
       const el = titled(e.target);
       // Touch has no hover: a tap on plain text with a hint shows it; a tap on a control does what the control does.
-      if (e.pointerType !== "mouse" && el && !el.closest(INTERACTIVE) && el !== current) {
+      // `data-tip-tap` marks a focusable element whose hint is its only action (a chart segment): a tap shows it too.
+      if (e.pointerType !== "mouse" && el && (!el.closest(INTERACTIVE) || el.hasAttribute("data-tip-tap")) && el !== current) {
         show(el, el.getAttribute("title") ?? "", false, 0);
         return;
       }

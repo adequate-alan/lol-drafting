@@ -336,15 +336,22 @@ function Overview({ role, row, prio, prioLabel, saved, logic, names, scopeLabel,
   );
 }
 
-function Bar({ parts }: { parts: [string, number, string][] }) {
+// Each segment names itself (category, count, share) in the site's themed tip (components/TipLayer.tsx): hover, keyboard
+// focus or a tap, so nobody has to match colours to the facts below. Display only; the counts are the caller's.
+export function Bar({ parts, label }: { parts: [string, number, string, string][]; label: string }) {
   const total = parts.reduce((n, [, v]) => n + v, 0);
   if (!total) return null;
   return (
-    <div className="usage-bar" role="img" aria-label={parts.map(([l, v]) => `${l} ${v}`).join(", ")}>
-      {parts.filter(([, v]) => v).map(([l, v, cls]) => <span key={l} className={cls} style={{ flexGrow: v }} />)}
+    <div className="usage-bar" role="group" aria-label={label}>
+      {parts.filter(([, v]) => v).map(([l, v, cls, tip]) => (
+        <span key={l} className={cls} style={{ flexGrow: v }} tabIndex={0} role="img" aria-label={tip} title={tip} data-tip-tap="" />
+      ))}
     </div>
   );
 }
+
+const share = (label: string, n: number, d: number, unit: string) => `${label} — ${n}/${d} ${unit} (${pct(n, d)})`;
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
 function Usage({ id, row, names, bundle, open, setOpen, scopeLabel, scope }: {
   id: string; row?: TopRow; names: Names; bundle: TopDraftBundle; open?: string; setOpen: (k?: string) => void; scopeLabel: string; scope: TopScope;
@@ -361,7 +368,11 @@ function Usage({ id, row, names, bundle, open, setOpen, scopeLabel, scope }: {
     <>
       <section className="scout-sec layer pro">
         <h3 className="scout-title"><span className="ldot" />Blind or response<span className="end">{scopeLabel}</span></h3>
-        <Bar parts={[["Blind", row.blind, "blind"], ["Response", row.response, "response"], ["Unclear", row.uncertain, "uncertain"]]} />
+        <Bar label="Blind or response" parts={[
+          ["Blind", row.blind, "blind", share("Blind", row.blind, row.classified, "classified picks")],
+          ["Response", row.response, "response", share("Response", row.response, row.classified, "classified picks")],
+          ["Unclear", row.uncertain, "uncertain", `Unclear — ${plural(row.uncertain, "pick")} (excluded from classified percentages)`],
+        ]} />
         <dl className="usage-facts tnum">
           <div><dt>Blind</dt><dd>{row.blind}/{row.classified} <span className="faint">{pct(row.blind, row.classified)}</span></dd></div>
           <div><dt>Response</dt><dd>{row.response}/{row.classified} <span className="faint">{pct(row.response, row.classified)}</span></dd></div>
@@ -583,7 +594,8 @@ function DuoView({ id, names, bundle, scope, scopeLabel }: { id: string; names: 
     <>
       <section className="scout-sec layer pro">
         <h3 className="scout-title"><span className="ldot" />How its duos were built<span className="end">{scopeLabel}</span></h3>
-        <Bar parts={[["Duo blind", shapes.blind, "blind"], ["Partially revealed", shapes.partial, "response"], ["Split construction", shapes.split, "response"], ["Full duo response", shapes.full, "response"], ["Unclear", shapes.uncertain, "uncertain"]]} />
+        <Bar label="How its duos were built" parts={([["blind", "blind"], ["partial", "response"], ["split", "response"], ["full", "response"], ["uncertain", "uncertain"]] as [DuoShape, string][])
+          .map(([k, cls]) => [DUO_SHAPE_LABEL[k], shapes[k], cls, share(DUO_SHAPE_LABEL[k], shapes[k], games.length, "duo games")])} />
         <dl className="usage-facts tnum">
           {SHAPES.map((k) => <div key={k}><dt>{DUO_SHAPE_LABEL[k]}</dt><dd>{shapes[k]}/{games.length}</dd></div>)}
           <div><dt>ADC first</dt><dd>{order("adc")}/{ordered}</dd></div>
