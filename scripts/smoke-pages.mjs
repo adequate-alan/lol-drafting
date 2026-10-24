@@ -1293,6 +1293,15 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await page.keyboard.press("Enter");
   await page.waitForTimeout(200);
   check("pro drafts: Enter on the open champion closes its build", !new URL(page.url()).searchParams.get("build") && (await page.locator(".game-build").count()) === 0, page.url());
+  // Draft order (alan, 2026-10-24): Composition stays the default; the toggle shows the picks in time order (seven turns,
+  // ten picks, both ban phases) from Gol.gg's pick order and First Pick mark, or says the order is unavailable.
+  await page.locator(".game-view-seg button", { hasText: "Draft order" }).click();
+  await page.locator(".draft-order, .order-unavailable").first().waitFor({ timeout: 4000 }).catch(() => {});
+  const order = { steps: await page.locator(".order-step").count(), picks: await page.locator(".order-pick").count(), bans: await page.locator(".order-bans").count(), none: await page.locator(".order-unavailable").count() };
+  check("pro drafts: Draft order shows seven turns and ten picks with both ban phases, or says the order is unavailable", new URL(page.url()).searchParams.get("view") === "order" && (order.none === 1 || (order.steps === 7 && order.picks === 10 && order.bans === 2)) && (await page.locator(".game-panel .game-team").count()) === 0, JSON.stringify(order));
+  await page.locator(".game-view-seg button", { hasText: "Composition" }).click();
+  await page.waitForTimeout(150);
+  check("pro drafts: Composition returns the role layout", (await page.locator(".game-panel .game-team").count()) === 2 && !new URL(page.url()).searchParams.get("view"), page.url());
   await open("/pro-drafts/?id=lck26po-finals-g3-geng");
   check("pro drafts: a game without recorded builds says so and offers no build buttons", (await page.locator(".game-panel .game-team").count()) === 2 && (await page.locator(".game-panel .pick-btn:disabled").count()) === 10 && /No builds recorded/.test(await page.locator(".game-hint").textContent().catch(() => "")), "");
 }

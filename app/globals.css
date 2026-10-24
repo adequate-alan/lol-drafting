@@ -2176,8 +2176,35 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .game-build .panel { background: transparent; border: 0; border-top: 1px solid var(--border); border-radius: 0; }
 .game-build .panel-head { min-height: 0; padding: var(--s3) 0 var(--s2); border-bottom: 0; }
 .game-build .panel-body { display: block; padding: 0 0 var(--s3); }
+/* Draft order (alan, 2026-10-24): the open game's picks in time order, blue column left and red right, one line per turn
+   (a paired turn's two picks share it), the ban phases where they fell. Same pick buttons as the Composition view. */
+.game-view-seg { justify-self: start; }
+.order-unavailable { margin: 0; }
+.draft-order { display: grid; gap: var(--s3); max-width: 760px; }
+.order-heads, .order-steps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--s6); }
+.order-head { display: flex; align-items: center; gap: var(--s3); min-width: 0; padding-left: var(--s4); font-family: var(--font-display); font-size: var(--fs-md); font-weight: var(--w-strong); box-shadow: inset 3px 0 0 var(--team-blue); }
+.order-head.side-red { box-shadow: inset 3px 0 0 var(--team-red); }
+.order-steps { margin: 0; padding: 0; list-style: none; row-gap: var(--s2); }
+.order-phase, .order-bans { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; padding-top: var(--s4); border-top: 1px solid var(--border); }
+.order-phase { padding-top: var(--s3); border-top: 0; }
+.order-phase .label, .order-phase-name { grid-column: 1 / -1; color: var(--text-muted); }
+.order-bans .order-phase-name { margin-bottom: var(--s2); }
+.order-ban-side { display: inline-flex; gap: 2px; padding-left: var(--s4); line-height: 0; }
+.order-step { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; }
+.order-cell { display: flex; align-items: center; gap: var(--s3); min-width: 0; padding-left: var(--s4); box-shadow: inset 3px 0 0 var(--team-blue); grid-column: 1; }
+.order-cell.side-red { grid-column: 2; box-shadow: inset 3px 0 0 var(--team-red); }
+.order-pos { display: grid; flex: none; width: 64px; line-height: 1.2; }
+.order-pos b { font-family: var(--font-mono); font-size: var(--fs-md); }
+.order-cell .order-pick { flex: 0 1 auto; min-width: 0; gap: var(--s3); }
+.order-pick .slot-name { font-size: var(--fs-md); }
+.order-note { margin: 0; }
 @media (max-width: 760px) {
   .game-team { padding-left: var(--s3); }
+  .order-heads, .order-steps { column-gap: var(--s4); }
+  .order-head, .order-cell, .order-ban-side { padding-left: var(--s3); }
+  .order-cell { flex-wrap: wrap; row-gap: 0; }
+  .order-pos { width: 100%; grid-auto-flow: column; justify-content: start; gap: var(--s3); align-items: baseline; }
+  .order-cell .order-pick { flex-basis: 100%; padding: var(--s2); }
   .game-panel .draft-slots { margin: 0 calc(-1 * var(--pad-card)) 0 0; padding-right: var(--pad-card); }
 }
 

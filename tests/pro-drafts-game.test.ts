@@ -2,9 +2,9 @@
 // it opens that player's recorded build for that exact game, named by game id, side and role, never by row position.
 import { describe, expect, it } from "vitest";
 import { getBuildGameRecords, getBuildGames, getProDrafts } from "@/lib/data";
-import { banPhases, bansOf, buildFor, buildParam, carryBuild, gameFacts, gameIdOf, gameView, newSince, parseBuildParam, pickedFirst } from "@/lib/pro-drafts-game";
+import { banPhases, bansOf, buildFor, buildParam, carryBuild, draftOrder, gameFacts, gameIdOf, gameView, newSince, parseBuildParam, pickedFirst } from "@/lib/pro-drafts-game";
 import { rows } from "@/lib/pro-builds-bundle";
-import { ROLES } from "@/lib/schema";
+import { ROLES, type Role } from "@/lib/schema";
 
 const drafts = getProDrafts();
 const withBuilds = new Set(getBuildGames());
@@ -136,5 +136,54 @@ describe("bans and first pick", () => {
     const g = records.filter((x) => x.event.startsWith("worlds"));
     for (const x of g) expect(x.tournament).toMatch(/^Worlds/);
     expect(new Set(drafts.map((d) => d.id)).size).toBe(drafts.length);
+  });
+});
+
+// Draft order (alan, 2026-10-24): rebuilt only from each team's pickOrder and Gol.gg's First Pick mark.
+describe("the draft order view", () => {
+  const side = (team: string, order: string[], roles: readonly Role[] = ROLES) => ({ team, bans: ["b1", "b2", "b3", "b4", "b5"].map((b) => `${team}-${b}`), pickOrder: order, picks: Object.fromEntries(order.map((c, i) => [roles[i], c])) });
+  const blueOrder = ["ba", "bb", "bc", "bd", "be"], redOrder = ["ra", "rb", "rc", "rd", "re"];
+  const record = (firstPick?: "blue" | "red", orders = true) => ({
+    id: 9001, firstPick,
+    blue: orders ? side("Blue Team", blueOrder) : { team: "Blue Team", bans: [] },
+    red: orders ? side("Red Team", redOrder, ["MID", "TOP", "SUPPORT", "JUNGLE", "BOT"]) : { team: "Red Team", bans: [] },
+  });
+  const teams = [{ team: "Blue Team", side: "blue" as const }, { team: "Red Team", side: "red" as const }];
+
+  it("red first: red takes R1, blue B1 · B2, red R2 · R3, blue B3; then R4, B4 · B5, R5 last", () => {
+    const o = draftOrder(9001, gameFacts([record("red")]), teams);
+    if (!o.ok) throw new Error(o.reason);
+    expect(o.firstPick).toBe("red");
+    expect(o.steps.map((s) => s.label)).toEqual(["R1", "B1 · B2", "R2 · R3", "B3", "B4", "R4 · R5", "B5"]);
+    expect(o.steps.map((s) => s.turns)).toEqual([[1], [2, 3], [4, 5], [6], [7], [8, 9], [10]]);
+    expect(o.steps.map((s) => s.rotation)).toEqual(["first", "first", "first", "first", "second", "second", "last"]);
+    expect(o.steps[0].picks).toEqual([{ champion: "ra", role: "MID" }]);
+    expect(o.steps[6].picks).toEqual([{ champion: "be", role: "SUPPORT" }]);
+    expect(o.bans.blue).toEqual([["Blue Team-b1", "Blue Team-b2", "Blue Team-b3"], ["Blue Team-b4", "Blue Team-b5"]]);
+  });
+
+  it("blue first mirrors it, and every pick appears once in its team's own order", () => {
+    const o = draftOrder(9001, gameFacts([record("blue")]), teams);
+    if (!o.ok) throw new Error(o.reason);
+    expect(o.steps.map((s) => s.label)).toEqual(["B1", "R1 · R2", "B2 · B3", "R3", "R4", "B4 · B5", "R5"]);
+    const by = (sd: string) => o.steps.filter((s) => s.side === sd).flatMap((s) => s.picks.map((p) => p.champion));
+    expect(by("blue")).toEqual(blueOrder);
+    expect(by("red")).toEqual(redOrder);
+  });
+
+  it("is unavailable without the First Pick mark, without either team's order, or for a record of other teams", () => {
+    expect(draftOrder(9001, gameFacts([record(undefined)]), teams).ok).toBe(false);
+    expect(draftOrder(9001, gameFacts([record("blue", false)]), teams)).toMatchObject({ ok: false, reason: expect.stringMatching(/role order/) });
+    expect(draftOrder(9001, gameFacts([record("blue")]), [{ team: "Someone Else", side: "blue" }]).ok).toBe(false);
+    expect(draftOrder(0, gameFacts([record("blue")]), teams).ok).toBe(false);
+  });
+
+  it("every recorded game with a mark and both orders reads in full; the rest say why", () => {
+    const records = getBuildGameRecords(), book = gameFacts(records);
+    for (const g of records) {
+      const o = draftOrder(g.id, book, [{ team: g.blue.team, side: "blue" }, { team: g.red.team, side: "red" }]);
+      expect(o.ok, String(g.id)).toBe(!!g.firstPick && !!g.blue.pickOrder && !!g.red.pickOrder);
+      if (o.ok) expect(o.steps.flatMap((s) => s.picks).every((p) => p.role)).toBe(true);
+    }
   });
 });
