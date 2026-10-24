@@ -625,7 +625,10 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   separates games, none sits inside one; the whole game tints on hover, the open game is gold, and the inspected
   team's name is gold in the table and the panel. The toolbar counts games (team drafts in the tooltip) and the
   freshness line is one compact line (`ProFreshness compact`, details in its tooltip). Below 760px the same markup
-  reflows into a match list (game line, two team lines with portraits only; names in the hover card and drawer).
+  reflows into a match list (game line, two team lines with portraits only; names in the hover card and drawer). On phones (alan, 2026-10-24) the games scroll with the page (no inner scroll box), off-screen games skip layout
+  (`content-visibility`), the menus fold behind one Filters button (count, Clear and pinned chips stay out), hover tints
+  only where a pointer hovers, rows are memoized (`GameRows`) so a tap re-renders only the changed games, and the tapped
+  game keeps its place when an open game above it folds.
   Rows carry no side tooltip (alan, 2026-10-13: the strip already says it); a visually hidden "Blue side:" / "Red
   side:" in the team cell names it for screen readers, and the open game labels each team's side. Champion hover cards
   stay. **Pins** (alan, 2026-10-13): Team, Champion, Tournament and Series are typeable `PinPicker`s
