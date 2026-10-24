@@ -2198,6 +2198,17 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .order-cell .order-pick { flex: 0 1 auto; min-width: 0; gap: var(--s3); }
 .order-pick .slot-name { font-size: var(--fs-md); }
 .order-note { margin: 0; }
+/* Pick order tab (alan, 2026-10-24): one compact champion table, rotation first, a row opens its position split and a
+   breakdown by patch, stage or team. Same table, select and segment primitives as the Games tab. */
+.drafts-tabs { margin-bottom: var(--s5); }
+.order-coverage { margin: 0 0 var(--s4); }
+.order-champ { display: inline-flex; align-items: center; gap: var(--s3); min-width: 0; }
+.order-champ .role-tag { font-size: var(--fs-2xs); }
+.order-detail { display: grid; gap: var(--s4); padding: var(--s4) 0 var(--s5); }
+.order-detail .seg { justify-self: start; }
+.order-slots { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2) var(--s6); }
+.order-detail .order-breakdown { width: 100%; max-width: 640px; }
+@media (max-width: 760px) { .order-champ .role-tag, .order-table td .pct-note { display: none; } }
 @media (max-width: 760px) {
   .game-team { padding-left: var(--s3); }
   .order-heads, .order-steps { column-gap: var(--s4); }

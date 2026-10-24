@@ -1302,6 +1302,20 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await page.locator(".game-view-seg button", { hasText: "Composition" }).click();
   await page.waitForTimeout(150);
   check("pro drafts: Composition returns the role layout", (await page.locator(".game-panel .game-team").count()) === 2 && !new URL(page.url()).searchParams.get("view"), page.url());
+  // Pick order tab (alan, 2026-10-24): verified chronological picks only, rotation by default, exact positions on demand,
+  // every count with its sample; a row opens its breakdown.
+  await open("/pro-drafts/?tab=order");
+  await page.locator(".order-table tbody tr.click-row").first().waitFor({ timeout: 5000 }).catch(() => {});
+  const cov = await page.locator(".order-coverage").innerText().catch(() => "");
+  const [ordered, picksN] = [/(\d+) games? with a verified pick order/.exec(cov)?.[1], /(\d+) picks/.exec(cov)?.[1]].map(Number);
+  check("pro drafts: Pick order counts ten picks per verified game and names the games left out", ordered > 0 && picksN === ordered * 10 && /Win–loss is context only/.test(cov), cov);
+  await page.locator(".order-table tbody tr.click-row").first().click();
+  await page.waitForTimeout(200);
+  check("pro drafts: a Pick order row opens its positions and a breakdown by patch", new URL(page.url()).searchParams.get("open") && (await page.locator(".order-detail .order-slots").count()) === 1 && (await page.locator(".order-breakdown tbody tr").count()) > 0, page.url());
+  await open("/pro-drafts/?tab=order&pos=slot:1");
+  await page.locator(".order-table tbody tr.click-row").first().waitFor({ timeout: 5000 }).catch(() => {});
+  const atPick1 = await page.$$eval(".order-table tbody tr.click-row td:nth-child(2)", (tds) => tds.map((t) => Number(t.textContent.split("/")[0])));
+  check("pro drafts: the first-pick drill-down lists one first pick per verified game", atPick1.length > 0 && atPick1.reduce((a, b) => a + b, 0) === ordered && atPick1.every((n, i) => i === 0 || n <= atPick1[i - 1]), String(atPick1.slice(0, 5)));
   await open("/pro-drafts/?id=lck26po-finals-g3-geng");
   check("pro drafts: a game without recorded builds says so and offers no build buttons", (await page.locator(".game-panel .game-team").count()) === 2 && (await page.locator(".game-panel .pick-btn:disabled").count()) === 10 && /No builds recorded/.test(await page.locator(".game-hint").textContent().catch(() => "")), "");
 }
