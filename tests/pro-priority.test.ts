@@ -8,7 +8,7 @@ import { getDraftData, getMeta, getPriority, getProGames, getSources } from "@/l
 import { draftCandidates } from "@/lib/candidates";
 import {
   bucket, championHistory, forRole, markFor, ORDER_READ, ORDER_READ_LABEL, orderRead, orderText, patchKey, patchLabel, patchesOf, previousPatch, priorityChanges,
-  priorityData, priorityMarks, rolePicksOf, sortRows, supportingGames,
+  priorityData, priorityMarks, rolePicksOf, sortRows, supportingGames, type PriorityRow,
 } from "@/lib/pro-priority";
 import { comparePatch } from "@/lib/patch";
 import { parseGamePage } from "@/scripts/golgg/parse.mjs";
@@ -206,6 +206,17 @@ describe("pick order", () => {
     const ordered = file.games.filter((g) => g.event === DEMACIA && g.blue.pickOrder && g.red.pickOrder && g.firstPick).length;
     expect(b.orderGames).toBe(ordered);
     if (!ordered) expect(b.rows.every((r) => r.order.known === 0 && orderRead(r.order) === undefined)).toBe(true);
+  });
+
+  // alan, 2026-10-24: frequency is not priority. A champion picked often but late (Alistar in Worlds Swiss Round 1, 2 of 5
+  // early) must read apart from one taken early, so Meta shows Early and Late with their sample and sorts by either.
+  it("keeps early and late picks apart and sorts by either share", () => {
+    const row = (id: string, first: number, late: number) => ({ id, order: { known: first + late, firstPick: 0, firstRotation: first, phase2: late, lastPick: 0 } }) as unknown as PriorityRow;
+    const rows = [row("early", 4, 1), row("late", 2, 3), row("none", 0, 0)];
+    expect(sortRows(rows, "firstRotation").map((r) => r.id)).toEqual(["early", "late", "none"]);
+    expect(sortRows(rows, "late").map((r) => r.id)).toEqual(["late", "early", "none"]);
+    const b = bucket(getPriority(), { patch: patchesOf(getPriority())[0] });
+    for (const r of b.rows) expect(r.order.firstRotation + r.order.phase2).toBe(r.order.known);
   });
 
   it("counts pick 1 of the draft as first pick and each team's first three picks as first rotation, whichever side picked first", () => {

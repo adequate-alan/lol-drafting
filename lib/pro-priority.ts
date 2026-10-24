@@ -265,7 +265,7 @@ export const rolesOf = (r: PriorityRow): Role[] => {
 // ---------- sorting ----------
 
 export const PRIORITY_SORTS = {
-  presence: "Presence", picks: "Picks", bans: "Bans", winRate: "Win rate", firstRotation: "First rotation", recency: "Latest",
+  presence: "Presence", picks: "Picks", bans: "Bans", winRate: "Win rate", firstRotation: "First rotation", late: "Late picks", recency: "Latest",
 } as const;
 export type PrioritySort = keyof typeof PRIORITY_SORTS;
 
@@ -276,6 +276,7 @@ export function sortRows(rows: PriorityRow[], key: PrioritySort, role?: Role): P
     if (key === "bans") return r.banRate == null ? null : r.bans;
     if (key === "winRate") return r.winRate;
     if (key === "firstRotation") return r.order.known ? r.order.firstRotation / r.order.known + r.order.firstRotation / 1000 : null;
+    if (key === "late") return r.order.known ? r.order.phase2 / r.order.known + r.order.phase2 / 1000 : null;
     return r.latest ? Number(r.latest.date.replace(/-/g, "")) : null;
   };
   return [...rows].sort((a, b) => {
