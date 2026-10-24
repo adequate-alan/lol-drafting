@@ -2064,8 +2064,11 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .drafts-table tbody.game-rows:last-of-type tr:last-child td { border-bottom-color: transparent; }
 /* States: the whole game tints on hover, the open game is gold with a 1px rule on its game cell, and the row the
    panel is named by (the team being inspected) carries the gold text. */
-.drafts-table tbody.game-rows:hover td { background: var(--surface-hover); }
-.drafts-table tbody.game-rows tr:hover .team-cell { background: var(--surface-sunken); }
+/* Hover tints only where a pointer hovers: on touch a tapped game would keep the tint after the finger lifts. */
+@media (hover: hover) {
+  .drafts-table tbody.game-rows:hover td { background: var(--surface-hover); }
+  .drafts-table tbody.game-rows tr:hover .team-cell { background: var(--surface-sunken); }
+}
 .drafts-table tbody.game-rows.selected td, .drafts-table tbody.game-rows.selected tr:hover td { background: linear-gradient(var(--accent-subtle), var(--accent-subtle)), var(--surface); }
 .drafts-table tbody.game-rows.selected .game-cell { box-shadow: inset 1px 0 0 var(--accent); }
 .drafts-table tbody.game-rows.selected tr.selected .team-name { color: var(--accent-text); }
@@ -2097,9 +2100,21 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .game-panel-meta .source-links { display: inline; }
 .game-panel-meta .source-links a { margin-left: var(--s2); }
 .game-team.inspecting .game-team-name { color: var(--accent-text); }
+.filters-toggle { display: none; }
 /* Phones: a compact match view. The header row goes, each game is a block: game line, then each team as a line with
-   its name, result and five portraits (the name is in the hover card, drawer and icon tooltip). */
+   its name, result and five portraits (the name is in the hover card, drawer and icon tooltip). The list scrolls with
+   the page, not inside a box of its own (a scroll box in a scrolling page traps the thumb), and games off screen skip
+   layout and paint until they come near (content-visibility). The menus fold behind one Filters button. */
 @media (max-width: 760px) {
+  .drafts-table.table-wrap.tall { max-height: none; overflow: visible; }
+  .drafts-table tbody.game-rows { content-visibility: auto; contain-intrinsic-size: auto 130px; }
+  .filters-toggle { display: inline-flex; }
+  .drafts-tools:not(.filters-open) .select-field { display: none; }
+  .drafts-tools.filters-open .select-field { order: 1; flex: 1 1 40%; flex-direction: column; align-items: stretch; gap: 2px; }
+  .drafts-tools .pinned-filters { order: 2; }
+  .drafts-tools .filters-count { color: var(--accent-text); }
+  .game-panel-head { flex-wrap: wrap; gap: var(--s3); }
+  .game-panel-head .end { margin-left: 0; }
   .drafts-table table, .drafts-table tbody, .drafts-table tr, .drafts-table td { display: block; }
   .drafts-table thead { display: none; }
   .drafts-table tbody.game-rows { padding: var(--s3) var(--s4) var(--s3); border-bottom: 1px solid var(--border-strong); }
@@ -2116,7 +2131,7 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
   .drafts-table .pick-cell .champ { --size: var(--icon-md); }
   .drafts-table .pick-cell .cell-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .drafts-table tbody.game-rows.selected { background: var(--accent-subtle); box-shadow: inset 1px 0 0 var(--accent); }
-  .drafts-table tbody.game-rows:hover { background: var(--surface-hover); }
+  @media (hover: hover) { .drafts-table tbody.game-rows:hover { background: var(--surface-hover); } }
   .drafts-table tbody.game-expand td { padding: 0 !important; }
   .game-expand-inner { position: static; width: auto; }
   .drafts-tools .select-field { flex: 1 1 45%; min-width: 0; }
@@ -2137,6 +2152,7 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .game-panel-head .game-id { display: grid; gap: 2px; min-width: 0; }
 .game-panel-head h2 { font-size: var(--fs-2xl); line-height: 1.05; letter-spacing: -.01em; }
 .game-panel-head h2 .faint { font-weight: 400; }
+@media (max-width: 760px) { .game-panel-head h2 { font-size: var(--fs-xl); } }
 /* The open game (alan, 2026-10-12): both teams, each a side-stripped block of five champion buttons; the chosen champion's
    exact build opens below in the same panel (components/GameBuild.tsx), swapping in place between champions. */
 .game-panel .panel-body { display: grid; gap: var(--s4); }
