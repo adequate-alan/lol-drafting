@@ -52,19 +52,19 @@
       "recorded": 22,
       "matchlist": "https://gol.gg/tournament/tournament-matchlist/Worlds%202026%20Play-In/",
       "lastUpdate": "2026-10-19T03:09:27.143Z",
-      "lastCheck": "2026-10-24T01:01:09.943Z"
+      "lastCheck": "2026-10-24T15:55:29.122Z"
     },
     {
       "event": "worlds-2026",
       "golgg": "Worlds 2026 Main Event",
       "status": "ongoing",
-      "series": 8,
+      "series": 16,
       "seriesPlayed": 8,
       "games": 8,
       "recorded": 8,
       "matchlist": "https://gol.gg/tournament/tournament-matchlist/Worlds%202026%20Main%20Event/",
-      "lastUpdate": "2026-10-24T01:01:09.943Z",
-      "lastCheck": "2026-10-24T01:01:09.943Z"
+      "lastUpdate": "2026-10-24T15:55:29.122Z",
+      "lastCheck": "2026-10-24T15:55:29.122Z"
     }
   ],
   "games": [
