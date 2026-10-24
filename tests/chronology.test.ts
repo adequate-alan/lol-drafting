@@ -3,7 +3,9 @@
 // relationships, so daily imports keep passing.
 import { describe, expect, it } from "vitest";
 import { newestGamesFirst, recordStamp, type GameStamp } from "@/lib/chronology";
-import { getBuildGameRecords, getChampions, getPriority, getProGames } from "@/lib/data";
+import { getBotPairings, getBuildGameRecords, getChampions, getMeta, getPriority, getProDrafts, getProGames, getSources } from "@/lib/data";
+import { hubData, recentDrafts } from "@/lib/meta-hub";
+import { proGames } from "@/lib/pool-stats";
 import { comparePatch } from "@/lib/patch";
 import { rows as buildRows } from "@/lib/pro-builds-bundle";
 import { pinnedOnChampion, playerKey, playerProfile, rowsOfPlayer } from "@/lib/pinned-players";
@@ -99,5 +101,24 @@ describe("game histories on the site", () => {
     }
     const sel = laneSelections(games, roleBook(getChampions(), games), "TOP");
     expectNewestFirst(sel.map((s) => stampOf(s.game)), "top selections");
+  });
+  // Meta's Recent drafts, the champion drawer's recorded games and Champion Pool read one list (alan, 2026-10-24): it
+  // used to sort the newer patch before the date, so Play-In games of Oct 15 sat above the Demacia final of Oct 17.
+  it("Meta recent drafts, the drawer and Champion Pool list their games newest first, date before patch", () => {
+    const input = { meta: getMeta(), proDrafts: getProDrafts(), botPairings: getBotPairings(), sources: Object.fromEntries(getSources().map((x) => [x.id, x])) };
+    const idOf = (source?: string) => Number(source?.match(/(\d+)$/)?.[1]) || undefined;
+    // Each row's own date: a supplied game page without one is undated and listed last.
+    const own = (x: { date?: string; patch?: string; gameSource?: string; key: string }, src?: string) => {
+      const r = records.get(idOf(src) ?? -1);
+      return { date: x.date, patch: x.patch, series: r && x.date === r.date ? recordStamp(r).series : x.key, game: r && x.date === r.date ? r.game : undefined, id: idOf(src) };
+    };
+    const games = proGames(input);
+    expectNewestFirst(games.map((x) => own(x, x.gameSource)), "pro games");
+    const dated = games.findLastIndex((x) => x.date);
+    expect(games.slice(0, dated + 1).every((x) => x.date)).toBe(true);
+    const drafts = recentDrafts(hubData(input));
+    expectNewestFirst(drafts.map((x) => own(x, x.key)), "recent drafts");
+    const final = drafts.findIndex((x) => x.key === "golgg-game-83618"), playIn = drafts.findIndex((x) => x.key === "golgg-game-83593");
+    if (final >= 0 && playIn >= 0) expect(final).toBeLessThan(playIn);
   });
 });

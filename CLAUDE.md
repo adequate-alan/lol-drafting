@@ -283,7 +283,8 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   becomes its own tracked event (`auto`, id `worlds-2026-<stage>`, `stageEvent`), grouped with every Worlds stage;
   any other Worlds name (a qualifier) is named in the run report, never imported under a guess.
 - Newest game first, across tournaments (alan, 2026-10-12; site-wide 2026-10-16): every game list (Pro Drafts, Gen.G,
-  Pro Builds, Pinned Players histories, drawer and evidence lists) sorts through `newestGamesFirst` in `lib/chronology.ts`:
+  Pro Builds, Pinned Players histories, drawer and evidence lists, Meta Recent drafts and Champion Pool through `proGames`,
+  date before patch since 2026-10-24) sorts through `newestGamesFirst` in `lib/chronology.ts`:
   date, then the newer patch on a shared date (Gol.gg records no start times), a series kept together in descending game
   order, undated games last, and the series' highest Gol.gg id only as a fixed tie-break, never as time. Never import
   order or tournament priority. Filters only remove rows. `tests/chronology.test.ts`.
