@@ -61,8 +61,10 @@ describe("Caitlyn + Bard Pick", () => {
     for (const id of shell.sources) expect(sources.has(id), id).toBe(true);
   });
   it("lists its supporting lineups as observed variations", () => {
-    const games = library.extras[shell.id].variations.flatMap((v) => v.games.map((g) => g.game));
-    for (const r of review.supporting.flatMap((x) => x.games)) expect(games).toContain(r.game);
+    for (const x of review.supporting) {
+      const games = library.extras[x.comp].variations.flatMap((v) => v.games.map((g) => g.game));
+      for (const r of x.games) expect(games, x.comp).toContain(r.game);
+    }
   });
   it("supporting lineups share the comp's core (3+ champions)", () => {
     for (const x of review.supporting) {
@@ -140,12 +142,17 @@ describe("named variations, holds and families (2026-10-17)", () => {
     for (const g of h.games) expect(games.get(g.game)?.[g.side].picks.JUNGLE).toBe("sejuani");
   });
 
-  it("Skirmish + Pick · Lucian waits in Ready for approval (2026-10-21): no card, its games still recorded and proposed", () => {
-    expect(review.pendingComps.map((p) => p.comp)).toContain("pro-83451-blue");
+  it("Skirmish + Pick · Lucian is not a comp (alan, 2026-10-24): Cloud9's game is an Objective Zone variation, Team WE's a named Stable Top + Carry Bot variation", () => {
+    expect(review.pendingComps.map((p) => p.comp)).not.toContain("pro-83451-blue");
     expect(library.shells.some((s) => s.id === "pro-83451-blue")).toBe(false);
     const games = new Map(getProGames().games.map((g) => [g.id, g]));
     expect(games.get(83451)?.blue.picks.TOP).toBe("galio");
     expect(games.get(83623)?.red.picks.TOP).toBe("rumble");
+    const zone = library.extras["objective-zone"].variations;
+    expect(zone.some((v) => v.games.some((g) => g.game === 83623 && g.side === "red"))).toBe(true);
+    const named = library.extras["stable-top-carry-bot"].variations.find((v) => v.named?.name === "Galio engage · Team WE");
+    expect(named?.games.map((g) => g.game)).toEqual([83451]);
+    expect(named?.picks.TOP).toBe("galio");
   });
 
   it("held lineups are recorded games and filed under no comp", () => {

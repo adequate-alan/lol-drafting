@@ -11,7 +11,7 @@
 import { analyze, IDENTITY_LABEL, names, slotsOf, type IdentityId, type Slot } from "./model-v2/analyze";
 import { convertKits } from "./model-v2/kits";
 import type { ChampionKit } from "./model-v2/schema";
-import { ROLES, type Champion, type CompShell, type ProDraft, type ProGame, type Role } from "./schema";
+import { ROLES, type Champion, type CompReview, type CompShell, type ProDraft, type ProGame, type Role } from "./schema";
 import { patchLabel } from "./patch";
 
 export type Picks = Record<Role, string>;
@@ -254,7 +254,11 @@ export interface DiscoveryInput {
   heldLineups?: HeldCandidate[]; // comp-review.json held: lineups alan kept as evidence only
   approved?: string[]; // comp-review.json approvedComps: new comps alan approved; nothing else is added
   pending?: string[]; // comp-review.json pendingComps: earlier additions sent back to "Ready for approval"
+  reviewed?: LineupRef[]; // lineups alan's review filed under a comp (supporting, named variations): never open a new comp
 }
+/** Lineups alan's review filed under a comp (`supporting`, named variations and the lineups that play the same way). */
+export const reviewedLineups = (r: Pick<CompReview, "supporting" | "namedVariations">): LineupRef[] =>
+  [...r.supporting.flatMap((x) => x.games), ...r.namedVariations.flatMap((n) => [n.game, ...n.supporting])];
 export interface HeldCandidate { name: string; games: LineupRef[]; note: string }
 
 const conceptLabel = (r: Pick<CompRead, "primary" | "secondary">) => `${SHORT[r.primary]}${r.secondary ? ` + ${SHORT[r.secondary]}` : ""}`;
@@ -278,6 +282,9 @@ export function discover(input: DiscoveryInput): DiscoveryResult {
   // alan's held candidates: their own games join nothing, and a later lineup closest to one is listed beside it (in the
   // report, for reconsidering) instead of opening a comp or a variation around the same idea.
   const heldGame = new Set((input.heldLineups ?? []).flatMap((h) => h.games.map(refKey)));
+  // A lineup alan filed by review already has its place in the library: it may still join a comp discovery finds, but it
+  // never opens a new one or waits for review again (alan, 2026-10-24: Team WE's Galio and Cloud9's Rumble games).
+  const byReview = new Set((input.reviewed ?? []).map(refKey));
   const byRef = new Map(observations.map((o) => [refKey(o), o]));
   const heldCandidates: DiscoveryResult["heldCandidates"] = (input.heldLineups ?? []).map((h) => ({
     name: h.name, note: h.note, games: h.games.flatMap((r) => byRef.get(refKey(r)) ?? []), closest: [],
@@ -309,6 +316,7 @@ export function discover(input: DiscoveryInput): DiscoveryResult {
       groups.get(hit.a.id)!.members.push({ obs, m: hit.m });
       continue;
     }
+    if (byReview.has(refKey(obs))) continue;
     const r = readOf(obs.picks);
     if (!r.ok) { unread.push({ obs, reason: r.reason }); continue; }
     const anchor: Anchor = { id: `pro-${obs.game}-${obs.side}`, picks: obs.picks, read: r.read };
@@ -372,6 +380,7 @@ export function discover(input: DiscoveryInput): DiscoveryResult {
     const hit = bestAnchor(obs.picks, okRead(obs.picks), open);
     if (hit && toHeld(obs, hit.a)) continue;
     const who = heldIn(obs.picks).map((h) => nameOf(h.champion)).join(" and ");
+    if (!hit && byReview.has(refKey(obs))) continue;
     if (!hit) {
       const r = readOf(obs.picks);
       awaiting.push({ obs, reason: r.ok ? `${who} lineup: no existing comp matches, and a new comp from it waits for review` : r.reason });

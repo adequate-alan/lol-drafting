@@ -489,8 +489,12 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   skirmish, held 2026-10-17). Approved comps and variants keep receiving new verified games as replays and variations.
   Everything else is "Proposed comps for review" in the report. Win/loss never decides. Additions are sticky (a comp
   that later fails is listed in the report, never removed), except a comp alan returns to `held` or sends back to
-  "Ready for approval" (`pendingComps`: Skirmish + Pick · Lucian, 2026-10-21, until it is compared with Objective Zone,
-  Stable Top + Carry Bot and the other skirmish / pick comps). Passing the checks earns a review, never a card.
+  "Ready for approval" (`pendingComps`). Passing the checks earns a review, never a card. The library collects distinct,
+  repeatable strategies, not lineups (alan, 2026-10-24): an existing strategy with other champions is a variation, and
+  one verified game is enough to document a named variation, never a comp. A lineup the review files (`supporting`,
+  `namedVariations`, `reviewedLineups`) never opens a comp or returns to review; it may still join one. Skirmish + Pick ·
+  Lucian was declined: Cloud9's Rumble / Syndra game is an Objective Zone variation, Team WE's Galio game the named
+  "Galio engage · Team WE" under Stable Top + Carry Bot.
 - Discovered comps render as Pro cards in Comp Library (`lib/comp-library.ts`); their identity, jobs, win condition,
   strengths, weak points and difficulty are the comp check's read (General Draft Logic, labelled "Comp check read" in
   Details). Observed variations of any comp sit behind "N observed variations". The page shows "Library reviewed" (last
