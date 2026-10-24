@@ -57,7 +57,11 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   usage and Draft Room starting picks use the same definition); first pick, second rotation and last pick read the
   first-picking team per game (`firstPick`, not always blue since 2026). The order read ("usually picked early / late") is descriptive: `ORDER_READ` in
   `lib/pro-priority.ts` (5 ordered picks, early ≥ 80% first rotation, late ≥ 60% second), always shown with its fraction
-  (`orderText`, "8/10 first rotation (80%)"), and never a blind-safety, counter or meta-priority claim. Patches show Riot's 26.xx (`patchLabel`; data keeps Gol.gg's 16.xx). Shown in the champion drawer
+  (`orderText`, "8/10 first rotation (80%)"), and never a blind-safety, counter or meta-priority claim. Frequency is not
+  priority (alan, 2026-10-24): the table shows Early (first rotation), Late (second rotation) and Bans (ban pressure) as
+  separate columns, each beside its sample ("2/5", "7/8"), sortable by Early or Late; any Draft Watch or meta claim about
+  early priority, blind picks or counterpicks is checked against the recorded pick order first, never taken from an
+  external write-up or pick counts alone. Patches show Riot's 26.xx (`patchLabel`; data keeps Gol.gg's 16.xx). Shown in the champion drawer
   (history chart, per-patch table) and as a "Pro priority · N%" label in the Draft Room when presence ≥ 30% on the
   newest patch and the champion has picks in that role: a label and a filter only, never a score, never an order.
 - **Tournament scopes** (alan, 2026-10-23; `lib/tournament-scope.ts`, `tests/tournament-scope.test.ts`): Pro priority

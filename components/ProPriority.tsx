@@ -59,7 +59,7 @@ export function ProPrioritySection({ data, patchIndex, names, sources, params, C
       <button className={`sort ${sort === k ? "active" : ""}`} aria-sort={sort === k ? "descending" : undefined} onClick={() => set("sort", k === "presence" ? undefined : k)}>{label}{sort === k ? " ↓" : ""}</button>
     </th>
   );
-  const cols = 7 + Number(role === "ALL") + Number(showOrder) + Number(allPatches);
+  const cols = 7 + Number(role === "ALL") + 2 * Number(showOrder) + Number(allPatches);
 
   return (
     <section className="priority" aria-label="Pro Priority">
@@ -88,7 +88,7 @@ export function ProPrioritySection({ data, patchIndex, names, sources, params, C
             <span className="count">{rows.length} champions</span>
           </div>
           <Disclosure summary="How these numbers work">
-            <p>Presence = games a champion was picked or banned ÷ games on the patch with both teams&apos; bans recorded. Pick rate = picks ÷ games; ban rate = games banned ÷ games; win rate = wins ÷ picks. Games are unique games, never team-games. Bans have no role: on a role tab, picks are that role&apos;s recorded picks, while bans and presence stay champion-wide. A patch is counted from its recorded Gol.gg games when every game of the tournament is recorded; otherwise from the tournament&apos;s Gol.gg table, and only when the whole tournament was played on that one patch (that table has no sides, dates or pick order). First rotation = each team&apos;s first three picks (six per game, before the second ban phase), from each team&apos;s pick order as the Gol.gg game page lists it in the standard tournament draft; shown only where that order is stored. * is fewer than 5 picks. Pro evidence only: it never changes saved pairings or the Draft Room order.</p>
+            <p>Presence = games a champion was picked or banned ÷ games on the patch with both teams&apos; bans recorded. Pick rate = picks ÷ games; ban rate = games banned ÷ games; win rate = wins ÷ picks. Games are unique games, never team-games. Bans have no role: on a role tab, picks are that role&apos;s recorded picks, while bans and presence stay champion-wide. A patch is counted from its recorded Gol.gg games when every game of the tournament is recorded; otherwise from the tournament&apos;s Gol.gg table, and only when the whole tournament was played on that one patch (that table has no sides, dates or pick order). First rotation = each team&apos;s first three picks (six per game, before the second ban phase), from each team&apos;s pick order as the Gol.gg game page lists it in the standard tournament draft; shown only where that order is stored. Three columns keep apart signals that are easy to confuse: Early is first-rotation priority (picks in the first three), Late is picks after the second ban phase, and Bans is ban pressure, each beside its sample (picks with a recorded order, or games with every ban recorded). A champion picked often but late is popular, not prioritised. * is fewer than 5 picks. Pro evidence only: it never changes saved pairings or the Draft Room order.</p>
           </Disclosure>
           <div className="table-wrap tall hub-table priority-table">
             <table>
@@ -96,11 +96,12 @@ export function ProPrioritySection({ data, patchIndex, names, sources, params, C
                 <th>Champion</th>
                 {role === "ALL" && <th className="hide-sm" title="Roles recorded for this champion's picks">Roles</th>}
                 {sortHead("picks", role === "ALL" ? "Picks" : `${role.charAt(0)}${role.slice(1).toLowerCase()} picks`, role === "ALL" ? "Picks, with pick rate (picks ÷ games)" : `Picks recorded in ${role.toLowerCase()}`)}
-                {sortHead("bans", <>Bans{role !== "ALL" && <span className="faint"> · all</span>}</>, "Games banned by either team, with ban rate. Champion-wide: a ban has no role", "hide-sm")}
+                {sortHead("bans", <>Bans{role !== "ALL" && <span className="faint"> · all</span>}</>, `Ban pressure: games banned by either team, of the ${b.banGames} games with every ban recorded. Champion-wide: a ban has no role`, "hide-sm")}
                 {sortHead("presence", <>Presence{role !== "ALL" && <span className="faint"> · all</span>}</>, "Games picked or banned ÷ games. Champion-wide")}
                 {sortHead("winRate", "WR", "Wins ÷ picks, all roles")}
                 <th className="num hide-sm" title="Picks on blue side / red side (recorded games only)">Blue / red</th>
-                {showOrder && sortHead("firstRotation", "1st rot.", "Share of ordered picks taken in the first rotation (each team's first three picks, six per game)", "hide-sm")}
+                {showOrder && sortHead("firstRotation", "Early", "First-rotation priority: ordered picks taken in the team's first three picks (six per game), of the picks with a recorded order", "hide-sm")}
+                {showOrder && sortHead("late", "Late", "Late picks: ordered picks taken after the second ban phase (each team's last two picks), of the picks with a recorded order", "hide-sm")}
                 {allPatches && <th className="hide-sm">Patches</th>}
                 {sortHead("recency", "Latest", "Most recent recorded game with this champion picked or banned")}
               </tr></thead>
@@ -121,11 +122,12 @@ export function ProPrioritySection({ data, patchIndex, names, sources, params, C
                         <td className="num nowrap">{shownPicks}{r.low && <span className="low" title="Fewer than 5 picks">*</span>}
                           {tabRole && rp === undefined ? <span className="xs faint" title="Role split not recorded: champion-wide picks"> all roles</span>
                             : <span className="xs faint hide-sm"> {pct(b.games ? shownPicks / b.games : 0)}</span>}</td>
-                        <td className="num hide-sm nowrap">{r.banRate != null ? <>{r.bans}<span className="xs faint"> {pct(r.banRate)}</span></> : DASH}</td>
+                        <td className="num hide-sm nowrap">{r.banRate != null ? <>{r.bans}<span className="xs faint">/{b.banGames} {pct(r.banRate)}</span></> : DASH}</td>
                         <td className="num">{r.presence != null ? <PresenceBar value={r.presence} max={max} /> : DASH}</td>
                         <td className="num">{r.winRate != null ? pct(r.winRate) : DASH}</td>
                         <td className="num hide-sm nowrap">{r.picks && r.sideKnown ? <>{r.blue} <span className="faint">/</span> {r.red}</> : DASH}</td>
-                        {showOrder && <td className="num hide-sm">{r.order.known ? <span title={`${r.order.firstRotation} of ${r.order.known} ordered picks in the first rotation`}>{pct(r.order.firstRotation / r.order.known)}</span> : DASH}</td>}
+                        {showOrder && <td className="num hide-sm nowrap"><Share n={r.order.firstRotation} of={r.order.known} /></td>}
+                        {showOrder && <td className="num hide-sm nowrap"><Share n={r.order.phase2} of={r.order.known} /></td>}
                         {allPatches && <td className="hide-sm nowrap tnum">{r.patches.map(patchLabel).join(", ")}</td>}
                         <td className="num nowrap">{r.latest ? <span title={r.latest.picked ? "Last picked" : "Last banned"}>{shortDate(r.latest.date)}</span> : DASH}</td>
                       </tr>
@@ -141,6 +143,12 @@ export function ProPrioritySection({ data, patchIndex, names, sources, params, C
       )}
     </section>
   );
+}
+
+/** A share with its sample beside it ("2/5 · 40%"), so a rate is never read without the picks behind it. */
+function Share({ n, of }: { n: number; of: number }) {
+  if (!of) return DASH;
+  return <>{n}<span className="xs faint">/{of} {pct(n / of)}</span></>;
 }
 
 function RoleTabs({ role, setRole }: { role: RoleTab; setRole: (r: RoleTab) => void }) {

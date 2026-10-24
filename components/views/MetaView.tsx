@@ -82,7 +82,7 @@ export function MetaView({ names, sources, input, rules, drawerData, freshness }
                 <tr key={e.id} className={eventId && selected.includes(e) ? "selected" : undefined}>
                   <td className="nowrap"><b>{e.short}</b> <span className="xs muted hide-sm">{e.name}</span></td>
                   <td className="num">{patchLabel(e.patch)}</td>
-                  <td className="hide-sm nowrap">{e.startDate ? `${shortDate(e.startDate)}–${shortDate(e.endDate)}` : DASH}</td>
+                  <td className="hide-sm nowrap">{e.startDate ? (e.endDate ? `${shortDate(e.startDate)}–${shortDate(e.endDate)}` : `From ${shortDate(e.startDate)}`) : DASH}</td>
                   <td>{e.status === "ongoing" ? <span className="badge pro">Ongoing</span> : <span className="xs muted">Completed</span>}</td>
                   <td className="num">{e.games ?? DASH}</td>
                   <td className="num">{s.recordedGames}</td>
