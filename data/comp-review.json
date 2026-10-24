@@ -30,6 +30,12 @@
   "approvedComps": [],
   "pendingComps": [],
   "namedVariations": [
+    { "comp": "pro-83521-blue", "name": "Peel + poke · BNK FearX", "game": { "game": 83453, "side": "blue" }, "approvedOn": "2026-10-24",
+      "note": "Still plays around Yunara, with stronger disengage and layered damage: Poppy and Lulu peel, Cassiopeia zones the front of the fight and Jayce adds poke. One frontliner (Poppy) and no on-demand engage, so the team waits for the enemy to come in. BNK picked Cassiopeia first, then Yunara and Lulu." },
+    { "comp": "pro-83521-blue", "name": "Ryze variation · BNK FearX", "game": { "game": 83618, "side": "red" }, "approvedOn": "2026-10-24",
+      "note": "BNK's Yunara + Lulu draft in the Demacia final, where Team WE banned Cassiopeia. Lee Sin and Ryze trade the frontline and peel for mobility and side-lane pressure: no frontliner and no on-demand engage. BNK took Lee Sin, Yunara and Lulu in the first rotation." },
+    { "comp": "pro-83521-blue", "name": "Galio engage · Karmine Corp", "game": { "game": 83636, "side": "blue" }, "approvedOn": "2026-10-24",
+      "note": "Adds the proactive engage the BNK drafts lack: Galio starts fights and is the frontline, Qiyana catches and Ryze pressures a side lane. Drafted the other way round: Karmine Corp picked second and took Lulu and Yunara with its last two picks." },
     { "comp": "stable-top-carry-bot", "name": "Galio engage · Team WE", "game": { "game": 83451, "side": "blue" }, "approvedOn": "2026-10-24",
       "note": "Same Lucian + Milio bot lane and the same short fights before items, but Galio is both the engage and the protection: he starts fights, is the only frontliner and peels with Milio, where the main comp has a stable top lane and Vi's point-click pick. Qiyana and Ahri find the catches. Tradeoffs: no lane that holds on its own, little tank damage, short range, and it falls off late. One game, so it is documented as a variation, not a comp of its own." },
     { "comp": "pro-83450-red", "name": "Ornn + Jarvan IV engage · Shopify Rebellion", "game": { "game": 83468, "side": "red" },

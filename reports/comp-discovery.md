@@ -26,18 +26,9 @@ Observed library comps with no exact or variation game in the tracked tournament
 - **Control Siege** · Top Jayce · Jng Qiyana · Mid Anivia · Bot Mel · Sup Alistar
 - **Dive + Utility Bot** · Top Camille · Jng Naafiri · Mid Galio · Bot Kalista · Sup Renata Glasc
 
-## Ready for approval (1)
+## Ready for approval (0)
 
-Pass every discovery check. Not in the library until alan approves (comp-review.json `approvedComps`).
-
-- **Protect · Cassiopeia** · Top Jayce · Jng Poppy · Mid Cassiopeia · Bot Yunara · Sup Lulu · Easy · id `pro-83453-blue`
-  - Poppy and Lulu protect Yunara. Play around Yunara: Poppy and Lulu stay with Yunara and let the enemy dive into you.
-  - Strengths: Catch: Poppy; Peel and disengage: Poppy and Lulu; Mixed damage (58% physical); Scales into the late game.
-  - Weak points: No on-demand engage (moderate); Thin frontline (minor).
-  - passes every check (3 games from 2 teams with the same strategy, no major weak point, a clear win condition); waiting for approval.
-  - [BNK FearX vs LGD Gaming G1](https://gol.gg/game/stats/83453/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-04, win)
-  - [BNK FearX vs Team WE G1](https://gol.gg/game/stats/83618/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-17, win)
-  - [Karmine Corp vs MVK Esports G2](https://gol.gg/game/stats/83636/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-18, win)
+None this week.
 
 ## Proposed comps for review (107)
 
