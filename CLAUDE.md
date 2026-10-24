@@ -674,6 +674,16 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   second ban phase and Second rotation, each champion with its role and the same build buttons. Rebuilt only from both
   teams' `pickOrder` and the First Pick mark of the game record whose teams match; otherwise "Pick order unavailable"
   with the reason (no mark, role-order page, no record). A later pick is an "observed response", never a counter.
+- **Pro Drafts pick order** (alan, 2026-10-24; `lib/pick-order.ts` pure and shared with Meta, `components/PickOrderStats.tsx`,
+  `tests/pick-order.test.ts`, smoke "Pick order"): Pro Drafts' second tab, Games | Pick order (`?tab=order`). One
+  compact champion table from verified chronological records only (`orderedPicks`: the First Pick mark and both teams'
+  `pickOrder`; others are counted as "left out", never inferred). Grouped by rotation by default (alan's choice): Picks,
+  First rotation (picks 1–6), Second rotation (7–9), Last pick (10), First pick (turn 1), first-rotation share per side;
+  the Position menu drills into exact turns (Pick 1, Picks 2–3, 4–5, 6, 7, 8–9, 10, each naming the first-pick or second
+  team; side is its own filter: blue, red, first-pick team, second team). Patch, tournament, stage, team, champion, role
+  and sort filters in the URL. A row opens its picks per position and a breakdown by patch, tournament stage (`scopeKey`:
+  Worlds Play-In / Swiss / Knockouts) or team, each line with its sample. Every count shows "n/of", under 5 picks is
+  marked; W–L is context only, never a sort or a priority claim.
 - **Identity-first headers** (alan, 2026-10-12, DPM.LOL as the hierarchy reference, never its branding or layout): a
   player or champion page leads with the subject, on one surface, not a card: a large portrait or champion icon, a
   large Space Grotesk name (`--fs-4xl` for a player profile, `--fs-3xl` elsewhere), team and role in medium weight

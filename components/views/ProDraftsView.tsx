@@ -8,6 +8,9 @@
 // also used by Pro Builds and Pinned Players). The game is named by its Gol.gg game id and the build by the team row
 // and role (lib/pro-drafts-game.ts), never by a row's position. A build Gol.gg did not give is said to be missing.
 import { ProFreshness } from "@/components/ProFreshness";
+import { ORDER_KEYS, PickOrderStats, type OrderParams } from "@/components/PickOrderStats";
+import type { OrderGame } from "@/lib/pick-order";
+import type { ScopeEvent } from "@/lib/tournament-scope";
 import type { Freshness } from "@/lib/pro-games";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -31,7 +34,10 @@ import { banPhases, bansOf, buildFor, buildParam, carryBuild, draftOrder, gameId
 
 // view: the open game's layout, Composition (default, by role) or Draft order (`view=order`, by pick). Kept while
 // browsing games, so a study of pick order carries from one game to the next.
-type Filters = { team?: string; champion?: string; role?: string; tournament?: string; stage?: string; series?: string; id?: string; build?: string; view?: string };
+// tab: the page's two views, Games (default) and Pick order (`tab=order`, components/PickOrderStats.tsx), whose own
+// filters (position, side, patch, sort, open row, breakdown) sit in the URL beside the shared ones.
+type Filters = { team?: string; champion?: string; role?: string; tournament?: string; stage?: string; series?: string; id?: string; build?: string; view?: string;
+  tab?: string; pos?: string; side?: string; patch?: string; sort?: string; open?: string; dim?: string };
 
 const seriesOf = (d: ProDraft) => d.seriesGame.replace(/\s*G\d+$/i, "");
 
@@ -47,8 +53,8 @@ function matches(d: ProDraft, f: Filters) {
   return true;
 }
 
-const KEYS = ["team", "champion", "role", "tournament", "stage", "series", "id", "build", "view"] as const;
-const FILTER_KEYS = KEYS.filter((k) => k !== "id" && k !== "build" && k !== "view");
+const KEYS = ["team", "champion", "role", "tournament", "stage", "series", "id", "build", "view", "tab", ...ORDER_KEYS] as const;
+const FILTER_KEYS = ["team", "champion", "role", "tournament", "stage", "series"] as const;
 
 // The build rows load as their own chunk the first time a recorded game is opened (lib/pro-builds-bundle.ts).
 let loaded: Promise<BuildRow[]> | undefined;
@@ -206,13 +212,15 @@ const GameRows = memo(function GameRows({ g, meta, href, isOpen, openId, fresh, 
   );
 });
 
-export function ProDraftsView({ names, sources, all, freshness, drawerData, buildGames, events, shortNames, eventIds, facts }: {
+export function ProDraftsView({ names, sources, all, freshness, drawerData, buildGames, events, shortNames, eventIds, facts, orderGames, scopeEvents }: {
   names: Record<string, string>; sources: Record<string, Source>; all: ProDraft[]; freshness: Freshness[]; drawerData: DrawerData;
   buildGames: number[]; // recorded games with Pro Builds (data/pro-builds.json)
   events: Record<string, string>; // meta.json event id -> short name, for the build header
   shortNames: Record<string, string>; // tournament name -> short name, for the game cell
   eventIds: Record<string, string>; // tournament name -> meta.json event id, so tournament pins are shared with Pro Builds
   facts: GameFactBook; // Gol.gg game id -> First Pick mark and each side's bans, from the game records
+  orderGames: OrderGame[]; // every game record, for the Pick order tab (only verified orders are counted)
+  scopeEvents: ScopeEvent[]; // meta.json events, for tournament-stage labels
 }) {
   const params = useSearchParams();
   const panelRef = useRef<HTMLElement>(null);
@@ -314,6 +322,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
   const hasBuilds = !!view && buildGames.includes(view.gameId);
   const target = view ? parseBuildParam(f.build, view) : undefined;
   const orderView = f.view === "order";
+  const orderTab = f.tab === "order";
   const setBuild = (value: string | undefined) => go({ ...f, build: value });
   useEffect(() => { if (f.build && selected && !target) setBuild(undefined); }, [f.build, selected, target]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -427,10 +436,22 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
       <PageHeader title="Pro Drafts" />
       <ProFreshness items={freshness} compact />
 
-      {selected && view && !inTable && panel}
+      {/* Games | Pick order (alan, 2026-10-24). Switching keeps the shared filters (team, champion, role, tournament). */}
+      <div className="seg drafts-tabs" role="group" aria-label="Pro Drafts view">
+        {([[undefined, "Games"], ["order", "Pick order"]] as const).map(([t, label]) => (
+          <button key={label} type="button" className={f.tab === t ? "active" : ""} aria-pressed={f.tab === t}
+            onClick={() => { if (f.tab !== t) go({ team: f.team, champion: f.champion, role: f.role, tournament: f.tournament, tab: t }, true); }}>{label}</button>
+        ))}
+      </div>
+
+      {orderTab && <PickOrderStats games={orderGames} names={names} events={scopeEvents} shortNames={shortNames} params={f as OrderParams}
+        set={(next) => { go({ ...f, ...next }); if (Object.keys(next).some((k) => k !== "open" && k !== "dim")) resultsToTop(".order-table"); }} />}
+
+      {!orderTab && selected && view && !inTable && panel}
 
       {/* Phones fold the menus behind one Filters button (the count, Clear and pinned chips stay out), so the games start
           near the top of the screen instead of under five stacked menus. */}
+      {!orderTab && <>
       <form className={`toolbar drafts-tools ${filtersOpen ? "filters-open" : ""}`.trim()} method="get">
         <button type="button" className="btn sm filters-toggle" aria-expanded={filtersOpen} onClick={() => setFiltersOpen((o) => !o)}>
           Filters{active > 0 && <span className="filters-count"> · {active}</span>}
@@ -480,6 +501,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
           {!rows.length && <tbody><tr><td colSpan={7} className="muted">No recorded game matches these filters.</td></tr></tbody>}
         </table>
       </div>
+      </>}
     </ChampionProvider>
   );
 }
