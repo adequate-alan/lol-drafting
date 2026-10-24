@@ -130,17 +130,22 @@ describe("the daily check", () => {
   for (const n of [16, 19, 20]) pages[`https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-${n}-notes/`] = fixture(`patch-26-${n}.html`);
   const requested: string[] = [];
   const get = async (url: string) => { requested.push(url); if (!(url in pages)) throw new Error(`not in fixtures: ${url}`); return pages[url]; };
+  // The daily refresh writes the data before the tests run, so a later Riot revision of a fixture patch (26.20 was
+  // edited on 2026-10-23) makes the stored data differ from the fixtures. The idempotence checks start from the stored
+  // data as these fixtures would leave it, never from the data as committed.
+  const fromFixtures = () => refresh({ patchNotes: structuredClone(stored), champions }, get, { now: NOW }).then((o) => o.patchNotes);
 
   it("does nothing when every revision is unchanged", async () => {
+    const base = await fromFixtures();
     requested.length = 0;
-    const out = await refresh({ patchNotes: structuredClone(stored), champions }, get, { now: NOW });
+    const out = await refresh({ patchNotes: structuredClone(base), champions }, get, { now: NOW });
     expect(out.changed).toEqual([]);
     expect(requested).toEqual([INDEX_URL]);
-    expect(out.patchNotes).toEqual(stored);
+    expect(out.patchNotes).toEqual(base);
   });
 
   it("re-reads a patch whose revision changed and writes nothing when its facts are the same", async () => {
-    const notes: PatchNotes = structuredClone(stored);
+    const notes: PatchNotes = await fromFixtures();
     notes.patches.find((p) => p.patch === "26.19")!.rev = "older-revision";
     const out = await refresh({ patchNotes: notes, champions }, get, { now: NOW });
     expect(out.changed).toEqual([]);
