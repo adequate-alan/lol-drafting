@@ -10158,6 +10158,28 @@
             "maxrank": 3
           }
         },
+        "aphelios": {
+          "Q": {
+            "name": "Weapon Abilites",
+            "icon": "ApheliosQ_ClientTooltipWrapper.png",
+            "maxrank": 6
+          },
+          "W": {
+            "name": "Phase",
+            "icon": "ApheliosW.png",
+            "maxrank": 6
+          },
+          "E": {
+            "name": "Weapon Queue System",
+            "icon": "ApheliosE_ClientTooltipWrapper.png",
+            "maxrank": 6
+          },
+          "R": {
+            "name": "Moonlight Vigil",
+            "icon": "ApheliosR.png",
+            "maxrank": 3
+          }
+        },
         "ashe": {
           "Q": {
             "name": "Ranger's Focus",
@@ -10686,6 +10708,28 @@
             "maxrank": 3
           }
         },
+        "leblanc": {
+          "Q": {
+            "name": "Sigil of Malice",
+            "icon": "LeblancQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Distortion",
+            "icon": "LeblancW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Ethereal Chains",
+            "icon": "LeblancE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Mimic",
+            "icon": "LeblancR.png",
+            "maxrank": 3
+          }
+        },
         "lee-sin": {
           "Q": {
             "name": "Sonic Wave / Resonating Strike",
@@ -11016,6 +11060,28 @@
             "maxrank": 3
           }
         },
+        "neeko": {
+          "Q": {
+            "name": "Blooming Burst",
+            "icon": "NeekoQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Shapesplitter",
+            "icon": "NeekoW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Tangle-Barbs",
+            "icon": "NeekoE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Pop Blossom",
+            "icon": "NeekoR.png",
+            "maxrank": 3
+          }
+        },
         "nocturne": {
           "Q": {
             "name": "Duskbringer",
@@ -11123,6 +11189,28 @@
           "R": {
             "name": "Grand Starfall",
             "icon": "PantheonR.png",
+            "maxrank": 3
+          }
+        },
+        "poppy": {
+          "Q": {
+            "name": "Hammer Shock",
+            "icon": "PoppyQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Steadfast Presence",
+            "icon": "PoppyW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Heroic Charge",
+            "icon": "PoppyE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Keeper's Verdict",
+            "icon": "PoppyR.png",
             "maxrank": 3
           }
         },

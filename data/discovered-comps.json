@@ -1,5 +1,5 @@
 {
-  "lastAddition": "2026-10-18",
+  "lastAddition": "2026-10-23",
   "comps": [
     {
       "id": "pro-83448-blue",
@@ -1040,6 +1040,23 @@
       ]
     },
     {
+      "of": "pro-83459-blue",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "qiyana",
+        "MID": "viktor",
+        "BOT": "aphelios",
+        "SUPPORT": "alistar"
+      },
+      "addedOn": "2026-10-23",
+      "games": [
+        {
+          "game": 83639,
+          "side": "red"
+        }
+      ]
+    },
+    {
       "of": "pro-83462-red",
       "picks": {
         "TOP": "rumble",
@@ -1205,6 +1222,23 @@
       "games": [
         {
           "game": 83595,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "pro-83526-blue",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "lee-sin",
+        "MID": "ryze",
+        "BOT": "kaisa",
+        "SUPPORT": "nautilus"
+      },
+      "addedOn": "2026-10-23",
+      "games": [
+        {
+          "game": 83644,
           "side": "red"
         }
       ]

@@ -1,18 +1,24 @@
 # Comp Library review · 2026-10-23
 
-Read 190 lineups from 95 recorded games (latest 2026-10-23). Demacia Cup: 70/71 games recorded, complete; Worlds 2026 Main Event: 3/3 games recorded, ongoing; Worlds 2026 Play-In: 22/22 games recorded, ongoing. LCK 2026 playoff drafts are used for comparison only.
+Read 200 lineups from 100 recorded games (latest 2026-10-23). Demacia Cup: 70/71 games recorded, complete; Worlds 2026 Main Event: 8/8 games recorded, ongoing; Worlds 2026 Play-In: 22/22 games recorded, ongoing. LCK 2026 playoff drafts are used for comparison only.
 
 ## New compositions (0)
 
 None this week.
 
-## New variations of existing compositions (0)
+## New variations of existing compositions (2)
 
-None this week.
+- **Front-to-back · Viktor**: Qiyana for Skarner, Aphelios for Ezreal
+  - [CTBC Flying Oyster vs Team Liquid G1](https://gol.gg/game/stats/83639/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-23, win)
+- **Dive · Ryze**: Lee Sin for Naafiri
+  - [Team Secret Whales vs LYON G1](https://gol.gg/game/stats/83644/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-23, loss)
 
-## Existing compositions seeing new professional play (0)
+## Existing compositions seeing new professional play (2)
 
-None this week.
+- **Front-to-back · Viktor**: 1 new game
+  - [CTBC Flying Oyster vs Team Liquid G1](https://gol.gg/game/stats/83639/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-23, win)
+- **Dive · Ryze**: 1 new game
+  - [Team Secret Whales vs LYON G1](https://gol.gg/game/stats/83644/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-23, loss)
 
 ## May be outdated (7)
 
@@ -46,7 +52,7 @@ Pass every discovery check. Not in the library until alan approves (comp-review.
   - [BNK FearX vs Team WE G1](https://gol.gg/game/stats/83618/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-17, win)
   - [Karmine Corp vs MVK Esports G2](https://gol.gg/game/stats/83636/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-18, win)
 
-## Proposed comps for review (101)
+## Proposed comps for review (108)
 
 Not added automatically: each needs more games or a person's call. One line per lineup group, newest games marked.
 
@@ -149,6 +155,13 @@ Not added automatically: each needs more games or a person's call. One line per 
 - **New** · Front-to-back + Split · Top Olaf · Jng Wukong · Mid Ryze · Bot Corki · Sup Shen · [MVK Esports G4 W](https://gol.gg/game/stats/83634/page-game/) · 1 game from MVK Esports with this strategy, and the library already has front-to-back comps
 - **New** · Dive + Skirmish · Top Jax · Jng Pantheon · Mid Taliyah · Bot Sivir · Sup Alistar · [FURIA G4 L](https://gol.gg/game/stats/83634/page-game/) · 1 game from FURIA with this strategy, and the library already has dive comps
 - **New** · Skirmish + Split · Top Yorick · Jng Jarvan IV · Mid Akali · Bot Ashe · Sup Seraphine · [MVK Esports G1 L](https://gol.gg/game/stats/83635/page-game/) · 1 game from MVK Esports with this strategy, and the library already has skirmish comps
+- **New** · Front-to-back + Pick · Top Galio · Jng Lee Sin · Mid Syndra · Bot Jhin · Sup Rakan · [Team Liquid G1 L](https://gol.gg/game/stats/83639/page-game/) · 1 game from Team Liquid with this strategy, and the library already has front-to-back comps
+- **New** · Wombo + Front-to-back · Top Jax · Jng Jarvan IV · Mid Orianna · Bot Kalista · Sup Renata Glasc · [Karmine Corp G1 W](https://gol.gg/game/stats/83640/page-game/) · 1 game from Karmine Corp with this strategy, and the library already has wombo comps
+- **New** · Dive + Skirmish · Top Olaf · Jng Nocturne · Mid Akali · Bot Miss Fortune · Sup Neeko · [Anyone s Legend G1 L](https://gol.gg/game/stats/83640/page-game/) · 1 game from Anyone s Legend with this strategy, and the library already has dive comps
+- **New** · Front-to-back + Skirmish · Top Olaf · Jng Vi · Mid Syndra · Bot Ziggs · Sup Poppy · [Dplus KIA G1 W](https://gol.gg/game/stats/83641/page-game/) · 1 game from Dplus KIA with this strategy, and the library already has front-to-back comps
+- **New** · Protect + Front-to-back · Top K'Sante · Jng Jarvan IV · Mid Viktor · Bot Kalista · Sup Renata Glasc · [G2 Esports G1 L](https://gol.gg/game/stats/83641/page-game/) · 1 game from G2 Esports with this strategy, and the library already has protect comps
+- **New** · Poke / siege + Dive · Top Jayce · Jng Lee Sin · Mid LeBlanc · Bot Jhin · Sup Alistar · [T1 G1 W](https://gol.gg/game/stats/83643/page-game/) · poke / siege + dive pull in different directions, so the win condition is ambiguous; 1 game from T1 with this strategy, and the library already has poke / siege comps
+- **New** · Front-to-back + Protect · Top K'Sante · Jng Nocturne · Mid Anivia · Bot Ezreal · Sup Alistar · [LYON G1 W](https://gol.gg/game/stats/83644/page-game/) · 1 game from LYON with this strategy, and the library already has front-to-back comps
 - **New** · Dive + Skirmish · Top Renekton · Jng Jarvan IV · Mid Sylas · Bot Ezreal · Sup Karma · [Movistar KOI G1 W](https://gol.gg/game/stats/83645/page-game/) · 1 game from Movistar KOI with this strategy, and the library already has dive comps
 - **New** · Dive + Skirmish · Top Ambessa · Jng Pantheon · Mid Akali · Bot Ashe · Sup Seraphine · [Bilibili Gaming G1 L](https://gol.gg/game/stats/83645/page-game/) · major weak point (No frontline); 1 game from Bilibili Gaming with this strategy, and the library already has dive comps
 
@@ -188,9 +201,10 @@ Kept as recorded evidence after review, filed under no comp. Lineups closest to 
   - Top Zaahen · Jng Pantheon · Mid Orianna · Bot Xayah · Sup Rakan · [Shopify Rebellion vs JD Gaming G2](https://gol.gg/game/stats/83469/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-05, loss)
   - Top Renekton · Jng Qiyana · Mid Orianna · Bot Xayah · Sup Rakan · [Karmine Corp vs Cloud9 G4](https://gol.gg/game/stats/83601/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-15, win)
   - Close: Top Renekton · Jng Qiyana · Mid Orianna · Bot Kai'Sa · Sup Camille · [BNK FearX vs Team WE G2](https://gol.gg/game/stats/83619/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-17, win)
-- **Pick + Front-to-back · Syndra** · 2 series from 2 teams · shared core K'Sante, Syndra, Neeko · Natus Vincere's Zaahen jungle draft and HANJIN BRION's Lee Sin version. Zaahen stays a Top recommendation only.
+- **Pick + Front-to-back · Syndra** · 2 series from 2 teams · shared core K'Sante, Syndra, Neeko · 1 close lineup · **new evidence** · Natus Vincere's Zaahen jungle draft and HANJIN BRION's Lee Sin version. Zaahen stays a Top recommendation only.
   - Top K'Sante · Jng Zaahen · Mid Syndra · Bot Miss Fortune · Sup Neeko · [Natus Vincere vs HANJIN BRION G3](https://gol.gg/game/stats/83522/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-06, loss)
   - Top K'Sante · Jng Lee Sin · Mid Syndra · Bot Ezreal · Sup Neeko · [HANJIN BRION vs Team WE G1](https://gol.gg/game/stats/83608/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-15, loss)
+  - Close: Top K'Sante · Jng Pantheon · Mid Syndra · Bot Tristana · Sup Rakan · [Los Grandes vs T1 G1](https://gol.gg/game/stats/83643/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-23, loss)
 - **Scaling + Front-to-back · Yunara** · 1 series from 1 team · KT Rolster's Yorick, Skarner and Locke lineup; to be checked against the scaling, split and protect comps.
   - Top Yorick · Jng Skarner · Mid Locke · Bot Yunara · Sup Lulu · [KT Rolster vs Team Vitality G4](https://gol.gg/game/stats/83566/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-12, win)
 
@@ -199,7 +213,7 @@ Kept as recorded evidence after review, filed under no comp. Lineups closest to 
 Kept in the library; review by hand.
 
 - **Front-to-back + Early tempo · Ryze**: 1 game from HANJIN BRION with this strategy (1 more with a lineup that reads differently), and the library already has front-to-back comps.
-- **Front-to-back · Viktor**: 1 game from Team WE with this strategy (1 more with a lineup that reads differently), and the library already has front-to-back comps.
+- **Front-to-back · Viktor**: 1 game from Team WE with this strategy (2 more with lineups that read differently), and the library already has front-to-back comps.
 - **Pick + Skirmish · Ryze**: 1 game from GAM Esports with this strategy (1 more with a lineup that reads differently), and the library already has pick comps.
 - **Dive · Kalista**: 1 game from JD Gaming with this strategy (2 more with lineups that read differently), and the library already has dive comps.
 - **Skirmish + Pick · Ryze**: 1 game from GAM Esports with this strategy (2 more with lineups that read differently), and the library already has skirmish comps.
