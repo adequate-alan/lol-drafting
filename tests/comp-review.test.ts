@@ -155,6 +155,20 @@ describe("named variations, holds and families (2026-10-17)", () => {
     expect(named?.picks.TOP).toBe("galio");
   });
 
+  it("Protect · Cassiopeia is not a comp (alan, 2026-10-24): its three games are separate named variations of Protect · Yunara", () => {
+    expect(library.shells.some((s) => s.id === "pro-83453-blue")).toBe(false);
+    const named = library.extras["pro-83521-blue"].variations.filter((v) => v.named);
+    const by = (name: string) => named.find((v) => v.named!.name === name)!;
+    // Each keeps its own five champions and game: Cassiopeia only where she was played.
+    expect(by("Peel + poke · BNK FearX").picks.MID).toBe("cassiopeia");
+    expect(by("Peel + poke · BNK FearX").games.map((g) => g.game)).toEqual([83453]);
+    expect(by("Ryze variation · BNK FearX").picks.MID).toBe("ryze");
+    expect(by("Ryze variation · BNK FearX").games.map((g) => g.game)).toEqual([83618]);
+    expect(by("Galio engage · Karmine Corp").picks.TOP).toBe("galio");
+    expect(by("Galio engage · Karmine Corp").games.map((g) => g.game)).toEqual([83636]);
+    for (const v of named) expect(v.named!.alike ?? []).toHaveLength(0);
+  });
+
   it("held lineups are recorded games and filed under no comp", () => {
     const games = new Map(getProGames().games.map((g) => [g.id, g]));
     for (const h of review.held) for (const r of h.games) {

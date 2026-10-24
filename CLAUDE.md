@@ -498,7 +498,9 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   one verified game is enough to document a named variation, never a comp. A lineup the review files (`supporting`,
   `namedVariations`, `reviewedLineups`) never opens a comp or returns to review; it may still join one. Skirmish + Pick ·
   Lucian was declined: Cloud9's Rumble / Syndra game is an Objective Zone variation, Team WE's Galio game the named
-  "Galio engage · Team WE" under Stable Top + Carry Bot.
+  "Galio engage · Team WE" under Stable Top + Carry Bot. Protect · Cassiopeia was folded into the Yunara protection family (2026-10-24): its three
+  games are separate named variations of Protect · Yunara (Peel + poke · BNK FearX, Ryze variation · BNK FearX, Galio
+  engage · Karmine Corp), each with its own lineup and tradeoffs; Yunara + Lulu alone never makes two drafts the same.
 - Discovered comps render as Pro cards in Comp Library (`lib/comp-library.ts`); their identity, jobs, win condition,
   strengths, weak points and difficulty are the comp check's read (General Draft Logic, labelled "Comp check read" in
   Details). Observed variations of any comp sit behind "N observed variations". The page shows "Library reviewed" (last
