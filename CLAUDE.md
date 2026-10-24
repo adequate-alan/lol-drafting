@@ -656,6 +656,14 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   row's team (`carryBuild`); a stale `build` leaves the URL. A game with no recorded builds (LCK finals G3, 82964) says
   "No builds recorded for this game" with the buttons disabled; a missing player build says so, never filled in. The
   build rows load as their own chunk on first use. Never a second build UI.
+- **Pro Drafts draft order** (alan, 2026-10-24; `draftOrder` in `lib/pro-drafts-game.ts`, `DraftOrderView` in
+  `components/views/ProDraftsView.tsx`, tests in `tests/pro-drafts-game.test.ts`, smoke "Draft order"): the open game has
+  a Composition | Draft order switch (`?view=order`, kept while browsing games; Composition is the default). Draft order
+  lists the picks in time order, blue column left, red right, one line per turn (B1, "R2 · R3", …; a paired turn's two
+  picks are never ordered), "First pick" on turn 1 and "Last pick" on turn 10, the first ban phase, First rotation, the
+  second ban phase and Second rotation, each champion with its role and the same build buttons. Rebuilt only from both
+  teams' `pickOrder` and the First Pick mark of the game record whose teams match; otherwise "Pick order unavailable"
+  with the reason (no mark, role-order page, no record). A later pick is an "observed response", never a counter.
 - **Identity-first headers** (alan, 2026-10-12, DPM.LOL as the hierarchy reference, never its branding or layout): a
   player or champion page leads with the subject, on one surface, not a card: a large portrait or champion icon, a
   large Space Grotesk name (`--fs-4xl` for a player profile, `--fs-3xl` elsewhere), team and role in medium weight

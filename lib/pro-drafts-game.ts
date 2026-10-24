@@ -6,6 +6,7 @@
 import { gameKey, golggGameId, sideOf, type DraftSide } from "./draft-side";
 import type { BuildRow } from "./pro-builds";
 import { ROLES, type ProDraft, type Role } from "./schema";
+import { FIRST_TURNS, rotationOf, turnOf, type Rotation } from "./top-draft";
 
 /** The Gol.gg game id behind a draft: an imported draft carries it in its id (`golgg-<id>-<side>`); a stored draft
  *  names it through the one Gol.gg game page it cites. 0 when neither does. */
@@ -58,11 +59,16 @@ export const carryBuild = (current: string | undefined, next: Pick<ProDraft, "id
 // a 1st Pick tag. Both come from the game record (data/pro-games.json, or the LCK archive records in pro-builds.json
 // `games`), named by Gol.gg game id and the draft's recorded side, and only when that side's team is the draft's team.
 // First pick is Gol.gg's "First Pick" mark, never inferred from side, winner or pick order; a game without it is unknown.
-export interface GameFacts { firstPick?: "blue" | "red"; blue: { team: string; bans: string[] }; red: { team: string; bans: string[] } }
+// `order` is the side's five picks in the order the Gol.gg game page draws them (`pickOrder`), stored only when the page
+// draws the turns; `picks` names each champion's role. Both feed the Draft order view below.
+interface FactSide { team: string; bans: string[]; order?: string[]; picks?: Partial<Record<Role, string>> }
+export interface GameFacts { firstPick?: "blue" | "red"; blue: FactSide; red: FactSide }
 export type GameFactBook = Record<number, GameFacts>;
 
-export const gameFacts = (records: { id: number; firstPick?: "blue" | "red"; blue: { team: string; bans: string[] }; red: { team: string; bans: string[] } }[]): GameFactBook =>
-  Object.fromEntries(records.map((g) => [g.id, { firstPick: g.firstPick, blue: { team: g.blue.team, bans: g.blue.bans }, red: { team: g.red.team, bans: g.red.bans } }]));
+type RecordSide = { team: string; bans: string[]; pickOrder?: string[]; picks?: Partial<Record<Role, string>> };
+const factSide = (s: RecordSide): FactSide => ({ team: s.team, bans: s.bans, ...(s.pickOrder ? { order: s.pickOrder, picks: s.picks } : {}) });
+export const gameFacts = (records: { id: number; firstPick?: "blue" | "red"; blue: RecordSide; red: RecordSide }[]): GameFactBook =>
+  Object.fromEntries(records.map((g) => [g.id, { firstPick: g.firstPick, blue: factSide(g.blue), red: factSide(g.red) }]));
 
 const factsFor = (d: Pick<ProDraft, "id" | "sources" | "side" | "team">, book: GameFactBook) => {
   const g = book[gameIdOf(d)], side = sideOf(d);
@@ -96,4 +102,45 @@ export function newSince(seen: number[] | null, current: number[]): number[] {
   if (!seen) return [];
   const have = new Set(seen);
   return current.filter((id) => !have.has(id));
+}
+
+// Draft order view (alan, 2026-10-24): the open game's ten picks in the order they were made, beside the default
+// Composition view. The order is rebuilt from two facts the Gol.gg game page gives, never from side, role order, the
+// final lineup or a source's pick list: each team's `pickOrder` and the First Pick mark. The marked team picks turns
+// 1, 4-5, 8-9; the other 2-3, 6, 7, 10 (lib/top-draft.ts `turnOf`). Two picks in one turn are drawn together, never
+// ordered between themselves ("B2 · B3"). A game without the mark, without either team's order, or whose record names
+// other teams, has no draft order: the view says it is unavailable and why. Observed Pro Evidence only: a pick made
+// after an opponent's is an observed response, never a counter, and nothing here scores or orders anything.
+export type PickSide = "blue" | "red";
+export interface OrderPick { champion: string; role?: Role }
+export interface OrderStep {
+  turns: number[]; // global turns 1-10 (one, or a paired turn of two)
+  side: PickSide;
+  label: string; // "B1", "R2 · R3": the side's own pick numbers
+  rotation: Rotation;
+  picks: OrderPick[];
+}
+export type DraftOrder =
+  | { ok: true; firstPick: PickSide; steps: OrderStep[]; bans: Record<PickSide, string[][]> }
+  | { ok: false; reason: string };
+
+const STEPS: number[][] = [[1], [2, 3], [4, 5], [6], [7], [8, 9], [10]];
+
+/** The open game's draft order from its game record, or why it is unavailable. `teams` (the drafts shown, with their
+ *  recorded sides) must be the record's teams on those sides, so a record never lends its order to another game. */
+export function draftOrder(gameId: number, book: GameFactBook, teams: { team: string; side: DraftSide }[] = []): DraftOrder {
+  const g = gameId ? book[gameId] : undefined;
+  if (!g || teams.some((t) => t.side === "none" || g[t.side].team !== t.team)) return { ok: false, reason: "This game has no Gol.gg game record, so its pick order is not recorded." };
+  if (!g.firstPick) return { ok: false, reason: "Gol.gg does not mark which team picked first in this game, so the order of the two teams' picks is unknown." };
+  if (!g.blue.order || !g.red.order) return { ok: false, reason: "Gol.gg's page for this game lists the picks in role order, not in the order they were made." };
+  const first = g.firstPick, other: PickSide = first === "blue" ? "red" : "blue";
+  const roleOf = (s: FactSide, id: string) => ROLES.find((r) => s.picks?.[r] === id);
+  const steps = STEPS.map((turns): OrderStep => {
+    const side = (FIRST_TURNS as readonly number[]).includes(turns[0]) ? first : other;
+    const s = g[side];
+    const idx = turns.map((t) => [0, 1, 2, 3, 4].find((i) => turnOf(i, side === first) === t)!);
+    const letter = side === "blue" ? "B" : "R";
+    return { turns, side, label: idx.map((i) => `${letter}${i + 1}`).join(" · "), rotation: rotationOf(turns[0]), picks: idx.map((i) => ({ champion: s.order![i], role: roleOf(s, s.order![i]) })) };
+  });
+  return { ok: true, firstPick: first, steps, bans: { blue: banPhases(g.blue.bans), red: banPhases(g.red.bans) } };
 }

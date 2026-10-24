@@ -27,9 +27,11 @@ import { resultsToTop } from "@/lib/motion";
 import { shortDate } from "@/lib/evidence";
 import { gameKey } from "@/lib/draft-side";
 import { buildsHref, type BuildRow } from "@/lib/pro-builds";
-import { banPhases, bansOf, buildFor, buildParam, carryBuild, gameIdOf, gameView, newSince, parseBuildParam, pickedFirst, SEEN_KEY, VISIT_KEY, type GameFactBook } from "@/lib/pro-drafts-game";
+import { banPhases, bansOf, buildFor, buildParam, carryBuild, draftOrder, gameIdOf, gameView, newSince, parseBuildParam, pickedFirst, SEEN_KEY, VISIT_KEY, type GameFactBook, type GameView } from "@/lib/pro-drafts-game";
 
-type Filters = { team?: string; champion?: string; role?: string; tournament?: string; stage?: string; series?: string; id?: string; build?: string };
+// view: the open game's layout, Composition (default, by role) or Draft order (`view=order`, by pick). Kept while
+// browsing games, so a study of pick order carries from one game to the next.
+type Filters = { team?: string; champion?: string; role?: string; tournament?: string; stage?: string; series?: string; id?: string; build?: string; view?: string };
 
 const seriesOf = (d: ProDraft) => d.seriesGame.replace(/\s*G\d+$/i, "");
 
@@ -45,8 +47,8 @@ function matches(d: ProDraft, f: Filters) {
   return true;
 }
 
-const KEYS = ["team", "champion", "role", "tournament", "stage", "series", "id", "build"] as const;
-const FILTER_KEYS = KEYS.filter((k) => k !== "id" && k !== "build");
+const KEYS = ["team", "champion", "role", "tournament", "stage", "series", "id", "build", "view"] as const;
+const FILTER_KEYS = KEYS.filter((k) => k !== "id" && k !== "build" && k !== "view");
 
 // The build rows load as their own chunk the first time a recorded game is opened (lib/pro-builds-bundle.ts).
 let loaded: Promise<BuildRow[]> | undefined;
@@ -96,6 +98,74 @@ function Bans({ ids, names, team }: { ids: string[]; names: Record<string, strin
 const FirstPick = ({ on }: { on?: boolean }) => on
   ? <span className="first-pick" title="Picked first in this game (Gol.gg First Pick mark)"><span aria-hidden="true">1st</span><span className="sr-only">First pick</span></span>
   : null;
+
+/** Draft order (alan, 2026-10-24): the open game's picks as they were made, blue on the left and red on the right, one
+ *  line per turn in time order (a turn never shares its line with the other team's), with each ban phase where it fell. A paired turn shows its two picks together ("B2 · B3"):
+ *  the source does not order them. Each champion opens its build like the Composition view. A game whose order Gol.gg
+ *  does not give says so, never rebuilt from roles or the lineup. */
+function DraftOrderView({ view, facts, names, hasBuilds, target, onPick }: {
+  view: GameView; facts: GameFactBook; names: Record<string, string>; hasBuilds: boolean;
+  target?: { d: ProDraft; role: Role }; onPick: (d: ProDraft, role: Role) => void;
+}) {
+  const order = draftOrder(view.gameId, facts, view.teams.map((t) => ({ team: t.d.team, side: t.side })));
+  if (!order.ok) return <p className="small muted order-unavailable"><b>Pick order unavailable.</b> {order.reason}</p>;
+  const team = (side: "blue" | "red") => view.teams.find((t) => t.side === side)?.d;
+  const Bans = ({ phase }: { phase: number }) => (
+    <li className="order-bans" aria-label={phase ? "Second ban phase" : "First ban phase"}>
+      <span className="order-phase-name label">{phase ? "Second ban phase" : "Bans"}</span>
+      {(["blue", "red"] as const).map((side) => (
+        <span key={side} className={`order-ban-side side-${side}`}>
+          {(order.bans[side][phase] ?? []).map((b) => <span key={b} className="ban" title={`Banned: ${names[b] ?? b}`}><ChampIcon id={b} name={names[b] ?? b} size="xs" /><span className="sr-only">{names[b] ?? b}</span></span>)}
+        </span>
+      ))}
+    </li>
+  );
+  const phase = (name: string) => <li className="order-phase"><span className="label">{name}</span></li>;
+  return (
+    <div className="draft-order">
+      <div className="order-heads" aria-hidden="true">
+        {(["blue", "red"] as const).map((side) => (
+          <span key={side} className={`order-head side-${side}`}><span className="truncate">{team(side)?.team ?? (side === "blue" ? "Blue side" : "Red side")}</span>
+            {order.firstPick === side && <FirstPick on />}</span>
+        ))}
+      </div>
+      <ol className="order-steps" aria-label="Picks in draft order">
+        <Bans phase={0} />
+        {phase("First rotation")}
+        {order.steps.map((s) => {
+          const d = team(s.side);
+          return (
+            <Fragment key={s.turns[0]}>
+              {s.turns[0] === 7 && <><Bans phase={1} />{phase("Second rotation")}</>}
+              <li className="order-step">
+                <span className={`order-cell side-${s.side}`}>
+                <span className="order-pos">
+                  <b>{s.label}</b>
+                  <span className="xs muted">{s.turns[0] === 1 ? "First pick" : s.turns[0] === 10 ? "Last pick" : s.turns.length > 1 ? `Picks ${s.turns.join("–")}` : `Pick ${s.turns[0]}`}</span>
+                </span>
+                <span className="sr-only">{s.side === "blue" ? "Blue side" : "Red side"}{d ? ` ${d.team}` : ""}: </span>
+                {s.picks.map((p) => {
+                  const champ = names[p.champion] ?? p.champion;
+                  const on = !!d && !!p.role && target?.d.id === d.id && target.role === p.role;
+                  return (
+                    <button key={p.champion} type="button" className="slot-body pick-btn order-pick" aria-pressed={on} disabled={!hasBuilds || !d || !p.role}
+                      title={hasBuilds ? `${champ}: this player's build in this game` : `${champ}: no build recorded for this game`}
+                      onClick={() => d && p.role && onPick(d, p.role)}>
+                      <span className="slot-icon"><ChampIcon id={p.champion} name={champ} role={p.role} size="ml" /></span>
+                      <span className="slot-text"><span className="slot-name truncate">{champ}</span>{p.role && <span className={`role-tag role-${p.role}`}>{p.role}</span>}</span>
+                    </button>
+                  );
+                })}
+                </span>
+              </li>
+            </Fragment>
+          );
+        })}
+      </ol>
+      <p className="xs muted order-note">Picks in one turn are shown together: the source does not say which came first. A pick made after an opponent&apos;s is an observed response, not proof of a counter.</p>
+    </div>
+  );
+}
 
 /** One game's rows: the game cell, then each team's line with its bans and five picks. Memoized, so opening or closing a
  *  game re-renders only the games whose state changed, never the whole list (a phone felt every tap otherwise). */
@@ -243,6 +313,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
   const view = selected ? gameView(selected, all) : undefined;
   const hasBuilds = !!view && buildGames.includes(view.gameId);
   const target = view ? parseBuildParam(f.build, view) : undefined;
+  const orderView = f.view === "order";
   const setBuild = (value: string | undefined) => go({ ...f, build: value });
   useEffect(() => { if (f.build && selected && !target) setBuild(undefined); }, [f.build, selected, target]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -278,7 +349,13 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
             </div>
           </div>
           <div className="panel-body">
-            {view.teams.map(({ d, side }) => (
+            <div className="seg game-view-seg" role="group" aria-label="Game view">
+              <button type="button" className={orderView ? "" : "active"} aria-pressed={!orderView} onClick={() => go({ ...f, view: undefined })}>Composition</button>
+              <button type="button" className={orderView ? "active" : ""} aria-pressed={orderView} onClick={() => go({ ...f, view: "order" })}>Draft order</button>
+            </div>
+            {orderView && <DraftOrderView view={view} facts={facts} names={names} hasBuilds={hasBuilds} target={target}
+              onPick={(d, r) => setBuild(target?.d.id === d.id && target.role === r ? undefined : buildParam(d, r))} />}
+            {!orderView && view.teams.map(({ d, side }) => (
               <div key={d.id} className={`game-team side-${side} ${target?.d.id === d.id ? "inspecting" : ""}`.trim()}>
                 <div className="game-team-head">
                   <span className="side-tag label">{side === "none" ? "Side not recorded" : side === "blue" ? "Blue side" : "Red side"}</span>
@@ -308,7 +385,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
               </div>
             ))}
             {view.teams.length === 1 && <p className="xs muted">The other team's draft for this game is not stored.</p>}
-            {view.teams.every((t) => pickedFirst(t.d, facts) === undefined) && <p className="xs muted">Gol.gg does not mark which team picked first in this game.</p>}
+            {!orderView && view.teams.every((t) => pickedFirst(t.d, facts) === undefined) && <p className="xs muted">Gol.gg does not mark which team picked first in this game.</p>}
             {hasBuilds ? (
               target ? (
                 <div className="game-build" aria-live="polite">
