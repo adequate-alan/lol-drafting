@@ -211,8 +211,9 @@ export function recentDrafts(d: HubData, eventId?: string): DraftGame[] {
     const k = g.gameSource ?? g.key;
     map.set(k, [...(map.get(k) ?? []), g]);
   }
+  // d.games is already newest game first, so the games keep their first side's position (never patch before date).
   return [...map.entries()].map(([key, sides]) => ({
     key, event: sides[0].event, eventName: sides[0].eventName, patch: sides[0].patch, date: sides[0].date, sides,
     sources: [...new Set(sides.flatMap((s) => s.sources))], partial: sides.some((s) => Object.keys(s.picks).length < 5),
-  })).sort((a, b) => fresher(a, b));
+  }));
 }

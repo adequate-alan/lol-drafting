@@ -2,6 +2,7 @@
 // game pages supplied during review (pending refresh) and Gol.gg tournament stats in meta.json. Never from champion
 // attributes or saved pairings, and nothing here changes a pool tier.
 import { scopeKey } from "./tournament-scope";
+import { draftStamp, newestGamesFirst, type GameStamp } from "./chronology";
 import { fresher } from "./evidence";
 import type { BotPairing, Meta, MetaEvent, MetaStat, PoolEntry, ProDraft, Role, Source } from "./schema";
 
@@ -57,11 +58,16 @@ const eventByName = (events: MetaEvent[], name?: string) => events.find((e) => e
 
 /** Every pro game the repo can show by role: recorded drafts plus supplied bot/support game pages. */
 export function proGames({ meta, proDrafts, botPairings, sources }: Omit<PoolInput, "pool">): ProGame[] {
+  // Newest game first (lib/chronology.ts): date, then patch, a series kept together; never patch before date.
+  const stamps = new Map<ProGame, GameStamp>();
+  const gameId = (source?: string) => Number(source?.match(/(\d+)$/)?.[1]) || undefined;
   const out: ProGame[] = proDrafts.map((d) => {
     const ev = eventByName(meta.events, d.tournament);
     const game = d.sources.map((id) => sources[id]).find((s) => s?.type === "golgg-game");
-    return { key: d.id, event: ev, eventName: ev?.short ?? d.tournament, scope: ev && scopeKey(ev.id, d.stage), label: `${d.team} ${d.seriesGame}`, team: d.team, opponent: d.opponent, gameSource: game?.id,
+    const row: ProGame = { key: d.id, event: ev, eventName: ev?.short ?? d.tournament, scope: ev && scopeKey(ev.id, d.stage), label: `${d.team} ${d.seriesGame}`, team: d.team, opponent: d.opponent, gameSource: game?.id,
       patch: d.patch ?? ev?.patch, date: d.date ?? game?.date, picks: d.picks, draftId: d.id, pending: false, sources: d.sources };
+    stamps.set(row, draftStamp({ ...d, date: row.date, patch: row.patch }, gameId(game?.id)));
+    return row;
   });
   const recorded = new Set(proDrafts.flatMap((d) => d.sources));
   for (const b of botPairings) for (const o of b.observedProPairings) {
@@ -70,13 +76,15 @@ export function proGames({ meta, proDrafts, botPairings, sources }: Omit<PoolInp
     if (!cited.length || !cited.every((s) => s?.type === "golgg-game" && s.pendingClaim && !recorded.has(s.id))) continue;
     for (const s of cited as Source[]) {
       const ev = o.event ? meta.events.find((e) => e.id === o.event) : eventByName(meta.events, s.tournament);
-      out.push({ key: `${s.id}-${b.champion}-${o.champion}`, event: ev, eventName: ev?.short ?? s.tournament ?? o.context,
+      const row: ProGame = { key: `${s.id}-${b.champion}-${o.champion}`, event: ev, eventName: ev?.short ?? s.tournament ?? o.context,
         label: s.seriesGame ?? `${s.team} vs ${s.opponent}`, team: s.team, opponent: s.opponent, gameSource: s.id,
         patch: s.patch ?? ev?.patch, date: s.date,
-        picks: { BOT: b.champion, SUPPORT: o.champion }, pending: true, sources: [s.id] });
+        picks: { BOT: b.champion, SUPPORT: o.champion }, pending: true, sources: [s.id] };
+      stamps.set(row, draftStamp({ tournament: row.eventName, seriesGame: row.label, date: row.date, patch: row.patch }, gameId(s.id)));
+      out.push(row);
     }
   }
-  return out.sort(fresher);
+  return newestGamesFirst(out, (g) => stamps.get(g)!);
 }
 
 /** Tournament stats per event. The LCK playoffs keep theirs in meta.stats; other events carry their own. */
