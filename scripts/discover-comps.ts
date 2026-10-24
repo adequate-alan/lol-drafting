@@ -9,7 +9,7 @@
 // any other data file: saved synergy, pool tiers and proposed synergy are untouched.
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { discover, weeklyReport } from "../lib/comp-discovery";
+import { discover, reviewedLineups, weeklyReport } from "../lib/comp-discovery";
 import { convertKits } from "../lib/model-v2/kits";
 import { freshness } from "../lib/pro-games";
 import type { z } from "zod";
@@ -39,6 +39,7 @@ const compName = (id: string) => shells.find((s) => s.id === id)?.name ?? previo
 const result = discover({
   games: proGames.games, events: proGames.tracked.map((t) => t.event), shells, kits: convertKits(champions), nameOf, previous, today,
   held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), pending: review.pendingComps.map((p) => p.comp),
+  reviewed: reviewedLineups(review),
 });
 const file = Files["discovered-comps.json"].parse(result.file);
 const text = JSON.stringify(file, null, 2) + "\n";

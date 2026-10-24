@@ -26,17 +26,10 @@ Observed library comps with no exact or variation game in the tracked tournament
 - **Control Siege** · Top Jayce · Jng Qiyana · Mid Anivia · Bot Mel · Sup Alistar
 - **Dive + Utility Bot** · Top Camille · Jng Naafiri · Mid Galio · Bot Kalista · Sup Renata Glasc
 
-## Ready for approval (2)
+## Ready for approval (1)
 
 Pass every discovery check. Not in the library until alan approves (comp-review.json `approvedComps`).
 
-- **Skirmish + Pick · Lucian** · Top Galio · Jng Qiyana · Mid Ahri · Bot Lucian · Sup Milio · Easy · id `pro-83451-blue`
-  - Qiyana, Ahri and Lucian win short fights before items; catch from Qiyana and Ahri, burst from Lucian. Fight short 2v2s and 3v3s around the jungle before items stack up, and snowball the leads into objectives. Between objectives, look for catches with Qiyana and Ahri.
-  - Strengths: Fight start: Galio; Peel and disengage: Galio and Milio; Mixed damage (60% physical); Strong before first items.
-  - Weak points: Little tank damage (moderate); Short range (moderate); Thin frontline (minor).
-  - passes every check (2 games from 2 teams with the same strategy, no major weak point, a clear win condition); waiting for approval.
-  - [Team WE vs GAM Esports G1](https://gol.gg/game/stats/83451/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-03, win)
-  - [Cloud9 vs FURIA G1](https://gol.gg/game/stats/83623/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-16, win)
 - **Protect · Cassiopeia** · Top Jayce · Jng Poppy · Mid Cassiopeia · Bot Yunara · Sup Lulu · Easy · id `pro-83453-blue`
   - Poppy and Lulu protect Yunara. Play around Yunara: Poppy and Lulu stay with Yunara and let the enemy dive into you.
   - Strengths: Catch: Poppy; Peel and disengage: Poppy and Lulu; Mixed damage (58% physical); Scales into the late game.
@@ -46,7 +39,7 @@ Pass every discovery check. Not in the library until alan approves (comp-review.
   - [BNK FearX vs Team WE G1](https://gol.gg/game/stats/83618/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-17, win)
   - [Karmine Corp vs MVK Esports G2](https://gol.gg/game/stats/83636/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-18, win)
 
-## Proposed comps for review (108)
+## Proposed comps for review (107)
 
 Not added automatically: each needs more games or a person's call. One line per lineup group, newest games marked.
 
@@ -82,7 +75,6 @@ Not added automatically: each needs more games or a person's call. One line per 
 - Dive · Top Olaf · Jng Wukong · Mid Sylas · Bot Mel · Sup Rakan · [Shopify Rebellion G2 W](https://gol.gg/game/stats/83535/page-game/) · 1 game from Shopify Rebellion with this strategy, and the library already has dive comps
 - Front-to-back + Scaling · Top Tristana · Jng Shyvana · Mid Annie · Bot Yunara · Sup Lulu · [FlyQuest G3 W](https://gol.gg/game/stats/83536/page-game/) · 1 game from FlyQuest with this strategy, and the library already has front-to-back comps
 - Front-to-back · Top Gnar · Jng Naafiri · Mid Anivia · Bot Miss Fortune · Sup Nautilus · [Shopify Rebellion G3 L](https://gol.gg/game/stats/83536/page-game/) · major weak point (Anivia is unprotected); 1 game from Shopify Rebellion with this strategy, and the library already has front-to-back comps
-- Front-to-back + Scaling · Top Ornn · Jng Nocturne · Mid Syndra · Bot Yunara · Sup Lulu · [FlyQuest G1 W](https://gol.gg/game/stats/83537/page-game/) · 1 game from FlyQuest with this strategy, and the library already has front-to-back comps · filed by review under Protect + Front-to-back · Yunara (Ornn + Jarvan IV engage · Shopify Rebellion)
 - Front-to-back + Skirmish · Top Rumble · Jng Jarvan IV · Mid Ryze · Bot Jhin · Sup Nautilus · [Natus Vincere G1 W](https://gol.gg/game/stats/83540/page-game/) · 1 game from Natus Vincere with this strategy, and the library already has front-to-back comps
 - Dive · Top Jax · Jng Nocturne · Mid Taliyah · Bot Xayah · Sup Rakan · [JD Gaming G3 W](https://gol.gg/game/stats/83542/page-game/) · major weak point (No frontline); 1 game from JD Gaming with this strategy, and the library already has dive comps
 - Pick + Front-to-back · Top K'Sante · Jng Pantheon · Mid Ryze · Bot Kalista · Sup Renata Glasc · [KT Rolster G1 L](https://gol.gg/game/stats/83563/page-game/) · 1 game from KT Rolster with this strategy, and the library already has pick comps
@@ -159,12 +151,11 @@ Not added automatically: each needs more games or a person's call. One line per 
 - **New** · Dive + Skirmish · Top Renekton · Jng Jarvan IV · Mid Sylas · Bot Ezreal · Sup Karma · [Movistar KOI G1 W](https://gol.gg/game/stats/83645/page-game/) · 1 game from Movistar KOI with this strategy, and the library already has dive comps
 - **New** · Dive + Skirmish · Top Ambessa · Jng Pantheon · Mid Akali · Bot Ashe · Sup Seraphine · [Bilibili Gaming G1 L](https://gol.gg/game/stats/83645/page-game/) · major weak point (No frontline); 1 game from Bilibili Gaming with this strategy, and the library already has dive comps
 
-## Awaiting review: new comps from held champions (17)
+## Awaiting review: new comps from held champions (16)
 
 Read by the comp check; these join existing comps when one matches, and never open a new comp without review.
 
 - Top Ornn · Jng Naafiri · Mid Locke · Bot Jhin · Sup Bard · [Team WE G3 W](https://gol.gg/game/stats/83461/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
-- Top Ornn · Jng Jarvan IV · Mid Locke · Bot Yunara · Sup Lulu · [Shopify Rebellion G1 L](https://gol.gg/game/stats/83468/page-game/) · filed by review under Protect + Front-to-back · Yunara (Ornn + Jarvan IV engage · Shopify Rebellion)
 - Top Ambessa · Jng Jarvan IV · Mid Locke · Bot Jhin · Sup Karma · [HANJIN BRION G1 L](https://gol.gg/game/stats/83520/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
 - Top Galio · Jng Qiyana · Mid Locke · Bot Ashe · Sup Seraphine · [JD Gaming G1 L](https://gol.gg/game/stats/83540/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
 - Top Rumble · Jng Pantheon · Mid Locke · Bot Kalista · Sup Renata Glasc · [BNK FearX G1 W](https://gol.gg/game/stats/83568/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review

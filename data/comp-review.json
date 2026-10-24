@@ -12,6 +12,7 @@
       "games": [{ "game": 83522, "side": "blue" }, { "game": 83604, "side": "blue" }] }
   ],
   "supporting": [
+    { "comp": "objective-zone", "approvedOn": "2026-10-24", "games": [{ "game": 83623, "side": "red" }] },
     { "comp": "caitlyn-bard-pick", "approvedOn": "2026-10-16",
       "games": [{ "game": 82626, "side": "red" }, { "game": 82410, "side": "blue" }] }
   ],
@@ -27,11 +28,10 @@
     { "champion": "zaahen", "since": "2026-10-16", "reason": "kit added 2026-10-16; his lineups join existing comps as evidence, new comps from them wait for alan's review" }
   ],
   "approvedComps": [],
-  "pendingComps": [
-    { "comp": "pro-83451-blue", "decidedOn": "2026-10-21",
-      "note": "Skirmish + Pick · Lucian (Team WE's Galio / Qiyana / Ahri / Lucian / Milio, with a Rumble / Syndra version) was added by the Oct 17 refresh without approval. A legitimate candidate; compare it with Objective Zone, Stable Top + Carry Bot and the other skirmish and pick comps before approving." }
-  ],
+  "pendingComps": [],
   "namedVariations": [
+    { "comp": "stable-top-carry-bot", "name": "Galio engage · Team WE", "game": { "game": 83451, "side": "blue" }, "approvedOn": "2026-10-24",
+      "note": "Same Lucian + Milio bot lane and the same short fights before items, but Galio is both the engage and the protection: he starts fights, is the only frontliner and peels with Milio, where the main comp has a stable top lane and Vi's point-click pick. Qiyana and Ahri find the catches. Tradeoffs: no lane that holds on its own, little tank damage, short range, and it falls off late. One game, so it is documented as a variation, not a comp of its own." },
     { "comp": "pro-83450-red", "name": "Ornn + Jarvan IV engage · Shopify Rebellion", "game": { "game": 83468, "side": "red" },
       "supporting": [{ "game": 83537, "side": "red" }], "approvedOn": "2026-10-17",
       "note": "Same Yunara + Lulu bot lane, but Ornn and Jarvan IV start fights in front of it instead of K'Sante and Anivia holding space, which covers the main comp's missing on-demand engage. Locke trades Anivia's zone control for close-range damage and costs waveclear. FlyQuest's Ornn, Nocturne and Syndra lineup plays the same way: Ornn starts, Syndra and Yunara deal damage from behind." },

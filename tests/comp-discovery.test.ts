@@ -5,7 +5,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { discover, lineupKey, readLineup, refKey, relation, shellPicks, weeklyReport, type DiscoveredFile, type DiscoveryInput, type Picks } from "@/lib/comp-discovery";
+import { discover, lineupKey, readLineup, refKey, relation, reviewedLineups, shellPicks, weeklyReport, type DiscoveredFile, type DiscoveryInput, type Picks } from "@/lib/comp-discovery";
 import { buildLibrary } from "@/lib/comp-library";
 import { getChampions, getCompReview, getCompShells, getDraftData, getLibrary, getProDrafts, getProGames, getSources } from "@/lib/data";
 import { convertKits } from "@/lib/model-v2/kits";
@@ -139,6 +139,20 @@ describe("weekly comp discovery", () => {
     expect(near.awaiting).toHaveLength(0);
   });
 
+  it("a lineup alan filed by review never opens a comp or waits for review again, but may still join one (2026-10-24)", () => {
+    const picks: Picks = { TOP: "ornn", JUNGLE: "sejuani", MID: "orianna", BOT: "jinx", SUPPORT: "lulu" };
+    const [a, b] = onlyBlue([game(picks, "A", { date: "2026-10-01" }), game(picks, "B", { date: "2026-10-02" })]);
+    expect(discover({ ...base, games: [a, b] }).candidates.flatMap((c) => c.games).map(refKey)).toContain(`${a.id}-blue`);
+    const r = discover({ ...base, games: [a, b], reviewed: [{ game: a.id, side: "blue" }, { game: b.id, side: "blue" }] });
+    const mine = new Set([a.id, b.id].map((id) => `${id}-blue`));
+    expect(r.file.comps.flatMap((c) => c.games).filter((g) => mine.has(refKey(g)))).toHaveLength(0);
+    expect(r.candidates.flatMap((c) => c.games).filter((g) => mine.has(refKey(g)))).toHaveLength(0);
+    const speed = shellPicks(shells.find((x) => x.id === "speed-up-skirmish")!);
+    const [near] = onlyBlue([game({ ...speed, BOT: "jinx" }, "A")]);
+    const joined = discover({ ...base, games: [near], reviewed: [{ game: near.id, side: "blue" }] });
+    expect(joined.file.variations.map((v) => v.of)).toContain("speed-up-skirmish");
+  });
+
   it("a held candidate's games join nothing, and later lineups closest to it are listed beside it, not filed", () => {
     const heldPicks: Picks = { TOP: "ornn", JUNGLE: "sejuani", MID: "orianna", BOT: "jinx", SUPPORT: "lulu" };
     const [first, later] = onlyBlue([game(heldPicks, "A", { date: "2026-10-01" }), game(heldPicks, "B", { date: "2026-10-02" })]);
@@ -152,8 +166,11 @@ describe("weekly comp discovery", () => {
 
   it("the stored library is exactly what discovery gives with alan's review inputs, and no comp grows from a held champion", () => {
     const review = getCompReview();
-    const r = discover({ ...base, previous: stored, today: stored.lastAddition ?? "2026-10-17", held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), pending: review.pendingComps.map((p) => p.comp) });
+    const r = discover({ ...base, previous: stored, today: stored.lastAddition ?? "2026-10-17", held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), pending: review.pendingComps.map((p) => p.comp), reviewed: reviewedLineups(review) });
     expect(r.file).toEqual(stored);
+    // Skirmish + Pick · Lucian was declined (2026-10-24): its two games are filed under other comps and open nothing.
+    expect(r.candidates.some((c) => c.id === "pro-83451-blue")).toBe(false);
+    expect(r.file.variations.some((v) => v.of === "objective-zone" && v.games.some((g) => refKey(g) === "83623-red"))).toBe(true);
     // A comp sent back to Ready for approval is proposed again with its games, never kept as a card.
     for (const p of review.pendingComps) {
       expect(r.file.comps.some((c) => c.id === p.comp), p.comp).toBe(false);
@@ -213,7 +230,7 @@ describe("stored discovered comps", () => {
 describe("Comp Library integration", () => {
   // A run on today's data, so these checks hold for real discoveries even before the stored file has any.
   const review = getCompReview();
-  const fresh = discover({ ...base, previous: stored, held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), pending: review.pendingComps.map((p) => p.comp) }).file;
+  const fresh = discover({ ...base, previous: stored, held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), pending: review.pendingComps.map((p) => p.comp), reviewed: reviewedLineups(review) }).file;
   const lib = buildLibrary(shells, fresh, pro.games);
 
   it("the site reads the stored library, Draft Room included", () => {

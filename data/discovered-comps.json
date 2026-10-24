@@ -1,5 +1,5 @@
 {
-  "lastAddition": "2026-10-23",
+  "lastAddition": "2026-10-24",
   "comps": [
     {
       "id": "pro-83448-blue",
@@ -883,6 +883,23 @@
         {
           "game": 83538,
           "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "objective-zone",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "qiyana",
+        "MID": "syndra",
+        "BOT": "lucian",
+        "SUPPORT": "milio"
+      },
+      "addedOn": "2026-10-24",
+      "games": [
+        {
+          "game": 83623,
+          "side": "red"
         }
       ]
     },
