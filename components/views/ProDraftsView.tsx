@@ -11,7 +11,7 @@ import { ProFreshness } from "@/components/ProFreshness";
 import type { Freshness } from "@/lib/pro-games";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ChampionProvider } from "@/components/ChampionInteraction";
 import type { DrawerContext } from "@/lib/drawer";
 const PRO_DRAFTS: DrawerContext = { page: "pro-drafts" };
@@ -21,7 +21,7 @@ import { PinIcon, PinPicker, usePins, type PinKind } from "@/components/PlayerPi
 import type { DrawerData } from "@/lib/data";
 import { ChampIcon, ChampionRow, PageHeader, SourceLinks } from "@/components/ui";
 import { ROLES, type ProDraft, type Role, type Source } from "@/lib/schema";
-import { groupGames, SIDE_LABEL } from "@/lib/draft-side";
+import { groupGames, SIDE_LABEL, type GameGroup } from "@/lib/draft-side";
 import { patchLabel } from "@/lib/patch";
 import { resultsToTop } from "@/lib/motion";
 import { shortDate } from "@/lib/evidence";
@@ -97,6 +97,45 @@ const FirstPick = ({ on }: { on?: boolean }) => on
   ? <span className="first-pick" title="Picked first in this game (Gol.gg First Pick mark)"><span aria-hidden="true">1st</span><span className="sr-only">First pick</span></span>
   : null;
 
+/** One game's rows: the game cell, then each team's line with its bans and five picks. Memoized, so opening or closing a
+ *  game re-renders only the games whose state changed, never the whole list (a phone felt every tap otherwise). */
+const GameRows = memo(function GameRows({ g, meta, href, isOpen, openId, fresh, pinned, champion, names, facts, onOpen }: {
+  g: GameGroup; meta: string; href: string; isOpen: boolean; openId?: string; fresh: boolean; pinned: ReadonlySet<string>; champion?: string;
+  names: Record<string, string>; facts: GameFactBook; onOpen: (d: ProDraft, e?: React.MouseEvent) => void;
+}) {
+  const first = g.rows[0].d;
+  const n = /G\d+$/i.exec(first.seriesGame)?.[0];
+  return (
+    <tbody className={`game-rows ${isOpen ? "selected" : ""}`.trim()} data-game={g.key} aria-label={`${first.team} vs ${first.opponent}, ${first.seriesGame}`}>
+      {g.rows.map(({ d, pair, side }, i) => (
+        <tr key={d.id} className={`clickable side-${side} ${pair} ${d.id === openId ? "selected" : ""}`.replace(/\s+/g, " ").trim()} data-side={side} aria-selected={d.id === openId}
+          onClick={(e) => { if ((e.target as HTMLElement).closest("a, button")) return; onOpen(d); }}>
+          {i === 0 && (
+            <td className="game-cell" rowSpan={g.rows.length}>
+              <Link className="cell-link" href={href} prefetch={false} aria-expanded={isOpen} title={`${d.team} vs ${d.opponent} · ${d.seriesGame}`} onClick={(e) => onOpen(d, e)}>
+                <span className="game-name truncate">{n && d.stage ? `${d.stage} ${n}` : d.seriesGame}{fresh && <span className="new-tag">New</span>}</span>
+                <span className="game-meta-line xs muted">{meta}</span>
+              </Link>
+            </td>
+          )}
+          <td className="team-cell">
+            {/* The strip carries the side visually (no hover tooltip, alan 2026-10-13); this names it for screen readers. */}
+            <span className="sr-only">{SIDE_LABEL[side]}: </span>
+            <span className="team-line">
+              {pinned.has(d.team) && <PinIcon on />}<span className="team-name truncate">{d.team}</span>
+              {d.won != null && <span className={`res ${d.won ? "win" : "loss"}`} title={d.won ? "Won" : "Lost"}>{d.won ? "W" : "L"}</span>}
+              <FirstPick on={pickedFirst(d, facts)} />
+            </span>
+            <Bans ids={bansOf(d, facts)} names={names} team={d.team} />
+            {!g.paired && <span className="team-vs xs muted truncate">vs {d.opponent}</span>}
+          </td>
+          {ROLES.map((r) => <td key={r} className="pick-cell"><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={d.picks[r] === champion} /></td>)}
+        </tr>
+      ))}
+    </tbody>
+  );
+});
+
 export function ProDraftsView({ names, sources, all, freshness, drawerData, buildGames, events, shortNames, eventIds, facts }: {
   names: Record<string, string>; sources: Record<string, Source>; all: ProDraft[]; freshness: Freshness[]; drawerData: DrawerData;
   buildGames: number[]; // recorded games with Pro Builds (data/pro-builds.json)
@@ -108,7 +147,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
   const params = useSearchParams();
   const panelRef = useRef<HTMLElement>(null);
   const f: Filters = Object.fromEntries(KEYS.map((k) => [k, params.get(k) || undefined]));
-  const rows = all.filter((d) => matches(d, f));
+  const rows = useMemo(() => all.filter((d) => matches(d, f)), [all, f.team, f.champion, f.role, f.tournament, f.stage, f.series]); // eslint-disable-line react-hooks/exhaustive-deps
   const selected = f.id ? all.find((d) => d.id === f.id) : undefined;
   const uniq = (xs: string[]) => [...new Set(xs)].sort();
   const champions = uniq(all.flatMap((d) => ROLES.map((r) => d.picks[r]))).sort((a, b) => (names[a] ?? a).localeCompare(names[b] ?? b));
@@ -129,7 +168,29 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
   };
   // A plain click on a link to this page becomes a history write; modified clicks (new tab) keep the browser's behaviour.
   const plain = (e: React.MouseEvent) => !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0);
-  const open = (d: ProDraft) => go(d.id === f.id ? { ...f, id: undefined, build: undefined } : { ...f, id: d.id, build: carryBuild(f.build, d) }, true);
+  // The rows read the latest filters through a ref, so the handler stays the same and only changed games re-render.
+  // The tapped game keeps its place on screen when another open game above it folds away (no Safari scroll anchoring).
+  const latest = useRef(f);
+  latest.current = f;
+  const anchor = useRef<{ key: string; top: number }>(undefined);
+  const onOpen = useCallback((d: ProDraft, e?: React.MouseEvent) => {
+    if (e) { if (!plain(e)) return; e.preventDefault(); }
+    const cur = latest.current, key = gameKey(d);
+    const el = document.querySelector(`tbody.game-rows[data-game="${CSS.escape(key)}"]`);
+    anchor.current = el ? { key, top: el.getBoundingClientRect().top } : undefined;
+    go(d.id === cur.id ? { ...cur, id: undefined, build: undefined } : { ...cur, id: d.id, build: carryBuild(cur.build, d) }, true);
+  }, []);
+  useLayoutEffect(() => {
+    const a = anchor.current;
+    anchor.current = undefined;
+    const el = a && document.querySelector(`tbody.game-rows[data-game="${CSS.escape(a.key)}"]`);
+    if (!a || !el) return;
+    const delta = el.getBoundingClientRect().top - a.top;
+    if (Math.abs(delta) < 1) return;
+    const box = document.querySelector<HTMLElement>(".drafts-table");
+    if (box && box.scrollHeight > box.clientHeight + 1 && getComputedStyle(box).overflowY !== "visible") box.scrollTop += delta;
+    else window.scrollBy(0, delta);
+  }, [f.id]);
   // Closing returns focus to the game's own link, so the keyboard stays where the game was.
   const close = () => {
     const opener = panelRef.current?.closest("tbody")?.previousElementSibling?.querySelector<HTMLElement>(".cell-link");
@@ -146,6 +207,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
       options={[{ value: "", label: any }, ...options.map(([value, l]) => ({ value, label: l }))]} />
   );
   const active = FILTER_KEYS.filter((k) => f[k]).length;
+  const [filtersOpen, setFiltersOpen] = useState(false);
   // Pinnable, typeable filters (alan, 2026-10-13): teams, champions, tournaments and series can be pinned; pins are kept
   // in this browser, listed first in their menu, and a pinned team is starred in the table. Team and tournament pins
   // are the same ones Pro Builds uses (tournaments by event id, so the URL keeps the tournament name).
@@ -154,6 +216,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
       <PinPicker kind={kind} value={f[key] ?? ""} options={options} onChange={(v) => setFilter(key, v)} /></label>
   );
   const teamPins = usePins("team");
+  const pinnedTeams = useMemo(() => new Set(teamPins.pins), [teamPins.pins]);
   const tournamentValue = f.tournament ? eventIds[f.tournament] ?? f.tournament : "";
   const tournamentOptions: [string, string][] = uniq(all.map((d) => d.tournament)).map((t) => [eventIds[t] ?? t, shortNames[t] ?? t]);
   const tournamentName = (v: string) => Object.keys(eventIds).find((n) => eventIds[n] === v) ?? v;
@@ -167,7 +230,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
     ...seriesPins.pins.filter((x) => seriesSet.has(x)).map((x) => ({ key: "series" as const, value: x, label: x, title: `Series: ${x}` })),
   ];
   // One game is one unit: its blue row then its red row under a shared game cell; a one-sided view keeps the game cell.
-  const games = groupGames(rows);
+  const games = useMemo(() => groupGames(rows), [rows]);
   const gameCount = new Set(all.map(gameKey)).size;
   // Stages of the chosen tournament (Worlds: Play-In is its own Gol.gg tournament; Swiss and knockout rounds are stages).
   const stages = f.tournament ? uniq(all.filter((d) => d.tournament === f.tournament && d.stage).map((d) => d.stage)) : [];
@@ -196,8 +259,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
   const evName = (r: BuildRow) => events[r.game.event] ?? r.game.tournament;
 
   const meta = (d: ProDraft) => [d.tournament, !d.seriesGame.startsWith(d.stage) && d.stage, d.patch && `patch ${patchLabel(d.patch)}`, d.date].filter(Boolean).join(" · ");
-  // The game cell: stage and game number ("Finals G1", "Round 2 G3"), then tournament, patch and date, each once per game.
-  const gameLabel = (d: ProDraft) => { const n = /G\d+$/i.exec(d.seriesGame)?.[0]; return n && d.stage ? `${d.stage} ${n}` : d.seriesGame; };
+  // The game cell: stage and game number ("Finals G1", "Round 2 G3", in GameRows), then tournament, patch and date, each once per game.
   const gameMeta = (d: ProDraft) => [shortNames[d.tournament] ?? d.tournament, d.patch && patchLabel(d.patch), d.date && shortDate(d.date)].filter(Boolean).join(" · ");
 
   // The open game unfolds in place under its own two rows (alan, 2026-10-16), so the rows stay where they were clicked and
@@ -290,7 +352,12 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
 
       {selected && view && !inTable && panel}
 
-      <form className="toolbar drafts-tools" method="get">
+      {/* Phones fold the menus behind one Filters button (the count, Clear and pinned chips stay out), so the games start
+          near the top of the screen instead of under five stacked menus. */}
+      <form className={`toolbar drafts-tools ${filtersOpen ? "filters-open" : ""}`.trim()} method="get">
+        <button type="button" className="btn sm filters-toggle" aria-expanded={filtersOpen} onClick={() => setFiltersOpen((o) => !o)}>
+          Filters{active > 0 && <span className="filters-count"> · {active}</span>}
+        </button>
         {pick("team", "team", uniq(all.map((d) => d.team)).map((t) => [t, t]))}
         {pick("champion", "champion", champions.map((c) => [c, names[c] ?? c]))}
         {sel("role", "Role", "Any role", ROLES.map((r) => [r, r]))}
@@ -322,33 +389,8 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
             const isOpen = g.rows.some((r) => r.d.id === f.id);
             return (
               <Fragment key={g.key}>
-              <tbody className={`game-rows ${isOpen ? "selected" : ""}`.trim()} aria-label={`${g.rows[0].d.team} vs ${g.rows[0].d.opponent}, ${g.rows[0].d.seriesGame}`}>
-                {g.rows.map(({ d, pair, side }, i) => (
-                  <tr key={d.id} className={`clickable side-${side} ${pair} ${d.id === f.id ? "selected" : ""}`.replace(/\s+/g, " ").trim()} data-side={side} aria-selected={d.id === f.id}
-                    onClick={(e) => { if ((e.target as HTMLElement).closest("a, button")) return; open(d); }}>
-                    {i === 0 && (
-                      <td className="game-cell" rowSpan={g.rows.length}>
-                        <Link className="cell-link" href={link(d)} aria-expanded={isOpen} title={`${d.team} vs ${d.opponent} · ${d.seriesGame}`} onClick={(e) => { if (plain(e)) { e.preventDefault(); open(d); } }}>
-                          <span className="game-name truncate">{gameLabel(d)}{fresh.has(gameIdOf(d)) && <span className="new-tag">New</span>}</span>
-                          <span className="game-meta-line xs muted">{gameMeta(d)}</span>
-                        </Link>
-                      </td>
-                    )}
-                    <td className="team-cell">
-                      {/* The strip carries the side visually (no hover tooltip, alan 2026-10-13); this names it for screen readers. */}
-                      <span className="sr-only">{SIDE_LABEL[side]}: </span>
-                      <span className="team-line">
-                        {teamPins.isPinned(d.team) && <PinIcon on />}<span className="team-name truncate">{d.team}</span>
-                        {d.won != null && <span className={`res ${d.won ? "win" : "loss"}`} title={d.won ? "Won" : "Lost"}>{d.won ? "W" : "L"}</span>}
-                        <FirstPick on={pickedFirst(d, facts)} />
-                      </span>
-                      <Bans ids={bansOf(d, facts)} names={names} team={d.team} />
-                      {!g.paired && <span className="team-vs xs muted truncate">vs {d.opponent}</span>}
-                    </td>
-                    {ROLES.map((r) => <td key={r} className="pick-cell"><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={d.picks[r] === f.champion} /></td>)}
-                  </tr>
-                ))}
-              </tbody>
+              <GameRows g={g} meta={gameMeta(g.rows[0].d)} href={link(g.rows[0].d)} isOpen={isOpen} openId={isOpen ? f.id : undefined} fresh={fresh.has(gameIdOf(g.rows[0].d))}
+                pinned={pinnedTeams} champion={f.champion} names={names} facts={facts} onOpen={onOpen} />
               {isOpen && panel && <tbody className="game-expand"><tr><td colSpan={7}><div className="game-expand-inner">{panel}</div></td></tr></tbody>}
               {!isOpen && closing?.key === g.key && (
                 <tbody className="game-expand closing" aria-hidden="true" inert><tr><td colSpan={7}>

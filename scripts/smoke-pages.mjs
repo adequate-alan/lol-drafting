@@ -1006,6 +1006,26 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   check("pro drafts pins: a pinned chip filters the table and the team is starred", new URL(page.url()).searchParams.get("team") === team && (await page.locator(".drafts-table .team-line .pin-icon.on").count()) > 0, page.url());
   await page.evaluate(() => ["pro-builds:pinned-teams", "pro-builds:pinned-tournaments", "pro-drafts:pinned-champions", "pro-drafts:pinned-series"].forEach((k) => localStorage.removeItem(k)));
 }
+// Pro Drafts on phones (alan, 2026-10-24, "very clunky on mobile"): the games scroll with the page, never inside a box of
+// their own; the menus fold behind one Filters button; opening a game below an open one keeps the tapped game in place.
+{
+  await page.setViewportSize({ width: 390, height: 844 });
+  await open("/pro-drafts/");
+  const box = await page.$eval(".drafts-table", (w) => ({ ov: getComputedStyle(w).overflowY, inner: w.scrollHeight - w.clientHeight }));
+  check("pro drafts at 390px: the games scroll with the page, not in a box", box.ov === "visible" && box.inner <= 1, JSON.stringify(box));
+  const folded = await page.locator(".drafts-tools .select-field").first().isVisible();
+  await page.locator(".filters-toggle").click();
+  const unfolded = await page.locator(".drafts-tools .select-field").first().isVisible();
+  check("pro drafts at 390px: the menus fold behind the Filters button", !folded && unfolded, JSON.stringify({ folded, unfolded }));
+  await page.locator(".drafts-table tbody.game-rows .team-name").first().click();
+  await page.locator(".game-expand .game-panel").waitFor({ timeout: 4000 }).catch(() => {});
+  const before = await page.evaluate(() => { const t = document.querySelectorAll(".drafts-table tbody.game-rows")[6]; t.scrollIntoView(); window.scrollBy(0, -200); return t.getBoundingClientRect().top; });
+  await page.evaluate(() => document.querySelectorAll(".drafts-table tbody.game-rows")[6].querySelector(".team-name").click());
+  await page.waitForTimeout(400);
+  const after = await page.evaluate(() => document.querySelectorAll(".drafts-table tbody.game-rows")[6].getBoundingClientRect().top);
+  check("pro drafts at 390px: opening a game below the open one keeps it in place", Math.abs(after - before) <= 2 && (await page.locator(".game-expand").count()) === 1, `${Math.round(before)} -> ${Math.round(after)}`);
+  await page.setViewportSize({ width: 1440, height: 900 });
+}
 // Pro Builds page (/pro-builds/, components/views/ProBuildsView.tsx) and the links into it
 {
   await open("/meta/?role=TOP");
