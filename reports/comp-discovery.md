@@ -1,6 +1,6 @@
 # Comp Library review · 2026-10-25
 
-Read 216 lineups from 108 recorded games (latest 2026-10-24). Demacia Cup: 70/71 games recorded, complete; Worlds 2026 Main Event: 16/16 games recorded, ongoing; Worlds 2026 Play-In: 22/22 games recorded, complete. LCK 2026 playoff drafts are used for comparison only.
+Read 224 lineups from 112 recorded games (latest 2026-10-25). Demacia Cup: 70/71 games recorded, complete; Worlds 2026 Main Event: 20/20 games recorded, ongoing; Worlds 2026 Play-In: 22/22 games recorded, complete. LCK 2026 playoff drafts are used for comparison only.
 
 ## New compositions (0)
 
@@ -26,7 +26,7 @@ Observed library comps with no exact or variation game in the tracked tournament
 - **Control Siege** · Top Jayce · Jng Qiyana · Mid Anivia · Bot Mel · Sup Alistar
 - **Dive + Utility Bot** · Top Camille · Jng Naafiri · Mid Galio · Bot Kalista · Sup Renata Glasc
 
-## Ready for approval (3)
+## Ready for approval (4)
 
 Pass every discovery check. Not in the library until alan approves (comp-review.json `approvedComps`).
 
@@ -50,8 +50,15 @@ Pass every discovery check. Not in the library until alan approves (comp-review.
   - passes every check (2 games from 2 teams with the same strategy, no major weak point, a clear win condition); waiting for approval.
   - [Movistar KOI vs CTBC Flying Oyster G1](https://gol.gg/game/stats/83647/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-24, win)
   - [Karmine Corp vs LYON G1](https://gol.gg/game/stats/83649/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-24, loss)
+- **Dive + Pick · Camille** · Top Camille · Jng Lee Sin · Mid Orianna · Bot Jhin · Sup Nautilus · Medium · id `pro-83653-red`
+  - Camille, Lee Sin and Nautilus can all reach the backline; catch from Camille and Lee Sin, burst from Orianna and Jhin. Go in together: Camille, Lee Sin and Nautilus reach the enemy carries at the same time instead of one by one. Between objectives, look for catches with Camille and Lee Sin.
+  - Strengths: Fight start: Nautilus; Peel and disengage: Lee Sin and Orianna; Side lane: Camille; Tank damage: Camille; Mixed damage (59% physical).
+  - Weak points: Thin frontline (minor).
+  - passes every check (2 games from 2 teams with the same strategy, no major weak point, a clear win condition); waiting for approval.
+  - [Bilibili Gaming vs Team Liquid G1](https://gol.gg/game/stats/83653/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-24, win)
+  - [Top Esports vs G2 Esports G1](https://gol.gg/game/stats/83655/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-25, win)
 
-## Proposed comps for review (110)
+## Proposed comps for review (114)
 
 Not added automatically: each needs more games or a person's call. One line per lineup group, newest games marked.
 
@@ -72,11 +79,11 @@ Not added automatically: each needs more games or a person's call. One line per 
 - Protect + Wombo · Top Galio · Jng Qiyana · Mid Ahri · Bot Aphelios · Sup Thresh · [GAM Esports G2 L](https://gol.gg/game/stats/83463/page-game/) · 1 game from GAM Esports with this strategy, and the library already has protect comps
 - Poke / siege + Pick · Top Jayce · Jng Lee Sin · Mid Ryze · Bot Mel · Sup Pyke · [FlyQuest G2 L](https://gol.gg/game/stats/83466/page-game/) · major weak point (No frontline); 1 game from FlyQuest with this strategy, and the library already has poke / siege comps
 - **New** · Pick + Skirmish · Top Yorick · Jng Xin Zhao · Mid Orianna · Bot Ashe · Sup Seraphine · [Natus Vincere G2 W](https://gol.gg/game/stats/83466/page-game/), [Invictus Gaming G1 W](https://gol.gg/game/stats/83650/page-game/) · major weak point (No frontline); 1 game from Natus Vincere with this strategy (1 more with a lineup that reads differently), and the library already has pick comps
-- Dive + Skirmish · Top Gwen · Jng Lee Sin · Mid Sylas · Bot Kalista · Sup Renata Glasc · [HANJIN BRION G3 W](https://gol.gg/game/stats/83522/page-game/) · major weak point (No frontline); 1 game from HANJIN BRION with this strategy, and the library already has dive comps
+- **New** · Dive + Skirmish · Top Gwen · Jng Lee Sin · Mid Sylas · Bot Kalista · Sup Renata Glasc · [HANJIN BRION G3 W](https://gol.gg/game/stats/83522/page-game/), [Hanwha Life Esports G1 L](https://gol.gg/game/stats/83654/page-game/) · major weak point (No frontline)
 - Front-to-back + Wombo · Top Sion · Jng Sejuani · Mid Cassiopeia · Bot Ezreal · Sup Karma · [RED Canids G1 L](https://gol.gg/game/stats/83523/page-game/) · 1 game from RED Canids with this strategy, and the library already has front-to-back comps
 - Front-to-back + Protect · Top Ornn · Jng Lee Sin · Mid Syndra · Bot Sivir · Sup Karma · [LGD Gaming G1 W](https://gol.gg/game/stats/83526/page-game/) · 1 game from LGD Gaming with this strategy, and the library already has front-to-back comps
 - Pick + Front-to-back · Top Varus · Jng Poppy · Mid Orianna · Bot Lucian · Sup Milio · [LGD Gaming G2 W](https://gol.gg/game/stats/83527/page-game/) · 1 game from LGD Gaming with this strategy, and the library already has pick comps
-- **New** · Front-to-back · Top K'Sante · Jng Wukong · Mid Orianna · Bot Ezreal · Sup Karma · [FlyQuest G1 W](https://gol.gg/game/stats/83528/page-game/), [FlyQuest G1 W](https://gol.gg/game/stats/83573/page-game/), [Top Esports G1 L](https://gol.gg/game/stats/83642/page-game/) · 2 games from FlyQuest with this strategy (1 more with a lineup that reads differently), and the library already has front-to-back comps
+- **New** · Front-to-back · Top K'Sante · Jng Wukong · Mid Orianna · Bot Ezreal · Sup Karma · [FlyQuest G1 W](https://gol.gg/game/stats/83528/page-game/), [FlyQuest G1 W](https://gol.gg/game/stats/83573/page-game/), [Top Esports G1 L](https://gol.gg/game/stats/83642/page-game/), [G2 Esports G1 L](https://gol.gg/game/stats/83655/page-game/) · 2 games from FlyQuest with this strategy (2 more with lineups that read differently), and the library already has front-to-back comps
 - Dive + Skirmish · Top Rumble · Jng Pantheon · Mid Akali · Bot Jhin · Sup Nautilus · [GAM Esports G1 L](https://gol.gg/game/stats/83528/page-game/) · 1 game from GAM Esports with this strategy, and the library already has dive comps
 - Front-to-back + Early tempo · Top Kled · Jng Cho'Gath · Mid Twisted Fate · Bot Kalista · Sup Renata Glasc · [FlyQuest G2 W](https://gol.gg/game/stats/83529/page-game/) · 1 game from FlyQuest with this strategy, and the library already has front-to-back comps
 - Poke / siege + Front-to-back · Top Jayce · Jng Jarvan IV · Mid Viktor · Bot Lucian · Sup Milio · [GAM Esports G1 L](https://gol.gg/game/stats/83531/page-game/) · 1 game from GAM Esports with this strategy, and the library already has poke / siege comps
@@ -164,7 +171,11 @@ Not added automatically: each needs more games or a person's call. One line per 
 - **New** · Protect + Front-to-back · Top Galio · Jng Wukong · Mid Syndra · Bot Yunara · Sup Lulu · [LYON G1 W](https://gol.gg/game/stats/83649/page-game/) · 1 game from LYON with this strategy, and the library already has protect comps
 - **New** · Front-to-back + Skirmish · Top Rumble · Jng Qiyana · Mid Syndra · Bot Ezreal · Sup Leona · [Gen.G G1 W](https://gol.gg/game/stats/83651/page-game/) · 1 game from Gen.G with this strategy, and the library already has front-to-back comps
 - **New** · Poke / siege + Skirmish · Top Jayce · Jng Vi · Mid Anivia · Bot Caitlyn · Sup Neeko · [T1 G1 L](https://gol.gg/game/stats/83652/page-game/) · major weak point (No frontline, Anivia is unprotected); 1 game from T1 with this strategy, and the library already has poke / siege comps
-- **New** · Dive + Pick · Top Camille · Jng Lee Sin · Mid Orianna · Bot Jhin · Sup Nautilus · [Bilibili Gaming G1 W](https://gol.gg/game/stats/83653/page-game/) · 1 game from Bilibili Gaming with this strategy, and the library already has dive comps
+- **New** · Skirmish · Top Kled · Jng Nocturne · Mid Annie · Bot Yunara · Sup Lulu · [Invictus Gaming G1 W](https://gol.gg/game/stats/83654/page-game/) · major weak point (No frontline); 1 game from Invictus Gaming with this strategy, and the library already has skirmish comps
+- **New** · Poke / siege · Top Jayce · Jng Trundle · Mid Anivia · Bot Ezreal · Sup Karma · [Movistar KOI G1 L](https://gol.gg/game/stats/83656/page-game/) · 1 game from Movistar KOI with this strategy, and the library already has poke / siege comps
+- **New** · Dive + Wombo · Top Ornn · Jng Lee Sin · Mid Cassiopeia · Bot Kai'Sa · Sup Nautilus · [Dplus KIA G1 W](https://gol.gg/game/stats/83656/page-game/) · 1 game from Dplus KIA with this strategy, and the library already has dive comps
+- **New** · Front-to-back + Pick · Top Irelia · Jng Jarvan IV · Mid Syndra · Bot Caitlyn · Sup Bard · [Dplus KIA G2 W](https://gol.gg/game/stats/83657/page-game/) · 1 game from Dplus KIA with this strategy, and the library already has front-to-back comps
+- **New** · Skirmish + Front-to-back · Top Gnar · Jng Vi · Mid Diana · Bot Yunara · Sup Lulu · [Movistar KOI G2 L](https://gol.gg/game/stats/83657/page-game/) · 1 game from Movistar KOI with this strategy, and the library already has skirmish comps
 
 ## Awaiting review: new comps from held champions (19)
 

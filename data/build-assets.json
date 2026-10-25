@@ -9160,6 +9160,13 @@
           "from": [3134, 3133],
           "kind": "completed"
         },
+        "3181": {
+          "name": "Hullbreaker",
+          "gold": 3000,
+          "stats": ["40 Attack Damage", "500 Health", "4% Move Speed"],
+          "from": [2021, 3066, 1037],
+          "kind": "completed"
+        },
         "3190": {
           "name": "Locket of the Iron Solari",
           "gold": 2200,
@@ -10369,6 +10376,28 @@
             "maxrank": 3
           }
         },
+        "diana": {
+          "Q": {
+            "name": "Crescent Strike",
+            "icon": "DianaQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Pale Cascade",
+            "icon": "DianaOrbs.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Lunar Rush",
+            "icon": "DianaTeleport.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Moonfall",
+            "icon": "DianaR.png",
+            "maxrank": 3
+          }
+        },
         "draven": {
           "Q": {
             "name": "Spinning Axe",
@@ -10476,6 +10505,28 @@
           "R": {
             "name": "Spiraling Despair",
             "icon": "HweiR.png",
+            "maxrank": 3
+          }
+        },
+        "irelia": {
+          "Q": {
+            "name": "Bladesurge",
+            "icon": "IreliaQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Defiant Dance",
+            "icon": "IreliaW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Flawless Duet",
+            "icon": "IreliaE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Vanguard's Edge",
+            "icon": "IreliaR.png",
             "maxrank": 3
           }
         },
@@ -10806,6 +10857,28 @@
           "R": {
             "name": "Lilting Lullaby",
             "icon": "LilliaR.png",
+            "maxrank": 3
+          }
+        },
+        "lissandra": {
+          "Q": {
+            "name": "Ice Shard",
+            "icon": "LissandraQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Ring of Frost",
+            "icon": "LissandraW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Glacial Path",
+            "icon": "LissandraE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Frozen Tomb",
+            "icon": "LissandraR.png",
             "maxrank": 3
           }
         },
