@@ -8427,6 +8427,13 @@
           "from": [3057, 1026, 3067, 1042],
           "kind": "completed"
         },
+        "2512": {
+          "name": "Fiendhunter Bolts",
+          "gold": 2650,
+          "stats": ["45% Attack Speed", "25% Critical Strike Chance", "4% Move Speed"],
+          "from": [3086, 3144],
+          "kind": "completed"
+        },
         "2517": {
           "name": "Endless Hunger",
           "gold": 3100,
@@ -9591,6 +9598,12 @@
           "name": "Health",
           "icon": "perk-images/StatMods/StatModsHealthScalingIcon.png",
           "short": "+65 Health",
+          "shard": true
+        },
+        "5013": {
+          "name": "Tenacity and Slow Resist",
+          "icon": "perk-images/StatMods/StatModsTenacityIcon.png",
+          "short": "+15% Tenacity and Slow Resist",
           "shard": true
         },
         "8005": {

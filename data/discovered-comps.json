@@ -938,6 +938,23 @@
       ]
     },
     {
+      "of": "objective-zone",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "jarvan-iv",
+        "MID": "orianna",
+        "BOT": "lucian",
+        "SUPPORT": "milio"
+      },
+      "addedOn": "2026-10-24",
+      "games": [
+        {
+          "game": 83646,
+          "side": "red"
+        }
+      ]
+    },
+    {
       "of": "poke-catch",
       "picks": {
         "TOP": "ksante",
