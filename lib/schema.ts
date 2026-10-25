@@ -429,6 +429,19 @@ export const CompReview = z.object({
   // Families (alan, 2026-10-17): a light grouping of distinct comps with one strategic thread. Each comp keeps its own
   // card, lineup, variants and evidence; the card only names its family and links the others.
   families: z.array(z.object({ id, name: z.string(), comps: z.array(id).min(2), note: z.string(), approvedOn: Day })).default([]),
+  // Archetypes (alan, 2026-10-25, Protect · Yunara pilot): a parent defined by its win condition, holding named
+  // variations that execute it. `core` is the comp whose card becomes the parent; `jobs` are what the plan typically
+  // needs (each row shows whether it keeps, replaces, shares or gives one up, from the comp check); `members` are the
+  // core's named variations (by game) and whole comps (by id, which keep their id and Draft Room links but no card of
+  // their own); `via` names how each enables the carry. `review` lists filed lineups whose plan is ambiguous: shown in
+  // the card, flagged, never counted as a variation. Never created by discovery; nothing is merged or deleted.
+  archetypes: z.array(z.object({
+    id, name: z.string(), core: id, carry: ChampionId, approvedOn: Day, winCondition: z.string(), plan: z.string(),
+    coreVia: z.array(z.string()).min(1), coreNote: z.string(),
+    members: z.array(z.object({ game: LineupRef.optional(), comp: id.optional(), name: z.string().optional(), note: z.string().optional(),
+      via: z.array(z.string()).min(1) }).refine((m) => !!m.game !== !!m.comp, "a member is a game or a comp")),
+    review: z.array(z.object({ game: LineupRef, why: z.string() })).default([]),
+  })).default([]),
 });
 export type CompReview = z.infer<typeof CompReview>;
 

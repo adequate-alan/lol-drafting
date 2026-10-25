@@ -3,7 +3,7 @@
 // independent series, and nothing in the review changes a comp's own lineup, its General Draft Logic swaps or any other
 // layer.
 import { describe, expect, it } from "vitest";
-import { buildLibrary } from "@/lib/comp-library";
+import { buildLibrary, jobReads, plainVariations } from "@/lib/comp-library";
 import { lineupKey, shellPicks, type Picks } from "@/lib/comp-discovery";
 import { getBuildGameRecords, getCompReview, getCompShells, getLibrary, getProGames, getSources } from "@/lib/data";
 import { comparePatch } from "@/lib/patch";
@@ -91,7 +91,7 @@ describe("historical marks", () => {
     const shells = getCompShells();
     const s = shells.find((x) => x.id === "protected-hypercarry")!;
     const fresh = { ...newest, id: 999001, blue: { ...newest.blue, picks: { ...newest.blue.picks, BOT: s.slots.BOT.champion } } };
-    const lib = buildLibrary(shells, discovered, [...games, fresh], { proSwaps: [], supporting: [], historical: [{ comp: s.id, roles: ["BOT"], approvedOn: "2026-10-16" }], variants: [], heldChampions: [], approvedComps: [], pendingComps: [], namedVariations: [], held: [], families: [] });
+    const lib = buildLibrary(shells, discovered, [...games, fresh], { proSwaps: [], supporting: [], historical: [{ comp: s.id, roles: ["BOT"], approvedOn: "2026-10-16" }], variants: [], heldChampions: [], approvedComps: [], pendingComps: [], namedVariations: [], held: [], families: [], archetypes: [] });
     expect(lib.extras[s.id]?.historical?.BOT).toBeUndefined();
   });
 });
@@ -123,11 +123,13 @@ describe("named variations, holds and families (2026-10-17)", () => {
     expect(ROLES.map((r) => s.slots[r].champion).join("|")).toBe("olaf|skarner|locke|sivir|karma");
   });
 
-  it("a family links distinct comps that each keep their card; Pick · Protected Yunara keeps its lineup", () => {
+  it("a family links distinct comps' cards; Pick · Protected Yunara keeps its lineup", () => {
     const f = review.families.find((x) => x.id === "yunara-protection")!;
+    // A comp shown inside an archetype is reached through its parent's card (2026-10-25).
+    const card = (id: string) => library.extras[id]?.inArchetype?.parent ?? id;
     for (const id of f.comps) {
       expect(library.shells.some((s) => s.id === id), id).toBe(true);
-      expect(library.extras[id]?.family?.others.map((o) => o.id).sort()).toEqual(f.comps.filter((c) => c !== id).sort());
+      expect(library.extras[id]?.family?.others.map((o) => o.id).sort()).toEqual([...new Set(f.comps.map(card))].filter((c) => c !== card(id)).sort());
       expect(library.extras[id]?.variantOf, id).toBeUndefined();
     }
     const pick = library.shells.find((s) => s.id === "yunara-protect")!;
@@ -175,5 +177,80 @@ describe("named variations, holds and families (2026-10-17)", () => {
       expect(games.has(r.game), h.name).toBe(true);
       for (const x of Object.values(library.extras)) for (const v of x.variations) expect(v.games.some((g) => g.game === r.game && g.side === r.side), h.name).toBe(false);
     }
+  });
+});
+
+describe("archetypes (alan, 2026-10-25: Protect · Yunara pilot)", () => {
+  const library = getLibrary();
+  const arch = library.extras["pro-83521-blue"].archetype!;
+  const rows = [arch.core, ...arch.members, ...arch.review];
+
+  it("Protect · Yunara is the only archetype, its parent is the Protect · Yunara card, defined by its win condition", () => {
+    expect(review.archetypes.map((a) => a.id)).toEqual(["protect-yunara"]);
+    expect(arch.name).toBe("Protect · Yunara");
+    expect(arch.winCondition).toMatch(/Enable Yunara to carry teamfights/);
+    expect(Object.values(library.extras).filter((x) => x.archetype)).toHaveLength(1);
+  });
+
+  it("holds the three approved BNK FearX and Karmine Corp filings and Team Vitality's comp, each with its own lineup and game", () => {
+    const by = (name: string) => arch.members.find((m) => m.name === name)!;
+    expect(by("Peel + poke · BNK FearX").games.map((g) => g.game)).toEqual([83453]);
+    expect(by("Peel + poke · BNK FearX").picks.MID).toBe("cassiopeia");
+    expect(by("Ryze variation · BNK FearX").picks.MID).toBe("ryze");
+    expect(by("Galio engage · Karmine Corp").picks.TOP).toBe("galio");
+    const vit = arch.members.find((m) => m.kind === "comp")!;
+    expect(vit.id).toBe("pro-83450-red");
+    expect(vit.games.map((g) => `${g.game}-${g.side}`)).toEqual(["83450-red"]);
+    // The stored filings are untouched: the named variations stay under the core, the comp keeps its own variations.
+    expect(review.namedVariations.filter((n) => n.comp === "pro-83521-blue")).toHaveLength(3);
+    expect(library.extras["pro-83450-red"].variations.some((v) => v.named?.name.includes("Shopify"))).toBe(true);
+  });
+
+  it("a member comp keeps its id and Draft Room link but has no card of its own", () => {
+    expect(library.shells.some((s) => s.id === "pro-83450-red")).toBe(true);
+    expect(library.extras["pro-83450-red"].inArchetype).toEqual({ parent: "pro-83521-blue", id: "protect-yunara" });
+    expect(library.extras["pro-83450-red"].variantOf).toBeUndefined();
+  });
+
+  it("Shopify's Ornn + Jarvan IV lineup is under review, shown apart and not counted as a variation", () => {
+    expect(arch.members.some((m) => m.games.some((g) => g.game === 83468))).toBe(false);
+    expect(arch.review.map((r) => r.id)).toEqual(["83468-red"]);
+    expect(arch.review[0].why).toMatch(/not counted/);
+    expect(arch.review[0].alike.flatMap((a) => a.games.map((g) => g.game))).toEqual([83537]);
+    // Nor listed again under Team Vitality's row.
+    expect(arch.members.find((m) => m.kind === "comp")!.observed.some((v) => v.games.some((g) => g.game === 83468))).toBe(false);
+  });
+
+  it("every game is listed once across the card, so the hierarchy never inflates a count", () => {
+    const refs = [...rows.flatMap((r) => [...r.games, ...r.alike.flatMap((a) => a.games), ...r.observed.flatMap((v) => v.games)]),
+      ...plainVariations(library.extras["pro-83521-blue"]).flatMap((v) => v.games), ...library.extras["pro-83521-blue"].games]
+      .map((g) => `${g.game}-${g.side}`);
+    expect(new Set(refs).size).toBe(refs.length);
+  });
+
+  it("each row shows which typical jobs it keeps, replaces, shares or gives up, from the comp check", () => {
+    for (const r of rows) expect(r.jobs?.map((j) => j.job), r.name).toEqual(["carry", "peel", "front", "start"]);
+    const job = (r: (typeof rows)[number], j: string) => r.jobs!.find((x) => x.job === j)!;
+    expect(job(arch.core, "front").state).toBe("keeps");
+    // BNK's Ryze draft has no frontliner; the plan still runs through Yunara, and the cost is shown.
+    const ryze = arch.members.find((m) => m.name === "Ryze variation · BNK FearX")!;
+    expect(job(ryze, "front")).toEqual({ job: "front", state: "gives up", champions: [] });
+    // Karmine Corp adds proactive engage: Galio replaces waiting for the enemy.
+    const kc = arch.members.find((m) => m.name === "Galio engage · Karmine Corp")!;
+    expect(job(kc, "start")).toEqual({ job: "start", state: "replaces", champions: ["galio"] });
+    for (const r of rows) expect(r.via.length || r.why, r.name).toBeTruthy();
+  });
+
+  it("jobReads compares a lineup with the plan's typical jobs", () => {
+    expect(jobReads({ main: "yunara", peel: ["lulu"], front: [], starts: ["galio"] }, "yunara").map((j) => j.state)).toEqual(["keeps", "gives up", "gives up", "replaces"]);
+    expect(jobReads({ main: "ryze", peel: ["lulu", "orianna"], front: ["olaf"], starts: [] }, "yunara")[0]).toEqual({ job: "carry", state: "shares", champions: ["yunara", "ryze"] });
+  });
+
+  it("other comps keep their own cards: Objective Zone, Stable Top + Carry Bot, Jax Skirmish and Pick · Protected Yunara", () => {
+    for (const id of ["objective-zone", "stable-top-carry-bot", "yunara-protect"]) {
+      expect(library.extras[id]?.inArchetype, id).toBeUndefined();
+      expect(library.extras[id]?.archetype, id).toBeUndefined();
+    }
+    for (const s of library.shells.filter((x) => /Jax/.test(x.name))) expect(library.extras[s.id]?.inArchetype, s.id).toBeUndefined();
   });
 });

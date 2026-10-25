@@ -501,6 +501,21 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   "Galio engage · Team WE" under Stable Top + Carry Bot. Protect · Cassiopeia was folded into the Yunara protection family (2026-10-24): its three
   games are separate named variations of Protect · Yunara (Peel + poke · BNK FearX, Ryze variation · BNK FearX, Galio
   engage · Karmine Corp), each with its own lineup and tradeoffs; Yunara + Lulu alone never makes two drafts the same.
+- **Archetypes** (alan, 2026-10-25, Protect · Yunara pilot only; `archetypes` in `comp-review.json`, `Archetype` in
+  `lib/comp-library.ts`, `tests/comp-review.test.ts`): two levels, a parent archetype and its named variations; families
+  stay cross-links, never a third level. An archetype is defined by its win condition (Protect · Yunara: enable Yunara
+  to carry teamfights), never by shared champions; its typical jobs (main damage, two peel sources, someone in front,
+  waiting for the enemy) are what the plan usually needs, and each row shows from the comp check whether it keeps,
+  replaces, shares or gives each one up (`jobReads`, `lineupJobs`), plus how it enables the carry (`via`: peel, zone
+  control, frontline, proactive engage), its tradeoff, its sample ("1 game") and, expanded, its lineup and games. The
+  core comp's card is the parent (full row on desktop); a member comp (Protect + Front-to-back · Yunara, shown as
+  "Protect + front-to-back · Team Vitality") keeps its id, filings and Draft Room link but has no card, and `#<id>`
+  opens its row. A filed lineup whose plan is ambiguous goes in `review` (Shopify's Ornn + Jarvan IV, read front-to-back
+  + scaling): shown apart, never counted. Every game is listed once in the card. Carry-specific for now (Protected
+  Hypercarry and Protect + Skirmish · Aphelios stay separate); Lucian + Milio, Dive and Ryze families each need their
+  own review, and Objective Zone, Stable Top + Carry Bot and Jax Skirmish stay separate. A shared bot lane alone never
+  files a lineup (`relation` needs the same identity in the other roles); K'Sante / Jarvan IV / Cassiopeia stays under
+  Objective Zone because its own read is the same skirmish + tempo plan with four of five jobs alike.
 - Discovered comps render as Pro cards in Comp Library (`lib/comp-library.ts`); their identity, jobs, win condition,
   strengths, weak points and difficulty are the comp check's read (General Draft Logic, labelled "Comp check read" in
   Details). Observed variations of any comp sit behind "N observed variations". The page shows "Library reviewed" (last

@@ -9,7 +9,7 @@
 // Since 2026-10-17 also named variations (one observed lineup with a name, alan's note and the comp check's read, plus
 // lineups that play the same way) and families (distinct comps with one strategic thread, linked from each card).
 import { newestGamesFirst, recordStamp } from "./chronology";
-import { IDENTITY_LABEL, lineupKey, refKey, shellPicks, type LineupRef, type Picks, type ReadResult, type Weak } from "./comp-discovery";
+import { IDENTITY_LABEL, lineupKey, refKey, shellPicks, type LineupJobs, type LineupRef, type Picks, type ReadResult, type Weak } from "./comp-discovery";
 import { comparePatch } from "./patch";
 import { gameSourceId } from "./pro-games";
 import { ROLES, type CompReview, type CompShell, type DiscoveredComp, type DiscoveredComps, type ProGame, type Role } from "./schema";
@@ -38,8 +38,41 @@ export interface LibraryExtra {
   variantOf?: { parent: string; name: string }; // shown inside the parent's card, never as its own card
   variants?: { id: string; name: string }[];    // a parent's named variants, in review order
   family?: CompFamily;
+  archetype?: Archetype;                          // on the core comp: its card is the parent
+  inArchetype?: { parent: string; id: string };   // a member comp: shown as a row in the parent's card, never as its own card
 }
-const NO_REVIEW: CompReview = { proSwaps: [], supporting: [], historical: [], variants: [], heldChampions: [], approvedComps: [], pendingComps: [], namedVariations: [], held: [], families: [] };
+/** The four jobs the Protect plan typically needs, as each archetype row keeps, replaces, shares or gives them up. */
+export const ARCHETYPE_JOBS = ["carry", "peel", "front", "start"] as const;
+export type ArchetypeJob = (typeof ARCHETYPE_JOBS)[number];
+export type JobState = "keeps" | "replaces" | "shares" | "gives up";
+export interface JobRead { job: ArchetypeJob; state: JobState; champions: string[] }
+export interface ArchetypeRow {
+  id: string;                 // the comp id for the core and a member comp, "<game>-<side>" for a named variation
+  kind: "core" | "named" | "comp";
+  name: string; note: string; via: string[]; picks: Picks;
+  games: ObservedGame[];      // every game with this exact lineup, newest first, each listed once in the card
+  jobs?: JobRead[];           // from the comp check; left out when a pick has no kit
+  read?: LineupRead; alike: ObservedLineup[];
+  observed: ObservedLineup[]; // a member comp's own observed variations and named lineups
+  why?: string;               // a review row: why its plan is ambiguous
+}
+export interface Archetype {
+  id: string; name: string; carry: string; winCondition: string; plan: string;
+  core: ArchetypeRow; members: ArchetypeRow[]; review: ArchetypeRow[];
+}
+/** Each job of a lineup against the archetype's typical plan: Yunara the main damage, two peel or disengage sources,
+ *  someone in front, and waiting for the enemy to come in (no on-demand start). */
+export function jobReads(j: LineupJobs, carry: string): JobRead[] {
+  return [
+    j.main === carry ? { job: "carry", state: "keeps", champions: [carry] } : { job: "carry", state: "shares", champions: [carry, j.main] },
+    { job: "peel", state: j.peel.length >= 2 ? "keeps" : "gives up", champions: j.peel },
+    { job: "front", state: j.front.length ? "keeps" : "gives up", champions: j.front },
+    { job: "start", state: j.starts.length ? "replaces" : "keeps", champions: j.starts },
+  ];
+}
+/** Observed variations a card lists behind its toggle: an archetype's named rows are already shown in the card. */
+export const plainVariations = (x: LibraryExtra) => x.archetype ? x.variations.filter((v) => !v.named) : x.variations;
+const NO_REVIEW: CompReview = { proSwaps: [], supporting: [], historical: [], variants: [], heldChampions: [], approvedComps: [], pendingComps: [], namedVariations: [], held: [], families: [], archetypes: [] };
 const readView = (r: ReadResult): LineupRead | undefined => r.ok ? {
   identity: [r.read.primary, r.read.secondary].filter((x): x is NonNullable<typeof x> => !!x).map((i) => IDENTITY_LABEL[i]).join(" + "),
   winCondition: r.read.winCondition, timing: r.read.timing, strengths: r.read.strengths, weaknesses: r.read.weaknesses,
@@ -66,8 +99,9 @@ export function discoveredShell(c: DiscoveredComp, games: Map<number, ProGame>):
 
 /** `records`: every recorded game the review may cite (the tracked games plus the LCK archive records); defaults to `proGames`. */
 /** `readOf`: the comp check's read of a lineup, shown with a named variation (left out when not given). */
+/** `jobsOf`: who does each archetype job in a lineup (left out: archetype rows carry no job read). */
 export function buildLibrary(shells: CompShell[], file: DiscoveredComps, proGames: ProGame[], review: CompReview = NO_REVIEW, records: ProGame[] = proGames,
-  readOf?: (p: Picks) => ReadResult) {
+  readOf?: (p: Picks) => ReadResult, jobsOf?: (p: Picks) => LineupJobs | null) {
   const games = new Map([...records, ...proGames].map((g) => [g.id, g]));
   const view = (refs: LineupRef[]) => newestGamesFirst(refs.flatMap((r) => { const g = games.get(r.game); return g ? [{ g, v: gameView(g, r.side) }] : []; }),
     (x) => recordStamp(x.g)).map((x) => x.v);
@@ -161,6 +195,51 @@ export function buildLibrary(shells: CompShell[], file: DiscoveredComps, proGame
     extras[s.id] = { ...(d ? { discovered: read } : {}), games: replays, variations, ...(hasSwaps ? { proSwaps } : {}), ...(hasHist ? { historical } : {}),
       ...(parent ? { variantOf: { parent: parent.parent, name: parent.name } } : {}), ...(children.length ? { variants: children } : {}),
       ...(family ? { family } : {}) };
+  }
+  // Archetypes: the core comp's card becomes the parent. Its named variations and whole member comps become rows; the
+  // stored filings are untouched (a member comp keeps its own extras, variations and Draft Room link).
+  for (const a of review.archetypes) {
+    const core = all.find((x) => x.id === a.core), ex = extras[a.core];
+    if (!core || !ex) continue;
+    const jobs = (p: Picks) => { const j = jobsOf?.(p); return j ? { jobs: jobReads(j, a.carry) } : {}; };
+    const ownGames = (id: string) => { const d = file.comps.find((c) => c.id === id); return d ? view(d.games) : extras[id]?.games ?? []; };
+    const namedRow = (ref: LineupRef): { comp: string; v: ObservedLineup } | undefined => {
+      for (const id of [a.core, ...a.members.flatMap((m) => m.comp ? [m.comp] : [])]) {
+        const v = extras[id]?.variations.find((x) => x.named && x.games.some((g) => g.game === ref.game && g.side === ref.side));
+        if (v) return { comp: id, v };
+      }
+    };
+    const fromNamed = (ref: LineupRef, via: string[], name?: string, note?: string): ArchetypeRow | undefined => {
+      const hit = namedRow(ref);
+      if (!hit) return;
+      const n = hit.v.named!;
+      return { id: refKey(ref), kind: "named", name: name ?? n.name, note: note ?? n.note, via, picks: hit.v.picks, games: hit.v.games,
+        ...jobs(hit.v.picks), ...(n.read ? { read: n.read } : {}), alike: n.alike, observed: [] };
+    };
+    const reviewed = new Set(a.review.map((r) => refKey(r.game)));
+    const members = a.members.flatMap((m): ArchetypeRow[] => {
+      if (m.game) { const row = fromNamed(m.game, m.via, m.name, m.note); return row ? [row] : []; }
+      const c = all.find((x) => x.id === m.comp), cx = extras[m.comp!];
+      if (!c || !cx) return [];
+      cx.inArchetype = { parent: a.core, id: a.id };
+      const picks = shellPicks(c), read = readOf ? readView(readOf(picks)) : undefined;
+      // A member comp's own observed lineups travel with its row; a lineup under review is listed in the review block.
+      const observed = cx.variations.filter((v) => !(v.named && v.games.some((g) => reviewed.has(refKey(g)))));
+      return [{ id: c.id, kind: "comp", name: m.name ?? c.name, note: m.note ?? c.why, via: m.via, picks, games: ownGames(c.id), ...jobs(picks),
+        ...(read ? { read } : {}), alike: [], observed }];
+    });
+    const rows = a.review.flatMap((r) => { const row = fromNamed(r.game, []); return row ? [{ ...row, why: r.why }] : []; });
+    const corePicks = shellPicks(core);
+    ex.archetype = { id: a.id, name: a.name, carry: a.carry, winCondition: a.winCondition, plan: a.plan,
+      core: { id: core.id, kind: "core", name: core.name, note: a.coreNote, via: a.coreVia, picks: corePicks, games: ownGames(core.id), ...jobs(corePicks), alike: [], observed: [] },
+      members, review: rows };
+  }
+  // A family links cards: a comp shown inside an archetype is reached through its parent's card.
+  for (const [id, x] of Object.entries(extras)) {
+    if (!x.family) continue;
+    const others = x.family.others.map((o) => { const p = extras[o.id]?.inArchetype?.parent; return p ? { id: p, name: all.find((y) => y.id === p)?.name ?? p } : o; })
+      .filter((o, i, list) => o.id !== id && o.id !== x.inArchetype?.parent && list.findIndex((y) => y.id === o.id) === i);
+    x.family = { ...x.family, others };
   }
   return { shells: all, extras, lastAddition: file.lastAddition };
 }
