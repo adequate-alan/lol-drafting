@@ -26,7 +26,8 @@ describe("static GitHub Pages export", () => {
     expect(BASE_PATH).toBe("/lol-drafting");
     expect(nextConfig.basePath).toBe(BASE_PATH);
     expect(nextConfig.trailingSlash).toBe(true);
-  });
+    // The config asks Data Dragon for its patch with a 5 s timeout of its own; the test waits past it.
+  }, 15_000);
 
   it("has no middleware, proxy, API routes or server actions", () => {
     for (const f of ["proxy.ts", "middleware.ts", "app/api", "app/login"]) expect(existsSync(join(root, f)), f).toBe(false);
