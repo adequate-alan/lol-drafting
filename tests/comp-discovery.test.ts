@@ -81,6 +81,25 @@ describe("weekly comp discovery", () => {
     expect(relation(other, ro.ok ? ro.read : null, anchor)).toBeNull();
   });
 
+  it("a shared bot lane alone never files a lineup under a comp; the plan in the other roles decides (alan, 2026-10-25)", () => {
+    const read = (p: Picks) => { const r = readLineup(p, kits, nameOf); return r.ok ? r.read : null; };
+    const picksOf = (id: string): Picks => {
+      const shell = shells.find((x) => x.id === id);
+      if (shell) return shellPicks(shell);
+      const c = stored.comps.find((x) => x.id === id)!;
+      return Object.fromEntries(ROLES.map((r) => [r, c.slots[r].champion])) as Picks;
+    };
+    const at = (id: string) => ({ id, picks: picksOf(id), read: read(picksOf(id)) });
+    // Pick · Protected Yunara shares Yunara + Lulu with Protect · Yunara but is a pick plan: not a variation of it.
+    const pick = picksOf("yunara-protect");
+    expect(relation(pick, read(pick), at("pro-83521-blue"))).toBeNull();
+    // K'Sante / Jarvan IV / Cassiopeia shares only Lucian + Milio with Objective Zone, but its own read is the same
+    // skirmish + tempo plan with four of five roles doing the same job: it stays filed there.
+    const ksante: Picks = { TOP: "ksante", JUNGLE: "jarvan-iv", MID: "cassiopeia", BOT: "lucian", SUPPORT: "milio" };
+    expect(relation(ksante, read(ksante), at("objective-zone"))).toBe("variation");
+    expect(stored.variations.some((v) => v.of === "objective-zone" && lineupKey(v.picks) === lineupKey(ksante))).toBe(true);
+  });
+
   it("adds a new comp on repeated independent games, keeps one-off games of a known plan for review", () => {
     const clean: Picks = { TOP: "ornn", JUNGLE: "sejuani", MID: "orianna", BOT: "jinx", SUPPORT: "lulu" };
     const read = readLineup(clean, kits, nameOf);

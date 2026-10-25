@@ -167,10 +167,29 @@ export function readLineup(picks: Picks, kits: ChampionKit[], nameOf: (id: strin
   };
 }
 
+/** Who does each archetype job in a lineup (General Draft Logic, champion ids in role order): the main damage, the peel
+ *  or disengage, the frontline and the on-demand fight starts. Null when a pick has no kit. */
+export interface LineupJobs { main: string; peel: string[]; front: string[]; starts: string[] }
+export function lineupJobs(picks: Picks, kits: ChampionKit[]): LineupJobs | null {
+  const have = new Set(kits.map((k) => k.id));
+  if (ROLES.some((r) => !have.has(picks[r]))) return null;
+  const f = analyze(picks, kits).facts;
+  const ids = (xs: { c: { id: string } }[]) => xs.map((x) => x.c.id);
+  return {
+    main: f.main?.c.id ?? picks.BOT,
+    peel: ids(slotsOf(picks, kits).filter((s) => s.c.attrs.peel >= 2 || s.c.kit.disengage >= 2)),
+    front: ids(f.frontliners), starts: ids(f.primary),
+  };
+}
+
 /** The comp check's read of any lineup, from the roster's kits (Comp Library shows it beside a named variation). */
 export function lineupReader(champions: Champion[]) {
   const kits = convertKits(champions), names = new Map(champions.map((c) => [c.id, c.name]));
   return (p: Picks) => readLineup(p, kits, (id) => names.get(id) ?? id);
+}
+export function lineupJobsReader(champions: Champion[]) {
+  const kits = convertKits(champions);
+  return (p: Picks) => lineupJobs(p, kits);
 }
 
 // ---------- grouping ----------

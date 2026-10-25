@@ -1906,6 +1906,36 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .shell-family a { color: var(--pro); }
 .shell-read { display: grid; gap: 3px; font-size: var(--fs-xs); line-height: 1.45; color: var(--text-muted); }
 .shell-read p { margin: 0; }
+/* Archetype (parent card): full row; the core board and its read on the left, the named variations beside it. Each
+   row: name, sample and how it enables the carry; the four typical jobs (a job it gives up in caution amber, a job it
+   replaces or shares named in words); the tradeoff; lineup and games on demand. A row under review sits apart. */
+.shell.archetype { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-content: start; }
+.shell.archetype > :not(.arch-vars) { grid-column: 1; }
+.shell.archetype > .arch-vars { grid-column: 2; grid-row: 1 / span 5; border-left: 1px solid var(--border); }
+@media (max-width: 960px) {
+  .shell.archetype { display: flex; }
+  .shell.archetype > .arch-vars { border-left: 0; border-top: 1px solid var(--border); }
+}
+.arch-vars { display: grid; align-content: start; gap: var(--s3); padding: var(--s5) var(--pad-card) var(--s4); }
+.arch-sub { margin: 0; font-size: var(--fs-sm); font-weight: var(--w-strong); }
+.arch-list { display: grid; gap: var(--s4); margin: 0 0 var(--s2); padding: 0; list-style: none; font-size: var(--fs-xs); }
+.arch-item { display: grid; gap: var(--s1); justify-items: start; scroll-margin-top: 16px; }
+.arch-item + .arch-item { padding-top: var(--s4); border-top: 1px dashed var(--border); }
+.arch-item:target { box-shadow: 0 0 0 1px var(--accent); border-radius: var(--r-sm); }
+.arch-item.review .arch-why { color: var(--text); }
+.arch-core { display: grid; gap: var(--s1); padding-top: var(--s2); font-size: var(--fs-xs); }
+.arch-row-head { margin: 0; line-height: 1.4; }
+.arch-via { color: var(--text-muted); }
+.arch-note, .arch-why { margin: 0; line-height: 1.45; color: var(--text-muted); text-wrap: pretty; }
+.arch-jobs { display: flex; flex-wrap: wrap; gap: 2px var(--s4); margin: 0; }
+.aj { display: inline-flex; gap: var(--s2); }
+.aj dt { color: var(--text-faint); }
+.aj dd { margin: 0; color: var(--text); }
+.aj.gives-up dd { color: var(--caution); }
+.aj-state { color: var(--text-muted); }
+.aj.gives-up .aj-state { color: var(--caution); }
+.arch-detail { display: grid; gap: 3px; width: 100%; padding-top: var(--s1); }
+.arch-detail p { margin: 0; line-height: 1.45; }
 /* Lineup: five champions across, role above, name and job below; highlights only change colors and rings */
 .lineup { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 0 var(--s3) var(--s3); }
 .lu-slot { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; padding: var(--s3) var(--s2) var(--s2); border-radius: var(--r); text-align: center; transition: background var(--t-fast), opacity var(--t-fast); }

@@ -13,7 +13,11 @@
 // swaps, win condition, sources and evidence; links to the variant's id open the parent on that variant.
 // Named variations (alan, 2026-10-17) lead the observed list: one lineup with its name, alan's approved note, the comp
 // check's read and the lineups that play the same way. A family line names the comp's strategic family and links the
-// other comps in it; each keeps its own card.
+// other comps in it; each keeps its own card. An archetype (alan, 2026-10-25, Protect · Yunara pilot) turns its core
+// comp's card into the parent: the archetype's win condition and plan lead the foot, the core lineup stays the board,
+// and its named variations (named lineups and whole member comps, which have no card of their own) are rows beside it,
+// each with its sample, how it enables the carry, which typical jobs it keeps, replaces, shares or gives up (the comp
+// check), its tradeoff and, expanded, its lineup and games. A filed lineup under review is shown apart and not counted.
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -24,7 +28,8 @@ import { useLeave } from "@/components/useLeave";
 import { CompFreshness } from "@/components/CompFreshness";
 import { ChampIcon, PageHeader, SourceBadge } from "@/components/ui";
 import { jobLabel, WHY_LINE } from "@/lib/comp-copy";
-import { PRO_SWAP_SAMPLE, type LibraryExtra, type NamedVariation, type ObservedGame, type ObservedLineup, type ProSwap } from "@/lib/comp-library";
+import { plainVariations, PRO_SWAP_SAMPLE, type Archetype, type ArchetypeRow, type JobRead, type LibraryExtra, type NamedVariation, type ObservedGame,
+  type ObservedLineup, type ProSwap } from "@/lib/comp-library";
 import { draftHref, shellDraft, variationDiff } from "@/lib/comp-preview";
 import type { DrawerData } from "@/lib/data";
 import { shortDate } from "@/lib/evidence";
@@ -66,6 +71,7 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
   const [shownSources, setShownSources] = useState<Record<string, boolean>>({});
   const [shownVariations, setShownVariations] = useState<Record<string, boolean>>({});
   const [variantShown, setVariantShown] = useState<Record<string, string | undefined>>({});
+  const [archOpen, setArchOpen] = useState<Record<string, boolean>>({});
   const opener = useRef<HTMLElement | null>(null);
   const openShell = open && allShells.find((s) => s.id === open.shell);
   const swapsOf = (id: string) => previews[id] ?? {};
@@ -114,9 +120,12 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
     // A named variant lives inside its parent's card: open the parent on it.
     const parent = extras[id]?.variantOf?.parent;
     if (parent) { setVariantShown((v) => ({ ...v, [parent]: id })); id = parent; }
+    // A comp inside an archetype is a row of its parent's card, which carries the comp's id: open the row there.
+    const inArch = extras[id]?.inArchetype;
+    if (inArch) setArchOpen((o) => ({ ...o, [id]: true }));
     const el = document.getElementById(id);
     if (el) el.scrollIntoView();
-    else if (!rawKind && allShells.some((s) => s.id === id)) window.location.replace(`${window.location.pathname}?kind=all#${id}`);
+    else if (!rawKind && allShells.some((s) => s.id === (inArch?.parent ?? id))) window.location.replace(`${window.location.pathname}?kind=all#${id}`);
   }, [rawKind, allShells, extras]);
   // An open swap list closes on Escape or a press anywhere outside its slot.
   useEffect(() => {
@@ -127,7 +136,7 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
     document.addEventListener("pointerdown", onDown);
     return () => { document.removeEventListener("keydown", onKey); document.removeEventListener("pointerdown", onDown); };
   }, [menu]);
-  const cards = allShells.filter((s) => !extras[s.id]?.variantOf);
+  const cards = allShells.filter((s) => !extras[s.id]?.variantOf && !extras[s.id]?.inArchetype);
   const shells = [...cards]
     .filter((s) => !kind || s.kind === kind)
     .filter((s) => !level || LEVEL[s.difficulty] === level)
@@ -164,13 +173,14 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
           const whyLine = WHY_LINE[s.id] ?? s.why;
           const x = extras[s.id];
           const read = x?.discovered;
-          const hasDetails = srcs.length > 0 || whyLine !== s.why || !!read;
-          const nVar = x?.variations.length ?? 0, nGames = x?.games.length ?? 0, nPro = proSwapsOf(x).length;
+          const hasDetails = srcs.length > 0 || whyLine !== s.why || !!read || !!x?.archetype;
+          const arch = x?.archetype;
+          const nVar = x ? plainVariations(x).length : 0, nGames = x?.games.length ?? 0, nPro = proSwapsOf(x).length;
           // Historical slots grouped by patch: "Zeri + Yuumi last seen 26.16".
           const hist = Object.entries(x?.historical ?? {}).reduce<Record<string, Role[]>>((m, [r, p]) => ({ ...m, [p]: [...(m[p] ?? []), r as Role] }), {});
           const showVar = !!shownVariations[s.id];
           return (
-            <article key={card.id} id={card.id} className={`panel shell ${s.kind} ${swapped.length ? "previewing" : ""}`}>
+            <article key={card.id} id={card.id} className={`panel shell ${s.kind}${arch ? " archetype" : ""} ${swapped.length ? "previewing" : ""}`}>
               <header className="shell-head">
                 <div className="row between">
                   <h2>{card.name}</h2>
@@ -181,6 +191,7 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
                 </div>
                 <span className="shell-tags xs muted">
                   {s.kind === "observed" && <span className="shell-by">{(read || s.proDraftId?.startsWith("golgg-")) && d ? `${d.team} vs ${d.opponent} · ${d.patch ? patchLabel(d.patch) : ""}` : `${s.observedBy}${d ? ` · ${d.seriesGame} vs ${d.opponent}` : ""}`}</span>}
+                  {arch && <span className="shell-tag">Archetype · {plural(arch.members.length, "named variation")}</span>}
                   {s.identities.map((i) => <span key={i} className="shell-tag">{tag(i)}</span>)}
                   {Object.entries(hist).map(([p, roles]) => (
                     <span key={p} className="shell-tag shell-hist"
@@ -211,8 +222,9 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
                 onOpen={(role, el) => select({ shell: s.id, role }, el)} onHover={(role, el, id) => onHover(s, role, el, id)} />
               {swapped.length > 0 && <Preview shell={s} swaps={swaps} names={names} data={data} pro={x?.proSwaps ?? {}} onReset={() => setPreviews((p) => ({ ...p, [s.id]: {} }))} />}
               <div className="shell-foot">
-                <p className="wc">{s.winCondition}</p>
-                <p className="why">{whyLine}</p>
+                <p className="wc">{arch ? arch.winCondition : s.winCondition}</p>
+                <p className="why">{arch ? arch.plan : whyLine}</p>
+                {arch && <CoreRead arch={arch} names={names} />}
                 <div className="row between shell-actions">
                   <span className="row shell-toggles">
                     {hasDetails && (
@@ -236,12 +248,14 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
                 {showVar && x && <Variations shell={s} extra={x} names={names} />}
                 {showSrc && (
                   <div className="shell-details">
+                    {arch && <p className="shell-why-full"><span className="faint">Core lineup</span> {s.winCondition}</p>}
                     {whyLine !== s.why && <p className="shell-why-full"><span className="faint">Why it works</span> {s.why}</p>}
                     {read && <ReadDetails read={read} />}
                     {srcs.length > 0 && <SourceList list={srcs} />}
                   </div>
                 )}
               </div>
+              {arch && <ArchetypeRows arch={arch} names={names} open={archOpen} onToggle={(id) => setArchOpen((o) => ({ ...o, [id]: !o[id] }))} />}
             </article>
           );
         })}
@@ -430,7 +444,7 @@ function Variations({ shell: s, extra, names }: { shell: CompShell; extra: Libra
           <span className="var-games">{extra.games.map((g) => <GameLink key={`${g.game}-${g.side}`} g={g} />)}</span>
         </li>
       )}
-      {extra.variations.map((v) => {
+      {plainVariations(extra).map((v) => {
         const changed = ROLES.filter((r) => v.picks[r] !== s.slots[r].champion);
         if (v.named) return <NamedRow key={ROLES.map((r) => v.picks[r]).join("|")} shell={s} v={v} n={v.named} names={names} />;
         return (
@@ -474,6 +488,112 @@ function NamedRow({ shell: s, v, n, names }: { shell: CompShell; v: ObservedLine
           </p>
         ))}
       </div>
+    </li>
+  );
+}
+
+const JOB_LABEL: Record<JobRead["job"], string> = { carry: "Damage", peel: "Peel", front: "Front", start: "Fights" };
+const JOB_HINT: Record<JobRead["job"], string> = {
+  carry: "Who deals the main damage, from the comp check. The plan usually runs through the carry alone.",
+  peel: "Peel and disengage around the carry. The plan usually has two sources.",
+  front: "Someone in front of the carry. The plan usually has at least one frontliner.",
+  start: "How fights start. The plan usually waits for the enemy to come in, with no on-demand engage.",
+};
+const list = (ids: string[], names: Record<string, string>) => ids.map((c) => names[c] ?? c).join(", ");
+function jobText(j: JobRead, names: Record<string, string>) {
+  if (j.job === "carry") return j.champions.map((c) => names[c] ?? c).join(" + ");
+  if (j.job === "start") return j.champions.length ? `${list(j.champions, names)} start${j.champions.length > 1 ? "" : "s"} fights` : "waits for the enemy";
+  if (j.job === "front") return j.champions.length ? list(j.champions, names) : "no frontliner";
+  return j.champions.length ? (j.state === "keeps" ? list(j.champions, names) : `only ${list(j.champions, names)}`) : "none";
+}
+/** The four typical jobs as one row reads them: what does each, and whether it keeps, replaces, shares or gives it up. */
+function JobLine({ jobs, names }: { jobs: JobRead[]; names: Record<string, string> }) {
+  return (
+    <dl className="arch-jobs">
+      {jobs.map((j) => (
+        <div key={j.job} className={`aj ${j.state.replace(" ", "-")}`}>
+          <dt title={JOB_HINT[j.job]}>{JOB_LABEL[j.job]}</dt>
+          <dd>{jobText(j, names)}{j.state !== "keeps" && <span className="aj-state"> · {j.state}</span>}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+const via = (r: ArchetypeRow) => r.via.length ? <span className="arch-via">· through {r.via.join(" + ")}</span> : null;
+const sample = (r: ArchetypeRow) => `${plural(r.games.length, "game")}${r.alike.length ? ` · ${plural(r.alike.reduce((n, a) => n + a.games.length, 0), "more")} playing the same way` : ""}`;
+
+function CoreRead({ arch, names }: { arch: Archetype; names: Record<string, string> }) {
+  const c = arch.core;
+  return (
+    <div className="arch-core">
+      <p className="arch-row-head"><b>Core lineup</b> <span className="faint">· {sample(c)}</span> {via(c)}</p>
+      {c.jobs && <JobLine jobs={c.jobs} names={names} />}
+      <p className="arch-note">{c.note}</p>
+    </div>
+  );
+}
+
+/** The archetype's named variations, then any filed lineup under review. Every game is listed once, under its own row. */
+function ArchetypeRows({ arch, names, open, onToggle }: { arch: Archetype; names: Record<string, string>; open: Record<string, boolean>; onToggle: (id: string) => void }) {
+  return (
+    <section className="arch-vars" aria-label={`${arch.name} named variations`}>
+      <h3 className="arch-sub">{plural(arch.members.length, "named variation")}</h3>
+      <ul className="arch-list">
+        {arch.members.map((r) => <ArchetypeItem key={r.id} row={r} core={arch.core} names={names} open={!!open[r.id]} onToggle={() => onToggle(r.id)} />)}
+      </ul>
+      {arch.review.length > 0 && (
+        <>
+          <h3 className="arch-sub">Needs review <span className="faint">· {arch.review.length}, not counted as a variation</span></h3>
+          <ul className="arch-list">
+            {arch.review.map((r) => <ArchetypeItem key={r.id} row={r} core={arch.core} names={names} open={!!open[r.id]} onToggle={() => onToggle(r.id)} />)}
+          </ul>
+        </>
+      )}
+    </section>
+  );
+}
+
+function ArchetypeItem({ row: r, core, names, open, onToggle }: { row: ArchetypeRow; core: ArchetypeRow; names: Record<string, string>; open: boolean; onToggle: () => void }) {
+  const changed = ROLES.filter((role) => r.picks[role] !== core.picks[role]);
+  const detail = `arch-detail-${r.id}`;
+  return (
+    <li id={r.kind === "comp" ? r.id : undefined} className={`arch-item${r.why ? " review" : ""}`}>
+      <p className="arch-row-head"><b>{r.name}</b> <span className="faint">· {sample(r)}</span> {via(r)}</p>
+      {r.jobs && <JobLine jobs={r.jobs} names={names} />}
+      {r.why && <p className="arch-why">{r.why}</p>}
+      <p className="arch-note">{r.note}</p>
+      <button type="button" className="src-toggle" aria-expanded={open} aria-controls={detail} onClick={onToggle}>
+        Lineup and games <span aria-hidden="true">{open ? "▴" : "▾"}</span>
+      </button>
+      {open && (
+        <div id={detail} className="arch-detail">
+          <span className="var-what">
+            <span className="var-lineup" aria-label={ROLES.map((role) => names[r.picks[role]]).join(", ")}>
+              {ROLES.map((role) => <span key={role} className={changed.includes(role) ? "var-pick diff" : "var-pick"}><ChampIcon id={r.picks[role]} name={names[r.picks[role]]} role={role} size="xs" /></span>)}
+            </span>
+            <span className="faint">{changed.length ? changed.map((role) => `${names[r.picks[role]]} for ${names[core.picks[role]]}`).join(", ") : "Core lineup"}</span>
+          </span>
+          <span className="var-games">
+            {r.games.map((g) => <GameLink key={`${g.game}-${g.side}`} g={g} />)}
+            <Link className="var-draft" href={r.kind === "comp" ? `/?shell=${r.id}` : draftHref(r.picks)}>Draft Room →</Link>
+          </span>
+          {r.read && (
+            <p className="faint">Comp check read: {r.read.identity}. {r.read.timing}{r.read.weaknesses.length ? ` Weak points: ${r.read.weaknesses.map((w) => `${w.label} (${w.severity})`).join(", ")}.` : " No weak points."}</p>
+          )}
+          {r.alike.map((a) => (
+            <p key={ROLES.map((role) => a.picks[role]).join("|")} className="var-alike">
+              <span className="faint">Plays the same way:</span> {ROLES.map((role) => names[a.picks[role]]).join(", ")}{" "}
+              {a.games.map((x) => <GameLink key={`${x.game}-${x.side}`} g={x} />)}
+            </p>
+          ))}
+          {r.observed.map((v) => (
+            <p key={ROLES.map((role) => v.picks[role]).join("|")} className="var-alike">
+              <span className="faint">{v.named ? `${v.named.name}:` : "Observed with it:"}</span> {ROLES.map((role) => names[v.picks[role]]).join(", ")}{" "}
+              {v.games.map((x) => <GameLink key={`${x.game}-${x.side}`} g={x} />)}
+            </p>
+          ))}
+        </div>
+      )}
     </li>
   );
 }

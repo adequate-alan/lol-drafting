@@ -59,5 +59,21 @@
   "families": [
     { "id": "yunara-protection", "name": "Yunara protection", "comps": ["yunara-protect", "pro-83450-red", "pro-83521-blue"], "approvedOn": "2026-10-17",
       "note": "Comps that protect Yunara with Lulu, each with its own plan: a pick comp (Pantheon and Syndra), protect and front-to-back, and protect." }
+  ],
+  "archetypes": [
+    { "id": "protect-yunara", "name": "Protect · Yunara", "core": "pro-83521-blue", "carry": "yunara", "approvedOn": "2026-10-25",
+      "winCondition": "Enable Yunara to carry teamfights.",
+      "plan": "Every lineup here is drafted so Yunara can carry the fights. Most keep her alive with peel and someone in front and let the enemy come in; each variation shows which of those jobs it keeps, replaces or gives up.",
+      "coreVia": ["peel", "zone control"],
+      "coreNote": "Orianna and Lulu peel and Orianna zones the front of the fight; Olaf is the only frontliner and Xin Zhao catches. No on-demand engage, so the team waits for the enemy to come in.",
+      "members": [
+        { "game": { "game": 83453, "side": "blue" }, "via": ["peel", "zone control"] },
+        { "game": { "game": 83618, "side": "red" }, "via": ["peel"] },
+        { "game": { "game": 83636, "side": "blue" }, "via": ["proactive engage", "frontline"] },
+        { "comp": "pro-83450-red", "name": "Protect + front-to-back · Team Vitality", "via": ["peel", "zone control", "frontline"],
+          "note": "K'Sante holds the front while Anivia's wall and Lulu peel, the closest variation to the core plan. Anivia is a second ranged threat: the comp check names her as the carry to keep alive, though Yunara is still the main damage. Naafiri adds a backline dive. No on-demand engage, so the team waits for the enemy to come in." }
+      ],
+      "review": [{ "game": { "game": 83468, "side": "red" },
+        "why": "Filed with Protect + front-to-back · Yunara. The comp check reads it as front-to-back + scaling, not protect: Ornn and Jarvan IV start fights in front of Yunara instead of waiting, with less peel around her. It may be a proactive-engage way to run this plan or a separate front-to-back archetype, so it is not counted as a variation until that is decided." }] }
   ]
 }
