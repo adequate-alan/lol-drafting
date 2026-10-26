@@ -1,22 +1,20 @@
 # Comp Library review · 2026-10-26
 
-Read 230 lineups from 115 recorded games (latest 2026-10-25). Demacia Cup: 70/71 games recorded, complete; Worlds 2026 Main Event: 23/23 games recorded, ongoing; Worlds 2026 Play-In: 22/22 games recorded, complete. LCK 2026 playoff drafts are used for comparison only.
+Read 232 lineups from 116 recorded games (latest 2026-10-26). Demacia Cup: 70/71 games recorded, complete; Worlds 2026 Main Event: 24/24 games recorded, ongoing; Worlds 2026 Play-In: 22/22 games recorded, complete. LCK 2026 playoff drafts are used for comparison only.
 
-## New compositions (1)
-
-- **Front-to-back + Zone Control · Viktor** · Top K'Sante · Jng Jarvan IV · Mid Viktor · Bot Kalista · Sup Renata Glasc · Easy
-  - K'Sante and Renata Glasc protect Viktor; K'Sante and Jarvan IV in front, Viktor and Kalista dealing damage from range. Play around Viktor: K'Sante and Renata Glasc stay with Viktor and let the enemy dive into you.
-  - Strengths: Fight start: Jarvan IV; Frontline: K'Sante and Jarvan IV; Peel and disengage: K'Sante and Renata Glasc.
-  - [G2 Esports vs Dplus KIA G1](https://gol.gg/game/stats/83641/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-23, loss)
-  - [Dplus KIA vs T1 G1](https://gol.gg/game/stats/83652/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-24, win)
-
-## New variations of existing compositions (0)
+## New compositions (0)
 
 None this week.
 
-## Existing compositions seeing new professional play (0)
+## New variations of existing compositions (1)
 
-None this week.
+- **Dive · Ryze**: Qiyana for Naafiri, Alistar for Nautilus
+  - [CTBC Flying Oyster vs T1 G1](https://gol.gg/game/stats/83662/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-26, loss)
+
+## Existing compositions seeing new professional play (1)
+
+- **Dive · Ryze**: 1 new game
+  - [CTBC Flying Oyster vs T1 G1](https://gol.gg/game/stats/83662/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-26, loss)
 
 ## May be outdated (7)
 
@@ -56,7 +54,7 @@ Pass every discovery check. Not in the library until alan approves (comp-review.
   - [Bilibili Gaming vs Team Liquid G1](https://gol.gg/game/stats/83653/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-24, win)
   - [Top Esports vs G2 Esports G1](https://gol.gg/game/stats/83655/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-25, win)
 
-## Proposed comps for review (115)
+## Proposed comps for review (116)
 
 Not added automatically: each needs more games or a person's call. One line per lineup group, newest games marked.
 
@@ -175,6 +173,7 @@ Not added automatically: each needs more games or a person's call. One line per 
 - **New** · Protect + Split · Top Shen · Jng Vi · Mid Akali · Bot Yunara · Sup Lulu · [LYON G2 L](https://gol.gg/game/stats/83660/page-game/) · protect + split pull in different directions, so the win condition is ambiguous; 1 game from LYON with this strategy, and the library already has protect comps
 - **New** · Front-to-back + Poke / siege · Top Camille · Jng Jayce · Mid Galio · Bot Ezreal · Sup Nautilus · [Gen.G G3 W](https://gol.gg/game/stats/83661/page-game/) · 1 game from Gen.G with this strategy, and the library already has front-to-back comps
 - **New** · Front-to-back · Top K'Sante · Jng Maokai · Mid Tristana · Bot Lucian · Sup Milio · [LYON G3 L](https://gol.gg/game/stats/83661/page-game/) · major weak point (Almost all physical damage); 1 game from LYON with this strategy, and the library already has front-to-back comps
+- **New** · Dive + Skirmish · Top Ambessa · Jng Vi · Mid Galio · Bot Jhin · Sup Rakan · [T1 G1 W](https://gol.gg/game/stats/83662/page-game/) · 1 game from T1 with this strategy, and the library already has dive comps
 
 ## Awaiting review: new comps from held champions (19)
 

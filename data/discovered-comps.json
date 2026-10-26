@@ -1351,6 +1351,23 @@
       ]
     },
     {
+      "of": "pro-83526-blue",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "qiyana",
+        "MID": "ryze",
+        "BOT": "kaisa",
+        "SUPPORT": "alistar"
+      },
+      "addedOn": "2026-10-26",
+      "games": [
+        {
+          "game": 83662,
+          "side": "red"
+        }
+      ]
+    },
+    {
       "of": "pro-83529-red",
       "picks": {
         "TOP": "olaf",

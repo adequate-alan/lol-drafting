@@ -58,13 +58,13 @@
       "event": "worlds-2026",
       "golgg": "Worlds 2026 Main Event",
       "status": "ongoing",
-      "series": 20,
-      "seriesPlayed": 20,
-      "games": 23,
-      "recorded": 23,
+      "series": 24,
+      "seriesPlayed": 21,
+      "games": 24,
+      "recorded": 24,
       "matchlist": "https://gol.gg/tournament/tournament-matchlist/Worlds%202026%20Main%20Event/",
-      "lastUpdate": "2026-10-26T02:24:40.214Z",
-      "lastCheck": "2026-10-26T02:24:40.214Z"
+      "lastUpdate": "2026-10-26T18:40:38.449Z",
+      "lastCheck": "2026-10-26T18:40:38.449Z"
     }
   ],
   "games": [
@@ -5934,6 +5934,70 @@
       "firstPick": "blue",
       "url": "https://gol.gg/game/stats/83661/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83661/page-fullstats/",
+      "checkedOn": "2026-10-26"
+    },
+    {
+      "id": 83662,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83662,
+      "series": "T1 vs CFO",
+      "game": 1,
+      "stage": "ROUND3",
+      "date": "2026-10-26",
+      "patch": "16.20",
+      "blue": {
+        "team": "T1",
+        "picks": {
+          "TOP": "ambessa",
+          "JUNGLE": "vi",
+          "MID": "galio",
+          "BOT": "jhin",
+          "SUPPORT": "rakan"
+        },
+        "bans": [
+          "ksante",
+          "draven",
+          "syndra",
+          "poppy",
+          "nautilus"
+        ],
+        "pickOrder": [
+          "vi",
+          "galio",
+          "jhin",
+          "ambessa",
+          "rakan"
+        ]
+      },
+      "red": {
+        "team": "CTBC Flying Oyster",
+        "picks": {
+          "TOP": "rumble",
+          "JUNGLE": "qiyana",
+          "MID": "ryze",
+          "BOT": "kaisa",
+          "SUPPORT": "alistar"
+        },
+        "bans": [
+          "renata-glasc",
+          "nocturne",
+          "cassiopeia",
+          "anivia",
+          "ahri"
+        ],
+        "pickOrder": [
+          "rumble",
+          "qiyana",
+          "ryze",
+          "alistar",
+          "kaisa"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "blue",
+      "url": "https://gol.gg/game/stats/83662/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83662/page-fullstats/",
       "checkedOn": "2026-10-26"
     },
     {
