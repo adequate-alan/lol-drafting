@@ -1874,7 +1874,8 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .shell .wc { margin: 0; font-family: var(--font-display); font-size: var(--fs-md); font-weight: var(--w-strong); line-height: 1.35; text-wrap: pretty; }
 .shell .why { margin: 0; font-size: var(--fs-sm); line-height: 1.45; color: var(--text-muted); text-wrap: pretty; }
 .shell-actions { margin-top: auto; padding-top: var(--s4); }
-.src-toggle { padding: 0; border: 0; background: none; font: inherit; font-size: var(--fs-xs); color: var(--text-muted); cursor: pointer; }
+/* 24px tall (WCAG 2.2 target size) without padding the text: the row keeps its density, the target grows. */
+.src-toggle { display: inline-flex; align-items: center; gap: .25em; min-height: 24px; padding: 0; border: 0; background: none; font: inherit; font-size: var(--fs-xs); color: var(--text-muted); cursor: pointer; }
 .src-toggle:hover, .src-toggle[aria-expanded="true"] { color: var(--text); }
 .src-toggle:focus-visible { box-shadow: var(--focus-ring); border-radius: var(--r-sm); }
 .shell-details { display: grid; gap: var(--s3); padding-top: var(--s3); border-top: 1px dashed var(--border); }
@@ -1935,6 +1936,28 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .aj-state { color: var(--text-muted); }
 .aj.gives-up .aj-state { color: var(--caution); }
 .arch-detail { display: grid; gap: 3px; width: 100%; padding-top: var(--s1); }
+/* Comparison rows (2026-10-26): name and sample beside the five champions; champions that differ from the core in full
+   colour with a gold ring, the shared ones quieter; one line on how the row differs; everything else behind Details. */
+.arch-item { gap: 2px; }
+.arch-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s1) var(--s4); width: 100%; }
+.arch-line .arch-row-head { flex: 1 1 180px; min-width: 0; }
+.arch-lineup { display: inline-flex; gap: 3px; flex: none; }
+.arch-pick { display: inline-flex; padding: 0; border: 0; background: none; border-radius: var(--r-sm); cursor: pointer; opacity: .5; transition: opacity var(--t-fast); }
+.arch-pick .champ { --size: var(--icon-row); transition: box-shadow var(--t-fast); }
+.arch-pick.diff, .arch-lineup.core .arch-pick, .arch-pick:hover, .arch-pick:focus-visible, .arch-pick.is-open { opacity: 1; }
+.arch-pick.diff .champ { box-shadow: 0 0 0 1px var(--bg), 0 0 0 2px var(--accent); }
+.arch-pick.is-open .champ { box-shadow: 0 0 0 2px var(--accent); }
+.arch-pick:focus-visible { box-shadow: var(--focus-ring); }
+.arch-diff { margin: 0; line-height: 1.4; color: var(--text-muted); }
+.arch-diff span + span::before { content: "·"; margin: 0 var(--s2); color: var(--text-faint); }
+.arch-diff .warn { color: var(--caution); }
+.shell-evidence { display: flex; flex-wrap: wrap; gap: 0 var(--s2); margin: 0; line-height: 1.35; color: var(--text-muted); }
+.shell-evidence span + span::before { content: "·"; margin-right: var(--s2); color: var(--text-faint); }
+.shell-evidence span:first-child { color: var(--text); }
+.shell-hit { margin: 0; color: var(--accent-text); }
+.comp-filters input[type="search"] { width: 170px; height: var(--control-h-sm); }
+.comp-empty { margin: 0 0 var(--s5); }
+@media (max-width: 560px) { .comp-filters input[type="search"] { width: 100%; } }
 .arch-detail p { margin: 0; line-height: 1.45; }
 /* Lineup: five champions across, role above, name and job below; highlights only change colors and rings */
 .lineup { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 0 var(--s3) var(--s3); }
@@ -2364,6 +2387,9 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
   .select-option { min-height: 36px; }
   .pop-trigger, .src-toggle, .pn-src, .role-switch { position: relative; }
   .pop-trigger::after, .src-toggle::after, .pn-src::after, .role-switch::after { content: ""; position: absolute; inset: -8px -3px; }
+  .src-toggle { min-height: 32px; }
+  .arch-pick { position: relative; }
+  .arch-pick::after { content: ""; position: absolute; inset: -4px -1px; }
 }
 
 /* ---------- 8. Motion ---------- */

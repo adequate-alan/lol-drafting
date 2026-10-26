@@ -57,7 +57,7 @@ export const getCompReview = () => load("comp-review.json");
 // Comp Library: the hand-written shells plus the weekly discovery's Observed Pro Comps and observed variations.
 let library: Library | undefined;
 export const getLibrary = () => (library ??= buildLibrary(getCompShells(), load("discovered-comps.json"), getProGames().games,
-  getCompReview(), getBuildGameRecords(), lineupReader(getChampions()), lineupJobsReader(getChampions())));
+  getCompReview(), getBuildGameRecords(), lineupReader(getChampions()), lineupJobsReader(getChampions()), getSources()));
 export const getPool = () => load("pool.json");
 export const getMeta = () => load("meta.json");
 export const getGenG = () => load("geng.json");
