@@ -1,5 +1,5 @@
 {
-  "lastAddition": "2026-10-24",
+  "lastAddition": "2026-10-25",
   "comps": [
     {
       "id": "pro-83448-blue",
@@ -985,6 +985,23 @@
         {
           "game": 83457,
           "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "poke-catch",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "qiyana",
+        "MID": "anivia",
+        "BOT": "jhin",
+        "SUPPORT": "alistar"
+      },
+      "addedOn": "2026-10-25",
+      "games": [
+        {
+          "game": 83659,
+          "side": "red"
         }
       ]
     },
