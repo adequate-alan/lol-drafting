@@ -1045,6 +1045,23 @@
       ]
     },
     {
+      "of": "poke-catch",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "qiyana",
+        "MID": "anivia",
+        "BOT": "jhin",
+        "SUPPORT": "alistar"
+      },
+      "addedOn": "2026-10-25",
+      "games": [
+        {
+          "game": 83659,
+          "side": "red"
+        }
+      ]
+    },
+    {
       "of": "pro-83450-red",
       "picks": {
         "TOP": "ksante",

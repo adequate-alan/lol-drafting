@@ -4035,13 +4035,13 @@
       "stats": [
         {
           "champion": "vi",
-          "picks": 3,
-          "bans": 17,
+          "picks": 4,
+          "bans": 18,
           "wins": 1,
-          "winRate": 0.3333,
+          "winRate": 0.25,
           "lowSample": true,
           "rolePicks": {
-            "JUNGLE": 3
+            "JUNGLE": 4
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4050,43 +4050,13 @@
         },
         {
           "champion": "nocturne",
-          "picks": 8,
-          "bans": 11,
-          "wins": 6,
-          "winRate": 0.75,
-          "lowSample": false,
-          "rolePicks": {
-            "JUNGLE": 8
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "olaf",
-          "picks": 4,
+          "picks": 9,
           "bans": 12,
-          "wins": 1,
-          "winRate": 0.25,
-          "lowSample": true,
-          "rolePicks": {
-            "TOP": 4
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "qiyana",
-          "picks": 6,
-          "bans": 10,
-          "wins": 4,
-          "winRate": 0.6667,
+          "wins": 7,
+          "winRate": 0.7778,
           "lowSample": false,
           "rolePicks": {
-            "JUNGLE": 6
+            "JUNGLE": 9
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4096,7 +4066,7 @@
         {
           "champion": "cassiopeia",
           "picks": 3,
-          "bans": 12,
+          "bans": 15,
           "wins": 2,
           "winRate": 0.6667,
           "lowSample": true,
@@ -4110,28 +4080,13 @@
         },
         {
           "champion": "ezreal",
-          "picks": 9,
-          "bans": 6,
-          "wins": 4,
-          "winRate": 0.4444,
-          "lowSample": false,
-          "rolePicks": {
-            "BOT": 9
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "renata-glasc",
-          "picks": 8,
-          "bans": 7,
-          "wins": 4,
+          "picks": 10,
+          "bans": 8,
+          "wins": 5,
           "winRate": 0.5,
           "lowSample": false,
           "rolePicks": {
-            "SUPPORT": 8
+            "BOT": 10
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4141,7 +4096,7 @@
         {
           "champion": "syndra",
           "picks": 6,
-          "bans": 9,
+          "bans": 12,
           "wins": 4,
           "winRate": 0.6667,
           "lowSample": false,
@@ -4154,14 +4109,74 @@
           ]
         },
         {
-          "champion": "akali",
+          "champion": "olaf",
           "picks": 5,
-          "bans": 8,
-          "wins": 1,
-          "winRate": 0.2,
+          "bans": 12,
+          "wins": 2,
+          "winRate": 0.4,
           "lowSample": false,
           "rolePicks": {
-            "MID": 5
+            "TOP": 5
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "qiyana",
+          "picks": 7,
+          "bans": 10,
+          "wins": 4,
+          "winRate": 0.5714,
+          "lowSample": false,
+          "rolePicks": {
+            "JUNGLE": 7
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "renata-glasc",
+          "picks": 9,
+          "bans": 7,
+          "wins": 5,
+          "winRate": 0.5556,
+          "lowSample": false,
+          "rolePicks": {
+            "SUPPORT": 9
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "akali",
+          "picks": 6,
+          "bans": 9,
+          "wins": 1,
+          "winRate": 0.1667,
+          "lowSample": false,
+          "rolePicks": {
+            "MID": 6
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "lee-sin",
+          "picks": 9,
+          "bans": 5,
+          "wins": 4,
+          "winRate": 0.4444,
+          "lowSample": false,
+          "rolePicks": {
+            "JUNGLE": 9
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4171,7 +4186,7 @@
         {
           "champion": "orianna",
           "picks": 7,
-          "bans": 6,
+          "bans": 7,
           "wins": 4,
           "winRate": 0.5714,
           "lowSample": false,
@@ -4185,13 +4200,44 @@
         },
         {
           "champion": "rumble",
-          "picks": 6,
+          "picks": 7,
           "bans": 7,
           "wins": 2,
-          "winRate": 0.3333,
+          "winRate": 0.2857,
           "lowSample": false,
           "rolePicks": {
-            "TOP": 6
+            "TOP": 7
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "galio",
+          "picks": 3,
+          "bans": 10,
+          "wins": 2,
+          "winRate": 0.6667,
+          "lowSample": true,
+          "rolePicks": {
+            "TOP": 2,
+            "MID": 1
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "jarvan-iv",
+          "picks": 8,
+          "bans": 5,
+          "wins": 4,
+          "winRate": 0.5,
+          "lowSample": false,
+          "rolePicks": {
+            "JUNGLE": 8
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4200,13 +4246,13 @@
         },
         {
           "champion": "jhin",
-          "picks": 6,
+          "picks": 7,
           "bans": 6,
           "wins": 3,
-          "winRate": 0.5,
+          "winRate": 0.4286,
           "lowSample": false,
           "rolePicks": {
-            "BOT": 6
+            "BOT": 7
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4214,14 +4260,14 @@
           ]
         },
         {
-          "champion": "lee-sin",
+          "champion": "ksante",
           "picks": 9,
-          "bans": 3,
+          "bans": 4,
           "wins": 4,
           "winRate": 0.4444,
           "lowSample": false,
           "rolePicks": {
-            "JUNGLE": 9
+            "TOP": 9
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4244,56 +4290,57 @@
           ]
         },
         {
-          "champion": "galio",
-          "picks": 2,
-          "bans": 9,
-          "wins": 1,
-          "winRate": 0.5,
-          "lowSample": true,
-          "rolePicks": {
-            "TOP": 2
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "jarvan-iv",
-          "picks": 8,
-          "bans": 3,
-          "wins": 4,
-          "winRate": 0.5,
-          "lowSample": false,
-          "rolePicks": {
-            "JUNGLE": 8
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "ksante",
-          "picks": 8,
-          "bans": 3,
-          "wins": 4,
-          "winRate": 0.5,
-          "lowSample": false,
-          "rolePicks": {
-            "TOP": 8
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
           "champion": "nautilus",
+          "picks": 6,
+          "bans": 6,
+          "wins": 5,
+          "winRate": 0.8333,
+          "lowSample": false,
+          "rolePicks": {
+            "SUPPORT": 6
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "jayce",
           "picks": 5,
           "bans": 6,
-          "wins": 4,
-          "winRate": 0.8,
+          "wins": 2,
+          "winRate": 0.4,
+          "lowSample": false,
+          "rolePicks": {
+            "TOP": 4,
+            "JUNGLE": 1
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "kalista",
+          "picks": 9,
+          "bans": 2,
+          "wins": 5,
+          "winRate": 0.5556,
+          "lowSample": false,
+          "rolePicks": {
+            "BOT": 9
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "lulu",
+          "picks": 5,
+          "bans": 5,
+          "wins": 2,
+          "winRate": 0.4,
           "lowSample": false,
           "rolePicks": {
             "SUPPORT": 5
@@ -4304,59 +4351,59 @@
           ]
         },
         {
-          "champion": "jayce",
+          "champion": "alistar",
+          "picks": 8,
+          "bans": 0,
+          "wins": 3,
+          "winRate": 0.375,
+          "lowSample": false,
+          "rolePicks": {
+            "SUPPORT": 8
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "seraphine",
+          "picks": 3,
+          "bans": 4,
+          "wins": 2,
+          "winRate": 0.6667,
+          "lowSample": true,
+          "rolePicks": {
+            "SUPPORT": 3
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "ambessa",
+          "picks": 6,
+          "bans": 0,
+          "wins": 4,
+          "winRate": 0.6667,
+          "lowSample": false,
+          "rolePicks": {
+            "TOP": 6
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "anivia",
           "picks": 4,
-          "bans": 6,
+          "bans": 2,
           "wins": 1,
           "winRate": 0.25,
           "lowSample": true,
           "rolePicks": {
-            "TOP": 4
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "kalista",
-          "picks": 8,
-          "bans": 2,
-          "wins": 4,
-          "winRate": 0.5,
-          "lowSample": false,
-          "rolePicks": {
-            "BOT": 8
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "lulu",
-          "picks": 4,
-          "bans": 5,
-          "wins": 2,
-          "winRate": 0.5,
-          "lowSample": true,
-          "rolePicks": {
-            "SUPPORT": 4
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "alistar",
-          "picks": 7,
-          "bans": 0,
-          "wins": 3,
-          "winRate": 0.4286,
-          "lowSample": false,
-          "rolePicks": {
-            "SUPPORT": 7
+            "MID": 4
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4379,14 +4426,14 @@
           ]
         },
         {
-          "champion": "seraphine",
+          "champion": "lucian",
           "picks": 2,
           "bans": 4,
-          "wins": 1,
-          "winRate": 0.5,
+          "wins": 0,
+          "winRate": 0,
           "lowSample": true,
           "rolePicks": {
-            "SUPPORT": 2
+            "BOT": 2
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4394,29 +4441,14 @@
           ]
         },
         {
-          "champion": "ambessa",
-          "picks": 5,
-          "bans": 0,
-          "wins": 3,
-          "winRate": 0.6,
-          "lowSample": false,
-          "rolePicks": {
-            "TOP": 5
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "anivia",
+          "champion": "ashe",
           "picks": 3,
           "bans": 2,
-          "wins": 1,
-          "winRate": 0.3333,
+          "wins": 2,
+          "winRate": 0.6667,
           "lowSample": true,
           "rolePicks": {
-            "MID": 3
+            "BOT": 3
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4439,39 +4471,9 @@
           ]
         },
         {
-          "champion": "lucian",
-          "picks": 1,
-          "bans": 4,
-          "wins": 0,
-          "winRate": 0,
-          "lowSample": true,
-          "rolePicks": {
-            "BOT": 1
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "ashe",
-          "picks": 2,
-          "bans": 2,
-          "wins": 1,
-          "winRate": 0.5,
-          "lowSample": true,
-          "rolePicks": {
-            "BOT": 2
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
           "champion": "pantheon",
           "picks": 3,
-          "bans": 1,
+          "bans": 2,
           "wins": 0,
           "winRate": 0,
           "lowSample": true,
@@ -4486,12 +4488,58 @@
         {
           "champion": "renekton",
           "picks": 1,
-          "bans": 3,
+          "bans": 4,
           "wins": 1,
           "winRate": 1,
           "lowSample": true,
           "rolePicks": {
             "TOP": 1
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "shen",
+          "picks": 4,
+          "bans": 0,
+          "wins": 1,
+          "winRate": 0.25,
+          "lowSample": true,
+          "rolePicks": {
+            "TOP": 3,
+            "SUPPORT": 1
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "wukong",
+          "picks": 2,
+          "bans": 2,
+          "wins": 1,
+          "winRate": 0.5,
+          "lowSample": true,
+          "rolePicks": {
+            "JUNGLE": 2
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "yunara",
+          "picks": 4,
+          "bans": 0,
+          "wins": 2,
+          "winRate": 0.5,
+          "lowSample": true,
+          "rolePicks": {
+            "BOT": 4
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4529,6 +4577,21 @@
           ]
         },
         {
+          "champion": "gnar",
+          "picks": 1,
+          "bans": 2,
+          "wins": 0,
+          "winRate": 0,
+          "lowSample": true,
+          "rolePicks": {
+            "TOP": 1
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
           "champion": "kaisa",
           "picks": 2,
           "bans": 1,
@@ -4537,6 +4600,21 @@
           "lowSample": true,
           "rolePicks": {
             "BOT": 2
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "leblanc",
+          "picks": 1,
+          "bans": 2,
+          "wins": 1,
+          "winRate": 1,
+          "lowSample": true,
+          "rolePicks": {
+            "MID": 1
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4574,15 +4652,26 @@
           ]
         },
         {
-          "champion": "shen",
+          "champion": "skarner",
+          "picks": 0,
+          "bans": 3,
+          "winRate": null,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "tristana",
           "picks": 3,
           "bans": 0,
-          "wins": 1,
-          "winRate": 0.3333,
+          "wins": 0,
+          "winRate": 0,
           "lowSample": true,
           "rolePicks": {
-            "TOP": 2,
-            "SUPPORT": 1
+            "MID": 1,
+            "BOT": 2
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4590,11 +4679,16 @@
           ]
         },
         {
-          "champion": "skarner",
-          "picks": 0,
-          "bans": 3,
-          "winRate": null,
+          "champion": "trundle",
+          "picks": 2,
+          "bans": 1,
+          "wins": 1,
+          "winRate": 0.5,
           "lowSample": true,
+          "rolePicks": {
+            "TOP": 1,
+            "JUNGLE": 1
+          },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
             "golgg-tournament-picksandbans-worlds-2026"
@@ -4609,21 +4703,6 @@
           "lowSample": true,
           "rolePicks": {
             "MID": 3
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "yunara",
-          "picks": 3,
-          "bans": 0,
-          "wins": 2,
-          "winRate": 0.6667,
-          "lowSample": true,
-          "rolePicks": {
-            "BOT": 3
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4661,6 +4740,21 @@
           ]
         },
         {
+          "champion": "camille",
+          "picks": 2,
+          "bans": 0,
+          "wins": 2,
+          "winRate": 1,
+          "lowSample": true,
+          "rolePicks": {
+            "TOP": 2
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
           "champion": "draven",
           "picks": 0,
           "bans": 2,
@@ -4672,11 +4766,11 @@
           ]
         },
         {
-          "champion": "gnar",
+          "champion": "jax",
           "picks": 1,
           "bans": 1,
-          "wins": 0,
-          "winRate": 0,
+          "wins": 1,
+          "winRate": 1,
           "lowSample": true,
           "rolePicks": {
             "TOP": 1
@@ -4702,14 +4796,29 @@
           ]
         },
         {
-          "champion": "leblanc",
-          "picks": 1,
-          "bans": 1,
+          "champion": "lissandra",
+          "picks": 2,
+          "bans": 0,
           "wins": 1,
-          "winRate": 1,
+          "winRate": 0.5,
           "lowSample": true,
           "rolePicks": {
-            "MID": 1
+            "MID": 2
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "milio",
+          "picks": 2,
+          "bans": 0,
+          "wins": 0,
+          "winRate": 0,
+          "lowSample": true,
+          "rolePicks": {
+            "SUPPORT": 2
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4747,6 +4856,32 @@
           ]
         },
         {
+          "champion": "sivir",
+          "picks": 0,
+          "bans": 2,
+          "winRate": null,
+          "lowSample": true,
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "sylas",
+          "picks": 1,
+          "bans": 1,
+          "wins": 1,
+          "winRate": 1,
+          "lowSample": true,
+          "rolePicks": {
+            "MID": 1
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
           "champion": "taliyah",
           "picks": 1,
           "bans": 1,
@@ -4762,46 +4897,11 @@
           ]
         },
         {
-          "champion": "tristana",
-          "picks": 2,
-          "bans": 0,
-          "wins": 0,
-          "winRate": 0,
+          "champion": "twisted-fate",
+          "picks": 0,
+          "bans": 2,
+          "winRate": null,
           "lowSample": true,
-          "rolePicks": {
-            "BOT": 2
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "trundle",
-          "picks": 2,
-          "bans": 0,
-          "wins": 1,
-          "winRate": 0.5,
-          "lowSample": true,
-          "rolePicks": {
-            "TOP": 1,
-            "JUNGLE": 1
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "wukong",
-          "picks": 2,
-          "bans": 0,
-          "wins": 1,
-          "winRate": 0.5,
-          "lowSample": true,
-          "rolePicks": {
-            "JUNGLE": 2
-          },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
             "golgg-tournament-picksandbans-worlds-2026"
@@ -4816,6 +4916,21 @@
           "lowSample": true,
           "rolePicks": {
             "BOT": 1
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
+          "champion": "ahri",
+          "picks": 1,
+          "bans": 0,
+          "wins": 1,
+          "winRate": 1,
+          "lowSample": true,
+          "rolePicks": {
+            "MID": 1
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4838,21 +4953,6 @@
           ]
         },
         {
-          "champion": "camille",
-          "picks": 1,
-          "bans": 0,
-          "wins": 1,
-          "winRate": 1,
-          "lowSample": true,
-          "rolePicks": {
-            "TOP": 1
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
           "champion": "diana",
           "picks": 1,
           "bans": 0,
@@ -4868,22 +4968,18 @@
           ]
         },
         {
-          "champion": "irelia",
-          "picks": 1,
-          "bans": 0,
-          "wins": 1,
-          "winRate": 1,
+          "champion": "gwen",
+          "picks": 0,
+          "bans": 1,
+          "winRate": null,
           "lowSample": true,
-          "rolePicks": {
-            "TOP": 1
-          },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
             "golgg-tournament-picksandbans-worlds-2026"
           ]
         },
         {
-          "champion": "jax",
+          "champion": "irelia",
           "picks": 1,
           "bans": 0,
           "wins": 1,
@@ -4913,29 +5009,14 @@
           ]
         },
         {
-          "champion": "lissandra",
+          "champion": "maokai",
           "picks": 1,
           "bans": 0,
           "wins": 0,
           "winRate": 0,
           "lowSample": true,
           "rolePicks": {
-            "MID": 1
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "milio",
-          "picks": 1,
-          "bans": 0,
-          "wins": 0,
-          "winRate": 0,
-          "lowSample": true,
-          "rolePicks": {
-            "SUPPORT": 1
+            "JUNGLE": 1
           },
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
@@ -4967,43 +5048,6 @@
           "rolePicks": {
             "MID": 1
           },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "sivir",
-          "picks": 0,
-          "bans": 1,
-          "winRate": null,
-          "lowSample": true,
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "sylas",
-          "picks": 1,
-          "bans": 0,
-          "wins": 1,
-          "winRate": 1,
-          "lowSample": true,
-          "rolePicks": {
-            "MID": 1
-          },
-          "sources": [
-            "golgg-tournament-championlist-worlds-2026",
-            "golgg-tournament-picksandbans-worlds-2026"
-          ]
-        },
-        {
-          "champion": "twisted-fate",
-          "picks": 0,
-          "bans": 1,
-          "winRate": null,
-          "lowSample": true,
           "sources": [
             "golgg-tournament-championlist-worlds-2026",
             "golgg-tournament-picksandbans-worlds-2026"
@@ -5047,6 +5091,21 @@
           ]
         },
         {
+          "champion": "xin-zhao",
+          "picks": 1,
+          "bans": 0,
+          "wins": 1,
+          "winRate": 1,
+          "lowSample": true,
+          "rolePicks": {
+            "JUNGLE": 1
+          },
+          "sources": [
+            "golgg-tournament-championlist-worlds-2026",
+            "golgg-tournament-picksandbans-worlds-2026"
+          ]
+        },
+        {
           "champion": "yone",
           "picks": 0,
           "bans": 1,
@@ -5064,7 +5123,7 @@
         "golgg-tournament-picksandbans-worlds-2026",
         "golgg-tournament-matchlist-worlds-2026"
       ],
-      "games": 20
+      "games": 23
     }
   ]
 }
