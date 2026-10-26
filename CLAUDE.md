@@ -490,7 +490,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   their own. Two teams are necessary, not sufficient: a game counts toward a new comp only when its own read has the
   same primary and secondary identity and 4+ roles doing the same job (`DISCOVERY.sameStrategy`); four shared
   champions with a fifth that changes how the team wins is not the same comp (Team WE's Yorick split vs FURIA's Olaf
-  skirmish, held 2026-10-17). Approved comps and variants keep receiving new verified games as replays and variations.
+  skirmish, held 2026-10-17). Approved comps and variants keep receiving new verified games as replays and variations. A comp's title names only a champion every lineup behind it plays (`compTitle`: the first lineup's main carry, else a shared champion, else none; alan, 2026-10-26), and alan's name on approval wins (`approvedComps.name`: "Front-to-back + Zone Control · Viktor"). Swiss review of 2026-10-26: Viktor approved, LYON's Galio + Wukong lineup under Protect · Yunara and Movistar KOI's Diana lineup under Stable Top + Carry Bot as named variations; the Cassiopeia early-tempo pair (not filed under Objective Zone) and the Akali and Camille dive proposals held for their own reviews.
   Everything else is "Proposed comps for review" in the report. Win/loss never decides. Additions are sticky (a comp
   that later fails is listed in the report, never removed), except a comp alan returns to `held` or sends back to
   "Ready for approval" (`pendingComps`). Passing the checks earns a review, never a card. The library collects distinct,

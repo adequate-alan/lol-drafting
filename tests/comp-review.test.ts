@@ -157,6 +157,22 @@ describe("named variations, holds and families (2026-10-17)", () => {
     expect(named?.picks.TOP).toBe("galio");
   });
 
+  it("Swiss filings (alan, 2026-10-26): Viktor approved under his name, Movistar KOI's Diana lineup under Stable Top + Carry Bot, the rest held", () => {
+    expect(review.approvedComps).toContainEqual({ comp: "pro-83641-red", approvedOn: "2026-10-26", name: "Front-to-back + Zone Control · Viktor" });
+    const viktor = library.shells.find((s) => s.id === "pro-83641-red")!;
+    expect(viktor.name).toBe("Front-to-back + Zone Control · Viktor");
+    // Both teams' games stay, each with its own side and result: G2 lost, Dplus KIA won.
+    const games = new Map(getProGames().games.map((g) => [g.id, g]));
+    expect(games.get(83641)?.winner).toBe("blue");
+    expect(games.get(83652)?.winner).toBe("blue");
+    const diana = library.extras["stable-top-carry-bot"].variations.find((v) => v.named?.name === "Diana + Yunara · Movistar KOI")!;
+    expect(diana.games.map((g) => `${g.game}-${g.side}`)).toEqual(["83657-red"]);
+    expect(diana.picks.MID).toBe("diana");
+    expect(library.extras["pro-83521-blue"].archetype!.members.some((m) => m.picks.MID === "diana")).toBe(false);
+    // Held for their own reviews: no card for the Cassiopeia, Akali or Camille proposals.
+    for (const id of ["pro-83647-blue", "pro-83640-red", "pro-83653-red"]) expect(library.shells.some((s) => s.id === id), id).toBe(false);
+  });
+
   it("Protect · Cassiopeia is not a comp (alan, 2026-10-24): its three games are separate named variations of Protect · Yunara", () => {
     expect(library.shells.some((s) => s.id === "pro-83453-blue")).toBe(false);
     const named = library.extras["pro-83521-blue"].variations.filter((v) => v.named);
@@ -202,8 +218,17 @@ describe("archetypes (alan, 2026-10-25: Protect · Yunara pilot)", () => {
     expect(vit.id).toBe("pro-83450-red");
     expect(vit.games.map((g) => `${g.game}-${g.side}`)).toEqual(["83450-red"]);
     // The stored filings are untouched: the named variations stay under the core, the comp keeps its own variations.
-    expect(review.namedVariations.filter((n) => n.comp === "pro-83521-blue")).toHaveLength(3);
+    expect(review.namedVariations.filter((n) => n.comp === "pro-83521-blue").map((n) => n.name)).toEqual(expect.arrayContaining(["Peel + poke · BNK FearX", "Ryze variation · BNK FearX", "Galio engage · Karmine Corp"]));
     expect(library.extras["pro-83450-red"].variations.some((v) => v.named?.name.includes("Shopify"))).toBe(true);
+  });
+
+  it("LYON's Galio + Wukong lineup is a one-game named variation that keeps Yunara's protection (alan, 2026-10-26)", () => {
+    const lyon = arch.members.find((m) => m.name === "Galio + Wukong engage · LYON")!;
+    expect(lyon.kind).toBe("named");
+    expect(lyon.games.map((g) => `${g.game}-${g.side}`)).toEqual(["83649-red"]);
+    expect([lyon.picks.TOP, lyon.picks.JUNGLE, lyon.picks.MID, lyon.picks.BOT, lyon.picks.SUPPORT]).toEqual(["galio", "wukong", "syndra", "yunara", "lulu"]);
+    expect(lyon.via).toEqual(expect.arrayContaining(["peel", "proactive engage", "frontline"]));
+    expect(lyon.note).toMatch(/One game/);
   });
 
   it("a member comp keeps its id and Draft Room link but has no card of its own", () => {
