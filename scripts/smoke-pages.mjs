@@ -1083,18 +1083,20 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await open("/pro-builds/?champion=jhin&role=BOT");
   await page.locator(".builds-head, .builds-empty").first().waitFor({ timeout: 8000 }).catch(() => {});
   check("builds: an explicit champion URL opens that champion and role", (await page.locator(".builds-title h2").textContent().catch(() => "")) === "Jhin" && /BOT/.test(await page.locator(".pick-rail li button.active").innerText().catch(() => "")), page.url());
-  // Pinned players first (alan, 2026-10-13): with Ruler (Gol.gg 685) pinned, Ashe Bot opens his newest Ashe game on
-  // 26.16 although newer 26.18 games exist; a chosen player, an explicit patch and unpinning are respected.
+  // Pinned players first (alan, 2026-10-13): with Ruler (Gol.gg 685) pinned, Ashe Bot opens his newest Ashe game (the
+  // first of his in the newest-first strip) on any patch; a chosen player, an explicit patch and unpinning are respected.
+  // Relationships only: Ruler keeps playing Ashe, so which patch his newest game is on changes with the data.
   {
     const keep = await page.evaluate(() => localStorage.getItem("pro-builds:pinned-players"));
     await page.evaluate(() => localStorage.setItem("pro-builds:pinned-players", JSON.stringify(["685"])));
     const shown = async (q) => {
       await open(`/pro-builds/?champion=ashe&role=BOT${q}`);
       await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
-      return { player: (await page.locator(".build-pick.active b").first().textContent().catch(() => ""))?.trim(), head: (await page.locator(".game-head").innerText().catch(() => "")).replace(/\s+/g, " "), games: await page.locator(".build-pick").count(), url: page.url() };
+      const names = await page.locator(".build-pick").evaluateAll((els) => els.map((e) => ({ name: e.querySelector("b")?.textContent?.trim() ?? "", active: e.classList.contains("active") })));
+      return { player: (await page.locator(".build-pick.active b").first().textContent().catch(() => ""))?.trim(), active: names.findIndex((n) => n.active), firstRuler: names.findIndex((n) => n.name === "Ruler"), head: (await page.locator(".game-head").innerText().catch(() => "")).replace(/\s+/g, " "), games: await page.locator(".build-pick").count(), url: page.url() };
     };
     const ruler = await shown("");
-    check("builds: a pinned player's newest game opens first, on any patch, others still listed", ruler.player === "Ruler" && /Ruler/.test(ruler.head) && /26\.16/.test(ruler.head) && ruler.games > 2 && !/game=/.test(ruler.url), JSON.stringify(ruler));
+    check("builds: a pinned player's newest game opens first, on any patch, others still listed", ruler.player === "Ruler" && /Ruler/.test(ruler.head) && ruler.active === ruler.firstRuler && ruler.games > 2 && !/game=/.test(ruler.url), JSON.stringify(ruler));
     const chosen = await shown("&player=1931");
     check("builds: a chosen player is never replaced by a pinned one", chosen.player === "GALA", JSON.stringify(chosen));
     const patch = await shown("&patch=26.18");
@@ -1102,7 +1104,7 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
     await page.evaluate(() => localStorage.setItem("pro-builds:pinned-players", "[]"));
     const unpinned = await shown("");
     const unpinnedPatch = Number(unpinned.head.match(/26\.(\d+)/)?.[1]);
-    check("builds: unpinned, the newest recorded game opens", unpinned.player !== "Ruler" && unpinnedPatch >= 18, JSON.stringify(unpinned));
+    check("builds: unpinned, the newest recorded game opens", unpinned.active === 0 && unpinnedPatch >= 18, JSON.stringify(unpinned));
     await page.evaluate((v) => { if (v == null) localStorage.removeItem("pro-builds:pinned-players"); else localStorage.setItem("pro-builds:pinned-players", v); }, keep);
   }
   await page.setViewportSize({ width: 390, height: 844 });
