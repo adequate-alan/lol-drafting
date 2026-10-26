@@ -168,11 +168,34 @@ export const needsPeel = (s: Slot) => s.c.flags.includes("needs-peel") || (s.thr
 // The carry the comp has to protect; a carry who dives with a dive comp is not waiting for peel.
 export const exposedCarries = (slots: Slot[], dive: boolean) => slots.filter((s) => needsPeel(s) && !(dive && s.c.kit.backlineAccess >= 2));
 export const peeler = (s: Slot) => s.c.attrs.peel >= 2 || s.c.kit.disengage >= 2;
+/**
+ * The carry a protect plan is built around (alan, 2026-10-26), never the first peel-dependent champion in role order.
+ * A carry an approved comp names wins. Otherwise a champion stored as needing peel (the `needs-peel` flag) outranks one
+ * that only meets the kit heuristic, and a carry who peels or disengages herself (Anivia's wall) is a secondary threat
+ * and defensive utility, not the one being protected, while another candidate exists. Several of equal standing are a
+ * dual-carry comp: no primary, and the text names them all. Damage share never decides. Explanatory only: every score
+ * keeps reading `slots.find(needsPeel)`.
+ */
+export function protectTarget(slots: Slot[], dive = false, named?: string): { primary?: Slot; carries: Slot[] } {
+  const hinted = named ? slots.find((s) => s.c.id === named) : undefined;
+  if (hinted) return { primary: hinted, carries: [hinted] };
+  const candidates = exposedCarries(slots, dive);
+  const standing = (s: Slot) => (s.c.flags.includes("needs-peel") ? 2 : peeler(s) ? 0 : 1);
+  const best = Math.max(...candidates.map(standing));
+  const carries = candidates.filter((s) => standing(s) === best);
+  return { primary: carries.length === 1 ? carries[0] : undefined, carries };
+}
 export const diver = (s: Slot) => s.c.kit.backlineAccess >= 2 && (s.threat >= 2 || s.c.fightStart === "primary");
 
 // ---------- identity ----------
 
-export function identities(slots: Slot[], f: Facts = facts(slots)): IdentityScore[] {
+// The protect identity's reason, around the carry the plan is built for (protectTarget); the score above keeps its own carry.
+function protectText(slots: Slot[], named?: string) {
+  const t = protectTarget(slots, false, named);
+  return `${names(slots.filter((s) => !t.carries.includes(s) && peeler(s)))} protect ${names(t.carries)}`;
+}
+
+export function identities(slots: Slot[], f: Facts = facts(slots), named?: string): IdentityScore[] {
   const out: IdentityScore[] = [];
   const small = f.n <= 3;
   const ranged = f.carries.filter((s) => s.c.kit.range >= 2);
@@ -197,7 +220,7 @@ export function identities(slots: Slot[], f: Facts = facts(slots)): IdentityScor
   if (carry && peelers.length >= 2)
     out.push({ id: "protect", score: 3 + sum(peelers.map((s) => (s.c.attrs.peel + s.c.kit.disengage) * (s.c.attrs.frontline >= 2 ? 0.5 : 1))) / 2
       + (peelers.some((s) => s.c.attrs.peel >= 3 && s.threat <= 1 && s.c.attrs.frontline < 2) ? 3 : 0)
-      + (carry === f.main && f.mainShare >= 0.4 ? 2.5 : 0), because: `${names(peelers)} protect ${carry.c.name}` });
+      + (carry === f.main && f.mainShare >= 0.4 ? 2.5 : 0), because: protectText(slots, named) });
   const skirmishers = slots.filter((s) => s.threat >= 2 && s.c.kit.range <= 1 && s.c.kit.curve.early + s.c.kit.curve.mid >= 5 && (s.c.attrs.sustainedDps >= 2 || s.c.attrs.burst >= 2));
   if (skirmishers.length >= 2 && skirmishers.some((s) => s.role === "JUNGLE" || s.role === "MID"))
     out.push({ id: "skirmish", score: 2 * skirmishers.length + f.lanePressure, because: `${names(skirmishers)} win short fights before items` });
@@ -390,20 +413,28 @@ export function timing(f: Facts) {
 
 // ---------- win condition ----------
 
-export function winCondition(id: IdentityId, slots: Slot[], f: Facts, secondary: IdentityId | null): string {
+export function winCondition(id: IdentityId, slots: Slot[], f: Facts, secondary: IdentityId | null, named?: string): string {
   const starters = f.primary.length ? f.primary : f.catchers;
   const carries = f.carries.length ? f.carries : slots;
   const ranged = carries.filter((s) => s.c.kit.range >= 2);
   const divers = slots.filter(diver);
-  const carry = slots.find(needsPeel) ?? f.main;
-  const peelers = slots.filter((s) => s !== carry && peeler(s));
+  // The protected carry is the one the plan is built around (protectTarget), and not always the only damage: a second
+  // threat is named beside it, and a team with its own engage starts fights instead of waiting to be dived.
+  const t = protectTarget(slots, false, named);
+  const kept = t.carries.length ? t.carries : f.main ? [f.main] : [];
+  const carry = names(kept);
+  const them = kept.length > 1 ? "them" : carry;
+  const peelers = slots.filter((s) => !kept.includes(s) && peeler(s));
+  const starts = f.primary.filter((s) => !kept.includes(s) && !peelers.includes(s));
+  // Named once: a front-to-back second identity already names every ranged threat.
+  const besides = t.primary && secondary !== "front-to-back" ? carries.filter((s) => s !== t.primary && s.c.kit.range >= 2) : [];
   const nm = (ss: Slot[]) => names(ss.slice(0, 3));
   const main: Record<IdentityId, string> = {
     "front-to-back": `Set up first around objectives, let ${nm(starters)} start fights, and play front-to-back through ${nm(ranged.length ? ranged : carries)}.`,
     dive: `Go in together: ${nm(divers)} reach the enemy carries at the same time instead of one by one.`,
     pick: `Win through vision and fog: catch a target with ${nm(f.catchers)} before each objective, then fight with the numbers advantage.`,
     poke: `Avoid forced 5v5 engages. Chip with ${nm(f.pokers)} first and fight only after creating a health advantage.`,
-    protect: `Play around ${carry?.c.name}: ${nm(peelers)} stay with ${carry?.c.name} and let the enemy dive into you.`,
+    protect: `Play around ${carry}: ${nm(peelers)} stay with ${them}${starts.length ? ` while ${nm(starts)} ${verb(starts, "starts", "start")} fights` : " and let the enemy dive into you"}.${besides.length ? ` ${nm(besides)} ${verb(besides, "adds", "add")} damage from range.` : ""}`,
     skirmish: "Fight short 2v2s and 3v3s around the jungle before items stack up, and snowball the leads into objectives.",
     wombo: `Fight in choke points and around objectives where ${nm(slots.filter((s) => s.c.kit.aoeCc >= 2))} can land their crowd control on the same targets.`,
     split: `Create side-lane pressure with ${nm(f.side)}, then use ${nm(slots.filter((s) => !f.side.includes(s) && (s.c.fightStart !== "none" || s.threat >= 2)))} to punish rotations.`,
@@ -414,7 +445,8 @@ export function winCondition(id: IdentityId, slots: Slot[], f: Facts, secondary:
     pick: f.catchers.length ? `Between objectives, look for catches with ${nm(f.catchers)}.` : undefined,
     split: f.side.length ? `Between fights, ${nm(f.side)} ${verb(f.side, "pressures", "pressure")} a side lane.` : undefined,
     poke: f.pokers.length ? `Before committing, chip with ${nm(f.pokers)}.` : undefined,
-    protect: carry && peelers.length ? `Once a fight starts, ${nm(peelers)} turn back to protect ${carry.c.name}.` : undefined,
+    protect: kept.length && peelers.length ? `Once a fight starts, ${nm(peelers)} turn back to protect ${carry}.` : undefined,
+    "front-to-back": f.frontliners.length && ranged.length ? `${nm(f.frontliners)} ${verb(f.frontliners, "holds", "hold")} the front while ${nm(ranged)} ${verb(ranged, "deals", "deal")} damage from behind.` : undefined,
     scaling: "If the early game goes even, the late game favours you.",
     tempo: "Use the early lanes to set up the first objectives.",
   };
@@ -437,7 +469,8 @@ export function jobs(slots: Slot[], f: Facts, insights: Insight[], dive = false)
   if (!f.primary.length) add(f.catchers.length ? "engage" : "fight-start", 3, "no primary engage yet");
   if (!f.frontliners.length) add("frontline", 3, "no frontline yet");
   const carry = exposedCarries(slots, dive)[0];
-  if (carry && sum(slots.filter((s) => s !== carry).map((s) => s.c.attrs.peel + s.c.kit.disengage)) < 4) add("peel", 3, `${carry.c.name} needs protection`);
+  const protect = protectTarget(slots, dive).carries;
+  if (carry && sum(slots.filter((s) => s !== carry).map((s) => s.c.attrs.peel + s.c.kit.disengage)) < 4) add("peel", 3, `${names(protect)} ${verb(protect, "needs", "need")} protection`);
   if (f.carries.length < 2) add("second-threat", f.carries.length ? 2.5 : 3, f.carries.length ? `only ${names(f.carries)} deals real damage so far` : "no damage source yet");
   if (f.n >= 2 && !f.sustained.length) add("sustained", 1.5, "no sustained damage yet");
   if (f.n >= 2 && (f.physicalShare ?? 0.5) >= 0.75) add("magic", 2, "mostly physical so far");
@@ -479,8 +512,10 @@ export function readCandidate(c: ChampionKit, role: Role, draft: Draft, champion
   const fixes = needs.filter((n) => NEEDS[n.id].test(c, role));
   const tradeoffs: string[] = [];
   const carry = after.find((s) => s.c.id !== c.id && needsPeel(s)) ?? (fa.main && fa.main.c.kit.backlineAccess === 0 && fa.main.threat >= 3 ? fa.main : undefined);
-  if (carry && c.attrs.peel + c.kit.disengage <= 1 && (role === "SUPPORT" || needs.some((n) => n.id === "peel")))
-    tradeoffs.push(`Less peel for ${carry.c.name}`);
+  if (carry && c.attrs.peel + c.kit.disengage <= 1 && (role === "SUPPORT" || needs.some((n) => n.id === "peel"))) {
+    const named = protectTarget(after.filter((s) => s.c.id !== c.id)).carries;
+    tradeoffs.push(`Less peel for ${named.length ? names(named) : carry.c.name}`);
+  }
   if (c.kit.resourceDemand >= 3 && fa.hungry.length >= 2) tradeoffs.push(`Another gold-hungry pick (${names(fa.hungry)})`);
   if (c.kit.disengage === 0 && c.kit.counterEngage <= 1 && (fa.n >= 3 && fa.disengage + fa.counterEngage < 4)) tradeoffs.push("Low disengage");
   if (threatOf(c, role).damageThreat >= 2 && c.kit.range <= 1 && fa.shortRange.length >= 2) tradeoffs.push("Another short-range carry");
@@ -564,12 +599,13 @@ export interface Analysis {
   facts: Facts;
 }
 
-export function analyze(draft: Draft, champions: ChampionKit[], enemyIds: string[] = []): Analysis {
+/** `carry`: the carry an approved comp names (Comp Library), used only to say who the protect plan is built around. */
+export function analyze(draft: Draft, champions: ChampionKit[], enemyIds: string[] = [], { carry }: { carry?: string } = {}): Analysis {
   const slots = slotsOf(draft, champions);
   const f = facts(slots);
   const n = slots.length;
   const confidence: Confidence = n < T.earlyRead ? "none" : n < T.teamRules ? "early" : n < 5 ? "read" : "full";
-  const all = identities(slots, f);
+  const all = identities(slots, f, carry);
   const { primary, secondary } = n >= T.earlyRead ? pickIdentity(all) : { primary: null, secondary: null };
   const weak = n >= T.earlyRead ? weaknesses(slots, f, all) : [];
   const theirs = slotsOf(enemyDraft(enemyIds, champions), champions);
@@ -579,8 +615,9 @@ export function analyze(draft: Draft, champions: ChampionKit[], enemyIds: string
   const needs = n ? jobs(slots, f, ranked, dive) : [];
   const open = ROLES.filter((r) => !draft[r]);
   const taken = new Set([...slots.map((s) => s.c.id), ...theirs.map((s) => s.c.id)]);
-  const protectedCarry = exposedCarries(slots, false)[0] ?? f.main;
-  const label = (i: IdentityScore | null) => (!i ? null : i.id === "protect" && protectedCarry ? `Protect ${protectedCarry.c.name}` : IDENTITY_LABEL[i.id]);
+  const protectedCarries = protectTarget(slots, false, carry).carries;
+  const protectedCarry = protectedCarries.length ? names(protectedCarries) : f.main?.c.name;
+  const label = (i: IdentityScore | null) => (!i ? null : i.id === "protect" && protectedCarry ? `Protect ${protectedCarry}` : IDENTITY_LABEL[i.id]);
   const top = ranked[0];
   const idText = [label(primary), label(secondary)].filter(Boolean).join(" · ") || "No clear identity yet";
   const headline = confidence === "early"
@@ -589,7 +626,7 @@ export function analyze(draft: Draft, champions: ChampionKit[], enemyIds: string
   return {
     confidence, headline,
     identity: { primary, secondary, all },
-    winCondition: primary && n >= T.earlyRead ? winCondition(primary.id, slots, f, secondary?.id ?? null) : null,
+    winCondition: primary && n >= T.earlyRead ? winCondition(primary.id, slots, f, secondary?.id ?? null, carry) : null,
     weakPoints: confidence === "early" ? ranked.filter((w) => w.severity !== "minor").slice(0, 2) : ranked.slice(0, T.weakShown),
     more: confidence === "early" ? ranked.filter((w) => w.severity !== "minor").slice(2) : ranked.slice(T.weakShown),
     versus: vs,

@@ -6,15 +6,13 @@ Read 232 lineups from 116 recorded games (latest 2026-10-26). Demacia Cup: 70/71
 
 None this week.
 
-## New variations of existing compositions (1)
+## New variations of existing compositions (0)
 
-- **Dive · Ryze**: Qiyana for Naafiri, Alistar for Nautilus
-  - [CTBC Flying Oyster vs T1 G1](https://gol.gg/game/stats/83662/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-26, loss)
+None this week.
 
-## Existing compositions seeing new professional play (1)
+## Existing compositions seeing new professional play (0)
 
-- **Dive · Ryze**: 1 new game
-  - [CTBC Flying Oyster vs T1 G1](https://gol.gg/game/stats/83662/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-26, loss)
+None this week.
 
 ## May be outdated (7)
 

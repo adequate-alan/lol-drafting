@@ -490,7 +490,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   their own. Two teams are necessary, not sufficient: a game counts toward a new comp only when its own read has the
   same primary and secondary identity and 4+ roles doing the same job (`DISCOVERY.sameStrategy`); four shared
   champions with a fifth that changes how the team wins is not the same comp (Team WE's Yorick split vs FURIA's Olaf
-  skirmish, held 2026-10-17). Approved comps and variants keep receiving new verified games as replays and variations. A comp's title names only a champion every lineup behind it plays (`compTitle`: the first lineup's main carry, else a shared champion, else none; alan, 2026-10-26), and alan's name on approval wins (`approvedComps.name`: "Front-to-back + Zone Control · Viktor"). Swiss review of 2026-10-26: Viktor approved, LYON's Galio + Wukong lineup under Protect · Yunara and Movistar KOI's Diana lineup under Stable Top + Carry Bot as named variations; the Cassiopeia early-tempo pair (not filed under Objective Zone) and the Akali and Camille dive proposals held for their own reviews.
+  skirmish, held 2026-10-17). Approved comps and variants keep receiving new verified games as replays and variations. A comp's title names only a champion every lineup behind it plays (`compTitle`: the first lineup's main carry, else a shared champion, else none; alan, 2026-10-26), and alan's name on approval wins (`approvedComps.name`: "Front-to-back + Zone Control · Viktor"). alan's own win condition (`approvedComps.winCondition`, Viktor 2026-10-26) leads the card, the comp check's stays in Details. Swiss review of 2026-10-26: Viktor approved, LYON's Galio + Wukong lineup under Protect · Yunara and Movistar KOI's Diana lineup under Stable Top + Carry Bot as named variations; the Cassiopeia early-tempo pair (not filed under Objective Zone) and the Akali and Camille dive proposals held for their own reviews.
   Everything else is "Proposed comps for review" in the report. Win/loss never decides. Additions are sticky (a comp
   that later fails is listed in the report, never removed), except a comp alan returns to `held` or sends back to
   "Ready for approval" (`pendingComps`). Passing the checks earns a review, never a card. The library collects distinct,
@@ -838,6 +838,12 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   within the same plan (`fifthPick`: fixes / switches / eases / unresolved); a pick that only changes the plan is named
   apart (`switches`), never as a fix. Kit corrections are proposed to alan, never applied to clear a warning. Never scored;
   validation: `npx tsx scripts/diagnostics/plan-validate.ts` and `plan-review.ts`.
+  **Protected carry** (alan, 2026-10-26; `protectTarget` in `lib/model-v2/analyze.ts`, `tests/comp-carry.test.ts`): who a
+  protect read is built around, never the first peel-dependent champion in role order: an approved comp's named carry
+  (an archetype's `carry`, through `readLineup` and discovery `carries`), else a stored `needs-peel` flag over the kit
+  heuristic, a carry who peels herself (Anivia) secondary; equal candidates are a dual carry, both named, no primary.
+  Damage share never decides. The protected carry is not always the only damage: other ranged threats are named, and a
+  front-to-back second identity adds who holds the front. Text and the plan read only: every score keeps `slots.find(needsPeel)`.
 
 ## Commit authorship
 

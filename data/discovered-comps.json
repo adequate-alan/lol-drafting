@@ -34,7 +34,7 @@
           "job": "Hard engage"
         }
       },
-      "winCondition": "Create side-lane pressure with Trundle and Ryze, then use Rumble, Senna and Nautilus to punish rotations.",
+      "winCondition": "Create side-lane pressure with Trundle and Ryze, then use Rumble, Senna and Nautilus to punish rotations. Trundle and Nautilus hold the front while Senna deals damage from behind.",
       "why": "Trundle and Ryze can hold a side lane alone; Senna can join a fight from anywhere; Trundle and Nautilus in front, Senna dealing damage from range.",
       "timing": "Even across the game; no clear power spike.",
       "strengths": [
@@ -91,8 +91,8 @@
           "job": "Peel"
         }
       },
-      "winCondition": "Play around Anivia: K'Sante and Lulu stay with Anivia and let the enemy dive into you.",
-      "why": "K'Sante and Lulu protect Anivia; K'Sante in front, Anivia and Yunara dealing damage from range.",
+      "winCondition": "Play around Yunara: K'Sante, Anivia and Lulu stay with Yunara and let the enemy dive into you. K'Sante holds the front while Anivia and Yunara deal damage from behind.",
+      "why": "K'Sante, Anivia and Lulu protect Yunara; K'Sante in front, Anivia and Yunara dealing damage from range.",
       "timing": "Weak before first items. Strongest around two to three items.",
       "strengths": [
         "Catch: K'Sante",
@@ -203,7 +203,7 @@
           "job": "Engage"
         }
       },
-      "winCondition": "Fight in choke points and around objectives where Wukong, Orianna and Rakan can land their crowd control on the same targets.",
+      "winCondition": "Fight in choke points and around objectives where Wukong, Orianna and Rakan can land their crowd control on the same targets. Wukong holds the front while Orianna and Corki deal damage from behind.",
       "why": "Wukong, Orianna and Rakan stack AoE crowd control; Wukong in front, Orianna and Corki dealing damage from range.",
       "timing": "Weak before first items. Strongest around two to three items.",
       "strengths": [
@@ -420,7 +420,7 @@
           "job": "Peel"
         }
       },
-      "winCondition": "Play around Yunara: Orianna and Lulu stay with Yunara and let the enemy dive into you.",
+      "winCondition": "Play around Yunara: Orianna and Lulu stay with Yunara and let the enemy dive into you. Orianna adds damage from range.",
       "why": "Orianna and Lulu protect Yunara.",
       "timing": "Even across the game; no clear power spike.",
       "strengths": [
@@ -480,7 +480,7 @@
           "job": "Peel"
         }
       },
-      "winCondition": "Fight short 2v2s and 3v3s around the jungle before items stack up, and snowball the leads into objectives.",
+      "winCondition": "Fight short 2v2s and 3v3s around the jungle before items stack up, and snowball the leads into objectives. Wukong holds the front while Viktor deals damage from behind.",
       "why": "Jax, Wukong and Lucian win short fights before items; Wukong in front, Viktor dealing damage from range.",
       "timing": "Strongest around two to three items.",
       "strengths": [
@@ -834,7 +834,7 @@
           "job": "Peel"
         }
       },
-      "winCondition": "Play around Viktor: K'Sante and Renata Glasc stay with Viktor and let the enemy dive into you.",
+      "winCondition": "Play around Viktor: K'Sante and Renata Glasc stay with Viktor while Jarvan IV starts fights. K'Sante and Jarvan IV hold the front while Viktor and Kalista deal damage from behind.",
       "why": "K'Sante and Renata Glasc protect Viktor; K'Sante and Jarvan IV in front, Viktor and Kalista dealing damage from range.",
       "timing": "Falls off late. Strongest around two to three items.",
       "strengths": [

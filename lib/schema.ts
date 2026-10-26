@@ -413,7 +413,8 @@ export const CompReview = z.object({
   // New comps alan approved from the weekly report's "Ready for approval" list (2026-10-17: discovery proposes, he
   // adds). Comps added before that rule stay; a held candidate's game never forms one.
   // `name` is alan's name for the comp when he renames it on approval (2026-10-26: "Front-to-back + Zone Control · Viktor").
-  approvedComps: z.array(z.object({ comp: id, approvedOn: Day, name: z.string().optional() })).default([]),
+  // winCondition: alan's own win condition for the card (2026-10-26, Viktor); the comp check's read stays in Details.
+  approvedComps: z.array(z.object({ comp: id, approvedOn: Day, name: z.string().optional(), winCondition: z.string().optional() })).default([]),
   // Comps an automated run added before that rule that alan sent back to "Ready for approval" (2026-10-21): no card
   // until approved; their games and variations stay recorded and listed in the report.
   pendingComps: z.array(z.object({ comp: id, decidedOn: Day, note: z.string() })).default([]),
