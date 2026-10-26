@@ -589,10 +589,26 @@ await page.locator(".theme-toggle").click();
   await open("/comps/");
   const yp = page.locator("#yunara-protect");
   check("comps: opens on Pro comps, with All and Template one click away",
-    (await page.locator("nav[aria-label='Type'] a.active").textContent()) === "Pro" && (await page.locator(".shell.generalized").count()) === 0, "");
+    (await page.locator("[aria-label='Type'] button.active").textContent()) === "Pro" && (await page.locator(".shell.generalized").count()) === 0, "");
   check("comps: filters read Type All/Pro/Template and Difficulty All/Easy/Medium/Hard",
-    (await page.locator("nav[aria-label='Type'] a").allTextContents()).join() === "All,Pro,Template"
-    && (await page.locator("nav[aria-label='Difficulty'] a").allTextContents()).join() === "All,Easy,Medium,Hard", "");
+    (await page.locator("[aria-label='Type'] button").allTextContents()).join() === "All,Pro,Template"
+    && (await page.locator("[aria-label='Difficulty'] button").allTextContents()).join() === "All,Easy,Medium,Hard", "");
+  // Archetype rows (alan, 2026-10-26): every row shows its five champions without a click; details stay folded.
+  const archRows = page.locator("article.archetype .arch-item");
+  const fives = await archRows.evaluateAll((els) => els.map((e) => e.querySelectorAll(".arch-lineup .arch-pick").length));
+  check("comps: every archetype row shows its five champions at once", fives.length > 1 && fives.every((n) => n === 5)
+    && (await page.locator("article.archetype .arch-detail").count()) === 0, fives.join(","));
+  check("comps: each card names its evidence sample", (await page.locator(".shell-grid > .shell .shell-evidence").count()) === (await page.locator(".shell-grid > .shell").count()), "");
+  await page.fill(".comp-search", "anivia");
+  await page.waitForTimeout(200);
+  check("comps: champion search finds a champion inside an archetype's variations", (await page.locator("article.archetype").count()) === 1 && /q=anivia/.test(page.url()), page.url());
+  await page.fill(".comp-search", "");
+  await open("/comps/?kind=generalized#pro-83450-red");
+  await page.waitForTimeout(400);
+  const nested = await page.locator("#pro-83450-red").evaluate((e) => { const r = e.getBoundingClientRect(); return r.top >= -2 && r.top < innerHeight; }).catch(() => false);
+  check("comps: a link to a comp inside an archetype opens its row even when a filter hides the card",
+    nested && (await page.locator("#pro-83450-red .arch-detail").count()) === 1 && /kind=all/.test(page.url()), page.url());
+  await open("/comps/");
   check("comps: five champions across, no swap lists or source links shown by default",
     (await yp.locator(".lu-slot").count()) === 5 && (await page.locator(".swap-menu").count()) === 0 && (await yp.locator(".shell-sources").count()) === 0, "");
   const rows = await page.locator(".shell-grid > .shell").evaluateAll((els) => {

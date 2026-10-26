@@ -18,18 +18,26 @@
 // and its named variations (named lineups and whole member comps, which have no card of their own) are rows beside it,
 // each with its sample, how it enables the carry, which typical jobs it keeps, replaces, shares or gives up (the comp
 // check), its tradeoff and, expanded, its lineup and games. A filed lineup under review is shown apart and not counted.
+// Comparison pass (alan, 2026-10-26): every archetype row, the core first, shows its five champions at once (the ones
+// that differ from the core in full colour), its sample, its own difficulty and one line on how it differs; jobs, notes,
+// reads and games stay behind Details. Each card names what its evidence stands on (games, series, teams, newest game):
+// a count of drafts that were played, never proof the comp works. Search (champion or comp), Strategy and Sort sit with
+// Type and Difficulty; every filter is in the URL and a link to a comp a filter hides clears the filters and opens it.
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChampionDrawer, compLinks, useDrawerIndex, type CompContext, type DrawerContext, type DrawerTarget } from "@/components/ChampionDrawer";
 const COMPS: DrawerContext = { page: "comps" };
 import { ChampionHoverCard, useHoverIntent } from "@/components/ChampionInteraction";
 import { useLeave } from "@/components/useLeave";
 import { CompFreshness } from "@/components/CompFreshness";
+import { Select } from "@/components/Select";
 import { ChampIcon, PageHeader, SourceBadge } from "@/components/ui";
 import { jobLabel, WHY_LINE } from "@/lib/comp-copy";
-import { plainVariations, PRO_SWAP_SAMPLE, type Archetype, type ArchetypeRow, type JobRead, type LibraryExtra, type NamedVariation, type ObservedGame,
-  type ObservedLineup, type ProSwap } from "@/lib/comp-library";
+import { championsOf, LEVEL, plainVariations, PRO_SWAP_SAMPLE, strategiesOf, type Archetype, type ArchetypeRow, type CardEvidence, type IdentityId, type JobRead, type Level,
+  type LibraryExtra, type NamedVariation, type ObservedGame, type ObservedLineup, type ProSwap } from "@/lib/comp-library";
+import { IDENTITY_LABEL } from "@/lib/comp-discovery";
+import { resultsToTop } from "@/lib/motion";
 import { draftHref, shellDraft, variationDiff } from "@/lib/comp-preview";
 import type { DrawerData } from "@/lib/data";
 import { shortDate } from "@/lib/evidence";
@@ -49,8 +57,7 @@ const compOf = (s: CompShell, swaps: Swaps = {}): CompContext => ({
 
 // Display difficulty: three levels. The data keeps "easy-medium"; it reads as Medium here (sorted before plain medium).
 const DIFF_ORDER = ["easy", "easy-medium", "medium", "hard"] as const;
-type Level = "easy" | "medium" | "hard";
-const LEVEL: Record<CompShell["difficulty"], Level> = { easy: "easy", "easy-medium": "medium", medium: "medium", hard: "hard" };
+const LEVELS_IN_ORDER: Level[] = ["easy", "medium", "hard"];
 const LEVEL_LABEL: Record<Level, string> = { easy: "Easy", medium: "Medium", hard: "Hard" };
 const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
 const tag = (s: string) => { const t = s.replace(/-/g, " "); return t.charAt(0).toUpperCase() + t.slice(1); };
@@ -59,9 +66,19 @@ const plural = (n: number, w: string) => `${n} ${w}${n === 1 || w === "series" ?
 const swapSample = (p: ProSwap) => `${plural(p.series, "series")} · ${plural(p.teams, "team")} · ${p.patches.map(patchLabel).join(", ")}`;
 const proSwapsOf = (x?: LibraryExtra) => ROLES.flatMap((r) => (x?.proSwaps?.[r] ?? []).map((p) => ({ role: r, ...p })));
 
-export function CompsView({ names, sources, drafts, allShells, extras, lastAddition, data }: {
+/** Search text: lower case, accents and punctuation dropped, so "kaisa" finds Kai'Sa. */
+const norm = (t: string) => t.toLowerCase().normalize("NFD").replace(/[^a-z0-9]/g, "");
+const SORTS: { value: string; label: string }[] = [{ value: "", label: "Easiest first" }, { value: "recent", label: "Newest game" }, { value: "games", label: "Most games" }];
+/** A card's difficulty levels: an archetype's core and each named variation keep their own. */
+const levelsOf = (s: CompShell, x?: LibraryExtra): Level[] => {
+  const a = x?.archetype;
+  const all = a ? [a.core, ...a.members].flatMap((r) => r.difficulty ? [r.difficulty] : []) : [LEVEL[s.difficulty]];
+  return LEVELS_IN_ORDER.filter((l) => all.includes(l));
+};
+
+export function CompsView({ names, sources, drafts, allShells, extras, evidence, lastAddition, data }: {
   names: Record<string, string>; sources: Record<string, Source>; drafts: Record<string, ProDraft>; allShells: CompShell[];
-  extras: Record<string, LibraryExtra>; lastAddition: string | null; data: DrawerData;
+  extras: Record<string, LibraryExtra>; evidence: Record<string, CardEvidence>; lastAddition: string | null; data: DrawerData;
 }) {
   const index = useDrawerIndex(data);
   const [open, setOpen] = useState<Slot | undefined>(undefined);
@@ -72,20 +89,36 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
   const [shownVariations, setShownVariations] = useState<Record<string, boolean>>({});
   const [variantShown, setVariantShown] = useState<Record<string, string | undefined>>({});
   const [archOpen, setArchOpen] = useState<Record<string, boolean>>({});
+  // A champion opened from an archetype row's lineup: the drawer reads that lineup as its comp.
+  const [free, setFree] = useState<{ target: DrawerTarget & { role: Role }; comp: CompContext } | undefined>(undefined);
+  const freeComp = useRef<CompContext | undefined>(undefined);
   const opener = useRef<HTMLElement | null>(null);
   const openShell = open && allShells.find((s) => s.id === open.shell);
   const swapsOf = (id: string) => previews[id] ?? {};
   const close = () => {
     setOpen(undefined);
+    setFree(undefined);
     // Back to the champion that opened the drawer, without scrolling the page.
     const el = opener.current;
     if (el && document.contains(el)) el.focus({ preventScroll: true });
   };
   const select = (slot: Slot, el?: HTMLElement | null) => {
-    if (!open && el) opener.current = el;
+    if (!open && !free && el) opener.current = el;
     intent.hide();
     setMenu(undefined);
+    setFree(undefined);
     setOpen(slot);
+  };
+  const openFree = (target: DrawerTarget & { role: Role }, comp: CompContext, el: HTMLElement) => {
+    if (!open && !free) opener.current = el;
+    intent.hide();
+    setMenu(undefined);
+    setOpen(undefined);
+    setFree({ target, comp });
+  };
+  const hoverFree = (t?: { id: string; role: Role; comp: CompContext; el: HTMLElement }) => {
+    setHover(undefined);
+    if (t) { freeComp.current = t.comp; intent.hover({ id: t.id, role: t.role }, t.el); } else intent.unhover();
   };
   const preview = (shell: string, role: Role, champ: string | undefined) => {
     setPreviews((p) => {
@@ -101,32 +134,79 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
     setHover(role ? { shell: s.id, role } : undefined);
     if (role && el) intent.hover({ id: id ?? shellDraft(s, swapsOf(s.id))[role], role }, el); else intent.unhover();
   };
-  const quick = useLeave(intent.card && !open ? intent.card : undefined);
+  const quick = useLeave(intent.card && !open && !free ? intent.card : undefined);
+  const onFree = !!quick.shown?.el.closest(".arch-lineup");
   const cardShellId = quick.shown?.el.closest("article.shell")?.id;
   const cardShell = cardShellId ? allShells.find((x) => x.id === cardShellId) : undefined;
   // Highlights follow the hovered or focused champion, else the open one.
   const active = hover ?? open;
   const params = useSearchParams();
+  // Filters live in the URL and change in place (history, never a route change), like every other page's filters.
+  const [query, setQuery] = useState(() => new URLSearchParams(params));
+  useEffect(() => setQuery(new URLSearchParams(params)), [params]);
+  const set = (o: Record<string, string | undefined>, keepHash = false) => {
+    const next = new URLSearchParams(query);
+    for (const [k, v] of Object.entries(o)) if (v) next.set(k, v); else next.delete(k);
+    setQuery(next);
+    window.history.replaceState(window.history.state, "", `${window.location.pathname}${next.size ? `?${next}` : ""}${keepHash ? window.location.hash : ""}`);
+    if (!keepHash) resultsToTop(".shell-grid");
+  };
   // Pro comps by default (alan, 2026-10-12); "all" and "generalized" (Template) are one click away.
-  const rawKind = params.get("kind");
+  const rawKind = query.get("kind");
   const kind = rawKind === "all" ? undefined : rawKind === "generalized" ? "generalized" : "observed";
-  const rawDiff = params.get("difficulty") || undefined;
+  const rawDiff = query.get("difficulty") || undefined;
   const level = rawDiff && rawDiff in LEVEL ? LEVEL[rawDiff as CompShell["difficulty"]] : undefined;
-  // The cards render in the browser, after the browser's own jump to #shell-id has already run.
-  // A link to a card the default Pro filter hides (a template) opens on All instead.
+  const rawStrategy = query.get("strategy") || undefined;
+  const strategy = rawStrategy && rawStrategy in IDENTITY_LABEL ? rawStrategy as IdentityId : undefined;
+  const sort = query.get("sort") === "recent" ? "recent" : query.get("sort") === "games" ? "games" : undefined;
+  const q = norm(query.get("q") ?? "");
+  const cards = allShells.filter((s) => !extras[s.id]?.variantOf && !extras[s.id]?.inArchetype);
+  // What each card can be found by: its names, champions and strategies (an archetype's rows and variants included).
+  const finder = useMemo(() => Object.fromEntries(cards.map((s) => {
+    const x = extras[s.id], { board, filed } = championsOf(s, x, allShells);
+    const texts = [s.name, ...(x?.variants ?? []).map((v) => v.name), ...(x?.archetype ? [x.archetype.name, ...x.archetype.members.map((r) => r.name)] : [])].map(norm);
+    const strategies = new Set([s, ...(x?.variants ?? []).flatMap((v) => allShells.filter((y) => y.id === v.id))].flatMap((c) => strategiesOf(c, extras[c.id]?.discovered)));
+    return [s.id, { texts, board: [...board], filed: [...filed], strategies }];
+  })), [cards, extras, allShells]);
+  const strategyCount = (id: IdentityId) => cards.filter((s) => finder[s.id].strategies.has(id)).length;
+  const strategyOptions = [{ value: "", label: "All strategies" },
+    ...(Object.keys(IDENTITY_LABEL) as IdentityId[]).filter((id) => strategyCount(id) > 0).map((id) => ({ value: id, label: `${IDENTITY_LABEL[id]} · ${strategyCount(id)}` }))];
+  // A champion found only in a filed lineup or swap is named on the card, so the match is never a mystery.
+  const filedHits = (id: string) => q ? finder[id].filed.filter((c) => norm(names[c] ?? c).includes(q)) : [];
+  const matches = (s: CompShell) => !q || finder[s.id].texts.some((t) => t.includes(q)) || finder[s.id].board.some((c) => norm(names[c] ?? c).includes(q)) || filedHits(s.id).length > 0;
+  const recency = (s: CompShell) => evidence[s.id]?.latest ?? "";
+  const shells = [...cards]
+    .filter((s) => !kind || s.kind === kind)
+    .filter((s) => !level || levelsOf(s, extras[s.id]).includes(level))
+    .filter((s) => !strategy || finder[s.id].strategies.has(strategy))
+    .filter(matches)
+    .sort((a, b) => sort === "recent" ? recency(b).localeCompare(recency(a)) || (evidence[b.id]?.games ?? 0) - (evidence[a.id]?.games ?? 0)
+      : sort === "games" ? (evidence[b.id]?.games ?? 0) - (evidence[a.id]?.games ?? 0) || (evidence[b.id]?.series ?? 0) - (evidence[a.id]?.series ?? 0) || recency(b).localeCompare(recency(a))
+      : DIFF_ORDER.indexOf(a.difficulty) - DIFF_ORDER.indexOf(b.difficulty));
+  // A link to a comp (#id, also a comp inside an archetype or a named variant) opens it, whatever the filters say: a
+  // comp the filters hide clears them first. The cards render in the browser, after its own jump to the hash ran.
+  const [target, setTarget] = useState<string | undefined>(undefined);
   useEffect(() => {
-    let id = decodeURIComponent(window.location.hash.slice(1));
-    if (!id) return;
+    const read = () => setTarget(decodeURIComponent(window.location.hash.slice(1)) || undefined);
+    read();
+    window.addEventListener("hashchange", read);
+    return () => window.removeEventListener("hashchange", read);
+  }, []);
+  useEffect(() => {
+    if (!target) return;
     // A named variant lives inside its parent's card: open the parent on it.
-    const parent = extras[id]?.variantOf?.parent;
-    if (parent) { setVariantShown((v) => ({ ...v, [parent]: id })); id = parent; }
+    const parent = extras[target]?.variantOf?.parent;
+    if (parent) setVariantShown((v) => ({ ...v, [parent]: target }));
+    const id = parent ?? target;
     // A comp inside an archetype is a row of its parent's card, which carries the comp's id: open the row there.
     const inArch = extras[id]?.inArchetype;
+    const card = inArch?.parent ?? id;
+    if (!allShells.some((s) => s.id === card)) { setTarget(undefined); return; }
+    if (!shells.some((s) => s.id === card)) { set({ kind: "all", difficulty: undefined, strategy: undefined, q: undefined }, true); return; }
     if (inArch) setArchOpen((o) => ({ ...o, [id]: true }));
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView();
-    else if (!rawKind && allShells.some((s) => s.id === (inArch?.parent ?? id))) window.location.replace(`${window.location.pathname}?kind=all#${id}`);
-  }, [rawKind, allShells, extras]);
+    setTarget(undefined);
+    requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView());
+  }, [target, query.toString()]);
   // An open swap list closes on Escape or a press anywhere outside its slot.
   useEffect(() => {
     if (!menu) return;
@@ -136,30 +216,34 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
     document.addEventListener("pointerdown", onDown);
     return () => { document.removeEventListener("keydown", onKey); document.removeEventListener("pointerdown", onDown); };
   }, [menu]);
-  const cards = allShells.filter((s) => !extras[s.id]?.variantOf && !extras[s.id]?.inArchetype);
-  const shells = [...cards]
-    .filter((s) => !kind || s.kind === kind)
-    .filter((s) => !level || LEVEL[s.difficulty] === level)
-    .sort((a, b) => DIFF_ORDER.indexOf(a.difficulty) - DIFF_ORDER.indexOf(b.difficulty));
-  const href = (o: Record<string, string | undefined>) => {
-    const q = new URLSearchParams(Object.entries({ kind: kind ?? "all", difficulty: level, ...o }).filter(([k, v]) => v && !(k === "kind" && v === "observed")) as [string, string][]);
-    return `/comps${q.size ? `?${q}` : ""}`;
-  };
-  const KINDS: [string | undefined, string][] = [["all", "All"], ["observed", "Pro"], ["generalized", "Template"]];
+  const KINDS: [string, string][] = [["all", "All"], ["observed", "Pro"], ["generalized", "Template"]];
   const LEVELS: [Level | undefined, string][] = [[undefined, "All"], ["easy", "Easy"], ["medium", "Medium"], ["hard", "Hard"]];
+  const filtered = !!(level || strategy || q || kind !== "observed");
   return (
     <>
       <PageHeader title="Comp Library" />
       <CompFreshness lastAddition={lastAddition} />
-      <div className="filters">
+      <div className="filters comp-filters">
+        <input type="search" className="comp-search" placeholder="Champion or comp" aria-label="Search comps by champion or name"
+          value={query.get("q") ?? ""} onChange={(e) => set({ q: e.target.value || undefined })} />
         <span className="filter-group"><span className="filter-label">Type</span>
-          <nav className="seg" aria-label="Type">{KINDS.map(([k, l]) => <Link key={l} href={href({ kind: k })} className={(kind ?? "all") === k ? "active" : undefined}>{l}</Link>)}</nav>
+          <span className="seg" role="group" aria-label="Type">{KINDS.map(([k, l]) => (
+            <button key={l} type="button" className={(kind ?? "all") === k ? "active" : undefined} aria-pressed={(kind ?? "all") === k}
+              onClick={() => set({ kind: k === "observed" ? undefined : k })}>{l}</button>
+          ))}</span>
         </span>
         <span className="filter-group"><span className="filter-label">Difficulty</span>
-          <nav className="seg" aria-label="Difficulty">{LEVELS.map(([d, l]) => <Link key={l} href={href({ difficulty: d })} className={level === d ? "active" : undefined}>{l}</Link>)}</nav>
+          <span className="seg" role="group" aria-label="Difficulty">{LEVELS.map(([d, l]) => (
+            <button key={l} type="button" className={level === d ? "active" : undefined} aria-pressed={level === d} onClick={() => set({ difficulty: d })}>{l}</button>
+          ))}</span>
         </span>
-        <span className="count">{shells.length} of {cards.length} comps</span>
+        <Select label="Strategy" value={strategy ?? ""} options={strategyOptions} onChange={(v) => set({ strategy: v || undefined })} />
+        <Select label="Sort" value={sort ?? ""} options={SORTS} onChange={(v) => set({ sort: v || undefined })} />
+        <span className="count">{shells.length} of {cards.length} comps
+          {filtered && <> · <button type="button" className="src-toggle" onClick={() => set({ kind: undefined, difficulty: undefined, strategy: undefined, q: undefined })}>Clear</button></>}
+        </span>
       </div>
+      {!shells.length && <p className="muted small comp-empty">No comp matches these filters.{kind === "observed" && " Templates are under Type: All."}</p>}
       <div className="shell-grid">
         {shells.map((card) => {
           const named = extras[card.id]?.variants ?? [];
@@ -179,6 +263,7 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
           // Historical slots grouped by patch: "Zeri + Yuumi last seen 26.16".
           const hist = Object.entries(x?.historical ?? {}).reduce<Record<string, Role[]>>((m, [r, p]) => ({ ...m, [p]: [...(m[p] ?? []), r as Role] }), {});
           const showVar = !!shownVariations[s.id];
+          const levels = levelsOf(s, x), hits = filedHits(card.id);
           return (
             <article key={card.id} id={card.id} className={`panel shell ${s.kind}${arch ? " archetype" : ""} ${swapped.length ? "previewing" : ""}`}>
               <header className="shell-head">
@@ -186,7 +271,9 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
                   <h2>{card.name}</h2>
                   <span className="row tight shell-kind">
                     {s.kind === "observed" ? <SourceBadge layer="pro" label="Pro" /> : <span className="src logic"><span className="ldot" />Template</span>}
-                    <span className="xs muted">{LEVEL_LABEL[LEVEL[s.difficulty]]}</span>
+                    <span className="xs muted" title={arch ? `Each lineup keeps its own difficulty: ${[arch.core, ...arch.members].map((r) => `${r.kind === "core" ? "core" : r.name} ${r.difficulty ? LEVEL_LABEL[r.difficulty] : "not read"}`).join(", ")}` : undefined}>
+                      {levels.map((l) => LEVEL_LABEL[l]).join("–")}
+                    </span>
                   </span>
                 </div>
                 <span className="shell-tags xs muted">
@@ -200,6 +287,8 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
                     </span>
                   ))}
                 </span>
+                <EvidenceLine e={evidence[s.id]} />
+                {hits.length > 0 && <p className="shell-hit xs">{hits.map((c) => names[c] ?? c).join(", ")} in a lineup filed under this comp</p>}
                 {x?.family && (
                   <p className="shell-family xs muted" title={x.family.note}>
                     {x.family.name} family: {x.family.others.map((o, i) => <span key={o.id}>{i > 0 && ", "}<a href={`#${o.id}`}>{o.name}</a></span>)}
@@ -224,7 +313,6 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
               <div className="shell-foot">
                 <p className="wc">{arch ? arch.winCondition : s.winCondition}</p>
                 <p className="why">{arch ? arch.plan : whyLine}</p>
-                {arch && <CoreRead arch={arch} names={names} />}
                 <div className="row between shell-actions">
                   <span className="row shell-toggles">
                     {hasDetails && (
@@ -255,16 +343,21 @@ export function CompsView({ names, sources, drafts, allShells, extras, lastAddit
                   </div>
                 )}
               </div>
-              {arch && <ArchetypeRows arch={arch} names={names} open={archOpen} onToggle={(id) => setArchOpen((o) => ({ ...o, [id]: !o[id] }))} />}
+              {arch && <ArchetypeRows arch={arch} names={names} open={archOpen} onToggle={(id) => setArchOpen((o) => ({ ...o, [id]: !o[id] }))}
+                active={free?.target} onOpen={openFree} onHover={hoverFree} />}
             </article>
           );
         })}
       </div>
-      {quick.shown && cardShell && quick.shown.t.role && (
+      {quick.shown && cardShell && quick.shown.t.role && (onFree ? freeComp.current : true) && (
         <ChampionHoverCard key={`${cardShell.id}-${quick.shown.t.role}-${quick.shown.t.id}`} target={quick.shown.t} anchor={quick.shown.el} swap={quick.shown.swap} data={data} index={index}
-          comp={compOf(cardShell, { ...swapsOf(cardShell.id), [quick.shown.t.role]: quick.shown.t.id })}
+          comp={onFree ? freeComp.current! : compOf(cardShell, { ...swapsOf(cardShell.id), [quick.shown.t.role]: quick.shown.t.id })}
           side={quick.shown.el.classList.contains("lu-slot") ? "below" : "beside"}
           leaving={quick.leaving} onGone={quick.end} onEnter={intent.keep} onLeave={intent.unhover} />
+      )}
+      {free && (
+        <ChampionDrawer target={free.target} comp={free.comp} data={data} index={index} context={COMPS} onClose={close}
+          onSelect={(t: DrawerTarget) => t.role && setFree({ target: { id: t.id, role: t.role }, comp: free.comp })} />
       )}
       {open && openShell && (
         <ChampionDrawer target={{ id: shellDraft(openShell, swapsOf(openShell.id))[open.role], role: open.role }} comp={compOf(openShell, swapsOf(openShell.id))}
@@ -519,76 +612,132 @@ function JobLine({ jobs, names }: { jobs: JobRead[]; names: Record<string, strin
     </dl>
   );
 }
-const via = (r: ArchetypeRow) => r.via.length ? <span className="arch-via">· through {r.via.join(" + ")}</span> : null;
 const sample = (r: ArchetypeRow) => `${plural(r.games.length, "game")}${r.alike.length ? ` · ${plural(r.alike.reduce((n, a) => n + a.games.length, 0), "more")} playing the same way` : ""}`;
+const lineupNames = (p: ArchetypeRow["picks"], names: Record<string, string>) => ROLES.map((r) => names[p[r]] ?? p[r]).join(", ");
 
-function CoreRead({ arch, names }: { arch: Archetype; names: Record<string, string> }) {
-  const c = arch.core;
+/** What a card's evidence stands on, in one quiet line: curated, discovered or template, the games with its own lineup
+ *  and everything filed under it (games, series, teams) and the newest game. Never a claim that the comp works. */
+function EvidenceLine({ e }: { e?: CardEvidence }) {
+  if (!e) return null;
+  if (e.origin === "template") return <p className="shell-evidence xs">Template · general draft logic, no recorded lineup</p>;
+  const more = e.games > e.lineup;
+  const lineup = e.lineup === 1 ? (more ? "lineup: 1 game" : "single-game example") : e.lineup ? `lineup: ${plural(e.lineup, "game")}, ${plural(e.lineupSeries, "series")}` : "lineup not recorded";
   return (
-    <div className="arch-core">
-      <p className="arch-row-head"><b>Core lineup</b> <span className="faint">· {sample(c)}</span> {via(c)}</p>
-      {c.jobs && <JobLine jobs={c.jobs} names={names} />}
-      <p className="arch-note">{c.note}</p>
-    </div>
+    <p className="shell-evidence xs" title="Recorded pro games filed under this comp. A comp being played shows it was drafted, not that it works.">
+      <span>{e.origin === "curated" ? "Curated" : "Discovered"}</span>
+      <span>{lineup}</span>
+      {more && <span>{plural(e.games, "game")}, {plural(e.series, "series")}, {plural(e.teams, "team")} in all</span>}
+      {e.latest && <span>last {shortDate(e.latest)}</span>}
+    </p>
   );
 }
 
-/** The archetype's named variations, then any filed lineup under review. Every game is listed once, under its own row. */
-function ArchetypeRows({ arch, names, open, onToggle }: { arch: Archetype; names: Record<string, string>; open: Record<string, boolean>; onToggle: (id: string) => void }) {
+/** How a row differs from the archetype's typical plan, from the comp check's job read: shared damage, thin peel, no
+ *  frontliner, its own fight starts. "Keeps every typical job" when nothing moves. */
+function diffParts(r: ArchetypeRow, names: Record<string, string>): { text: string; warn?: boolean }[] {
+  const out: { text: string; warn?: boolean }[] = [];
+  for (const j of r.jobs ?? []) {
+    if (j.job === "carry" && j.state === "shares") out.push({ text: `damage shared with ${list(j.champions.slice(1), names)}` });
+    if (j.job === "peel" && j.state === "gives up") out.push({ text: j.champions.length ? `only ${list(j.champions, names)} peels` : "no peel", warn: true });
+    if (j.job === "front" && j.state === "gives up") out.push({ text: "no frontliner", warn: true });
+    if (j.job === "start" && j.state === "replaces") out.push({ text: `${list(j.champions, names)} start${j.champions.length > 1 ? "" : "s"} fights` });
+  }
+  if (r.jobs && !out.length) out.push({ text: "keeps every typical job" });
+  return out;
+}
+
+/** The archetype's core and named variations as comparison rows, then any filed lineup under review. Each row shows its
+ *  five champions (those that differ from the core in full colour), its sample, its own difficulty and how it differs;
+ *  jobs, notes, reads and games are behind Details. Every game is listed once, under its own row. */
+function ArchetypeRows({ arch, names, open, onToggle, active, onOpen, onHover }: {
+  arch: Archetype; names: Record<string, string>; open: Record<string, boolean>; onToggle: (id: string) => void;
+  active?: DrawerTarget; onOpen: OpenFree; onHover: HoverFree;
+}) {
+  const item = (r: ArchetypeRow) => <ArchetypeItem key={r.id} row={r} arch={arch} names={names} open={!!open[r.id]} onToggle={() => onToggle(r.id)} active={active} onOpen={onOpen} onHover={onHover} />;
   return (
-    <section className="arch-vars" aria-label={`${arch.name} named variations`}>
-      <h3 className="arch-sub">{plural(arch.members.length, "named variation")}</h3>
-      <ul className="arch-list">
-        {arch.members.map((r) => <ArchetypeItem key={r.id} row={r} core={arch.core} names={names} open={!!open[r.id]} onToggle={() => onToggle(r.id)} />)}
-      </ul>
+    <section className="arch-vars" aria-label={`${arch.name}: core and named variations`}>
+      <h3 className="arch-sub">Core and {plural(arch.members.length, "named variation")} <span className="faint">· champions that differ from the core in full colour</span></h3>
+      <ul className="arch-list">{[arch.core, ...arch.members].map(item)}</ul>
       {arch.review.length > 0 && (
         <>
           <h3 className="arch-sub">Needs review <span className="faint">· {arch.review.length}, not counted as a variation</span></h3>
-          <ul className="arch-list">
-            {arch.review.map((r) => <ArchetypeItem key={r.id} row={r} core={arch.core} names={names} open={!!open[r.id]} onToggle={() => onToggle(r.id)} />)}
-          </ul>
+          <ul className="arch-list">{arch.review.map(item)}</ul>
         </>
       )}
     </section>
   );
 }
 
-function ArchetypeItem({ row: r, core, names, open, onToggle }: { row: ArchetypeRow; core: ArchetypeRow; names: Record<string, string>; open: boolean; onToggle: () => void }) {
+type OpenFree = (t: DrawerTarget & { role: Role }, comp: CompContext, el: HTMLElement) => void;
+type HoverFree = (t?: { id: string; role: Role; comp: CompContext; el: HTMLElement }) => void;
+
+/** A row's five champions, the core's order. Hover for the quick card, click for the drawer (reading this lineup). */
+function RowLineup({ r, core, names, active, onOpen, onHover }: { r: ArchetypeRow; core: ArchetypeRow; names: Record<string, string>; active?: DrawerTarget; onOpen: OpenFree; onHover: HoverFree }) {
+  const comp: CompContext = { name: r.kind === "core" ? `${r.name} · core` : r.name, slots: r.picks };
   const changed = ROLES.filter((role) => r.picks[role] !== core.picks[role]);
-  const detail = `arch-detail-${r.id}`;
   return (
-    <li id={r.kind === "comp" ? r.id : undefined} className={`arch-item${r.why ? " review" : ""}`}>
-      <p className="arch-row-head"><b>{r.name}</b> <span className="faint">· {sample(r)}</span> {via(r)}</p>
-      {r.jobs && <JobLine jobs={r.jobs} names={names} />}
+    <span className={`arch-lineup${r.kind === "core" ? " core" : ""}`}>
+      {ROLES.map((role) => {
+        const id = r.picks[role], diff = changed.includes(role);
+        return (
+          <button key={role} type="button" className={`arch-pick${diff ? " diff" : ""}${active?.id === id && active.role === role ? " is-open" : ""}`}
+            aria-label={`${names[id] ?? id}, ${ROLE_LABEL[role].toLowerCase()}${r.kind === "core" ? "" : diff ? `, in place of ${names[core.picks[role]]}` : ", as in the core"}: open details`}
+            onClick={(e) => onOpen({ id, role }, comp, e.currentTarget)}
+            onPointerEnter={(e) => { if (e.pointerType === "mouse") onHover({ id, role, comp, el: e.currentTarget }); }}
+            onPointerLeave={(e) => { if (e.pointerType === "mouse") onHover(undefined); }}
+            onFocus={(e) => { if (e.currentTarget.matches(":focus-visible")) onHover({ id, role, comp, el: e.currentTarget }); }} onBlur={() => onHover(undefined)}>
+            <ChampIcon id={id} name={names[id]} role={role} size="sm" />
+          </button>
+        );
+      })}
+      {r.kind !== "core" && changed.length > 0 && <span className="sr-only">Changed from the core: {changed.map((role) => `${names[r.picks[role]]} for ${names[core.picks[role]]}`).join(", ")}.</span>}
+    </span>
+  );
+}
+
+function ArchetypeItem({ row: r, arch, names, open, onToggle, active, onOpen, onHover }: {
+  row: ArchetypeRow; arch: Archetype; names: Record<string, string>; open: boolean; onToggle: () => void;
+  active?: DrawerTarget; onOpen: OpenFree; onHover: HoverFree;
+}) {
+  const core = arch.core;
+  const detail = `arch-detail-${r.id}`;
+  const parts = [...(r.via.length ? [{ text: `through ${r.via.join(" + ")}` }] : []), ...diffParts(r, names)];
+  return (
+    <li id={r.kind === "comp" ? r.id : undefined} className={`arch-item${r.why ? " review" : ""}${r.kind === "core" ? " core" : ""}`}>
+      <div className="arch-line">
+        <p className="arch-row-head">
+          <b>{r.kind === "core" ? "Core" : r.name}</b>{" "}
+          <span className="faint">· {sample(r)}{r.difficulty ? ` · ${LEVEL_LABEL[r.difficulty]}` : ""}</span>
+        </p>
+        <RowLineup r={r} core={core} names={names} active={active} onOpen={onOpen} onHover={onHover} />
+      </div>
+      {parts.length > 0 && (
+        <p className="arch-diff">{parts.map((p, i) => <span key={p.text} className={p.warn ? "warn" : undefined}>{i === 0 ? p.text.charAt(0).toUpperCase() + p.text.slice(1) : p.text}</span>)}</p>
+      )}
       {r.why && <p className="arch-why">{r.why}</p>}
-      <p className="arch-note">{r.note}</p>
       <button type="button" className="src-toggle" aria-expanded={open} aria-controls={detail} onClick={onToggle}>
-        Lineup and games <span aria-hidden="true">{open ? "▴" : "▾"}</span>
+        Details <span className="faint">· jobs, notes and {r.games.length === 1 ? "game" : "games"}</span> <span aria-hidden="true">{open ? "▴" : "▾"}</span>
       </button>
       {open && (
         <div id={detail} className="arch-detail">
-          <span className="var-what">
-            <span className="var-lineup" aria-label={ROLES.map((role) => names[r.picks[role]]).join(", ")}>
-              {ROLES.map((role) => <span key={role} className={changed.includes(role) ? "var-pick diff" : "var-pick"}><ChampIcon id={r.picks[role]} name={names[r.picks[role]]} role={role} size="xs" /></span>)}
-            </span>
-            <span className="faint">{changed.length ? changed.map((role) => `${names[r.picks[role]]} for ${names[core.picks[role]]}`).join(", ") : "Core lineup"}</span>
-          </span>
+          {r.jobs && <JobLine jobs={r.jobs} names={names} />}
+          <p className="arch-note">{r.note}</p>
           <span className="var-games">
             {r.games.map((g) => <GameLink key={`${g.game}-${g.side}`} g={g} />)}
-            <Link className="var-draft" href={r.kind === "comp" ? `/?shell=${r.id}` : draftHref(r.picks)}>Draft Room →</Link>
+            <Link className="var-draft" href={r.kind === "comp" || r.kind === "core" ? `/?shell=${r.id}` : draftHref(r.picks)}>Draft Room →</Link>
           </span>
           {r.read && (
             <p className="faint">Comp check read: {r.read.identity}. {r.read.timing}{r.read.weaknesses.length ? ` Weak points: ${r.read.weaknesses.map((w) => `${w.label} (${w.severity})`).join(", ")}.` : " No weak points."}</p>
           )}
           {r.alike.map((a) => (
             <p key={ROLES.map((role) => a.picks[role]).join("|")} className="var-alike">
-              <span className="faint">Plays the same way:</span> {ROLES.map((role) => names[a.picks[role]]).join(", ")}{" "}
+              <span className="faint">Plays the same way:</span> {lineupNames(a.picks, names)}{" "}
               {a.games.map((x) => <GameLink key={`${x.game}-${x.side}`} g={x} />)}
             </p>
           ))}
           {r.observed.map((v) => (
             <p key={ROLES.map((role) => v.picks[role]).join("|")} className="var-alike">
-              <span className="faint">{v.named ? `${v.named.name}:` : "Observed with it:"}</span> {ROLES.map((role) => names[v.picks[role]]).join(", ")}{" "}
+              <span className="faint">{v.named ? `${v.named.name}:` : "Observed with it:"}</span> {lineupNames(v.picks, names)}{" "}
               {v.games.map((x) => <GameLink key={`${x.game}-${x.side}`} g={x} />)}
             </p>
           ))}

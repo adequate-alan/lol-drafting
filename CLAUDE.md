@@ -516,6 +516,16 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   own review, and Objective Zone, Stable Top + Carry Bot and Jax Skirmish stay separate. A shared bot lane alone never
   files a lineup (`relation` needs the same identity in the other roles); K'Sante / Jarvan IV / Cassiopeia stays under
   Objective Zone because its own read is the same skirmish + tempo plan with four of five jobs alike.
+- **Comparison and discovery** (alan, 2026-10-26; `CardEvidence`, `strategiesOf`, `championsOf` in `lib/comp-library.ts`,
+  `tests/comp-library-browse.test.ts`, smoke "comps:"): every archetype row, the core first, shows its five champions at
+  once (those that differ from the core in full colour with a gold ring), its sample, its own difficulty (the comp check's
+  read, never the core's carried over; the card shows the range) and one line on how it differs (the job read); jobs,
+  notes, reads and games stay behind Details. A row's champion opens the drawer and hover card on that lineup. Each card
+  names its evidence (curated / discovered / template, its lineup's games, every filed game by game, series and team,
+  the newest game; a lineup under review is never counted): drafts that were played, never proof a comp works. Filters:
+  search (champion or comp name, filed lineups included and named on the card), Type, Difficulty, Strategy (identity
+  tags mapped to the comp check's identities, never a reclassification) and Sort (easiest first, newest game, most
+  games), all in the URL, written in place. A link to a comp (`#id`, nested or variant) clears filters that hide it.
 - Discovered comps render as Pro cards in Comp Library (`lib/comp-library.ts`); their identity, jobs, win condition,
   strengths, weak points and difficulty are the comp check's read (General Draft Logic, labelled "Comp check read" in
   Details). Observed variations of any comp sit behind "N observed variations". The page shows "Library reviewed" (last

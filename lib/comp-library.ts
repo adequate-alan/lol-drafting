@@ -12,16 +12,20 @@ import { newestGamesFirst, recordStamp } from "./chronology";
 import { IDENTITY_LABEL, lineupKey, refKey, shellPicks, type LineupJobs, type LineupRef, type Picks, type ReadResult, type Weak } from "./comp-discovery";
 import { comparePatch } from "./patch";
 import { gameSourceId } from "./pro-games";
-import { ROLES, type CompReview, type CompShell, type DiscoveredComp, type DiscoveredComps, type ProGame, type Role } from "./schema";
+import { ROLES, type CompReview, type CompShell, type DiscoveredComp, type DiscoveredComps, type ProGame, type Role, type Source } from "./schema";
 
 /** One recorded game for a lineup, as a variation row shows it. */
 export interface ObservedGame {
   game: number; side: "blue" | "red"; team: string; opponent: string; won: boolean;
   date: string; patch: string; tournament: string; url: string;
+  series: string; // Gol.gg series id (the game's own id when the record names none): independent samples are counted by series
 }
 export interface ObservedLineup { picks: Picks; games: ObservedGame[]; named?: NamedVariation }
 /** The comp check's read of a lineup (General Draft Logic), for a named variation. */
-export interface LineupRead { identity: string; winCondition: string; timing: string; strengths: string[]; weaknesses: Weak[] }
+export interface LineupRead { identity: string; winCondition: string; timing: string; strengths: string[]; weaknesses: Weak[]; difficulty: Level }
+/** The comp check's three difficulty levels (curated shells keep "easy-medium", which reads as Medium). */
+export type Level = "easy" | "medium" | "hard";
+export const LEVEL: Record<CompShell["difficulty"], Level> = { easy: "easy", "easy-medium": "medium", medium: "medium", hard: "hard" };
 export interface NamedVariation { name: string; note: string; read?: LineupRead; alike: ObservedLineup[] }
 export interface CompFamily { id: string; name: string; note: string; others: { id: string; name: string }[] }
 /** A champion pro teams played in one slot of a comp, approved by alan as a supported alternative. Never "the" meta pick:
@@ -55,6 +59,7 @@ export interface ArchetypeRow {
   read?: LineupRead; alike: ObservedLineup[];
   observed: ObservedLineup[]; // a member comp's own observed variations and named lineups
   why?: string;               // a review row: why its plan is ambiguous
+  difficulty?: Level;         // the row's own difficulty (the comp check's read), never the core's carried over
 }
 export interface Archetype {
   id: string; name: string; carry: string; winCondition: string; plan: string;
@@ -75,12 +80,13 @@ export const plainVariations = (x: LibraryExtra) => x.archetype ? x.variations.f
 const NO_REVIEW: CompReview = { proSwaps: [], supporting: [], historical: [], variants: [], heldChampions: [], approvedComps: [], pendingComps: [], namedVariations: [], held: [], families: [], archetypes: [] };
 const readView = (r: ReadResult): LineupRead | undefined => r.ok ? {
   identity: [r.read.primary, r.read.secondary].filter((x): x is NonNullable<typeof x> => !!x).map((i) => IDENTITY_LABEL[i]).join(" + "),
-  winCondition: r.read.winCondition, timing: r.read.timing, strengths: r.read.strengths, weaknesses: r.read.weaknesses,
+  winCondition: r.read.winCondition, timing: r.read.timing, strengths: r.read.strengths, weaknesses: r.read.weaknesses, difficulty: r.read.difficulty,
 } : undefined;
 
 export function gameView(g: ProGame, side: "blue" | "red"): ObservedGame {
   const them = side === "blue" ? "red" : "blue";
-  return { game: g.id, side, team: g[side].team, opponent: g[them].team, won: g.winner === side, date: g.date, patch: g.patch, tournament: g.tournament, url: g.url };
+  return { game: g.id, side, team: g[side].team, opponent: g[them].team, won: g.winner === side, date: g.date, patch: g.patch, tournament: g.tournament, url: g.url,
+    series: String(g.seriesId ?? g.id) };
 }
 
 const DIFFICULTY: Record<DiscoveredComp["difficulty"], CompShell["difficulty"]> = { easy: "easy", medium: "medium", hard: "hard" };
@@ -100,8 +106,9 @@ export function discoveredShell(c: DiscoveredComp, games: Map<number, ProGame>):
 /** `records`: every recorded game the review may cite (the tracked games plus the LCK archive records); defaults to `proGames`. */
 /** `readOf`: the comp check's read of a lineup, shown with a named variation (left out when not given). */
 /** `jobsOf`: who does each archetype job in a lineup (left out: archetype rows carry no job read). */
+/** `sourceList`: the library's sources, for a curated shell whose own game has no game record (LCK finals G3): counted from the source. */
 export function buildLibrary(shells: CompShell[], file: DiscoveredComps, proGames: ProGame[], review: CompReview = NO_REVIEW, records: ProGame[] = proGames,
-  readOf?: (p: Picks) => ReadResult, jobsOf?: (p: Picks) => LineupJobs | null) {
+  readOf?: (p: Picks) => ReadResult, jobsOf?: (p: Picks) => LineupJobs | null, sourceList: Source[] = []) {
   const games = new Map([...records, ...proGames].map((g) => [g.id, g]));
   const view = (refs: LineupRef[]) => newestGamesFirst(refs.flatMap((r) => { const g = games.get(r.game); return g ? [{ g, v: gameView(g, r.side) }] : []; }),
     (x) => recordStamp(x.g)).map((x) => x.v);
@@ -214,7 +221,7 @@ export function buildLibrary(shells: CompShell[], file: DiscoveredComps, proGame
       if (!hit) return;
       const n = hit.v.named!;
       return { id: refKey(ref), kind: "named", name: name ?? n.name, note: note ?? n.note, via, picks: hit.v.picks, games: hit.v.games,
-        ...jobs(hit.v.picks), ...(n.read ? { read: n.read } : {}), alike: n.alike, observed: [] };
+        ...jobs(hit.v.picks), ...(n.read ? { read: n.read, difficulty: n.read.difficulty } : {}), alike: n.alike, observed: [] };
     };
     const reviewed = new Set(a.review.map((r) => refKey(r.game)));
     const members = a.members.flatMap((m): ArchetypeRow[] => {
@@ -226,12 +233,13 @@ export function buildLibrary(shells: CompShell[], file: DiscoveredComps, proGame
       // A member comp's own observed lineups travel with its row; a lineup under review is listed in the review block.
       const observed = cx.variations.filter((v) => !(v.named && v.games.some((g) => reviewed.has(refKey(g)))));
       return [{ id: c.id, kind: "comp", name: m.name ?? c.name, note: m.note ?? c.why, via: m.via, picks, games: ownGames(c.id), ...jobs(picks),
-        ...(read ? { read } : {}), alike: [], observed }];
+        ...(read ? { read } : {}), alike: [], observed, difficulty: LEVEL[c.difficulty] }];
     });
     const rows = a.review.flatMap((r) => { const row = fromNamed(r.game, []); return row ? [{ ...row, why: r.why }] : []; });
     const corePicks = shellPicks(core);
     ex.archetype = { id: a.id, name: a.name, carry: a.carry, winCondition: a.winCondition, plan: a.plan,
-      core: { id: core.id, kind: "core", name: core.name, note: a.coreNote, via: a.coreVia, picks: corePicks, games: ownGames(core.id), ...jobs(corePicks), alike: [], observed: [] },
+      core: { id: core.id, kind: "core", name: core.name, note: a.coreNote, via: a.coreVia, picks: corePicks, games: ownGames(core.id), ...jobs(corePicks), alike: [], observed: [],
+        difficulty: LEVEL[core.difficulty] },
       members, review: rows };
   }
   // A family links cards: a comp shown inside an archetype is reached through its parent's card.
@@ -241,6 +249,80 @@ export function buildLibrary(shells: CompShell[], file: DiscoveredComps, proGame
       .filter((o, i, list) => o.id !== id && o.id !== x.inArchetype?.parent && list.findIndex((y) => y.id === o.id) === i);
     x.family = { ...x.family, others };
   }
-  return { shells: all, extras, lastAddition: file.lastAddition };
+  // Evidence per comp: its own lineup's games (a curated shell's source game included) and every game filed under it.
+  const evidence: Record<string, CardEvidence> = {};
+  for (const s of all) {
+    const x = extras[s.id], own = lineupKey(shellPicks(s)), d = file.comps.find((c) => c.id === s.id);
+    const source = s.sources.flatMap((id): Counted[] => {
+      if (!id.startsWith("golgg-game-")) return [];
+      const g = games.get(Number(id.replace(/^golgg-game-/, "")));
+      const side = g && (["blue", "red"] as const).find((k) => lineupKey(g[k].picks as Picks) === own);
+      if (g && side) return [gameView(g, side)];
+      // A source game with no game record still counts once, by its source: same series key as its teams and tournament.
+      const src = !g && s.kind === "observed" ? sourceList.find((x) => x.id === id) : undefined;
+      return src?.date && src.team ? [{ game: Number(id.replace(/^golgg-game-/, "")), side: "blue", team: src.team, date: src.date,
+        series: `${src.tournament ?? ""}|${[src.team, src.opponent ?? ""].sort().join("|")}` }] : [];
+    });
+    const lineup = d ? view(d.games) : [...source, ...(x?.games ?? [])];
+    const a = x?.archetype;
+    const filed = [...lineup, ...(x?.variations ?? []).flatMap((v) => [...v.games, ...(v.named?.alike ?? []).flatMap((l) => l.games)]),
+      ...proSwapsOf(x).flatMap((p) => p.games),
+      ...(a ? a.members.flatMap((r) => [...r.games, ...r.alike.flatMap((l) => l.games), ...r.observed.flatMap((l) => [...l.games, ...(l.named?.alike ?? []).flatMap((m) => m.games)])]) : [])];
+    evidence[s.id] = { origin: s.kind === "generalized" ? "template" : d ? "discovered" : "curated", ...sampleOf(lineup, "lineup"), ...sampleOf(filed) };
+  }
+  return { shells: all, extras, evidence, lastAddition: file.lastAddition };
+}
+
+/** What a comp's evidence stands on: games with its own lineup, and every distinct game filed under it (its lineup,
+ *  observed variations, lineups that play the same way, pro swaps and, on an archetype, every named variation; a lineup
+ *  under review is left out), by game, independent series and team, with the newest game's date. A count of drafts
+ *  that were played, never a claim that the comp works. */
+export interface CardEvidence {
+  origin: "curated" | "discovered" | "template";
+  lineup: number; lineupSeries: number; games: number; series: number; teams: number; latest?: string;
+}
+type Counted = Pick<ObservedGame, "game" | "side" | "team" | "date" | "series">;
+function sampleOf(list: Counted[]): Pick<CardEvidence, "games" | "series" | "teams" | "latest">;
+function sampleOf(list: Counted[], as: "lineup"): Pick<CardEvidence, "lineup" | "lineupSeries">;
+function sampleOf(list: Counted[], as?: "lineup") {
+  const seen = new Map(list.map((g) => [`${g.game}-${g.side}`, g])), gs = [...seen.values()];
+  const series = new Set(gs.map((g) => g.series)).size;
+  if (as) return { lineup: gs.length, lineupSeries: series };
+  return { games: gs.length, series, teams: new Set(gs.map((g) => g.team)).size, ...(gs.length ? { latest: gs.map((g) => g.date).sort().at(-1) } : {}) };
+}
+const proSwapsOf = (x?: LibraryExtra) => ROLES.flatMap((r) => x?.proSwaps?.[r] ?? []);
+
+/** Composition strategies a comp is filed under, for the library's Strategy filter: the comp check's primary and
+ *  secondary identity for a discovered comp, and its tags mapped to the same identities for every comp. A filter, never
+ *  a reclassification: a tag with no clear identity (hybrid, weakside, objective control) maps to none. */
+const TAG_IDENTITY: Record<string, IdentityId> = {
+  "front-to-back": "front-to-back", dive: "dive", "dive-mid-jg": "dive",
+  pick: "pick", catch: "pick", "pick-catch": "pick", "point-click-setup": "pick",
+  poke: "poke", siege: "poke",
+  "protect-the-carry": "protect", "protected-carry": "protect", "protect-carry": "protect", "protected-bot": "protect",
+  skirmish: "skirmish", "anti-cc-skirmish": "skirmish", wombo: "wombo",
+  "split-pressure": "split", "side-pressure": "split", "side-lane": "split",
+  tempo: "tempo", "early-tempo": "tempo", "lane-pressure": "tempo", scaling: "scaling",
+};
+/** A composition identity, as the comp check names them. */
+export type IdentityId = keyof typeof IDENTITY_LABEL;
+export function strategiesOf(s: CompShell, d?: Pick<DiscoveredComp, "primary" | "secondary">): IdentityId[] {
+  const ids = [d?.primary, d?.secondary, ...s.identities.map((t) => TAG_IDENTITY[t])].filter((x): x is IdentityId => !!x);
+  return [...new Set(ids)];
+}
+
+/** Every champion a card shows: its board (each variant's too), and the lineups and swaps filed under it. Search reads it. */
+export function championsOf(s: CompShell, x: LibraryExtra | undefined, all: CompShell[]): { board: Set<string>; filed: Set<string> } {
+  const board = new Set<string>(), filed = new Set<string>();
+  const add = (set: Set<string>, p: Picks) => { for (const r of ROLES) set.add(p[r]); };
+  add(board, shellPicks(s));
+  for (const v of x?.variants ?? []) { const c = all.find((y) => y.id === v.id); if (c) add(board, shellPicks(c)); }
+  const lineups = [...(x?.variations ?? []), ...(x?.variations ?? []).flatMap((v) => v.named?.alike ?? [])];
+  const a = x?.archetype;
+  if (a) for (const r of [...a.members, ...a.review]) { add(filed, r.picks); lineups.push(...r.alike, ...r.observed); }
+  for (const l of lineups) add(filed, l.picks);
+  for (const p of proSwapsOf(x)) filed.add(p.champion);
+  for (const c of board) filed.delete(c);
+  return { board, filed };
 }
 export type Library = ReturnType<typeof buildLibrary>;

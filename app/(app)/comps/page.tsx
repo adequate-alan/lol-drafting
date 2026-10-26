@@ -13,7 +13,7 @@ export default function Comps() {
   return (
     <Suspense fallback={<PageLoading title="Comp Library" />}>
       <CompsView names={nameMap()} sources={sourceMap()} drafts={drafts} allShells={library.shells}
-        extras={library.extras} lastAddition={library.lastAddition} data={getDrawerData()} />
+        extras={library.extras} evidence={library.evidence} lastAddition={library.lastAddition} data={getDrawerData()} />
     </Suspense>
   );
 }
