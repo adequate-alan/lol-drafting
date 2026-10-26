@@ -28,10 +28,19 @@
     { "champion": "zaahen", "since": "2026-10-16", "reason": "kit added 2026-10-16; his lineups join existing comps as evidence, new comps from them wait for alan's review" }
   ],
   "approvedComps": [
-    { "comp": "pro-83641-red", "approvedOn": "2026-10-26", "name": "Front-to-back + Zone Control · Viktor" }
+    { "comp": "pro-83641-red", "approvedOn": "2026-10-26", "name": "Front-to-back + Zone Control · Viktor" },
+    { "comp": "pro-83653-red", "approvedOn": "2026-10-26", "name": "Dive · Orianna follow-up" }
   ],
   "pendingComps": [],
   "namedVariations": [
+    { "comp": "pro-83653-red", "name": "Corki front-to-back · KT Rolster", "game": { "game": 83605, "side": "blue" }, "approvedOn": "2026-10-26",
+      "note": "Same start and follow-up: Nautilus and Wukong start the fight, Olaf dives behind them, and Orianna and Corki follow up from range. Three frontliners (Olaf, Wukong, Nautilus) make it read front-to-back rather than pick: Corki deals sustained damage from behind instead of catches between fights. Lost to BNK FearX at the Demacia Cup (26.18). One game, so it is documented as a variation." },
+    { "comp": "pro-83653-red", "name": "Ezreal front-to-back · Cloud9", "game": { "game": 83625, "side": "red" }, "approvedOn": "2026-10-26",
+      "note": "Alistar starts the fight, Renekton and Naafiri dive behind him, and Orianna and Ezreal follow up from range. Like KT Rolster's draft it reads front-to-back rather than pick, with Ezreal poking from behind; Naafiri is a second diver instead of a catch jungler, and the comp check flags little tank damage. Lost to FURIA at the Worlds Play-In (26.20). One game, so it is documented as a variation." },
+    { "comp": "pro-83469-blue", "name": "Jarvan IV start · FURIA", "game": { "game": 83623, "side": "blue" }, "approvedOn": "2026-10-26",
+      "note": "The same coordinated dive: Jarvan IV starts the fight, as in BNK FearX's filed game, Ambessa and Ahri go in with him and Kalista and Renata follow. Tradeoffs: Jarvan IV is the only frontliner, short range and weak waveclear. Lost to Cloud9 at the Worlds Play-In (26.20). One game, so it is documented as a variation." },
+    { "comp": "pro-83469-blue", "name": "Wukong start · HANJIN BRION", "game": { "game": 83610, "side": "red" }, "approvedOn": "2026-10-26",
+      "note": "The same coordinated dive: Wukong starts the fight, as in Cloud9's filed game, Olaf and Locke go in with him and Kalista and Renata follow. Olaf and Wukong are the frontline, like Renekton and Skarner in the main comp; Locke's damage replaces Akali's. Tradeoffs: short range and weak waveclear. Beat Team WE at the Demacia Cup (26.18). One game, so it is documented as a variation." },
     { "comp": "pro-83521-blue", "name": "Peel + poke · BNK FearX", "game": { "game": 83453, "side": "blue" }, "approvedOn": "2026-10-24",
       "note": "Still plays around Yunara, with stronger disengage and layered damage: Poppy and Lulu peel, Cassiopeia zones the front of the fight and Jayce adds poke. One frontliner (Poppy) and no on-demand engage, so the team waits for the enemy to come in. BNK picked Cassiopeia first, then Yunara and Lulu." },
     { "comp": "pro-83521-blue", "name": "Ryze variation · BNK FearX", "game": { "game": 83618, "side": "red" }, "approvedOn": "2026-10-24",
@@ -51,6 +60,8 @@
       "note": "Keeps the plan: Skarner starts, Jax and Locke go in with him, Karma speeds the dive. Tradeoffs: Sivir's team-wide speed-up is gone, Jax is a side-lane diver rather than a second frontliner beside Skarner, and Aphelios needs items, so the comp gives up its early edge and leans later." }
   ],
   "held": [
+    { "name": "Dive + Skirmish · Akali", "games": [{ "game": 83640, "side": "red" }, { "game": 83647, "side": "red" }], "decidedOn": "2026-10-26",
+      "note": "Anyone's Legend's Neeko-started dive and CTBC Flying Oyster's Olaf + Lee Sin skirmish dive share Olaf and Akali but start their fights differently, so their strategic identity is not established yet. Reconsider when another team plays a comparable Olaf + Akali dive." },
     { "name": "Front-to-back + Split · Yunara", "games": [{ "game": 83460, "side": "blue" }, { "game": 83624, "side": "red" }], "decidedOn": "2026-10-17",
       "note": "Team WE's Yorick lineup and FURIA's Olaf lineup share a Sejuani + Akali + Yunara + Lulu core, but Yorick's split pressure and Olaf's skirmishing win differently, so FURIA's game does not confirm the split comp. Reconsider when another team plays a comparable split-push lineup." },
     { "name": "Front-to-back · Yunara with Zaahen (Cloud9)", "games": [{ "game": 83601, "side": "blue" }], "decidedOn": "2026-10-17",

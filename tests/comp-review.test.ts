@@ -169,8 +169,30 @@ describe("named variations, holds and families (2026-10-17)", () => {
     expect(diana.games.map((g) => `${g.game}-${g.side}`)).toEqual(["83657-red"]);
     expect(diana.picks.MID).toBe("diana");
     expect(library.extras["pro-83521-blue"].archetype!.members.some((m) => m.picks.MID === "diana")).toBe(false);
-    // Held for their own reviews: no card for the Cassiopeia, Akali or Camille proposals.
-    for (const id of ["pro-83647-blue", "pro-83640-red", "pro-83653-red"]) expect(library.shells.some((s) => s.id === id), id).toBe(false);
+    // Held for their own reviews: no card for the Cassiopeia or Akali proposals.
+    for (const id of ["pro-83647-blue", "pro-83640-red"]) expect(library.shells.some((s) => s.id === id), id).toBe(false);
+  });
+
+  it("Dive review (alan, 2026-10-26): Orianna follow-up dive approved, two Kalista + Renata variations, Akali and Xayah held", () => {
+    const ori = library.shells.find((s) => s.id === "pro-83653-red")!;
+    expect(ori.name).toBe("Dive · Orianna follow-up");
+    const oriVars = library.extras["pro-83653-red"].variations;
+    // Four teams: Bilibili's card, Top Esports' observed lineup, KT Rolster's and Cloud9's named variations.
+    expect(oriVars.some((v) => v.games.some((g) => g.game === 83655 && g.side === "blue"))).toBe(true);
+    for (const [name, game, mid] of [["Corki front-to-back · KT Rolster", 83605, "orianna"], ["Ezreal front-to-back · Cloud9", 83625, "orianna"]] as const) {
+      const v = oriVars.find((x) => x.named?.name === name)!;
+      expect(v.games.map((g) => g.game), name).toEqual([game]);
+      expect(v.picks.MID).toBe(mid);
+    }
+    const kal = library.extras["pro-83469-blue"].variations;
+    expect(kal.find((v) => v.named?.name === "Jarvan IV start · FURIA")?.games.map((g) => `${g.game}-${g.side}`)).toEqual(["83623-blue"]);
+    expect(kal.find((v) => v.named?.name === "Wukong start · HANJIN BRION")?.games.map((g) => `${g.game}-${g.side}`)).toEqual(["83610-red"]);
+    // Held, with their games kept as evidence: the Akali pair and Dive · Xayah. No Dive archetype.
+    const held = new Map(review.held.map((h) => [h.name, h.games.map((g) => `${g.game}-${g.side}`)]));
+    expect(held.get("Dive + Skirmish · Akali")).toEqual(["83640-red", "83647-red"]);
+    expect(held.get("Dive · Xayah")).toEqual(["83469-red", "83601-red"]);
+    expect(library.shells.some((s) => s.id === "pro-83640-red")).toBe(false);
+    expect(review.archetypes.map((a) => a.id)).toEqual(["protect-yunara"]);
   });
 
   it("Protect · Cassiopeia is not a comp (alan, 2026-10-24): its three games are separate named variations of Protect · Yunara", () => {
