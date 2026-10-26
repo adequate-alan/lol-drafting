@@ -249,6 +249,7 @@ export interface DiscoveredFile {
 export interface Candidate {
   id: string; picks: Picks; read: CompRead | null; reason: string; games: Observation[];
   ready?: boolean; // passes every check: listed for alan's approval, never added without it
+  title?: string; // the name it would get (compTitle), for the report
 }
 export interface DiscoveryResult {
   file: DiscoveredFile;
@@ -272,6 +273,7 @@ export interface DiscoveryInput {
   held?: { champion: string; reason: string }[]; // comp-review.json heldChampions: attach to existing comps, never open one
   heldLineups?: HeldCandidate[]; // comp-review.json held: lineups alan kept as evidence only
   approved?: string[]; // comp-review.json approvedComps: new comps alan approved; nothing else is added
+  names?: Record<string, string>; // comp-review.json approvedComps names: alan's name for an approved comp wins
   pending?: string[]; // comp-review.json pendingComps: earlier additions sent back to "Ready for approval"
   reviewed?: LineupRef[]; // lineups alan's review filed under a comp (supporting, named variations): never open a new comp
 }
@@ -281,6 +283,16 @@ export const reviewedLineups = (r: Pick<CompReview, "supporting" | "namedVariati
 export interface HeldCandidate { name: string; games: LineupRef[]; note: string }
 
 const conceptLabel = (r: Pick<CompRead, "primary" | "secondary">) => `${SHORT[r.primary]}${r.secondary ? ` + ${SHORT[r.secondary]}` : ""}`;
+const NAME_ORDER: Role[] = ["MID", "BOT", "TOP", "JUNGLE", "SUPPORT"];
+/** A group's name: its read and its main threat ("Protect · Yunara"). A title only names a champion every lineup behind
+ *  it plays (alan, 2026-10-26: Top Esports' lineup filed as "Dive + Pick · Camille" had no Camille): the first lineup's
+ *  main carry when all of them have it, else a champion all of them share (mid first, then bot, top, jungle, support),
+ *  else no champion. */
+export function compTitle(read: Pick<CompRead, "primary" | "secondary" | "mainCarry">, picks: Picks, games: { picks: Picks }[], nameOf: (id: string) => string): string {
+  const inAll = (c: string) => games.every((g) => ROLES.some((r) => g.picks[r] === c));
+  const champ = inAll(read.mainCarry) ? read.mainCarry : NAME_ORDER.map((r) => picks[r]).find(inAll);
+  return champ ? `${conceptLabel(read)} · ${nameOf(champ)}` : conceptLabel(read);
+}
 export const shellPicks = (s: CompShell): Picks => Object.fromEntries(ROLES.map((r) => [r, s.slots[r].champion])) as Picks;
 
 export function discover(input: DiscoveryInput): DiscoveryResult {
@@ -366,18 +378,20 @@ export function discover(input: DiscoveryInput): DiscoveryResult {
     const others = games.length - alike.length;
     if (!repeated && !distinct) why.push(`${alike.length} game${alike.length > 1 ? "s" : ""} from ${[...teams].join(", ")} with this strategy${others ? ` (${others} more with ${others > 1 ? "lineups that read" : "a lineup that reads"} differently)` : ""}, and the library already has ${SHORT[read.primary].toLowerCase()} comps`);
     const before = (input.pending ?? []).includes(id) ? undefined : prevComps.get(id);
-    if (why.length && !before) { candidates.push({ id, picks: g.anchor.picks, read, reason: why.join("; "), games }); continue; }
+    const title = compTitle(read, g.anchor.picks, [{ picks: g.anchor.picks }, ...alike], nameOf);
+    if (why.length && !before) { candidates.push({ id, picks: g.anchor.picks, read, reason: why.join("; "), games, title }); continue; }
     // A new comp that passes every check still waits for alan's approval (2026-10-17): discovery proposes, he adds.
     if (!before && !(input.approved ?? []).includes(id)) {
-      candidates.push({ id, picks: g.anchor.picks, read, games, ready: true,
+      candidates.push({ id, picks: g.anchor.picks, read, games, ready: true, title,
         reason: `passes every check (${repeated ? `${alike.length} games from ${teams.size} teams with the same strategy` : `a primary identity no observed library comp has`}, no major weak point, a clear win condition); waiting for approval` });
       continue;
     }
     if (why.length && before) kept.push({ id, reason: why.join("; ") });
     primaries.add(read.primary);
     // Named by its read and its main threat ("Protect · Yunara"); the first team's name breaks a tie.
-    let name = before?.name ?? `${conceptLabel(read)} · ${nameOf(read.mainCarry)}`;
-    if (!before && usedNames.has(name.toLowerCase())) name = `${name} (${games[0].team})`;
+    const given = input.names?.[id];
+    let name = given ?? before?.name ?? title;
+    if (!given && !before && usedNames.has(name.toLowerCase())) name = `${name} (${games[0].team})`;
     usedNames.add(name.toLowerCase());
     comps.push({
       id, name, addedOn: before?.addedOn ?? today,
@@ -526,7 +540,7 @@ export function weeklyReport({ result, previous, shells, lck, nameOf, today, tou
   out.push(ready.length ? "Pass every discovery check. Not in the library until alan approves (comp-review.json `approvedComps`)." : "None this week.", "");
   for (const c of ready) {
     const r = c.read!;
-    out.push(`- **${conceptLabel(r)} · ${nameOf(r.mainCarry)}** · ${lineup(c.picks)} · ${cap(r.difficulty)} · id \`${c.id}\``);
+    out.push(`- **${c.title ?? conceptLabel(r)}** · ${lineup(c.picks)} · ${cap(r.difficulty)} · id \`${c.id}\``);
     out.push(`  - ${r.why} ${r.winCondition}`);
     if (r.strengths.length) out.push(`  - Strengths: ${r.strengths.join("; ")}.`);
     if (r.weaknesses.length) out.push(`  - Weak points: ${r.weaknesses.map((w) => `${w.label} (${w.severity})`).join("; ")}.`);

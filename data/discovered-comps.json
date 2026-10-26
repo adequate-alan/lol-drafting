@@ -1,5 +1,5 @@
 {
-  "lastAddition": "2026-10-24",
+  "lastAddition": "2026-10-26",
   "comps": [
     {
       "id": "pro-83448-blue",
@@ -795,6 +795,62 @@
       "games": [
         {
           "game": 83576,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "id": "pro-83641-red",
+      "name": "Front-to-back + Zone Control · Viktor",
+      "addedOn": "2026-10-26",
+      "primary": "protect",
+      "secondary": "front-to-back",
+      "tags": [
+        "protect-the-carry",
+        "front-to-back",
+        "hybrid",
+        "counter-engage",
+        "objective-control"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "ksante",
+          "job": "Catch"
+        },
+        "JUNGLE": {
+          "champion": "jarvan-iv",
+          "job": "Engage + damage"
+        },
+        "MID": {
+          "champion": "viktor",
+          "job": "AoE damage"
+        },
+        "BOT": {
+          "champion": "kalista",
+          "job": "Ranged DPS"
+        },
+        "SUPPORT": {
+          "champion": "renata-glasc",
+          "job": "Peel"
+        }
+      },
+      "winCondition": "Play around Viktor: K'Sante and Renata Glasc stay with Viktor and let the enemy dive into you.",
+      "why": "K'Sante and Renata Glasc protect Viktor; K'Sante and Jarvan IV in front, Viktor and Kalista dealing damage from range.",
+      "timing": "Falls off late. Strongest around two to three items.",
+      "strengths": [
+        "Fight start: Jarvan IV",
+        "Frontline: K'Sante and Jarvan IV",
+        "Peel and disengage: K'Sante and Renata Glasc"
+      ],
+      "weaknesses": [],
+      "difficulty": "easy",
+      "games": [
+        {
+          "game": 83641,
+          "side": "red"
+        },
+        {
+          "game": 83652,
           "side": "blue"
         }
       ]

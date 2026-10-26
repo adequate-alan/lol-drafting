@@ -5,7 +5,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { discover, lineupKey, readLineup, refKey, relation, reviewedLineups, shellPicks, weeklyReport, type DiscoveredFile, type DiscoveryInput, type Picks } from "@/lib/comp-discovery";
+import { compTitle, discover, lineupKey, readLineup, refKey, relation, reviewedLineups, shellPicks, weeklyReport, type DiscoveredFile, type DiscoveryInput, type Picks } from "@/lib/comp-discovery";
 import { buildLibrary } from "@/lib/comp-library";
 import { getChampions, getCompReview, getCompShells, getDraftData, getLibrary, getProDrafts, getProGames, getSources } from "@/lib/data";
 import { convertKits } from "@/lib/model-v2/kits";
@@ -79,6 +79,19 @@ describe("weekly comp discovery", () => {
     const other: Picks = { TOP: "gnar", JUNGLE: "sejuani", MID: "azir", BOT: "jinx", SUPPORT: "thresh" };
     const ro = readLineup(other, kits, nameOf);
     expect(relation(other, ro.ok ? ro.read : null, anchor)).toBeNull();
+  });
+
+  it("a title names only a champion every lineup behind it plays (alan, 2026-10-26: Top Esports' lineup had no Camille)", () => {
+    const blg: Picks = { TOP: "camille", JUNGLE: "lee-sin", MID: "orianna", BOT: "jhin", SUPPORT: "nautilus" };
+    const tes: Picks = { TOP: "ambessa", JUNGLE: "nocturne", MID: "orianna", BOT: "varus", SUPPORT: "nautilus" };
+    const read = { primary: "dive", secondary: "pick", mainCarry: "camille" } as const;
+    const name = (id: string) => id[0].toUpperCase() + id.slice(1);
+    expect(compTitle(read, blg, [{ picks: blg }], name)).toBe("Dive + Pick · Camille");
+    expect(compTitle(read, blg, [{ picks: blg }, { picks: tes }], name)).toBe("Dive + Pick · Orianna");
+    const other: Picks = { TOP: "gnar", JUNGLE: "vi", MID: "ahri", BOT: "jinx", SUPPORT: "lulu" };
+    expect(compTitle(read, blg, [{ picks: blg }, { picks: other }], name)).toBe("Dive + Pick");
+    // The fix is in the title only: the stored game records keep their lineups.
+    expect(games.get(83655)?.blue.picks.TOP).toBe("ambessa");
   });
 
   it("a shared bot lane alone never files a lineup under a comp; the plan in the other roles decides (alan, 2026-10-25)", () => {
@@ -185,7 +198,7 @@ describe("weekly comp discovery", () => {
 
   it("the stored library is exactly what discovery gives with alan's review inputs, and no comp grows from a held champion", () => {
     const review = getCompReview();
-    const r = discover({ ...base, previous: stored, today: stored.lastAddition ?? "2026-10-17", held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), pending: review.pendingComps.map((p) => p.comp), reviewed: reviewedLineups(review) });
+    const r = discover({ ...base, previous: stored, today: stored.lastAddition ?? "2026-10-17", held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), names: Object.fromEntries(review.approvedComps.flatMap((a) => a.name ? [[a.comp, a.name]] : [])), pending: review.pendingComps.map((p) => p.comp), reviewed: reviewedLineups(review) });
     expect(r.file).toEqual(stored);
     // Skirmish + Pick · Lucian was declined (2026-10-24): its two games are filed under other comps and open nothing.
     expect(r.candidates.some((c) => c.id === "pro-83451-blue")).toBe(false);
@@ -249,7 +262,7 @@ describe("stored discovered comps", () => {
 describe("Comp Library integration", () => {
   // A run on today's data, so these checks hold for real discoveries even before the stored file has any.
   const review = getCompReview();
-  const fresh = discover({ ...base, previous: stored, held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), pending: review.pendingComps.map((p) => p.comp), reviewed: reviewedLineups(review) }).file;
+  const fresh = discover({ ...base, previous: stored, held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), names: Object.fromEntries(review.approvedComps.flatMap((a) => a.name ? [[a.comp, a.name]] : [])), pending: review.pendingComps.map((p) => p.comp), reviewed: reviewedLineups(review) }).file;
   const lib = buildLibrary(shells, fresh, pro.games);
 
   it("the site reads the stored library, Draft Room included", () => {
