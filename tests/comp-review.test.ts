@@ -187,12 +187,32 @@ describe("named variations, holds and families (2026-10-17)", () => {
     const kal = library.extras["pro-83469-blue"].variations;
     expect(kal.find((v) => v.named?.name === "Jarvan IV start · FURIA")?.games.map((g) => `${g.game}-${g.side}`)).toEqual(["83623-blue"]);
     expect(kal.find((v) => v.named?.name === "Wukong start · HANJIN BRION")?.games.map((g) => `${g.game}-${g.side}`)).toEqual(["83610-red"]);
-    // Held, with their games kept as evidence: the Akali pair and Dive · Xayah. No Dive archetype.
+    // Held, with their games kept as evidence: the Akali pair. No Dive archetype. (Dive · Xayah approved 2026-10-27.)
     const held = new Map(review.held.map((h) => [h.name, h.games.map((g) => `${g.game}-${g.side}`)]));
     expect(held.get("Dive + Skirmish · Akali")).toEqual(["83640-red", "83647-red"]);
-    expect(held.get("Dive · Xayah")).toEqual(["83469-red", "83601-red"]);
     expect(library.shells.some((s) => s.id === "pro-83640-red")).toBe(false);
     expect(review.archetypes.map((a) => a.id)).toEqual(["protect-yunara"]);
+  });
+
+  it("Dive · Xayah (alan, 2026-10-27): Karmine Corp's card, Shopify Rebellion and JD Gaming as named variations, nothing else filed", () => {
+    const x = library.shells.find((s) => s.id === "pro-83601-red")!;
+    expect(x.name).toBe("Dive · Xayah");
+    expect(review.held.some((h) => h.name === "Dive · Xayah")).toBe(false);
+    expect([x.slots.TOP.champion, x.slots.JUNGLE.champion, x.slots.MID.champion, x.slots.BOT.champion, x.slots.SUPPORT.champion]).toEqual(["renekton", "qiyana", "orianna", "xayah", "rakan"]);
+    const vars = library.extras["pro-83601-red"].variations;
+    expect(vars.find((v) => v.named?.name === "Zaahen + Pantheon · Shopify Rebellion")?.games.map((g) => `${g.game}-${g.side}`)).toEqual(["83469-red"]);
+    expect(vars.find((v) => v.named?.name === "Jax + Nocturne · JD Gaming")?.games.map((g) => `${g.game}-${g.side}`)).toEqual(["83542-blue"]);
+    // Every game once, and only the three reviewed drafts (exact replays aside).
+    const all = vars.flatMap((v) => v.games.map((g) => `${g.game}-${g.side}`));
+    expect(new Set(all).size).toBe(all.length);
+    expect(all.sort()).toEqual(["83469-red", "83542-blue"]);
+    // Kept under review or held where they were: HANJIN BRION's Malphite, Karmine Corp's Kennen + Jarvan IV, JD Gaming's
+    // K'Sante and FURIA's Ornn + Wukong drafts join no comp; RED Canids' and Team Vitality's wombo filings are unchanged.
+    for (const [game, side] of [[83611, "blue"], [83630, "red"], [83568, "red"], [83594, "red"]] as const) {
+      const filed = Object.entries(library.extras).filter(([, e]) => e.variations.some((v) => v.games.some((g) => g.game === game && g.side === side)));
+      expect(filed.map(([id]) => id), `${game}`).toEqual([]);
+      expect(library.shells.some((s) => s.id === `pro-${game}-${side}`), `${game}`).toBe(false);
+    }
   });
 
   it("Protect · Cassiopeia is not a comp (alan, 2026-10-24): its three games are separate named variations of Protect · Yunara", () => {

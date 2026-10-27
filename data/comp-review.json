@@ -29,10 +29,15 @@
   ],
   "approvedComps": [
     { "comp": "pro-83641-red", "approvedOn": "2026-10-26", "name": "Front-to-back + Zone Control · Viktor" },
-    { "comp": "pro-83653-red", "approvedOn": "2026-10-26", "name": "Dive · Orianna follow-up" }
+    { "comp": "pro-83653-red", "approvedOn": "2026-10-26", "name": "Dive · Orianna follow-up" },
+    { "comp": "pro-83601-red", "approvedOn": "2026-10-27", "name": "Dive · Xayah", "limited": true }
   ],
   "pendingComps": [],
   "namedVariations": [
+    { "comp": "pro-83601-red", "name": "Zaahen + Pantheon · Shopify Rebellion", "game": { "game": 83469, "side": "red" }, "approvedOn": "2026-10-27",
+      "note": "The same dive with a different top and jungle: Pantheon's ultimate and Rakan both open a path to the enemy backline, Zaahen goes in beside them and Orianna and Xayah follow up. Xayah keeps her own escape, so the divers can commit without a peel support behind her. A kit reading of how the lineup can play, not footage of how Shopify Rebellion played it. Lost to JD Gaming at the Demacia Cup (26.18, 2026-10-05). One game, so it is documented as a variation." },
+    { "comp": "pro-83601-red", "name": "Jax + Nocturne · JD Gaming", "game": { "game": 83542, "side": "blue" }, "approvedOn": "2026-10-27",
+      "note": "Backline access from the jungle: Nocturne's ultimate can start a dive on its own, Rakan adds the crowd control and Jax follows onto the carries, with Taliyah's wall and ultimate cutting off the fight instead of Orianna's follow-up. No frontliner, so the plan depends on reaching the backline first; Xayah keeps her own escape. A kit reading, not footage of how JD Gaming played it. Beat Natus Vincere at the Demacia Cup (26.18, 2026-10-08). One game, so it is documented as a variation." },
     { "comp": "pro-83653-red", "name": "Corki front-to-back · KT Rolster", "game": { "game": 83605, "side": "blue" }, "approvedOn": "2026-10-26",
       "note": "Same start and follow-up: Nautilus and Wukong start the fight, Olaf dives behind them, and Orianna and Corki follow up from range. Three frontliners (Olaf, Wukong, Nautilus) make it read front-to-back rather than pick: Corki deals sustained damage from behind instead of catches between fights. Lost to BNK FearX at the Demacia Cup (26.18). One game, so it is documented as a variation." },
     { "comp": "pro-83653-red", "name": "Ezreal front-to-back · Cloud9", "game": { "game": 83625, "side": "red" }, "approvedOn": "2026-10-26",
@@ -66,8 +71,6 @@
       "note": "Team WE's Yorick lineup and FURIA's Olaf lineup share a Sejuani + Akali + Yunara + Lulu core, but Yorick's split pressure and Olaf's skirmishing win differently, so FURIA's game does not confirm the split comp. Reconsider when another team plays a comparable split-push lineup." },
     { "name": "Front-to-back · Yunara with Zaahen (Cloud9)", "games": [{ "game": 83601, "side": "blue" }], "decidedOn": "2026-10-17",
       "note": "Zaahen, Sejuani and Sylas around Yunara + Lulu; kept apart from Team WE's Yorick and Akali split lineup, which it does not play like." },
-    { "name": "Dive · Xayah", "games": [{ "game": 83469, "side": "red" }, { "game": 83601, "side": "red" }], "decidedOn": "2026-10-17",
-      "note": "Shopify Rebellion's Zaahen and Pantheon lineup and Karmine Corp's Renekton and Qiyana version; to be checked against the Dive comps and the Orianna + Xayah + Rakan lineups under Wombo + Front-to-back · Corki." },
     { "name": "Pick + Front-to-back · Syndra", "games": [{ "game": 83522, "side": "red" }, { "game": 83608, "side": "red" }], "decidedOn": "2026-10-17",
       "note": "Natus Vincere's Zaahen jungle draft and HANJIN BRION's Lee Sin version. Zaahen stays a Top recommendation only." },
     { "name": "Scaling + Front-to-back · Yunara", "games": [{ "game": 83566, "side": "blue" }], "decidedOn": "2026-10-17",

@@ -1,5 +1,5 @@
 {
-  "lastAddition": "2026-10-26",
+  "lastAddition": "2026-10-27",
   "comps": [
     {
       "id": "pro-83448-blue",
@@ -800,6 +800,64 @@
       ]
     },
     {
+      "id": "pro-83601-red",
+      "name": "Dive · Xayah",
+      "addedOn": "2026-10-27",
+      "primary": "dive",
+      "secondary": "wombo",
+      "tags": [
+        "dive",
+        "wombo",
+        "hybrid"
+      ],
+      "slots": {
+        "TOP": {
+          "champion": "renekton",
+          "job": "Backline dive"
+        },
+        "JUNGLE": {
+          "champion": "qiyana",
+          "job": "Catch + damage"
+        },
+        "MID": {
+          "champion": "orianna",
+          "job": "AoE damage"
+        },
+        "BOT": {
+          "champion": "xayah",
+          "job": "Ranged DPS"
+        },
+        "SUPPORT": {
+          "champion": "rakan",
+          "job": "Engage"
+        }
+      },
+      "winCondition": "Go in together: Renekton, Qiyana and Rakan reach the enemy carries at the same time instead of one by one.",
+      "why": "Renekton, Qiyana and Rakan can all reach the backline; Qiyana, Orianna and Rakan stack AoE crowd control.",
+      "timing": "Strongest around two to three items.",
+      "strengths": [
+        "Fight start: Rakan",
+        "Peel and disengage: Orianna and Rakan"
+      ],
+      "weaknesses": [
+        {
+          "label": "Little tank damage",
+          "severity": "moderate"
+        },
+        {
+          "label": "Thin frontline",
+          "severity": "minor"
+        }
+      ],
+      "difficulty": "medium",
+      "games": [
+        {
+          "game": 83601,
+          "side": "red"
+        }
+      ]
+    },
+    {
       "id": "pro-83641-red",
       "name": "Front-to-back + Zone Control · Viktor",
       "addedOn": "2026-10-26",
@@ -1590,6 +1648,23 @@
       "games": [
         {
           "game": 83632,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "pro-83601-red",
+      "picks": {
+        "TOP": "zaahen",
+        "JUNGLE": "pantheon",
+        "MID": "orianna",
+        "BOT": "xayah",
+        "SUPPORT": "rakan"
+      },
+      "addedOn": "2026-10-27",
+      "games": [
+        {
+          "game": 83469,
           "side": "red"
         }
       ]
