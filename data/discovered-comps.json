@@ -1221,6 +1221,23 @@
       ]
     },
     {
+      "of": "pro-83459-blue",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "lee-sin",
+        "MID": "viktor",
+        "BOT": "jhin",
+        "SUPPORT": "alistar"
+      },
+      "addedOn": "2026-10-26",
+      "games": [
+        {
+          "game": 83663,
+          "side": "red"
+        }
+      ]
+    },
+    {
       "of": "pro-83462-red",
       "picks": {
         "TOP": "rumble",
@@ -1302,6 +1319,23 @@
         {
           "game": 83541,
           "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "pro-83521-blue",
+      "picks": {
+        "TOP": "ambessa",
+        "JUNGLE": "skarner",
+        "MID": "orianna",
+        "BOT": "yunara",
+        "SUPPORT": "lulu"
+      },
+      "addedOn": "2026-10-26",
+      "games": [
+        {
+          "game": 83667,
+          "side": "blue"
         }
       ]
     },
@@ -1488,6 +1522,23 @@
       "games": [
         {
           "game": 83602,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "pro-83565-red",
+      "picks": {
+        "TOP": "ambessa",
+        "JUNGLE": "jarvan-iv",
+        "MID": "orianna",
+        "BOT": "kaisa",
+        "SUPPORT": "nautilus"
+      },
+      "addedOn": "2026-10-26",
+      "games": [
+        {
+          "game": 83663,
           "side": "blue"
         }
       ]
