@@ -1,28 +1,23 @@
-# Comp Library review · 2026-10-26
+# Comp Library review · 2026-10-27
 
 Read 242 lineups from 121 recorded games (latest 2026-10-26). Demacia Cup: 70/71 games recorded, complete; Worlds 2026 Main Event: 29/29 games recorded, ongoing; Worlds 2026 Play-In: 22/22 games recorded, complete. LCK 2026 playoff drafts are used for comparison only.
 
-## New compositions (0)
+## New compositions (1)
+
+- **Dive · Xayah** · Top Renekton · Jng Qiyana · Mid Orianna · Bot Xayah · Sup Rakan · Medium
+  - Renekton, Qiyana and Rakan can all reach the backline; Qiyana, Orianna and Rakan stack AoE crowd control. Go in together: Renekton, Qiyana and Rakan reach the enemy carries at the same time instead of one by one.
+  - Strengths: Fight start: Rakan; Peel and disengage: Orianna and Rakan.
+  - Weak points: Little tank damage (moderate); Thin frontline (minor).
+  - [Karmine Corp vs Cloud9 G4](https://gol.gg/game/stats/83601/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-15, win)
+  - 1 observed variation: Top Zaahen · Jng Pantheon · Mid Orianna · Bot Xayah · Sup Rakan
+
+## New variations of existing compositions (0)
 
 None this week.
 
-## New variations of existing compositions (3)
+## Existing compositions seeing new professional play (0)
 
-- **Front-to-back · Viktor**: Lee Sin for Skarner, Jhin for Ezreal
-  - [Karmine Corp vs Bilibili Gaming G1](https://gol.gg/game/stats/83663/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-26, loss)
-- **Protect · Yunara**: Ambessa for Olaf, Skarner for Xin Zhao
-  - [Anyone s Legend vs Team Liquid G1](https://gol.gg/game/stats/83667/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-26, loss)
-- **Dive · Kai'Sa**: Ambessa for Camille, Jarvan IV for Wukong, Orianna for Ahri
-  - [Bilibili Gaming vs Karmine Corp G1](https://gol.gg/game/stats/83663/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-26, win)
-
-## Existing compositions seeing new professional play (3)
-
-- **Front-to-back · Viktor**: 1 new game
-  - [Karmine Corp vs Bilibili Gaming G1](https://gol.gg/game/stats/83663/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-26, loss)
-- **Protect · Yunara**: 1 new game
-  - [Anyone s Legend vs Team Liquid G1](https://gol.gg/game/stats/83667/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-26, loss)
-- **Dive · Kai'Sa**: 1 new game
-  - [Bilibili Gaming vs Karmine Corp G1](https://gol.gg/game/stats/83663/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-26, win)
+None this week.
 
 ## May be outdated (7)
 
@@ -92,7 +87,6 @@ Not added automatically: each needs more games or a person's call. One line per 
 - Front-to-back + Scaling · Top Tristana · Jng Shyvana · Mid Annie · Bot Yunara · Sup Lulu · [FlyQuest G3 W](https://gol.gg/game/stats/83536/page-game/) · 1 game from FlyQuest with this strategy, and the library already has front-to-back comps
 - Front-to-back · Top Gnar · Jng Naafiri · Mid Anivia · Bot Miss Fortune · Sup Nautilus · [Shopify Rebellion G3 L](https://gol.gg/game/stats/83536/page-game/) · major weak point (Anivia is unprotected); 1 game from Shopify Rebellion with this strategy, and the library already has front-to-back comps
 - Front-to-back + Skirmish · Top Rumble · Jng Jarvan IV · Mid Ryze · Bot Jhin · Sup Nautilus · [Natus Vincere G1 W](https://gol.gg/game/stats/83540/page-game/) · 1 game from Natus Vincere with this strategy, and the library already has front-to-back comps
-- Dive · Top Jax · Jng Nocturne · Mid Taliyah · Bot Xayah · Sup Rakan · [JD Gaming G3 W](https://gol.gg/game/stats/83542/page-game/) · major weak point (No frontline); 1 game from JD Gaming with this strategy, and the library already has dive comps
 - Pick + Front-to-back · Top K'Sante · Jng Pantheon · Mid Ryze · Bot Kalista · Sup Renata Glasc · [KT Rolster G1 L](https://gol.gg/game/stats/83563/page-game/) · 1 game from KT Rolster with this strategy, and the library already has pick comps
 - Front-to-back + Poke / siege · Top Renekton · Jng Jarvan IV · Mid Viktor · Bot Ezreal · Sup Seraphine · [KT Rolster G2 L](https://gol.gg/game/stats/83564/page-game/) · 1 game from KT Rolster with this strategy, and the library already has front-to-back comps
 - Dive + Skirmish · Top Ambessa · Jng Lee Sin · Mid Syndra · Bot Ziggs · Sup Alistar · [Team Vitality G2 W](https://gol.gg/game/stats/83564/page-game/) · 1 game from Team Vitality with this strategy, and the library already has dive comps
@@ -173,6 +167,7 @@ Not added automatically: each needs more games or a person's call. One line per 
 - **New** · Dive + Skirmish · Top Ambessa · Jng Vi · Mid Galio · Bot Jhin · Sup Rakan · [T1 G1 W](https://gol.gg/game/stats/83662/page-game/) · 1 game from T1 with this strategy, and the library already has dive comps
 - **New** · Dive + Skirmish · Top Shen · Jng Lee Sin · Mid Akali · Bot Caitlyn · Sup Elise · [Team Secret Whales G1 L](https://gol.gg/game/stats/83664/page-game/) · 1 game from Team Secret Whales with this strategy, and the library already has dive comps
 - **New** · Skirmish + Wombo · Top Kennen · Jng Trundle · Mid Galio · Bot Ashe · Sup Seraphine · [Los Grandes G2 W](https://gol.gg/game/stats/83665/page-game/) · 1 game from Los Grandes with this strategy, and the library already has skirmish comps
+- **New** · Dive · Top Kled · Jng Pantheon · Mid Akali · Bot Xayah · Sup Rakan · [Team Liquid G2 W](https://gol.gg/game/stats/83668/page-game/) · major weak point (No frontline, Xayah is unprotected); 1 game from Team Liquid with this strategy, and the library already has dive comps
 - **New** · Front-to-back + Skirmish · Top Olaf · Jng Nocturne · Mid Annie · Bot Jinx · Sup Tahm Kench · [Anyone s Legend G2 L](https://gol.gg/game/stats/83668/page-game/) · 1 game from Anyone s Legend with this strategy, and the library already has front-to-back comps
 
 ## Awaiting review: new comps from held champions (19)
@@ -199,7 +194,7 @@ Read by the comp check; these join existing comps when one matches, and never op
 - **New** · Top K'Sante · Jng Jarvan IV · Mid Locke · Bot Ezreal · Sup Karma · [Team Liquid G1 L](https://gol.gg/game/stats/83653/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
 - **New** · Top Jax · Jng Vi · Mid Locke · Bot Miss Fortune · Sup Nautilus · [Team Secret Whales G2 L](https://gol.gg/game/stats/83665/page-game/) · Locke lineup: no existing comp matches, and a new comp from it waits for review
 
-## Held candidates (6)
+## Held candidates (5)
 
 Kept as recorded evidence after review, filed under no comp. Lineups closest to one are listed under it (not evidence for it by themselves); reconsider when another team plays a comparable strategy.
 
@@ -212,11 +207,6 @@ Kept as recorded evidence after review, filed under no comp. Lineups closest to 
   - Close: Top Olaf · Jng Skarner · Mid Ryze · Bot Yunara · Sup Lulu · [KT Rolster vs RED Canids G1](https://gol.gg/game/stats/83456/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-04, win)
 - **Front-to-back · Yunara with Zaahen (Cloud9)** · 1 series from 1 team · Zaahen, Sejuani and Sylas around Yunara + Lulu; kept apart from Team WE's Yorick and Akali split lineup, which it does not play like.
   - Top Zaahen · Jng Sejuani · Mid Sylas · Bot Yunara · Sup Lulu · [Cloud9 vs Karmine Corp G4](https://gol.gg/game/stats/83601/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-15, loss)
-- **Dive · Xayah** · 2 series from 2 teams · shared core Orianna, Xayah, Rakan · 2 close lineups · **new evidence** · Shopify Rebellion's Zaahen and Pantheon lineup and Karmine Corp's Renekton and Qiyana version; to be checked against the Dive comps and the Orianna + Xayah + Rakan lineups under Wombo + Front-to-back · Corki.
-  - Top Zaahen · Jng Pantheon · Mid Orianna · Bot Xayah · Sup Rakan · [Shopify Rebellion vs JD Gaming G2](https://gol.gg/game/stats/83469/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-05, loss)
-  - Top Renekton · Jng Qiyana · Mid Orianna · Bot Xayah · Sup Rakan · [Karmine Corp vs Cloud9 G4](https://gol.gg/game/stats/83601/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-15, win)
-  - Close: Top Renekton · Jng Qiyana · Mid Orianna · Bot Kai'Sa · Sup Camille · [BNK FearX vs Team WE G2](https://gol.gg/game/stats/83619/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-17, win)
-  - Close: Top Kled · Jng Pantheon · Mid Akali · Bot Xayah · Sup Rakan · [Team Liquid vs Anyone s Legend G2](https://gol.gg/game/stats/83668/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-26, win)
 - **Pick + Front-to-back · Syndra** · 2 series from 2 teams · shared core K'Sante, Syndra, Neeko · 2 close lineups · **new evidence** · Natus Vincere's Zaahen jungle draft and HANJIN BRION's Lee Sin version. Zaahen stays a Top recommendation only.
   - Top K'Sante · Jng Zaahen · Mid Syndra · Bot Miss Fortune · Sup Neeko · [Natus Vincere vs HANJIN BRION G3](https://gol.gg/game/stats/83522/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-06, loss)
   - Top K'Sante · Jng Lee Sin · Mid Syndra · Bot Ezreal · Sup Neeko · [HANJIN BRION vs Team WE G1](https://gol.gg/game/stats/83608/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-15, loss)
@@ -224,6 +214,13 @@ Kept as recorded evidence after review, filed under no comp. Lineups closest to 
   - Close: Top K'Sante · Jng Lee Sin · Mid Locke · Bot Ezreal · Sup Karma · [G2 Esports vs Los Grandes G1](https://gol.gg/game/stats/83648/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-24, win)
 - **Scaling + Front-to-back · Yunara** · 1 series from 1 team · KT Rolster's Yorick, Skarner and Locke lineup; to be checked against the scaling, split and protect comps.
   - Top Yorick · Jng Skarner · Mid Locke · Bot Yunara · Sup Lulu · [KT Rolster vs Team Vitality G4](https://gol.gg/game/stats/83566/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-12, win)
+
+## Close to a comp approved from its reviewed drafts (1)
+
+alan approved these comps from the drafts he reviewed: a lineup closest to one is listed here and filed under no comp until he reviews it.
+
+- **Dive · Xayah**
+  - Top Renekton · Jng Qiyana · Mid Orianna · Bot Kai'Sa · Sup Camille · [BNK FearX vs Team WE G2](https://gol.gg/game/stats/83619/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-17, win)
 
 ## Earlier additions that would not pass today
 
