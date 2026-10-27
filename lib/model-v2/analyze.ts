@@ -170,9 +170,33 @@ export const exposedCarries = (slots: Slot[], dive: boolean) => slots.filter((s)
 export const peeler = (s: Slot) => s.c.attrs.peel >= 2 || s.c.kit.disengage >= 2;
 export const diver = (s: Slot) => s.c.kit.backlineAccess >= 2 && (s.threat >= 2 || s.c.fightStart === "primary");
 
+// ---------- fight roles ----------
+
+/**
+ * Who starts and who follows a fight (alan, 2026-10-27): primary initiation is an on-demand team engage (kit
+ * `fightStart: "primary"`); secondary initiation is a champion who can open a fight on their own terms by catching or
+ * diving one target (`"catch"`: Qiyana, Nocturne, Pantheon, Lee Sin), never promoted to primary; follow-up is everyone
+ * else whose crowd control or burst lands once a fight has started. Kit values only, nothing here is read by a score.
+ */
+export function fightRoles(slots: Slot[]) {
+  const primary = slots.filter((s) => s.c.fightStart === "primary");
+  const secondary = slots.filter((s) => s.c.fightStart === "catch");
+  const followUp = slots.filter((s) => !primary.includes(s) && !secondary.includes(s) && (s.c.fightStart === "follow-up" || s.c.kit.followUp >= 2));
+  return { primary, secondary, followUp };
+}
+
 // ---------- identity ----------
 
-export function identities(slots: Slot[], f: Facts = facts(slots)): IdentityScore[] {
+/**
+ * `strategy` (alan, 2026-10-27; the Comp Check text, Comp Library and discovery, never the ranking): dive is reaching
+ * and collapsing on priority targets, wombo is overlapping AoE that wins a grouped fight, and several AoE abilities alone
+ * never make a comp wombo. When the comp is a dive, a catch diver's crowd control (Qiyana, Nocturne, Pantheon) is spent
+ * reaching and locking its target, so it counts toward the dive and not as a wombo layer; primary AoE engagers who also
+ * dive (Kennen, Jarvan IV, Rakan) count toward both. Without a dive nothing changes. The ranking keeps the default read.
+ */
+export interface ReadOpts { strategy?: boolean }
+
+export function identities(slots: Slot[], f: Facts = facts(slots), opts: ReadOpts = {}): IdentityScore[] {
   const out: IdentityScore[] = [];
   const small = f.n <= 3;
   const ranged = f.carries.filter((s) => s.c.kit.range >= 2);
@@ -180,7 +204,8 @@ export function identities(slots: Slot[], f: Facts = facts(slots)): IdentityScor
     out.push({ id: "front-to-back", score: 2 * Math.min(f.frontliners.length, 2) + 1.5 * Math.min(ranged.length, 2) + (f.primary.length ? 1.5 : 0) + slots.filter((s) => s.c.attrs.frontline >= 3).length - (f.access.length >= 3 ? 2 : 0),
       because: `${names(f.frontliners)} in front, ${names(ranged)} dealing damage from range` });
   const divers = slots.filter(diver);
-  if (divers.length >= (small ? 2 : 3) && divers.some((s) => s.c.fightStart === "primary" || s.c.fightStart === "catch"))
+  const dives = divers.length >= (small ? 2 : 3) && divers.some((s) => s.c.fightStart === "primary" || s.c.fightStart === "catch");
+  if (dives)
     out.push({ id: "dive", score: sum(divers.map((s) => s.c.kit.backlineAccess)) + 0.5 * sum(divers.map((s) => s.c.kit.followUp)) - (f.carryRange >= 2.5 ? 2 : 0),
       because: `${names(divers)} can all reach the backline` });
   const bursty = f.burst.filter((s) => s.c.fightStart !== "catch");
@@ -201,9 +226,11 @@ export function identities(slots: Slot[], f: Facts = facts(slots)): IdentityScor
   const skirmishers = slots.filter((s) => s.threat >= 2 && s.c.kit.range <= 1 && s.c.kit.curve.early + s.c.kit.curve.mid >= 5 && (s.c.attrs.sustainedDps >= 2 || s.c.attrs.burst >= 2));
   if (skirmishers.length >= 2 && skirmishers.some((s) => s.role === "JUNGLE" || s.role === "MID"))
     out.push({ id: "skirmish", score: 2 * skirmishers.length + f.lanePressure, because: `${names(skirmishers)} win short fights before items` });
-  const aoe = slots.filter((s) => s.c.kit.aoeCc >= 2);
-  if (aoe.length >= 3 && f.primary.length && f.aoe >= 8)
-    out.push({ id: "wombo", score: 0.8 * f.aoe, because: `${names(aoe)} stack AoE crowd control` });
+  const diveLock = (s: Slot) => !!opts.strategy && dives && divers.includes(s) && s.c.fightStart === "catch";
+  const aoe = slots.filter((s) => s.c.kit.aoeCc >= 2 && !diveLock(s));
+  const aoeSum = sum(slots.map((s) => s.c.kit.aoeCc));
+  if (aoe.length >= 3 && f.primary.length && aoeSum >= 8)
+    out.push({ id: "wombo", score: 0.8 * aoeSum, because: `${names(aoe)} stack AoE crowd control` });
   if (f.side.length)
     {
     const globals = slots.filter((s) => s.c.kit.global);
@@ -564,12 +591,12 @@ export interface Analysis {
   facts: Facts;
 }
 
-export function analyze(draft: Draft, champions: ChampionKit[], enemyIds: string[] = []): Analysis {
+export function analyze(draft: Draft, champions: ChampionKit[], enemyIds: string[] = [], opts: ReadOpts = {}): Analysis {
   const slots = slotsOf(draft, champions);
   const f = facts(slots);
   const n = slots.length;
   const confidence: Confidence = n < T.earlyRead ? "none" : n < T.teamRules ? "early" : n < 5 ? "read" : "full";
-  const all = identities(slots, f);
+  const all = identities(slots, f, opts);
   const { primary, secondary } = n >= T.earlyRead ? pickIdentity(all) : { primary: null, secondary: null };
   const weak = n >= T.earlyRead ? weaknesses(slots, f, all) : [];
   const theirs = slotsOf(enemyDraft(enemyIds, champions), champions);

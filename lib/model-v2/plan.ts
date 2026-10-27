@@ -389,7 +389,8 @@ function core(draft: Draft, champions: ChampionKit[]) {
   const slots = slotsOf(draft, champions);
   const f = facts(slots);
   const n = slots.length;
-  const all = identities(slots, f);
+  // The Comp Check reads strategies apart (dive vs wombo, alan 2026-10-27); the ranking keeps the default read.
+  const all = identities(slots, f, { strategy: true });
   const { primary, secondary } = n >= T.earlyRead ? pickIdentity(all) : { primary: null, secondary: null };
   const plan = primary ? checkPlan(primary.id, slots, f) : null;
   const team = n >= T.teamRules;
@@ -466,7 +467,7 @@ function expose(findings: PlanFinding[], theirs: Slot[]) {
   const b = facts(theirs);
   const reach = theirs.filter((s) => s.c.kit.backlineAccess >= 2);
   const engagers = theirs.filter((s) => s.c.fightStart === "primary");
-  const ep = pickIdentity(identities(theirs, b)).primary?.id;
+  const ep = pickIdentity(identities(theirs, b, { strategy: true })).primary?.id;
   const many = theirs.length >= 4;
   // Gaps around the carry: exploited by two or more champions who reach the backline.
   const CARRY = ["carry-unprotected", "x-engage-is-peel", "duo-short-no-peel", "plan:protectors", "plan:protect"];

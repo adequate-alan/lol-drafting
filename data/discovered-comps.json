@@ -38,7 +38,7 @@
       "why": "Trundle and Ryze can hold a side lane alone; Senna can join a fight from anywhere; Trundle and Nautilus in front, Senna dealing damage from range.",
       "timing": "Even across the game; no clear power spike.",
       "strengths": [
-        "Fight start: Nautilus",
+        "Fight start: Nautilus; secondary start (catch or dive): Trundle and Senna; follow-up: Rumble and Ryze",
         "Frontline: Trundle and Nautilus",
         "Side lane: Trundle and Ryze",
         "Tank damage: Trundle",
@@ -95,7 +95,7 @@
       "why": "K'Sante and Lulu protect Anivia; K'Sante in front, Anivia and Yunara dealing damage from range.",
       "timing": "Weak before first items. Strongest around two to three items.",
       "strengths": [
-        "Catch: K'Sante",
+        "Secondary start (catch or dive): K'Sante; follow-up: Naafiri, Anivia and Lulu",
         "Peel and disengage: K'Sante, Anivia and Lulu",
         "Mixed damage (58% physical)",
         "Scales into the late game"
@@ -151,7 +151,7 @@
       "why": "Nautilus in front, Jayce and Miss Fortune dealing damage from range; early-game average 2.4/3.",
       "timing": "Falls off late. Strongest before first items.",
       "strengths": [
-        "Fight start: Nautilus",
+        "Fight start: Nautilus; secondary start (catch or dive): Lee Sin; follow-up: Ryze and Miss Fortune",
         "Side lane: Ryze",
         "Strong before first items"
       ],
@@ -207,7 +207,7 @@
       "why": "Wukong, Orianna and Rakan stack AoE crowd control; Wukong in front, Orianna and Corki dealing damage from range.",
       "timing": "Weak before first items. Strongest around two to three items.",
       "strengths": [
-        "Fight start: Wukong and Rakan",
+        "Fight start: Wukong and Rakan; follow-up: Rumble and Orianna",
         "Peel and disengage: Orianna and Rakan",
         "Scales into the late game"
       ],
@@ -261,7 +261,7 @@
       "why": "Skarner and Alistar in front, Viktor and Ezreal dealing damage from range.",
       "timing": "Strongest around two to three items.",
       "strengths": [
-        "Fight start: Skarner and Alistar",
+        "Fight start: Skarner and Alistar; follow-up: Rumble and Viktor",
         "Frontline: Skarner and Alistar"
       ],
       "weaknesses": [
@@ -315,7 +315,7 @@
       "why": "Catch from Lee Sin and Bard, burst from Jhin; Olaf and Lee Sin win short fights before items.",
       "timing": "Falls off late. Strongest before first items.",
       "strengths": [
-        "Catch: Lee Sin and Bard",
+        "Secondary start (catch or dive): Lee Sin and Bard; follow-up: Olaf, Ryze and Jhin",
         "Peel and disengage: Lee Sin and Bard",
         "Side lane: Ryze",
         "Tank damage: Olaf",
@@ -374,7 +374,7 @@
       "why": "Renekton, Skarner and Akali can all reach the backline.",
       "timing": "Falls off late. Strongest around two to three items.",
       "strengths": [
-        "Fight start: Skarner",
+        "Fight start: Skarner; follow-up: Renekton, Akali, Kalista and Renata Glasc",
         "Frontline: Renekton and Skarner",
         "Side lane: Akali",
         "Mixed damage (62% physical)",
@@ -424,7 +424,7 @@
       "why": "Orianna and Lulu protect Yunara.",
       "timing": "Even across the game; no clear power spike.",
       "strengths": [
-        "Catch: Xin Zhao",
+        "Secondary start (catch or dive): Xin Zhao; follow-up: Olaf, Orianna and Lulu",
         "Peel and disengage: Orianna and Lulu",
         "Tank damage: Olaf",
         "Mixed damage (53% physical)"
@@ -484,7 +484,7 @@
       "why": "Jax, Wukong and Lucian win short fights before items; Wukong in front, Viktor dealing damage from range.",
       "timing": "Strongest around two to three items.",
       "strengths": [
-        "Fight start: Wukong",
+        "Fight start: Wukong; follow-up: Jax and Viktor",
         "Side lane: Jax",
         "Tank damage: Jax",
         "Mixed damage (62% physical)",
@@ -543,7 +543,7 @@
       "why": "Naafiri, Kai'Sa and Nautilus can all reach the backline.",
       "timing": "Strongest around two to three items.",
       "strengths": [
-        "Fight start: Nautilus",
+        "Fight start: Nautilus; follow-up: Rumble, Naafiri, Ryze and Kai'Sa",
         "Side lane: Ryze"
       ],
       "weaknesses": [
@@ -601,7 +601,7 @@
       "why": "Olaf and Qiyana win short fights before items; catch from Qiyana and Ashe.",
       "timing": "Even across the game; no clear power spike.",
       "strengths": [
-        "Catch: Qiyana and Ashe",
+        "Secondary start (catch or dive): Qiyana and Ashe; follow-up: Olaf, Ryze and Seraphine",
         "Side lane: Ryze",
         "Tank damage: Olaf",
         "Mixed damage (58% physical)"
@@ -662,7 +662,7 @@
       "why": "Sejuani in front, Viktor and Kalista dealing damage from range; Sejuani, Viktor and Renata Glasc stack AoE crowd control.",
       "timing": "Strongest around two to three items.",
       "strengths": [
-        "Fight start: Sejuani",
+        "Fight start: Sejuani; secondary start (catch or dive): Ambessa; follow-up: Viktor, Kalista and Renata Glasc",
         "Side lane: Ambessa",
         "Mixed damage (56% physical)"
       ],
@@ -710,7 +710,7 @@
       "why": "Camille, Wukong, Ahri, Kai'Sa and Nautilus can all reach the backline.",
       "timing": "Weak before first items. Strongest around two to three items.",
       "strengths": [
-        "Fight start: Wukong and Nautilus",
+        "Fight start: Wukong and Nautilus; secondary start (catch or dive): Camille and Ahri; follow-up: Kai'Sa",
         "Frontline: Wukong and Nautilus",
         "Side lane: Camille",
         "Tank damage: Camille",
@@ -771,7 +771,7 @@
       "why": "Gragas and Lulu protect Aphelios; Yorick, Gragas and Ahri win short fights before items.",
       "timing": "Even across the game; no clear power spike.",
       "strengths": [
-        "Catch: Gragas and Ahri",
+        "Secondary start (catch or dive): Gragas and Ahri; follow-up: Aphelios and Lulu",
         "Peel and disengage: Gragas and Lulu",
         "Side lane: Yorick",
         "Mixed damage (45% physical)",
@@ -804,11 +804,9 @@
       "name": "Dive · Xayah",
       "addedOn": "2026-10-27",
       "primary": "dive",
-      "secondary": "wombo",
+      "secondary": null,
       "tags": [
-        "dive",
-        "wombo",
-        "hybrid"
+        "dive"
       ],
       "slots": {
         "TOP": {
@@ -833,10 +831,10 @@
         }
       },
       "winCondition": "Go in together: Renekton, Qiyana and Rakan reach the enemy carries at the same time instead of one by one.",
-      "why": "Renekton, Qiyana and Rakan can all reach the backline; Qiyana, Orianna and Rakan stack AoE crowd control.",
+      "why": "Renekton, Qiyana and Rakan can all reach the backline.",
       "timing": "Strongest around two to three items.",
       "strengths": [
-        "Fight start: Rakan",
+        "Fight start: Rakan; secondary start (catch or dive): Qiyana; follow-up: Renekton, Orianna and Xayah",
         "Peel and disengage: Orianna and Rakan"
       ],
       "weaknesses": [
@@ -896,7 +894,7 @@
       "why": "K'Sante and Renata Glasc protect Viktor; K'Sante and Jarvan IV in front, Viktor and Kalista dealing damage from range.",
       "timing": "Falls off late. Strongest around two to three items.",
       "strengths": [
-        "Fight start: Jarvan IV",
+        "Fight start: Jarvan IV; secondary start (catch or dive): K'Sante; follow-up: Viktor, Kalista and Renata Glasc",
         "Frontline: K'Sante and Jarvan IV",
         "Peel and disengage: K'Sante and Renata Glasc"
       ],
@@ -950,7 +948,7 @@
       "why": "Camille, Lee Sin and Nautilus can all reach the backline; catch from Camille and Lee Sin, burst from Orianna and Jhin.",
       "timing": "Strongest around two to three items.",
       "strengths": [
-        "Fight start: Nautilus",
+        "Fight start: Nautilus; secondary start (catch or dive): Camille and Lee Sin; follow-up: Orianna and Jhin",
         "Peel and disengage: Lee Sin and Orianna",
         "Side lane: Camille",
         "Tank damage: Camille",
