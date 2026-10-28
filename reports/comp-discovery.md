@@ -1,4 +1,4 @@
-# Comp Library review · 2026-10-27
+# Comp Library review · 2026-10-28
 
 Read 242 lineups from 121 recorded games (latest 2026-10-26). Demacia Cup: 70/71 games recorded, complete; Worlds 2026 Main Event: 29/29 games recorded, ongoing; Worlds 2026 Play-In: 22/22 games recorded, complete. LCK 2026 playoff drafts are used for comparison only.
 
