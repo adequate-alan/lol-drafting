@@ -2,14 +2,9 @@
 
 Read 242 lineups from 121 recorded games (latest 2026-10-26). Demacia Cup: 70/71 games recorded, complete; Worlds 2026 Main Event: 29/29 games recorded, ongoing; Worlds 2026 Play-In: 22/22 games recorded, complete. LCK 2026 playoff drafts are used for comparison only.
 
-## New compositions (1)
+## New compositions (0)
 
-- **Dive · Xayah** · Top Renekton · Jng Qiyana · Mid Orianna · Bot Xayah · Sup Rakan · Medium
-  - Renekton, Qiyana and Rakan can all reach the backline; Qiyana, Orianna and Rakan stack AoE crowd control. Go in together: Renekton, Qiyana and Rakan reach the enemy carries at the same time instead of one by one.
-  - Strengths: Fight start: Rakan; Peel and disengage: Orianna and Rakan.
-  - Weak points: Little tank damage (moderate); Thin frontline (minor).
-  - [Karmine Corp vs Cloud9 G4](https://gol.gg/game/stats/83601/page-game/) (Worlds 2026 Play-In, 26.20, 2026-10-15, win)
-  - 1 observed variation: Top Zaahen · Jng Pantheon · Mid Orianna · Bot Xayah · Sup Rakan
+None this week.
 
 ## New variations of existing compositions (0)
 
