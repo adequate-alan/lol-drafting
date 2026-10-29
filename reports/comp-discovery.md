@@ -1,4 +1,4 @@
-# Comp Library review · 2026-10-28
+# Comp Library review · 2026-10-29
 
 Read 242 lineups from 121 recorded games (latest 2026-10-26). Demacia Cup: 70/71 games recorded, complete; Worlds 2026 Main Event: 29/29 games recorded, ongoing; Worlds 2026 Play-In: 22/22 games recorded, complete. LCK 2026 playoff drafts are used for comparison only.
 
@@ -32,14 +32,14 @@ Pass every discovery check. Not in the library until alan approves (comp-review.
 
 - **Wombo + Front-to-back · Orianna** · Top Jax · Jng Jarvan IV · Mid Orianna · Bot Kalista · Sup Renata Glasc · Medium · id `pro-83640-blue`
   - Jarvan IV, Orianna and Renata Glasc stack AoE crowd control; Jarvan IV in front, Orianna and Kalista dealing damage from range. Fight in choke points and around objectives where Jarvan IV, Orianna and Renata Glasc can land their crowd control on the same targets.
-  - Strengths: Fight start: Jarvan IV; follow-up: Jax, Orianna, Kalista and Renata Glasc; Peel and disengage: Orianna and Renata Glasc; Side lane: Jax; Tank damage: Jax; Mixed damage (62% physical).
+  - Strengths: Teamfight engage: Jarvan IV; follow-up: Jax, Orianna, Kalista and Renata Glasc; Peel and disengage: Orianna and Renata Glasc; Side lane: Jax; Tank damage: Jax; Mixed damage (62% physical).
   - Weak points: Thin frontline (minor).
   - passes every check (2 games from 2 teams with the same strategy, no major weak point, a clear win condition); waiting for approval.
   - [Karmine Corp vs Anyone s Legend G1](https://gol.gg/game/stats/83640/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-23, win)
   - [Los Grandes vs Team Secret Whales G1](https://gol.gg/game/stats/83664/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-26, win)
 - **Skirmish + Early tempo · Cassiopeia** · Top Trundle · Jng Qiyana · Mid Cassiopeia · Bot Kalista · Sup Renata Glasc · Easy · id `pro-83647-blue`
   - Trundle, Qiyana and Cassiopeia win short fights before items; early-game average 2.6/3. Fight short 2v2s and 3v3s around the jungle before items stack up, and snowball the leads into objectives. Use the early lanes to set up the first objectives.
-  - Strengths: Secondary start (catch or dive): Trundle and Qiyana; follow-up: Cassiopeia, Kalista and Renata Glasc; Side lane: Trundle; Tank damage: Trundle; Strong before first items.
+  - Strengths: Dive start: Qiyana; catch start: Trundle; follow-up: Cassiopeia, Kalista and Renata Glasc; Side lane: Trundle; Tank damage: Trundle; Strong before first items.
   - Weak points: No on-demand engage (moderate); Short range (moderate); Thin frontline (minor).
   - passes every check (2 games from 2 teams with the same strategy, no major weak point, a clear win condition); waiting for approval.
   - [Movistar KOI vs CTBC Flying Oyster G1](https://gol.gg/game/stats/83647/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-24, win)

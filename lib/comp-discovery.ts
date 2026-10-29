@@ -140,10 +140,12 @@ export function readLineup(picks: Picks, kits: ChampionKit[], nameOf: (id: strin
 
   const peelers = all.filter((s) => s.c.attrs.peel >= 2 || s.c.kit.disengage >= 2);
   const strengths: string[] = [];
-  // Primary initiation, secondary initiation (a catch or dive on one target) and follow-up, kept apart (alan, 2026-10-27).
+  // Teamfight engage, dive starts, catch starts and follow-up, kept apart (alan, 2026-10-27 / 2026-10-29).
   const fr = fightRoles(all);
-  const starts = [fr.primary.length ? `Fight start: ${names(fr.primary)}` : "", fr.secondary.length ? `${fr.primary.length ? "secondary start" : "Secondary start"} (catch or dive): ${names(fr.secondary)}` : ""].filter(Boolean);
-  if (starts.length) strengths.push(`${starts.join("; ")}${fr.followUp.length ? `; follow-up: ${names(fr.followUp)}` : ""}`);
+  const starts = ([["Teamfight engage", fr.primary], ["dive start", fr.dive], ["catch start", fr.catch], ["follow-up", fr.followUp]] as const)
+    .filter(([, xs]) => xs.length).map(([label, xs]) => `${label}: ${names(xs)}`);
+  if (starts.length && (fr.primary.length || fr.dive.length || fr.catch.length))
+    strengths.push(starts.map((x, n) => (n ? x : x[0].toUpperCase() + x.slice(1))).join("; "));
   if (f.frontliners.length >= 2) strengths.push(`Frontline: ${names(f.frontliners)}`);
   if (peelers.length >= 2) strengths.push(`Peel and disengage: ${names(peelers)}`);
   if (f.siege.score >= 1.9 && f.siege.sources.length) strengths.push(`Siege: ${names(f.siege.sources)}`);

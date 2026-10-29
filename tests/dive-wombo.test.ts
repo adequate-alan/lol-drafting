@@ -11,7 +11,7 @@ import { convertKits } from "@/lib/model-v2/kits";
 const champions = getChampions();
 const kits = convertKits(champions);
 const nameOf = (id: string) => champions.find((c) => c.id === id)?.name ?? id;
-const lineup = (TOP: string, JUNGLE: string, MID: string, BOT: string, SUPPORT: string): Draft => ({ TOP, JUNGLE, MID, BOT, SUPPORT });
+const lineup = (TOP: string, JUNGLE: string, MID: string, BOT: string, SUPPORT: string) => ({ TOP, JUNGLE, MID, BOT, SUPPORT }) satisfies Draft;
 const ids = (d: Draft, strategy: boolean) => analyze(d, kits, [], { strategy }).identity.all.map((i) => i.id);
 const pair = (d: Draft) => { const p = analyzePlan(d, kits).identity; return [p.primary?.id, p.secondary?.id]; };
 
@@ -48,19 +48,28 @@ describe("dive vs wombo", () => {
 });
 
 describe("fight roles", () => {
-  it("keeps primary initiation, secondary initiation and follow-up apart", () => {
-    const name = (xs: { c: { id: string } }[]) => xs.map((s) => s.c.id);
-    const f = fightRoles(slotsOf(KC_XAYAH, kits));
+  const name = (xs: { c: { id: string } }[]) => xs.map((s) => s.c.id);
+  const roles = (d: Draft) => fightRoles(slotsOf(d, kits));
+
+  it("keeps teamfight engage, dive starts, catch starts and follow-up apart", () => {
+    const f = roles(KC_XAYAH);
     expect(name(f.primary)).toEqual(["rakan"]);
-    expect(name(f.secondary)).toEqual(["qiyana"]);
+    expect(name(f.dive)).toEqual(["qiyana"]);
+    expect(name(f.catch)).toEqual([]);
     expect(name(f.followUp)).toContain("orianna");
-    const tl = fightRoles(slotsOf(lineup("kled", "pantheon", "akali", "xayah", "rakan"), kits));
-    expect(name(tl.secondary)).toEqual(["pantheon"]);
+    const tl = roles(lineup("kled", "pantheon", "akali", "xayah", "rakan"));
+    expect(name(tl.dive)).toEqual(["pantheon"]);
     expect(name(tl.primary)).not.toContain("pantheon");
+  });
+
+  it("reads dive and catch from what the kit does, and a champion can be both", () => {
+    const f = roles(lineup("trundle", "nocturne", "ahri", "ashe", "thresh"));
+    expect(name(f.dive)).toEqual(["nocturne", "ahri"]);
+    expect(name(f.catch)).toEqual(["trundle", "ahri", "ashe", "thresh"]);
   });
 
   it("the comp read names each level", () => {
     const r = readLineup(KC_XAYAH, kits, nameOf);
-    expect(r.ok && r.read.strengths[0]).toBe("Fight start: Rakan; secondary start (catch or dive): Qiyana; follow-up: Renekton, Orianna and Xayah");
+    expect(r.ok && r.read.strengths[0]).toBe("Teamfight engage: Rakan; dive start: Qiyana; follow-up: Renekton, Orianna and Xayah");
   });
 });

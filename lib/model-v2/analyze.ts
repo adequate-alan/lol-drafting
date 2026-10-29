@@ -173,16 +173,22 @@ export const diver = (s: Slot) => s.c.kit.backlineAccess >= 2 && (s.threat >= 2 
 // ---------- fight roles ----------
 
 /**
- * Who starts and who follows a fight (alan, 2026-10-27): primary initiation is an on-demand team engage (kit
- * `fightStart: "primary"`); secondary initiation is a champion who can open a fight on their own terms by catching or
- * diving one target (`"catch"`: Qiyana, Nocturne, Pantheon, Lee Sin), never promoted to primary; follow-up is everyone
- * else whose crowd control or burst lands once a fight has started. Kit values only, nothing here is read by a score.
+ * Who starts and who follows a fight (alan, 2026-10-27 / 2026-10-29). Teamfight engage is reliable, on-demand team
+ * initiation (kit `fightStart: "primary"`: Rakan, Jarvan IV). The other starters (`"catch"`) open a fight on their own
+ * terms in one of two ways, read from what the kit does: a dive commits onto a target (backline access 2+ at short or no
+ * range: Qiyana, Nocturne, Pantheon), a catch creates a pick with crowd control or displacement without going in (from
+ * range 1+, or holding a target who comes to them, backline access under 2: Ashe, Thresh, Trundle). A champion who
+ * reaches the backline and catches from range (Ahri, Vex, Gragas) is both. Neither is ranked below teamfight engage as a
+ * way to start: a catch can be the first action of a fight. Follow-up is everyone else whose crowd control or burst lands
+ * once a fight has started. Kit values only, nothing here is read by a score.
  */
 export function fightRoles(slots: Slot[]) {
   const primary = slots.filter((s) => s.c.fightStart === "primary");
-  const secondary = slots.filter((s) => s.c.fightStart === "catch");
-  const followUp = slots.filter((s) => !primary.includes(s) && !secondary.includes(s) && (s.c.fightStart === "follow-up" || s.c.kit.followUp >= 2));
-  return { primary, secondary, followUp };
+  const starters = slots.filter((s) => s.c.fightStart === "catch");
+  const dive = starters.filter((s) => s.c.kit.backlineAccess >= 2 && s.c.kit.range <= 1);
+  const pick = starters.filter((s) => s.c.kit.range >= 1 || s.c.kit.backlineAccess < 2);
+  const followUp = slots.filter((s) => !primary.includes(s) && !starters.includes(s) && (s.c.fightStart === "follow-up" || s.c.kit.followUp >= 2));
+  return { primary, dive, catch: pick, followUp };
 }
 
 // ---------- identity ----------

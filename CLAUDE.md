@@ -841,8 +841,11 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   is reaching and collapsing on priority targets, wombo overlapping AoE that wins a grouped fight; several AoE abilities
   alone never make a comp wombo. In a dive, a catch diver's crowd control (Qiyana, Nocturne, Pantheon) is not a wombo
   layer; primary AoE engagers who dive (Kennen, Jarvan IV, Rakan) count for both. Read by Comp Check, the plan read, Comp
-  Library and discovery only; the ranking keeps the default read (scores unchanged). `fightRoles` splits primary
-  initiation, secondary initiation (catch or dive) and follow-up for the comp read. Never scored;
+  Library and discovery only; the ranking keeps the default read (scores unchanged). `fightRoles` (alan, 2026-10-29) names
+  how a fight starts in the comp read: Teamfight engage (`fightStart: "primary"`), Dive start (a starter who commits onto
+  a target: backline access 2+ at range 0–1), Catch start (crowd control or displacement without going in: range 1+, or
+  backline access under 2) and Follow-up; a starter can be both dive and catch (Ahri, Vex, Gragas), and neither is called
+  secondary to teamfight engage. Displacement is not a stored kit value, so Lee Sin's kick and K'Sante's ult read as dive only. Never scored;
   validation: `npx tsx scripts/diagnostics/plan-validate.ts` and `plan-review.ts`.
 
 ## Commit authorship
