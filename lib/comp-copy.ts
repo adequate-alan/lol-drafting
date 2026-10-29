@@ -92,6 +92,8 @@ export const WHY_LINE: Record<string, string> = {
   "speed-up-skirmish": "Karma and Sivir speed Olaf and Skarner in; Locke follows up.",
   "dive-utility-bot": "Camille and Naafiri get access, Galio follows, Renata saves the diver.",
   "mage-bot-siege": "Ziggs takes the towers; Jarvan IV, Nautilus and Orianna supply the start.",
+  // Front-to-back + Zone Control · Viktor, from alan's win condition (2026-10-26).
+  "pro-83641-red": "K'Sante and Jarvan IV start; Viktor zones; Kalista shreds; Renata stops dives.",
   "classic-front-to-back": "K'Sante and Jarvan IV start the fight; Viktor and Lulu keep Jinx shooting.",
   "caitlyn-bard-pick": "Caitlyn and Jayce push lanes; Bard, Qiyana and Syndra land the catches.",
 };

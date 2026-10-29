@@ -47,7 +47,9 @@ describe("pro swaps", () => {
 
   it("never change a comp's lineup or its general-logic swaps", () => {
     const plain = buildLibrary(getCompShells(), discovered, getProGames().games);
-    expect(library.shells).toEqual(plain.shells);
+    // Only an approved comp's own win condition (alan's words) replaces the comp check's on its card.
+    const own = new Map(review.approvedComps.flatMap((a) => a.winCondition ? [[a.comp, a.winCondition]] : []));
+    expect(library.shells).toEqual(plain.shells.map((s) => own.has(s.id) ? { ...s, winCondition: own.get(s.id) } : s));
   });
 });
 
@@ -158,7 +160,7 @@ describe("named variations, holds and families (2026-10-17)", () => {
   });
 
   it("Swiss filings (alan, 2026-10-26): Viktor approved under his name, Movistar KOI's Diana lineup under Stable Top + Carry Bot, the rest held", () => {
-    expect(review.approvedComps).toContainEqual({ comp: "pro-83641-red", approvedOn: "2026-10-26", name: "Front-to-back + Zone Control · Viktor" });
+    expect(review.approvedComps).toContainEqual(expect.objectContaining({ comp: "pro-83641-red", approvedOn: "2026-10-26", name: "Front-to-back + Zone Control · Viktor" }));
     const viktor = library.shells.find((s) => s.id === "pro-83641-red")!;
     expect(viktor.name).toBe("Front-to-back + Zone Control · Viktor");
     // Both teams' games stay, each with its own side and result: G2 lost, Dplus KIA won.

@@ -1,4 +1,4 @@
-# Comp Library review · 2026-10-28
+# Comp Library review · 2026-10-29
 
 Read 242 lineups from 121 recorded games (latest 2026-10-26). Demacia Cup: 70/71 games recorded, complete; Worlds 2026 Main Event: 29/29 games recorded, ongoing; Worlds 2026 Play-In: 22/22 games recorded, complete. LCK 2026 playoff drafts are used for comparison only.
 
@@ -31,7 +31,7 @@ Observed library comps with no exact or variation game in the tracked tournament
 Pass every discovery check. Not in the library until alan approves (comp-review.json `approvedComps`).
 
 - **Wombo + Front-to-back · Orianna** · Top Jax · Jng Jarvan IV · Mid Orianna · Bot Kalista · Sup Renata Glasc · Medium · id `pro-83640-blue`
-  - Jarvan IV, Orianna and Renata Glasc stack AoE crowd control; Jarvan IV in front, Orianna and Kalista dealing damage from range. Fight in choke points and around objectives where Jarvan IV, Orianna and Renata Glasc can land their crowd control on the same targets.
+  - Jarvan IV, Orianna and Renata Glasc stack AoE crowd control; Jarvan IV in front, Orianna and Kalista dealing damage from range. Fight in choke points and around objectives where Jarvan IV, Orianna and Renata Glasc can land their crowd control on the same targets. Jarvan IV holds the front while Orianna and Kalista deal damage from behind.
   - Strengths: Fight start: Jarvan IV; Peel and disengage: Orianna and Renata Glasc; Side lane: Jax; Tank damage: Jax; Mixed damage (62% physical).
   - Weak points: Thin frontline (minor).
   - passes every check (2 games from 2 teams with the same strategy, no major weak point, a clear win condition); waiting for approval.

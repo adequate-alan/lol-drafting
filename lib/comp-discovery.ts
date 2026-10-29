@@ -120,12 +120,13 @@ function jobOf(s: Slot, main: Slot | undefined): string {
   return "Utility";
 }
 
-/** The engine's read of a full lineup, or why it cannot be read reliably. */
-export function readLineup(picks: Picks, kits: ChampionKit[], nameOf: (id: string) => string): ReadResult {
+/** The engine's read of a full lineup, or why it cannot be read reliably. `carry`: the carry an approved comp names
+ *  (an archetype's), so the text says who the protect plan is built around; the identity and every score stay the engine's. */
+export function readLineup(picks: Picks, kits: ChampionKit[], nameOf: (id: string) => string, carry?: string): ReadResult {
   const have = new Set(kits.map((k) => k.id));
   const missing = ROLES.filter((r) => !have.has(picks[r]));
   if (missing.length) return { ok: false, reason: `${missing.map((r) => nameOf(picks[r])).join(", ")} ${missing.length > 1 ? "have" : "has"} no reviewed kit, so the comp check cannot read this lineup` };
-  const a = analyze(picks, kits);
+  const a = analyze(picks, kits, [], { carry });
   const f = a.facts;
   const primary = a.identity.primary?.id;
   if (!primary || !a.winCondition) return { ok: false, reason: "no identity scores high enough for a clear read" };
@@ -185,7 +186,7 @@ export function lineupJobs(picks: Picks, kits: ChampionKit[]): LineupJobs | null
 /** The comp check's read of any lineup, from the roster's kits (Comp Library shows it beside a named variation). */
 export function lineupReader(champions: Champion[]) {
   const kits = convertKits(champions), names = new Map(champions.map((c) => [c.id, c.name]));
-  return (p: Picks) => readLineup(p, kits, (id) => names.get(id) ?? id);
+  return (p: Picks, carry?: string) => readLineup(p, kits, (id) => names.get(id) ?? id, carry);
 }
 export function lineupJobsReader(champions: Champion[]) {
   const kits = convertKits(champions);
@@ -276,6 +277,7 @@ export interface DiscoveryInput {
   approved?: string[]; // comp-review.json approvedComps: new comps alan approved; nothing else is added
   names?: Record<string, string>; // comp-review.json approvedComps names: alan's name for an approved comp wins
   pending?: string[]; // comp-review.json pendingComps: earlier additions sent back to "Ready for approval"
+  carries?: Record<string, string>; // comp-review.json archetypes: comp id → the carry its archetype names (text only)
   limited?: string[]; // comp-review.json approvedComps `limited`: only the drafts alan reviewed (and exact replays) file under it
   reviewed?: LineupRef[]; // lineups alan's review filed under a comp (supporting, named variations): never open a new comp
 }
@@ -306,6 +308,11 @@ export function discover(input: DiscoveryInput): DiscoveryResult {
   const heldIn = (p: Picks) => (input.held ?? []).filter((h) => ROLES.some((r) => p[r] === h.champion));
   const readOf = (p: Picks) => { const k = lineupKey(p); if (!reads.has(k)) reads.set(k, readLineup(p, kits, nameOf)); return reads.get(k)!; };
   const okRead = (p: Picks) => { const r = readOf(p); return r.ok ? r.read : null; };
+  // A comp in an archetype names its carry: the stored text says who the protect plan is built around (identity unchanged).
+  const named = (id: string, p: Picks, read: { winCondition: string; why: string }) => {
+    const carry = input.carries?.[id], r = carry ? readLineup(p, kits, nameOf, carry) : null;
+    return r?.ok ? { winCondition: r.read.winCondition, why: r.read.why } : { winCondition: read.winCondition, why: read.why };
+  };
 
   const shellReads: Record<string, ReadResult> = {};
   // Templates are general draft logic: observed lineups are never filed under one (they form their own observed comps).
@@ -411,7 +418,8 @@ export function discover(input: DiscoveryInput): DiscoveryResult {
       id, name, addedOn: before?.addedOn ?? today,
       primary: read.primary, secondary: read.secondary, tags: read.tags,
       slots: Object.fromEntries(ROLES.map((r) => [r, { champion: g.anchor.picks[r], job: read.jobs[r] }])) as DiscoveredComp["slots"],
-      winCondition: read.winCondition, why: read.why, timing: read.timing,
+      ...named(id, g.anchor.picks, read),
+      timing: read.timing,
       strengths: read.strengths, weaknesses: read.weaknesses, difficulty: read.difficulty,
       games: g.members.filter((x) => x.m === "exact").map(({ obs }) => ({ game: obs.game, side: obs.side })),
     });
