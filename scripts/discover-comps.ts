@@ -38,7 +38,7 @@ const compName = (id: string) => shells.find((s) => s.id === id)?.name ?? previo
 
 const result = discover({
   games: proGames.games, events: proGames.tracked.map((t) => t.event), shells, kits: convertKits(champions), nameOf, previous, today,
-  held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), names: Object.fromEntries(review.approvedComps.flatMap((a) => a.name ? [[a.comp, a.name]] : [])), pending: review.pendingComps.map((p) => p.comp),
+  held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), names: Object.fromEntries(review.approvedComps.flatMap((a) => a.name ? [[a.comp, a.name]] : [])), pending: review.pendingComps.map((p) => p.comp), limited: review.approvedComps.flatMap((a) => a.limited ? [a.comp] : []),
   reviewed: reviewedLineups(review),
   carries: Object.fromEntries(review.archetypes.flatMap((a) => [a.core, ...a.members.flatMap((m) => m.comp ? [m.comp] : [])].map((c) => [c, a.carry]))),
 });

@@ -9568,6 +9568,13 @@
           "stats": ["65 Ability Power", "400 Health", "15 Ability Haste"],
           "from": [3147, 3108],
           "kind": "completed"
+        },
+        "8020": {
+          "name": "Abyssal Mask",
+          "gold": 2650,
+          "stats": ["350 Health", "45 Magic Resist", "15 Ability Haste"],
+          "from": [3067, 1057],
+          "kind": "completed"
         }
       },
       "runes": {
@@ -10420,6 +10427,28 @@
             "maxrank": 3
           }
         },
+        "elise": {
+          "Q": {
+            "name": "Neurotoxin / Venomous Bite",
+            "icon": "EliseHumanQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Volatile Spiderling / Skittering Frenzy",
+            "icon": "EliseHumanW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Cocoon / Rappel",
+            "icon": "EliseHumanE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Spider Form",
+            "icon": "EliseR.png",
+            "maxrank": 4
+          }
+        },
         "ezreal": {
           "Q": {
             "name": "Mystic Shot",
@@ -10615,6 +10644,28 @@
           "R": {
             "name": "Curtain Call",
             "icon": "JhinR.png",
+            "maxrank": 3
+          }
+        },
+        "jinx": {
+          "Q": {
+            "name": "Switcheroo!",
+            "icon": "JinxQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Zap!",
+            "icon": "JinxW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Flame Chompers!",
+            "icon": "JinxE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Super Mega Death Rocket!",
+            "icon": "JinxR.png",
             "maxrank": 3
           }
         },
@@ -11627,6 +11678,28 @@
           "R": {
             "name": "Unleashed Power",
             "icon": "SyndraR.png",
+            "maxrank": 3
+          }
+        },
+        "tahm-kench": {
+          "Q": {
+            "name": "Tongue Lash",
+            "icon": "TahmKenchQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Abyssal Dive",
+            "icon": "TahmKenchW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Thick Skin",
+            "icon": "TahmKenchE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Devour",
+            "icon": "TahmKenchRWrapper.png",
             "maxrank": 3
           }
         },

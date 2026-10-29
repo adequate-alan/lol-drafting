@@ -46,7 +46,9 @@ describe("weekly comp discovery", () => {
   });
 
   it("a run with the stored library as its previous state keeps every stored comp and its added date", () => {
-    const r = discover({ ...base, previous: stored, today: "2099-01-01" });
+    // With alan's review decisions, as the weekly run reads them: which lineup opens a group depends on what he held.
+    const review = getCompReview();
+    const r = discover({ ...base, previous: stored, today: "2099-01-01", held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), names: Object.fromEntries(review.approvedComps.flatMap((a) => a.name ? [[a.comp, a.name]] : [])), pending: review.pendingComps.map((p) => p.comp), limited: review.approvedComps.flatMap((a) => a.limited ? [a.comp] : []), reviewed: reviewedLineups(review) });
     for (const c of stored.comps) expect(r.file.comps.find((x) => x.id === c.id)?.addedOn, c.id).toBe(c.addedOn);
   });
 
@@ -198,7 +200,7 @@ describe("weekly comp discovery", () => {
 
   it("the stored library is exactly what discovery gives with alan's review inputs, and no comp grows from a held champion", () => {
     const review = getCompReview();
-    const r = discover({ ...base, previous: stored, today: stored.lastAddition ?? "2026-10-17", held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), names: Object.fromEntries(review.approvedComps.flatMap((a) => a.name ? [[a.comp, a.name]] : [])), pending: review.pendingComps.map((p) => p.comp), reviewed: reviewedLineups(review) });
+    const r = discover({ ...base, previous: stored, today: stored.lastAddition ?? "2026-10-17", held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), names: Object.fromEntries(review.approvedComps.flatMap((a) => a.name ? [[a.comp, a.name]] : [])), pending: review.pendingComps.map((p) => p.comp), limited: review.approvedComps.flatMap((a) => a.limited ? [a.comp] : []), reviewed: reviewedLineups(review) });
     expect(r.file).toEqual(stored);
     // Skirmish + Pick · Lucian was declined (2026-10-24): its two games are filed under other comps and open nothing.
     expect(r.candidates.some((c) => c.id === "pro-83451-blue")).toBe(false);
@@ -262,7 +264,7 @@ describe("stored discovered comps", () => {
 describe("Comp Library integration", () => {
   // A run on today's data, so these checks hold for real discoveries even before the stored file has any.
   const review = getCompReview();
-  const fresh = discover({ ...base, previous: stored, held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), names: Object.fromEntries(review.approvedComps.flatMap((a) => a.name ? [[a.comp, a.name]] : [])), pending: review.pendingComps.map((p) => p.comp), reviewed: reviewedLineups(review) }).file;
+  const fresh = discover({ ...base, previous: stored, held: review.heldChampions, heldLineups: review.held, approved: review.approvedComps.map((a) => a.comp), names: Object.fromEntries(review.approvedComps.flatMap((a) => a.name ? [[a.comp, a.name]] : [])), pending: review.pendingComps.map((p) => p.comp), limited: review.approvedComps.flatMap((a) => a.limited ? [a.comp] : []), reviewed: reviewedLineups(review) }).file;
   const lib = buildLibrary(shells, fresh, pro.games);
 
   it("the site reads the stored library, Draft Room included", () => {
