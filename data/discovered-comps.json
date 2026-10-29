@@ -1,5 +1,5 @@
 {
-  "lastAddition": "2026-10-27",
+  "lastAddition": "2026-10-29",
   "comps": [
     {
       "id": "pro-83448-blue",
@@ -1699,6 +1699,23 @@
       "games": [
         {
           "game": 83655,
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "pro-83653-red",
+      "picks": {
+        "TOP": "zaahen",
+        "JUNGLE": "lee-sin",
+        "MID": "annie",
+        "BOT": "jhin",
+        "SUPPORT": "nautilus"
+      },
+      "addedOn": "2026-10-29",
+      "games": [
+        {
+          "game": 83673,
           "side": "blue"
         }
       ]

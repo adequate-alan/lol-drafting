@@ -8370,6 +8370,11 @@
           "text": "Temporarily grants Attack Damage and heals you when dealing physical damage to champions.",
           "kind": "consumable"
         },
+        "2152": {
+          "name": "Elixir of Force",
+          "gold": 50,
+          "kind": "consumable"
+        },
         "2420": {
           "name": "Seeker's Armguard",
           "gold": 1600,
@@ -10515,6 +10520,28 @@
             "maxrank": 3
           }
         },
+        "gwen": {
+          "Q": {
+            "name": "Snip Snip!",
+            "icon": "GwenQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Hallowed Mist",
+            "icon": "GwenW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Skip 'n Slash",
+            "icon": "GwenE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Needlework",
+            "icon": "GwenR.png",
+            "maxrank": 3
+          }
+        },
         "hwei": {
           "Q": {
             "name": "Subject: Disaster",
@@ -10996,6 +11023,28 @@
           "R": {
             "name": "Wild Growth",
             "icon": "LuluR.png",
+            "maxrank": 3
+          }
+        },
+        "lux": {
+          "Q": {
+            "name": "Light Binding",
+            "icon": "LuxLightBinding.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Prismatic Barrier",
+            "icon": "LuxPrismaticWave.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Lucent Singularity",
+            "icon": "LuxLightStrikeKugel.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Final Spark",
+            "icon": "LuxR.png",
             "maxrank": 3
           }
         },
