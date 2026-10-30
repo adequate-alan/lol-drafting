@@ -1721,6 +1721,40 @@
       ]
     },
     {
+      "of": "control-siege",
+      "picks": {
+        "TOP": "jayce",
+        "JUNGLE": "qiyana",
+        "MID": "viktor",
+        "BOT": "jhin",
+        "SUPPORT": "alistar"
+      },
+      "addedOn": "2026-10-29",
+      "games": [
+        {
+          "game": 83678,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "yunara-protect",
+      "picks": {
+        "TOP": "renekton",
+        "JUNGLE": "pantheon",
+        "MID": "syndra",
+        "BOT": "tristana",
+        "SUPPORT": "lulu"
+      },
+      "addedOn": "2026-10-29",
+      "games": [
+        {
+          "game": 83680,
+          "side": "blue"
+        }
+      ]
+    },
+    {
       "of": "speed-up-skirmish",
       "picks": {
         "TOP": "jax",

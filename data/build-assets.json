@@ -9111,6 +9111,14 @@
           "from": [1037, 2021, 1028],
           "kind": "completed"
         },
+        "3165": {
+          "name": "Morellonomicon",
+          "gold": 2850,
+          "stats": ["75 Ability Power", "350 Health", "15 Ability Haste"],
+          "text": "Increases magic damage",
+          "from": [3916, 1026, 3067],
+          "kind": "completed"
+        },
         "3170": {
           "name": "Swiftmarch",
           "gold": 1000,
