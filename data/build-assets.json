@@ -8859,6 +8859,14 @@
           "from": [1058, 4632],
           "kind": "completed"
         },
+        "3107": {
+          "name": "Redemption",
+          "gold": 2300,
+          "stats": ["30 Ability Power", "15 Ability Haste", "100% Base Mana Regen", "10% Heal and Shield Power"],
+          "text": "Activate to heal allies and damage enemies in an area",
+          "from": [3108, 3114],
+          "kind": "completed"
+        },
         "3108": {
           "name": "Fiendish Codex",
           "gold": 850,
@@ -11691,6 +11699,28 @@
           "R": {
             "name": "Impale",
             "icon": "SkarnerR.png",
+            "maxrank": 3
+          }
+        },
+        "swain": {
+          "Q": {
+            "name": "Death's Hand",
+            "icon": "SwainQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Vision of Empire",
+            "icon": "SwainW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Nevermove",
+            "icon": "SwainE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Demonic Ascension",
+            "icon": "SwainR.png",
             "maxrank": 3
           }
         },
