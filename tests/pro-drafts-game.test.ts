@@ -2,7 +2,7 @@
 // it opens that player's recorded build for that exact game, named by game id, side and role, never by row position.
 import { describe, expect, it } from "vitest";
 import { getBuildGameRecords, getBuildGames, getProDrafts } from "@/lib/data";
-import { banPhases, bansOf, buildFor, buildParam, carryBuild, draftOrder, gameFacts, gameIdOf, gameView, newSince, parseBuildParam, pickedFirst } from "@/lib/pro-drafts-game";
+import { banPhases, bansOf, buildFor, buildParam, carryBuild, draftOrder, gameFacts, gameIdOf, gameView, latestBatch, newSince, parseBuildParam, pickedFirst } from "@/lib/pro-drafts-game";
 import { rows } from "@/lib/pro-builds-bundle";
 import { ROLES, type Role } from "@/lib/schema";
 
@@ -128,6 +128,18 @@ describe("bans and first pick", () => {
     expect(newSince(null, [1, 2])).toEqual([]);
     expect(newSince([1], [1, 2, 3])).toEqual([2, 3]);
     expect(newSince([1, 2, 3], [1, 2, 3])).toEqual([]);
+  });
+
+  it("the latest refresh's games are the ones carrying its import day", () => {
+    expect(latestBatch([{ id: 1, added: "2026-10-29" }, { id: 2, added: "2026-10-30" }, { id: 3, added: "2026-10-30" }, { id: 4, added: null }]))
+      .toEqual({ ids: [2, 3], day: "2026-10-30" });
+    expect(latestBatch([{ id: 1, added: null }])).toEqual({ ids: [], day: null });
+    const book = gameFacts(getBuildGameRecords());
+    const w = drafts.filter((d) => /^Worlds/.test(d.tournament) && gameIdOf(d));
+    const { ids, day } = latestBatch(w.map((d) => ({ id: gameIdOf(d), added: book[gameIdOf(d)]?.added ?? null })));
+    expect(ids.length).toBeGreaterThan(0);
+    for (const id of ids) expect(book[id].added).toBe(day);
+    for (const d of w) expect((book[gameIdOf(d)]?.added ?? "") <= day!).toBe(true);
   });
 
   it("Worlds games are their own tournament, never Demacia Cup, on their own patch", () => {
