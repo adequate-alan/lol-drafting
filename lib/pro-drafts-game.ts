@@ -62,13 +62,13 @@ export const carryBuild = (current: string | undefined, next: Pick<ProDraft, "id
 // `order` is the side's five picks in the order the Gol.gg game page draws them (`pickOrder`), stored only when the page
 // draws the turns; `picks` names each champion's role. Both feed the Draft order view below.
 interface FactSide { team: string; bans: string[]; order?: string[]; picks?: Partial<Record<Role, string>> }
-export interface GameFacts { firstPick?: "blue" | "red"; blue: FactSide; red: FactSide }
+export interface GameFacts { firstPick?: "blue" | "red"; blue: FactSide; red: FactSide; /** Day the refresh imported it. */ added?: string }
 export type GameFactBook = Record<number, GameFacts>;
 
 type RecordSide = { team: string; bans: string[]; pickOrder?: string[]; picks?: Partial<Record<Role, string>> };
 const factSide = (s: RecordSide): FactSide => ({ team: s.team, bans: s.bans, ...(s.pickOrder ? { order: s.pickOrder, picks: s.picks } : {}) });
-export const gameFacts = (records: { id: number; firstPick?: "blue" | "red"; blue: RecordSide; red: RecordSide }[]): GameFactBook =>
-  Object.fromEntries(records.map((g) => [g.id, { firstPick: g.firstPick, blue: factSide(g.blue), red: factSide(g.red) }]));
+export const gameFacts = (records: { id: number; firstPick?: "blue" | "red"; blue: RecordSide; red: RecordSide; checkedOn?: string }[]): GameFactBook =>
+  Object.fromEntries(records.map((g) => [g.id, { firstPick: g.firstPick, blue: factSide(g.blue), red: factSide(g.red), ...(g.checkedOn ? { added: g.checkedOn } : {}) }]));
 
 const factsFor = (d: Pick<ProDraft, "id" | "sources" | "side" | "team">, book: GameFactBook) => {
   const g = book[gameIdOf(d)], side = sideOf(d);
@@ -102,6 +102,15 @@ export function newSince(seen: number[] | null, current: number[]): number[] {
   if (!seen) return [];
   const have = new Set(seen);
   return current.filter((id) => !have.has(id));
+}
+
+// Latest refresh (alan, 2026-10-31: "represent the new ones as the ones you just updated"): the Worlds games the most
+// recent refresh added are flagged too, on every browser and every visit, beside the ones new since the last visit. A
+// game record's `checkedOn` (`GameFacts.added`) is the day the refresh imported it (a later build re-read never moves
+// it), so the batch is the games carrying the newest such day.
+export function latestBatch(games: { id: number; added: string | null }[]): { ids: number[]; day: string | null } {
+  const day = games.reduce<string | null>((d, g) => (g.added && (!d || g.added > d) ? g.added : d), null);
+  return { ids: day ? [...new Set(games.filter((g) => g.added === day).map((g) => g.id))] : [], day };
 }
 
 // Draft order view (alan, 2026-10-24): the open game's ten picks in the order they were made, beside the default

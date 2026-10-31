@@ -677,7 +677,9 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   the team carrying Gol.gg's First Pick mark (from the game record, LCK archive records included), never inferred; an
   unmarked game shows none and the open game says so. A Stage menu appears once a tournament with several stages is
   chosen. Worlds games this browser had not seen on its last visit get a "New" marker and a toolbar count
-  (localStorage `pro-drafts:seen-worlds`, kept for the visit in sessionStorage; the first visit flags nothing).
+  (localStorage `pro-drafts:seen-worlds`, kept for the visit in sessionStorage; the first visit flags nothing), and the
+  games the latest refresh added are always marked too (alan, 2026-10-31; `latestBatch`, the newest import day,
+  `checkedOn` on the game record).
 - **Pro Drafts game inspection** (alan, 2026-10-12; `lib/pro-drafts-game.ts`, `tests/pro-drafts-game.test.ts`): a row
   click (or its game link) opens the whole game in place, unfolded under its own two rows (alan, 2026-10-16; above the
   table only when the filters hide the game; `?id=`; clicking the open row again or Escape folds it, focus back on the
