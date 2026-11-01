@@ -711,6 +711,22 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   and sort filters in the URL. A row opens its picks per position and a breakdown by patch, tournament stage (`scopeKey`:
   Worlds Play-In / Swiss / Knockouts) or team, each line with its sample. Every count shows "n/of", under 5 picks is
   marked; W–L is context only, never a sort or a priority claim.
+- **Analyst perspectives** (alan, 2026-11-01; `data/analyst-commentary.json`, `AnalystCommentary` in `lib/schema.ts`,
+  `lib/analyst-commentary.ts`, `components/AnalystPerspectives.tsx`, `tests/analyst-commentary.test.ts`, smoke "analyst:"):
+  attributed opinions of named analysts (YamatoCannon and Caedrel co-streams of BLG vs HLE, games 83692 / 83693, to start),
+  not an evidence layer and apart from Pro Evidence and General Draft Logic. Never read by scoring, rankings, Synergies,
+  Counters, kits, pool tiers, Comp Library or pro draft records; never promoted into a drafting rule. One record per
+  observation: Gol.gg game id, analyst, video and timestamp (seconds, inside the video's captions), phase (draft or
+  post-game only), kind, a one-sentence paraphrase, and each champion mentioned as what it was in that game (a side's pick,
+  a side's ban, or an option a side did not take): two champions in one sentence are never teammates by default (Caedrel's
+  Orianna + Jarvan IV was a hypothetical for BLG; HLE picked Jarvan IV). `check` covers only a factual sub-claim against
+  recorded games (corroborated / contradicted / unverifiable), and speculation about a team's reasons is its own status.
+  A game's result never marks a draft read right or wrong. Two analysts answering the same question (`topic`, `stance`) show
+  a quiet "agrees" / "differs"; disagreements are shown, never resolved. In the open Pro Drafts game only: a collapsed
+  "Analyst perspectives (n)" row (hidden without commentary), the text a separate chunk loaded on first open, grouped by
+  analyst, draft before post-game, each line linked to its video moment. Transcripts come from YouTube captions fetched on
+  alan's Mac with yt-dlp (YouTube answers Claude's cloud environments with a bot check); garbled, cut-off, in-game or
+  ambiguous lines go in `excluded` with the reason. Expanding to more analysts or games waits on alan's review.
 - **Identity-first headers** (alan, 2026-10-12, DPM.LOL as the hierarchy reference, never its branding or layout): a
   player or champion page leads with the subject, on one surface, not a card: a large portrait or champion icon, a
   large Space Grotesk name (`--fs-4xl` for a player profile, `--fs-3xl` elsewhere), team and role in medium weight

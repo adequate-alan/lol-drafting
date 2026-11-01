@@ -1,0 +1,694 @@
+{
+  "creators": {
+    "yamato": {
+      "name": "YamatoCannon"
+    },
+    "caedrel": {
+      "name": "Caedrel"
+    }
+  },
+  "videos": {
+    "qS1WkPdFRAA": {
+      "creator": "yamato",
+      "title": "ONE OF THEM ISN'T MAKING PLAYOFFS | BLG VS HLE | WORLDS 2026 SWISS STAGE ROUND 5",
+      "url": "https://www.youtube.com/watch?v=qS1WkPdFRAA",
+      "uploaded": "2026-11-01",
+      "captions": "auto",
+      "note": "Co-stream. Captions end at 36:01 of 53:18.",
+      "duration": 3198,
+      "captionsEnd": 2161
+    },
+    "N-Ao8zE2jdY": {
+      "creator": "caedrel",
+      "title": "MSI FINALS REMATCH TO SURVIVE - HLE VS BLG - WORLDS 2026",
+      "url": "https://www.youtube.com/watch?v=N-Ao8zE2jdY",
+      "uploaded": "2026-11-01",
+      "captions": "auto",
+      "note": "Edited co-stream. The uncut Twitch VOD has no captions.",
+      "duration": 4079,
+      "captionsEnd": 4079
+    }
+  },
+  "topics": {
+    "83692-edge": {
+      "game": 83692,
+      "question": "Which team drafted better?"
+    },
+    "83692-decider": {
+      "game": 83692,
+      "question": "What decided the game?"
+    },
+    "83693-response": {
+      "game": 83693,
+      "question": "HLE's answer to Yunara + Lulu"
+    },
+    "83693-pantheon": {
+      "game": 83693,
+      "question": "Should HLE ban Pantheon?"
+    },
+    "83693-edge": {
+      "game": 83693,
+      "question": "Which team drafted better?"
+    }
+  },
+  "observations": [
+    {
+      "id": "y-83692-knight-mid",
+      "game": 83692,
+      "creator": "yamato",
+      "video": "qS1WkPdFRAA",
+      "t": 0,
+      "phase": "draft",
+      "kind": "prediction",
+      "text": "With Syndra banned, expects Knight to play LeBlanc or Orianna.",
+      "champions": [
+        {
+          "id": "syndra",
+          "as": "ban",
+          "side": "red"
+        },
+        {
+          "id": "leblanc",
+          "as": "option",
+          "side": "blue"
+        },
+        {
+          "id": "orianna",
+          "as": "pick",
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "id": "y-83692-draft-edge",
+      "game": 83692,
+      "creator": "yamato",
+      "video": "qS1WkPdFRAA",
+      "t": 90,
+      "phase": "draft",
+      "kind": "preference",
+      "text": "Slightly prefers BLG's draft for its isolated matchups, Gnar into Rumble and Lee Sin into Jarvan IV, but calls it a preference rather than a clear edge.",
+      "champions": [
+        {
+          "id": "gnar",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "rumble",
+          "as": "pick",
+          "side": "red"
+        },
+        {
+          "id": "lee-sin",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "jarvan-iv",
+          "as": "pick",
+          "side": "red"
+        }
+      ],
+      "topic": "83692-edge",
+      "stance": "blg-slight",
+      "check": {
+        "status": "corroborated",
+        "claim": "Rumble and Alistar have lost a lot of games at this tournament.",
+        "evidence": "Worlds 2026 games recorded before Oct 31 (Play-In and Swiss): Rumble 5–12 in top, Alistar 6–12 in support.",
+        "games": []
+      }
+    },
+    {
+      "id": "y-83692-hle-answers",
+      "game": 83692,
+      "creator": "yamato",
+      "video": "qS1WkPdFRAA",
+      "t": 150,
+      "phase": "draft",
+      "kind": "win-condition",
+      "text": "HLE still have solid answers: Cassiopeia, comparable scaling and a good early game through Jarvan IV.",
+      "champions": [
+        {
+          "id": "cassiopeia",
+          "as": "pick",
+          "side": "red"
+        },
+        {
+          "id": "jarvan-iv",
+          "as": "pick",
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "id": "y-83692-ezreal-snipe",
+      "game": 83692,
+      "creator": "yamato",
+      "video": "qS1WkPdFRAA",
+      "t": 1231,
+      "phase": "post-game",
+      "kind": "reflection",
+      "text": "Viper's Ezreal snipe on Gumayusi changed the game: HLE limped into the drake fight, and Orianna and Ezreal had prime position to carry it.",
+      "champions": [
+        {
+          "id": "ezreal",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "corki",
+          "as": "pick",
+          "side": "red"
+        },
+        {
+          "id": "orianna",
+          "as": "pick",
+          "side": "blue"
+        }
+      ],
+      "topic": "83692-decider",
+      "stance": "ezreal-snipe"
+    },
+    {
+      "id": "c-83692-orianna-jarvan",
+      "game": 83692,
+      "creator": "caedrel",
+      "video": "N-Ao8zE2jdY",
+      "t": 30,
+      "phase": "draft",
+      "kind": "interaction",
+      "text": "After BLG's Orianna, suggests BLG could add Jarvan IV beside her: Orianna + Jarvan IV combine well and Jarvan IV is good into Cassiopeia. A hypothetical for BLG; HLE took Jarvan IV themselves.",
+      "champions": [
+        {
+          "id": "orianna",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "jarvan-iv",
+          "as": "option",
+          "side": "blue"
+        },
+        {
+          "id": "cassiopeia",
+          "as": "pick",
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "id": "c-83692-early-nautilus",
+      "game": 83692,
+      "creator": "caedrel",
+      "video": "N-Ao8zE2jdY",
+      "t": 30,
+      "phase": "draft",
+      "kind": "priority",
+      "text": "Notes BLG taking Nautilus early, the same thing G2 did against HLE the day before.",
+      "champions": [
+        {
+          "id": "nautilus",
+          "as": "pick",
+          "side": "blue"
+        }
+      ],
+      "check": {
+        "status": "corroborated",
+        "claim": "G2 picked Nautilus early against HLE the day before.",
+        "evidence": "G2 took Nautilus with their second pick against HLE on Oct 30.",
+        "games": [
+          83684
+        ]
+      }
+    },
+    {
+      "id": "c-83692-blg-bot",
+      "game": 83692,
+      "creator": "caedrel",
+      "video": "N-Ao8zE2jdY",
+      "t": 61,
+      "phase": "draft",
+      "kind": "preference",
+      "text": "Doesn't rate BLG's Ezreal + Nautilus bot lane in this game, and thought Kai'Sa would have been risky too.",
+      "champions": [
+        {
+          "id": "ezreal",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "nautilus",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "kaisa",
+          "as": "option",
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "id": "c-83692-rumble-blind",
+      "game": 83692,
+      "creator": "caedrel",
+      "video": "N-Ao8zE2jdY",
+      "t": 154,
+      "phase": "draft",
+      "kind": "priority",
+      "text": "Calls Rumble HLE's natural top blind here: nothing else could be blinded.",
+      "champions": [
+        {
+          "id": "rumble",
+          "as": "pick",
+          "side": "red"
+        }
+      ],
+      "check": {
+        "status": "corroborated",
+        "claim": "Rumble was picked blind.",
+        "evidence": "HLE picked Rumble at turn 9, before BLG's Gnar at turn 10, so no enemy top was on the board.",
+        "games": [
+          83692
+        ]
+      }
+    },
+    {
+      "id": "c-83692-draft-edge",
+      "game": 83692,
+      "creator": "caedrel",
+      "video": "N-Ao8zE2jdY",
+      "t": 181,
+      "phase": "draft",
+      "kind": "preference",
+      "text": "Calls both drafts standard and good: roughly even, so the game comes down to execution.",
+      "champions": [],
+      "topic": "83692-edge",
+      "stance": "even"
+    },
+    {
+      "id": "c-83692-bot-matchup",
+      "game": 83692,
+      "creator": "caedrel",
+      "video": "N-Ao8zE2jdY",
+      "t": 181,
+      "phase": "draft",
+      "kind": "matchup",
+      "text": "In bot lane, Alistar is good into Nautilus, while Ezreal can farm freely.",
+      "champions": [
+        {
+          "id": "alistar",
+          "as": "pick",
+          "side": "red"
+        },
+        {
+          "id": "nautilus",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "ezreal",
+          "as": "pick",
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "id": "c-83692-ezreal-snipe",
+      "game": 83692,
+      "creator": "caedrel",
+      "video": "N-Ao8zE2jdY",
+      "t": 1530,
+      "phase": "post-game",
+      "kind": "reflection",
+      "text": "Knight carried the game; the one decisive kill he had no part in was Viper's Ezreal snipe onto the Corki.",
+      "champions": [
+        {
+          "id": "orianna",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "ezreal",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "corki",
+          "as": "pick",
+          "side": "red"
+        }
+      ],
+      "topic": "83692-decider",
+      "stance": "ezreal-snipe"
+    },
+    {
+      "id": "y-83693-hle-bans",
+      "game": 83693,
+      "creator": "yamato",
+      "video": "qS1WkPdFRAA",
+      "t": 1263,
+      "phase": "draft",
+      "kind": "priority",
+      "text": "Reads HLE's Qiyana and Akali bans as banning their own comfort picks, and expects a Syndra first pick to follow.",
+      "champions": [
+        {
+          "id": "qiyana",
+          "as": "ban",
+          "side": "red"
+        },
+        {
+          "id": "akali",
+          "as": "ban",
+          "side": "red"
+        },
+        {
+          "id": "syndra",
+          "as": "pick",
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "id": "y-83693-syndra",
+      "game": 83693,
+      "creator": "yamato",
+      "video": "qS1WkPdFRAA",
+      "t": 1290,
+      "phase": "draft",
+      "kind": "matchup",
+      "text": "Syndra is good into both bot lanes BLG could take, Kalista + Renata or Yunara + Lulu.",
+      "champions": [
+        {
+          "id": "syndra",
+          "as": "pick",
+          "side": "red"
+        },
+        {
+          "id": "kalista",
+          "as": "option",
+          "side": "blue"
+        },
+        {
+          "id": "renata-glasc",
+          "as": "option",
+          "side": "blue"
+        },
+        {
+          "id": "yunara",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "lulu",
+          "as": "pick",
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "id": "y-83693-caitlyn",
+      "game": 83693,
+      "creator": "yamato",
+      "video": "qS1WkPdFRAA",
+      "t": 1321,
+      "phase": "draft",
+      "kind": "preference",
+      "text": "Calls Caitlyn the correct response to BLG's Yunara + Lulu.",
+      "champions": [
+        {
+          "id": "caitlyn",
+          "as": "pick",
+          "side": "red"
+        },
+        {
+          "id": "yunara",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "lulu",
+          "as": "pick",
+          "side": "blue"
+        }
+      ],
+      "topic": "83693-response",
+      "stance": "caitlyn"
+    },
+    {
+      "id": "y-83693-draft-edge",
+      "game": 83693,
+      "creator": "yamato",
+      "video": "qS1WkPdFRAA",
+      "t": 1350,
+      "phase": "draft",
+      "kind": "preference",
+      "text": "Thinks HLE have the winning draft, and doubts BLG have an AD jungler left that gives them what they need.",
+      "champions": [],
+      "topic": "83693-edge",
+      "stance": "hle"
+    },
+    {
+      "id": "y-83693-pantheon",
+      "game": 83693,
+      "creator": "yamato",
+      "video": "qS1WkPdFRAA",
+      "t": 1350,
+      "phase": "draft",
+      "kind": "prediction",
+      "text": "Expects HLE to ban Pantheon, the last strong AD jungler open for BLG.",
+      "champions": [
+        {
+          "id": "pantheon",
+          "as": "pick",
+          "side": "blue"
+        }
+      ],
+      "topic": "83693-pantheon",
+      "stance": "ban"
+    },
+    {
+      "id": "y-83693-ksante",
+      "game": 83693,
+      "creator": "yamato",
+      "video": "qS1WkPdFRAA",
+      "t": 1410,
+      "phase": "draft",
+      "kind": "tradeoff",
+      "text": "Thinks HLE's K'Sante was the wrong last top pick: it left BLG a free Ambessa, which he rated above the Olaf BLG chose.",
+      "champions": [
+        {
+          "id": "ksante",
+          "as": "pick",
+          "side": "red"
+        },
+        {
+          "id": "ambessa",
+          "as": "option",
+          "side": "blue"
+        },
+        {
+          "id": "olaf",
+          "as": "pick",
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "id": "y-83693-bot-lane",
+      "game": 83693,
+      "creator": "yamato",
+      "video": "qS1WkPdFRAA",
+      "t": 1410,
+      "phase": "draft",
+      "kind": "matchup",
+      "text": "Yunara + Lulu into Caitlyn + Karma is a very hard lane for BLG, one that suffers until level 6.",
+      "champions": [
+        {
+          "id": "yunara",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "lulu",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "caitlyn",
+          "as": "pick",
+          "side": "red"
+        },
+        {
+          "id": "karma",
+          "as": "pick",
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "id": "y-83693-zeus",
+      "game": 83693,
+      "creator": "yamato",
+      "video": "qS1WkPdFRAA",
+      "t": 1981,
+      "phase": "post-game",
+      "kind": "reflection",
+      "text": "With HLE on first pick both games, Zeus still ended up on Rumble and K'Sante, the tops he calls the weakest of the tournament.",
+      "champions": [
+        {
+          "id": "ksante",
+          "as": "pick",
+          "side": "red"
+        }
+      ],
+      "check": {
+        "status": "corroborated",
+        "claim": "K'Sante and Rumble have the lowest win rates of any top champion at this tournament.",
+        "evidence": "Worlds 2026 games recorded before Oct 31: Rumble 5–12 and K'Sante 5–11, the two lowest win rates of any top champion with 5+ games.",
+        "games": []
+      }
+    },
+    {
+      "id": "c-83693-first-pick",
+      "game": 83693,
+      "creator": "caedrel",
+      "video": "N-Ao8zE2jdY",
+      "t": 1561,
+      "phase": "draft",
+      "kind": "priority",
+      "text": "HLE's first-pick dilemma: first-pick Syndra and leave Nocturne open, or ban Nocturne and let BLG ban Syndra. A double jungle ban 'feels right, but feels wrong'.",
+      "champions": [
+        {
+          "id": "syndra",
+          "as": "pick",
+          "side": "red"
+        },
+        {
+          "id": "nocturne",
+          "as": "ban",
+          "side": "blue"
+        }
+      ]
+    },
+    {
+      "id": "c-83693-caitlyn",
+      "game": 83693,
+      "creator": "caedrel",
+      "video": "N-Ao8zE2jdY",
+      "t": 1650,
+      "phase": "draft",
+      "kind": "preference",
+      "text": "Into BLG's Lulu, prefers Caitlyn + Karma; Caitlyn + Bard would also be good.",
+      "champions": [
+        {
+          "id": "caitlyn",
+          "as": "pick",
+          "side": "red"
+        },
+        {
+          "id": "karma",
+          "as": "pick",
+          "side": "red"
+        },
+        {
+          "id": "bard",
+          "as": "option",
+          "side": "red"
+        },
+        {
+          "id": "lulu",
+          "as": "pick",
+          "side": "blue"
+        }
+      ],
+      "topic": "83693-response",
+      "stance": "caitlyn"
+    },
+    {
+      "id": "c-83693-pantheon",
+      "game": 83693,
+      "creator": "caedrel",
+      "video": "N-Ao8zE2jdY",
+      "t": 1687,
+      "phase": "draft",
+      "kind": "prediction",
+      "text": "Sees no need for HLE to ban junglers in general, but Pantheon is strong into these bot lanes, so expects HLE to take him away.",
+      "champions": [
+        {
+          "id": "pantheon",
+          "as": "pick",
+          "side": "blue"
+        }
+      ],
+      "topic": "83693-pantheon",
+      "stance": "ban"
+    },
+    {
+      "id": "c-83693-draft-edge",
+      "game": 83693,
+      "creator": "caedrel",
+      "video": "N-Ao8zE2jdY",
+      "t": 1770,
+      "phase": "draft",
+      "kind": "preference",
+      "text": "HLE have the winning lanes and need their bot lane to win; BLG have strong teamfight champions if they find the right angles.",
+      "champions": [],
+      "topic": "83693-edge",
+      "stance": "hle"
+    }
+  ],
+  "excluded": [
+    {
+      "video": "qS1WkPdFRAA",
+      "t": 30,
+      "reason": "Kai'Sa ban question and 'he only plays Kai'Sa at Worlds': no recorded Gumayusi Kai'Sa to check, caption unclear."
+    },
+    {
+      "video": "qS1WkPdFRAA",
+      "t": 60,
+      "reason": "'Zeus is just picking Gnar … pick your counter': garbled; Gnar was BLG's (Bin) last pick."
+    },
+    {
+      "video": "qS1WkPdFRAA",
+      "t": 1321,
+      "reason": "Reason given for the Kalista + Renata choice: unclear which team's decision it describes, and a claim about intent."
+    },
+    {
+      "video": "qS1WkPdFRAA",
+      "t": 360,
+      "reason": "Orianna into Cassiopeia move speed and Cassiopeia's early skirmish strength: said during the game, outside the draft and post-game windows."
+    },
+    {
+      "video": "N-Ao8zE2jdY",
+      "t": 154,
+      "reason": "Gumayusi 'prefers Corki, Ziggs, Jhin/Jinx': caption unclear; recorded games only partly support it."
+    },
+    {
+      "video": "N-Ao8zE2jdY",
+      "t": 154,
+      "reason": "'Kai'Sa is terrible with Alistar': champion name garbled in the caption."
+    },
+    {
+      "video": "N-Ao8zE2jdY",
+      "t": 181,
+      "reason": "'Rumble into Gnar is fine for …' and 'HLE maybe has three winning …': sentences cut off."
+    },
+    {
+      "video": "N-Ao8zE2jdY",
+      "t": 212,
+      "reason": "Early pushing lanes: unclear which team it describes."
+    },
+    {
+      "video": "N-Ao8zE2jdY",
+      "t": 1747,
+      "reason": "K'Sante blind discussion: garbled."
+    },
+    {
+      "video": "N-Ao8zE2jdY",
+      "t": 2340,
+      "reason": "Locke and Olaf punish HLE's objective contests: said during the game, outside the draft and post-game windows."
+    }
+  ]
+}

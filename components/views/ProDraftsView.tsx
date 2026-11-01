@@ -19,6 +19,7 @@ import { ChampionProvider } from "@/components/ChampionInteraction";
 import type { DrawerContext } from "@/lib/drawer";
 const PRO_DRAFTS: DrawerContext = { page: "pro-drafts" };
 import { GameDetail } from "@/components/GameBuild";
+import { AnalystPerspectives } from "@/components/AnalystPerspectives";
 import { Select } from "@/components/Select";
 import { PinIcon, PinPicker, usePins, type PinKind } from "@/components/PlayerPicker";
 import type { DrawerData } from "@/lib/data";
@@ -212,12 +213,13 @@ const GameRows = memo(function GameRows({ g, meta, href, isOpen, openId, fresh, 
   );
 });
 
-export function ProDraftsView({ names, sources, all, freshness, drawerData, buildGames, events, shortNames, eventIds, facts, orderGames, scopeEvents }: {
+export function ProDraftsView({ names, sources, all, freshness, drawerData, buildGames, events, shortNames, eventIds, facts, orderGames, scopeEvents, commentary = {} }: {
   names: Record<string, string>; sources: Record<string, Source>; all: ProDraft[]; freshness: Freshness[]; drawerData: DrawerData;
   buildGames: number[]; // recorded games with Pro Builds (data/pro-builds.json)
   events: Record<string, string>; // meta.json event id -> short name, for the build header
   shortNames: Record<string, string>; // tournament name -> short name, for the game cell
   eventIds: Record<string, string>; // tournament name -> meta.json event id, so tournament pins are shared with Pro Builds
+  commentary?: Record<number, number>; // Gol.gg game id -> analyst observations (the text loads on demand)
   facts: GameFactBook; // Gol.gg game id -> First Pick mark and each side's bans, from the game records
   orderGames: OrderGame[]; // every game record, for the Pick order tab (only verified orders are counted)
   scopeEvents: ScopeEvent[]; // meta.json events, for tournament-stage labels
@@ -416,6 +418,11 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
                 </div>
               ) : <p className="xs muted game-hint">Select a champion to see that player's exact build in this game: runes, items, skill order and summoner spells.</p>
             ) : <p className="xs muted game-hint">No builds recorded for this game.</p>}
+            {view.teams.length === 2 && view.teams.every((t) => t.side !== "none") && (
+              <AnalystPerspectives key={view.gameId} game={view.gameId} count={commentary[view.gameId] ?? 0} names={names}
+                teams={Object.fromEntries(view.teams.map((t) => [t.side, t.d.team])) as Record<"blue" | "red", string>}
+                picks={Object.fromEntries(view.teams.map((t) => [t.side, ROLES.map((r) => t.d.picks[r])])) as Record<"blue" | "red", string[]>} />
+            )}
           </div>
         </section>
   ) : null;

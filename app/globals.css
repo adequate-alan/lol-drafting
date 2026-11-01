@@ -2193,6 +2193,28 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 }
 
 .game-panel { margin-bottom: var(--s5); }
+/* Analyst perspectives (alan, 2026-11-01): attributed opinion, collapsed inside the open game. Neutral styling: it is not
+   Synergy (gold), Pro evidence (teal) or General Draft Logic, so it borrows none of their treatments. */
+.analyst-perspectives { margin-top: var(--s5); padding-top: var(--s4); border-top: 1px solid var(--border); }
+.analyst-perspectives > .disclosure-body { max-width: 860px; }
+.ap { display: grid; gap: var(--s5); }
+.ap-intro { margin: 0; }
+.ap-creator { display: grid; gap: var(--s3); }
+.ap-name { display: flex; align-items: baseline; gap: var(--s3); margin: 0; font-family: var(--font-display); font-size: var(--fs-md); font-weight: var(--w-strong); color: var(--text); }
+.ap-video { font-family: var(--font); font-weight: 400; }
+.ap-list { display: grid; gap: var(--s4); margin: 0; padding: 0; list-style: none; }
+.ap-item { display: grid; gap: var(--s2); padding-left: var(--s4); border-left: 1px solid var(--border); }
+.ap-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s3); color: var(--text-muted); }
+.ap-time { font-family: var(--font-mono); color: var(--text); }
+.ap-kind, .ap-phase { color: var(--text-muted); }
+.ap-phase::after { content: "·"; margin-left: var(--s3); color: var(--text-faint); }
+.ap-text { margin: 0; font-size: var(--fs-sm); line-height: 1.45; color: var(--text); }
+.ap-champs { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); margin: 0; padding: 0; list-style: none; }
+.ap-champ { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px 5px; min-width: 0; }
+.ap-champ > span:first-of-type { white-space: nowrap; }
+.ap-check, .ap-relation { margin: 0; line-height: 1.4; }
+.ap-check b { font-weight: var(--w-control); }
+.ap-check.contradicted b, .ap-check.speculation b { color: var(--caution); }
 /* The open game unfolds in place under its two rows (alan, 2026-10-16): one full-width cell, pinned to the visible width
    of the table so a horizontally scrolled table still shows it whole; it fades and settles in, and fades out on close. */
 .drafts-table { container-type: inline-size; }
