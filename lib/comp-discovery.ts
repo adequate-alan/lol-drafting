@@ -8,7 +8,7 @@
 // jobs, strengths, weak points, difficulty) is the comp-analysis engine's read (lib/model-v2/analyze.ts), i.e. General
 // Draft Logic, and is labelled that way on the page. Saved synergy, pool tiers and proposed synergy are never read or
 // written here. Win/loss is shown, never used to decide anything.
-import { analyze, IDENTITY_LABEL, names, slotsOf, type IdentityId, type Slot } from "./model-v2/analyze";
+import { analyze, fightRoles, IDENTITY_LABEL, names, slotsOf, type IdentityId, type Slot } from "./model-v2/analyze";
 import { convertKits } from "./model-v2/kits";
 import type { ChampionKit } from "./model-v2/schema";
 import { ROLES, type Champion, type CompReview, type CompShell, type ProDraft, type ProGame, type Role } from "./schema";
@@ -126,7 +126,7 @@ export function readLineup(picks: Picks, kits: ChampionKit[], nameOf: (id: strin
   const have = new Set(kits.map((k) => k.id));
   const missing = ROLES.filter((r) => !have.has(picks[r]));
   if (missing.length) return { ok: false, reason: `${missing.map((r) => nameOf(picks[r])).join(", ")} ${missing.length > 1 ? "have" : "has"} no reviewed kit, so the comp check cannot read this lineup` };
-  const a = analyze(picks, kits, [], { carry });
+  const a = analyze(picks, kits, [], { strategy: true, carry });
   const f = a.facts;
   const primary = a.identity.primary?.id;
   if (!primary || !a.winCondition) return { ok: false, reason: "no identity scores high enough for a clear read" };
@@ -141,8 +141,12 @@ export function readLineup(picks: Picks, kits: ChampionKit[], nameOf: (id: strin
 
   const peelers = all.filter((s) => s.c.attrs.peel >= 2 || s.c.kit.disengage >= 2);
   const strengths: string[] = [];
-  if (f.primary.length) strengths.push(`Fight start: ${names(f.primary)}`);
-  else if (f.catchers.length) strengths.push(`Catch: ${names(f.catchers)}`);
+  // Teamfight engage, dive starts, catch starts and follow-up, kept apart (alan, 2026-10-27 / 2026-10-29).
+  const fr = fightRoles(all);
+  const starts = ([["Teamfight engage", fr.primary], ["dive start", fr.dive], ["catch start", fr.catch], ["follow-up", fr.followUp]] as const)
+    .filter(([, xs]) => xs.length).map(([label, xs]) => `${label}: ${names(xs)}`);
+  if (starts.length && (fr.primary.length || fr.dive.length || fr.catch.length))
+    strengths.push(starts.map((x, n) => (n ? x : x[0].toUpperCase() + x.slice(1))).join("; "));
   if (f.frontliners.length >= 2) strengths.push(`Frontline: ${names(f.frontliners)}`);
   if (peelers.length >= 2) strengths.push(`Peel and disengage: ${names(peelers)}`);
   if (f.siege.score >= 1.9 && f.siege.sources.length) strengths.push(`Siege: ${names(f.siege.sources)}`);

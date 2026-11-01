@@ -187,7 +187,39 @@ export function protectTarget(slots: Slot[], dive = false, named?: string): { pr
 }
 export const diver = (s: Slot) => s.c.kit.backlineAccess >= 2 && (s.threat >= 2 || s.c.fightStart === "primary");
 
+// ---------- fight roles ----------
+
+/**
+ * Who starts and who follows a fight (alan, 2026-10-27 / 2026-10-29). Teamfight engage is reliable, on-demand team
+ * initiation (kit `fightStart: "primary"`: Rakan, Jarvan IV). The other starters (`"catch"`) open a fight on their own
+ * terms in one of two ways, read from what the kit does: a dive commits onto a target (backline access 2+ at short or no
+ * range: Qiyana, Nocturne, Pantheon), a catch creates a pick with crowd control or displacement without going in (from
+ * range 1+, or holding a target who comes to them, backline access under 2: Ashe, Thresh, Trundle). A champion who
+ * reaches the backline and catches from range (Ahri, Vex, Gragas) is both. Neither is ranked below teamfight engage as a
+ * way to start: a catch can be the first action of a fight. Follow-up is everyone else whose crowd control or burst lands
+ * once a fight has started. Kit values only, nothing here is read by a score.
+ */
+export function fightRoles(slots: Slot[]) {
+  const primary = slots.filter((s) => s.c.fightStart === "primary");
+  const starters = slots.filter((s) => s.c.fightStart === "catch");
+  const dive = starters.filter((s) => s.c.kit.backlineAccess >= 2 && s.c.kit.range <= 1);
+  const pick = starters.filter((s) => s.c.kit.range >= 1 || s.c.kit.backlineAccess < 2);
+  const followUp = slots.filter((s) => !primary.includes(s) && !starters.includes(s) && (s.c.fightStart === "follow-up" || s.c.kit.followUp >= 2));
+  return { primary, dive, catch: pick, followUp };
+}
+
 // ---------- identity ----------
+
+/**
+ * `strategy` (alan, 2026-10-27; the Comp Check text, Comp Library and discovery, never the ranking): dive is reaching
+ * and collapsing on priority targets, wombo is overlapping AoE that wins a grouped fight, and several AoE abilities alone
+ * never make a comp wombo. When the comp is a dive, a catch diver's crowd control (Qiyana, Nocturne, Pantheon) is spent
+ * reaching and locking its target, so it counts toward the dive and not toward wombo, neither as a layer nor in the AoE
+ * total (alan, 2026-11-01); primary AoE engagers who also
+ * dive (Kennen, Jarvan IV, Rakan) count toward both. Without a dive nothing changes. The ranking keeps the default read.
+ * `carry`: the carry an approved comp names (Comp Library), used only to say who the protect plan is built around.
+ */
+export interface ReadOpts { strategy?: boolean; carry?: string }
 
 // The protect identity's reason, around the carry the plan is built for (protectTarget); the score above keeps its own carry.
 function protectText(slots: Slot[], named?: string) {
@@ -195,7 +227,8 @@ function protectText(slots: Slot[], named?: string) {
   return `${names(slots.filter((s) => !t.carries.includes(s) && peeler(s)))} protect ${names(t.carries)}`;
 }
 
-export function identities(slots: Slot[], f: Facts = facts(slots), named?: string): IdentityScore[] {
+export function identities(slots: Slot[], f: Facts = facts(slots), opts: ReadOpts = {}): IdentityScore[] {
+  const named = opts.carry;
   const out: IdentityScore[] = [];
   const small = f.n <= 3;
   const ranged = f.carries.filter((s) => s.c.kit.range >= 2);
@@ -203,7 +236,8 @@ export function identities(slots: Slot[], f: Facts = facts(slots), named?: strin
     out.push({ id: "front-to-back", score: 2 * Math.min(f.frontliners.length, 2) + 1.5 * Math.min(ranged.length, 2) + (f.primary.length ? 1.5 : 0) + slots.filter((s) => s.c.attrs.frontline >= 3).length - (f.access.length >= 3 ? 2 : 0),
       because: `${names(f.frontliners)} in front, ${names(ranged)} dealing damage from range` });
   const divers = slots.filter(diver);
-  if (divers.length >= (small ? 2 : 3) && divers.some((s) => s.c.fightStart === "primary" || s.c.fightStart === "catch"))
+  const dives = divers.length >= (small ? 2 : 3) && divers.some((s) => s.c.fightStart === "primary" || s.c.fightStart === "catch");
+  if (dives)
     out.push({ id: "dive", score: sum(divers.map((s) => s.c.kit.backlineAccess)) + 0.5 * sum(divers.map((s) => s.c.kit.followUp)) - (f.carryRange >= 2.5 ? 2 : 0),
       because: `${names(divers)} can all reach the backline` });
   const bursty = f.burst.filter((s) => s.c.fightStart !== "catch");
@@ -224,9 +258,11 @@ export function identities(slots: Slot[], f: Facts = facts(slots), named?: strin
   const skirmishers = slots.filter((s) => s.threat >= 2 && s.c.kit.range <= 1 && s.c.kit.curve.early + s.c.kit.curve.mid >= 5 && (s.c.attrs.sustainedDps >= 2 || s.c.attrs.burst >= 2));
   if (skirmishers.length >= 2 && skirmishers.some((s) => s.role === "JUNGLE" || s.role === "MID"))
     out.push({ id: "skirmish", score: 2 * skirmishers.length + f.lanePressure, because: `${names(skirmishers)} win short fights before items` });
-  const aoe = slots.filter((s) => s.c.kit.aoeCc >= 2);
-  if (aoe.length >= 3 && f.primary.length && f.aoe >= 8)
-    out.push({ id: "wombo", score: 0.8 * f.aoe, because: `${names(aoe)} stack AoE crowd control` });
+  const diveLock = (s: Slot) => !!opts.strategy && dives && divers.includes(s) && s.c.fightStart === "catch";
+  const aoe = slots.filter((s) => s.c.kit.aoeCc >= 2 && !diveLock(s));
+  const aoeSum = sum(slots.filter((s) => !diveLock(s)).map((s) => s.c.kit.aoeCc));
+  if (aoe.length >= 3 && f.primary.length && aoeSum >= 8)
+    out.push({ id: "wombo", score: 0.8 * aoeSum, because: `${names(aoe)} stack AoE crowd control` });
   if (f.side.length)
     {
     const globals = slots.filter((s) => s.c.kit.global);
@@ -599,13 +635,12 @@ export interface Analysis {
   facts: Facts;
 }
 
-/** `carry`: the carry an approved comp names (Comp Library), used only to say who the protect plan is built around. */
-export function analyze(draft: Draft, champions: ChampionKit[], enemyIds: string[] = [], { carry }: { carry?: string } = {}): Analysis {
+export function analyze(draft: Draft, champions: ChampionKit[], enemyIds: string[] = [], opts: ReadOpts = {}): Analysis {
   const slots = slotsOf(draft, champions);
   const f = facts(slots);
   const n = slots.length;
   const confidence: Confidence = n < T.earlyRead ? "none" : n < T.teamRules ? "early" : n < 5 ? "read" : "full";
-  const all = identities(slots, f, carry);
+  const all = identities(slots, f, opts);
   const { primary, secondary } = n >= T.earlyRead ? pickIdentity(all) : { primary: null, secondary: null };
   const weak = n >= T.earlyRead ? weaknesses(slots, f, all) : [];
   const theirs = slotsOf(enemyDraft(enemyIds, champions), champions);
@@ -615,7 +650,7 @@ export function analyze(draft: Draft, champions: ChampionKit[], enemyIds: string
   const needs = n ? jobs(slots, f, ranked, dive) : [];
   const open = ROLES.filter((r) => !draft[r]);
   const taken = new Set([...slots.map((s) => s.c.id), ...theirs.map((s) => s.c.id)]);
-  const protectedCarries = protectTarget(slots, false, carry).carries;
+  const protectedCarries = protectTarget(slots, false, opts.carry).carries;
   const protectedCarry = protectedCarries.length ? names(protectedCarries) : f.main?.c.name;
   const label = (i: IdentityScore | null) => (!i ? null : i.id === "protect" && protectedCarry ? `Protect ${protectedCarry}` : IDENTITY_LABEL[i.id]);
   const top = ranked[0];
@@ -626,7 +661,7 @@ export function analyze(draft: Draft, champions: ChampionKit[], enemyIds: string
   return {
     confidence, headline,
     identity: { primary, secondary, all },
-    winCondition: primary && n >= T.earlyRead ? winCondition(primary.id, slots, f, secondary?.id ?? null, carry) : null,
+    winCondition: primary && n >= T.earlyRead ? winCondition(primary.id, slots, f, secondary?.id ?? null, opts.carry) : null,
     weakPoints: confidence === "early" ? ranked.filter((w) => w.severity !== "minor").slice(0, 2) : ranked.slice(0, T.weakShown),
     more: confidence === "early" ? ranked.filter((w) => w.severity !== "minor").slice(2) : ranked.slice(T.weakShown),
     versus: vs,

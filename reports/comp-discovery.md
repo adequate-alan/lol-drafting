@@ -30,13 +30,13 @@ Pass every discovery check. Not in the library until alan approves (comp-review.
 
 - **Front-to-back + Protect · Ornn** · Top Ornn · Jng Lee Sin · Mid Syndra · Bot Sivir · Sup Karma · Easy · id `pro-83526-red`
   - Ornn in front, Syndra and Sivir dealing damage from range; Lee Sin and Karma protect Sivir. Set up first around objectives, let Ornn start fights, and play front-to-back through Syndra and Sivir. Once a fight starts, Lee Sin and Karma turn back to protect Sivir.
-  - Strengths: Fight start: Ornn; Peel and disengage: Lee Sin and Karma; Mixed damage (54% physical).
+  - Strengths: Teamfight engage: Ornn; dive start: Lee Sin; catch start: Syndra; follow-up: Karma; Peel and disengage: Lee Sin and Karma; Mixed damage (54% physical).
   - passes every check (2 games from 2 teams with the same strategy, no major weak point, a clear win condition); waiting for approval.
   - [LGD Gaming vs JD Gaming G1](https://gol.gg/game/stats/83526/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-06, win)
   - [Movistar KOI vs Karmine Corp G2](https://gol.gg/game/stats/83687/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-31, loss)
 - **Dive + Skirmish · Ziggs** · Top Ambessa · Jng Lee Sin · Mid Syndra · Bot Ziggs · Sup Alistar · Medium · id `pro-83564-red`
   - Ambessa, Lee Sin and Alistar can all reach the backline; Ambessa and Lee Sin win short fights before items. Go in together: Ambessa, Lee Sin and Alistar reach the enemy carries at the same time instead of one by one.
-  - Strengths: Fight start: Alistar; Peel and disengage: Lee Sin and Alistar; Side lane: Ambessa; Mixed damage (36% physical); Strong before first items.
+  - Strengths: Teamfight engage: Alistar; dive start: Ambessa and Lee Sin; catch start: Syndra; Peel and disengage: Lee Sin and Alistar; Side lane: Ambessa; Mixed damage (36% physical); Strong before first items.
   - Weak points: Thin frontline (minor).
   - passes every check (2 games from 2 teams with the same strategy, no major weak point, a clear win condition); waiting for approval.
   - [Team Vitality vs KT Rolster G2](https://gol.gg/game/stats/83564/page-game/) (Demacia Cup Global Invitational 2026, 26.18, 2026-10-12, win)
@@ -44,28 +44,28 @@ Pass every discovery check. Not in the library until alan approves (comp-review.
   - [Team Liquid vs Los Grandes G1](https://gol.gg/game/stats/83681/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-30, loss)
 - **Front-to-back + Pick · Syndra** · Top Galio · Jng Lee Sin · Mid Syndra · Bot Jhin · Sup Rakan · Easy · id `pro-83639-blue`
   - Galio in front, Syndra and Jhin dealing damage from range; catch from Lee Sin and Syndra, burst from Jhin. Set up first around objectives, let Galio and Rakan start fights, and play front-to-back through Syndra and Jhin. Between objectives, look for catches with Lee Sin and Syndra.
-  - Strengths: Fight start: Galio and Rakan; Peel and disengage: Galio, Lee Sin and Rakan; Mixed damage (50% physical).
+  - Strengths: Teamfight engage: Galio and Rakan; dive start: Lee Sin; catch start: Syndra; follow-up: Jhin; Peel and disengage: Galio, Lee Sin and Rakan; Mixed damage (50% physical).
   - Weak points: No sustained damage (moderate); Little tank damage (moderate); Thin frontline (minor).
   - passes every check (2 games from 2 teams with the same strategy, no major weak point, a clear win condition); waiting for approval.
   - [Team Liquid vs CTBC Flying Oyster G1](https://gol.gg/game/stats/83639/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-23, loss)
   - [Hanwha Life Esports vs G2 Esports G1](https://gol.gg/game/stats/83684/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-30, win)
 - **Wombo + Front-to-back · Orianna** · Top Jax · Jng Jarvan IV · Mid Orianna · Bot Kalista · Sup Renata Glasc · Medium · id `pro-83640-blue`
   - Jarvan IV, Orianna and Renata Glasc stack AoE crowd control; Jarvan IV in front, Orianna and Kalista dealing damage from range. Fight in choke points and around objectives where Jarvan IV, Orianna and Renata Glasc can land their crowd control on the same targets. Jarvan IV holds the front while Orianna and Kalista deal damage from behind.
-  - Strengths: Fight start: Jarvan IV; Peel and disengage: Orianna and Renata Glasc; Side lane: Jax; Tank damage: Jax; Mixed damage (62% physical).
+  - Strengths: Teamfight engage: Jarvan IV; follow-up: Jax, Orianna, Kalista and Renata Glasc; Peel and disengage: Orianna and Renata Glasc; Side lane: Jax; Tank damage: Jax; Mixed damage (62% physical).
   - Weak points: Thin frontline (minor).
   - passes every check (2 games from 2 teams with the same strategy, no major weak point, a clear win condition); waiting for approval.
   - [Karmine Corp vs Anyone s Legend G1](https://gol.gg/game/stats/83640/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-23, win)
   - [Los Grandes vs Team Secret Whales G1](https://gol.gg/game/stats/83664/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-26, win)
 - **Skirmish + Early tempo · Cassiopeia** · Top Trundle · Jng Qiyana · Mid Cassiopeia · Bot Kalista · Sup Renata Glasc · Easy · id `pro-83647-blue`
   - Trundle, Qiyana and Cassiopeia win short fights before items; early-game average 2.6/3. Fight short 2v2s and 3v3s around the jungle before items stack up, and snowball the leads into objectives. Use the early lanes to set up the first objectives.
-  - Strengths: Catch: Trundle and Qiyana; Side lane: Trundle; Tank damage: Trundle; Strong before first items.
+  - Strengths: Dive start: Qiyana; catch start: Trundle; follow-up: Cassiopeia, Kalista and Renata Glasc; Side lane: Trundle; Tank damage: Trundle; Strong before first items.
   - Weak points: No on-demand engage (moderate); Short range (moderate); Thin frontline (minor).
   - passes every check (2 games from 2 teams with the same strategy, no major weak point, a clear win condition); waiting for approval.
   - [Movistar KOI vs CTBC Flying Oyster G1](https://gol.gg/game/stats/83647/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-24, win)
   - [Karmine Corp vs LYON G1](https://gol.gg/game/stats/83649/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-24, loss)
 - **Poke / siege · Jayce** · Top Jayce · Jng Trundle · Mid Anivia · Bot Ezreal · Sup Karma · Easy · id `pro-83656-blue`
   - Poke from Jayce and Ezreal; Karma adds utility poke; siege high through Jayce, Anivia and Ezreal. Avoid forced 5v5 engages. Chip with Jayce and Ezreal first and fight only after creating a health advantage.
-  - Strengths: Catch: Trundle; Peel and disengage: Anivia and Karma; Siege: Jayce, Anivia and Ezreal; Side lane: Trundle; Tank damage: Trundle.
+  - Strengths: Catch start: Trundle; follow-up: Anivia and Karma; Peel and disengage: Anivia and Karma; Siege: Jayce, Anivia and Ezreal; Side lane: Trundle; Tank damage: Trundle.
   - Weak points: No on-demand engage (moderate); Thin frontline (minor).
   - passes every check (2 games from 2 teams with the same strategy, no major weak point, a clear win condition); waiting for approval.
   - [Movistar KOI vs Dplus KIA G1](https://gol.gg/game/stats/83656/page-game/) (Worlds 2026 Main Event, 26.20, 2026-10-25, loss)
@@ -176,7 +176,7 @@ Not added automatically: each needs more games or a person's call. One line per 
 - Front-to-back + Skirmish · Top Rumble · Jng Qiyana · Mid Syndra · Bot Ezreal · Sup Leona · [Gen.G G1 W](https://gol.gg/game/stats/83651/page-game/) · 1 game from Gen.G with this strategy, and the library already has front-to-back comps
 - Poke / siege + Skirmish · Top Jayce · Jng Vi · Mid Anivia · Bot Caitlyn · Sup Neeko · [T1 G1 L](https://gol.gg/game/stats/83652/page-game/) · major weak point (No frontline, Anivia is unprotected); 1 game from T1 with this strategy, and the library already has poke / siege comps
 - **New** · Skirmish · Top Kled · Jng Nocturne · Mid Annie · Bot Yunara · Sup Lulu · [Invictus Gaming G1 W](https://gol.gg/game/stats/83654/page-game/) · major weak point (No frontline); 1 game from Invictus Gaming with this strategy, and the library already has skirmish comps
-- **New** · Dive + Wombo · Top Ornn · Jng Lee Sin · Mid Cassiopeia · Bot Kai'Sa · Sup Nautilus · [Dplus KIA G1 W](https://gol.gg/game/stats/83656/page-game/), [Los Grandes G1 W](https://gol.gg/game/stats/83689/page-game/) · 1 game from Dplus KIA with this strategy (1 more with a lineup that reads differently), and the library already has dive comps
+- **New** · Dive · Top Ornn · Jng Lee Sin · Mid Cassiopeia · Bot Kai'Sa · Sup Nautilus · [Dplus KIA G1 W](https://gol.gg/game/stats/83656/page-game/), [Los Grandes G1 W](https://gol.gg/game/stats/83689/page-game/) · 1 game from Dplus KIA with this strategy (1 more with a lineup that reads differently), and the library already has dive comps
 - **New** · Front-to-back + Pick · Top Irelia · Jng Jarvan IV · Mid Syndra · Bot Caitlyn · Sup Bard · [Dplus KIA G2 W](https://gol.gg/game/stats/83657/page-game/) · 1 game from Dplus KIA with this strategy, and the library already has front-to-back comps
 - **New** · Protect + Split · Top Shen · Jng Vi · Mid Akali · Bot Yunara · Sup Lulu · [LYON G2 L](https://gol.gg/game/stats/83660/page-game/) · protect + split pull in different directions, so the win condition is ambiguous; 1 game from LYON with this strategy, and the library already has protect comps
 - **New** · Front-to-back + Poke / siege · Top Camille · Jng Jayce · Mid Galio · Bot Ezreal · Sup Nautilus · [Gen.G G3 W](https://gol.gg/game/stats/83661/page-game/) · 1 game from Gen.G with this strategy, and the library already has front-to-back comps

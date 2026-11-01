@@ -140,7 +140,7 @@ export function CompCheck({ read: p, legacy = false, draft, enemyIds, champions,
   const vs = enemyIds.join(",");
   // The comp facts (grid, timing, identity scores) and the ranking's best fix come from the general engine; the
   // diagnosis itself is the plan read.
-  const r = useMemo(() => analyze(draft, kits, enemyIds), [draft, kits, vs]);
+  const r = useMemo(() => analyze(draft, kits, enemyIds, { strategy: true }), [draft, kits, vs]);
   const fix = useMemo(() => (active && r.confidence !== "none" ? bestFix(active, draft, kits, botPairings, enemyIds) : null), [active, r.confidence, draft, kits, botPairings, vs]);
   const needs = active ? (p.roleNeeds[active] ?? []).slice(0, 3) : [];
   const best = (bestFixId && fix?.fixes.find((c) => c.champion === bestFixId)) || fix?.fixes.find((c) => c.fixScore > 0);

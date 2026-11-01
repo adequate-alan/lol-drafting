@@ -854,7 +854,16 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   catch threats, globals); a carry who stops a dive alone and a covered rule whose plan job is met are weaknesses; a
   lone bruiser with an enchanter is thin, not missing; anti-engage one short is a weakness. A fixer must fix the gap
   within the same plan (`fifthPick`: fixes / switches / eases / unresolved); a pick that only changes the plan is named
-  apart (`switches`), never as a fix. Kit corrections are proposed to alan, never applied to clear a warning. Never scored;
+  apart (`switches`), never as a fix. Kit corrections are proposed to alan, never applied to clear a warning.
+  **Dive vs wombo** (alan, 2026-10-27; `ReadOpts.strategy` in `lib/model-v2/analyze.ts`, `tests/dive-wombo.test.ts`): dive
+  is reaching and collapsing on priority targets, wombo overlapping AoE that wins a grouped fight; several AoE abilities
+  alone never make a comp wombo. In a dive, a catch diver's crowd control (Qiyana, Nocturne, Pantheon) is not a wombo
+  layer; primary AoE engagers who dive (Kennen, Jarvan IV, Rakan) count for both. Read by Comp Check, the plan read, Comp
+  Library and discovery only; the ranking keeps the default read (scores unchanged). `fightRoles` (alan, 2026-10-29) names
+  how a fight starts in the comp read: Teamfight engage (`fightStart: "primary"`), Dive start (a starter who commits onto
+  a target: backline access 2+ at range 0–1), Catch start (crowd control or displacement without going in: range 1+, or
+  backline access under 2) and Follow-up; a starter can be both dive and catch (Ahri, Vex, Gragas), and neither is called
+  secondary to teamfight engage. Displacement is not a stored kit value, so Lee Sin's kick and K'Sante's ult read as dive only. Never scored;
   validation: `npx tsx scripts/diagnostics/plan-validate.ts` and `plan-review.ts`.
   **Protected carry** (alan, 2026-10-26; `protectTarget` in `lib/model-v2/analyze.ts`, `tests/comp-carry.test.ts`): who a
   protect read is built around, never the first peel-dependent champion in role order: an approved comp's named carry
