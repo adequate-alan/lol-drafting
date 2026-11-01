@@ -713,7 +713,7 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   marked; W–L is context only, never a sort or a priority claim.
 - **Analyst perspectives** (alan, 2026-11-01; `data/analyst-commentary.json`, `AnalystCommentary` in `lib/schema.ts`,
   `lib/analyst-commentary.ts`, `components/AnalystPerspectives.tsx`, `tests/analyst-commentary.test.ts`, smoke "analyst:"):
-  attributed opinions of named analysts (YamatoCannon and Caedrel co-streams of BLG vs HLE, games 83692 / 83693, to start),
+  attributed opinions of named analysts (YamatoCannon and Caedrel co-streams of BLG vs HLE, games 83692 / 83693, plus three post-game lines from Yamato's Day 8 rundown on 83693, alan 2026-11-01; new videos go through a review in the thread first),
   not an evidence layer and apart from Pro Evidence and General Draft Logic. Never read by scoring, rankings, Synergies,
   Counters, kits, pool tiers, Comp Library or pro draft records; never promoted into a drafting rule. One record per
   observation: Gol.gg game id, analyst, video and timestamp (seconds, inside the video's captions), phase (draft or
