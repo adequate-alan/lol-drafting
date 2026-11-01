@@ -27,6 +27,16 @@
       "note": "Edited co-stream. The uncut Twitch VOD has no captions.",
       "duration": 4079,
       "captionsEnd": 4079
+    },
+    "vT543qVJ4NI": {
+      "creator": "yamato",
+      "title": "AN INSANE ENDING TO THE SWISS BRACKET! | WORLDS SWISS STAGE 2026 DAY 8 RUNDOWN",
+      "url": "https://www.youtube.com/watch?v=vT543qVJ4NI",
+      "uploaded": "2026-11-01",
+      "captions": "auto",
+      "note": "Rundown of the Oct 31 series. Only three post-game lines on BLG vs HLE game 2 are kept; the rest restates his co-stream or is not draft reasoning.",
+      "duration": 2237,
+      "captionsEnd": 2237
     }
   },
   "topics": {
@@ -637,6 +647,92 @@
       "champions": [],
       "topic": "83693-edge",
       "stance": "hle"
+    },
+    {
+      "id": "y-83693-rundown-plan",
+      "game": 83693,
+      "creator": "yamato",
+      "video": "vT543qVJ4NI",
+      "t": 1621,
+      "phase": "post-game",
+      "kind": "win-condition",
+      "text": "After the loss, still rates HLE's draft good on paper: drake and river control, and ending before Yunara + Lulu come online. Says HLE lost the lane by play, not draft.",
+      "champions": [
+        {
+          "id": "yunara",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "lulu",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "caitlyn",
+          "as": "pick",
+          "side": "red"
+        },
+        {
+          "id": "karma",
+          "as": "pick",
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "id": "y-83693-rundown-karma",
+      "game": 83693,
+      "creator": "yamato",
+      "video": "vT543qVJ4NI",
+      "t": 1725,
+      "phase": "post-game",
+      "kind": "tradeoff",
+      "text": "Caitlyn + Karma leave little room for mistakes: HLE needed a clear lead by 20 to 30 minutes (three drakes, grubs, herald) before BLG's draft takes over.",
+      "champions": [
+        {
+          "id": "caitlyn",
+          "as": "pick",
+          "side": "red"
+        },
+        {
+          "id": "karma",
+          "as": "pick",
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "id": "y-83693-rundown-catch",
+      "game": 83693,
+      "creator": "yamato",
+      "video": "vT543qVJ4NI",
+      "t": 2006,
+      "phase": "post-game",
+      "kind": "interaction",
+      "text": "Hedged as maybe a draft point: Pantheon, Locke and Olaf can still catch a Caitlyn as long as they are not far behind.",
+      "champions": [
+        {
+          "id": "pantheon",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "locke",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "olaf",
+          "as": "pick",
+          "side": "blue"
+        },
+        {
+          "id": "caitlyn",
+          "as": "pick",
+          "side": "red"
+        }
+      ]
     }
   ],
   "excluded": [
@@ -689,6 +785,41 @@
       "video": "N-Ao8zE2jdY",
       "t": 2340,
       "reason": "Locke and Olaf punish HLE's objective contests: said during the game, outside the draft and post-game windows."
+    },
+    {
+      "video": "vT543qVJ4NI",
+      "t": 1584,
+      "reason": "Camille ban surprise: restates the live K'Sante line."
+    },
+    {
+      "video": "vT543qVJ4NI",
+      "t": 1593,
+      "reason": "Pantheon 'misfire': restates the live Pantheon prediction."
+    },
+    {
+      "video": "vT543qVJ4NI",
+      "t": 1615,
+      "reason": "Olaf for Lulu synergy: speculation about BLG's reasons."
+    },
+    {
+      "video": "vT543qVJ4NI",
+      "t": 2087,
+      "reason": "'Maybe too optimistic': a hedge of his own win-condition read."
+    },
+    {
+      "video": "vT543qVJ4NI",
+      "t": 1652,
+      "reason": "Cloud9 Karma record: about his own team, mostly outside recorded games (one recorded C9 Karma game, 83598)."
+    },
+    {
+      "video": "vT543qVJ4NI",
+      "t": 531,
+      "reason": "Los Grandes LeBlanc / Qiyana scaling: unclear which game."
+    },
+    {
+      "video": "vT543qVJ4NI",
+      "t": 2024,
+      "reason": "'Engage comps have been better': general, not checkable as stated."
     }
   ]
 }

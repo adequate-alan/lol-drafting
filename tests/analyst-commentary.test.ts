@@ -20,7 +20,7 @@ describe("analyst commentary data", () => {
   it("starts with the BLG vs HLE pilot: two analysts, games 83692 and 83693", () => {
     expect(Object.keys(data.creators).sort()).toEqual(["caedrel", "yamato"]);
     expect([...new Set(data.observations.map((o) => o.game))].sort()).toEqual([83692, 83693]);
-    expect(data.observations).toHaveLength(23);
+    expect(data.observations).toHaveLength(26);
     expect(new Set(data.observations.map((o) => o.id)).size).toBe(data.observations.length);
   });
 
@@ -148,7 +148,7 @@ describe("perspectives view", () => {
   });
 
   it("counts per game for the collapsed row and renders nothing for a game without commentary", () => {
-    expect(commentaryCounts(data)).toEqual({ 83692: 11, 83693: 12 });
+    expect(commentaryCounts(data)).toEqual({ 83692: 11, 83693: 15 });
     expect(perspectivesFor(data, 83684)).toEqual([]);
     const props = { game: 83684, count: 0, names: {}, teams: { blue: "a", red: "b" }, picks: { blue: [], red: [] } };
     expect(renderToStaticMarkup(createElement(AnalystPerspectives, props))).toBe("");
