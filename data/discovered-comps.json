@@ -1,5 +1,5 @@
 {
-  "lastAddition": "2026-10-29",
+  "lastAddition": "2026-10-31",
   "comps": [
     {
       "id": "pro-83448-blue",
@@ -1394,6 +1394,23 @@
         {
           "game": 83667,
           "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "pro-83521-blue",
+      "picks": {
+        "TOP": "gnar",
+        "JUNGLE": "lee-sin",
+        "MID": "orianna",
+        "BOT": "yunara",
+        "SUPPORT": "lulu"
+      },
+      "addedOn": "2026-10-31",
+      "games": [
+        {
+          "game": 83690,
+          "side": "red"
         }
       ]
     },

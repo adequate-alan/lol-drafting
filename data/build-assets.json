@@ -9269,6 +9269,14 @@
           "from": [3077, 2021, 1011],
           "kind": "completed"
         },
+        "3801": {
+          "name": "Crystalline Bracer",
+          "gold": 800,
+          "stats": ["200 Health", "100% Base Health Regen"],
+          "text": "Grants Health and Health Regen",
+          "from": [1028, 1006],
+          "kind": "component"
+        },
         "3802": {
           "name": "Lost Chapter",
           "gold": 1200,
@@ -9437,6 +9445,13 @@
           "stats": ["35 Ability Power", "200 Health", "20 Ability Haste", "125% Base Mana Regen"],
           "text": "Damage low-health enemies to trigger a cursed explosion, dealing damage and slowing nearby foes",
           "from": [3067, 4642],
+          "kind": "completed"
+        },
+        "6621": {
+          "name": "Dawncore",
+          "gold": 2500,
+          "stats": ["45 Ability Power", "16% Heal and Shield Power", "100% Base Mana Regen"],
+          "from": [1026, 3114, 3114],
           "kind": "completed"
         },
         "6631": {
