@@ -11,6 +11,7 @@ import { priorityData, priorityMarks, type PriorityData } from "./pro-priority";
 import { buildPatchIndex } from "./patch-changes";
 import { counterFreshness, newestPatch, type CounterFreshness } from "./counter-freshness";
 import { storedKitQueue } from "./kit-review";
+import { commentaryCounts } from "./analyst-commentary";
 import { championIndex, type ChampionBuilds } from "./pro-builds";
 import { withoutConfirmed } from "./proposed";
 import { Files, ROLES, type Role } from "./schema";
@@ -75,6 +76,8 @@ export const getPatchNotes = () => load("patch-notes.json");
 let patchIndex: ReturnType<typeof buildPatchIndex> | undefined;
 export const getPatchIndex = () => (patchIndex ??= buildPatchIndex(getPatchNotes()));
 /** Champions whose Riot changes touch their stored kit values and that alan has not reviewed yet (lib/kit-review.ts). */
+/** Analyst perspectives per Gol.gg game id (counts only; the text loads as its own chunk, lib/analyst-commentary-bundle.ts). */
+export const getCommentaryCounts = () => commentaryCounts(load("analyst-commentary.json"));
 export const getKitQueue = () => storedKitQueue(getPatchNotes(), getChampions(), load("kit-review.json").decisions);
 let counterFresh: CounterFreshness | undefined;
 /** The DPM data's patch against the newest patch the site recognises (Riot's patch notes and recorded pro games). */

@@ -641,6 +641,52 @@ export const KitDecision = z.object({
 export const KitReview = z.object({ decisions: z.array(KitDecision) });
 export type KitReview = z.infer<typeof KitReview>;
 
+// Analyst Commentary (alan, 2026-11-01, "Analyst perspectives"): attributed opinions of named analysts (creators'
+// co-streams and VODs) tied to verified Gol.gg games. Not an evidence layer: it never scores, never ranks, never edits
+// Synergies, General Draft Logic, DPM Counters, kits, pool tiers, Comp Library filings or pro draft records, and an
+// opinion is never marked right or wrong by the game's result. Each observation is one paraphrase at one timestamp.
+// `champions` says what each mention was in that game (a pick or ban of a side, or an option a side did not take), so
+// two champions in one sentence are never read as teammates. `check` covers only a factual sub-claim, checked against
+// our recorded games; speculation about a team's reasons is its own status, never a failed fact.
+export const COMMENTARY_KINDS = ["prediction", "preference", "matchup", "interaction", "priority", "win-condition", "tradeoff", "reflection"] as const;
+export const CommentaryMention = z.object({
+  id: ChampionId,
+  as: z.enum(["pick", "ban", "option"]), // option: discussed for that side, not picked by it
+  side: z.enum(["blue", "red"]),
+});
+export const CommentaryObservation = z.object({
+  id: z.string().regex(/^[a-z0-9-]+$/),
+  game: z.number().int().positive(), // Gol.gg game id
+  creator: z.string(),
+  video: z.string(), // key in `videos`
+  t: z.number().int().nonnegative(), // seconds into the video
+  phase: z.enum(["draft", "post-game"]),
+  kind: z.enum(COMMENTARY_KINDS),
+  text: z.string().min(20).max(260),
+  champions: z.array(CommentaryMention).default([]),
+  topic: z.string().optional(), // a strategic question two analysts both address (key in `topics`)
+  stance: z.string().optional(), // the answer given to that question; equal stances agree, different ones differ
+  check: z.object({
+    status: z.enum(["corroborated", "contradicted", "unverifiable", "speculation"]),
+    claim: z.string().min(10),
+    evidence: z.string().min(10),
+    games: z.array(z.number().int().positive()).default([]),
+  }).optional(),
+});
+export const AnalystCommentary = z.object({
+  creators: z.record(z.string(), z.object({ name: z.string() })),
+  videos: z.record(z.string(), z.object({
+    creator: z.string(), title: z.string(), url: z.string().url(), uploaded: Day,
+    captions: z.enum(["manual", "auto"]), note: z.string().optional(),
+    duration: z.number().int().positive(), captionsEnd: z.number().int().positive(), // seconds; no observation after the captions end
+  })),
+  topics: z.record(z.string(), z.object({ game: z.number().int().positive(), question: z.string() })),
+  observations: z.array(CommentaryObservation),
+  excluded: z.array(z.object({ video: z.string(), t: z.number().int().nonnegative(), reason: z.string() })).default([]),
+});
+export type AnalystCommentary = z.infer<typeof AnalystCommentary>;
+export type CommentaryObservation = z.infer<typeof CommentaryObservation>;
+
 export const Files = {
   "champions.json": z.array(Champion),
   "sources.json": z.array(Source),
@@ -663,4 +709,5 @@ export const Files = {
   "proposed-synergy.json": ProposedSynergy,
   "patch-notes.json": PatchNotes,
   "kit-review.json": KitReview,
+  "analyst-commentary.json": AnalystCommentary,
 } as const;
