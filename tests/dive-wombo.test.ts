@@ -31,7 +31,19 @@ describe("dive vs wombo", () => {
 
   it("dives that also layer AoE engage keep both", () => {
     expect(pair(KC_KENNEN)).toEqual(["dive", "wombo"]);
-    expect(pair(DK)).toEqual(["dive", "wombo"]);
+  });
+
+  it("a catch diver's AoE counts neither as a layer nor toward the AoE total (alan, 2026-11-01)", () => {
+    // DK: Ornn, Cassiopeia and Nautilus are three layers but total 7; Lee Sin's 1 made 8, the threshold.
+    const slots = slotsOf(DK, kits);
+    const total = slots.reduce((n, s) => n + s.c.kit.aoeCc, 0);
+    const lee = slots.find((s) => s.c.id === "lee-sin")!;
+    expect(lee.c.fightStart).toBe("catch");
+    expect(total).toBe(8);
+    expect(total - lee.c.kit.aoeCc).toBeLessThan(8);
+    expect(ids(DK, false)).toContain("wombo");
+    expect(ids(DK, true)).not.toContain("wombo");
+    expect(pair(DK)[0]).toBe("dive");
   });
 
   it("wombo comps without a dive are untouched", () => {

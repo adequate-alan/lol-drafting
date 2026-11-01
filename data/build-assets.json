@@ -8370,6 +8370,11 @@
           "text": "Temporarily grants Attack Damage and heals you when dealing physical damage to champions.",
           "kind": "consumable"
         },
+        "2152": {
+          "name": "Elixir of Force",
+          "gold": 50,
+          "kind": "consumable"
+        },
         "2420": {
           "name": "Seeker's Armguard",
           "gold": 1600,
@@ -8854,6 +8859,14 @@
           "from": [1058, 4632],
           "kind": "completed"
         },
+        "3107": {
+          "name": "Redemption",
+          "gold": 2300,
+          "stats": ["30 Ability Power", "15 Ability Haste", "100% Base Mana Regen", "10% Heal and Shield Power"],
+          "text": "Activate to heal allies and damage enemies in an area",
+          "from": [3108, 3114],
+          "kind": "completed"
+        },
         "3108": {
           "name": "Fiendish Codex",
           "gold": 850,
@@ -9106,6 +9119,14 @@
           "from": [1037, 2021, 1028],
           "kind": "completed"
         },
+        "3165": {
+          "name": "Morellonomicon",
+          "gold": 2850,
+          "stats": ["75 Ability Power", "350 Health", "15 Ability Haste"],
+          "text": "Increases magic damage",
+          "from": [3916, 1026, 3067],
+          "kind": "completed"
+        },
         "3170": {
           "name": "Swiftmarch",
           "gold": 1000,
@@ -9247,6 +9268,14 @@
           "text": "Deals area of effect damage based on owner's health",
           "from": [3077, 2021, 1011],
           "kind": "completed"
+        },
+        "3801": {
+          "name": "Crystalline Bracer",
+          "gold": 800,
+          "stats": ["200 Health", "100% Base Health Regen"],
+          "text": "Grants Health and Health Regen",
+          "from": [1028, 1006],
+          "kind": "component"
         },
         "3802": {
           "name": "Lost Chapter",
@@ -9416,6 +9445,13 @@
           "stats": ["35 Ability Power", "200 Health", "20 Ability Haste", "125% Base Mana Regen"],
           "text": "Damage low-health enemies to trigger a cursed explosion, dealing damage and slowing nearby foes",
           "from": [3067, 4642],
+          "kind": "completed"
+        },
+        "6621": {
+          "name": "Dawncore",
+          "gold": 2500,
+          "stats": ["45 Ability Power", "16% Heal and Shield Power", "100% Base Mana Regen"],
+          "from": [1026, 3114, 3114],
           "kind": "completed"
         },
         "6631": {
@@ -10515,6 +10551,28 @@
             "maxrank": 3
           }
         },
+        "gwen": {
+          "Q": {
+            "name": "Snip Snip!",
+            "icon": "GwenQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Hallowed Mist",
+            "icon": "GwenW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Skip 'n Slash",
+            "icon": "GwenE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Needlework",
+            "icon": "GwenR.png",
+            "maxrank": 3
+          }
+        },
         "hwei": {
           "Q": {
             "name": "Subject: Disaster",
@@ -10996,6 +11054,28 @@
           "R": {
             "name": "Wild Growth",
             "icon": "LuluR.png",
+            "maxrank": 3
+          }
+        },
+        "lux": {
+          "Q": {
+            "name": "Light Binding",
+            "icon": "LuxLightBinding.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Prismatic Barrier",
+            "icon": "LuxPrismaticWave.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Lucent Singularity",
+            "icon": "LuxLightStrikeKugel.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Final Spark",
+            "icon": "LuxR.png",
             "maxrank": 3
           }
         },
@@ -11634,6 +11714,28 @@
           "R": {
             "name": "Impale",
             "icon": "SkarnerR.png",
+            "maxrank": 3
+          }
+        },
+        "swain": {
+          "Q": {
+            "name": "Death's Hand",
+            "icon": "SwainQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Vision of Empire",
+            "icon": "SwainW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Nevermove",
+            "icon": "SwainE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Demonic Ascension",
+            "icon": "SwainR.png",
             "maxrank": 3
           }
         },

@@ -28,7 +28,8 @@
     { "champion": "zaahen", "since": "2026-10-16", "reason": "kit added 2026-10-16; his lineups join existing comps as evidence, new comps from them wait for alan's review" }
   ],
   "approvedComps": [
-    { "comp": "pro-83641-red", "approvedOn": "2026-10-26", "name": "Front-to-back + Zone Control · Viktor" },
+    { "comp": "pro-83641-red", "approvedOn": "2026-10-26", "name": "Front-to-back + Zone Control · Viktor",
+      "winCondition": "Control objective approaches with Viktor's zone denial, use K'Sante and Jarvan IV to establish the frontline and initiate favorable fights, then let Viktor and Kalista deal sustained damage while Renata disrupts enemy engages." },
     { "comp": "pro-83653-red", "approvedOn": "2026-10-26", "name": "Dive · Orianna follow-up" },
     { "comp": "pro-83601-red", "approvedOn": "2026-10-27", "name": "Dive · Xayah", "limited": true }
   ],
@@ -92,7 +93,7 @@
         { "game": { "game": 83636, "side": "blue" }, "via": ["proactive engage", "frontline"] },
         { "game": { "game": 83649, "side": "red" }, "via": ["peel", "proactive engage", "frontline"] },
         { "comp": "pro-83450-red", "name": "Protect + front-to-back · Team Vitality", "via": ["peel", "zone control", "frontline"],
-          "note": "K'Sante holds the front while Anivia's wall and Lulu peel, the closest variation to the core plan. Anivia is a second ranged threat: the comp check names her as the carry to keep alive, though Yunara is still the main damage. Naafiri adds a backline dive. No on-demand engage, so the team waits for the enemy to come in." }
+          "note": "K'Sante holds the front while Anivia's wall and Lulu peel, the closest variation to the core plan. Yunara is the carry the team protects; Anivia is a second ranged threat whose wall adds zone control and peel. Naafiri adds a backline dive. No on-demand engage, so the team waits for the enemy to come in." }
       ],
       "review": [{ "game": { "game": 83468, "side": "red" },
         "why": "Filed with Protect + front-to-back · Yunara. The comp check reads it as front-to-back + scaling, not protect: Ornn and Jarvan IV start fights in front of Yunara instead of waiting, with less peel around her. It may be a proactive-engage way to run this plan or a separate front-to-back archetype, so it is not counted as a variation until that is decided." }] }

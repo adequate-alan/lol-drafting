@@ -1336,6 +1336,21 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   check("pro drafts: the first-pick drill-down lists one first pick per verified game", atPick1.length > 0 && atPick1.reduce((a, b) => a + b, 0) === ordered && atPick1.every((n, i) => i === 0 || n <= atPick1[i - 1]), String(atPick1.slice(0, 5)));
   await open("/pro-drafts/?id=lck26po-finals-g3-geng");
   check("pro drafts: a game without recorded builds says so and offers no build buttons", (await page.locator(".game-panel .game-team").count()) === 2 && (await page.locator(".game-panel .pick-btn:disabled").count()) === 10 && /No builds recorded/.test(await page.locator(".game-hint").textContent().catch(() => "")), "");
+  check("analyst: a game without commentary shows no Analyst perspectives row", (await page.locator(".analyst-perspectives").count()) === 0, "");
+  // Analyst perspectives (alan, 2026-11-01): collapsed by default, opens on demand, grouped by analyst, every
+  // observation linked to its video moment, disagreements shown.
+  await open("/pro-drafts/?id=golgg-83692-blue");
+  const ap = page.locator(".game-panel .analyst-perspectives");
+  await ap.locator("summary").waitFor({ timeout: 5000 }).catch(() => {});
+  const apSummary = (await ap.locator("summary").innerText().catch(() => "")).replace(/\s+/g, " ");
+  check("analyst: BLG vs HLE G1 shows a collapsed Analyst perspectives row with its count", /Analyst perspectives 11/.test(apSummary) && !(await ap.evaluate((d) => d.open).catch(() => true)), apSummary);
+  await ap.locator("summary").click();
+  await ap.locator(".ap-item").first().waitFor({ timeout: 5000 }).catch(() => {});
+  const apNames = await ap.locator(".ap-name").allInnerTexts();
+  const apLinks = await ap.locator(".ap-time").evaluateAll((as) => as.map((a) => a.href));
+  const apText = await ap.innerText().catch(() => "");
+  check("analyst: opening lists both analysts, each observation linked to its moment", apNames.length === 2 && /YamatoCannon/.test(apNames[0]) && /Caedrel/.test(apNames[1]) && apLinks.length === 11 && apLinks.every((h) => /^https:\/\/www\.youtube\.com\/watch\?v=[\w-]+&t=\d+s$/.test(h)), `${apNames.join("|")} ${apLinks.length}`);
+  check("analyst: a disagreement is shown, and Jarvan IV is an option for BLG picked by HLE", /Caedrel differs · Which team drafted better\?/.test(apText) && /Option for Bilibili Gaming · picked by Hanwha Life Esports/.test(apText), "");
 }
 // Patch Notes: Riot's official values, patch navigation, filters, anchors, compare, and the drawer link.
 await open("/patch-notes/");

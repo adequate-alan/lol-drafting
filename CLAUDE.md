@@ -490,7 +490,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   their own. Two teams are necessary, not sufficient: a game counts toward a new comp only when its own read has the
   same primary and secondary identity and 4+ roles doing the same job (`DISCOVERY.sameStrategy`); four shared
   champions with a fifth that changes how the team wins is not the same comp (Team WE's Yorick split vs FURIA's Olaf
-  skirmish, held 2026-10-17). Approved comps and variants keep receiving new verified games as replays and variations. A comp's title names only a champion every lineup behind it plays (`compTitle`: the first lineup's main carry, else a shared champion, else none; alan, 2026-10-26), and alan's name on approval wins (`approvedComps.name`: "Front-to-back + Zone Control · Viktor"). Swiss review of 2026-10-26: Viktor approved, LYON's Galio + Wukong lineup under Protect · Yunara and Movistar KOI's Diana lineup under Stable Top + Carry Bot as named variations; the Cassiopeia early-tempo pair (not filed under Objective Zone) and the Akali and Camille dive proposals held for their own reviews. Dive review of 2026-10-26: no universal Dive archetype (dive comps stay separate cards, defined by how they start and follow up a fight); "Dive · Orianna follow-up" approved (Bilibili's card, Top Esports' lineup, KT Rolster's and Cloud9's front-to-back named variations: a support starts, divers follow, Orianna and a ranged carry follow up); FURIA's Jarvan IV and HANJIN BRION's Wukong drafts named variations of Dive · Kalista; the Akali pair moved to `held`; Dive · Xayah stays held until proactive Rakan dive, counter-engage and the Orianna / Xayah / Rakan wombo lineups are told apart. Xayah review of 2026-10-27: "Dive · Xayah" approved (Karmine Corp's Renekton / Qiyana card, Shopify Rebellion's Zaahen + Pantheon and JD Gaming's Jax + Nocturne as named variations: top / jungle threats and Rakan reach the backline, Xayah deals sustained damage and needs less protection) and `limited` (`approvedComps.limited`: only its reviewed drafts and exact replays file under it; a lineup it would take is listed in the report as close, filed nowhere); an approval stands in for the evidence count, never for a major weak point or a clash. HANJIN BRION's Malphite and Karmine Corp's Kennen + Jarvan IV drafts stay under review, JD Gaming's K'Sante and FURIA's Ornn + Wukong drafts stay proposals (strong engage tools never prove a team waits to counter-engage), RED Canids' and Team Vitality's wombo filings unchanged. Dive (reaching and collapsing on priority targets) and wombo (overlapping abilities in a grouped fight) can overlap but are not interchangeable; several fight starters never make a comp wombo.
+  skirmish, held 2026-10-17). Approved comps and variants keep receiving new verified games as replays and variations. A comp's title names only a champion every lineup behind it plays (`compTitle`: the first lineup's main carry, else a shared champion, else none; alan, 2026-10-26), and alan's name on approval wins (`approvedComps.name`: "Front-to-back + Zone Control · Viktor"). alan's own win condition (`approvedComps.winCondition`, Viktor 2026-10-26) leads the card, the comp check's stays in Details. Swiss review of 2026-10-26: Viktor approved, LYON's Galio + Wukong lineup under Protect · Yunara and Movistar KOI's Diana lineup under Stable Top + Carry Bot as named variations; the Cassiopeia early-tempo pair (not filed under Objective Zone) and the Akali and Camille dive proposals held for their own reviews. Dive review of 2026-10-26: no universal Dive archetype (dive comps stay separate cards, defined by how they start and follow up a fight); "Dive · Orianna follow-up" approved (Bilibili's card, Top Esports' lineup, KT Rolster's and Cloud9's front-to-back named variations: a support starts, divers follow, Orianna and a ranged carry follow up); FURIA's Jarvan IV and HANJIN BRION's Wukong drafts named variations of Dive · Kalista; the Akali pair moved to `held`; Dive · Xayah stays held until proactive Rakan dive, counter-engage and the Orianna / Xayah / Rakan wombo lineups are told apart. Xayah review of 2026-10-27: "Dive · Xayah" approved (Karmine Corp's Renekton / Qiyana card, Shopify Rebellion's Zaahen + Pantheon and JD Gaming's Jax + Nocturne as named variations: top / jungle threats and Rakan reach the backline, Xayah deals sustained damage and needs less protection) and `limited` (`approvedComps.limited`: only its reviewed drafts and exact replays file under it; a lineup it would take is listed in the report as close, filed nowhere); an approval stands in for the evidence count, never for a major weak point or a clash. HANJIN BRION's Malphite and Karmine Corp's Kennen + Jarvan IV drafts stay under review, JD Gaming's K'Sante and FURIA's Ornn + Wukong drafts stay proposals (strong engage tools never prove a team waits to counter-engage), RED Canids' and Team Vitality's wombo filings unchanged. Dive (reaching and collapsing on priority targets) and wombo (overlapping abilities in a grouped fight) can overlap but are not interchangeable; several fight starters never make a comp wombo.
   Everything else is "Proposed comps for review" in the report. Win/loss never decides. Additions are sticky (a comp
   that later fails is listed in the report, never removed), except a comp alan returns to `held` or sends back to
   "Ready for approval" (`pendingComps`). Passing the checks earns a review, never a card. The library collects distinct,
@@ -677,7 +677,9 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   the team carrying Gol.gg's First Pick mark (from the game record, LCK archive records included), never inferred; an
   unmarked game shows none and the open game says so. A Stage menu appears once a tournament with several stages is
   chosen. Worlds games this browser had not seen on its last visit get a "New" marker and a toolbar count
-  (localStorage `pro-drafts:seen-worlds`, kept for the visit in sessionStorage; the first visit flags nothing).
+  (localStorage `pro-drafts:seen-worlds`, kept for the visit in sessionStorage; the first visit flags nothing), and the
+  games the latest refresh added are always marked too (alan, 2026-10-31; `latestBatch`, the newest import day,
+  `checkedOn` on the game record).
 - **Pro Drafts game inspection** (alan, 2026-10-12; `lib/pro-drafts-game.ts`, `tests/pro-drafts-game.test.ts`): a row
   click (or its game link) opens the whole game in place, unfolded under its own two rows (alan, 2026-10-16; above the
   table only when the filters hide the game; `?id=`; clicking the open row again or Escape folds it, focus back on the
@@ -709,6 +711,22 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   and sort filters in the URL. A row opens its picks per position and a breakdown by patch, tournament stage (`scopeKey`:
   Worlds Play-In / Swiss / Knockouts) or team, each line with its sample. Every count shows "n/of", under 5 picks is
   marked; W–L is context only, never a sort or a priority claim.
+- **Analyst perspectives** (alan, 2026-11-01; `data/analyst-commentary.json`, `AnalystCommentary` in `lib/schema.ts`,
+  `lib/analyst-commentary.ts`, `components/AnalystPerspectives.tsx`, `tests/analyst-commentary.test.ts`, smoke "analyst:"):
+  attributed opinions of named analysts (YamatoCannon and Caedrel co-streams of BLG vs HLE, games 83692 / 83693, to start),
+  not an evidence layer and apart from Pro Evidence and General Draft Logic. Never read by scoring, rankings, Synergies,
+  Counters, kits, pool tiers, Comp Library or pro draft records; never promoted into a drafting rule. One record per
+  observation: Gol.gg game id, analyst, video and timestamp (seconds, inside the video's captions), phase (draft or
+  post-game only), kind, a one-sentence paraphrase, and each champion mentioned as what it was in that game (a side's pick,
+  a side's ban, or an option a side did not take): two champions in one sentence are never teammates by default (Caedrel's
+  Orianna + Jarvan IV was a hypothetical for BLG; HLE picked Jarvan IV). `check` covers only a factual sub-claim against
+  recorded games (corroborated / contradicted / unverifiable), and speculation about a team's reasons is its own status.
+  A game's result never marks a draft read right or wrong. Two analysts answering the same question (`topic`, `stance`) show
+  a quiet "agrees" / "differs"; disagreements are shown, never resolved. In the open Pro Drafts game only: a collapsed
+  "Analyst perspectives (n)" row (hidden without commentary), the text a separate chunk loaded on first open, grouped by
+  analyst, draft before post-game, each line linked to its video moment. Transcripts come from YouTube captions fetched on
+  alan's Mac with yt-dlp (YouTube answers Claude's cloud environments with a bot check); garbled, cut-off, in-game or
+  ambiguous lines go in `excluded` with the reason. Expanding to more analysts or games waits on alan's review.
 - **Identity-first headers** (alan, 2026-10-12, DPM.LOL as the hierarchy reference, never its branding or layout): a
   player or champion page leads with the subject, on one surface, not a card: a large portrait or champion icon, a
   large Space Grotesk name (`--fs-4xl` for a player profile, `--fs-3xl` elsewhere), team and role in medium weight
@@ -847,6 +865,12 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   backline access under 2) and Follow-up; a starter can be both dive and catch (Ahri, Vex, Gragas), and neither is called
   secondary to teamfight engage. Displacement is not a stored kit value, so Lee Sin's kick and K'Sante's ult read as dive only. Never scored;
   validation: `npx tsx scripts/diagnostics/plan-validate.ts` and `plan-review.ts`.
+  **Protected carry** (alan, 2026-10-26; `protectTarget` in `lib/model-v2/analyze.ts`, `tests/comp-carry.test.ts`): who a
+  protect read is built around, never the first peel-dependent champion in role order: an approved comp's named carry
+  (an archetype's `carry`, through `readLineup` and discovery `carries`), else a stored `needs-peel` flag over the kit
+  heuristic, a carry who peels herself (Anivia) secondary; equal candidates are a dual carry, both named, no primary.
+  Damage share never decides. The protected carry is not always the only damage: other ranged threats are named, and a
+  front-to-back second identity adds who holds the front. Text and the plan read only: every score keeps `slots.find(needsPeel)`.
 
 ## Commit authorship
 

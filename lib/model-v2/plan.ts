@@ -12,7 +12,7 @@
 import { ROLES, type Role } from "../schema";
 import {
   facts, identities, pickIdentity, weaknesses, winCondition, timing, roleNeeds, names, slotsOf, SEV, IDENTITY_LABEL,
-  needsPeel, peeler, NEEDS, savedEligible, type SavedBotRecord, type Draft, type Facts, type IdentityId, type IdentityScore, type Insight, type NeedId,
+  peeler, protectTarget, NEEDS, savedEligible, type SavedBotRecord, type Draft, type Facts, type IdentityId, type IdentityScore, type Insight, type NeedId,
   type RoleNeed, type Severity, type Slot, type Confidence, enemyDraft,
 } from "./analyze";
 import type { ChampionKit } from "./schema";
@@ -119,8 +119,13 @@ function jobsFor(id: IdentityId, slots: Slot[], f: Facts): Job[] {
     ({ id: jid, label, met, by: typeof by === "string" ? by : nm(by), missing, fixes, essential });
   const hold = holdOf(slots);
   const fronts = slots.filter((s) => tank(s) || bruiser(s));
-  const carry = slots.find(needsPeel) ?? (f.main && f.main.c.kit.range >= 2 && f.main.c.kit.backlineAccess === 0 ? f.main : undefined);
-  const protectors = slots.filter((s) => s !== carry && peeler(s) && !starter(s));
+  // The carry the plan protects (protectTarget, alan 2026-10-26); dual carries are protected together, never one by role order.
+  const target = protectTarget(slots).carries;
+  const kept = target.length ? target : f.main && f.main.c.kit.range >= 2 && f.main.c.kit.backlineAccess === 0 ? [f.main] : [];
+  const carry = kept.length === 1 ? kept[0] : undefined;
+  const away = (s: Slot) => !kept.includes(s);
+  const carryName = kept.length ? names(kept) : undefined;
+  const protectors = slots.filter((s) => away(s) && peeler(s) && !starter(s));
   const start = f.primary.length ? f.primary : [];
   switch (id) {
     case "front-to-back": {
@@ -135,7 +140,7 @@ function jobsFor(id: IdentityId, slots: Slot[], f: Facts): Job[] {
         J("depth", "A second frontliner, or disengage that covers one", depth, hold >= PLAN.hold.frontToBack ? fronts : `${nm(fronts)}, covered by ${nm(cover.filter((s) => Math.max(s.c.kit.disengage, s.c.kit.counterEngage) >= 2))}`, `${nm(fronts)} is the only frontliner and the disengage behind it totals ${coverSum}; once ${nm(fronts)} is down or out of position, the carries are next`, ["second-frontline", "disengage"], false),
         J("backline-damage", "Damage from behind the frontline", r.length >= PLAN.rangedCarries, r, `only ${nm(r)} deals damage from behind the frontline; the rest has to walk past it`, ["range"], false),
         J("start", "A way to start or accept the 5v5", start.length > 0 || f.counterEngage >= PLAN.counterEngage, start.length ? start : `counter-engage ${f.counterEngage}`, "nobody starts the fight and the comp cannot turn one either", ["engage"]),
-        J("protect", "Protection for the main carry", !carry || slots.filter((s) => s !== carry && peeler(s)).length >= 1 || hold >= 2, !carry ? "no carry that needs it" : slots.some((s) => s !== carry && peeler(s)) ? slots.filter((s) => s !== carry && peeler(s)) : `${nm(fronts)} in front of ${carry.c.name}`, `${carry?.c.name} has nobody to peel once the frontline is busy`, ["peel"], false),
+        J("protect", "Protection for the main carry", !kept.length || slots.filter((s) => away(s) && peeler(s)).length >= 1 || hold >= 2, !kept.length ? "no carry that needs it" : slots.some((s) => away(s) && peeler(s)) ? slots.filter((s) => away(s) && peeler(s)) : `${nm(fronts)} in front of ${carryName}`, `${carryName} ${kept.length > 1 ? "have" : "has"} nobody to peel once the frontline is busy`, ["peel"], false),
       ];
     }
     case "dive": {
@@ -160,17 +165,17 @@ function jobsFor(id: IdentityId, slots: Slot[], f: Facts): Job[] {
       ];
     }
     case "protect": {
-      const turners = slots.filter((s) => s !== carry && s.c.kit.counterEngage >= 2);
+      const turners = slots.filter((s) => away(s) && s.c.kit.counterEngage >= 2);
       // Protection points (alan, 2026-10-14: one strong protector can be enough with other defensive tools): a
       // protector counts 1, a strong one (peel or disengage 3) 1.5; a champion who is also the engage (Galio, Maokai)
       // counts half, since it cannot stay back and go in at once; a carry who protects itself (self-peel 2+) adds 0.5.
-      const guards = slots.filter((s) => s !== carry && peeler(s));
+      const guards = slots.filter((s) => away(s) && peeler(s));
       const strong = (s: Slot) => s.c.attrs.peel >= PLAN.strongProtector || s.c.kit.disengage >= PLAN.strongProtector;
       const self = carry && carry.c.kit.selfPeel >= 2 ? 0.5 : 0;
       const points = sum(guards.map((s) => (strong(s) ? 1.5 : 1) * (starter(s) ? 0.5 : 1))) + self;
       const by = `${nm(guards)}${self ? ` and ${carry!.c.name}'s own self-protection` : ""}`;
       return [
-        J("protectors", "Protection that stays with the carry", points >= PLAN.protectors, by, `only ${nm(guards)} can protect ${carry?.c.name ?? "the carry"}${guards.some(starter) ? `, and ${nm(guards.filter(starter))} is also the engage` : ""}`, ["peel", "disengage"]),
+        J("protectors", "Protection that stays with the carry", points >= PLAN.protectors, by, `only ${nm(guards)} can protect ${carryName ?? "the carry"}${guards.some(starter) ? `, and ${nm(guards.filter(starter))} is also the engage` : ""}`, ["peel", "disengage"]),
         J("punish", "A punish for the enemy dive", turners.length >= 1, turners, `nobody turns the enemy's dive into a kill; fights stall`, ["disengage"], false),
         J("front", "Something between the enemy and the carry", hold >= PLAN.hold.any, fronts, "nothing stands in front of the carry", ["frontline"], false),
       ];
@@ -348,15 +353,16 @@ function interactions(slots: Slot[], f: Facts, plan: IdentityId | null): PlanFin
   const stuckCarries = slots.filter(stuck);
   if (hold < PLAN.hold.any && stuckCarries.length >= 2 && plan !== "dive")
     add("x-no-front-short", "critical", "major", "No frontline and short range together", `${nm(stuckCarries)} must walk into the enemy, and nobody absorbs the first rotation in front of them. Each gap makes the other worse.`, ["frontline", "range"]);
-  const carry = slots.find(needsPeel);
+  const kept = protectTarget(slots).carries;
+  const carry = kept.length ? kept[0] : undefined, carryName = names(kept);
   if (carry && f.primary.length === 1) {
     const s = f.primary[0];
-    const others = slots.filter((x) => x !== s && x !== carry && peeler(x));
+    const others = slots.filter((x) => x !== s && !kept.includes(x) && peeler(x));
     if (peeler(s) && !others.length)
-      add("x-engage-is-peel", "weakness", "moderate", "Engage and peel on one champion", `${s.c.name} is the only engage and the only protection for ${carry.c.name}; once ${s.c.name} goes in, ${carry.c.name} is alone.`, ["peel"]);
+      add("x-engage-is-peel", "weakness", "moderate", "Engage and peel on one champion", `${s.c.name} is the only engage and the only protection for ${carryName}; once ${s.c.name} goes in, ${carryName} ${kept.length > 1 ? "are" : "is"} alone.`, ["peel"]);
   }
-  if (plan === "protect" && carry && slots.filter((x) => x !== carry && peeler(x)).length >= 2 && !slots.some((x) => x !== carry && x.c.kit.counterEngage >= 2))
-    add("x-peel-no-punish", "weakness", "moderate", "Peel without punish", `${nm(slots.filter((x) => x !== carry && peeler(x)))} keep ${carry.c.name} alive, but nobody turns the dive into a kill, so fights stall.`, ["disengage"]);
+  if (plan === "protect" && carry && slots.filter((x) => !kept.includes(x) && peeler(x)).length >= 2 && !slots.some((x) => !kept.includes(x) && x.c.kit.counterEngage >= 2))
+    add("x-peel-no-punish", "weakness", "moderate", "Peel without punish", `${nm(slots.filter((x) => !kept.includes(x) && peeler(x)))} keep ${carryName} alive, but nobody turns the dive into a kill, so fights stall.`, ["disengage"]);
   if (plan === "poke" && Math.max(0, ...slots.map((s) => s.c.attrs.lanePressure)) < 2)
     add("x-siege-no-priority", "weakness", "moderate", "Siege without lane priority", "The comp wants to start sieges, but no lane can push first to start one.", ["early"]);
   // Bot lane pair reads (supported by recorded pro lineups against shuffled ones, 2026-10-14).

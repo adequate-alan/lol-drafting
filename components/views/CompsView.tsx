@@ -500,6 +500,7 @@ function ReadDetails({ read }: { read: NonNullable<LibraryExtra["discovered"]> }
   return (
     <div className="shell-read">
       <span className="pv-title"><span className="ldot" /><b>Comp check read</b> <span className="faint">· general draft logic, added {shortDate(read.addedOn)}</span></span>
+      {read.winCondition && <p><span className="faint">Win condition</span> {read.winCondition}</p>}
       {read.strengths.length > 0 && <p><span className="faint">Strengths</span> {read.strengths.join("; ")}</p>}
       <p><span className="faint">Weak points</span> {read.weaknesses.length ? read.weaknesses.map((w) => `${w.label} (${SEV_LABEL[w.severity].toLowerCase()})`).join("; ") : "none found"}</p>
       {read.timing && <p><span className="faint">Timing</span> {read.timing}</p>}

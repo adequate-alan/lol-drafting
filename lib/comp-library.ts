@@ -34,7 +34,8 @@ export interface ProSwap { champion: string; games: ObservedGame[]; series: numb
 /** Under 3 independent series a pro swap is a small sample. */
 export const PRO_SWAP_SAMPLE = 3;
 export interface LibraryExtra {
-  discovered?: Omit<DiscoveredComp, "slots" | "games" | "winCondition" | "why">; // the comp check's read, for Details
+  // The comp check's read, for Details; its win condition only when alan's own replaces it on the card.
+  discovered?: Omit<DiscoveredComp, "slots" | "games" | "winCondition" | "why"> & { winCondition?: string };
   games: ObservedGame[]; // games with the comp's own lineup (a curated shell's own source game left out)
   variations: ObservedLineup[]; // other observed lineups filed under this comp, most games first
   proSwaps?: Partial<Record<Role, ProSwap[]>>;
@@ -108,11 +109,15 @@ export function discoveredShell(c: DiscoveredComp, games: Map<number, ProGame>):
 /** `jobsOf`: who does each archetype job in a lineup (left out: archetype rows carry no job read). */
 /** `sourceList`: the library's sources, for a curated shell whose own game has no game record (LCK finals G3): counted from the source. */
 export function buildLibrary(shells: CompShell[], file: DiscoveredComps, proGames: ProGame[], review: CompReview = NO_REVIEW, records: ProGame[] = proGames,
-  readOf?: (p: Picks) => ReadResult, jobsOf?: (p: Picks) => LineupJobs | null, sourceList: Source[] = []) {
+  readOf?: (p: Picks, carry?: string) => ReadResult, jobsOf?: (p: Picks) => LineupJobs | null, sourceList: Source[] = []) {
   const games = new Map([...records, ...proGames].map((g) => [g.id, g]));
   const view = (refs: LineupRef[]) => newestGamesFirst(refs.flatMap((r) => { const g = games.get(r.game); return g ? [{ g, v: gameView(g, r.side) }] : []; }),
     (x) => recordStamp(x.g)).map((x) => x.v);
-  const all = [...shells, ...file.comps.map((c) => discoveredShell(c, games))];
+  // alan's own win condition for an approved comp leads its card; the comp check's stays in Details.
+  // The carry an archetype names, for its core's and member comps' reads (who the protect plan is built around).
+  const carryOf = (id: string) => review.archetypes.find((a) => a.core === id || a.members.some((m) => m.comp === id))?.carry;
+  const ownWin = new Map(review.approvedComps.flatMap((a) => a.winCondition ? [[a.comp, a.winCondition] as const] : []));
+  const all = [...shells, ...file.comps.map((c) => ({ ...discoveredShell(c, games), ...(ownWin.has(c.id) ? { winCondition: ownWin.get(c.id)! } : {}) }))];
   // Last patch each champion was picked in each role across every record, and the newest recorded patch.
   const lastPicked = new Map<string, string>();
   let newest: string | undefined;
@@ -173,7 +178,7 @@ export function buildLibrary(shells: CompShell[], file: DiscoveredComps, proGame
         if (!at.games.some((x) => refKey(x) === refKey(r))) at.games.push(r);
       }
       const alike: ObservedLineup[] = [...refs.values()].map((v) => ({ picks: v.picks, games: view(v.games) }));
-      const read = readOf ? readView(readOf(row.picks)) : undefined;
+      const read = readOf ? readView(readOf(row.picks, carryOf(s.id))) : undefined;
       return [{ ...row, named: { name: n.name, note: n.note, ...(read ? { read } : {}), alike } }];
     }), ...plain];
     const proSwaps: Partial<Record<Role, ProSwap[]>> = {};
@@ -199,7 +204,7 @@ export function buildLibrary(shells: CompShell[], file: DiscoveredComps, proGame
       others: fam.comps.filter((c) => c !== s.id).flatMap((c) => { const x = all.find((y) => y.id === c); return x ? [{ id: x.id, name: x.name }] : []; }) };
     if (!d && !replays.length && !variations.length && !hasSwaps && !hasHist && !parent && !children.length && !family) continue;
     const { slots: _s, games: _g, winCondition: _w, why: _y, ...read } = d ?? ({} as DiscoveredComp);
-    extras[s.id] = { ...(d ? { discovered: read } : {}), games: replays, variations, ...(hasSwaps ? { proSwaps } : {}), ...(hasHist ? { historical } : {}),
+    extras[s.id] = { ...(d ? { discovered: { ...read, ...(ownWin.has(s.id) ? { winCondition: d.winCondition } : {}) } } : {}), games: replays, variations, ...(hasSwaps ? { proSwaps } : {}), ...(hasHist ? { historical } : {}),
       ...(parent ? { variantOf: { parent: parent.parent, name: parent.name } } : {}), ...(children.length ? { variants: children } : {}),
       ...(family ? { family } : {}) };
   }
@@ -229,7 +234,7 @@ export function buildLibrary(shells: CompShell[], file: DiscoveredComps, proGame
       const c = all.find((x) => x.id === m.comp), cx = extras[m.comp!];
       if (!c || !cx) return [];
       cx.inArchetype = { parent: a.core, id: a.id };
-      const picks = shellPicks(c), read = readOf ? readView(readOf(picks)) : undefined;
+      const picks = shellPicks(c), read = readOf ? readView(readOf(picks, a.carry)) : undefined;
       // A member comp's own observed lineups travel with its row; a lineup under review is listed in the review block.
       const observed = cx.variations.filter((v) => !(v.named && v.games.some((g) => reviewed.has(refKey(g)))));
       return [{ id: c.id, kind: "comp", name: m.name ?? c.name, note: m.note ?? c.why, via: m.via, picks, games: ownGames(c.id), ...jobs(picks),

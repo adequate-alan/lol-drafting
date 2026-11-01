@@ -2,10 +2,12 @@
 // stored shells, which keep their full job and "why" for the hover card, drawer and Details.
 import { describe, expect, it } from "vitest";
 import { JOB_LABEL, jobLabel, WHY_LINE } from "@/lib/comp-copy";
-import { getCompShells } from "@/lib/data";
+import { getCompShells, getLibrary } from "@/lib/data";
 import { ROLES } from "@/lib/schema";
 
 const shells = getCompShells();
+// Every card, discovered comps included (an approved comp can carry a line, alan 2026-10-26).
+const cards = getLibrary().shells;
 const jobs = new Set(shells.flatMap((s) => ROLES.map((r) => s.slots[r].job)));
 
 describe("comp library copy", () => {
@@ -18,12 +20,12 @@ describe("comp library copy", () => {
 
   it("has no labels or lines for jobs and shells that no longer exist", () => {
     for (const job of Object.keys(JOB_LABEL)) expect(jobs.has(job), job).toBe(true);
-    const ids = new Set(shells.map((s) => s.id));
+    const ids = new Set(cards.map((s) => s.id));
     for (const id of Object.keys(WHY_LINE)) expect(ids.has(id), id).toBe(true);
   });
 
   it("a supporting line stays one short sentence and differs from the win condition", () => {
-    for (const s of shells) {
+    for (const s of cards) {
       const line = WHY_LINE[s.id];
       if (!line) continue;
       expect(line.length, s.id).toBeLessThanOrEqual(80);

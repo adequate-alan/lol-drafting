@@ -19,6 +19,7 @@ import { ChampionProvider } from "@/components/ChampionInteraction";
 import type { DrawerContext } from "@/lib/drawer";
 const PRO_DRAFTS: DrawerContext = { page: "pro-drafts" };
 import { GameDetail } from "@/components/GameBuild";
+import { AnalystPerspectives } from "@/components/AnalystPerspectives";
 import { Select } from "@/components/Select";
 import { PinIcon, PinPicker, usePins, type PinKind } from "@/components/PlayerPicker";
 import type { DrawerData } from "@/lib/data";
@@ -30,7 +31,7 @@ import { resultsToTop } from "@/lib/motion";
 import { shortDate } from "@/lib/evidence";
 import { gameKey } from "@/lib/draft-side";
 import { buildsHref, type BuildRow } from "@/lib/pro-builds";
-import { banPhases, bansOf, buildFor, buildParam, carryBuild, draftOrder, gameIdOf, gameView, newSince, parseBuildParam, pickedFirst, SEEN_KEY, VISIT_KEY, type GameFactBook, type GameView } from "@/lib/pro-drafts-game";
+import { banPhases, bansOf, buildFor, buildParam, carryBuild, draftOrder, gameIdOf, gameView, latestBatch, newSince, parseBuildParam, pickedFirst, SEEN_KEY, VISIT_KEY, type GameFactBook, type GameView } from "@/lib/pro-drafts-game";
 
 // view: the open game's layout, Composition (default, by role) or Draft order (`view=order`, by pick). Kept while
 // browsing games, so a study of pick order carries from one game to the next.
@@ -212,12 +213,13 @@ const GameRows = memo(function GameRows({ g, meta, href, isOpen, openId, fresh, 
   );
 });
 
-export function ProDraftsView({ names, sources, all, freshness, drawerData, buildGames, events, shortNames, eventIds, facts, orderGames, scopeEvents }: {
+export function ProDraftsView({ names, sources, all, freshness, drawerData, buildGames, events, shortNames, eventIds, facts, orderGames, scopeEvents, commentary = {} }: {
   names: Record<string, string>; sources: Record<string, Source>; all: ProDraft[]; freshness: Freshness[]; drawerData: DrawerData;
   buildGames: number[]; // recorded games with Pro Builds (data/pro-builds.json)
   events: Record<string, string>; // meta.json event id -> short name, for the build header
   shortNames: Record<string, string>; // tournament name -> short name, for the game cell
   eventIds: Record<string, string>; // tournament name -> meta.json event id, so tournament pins are shared with Pro Builds
+  commentary?: Record<number, number>; // Gol.gg game id -> analyst observations (the text loads on demand)
   facts: GameFactBook; // Gol.gg game id -> First Pick mark and each side's bans, from the game records
   orderGames: OrderGame[]; // every game record, for the Pick order tab (only verified orders are counted)
   scopeEvents: ScopeEvent[]; // meta.json events, for tournament-stage labels
@@ -313,9 +315,14 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
   // Stages of the chosen tournament (Worlds: Play-In is its own Gol.gg tournament; Swiss and knockout rounds are stages).
   const stages = f.tournament ? uniq(all.filter((d) => d.tournament === f.tournament && d.stage).map((d) => d.stage)) : [];
   // Worlds games new since this browser's last visit: a small marker on the game and a count in the toolbar.
-  const worlds = [...new Set(all.filter((d) => eventIds[d.tournament]?.startsWith("worlds")).map(gameIdOf).filter(Boolean))];
-  const fresh = useNewGames(worlds);
+  const worldsDrafts = all.filter((d) => eventIds[d.tournament]?.startsWith("worlds") && gameIdOf(d));
+  const worlds = [...new Set(worldsDrafts.map(gameIdOf))];
+  const sinceVisit = useNewGames(worlds);
+  // Plus the games the latest refresh added, so the newest batch is always marked (alan, 2026-10-31).
+  const batch = useMemo(() => latestBatch(worldsDrafts.map((d) => ({ id: gameIdOf(d), added: facts[gameIdOf(d)]?.added ?? null }))), [all, facts]); // eslint-disable-line react-hooks/exhaustive-deps
+  const fresh = new Set([...sinceVisit, ...batch.ids]);
   const freshShown = new Set(rows.map(gameIdOf).filter((id) => fresh.has(id))).size;
+  const freshTitle = `Added by the latest refresh${batch.day ? ` (${shortDate(batch.day)})` : ""}${sinceVisit.size ? ", or recorded since your last visit to Pro Drafts in this browser" : ""}`;
 
   // The open game and its open build. Choosing a champion changes only the build target, in place.
   const view = selected ? gameView(selected, all) : undefined;
@@ -411,6 +418,11 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
                 </div>
               ) : <p className="xs muted game-hint">Select a champion to see that player's exact build in this game: runes, items, skill order and summoner spells.</p>
             ) : <p className="xs muted game-hint">No builds recorded for this game.</p>}
+            {view.teams.length === 2 && view.teams.every((t) => t.side !== "none") && (
+              <AnalystPerspectives key={view.gameId} game={view.gameId} count={commentary[view.gameId] ?? 0} names={names}
+                teams={Object.fromEntries(view.teams.map((t) => [t.side, t.d.team])) as Record<"blue" | "red", string>}
+                picks={Object.fromEntries(view.teams.map((t) => [t.side, ROLES.map((r) => t.d.picks[r])])) as Record<"blue" | "red", string[]>} />
+            )}
           </div>
         </section>
   ) : null;
@@ -466,7 +478,7 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
         <noscript><button className="btn primary sm" type="submit">Filter</button></noscript>
         {active > 0 && <Link className="btn sm ghost" href="/pro-drafts" onClick={(e) => { if (plain(e)) { e.preventDefault(); go({}); resultsToTop(".drafts-table"); } }}>Clear {active} filter{active > 1 ? "s" : ""}</Link>}
         <span className="count" title={`${rows.length} of ${all.length} team drafts`}>{games.length} of {gameCount} games</span>
-        {freshShown > 0 && <span className="new-count" title="Recorded since your last visit to Pro Drafts in this browser">{freshShown} new Worlds game{freshShown > 1 ? "s" : ""}</span>}
+        {freshShown > 0 && <span className="new-count" title={freshTitle}>{freshShown} new Worlds game{freshShown > 1 ? "s" : ""}</span>}
         {quick.length > 0 && (
           <div className="pinned-filters" role="group" aria-label="Pinned filters">
             <span className="label"><PinIcon on />Pinned</span>
