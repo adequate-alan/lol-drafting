@@ -119,8 +119,10 @@ export function ChipList({ ids, names, role, empty = "none", notes, strong, dim 
 
 /** A champion name with its monogram, for table cells and lists. Inside a ChampionProvider it gets the shared hover
  *  card and drawer. */
-export function ChampionRow({ id, name, role, hit = false, size = "sm" }: { id?: string; name: string; role?: Role; hit?: boolean; size?: "xs" | "sm" | "md" }) {
-  const row = <span className={`cell-champ ${hit ? "hit" : ""} ${role ? `role-${role}` : ""}`}><ChampIcon id={id} name={name} role={role} size={size} /><span className="cell-name">{name}</span></span>;
+/** `sub`: an optional quiet second line under the name (Pro Drafts: the player who played the pick). */
+export function ChampionRow({ id, name, role, hit = false, size = "sm", sub }: { id?: string; name: string; role?: Role; hit?: boolean; size?: "xs" | "sm" | "md"; sub?: React.ReactNode }) {
+  const label = sub ? <span className="cell-name cell-stack"><span>{name}</span><span className="cell-sub">{sub}</span></span> : <span className="cell-name">{name}</span>;
+  const row = <span className={`cell-champ ${hit ? "hit" : ""} ${role ? `role-${role}` : ""}`}><ChampIcon id={id} name={name} role={role} size={size} />{label}</span>;
   return id ? <InteractiveChampion id={id} role={role}>{row}</InteractiveChampion> : row;
 }
 

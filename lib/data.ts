@@ -14,6 +14,7 @@ import { storedKitQueue } from "./kit-review";
 import { commentaryCounts } from "./analyst-commentary";
 import { championIndex, type ChampionBuilds } from "./pro-builds";
 import { withoutConfirmed } from "./proposed";
+import { gamePlayers, type GamePlayers } from "./pro-drafts-game";
 import { Files, ROLES, type Role } from "./schema";
 import { brief, duoSelections, LANE_ROLES, laneSelections, roleBook, topUsageMarks, type LaneRole, type TopDraftBundle, type TopUsageMarks } from "./top-draft";
 import { blindReads } from "./top-blind";
@@ -95,6 +96,9 @@ export const getArchiveResults = () => {
   return resultsFromGames((load("pro-builds.json").games ?? []).filter((g) => !tracked.has(g.id)), []);
 };
 export const getBuildGameRecords = () => [...getProGames().games, ...(load("pro-builds.json").games ?? [])];
+/** Who played each pick of each recorded game, from the recorded builds (lib/pro-drafts-game.ts `gamePlayers`). */
+let players: GamePlayers | undefined;
+export const getGamePlayers = () => (players ??= gamePlayers(load("pro-builds.json").builds, getBuildGameRecords()));
 /** Players of one team in the recorded builds (latest team per player id), by role, with their recorded game count. */
 export function getTeamPlayers(team: string) {
   const games = new Map(getBuildGameRecords().map((g) => [g.id, g]));

@@ -9,7 +9,7 @@ import { PinPicker } from "@/components/PlayerPicker";
 import { Select } from "@/components/Select";
 import { patchLabel } from "@/lib/patch";
 import {
-  breakdown, coverage, filterPicks, orderedPicks, pickRows, SLOT_LABEL, SLOTS, SMALL_SAMPLE, slotTeam,
+  breakdown, coverage, filterPicks, NO_PLAYER, orderedPicks, pickRows, playerName, SLOT_LABEL, SLOTS, SMALL_SAMPLE, slotTeam,
   type Dimension, type OrderGame, type PickFilter, type PickRow, type PickSort, type Position, type Tally,
 } from "@/lib/pick-order";
 import { comparePatchDesc } from "@/lib/evidence";
@@ -24,7 +24,7 @@ const POSITIONS: [Position, string][] = [
 ];
 const SIDES: [string, string][] = [["blue", "Blue side"], ["red", "Red side"], ["first", "First-pick team"], ["second", "Second-pick team"]];
 const SORTS: [PickSort, string][] = [["at", "Picks at position"], ["first", "First rotation"], ["firstOverall", "First pick"], ["last", "Last pick"], ["picks", "All picks"]];
-const DIMS: [Dimension, string][] = [["patch", "Patch"], ["scope", "Tournament stage"], ["team", "Team"]];
+const DIMS: [Dimension, string][] = [["patch", "Patch"], ["scope", "Tournament stage"], ["team", "Team"], ["player", "Player"]];
 
 /** "6/8" with its share in the hint: a count is never shown without its sample. */
 const Of = ({ n, of, what }: { n: number; of: number; what: string }) =>
@@ -140,7 +140,7 @@ function Detail({ r, picks, pos, dim, events, setDim }: {
   r: PickRow; picks: ReturnType<typeof filterPicks>; pos?: Position; dim: Dimension; events: ScopeEvent[]; setDim: (d: Dimension) => void;
 }) {
   const lines = breakdown(picks, r.champion, dim, pos);
-  const label = (k: string) => (dim === "scope" ? scopeLabel(k, events) : k);
+  const label = (k: string) => (dim === "scope" ? scopeLabel(k, events) : dim === "player" ? (k === NO_PLAYER ? "Player not recorded" : playerName(k)) : k);
   return (
     <div className="order-detail">
       <div className="order-slots xs" aria-label="Picks at each position">

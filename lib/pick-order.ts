@@ -26,18 +26,24 @@ type Side = "blue" | "red";
 export interface OrderGame {
   id: number; event: string; tournament: string; stage?: string; patch: string; date: string;
   seriesId: number; series: string; winner: Side; firstPick?: Side;
-  blue: { team: string; order?: string[]; picks: Partial<Record<Role, string>> };
-  red: { team: string; order?: string[]; picks: Partial<Record<Role, string>> };
+  blue: OrderSide; red: OrderSide;
 }
+/** `players`: who played each pick (Gol.gg player name and id from the recorded builds, lib/pro-drafts-game.ts
+ *  `gamePlayers`); a pick without a recorded player has none. */
+interface OrderSide { team: string; order?: string[]; picks: Partial<Record<Role, string>>; players?: Partial<Record<Role, { name: string; id: number }>> }
 
 type RecordSide = { team: string; pickOrder?: string[]; picks: Partial<Record<Role, string>> };
+type PlayerBook = Record<number, Partial<Record<Side, Partial<Record<Role, { name: string; id: number }>>>>>;
 export const orderGame = (g: {
   id: number; event: string; tournament: string; stage?: string; patch: string; date: string; seriesId: number; series: string;
   winner: Side; firstPick?: Side; blue: RecordSide; red: RecordSide;
-}): OrderGame => {
-  const side = (s: RecordSide) => ({ team: s.team, ...(s.pickOrder ? { order: s.pickOrder } : {}), picks: s.picks });
+}, players: PlayerBook = {}): OrderGame => {
+  const side = (s: RecordSide, k: Side): OrderSide => {
+    const named = Object.fromEntries(Object.entries(players[g.id]?.[k] ?? {}).map(([r, p]) => [r, { name: p!.name, id: p!.id }]));
+    return { team: s.team, ...(s.pickOrder ? { order: s.pickOrder } : {}), picks: s.picks, ...(Object.keys(named).length ? { players: named } : {}) };
+  };
   return { id: g.id, event: g.event, tournament: g.tournament, ...(g.stage ? { stage: g.stage } : {}), patch: g.patch, date: g.date,
-    seriesId: g.seriesId, series: g.series, winner: g.winner, ...(g.firstPick ? { firstPick: g.firstPick } : {}), blue: side(g.blue), red: side(g.red) };
+    seriesId: g.seriesId, series: g.series, winner: g.winner, ...(g.firstPick ? { firstPick: g.firstPick } : {}), blue: side(g.blue, "blue"), red: side(g.red, "red") };
 };
 
 /** A game's draft order is verified when Gol.gg marks the first-picking team and draws both teams' turns. */
@@ -55,6 +61,8 @@ export const SLOT_LABEL: Record<Slot, string> = {
 
 export interface OrderedPick {
   game: number; seriesId: number; champion: string; role?: Role; side: Side; team: string; opponent: string;
+  /** The recorded player as "<Gol.gg player id>:<name>", undefined when no build names one. */
+  player?: string;
   firstPicker: boolean; turn: number; slot: Slot; rotation: Rotation; won: boolean;
   patch: string; tournament: string; stage: string; scope: string; date: string; series: string;
 }
@@ -64,11 +72,14 @@ export function orderedPicks(games: OrderGame[]): OrderedPick[] {
   return games.filter(isOrdered).flatMap((g) => (["blue", "red"] as const).flatMap((side) => {
     const me = g[side], them = g[side === "blue" ? "red" : "blue"], first = g.firstPick === side;
     const turns = first ? FIRST_TURNS : [2, 3, 6, 7, 10];
-    return me.order!.map((champion, i): OrderedPick => ({
-      game: g.id, seriesId: g.seriesId, champion, role: ROLES.find((r) => me.picks[r] === champion), side, team: me.team, opponent: them.team,
+    return me.order!.map((champion, i): OrderedPick => {
+      const role = ROLES.find((r) => me.picks[r] === champion), who = role && me.players?.[role];
+      return {
+      game: g.id, seriesId: g.seriesId, champion, role, side, team: me.team, opponent: them.team, ...(who ? { player: `${who.id}:${who.name}` } : {}),
       firstPicker: first, turn: turns[i], slot: slotOf(turns[i]), rotation: rotationOf(turns[i]), won: g.winner === side,
       patch: g.patch, tournament: g.tournament, stage: stageLabel(g.stage), scope: scopeKey(g.event, g.stage), date: g.date, series: g.series,
-    }));
+    };
+    });
   }));
 }
 
@@ -135,12 +146,15 @@ export function pickRows(picks: OrderedPick[], pos?: Position, sort: PickSort = 
 
 /** How a champion's picks split across one dimension, each line with its own sample: newest patch first, stages and
  *  teams by picks. */
-export type Dimension = "patch" | "scope" | "team";
+export type Dimension = "patch" | "scope" | "team" | "player";
+/** A player breakdown key ("<id>:<name>", players keyed by Gol.gg id so same-name players stay apart) shown as the name. */
+export const playerName = (key: string) => key.slice(key.indexOf(":") + 1);
+export const NO_PLAYER = "not-recorded";
 export interface BreakdownLine extends Tally { key: string; at: number; small: boolean }
 export function breakdown(picks: OrderedPick[], champion: string, dim: Dimension, pos?: Position): BreakdownLine[] {
   const by = new Map<string, OrderedPick[]>();
   for (const p of picks) if (p.champion === champion) {
-    const k = dim === "patch" ? patchKey(p.patch) : p[dim];
+    const k = dim === "patch" ? patchKey(p.patch) : dim === "player" ? p.player ?? NO_PLAYER : p[dim];
     by.set(k, [...(by.get(k) ?? []), p]);
   }
   const lines = [...by].map(([key, ps]) => ({ key, ...tally(ps), at: ps.filter((p) => atPosition(p, pos)).length, small: ps.length < SMALL_SAMPLE }));

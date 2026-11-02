@@ -31,7 +31,7 @@ import { resultsToTop } from "@/lib/motion";
 import { shortDate } from "@/lib/evidence";
 import { gameKey } from "@/lib/draft-side";
 import { buildsHref, type BuildRow } from "@/lib/pro-builds";
-import { banPhases, bansOf, buildFor, buildParam, carryBuild, draftOrder, gameIdOf, gameView, latestBatch, newSince, parseBuildParam, pickedFirst, SEEN_KEY, VISIT_KEY, type GameFactBook, type GameView } from "@/lib/pro-drafts-game";
+import { banPhases, bansOf, buildFor, buildParam, carryBuild, draftOrder, gameIdOf, gameView, latestBatch, newSince, parseBuildParam, pickedFirst, playerOf, SEEN_KEY, VISIT_KEY, type GameFactBook, type GameView } from "@/lib/pro-drafts-game";
 
 // view: the open game's layout, Composition (default, by role) or Draft order (`view=order`, by pick). Kept while
 // browsing games, so a study of pick order carries from one game to the next.
@@ -156,10 +156,11 @@ function DraftOrderView({ view, facts, names, hasBuilds, target, onPick }: {
                   const on = !!d && !!p.role && target?.d.id === d.id && target.role === p.role;
                   return (
                     <button key={p.champion} type="button" className="slot-body pick-btn order-pick" aria-pressed={on} disabled={!hasBuilds || !d || !p.role}
-                      title={hasBuilds ? `${champ}: this player's build in this game` : `${champ}: no build recorded for this game`}
+                      title={hasBuilds ? `${champ}: ${p.player ? `${p.player}'s` : "this player's"} build in this game` : `${champ}: no build recorded for this game`}
                       onClick={() => d && p.role && onPick(d, p.role)}>
                       <span className="slot-icon"><ChampIcon id={p.champion} name={champ} role={p.role} size="ml" /></span>
-                      <span className="slot-text"><span className="slot-name truncate">{champ}</span>{p.role && <span className={`role-tag role-${p.role}`}>{p.role}</span>}</span>
+                      <span className="slot-text"><span className="slot-name truncate">{champ}</span>{p.role && <span className={`role-tag role-${p.role}`}>{p.role}</span>}
+                        {p.player && <span className="slot-player truncate">{p.player}</span>}</span>
                     </button>
                   );
                 })}
@@ -206,7 +207,7 @@ const GameRows = memo(function GameRows({ g, meta, href, isOpen, openId, fresh, 
             <Bans ids={bansOf(d, facts)} names={names} team={d.team} />
             {!g.paired && <span className="team-vs xs muted truncate">vs {d.opponent}</span>}
           </td>
-          {ROLES.map((r) => <td key={r} className="pick-cell"><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={d.picks[r] === champion} /></td>)}
+          {ROLES.map((r) => <td key={r} className="pick-cell"><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} hit={d.picks[r] === champion} sub={playerOf(d, r, facts)?.name} /></td>)}
         </tr>
       ))}
     </tbody>
@@ -384,13 +385,15 @@ export function ProDraftsView({ names, sources, all, freshness, drawerData, buil
                   {ROLES.map((r) => {
                     const on = target?.d.id === d.id && target.role === r;
                     const champ = names[d.picks[r]] ?? d.picks[r];
+                    const player = playerOf(d, r, facts)?.name;
                     return (
                       <div key={r} className={`draft-slot locked role-${r} ${on ? "active" : ""}`}>
                         <button type="button" className="slot-body pick-btn" aria-pressed={on} disabled={!hasBuilds}
-                          title={hasBuilds ? `${champ}: this player's build in this game` : `${champ}: no build recorded for this game`}
+                          title={hasBuilds ? `${champ}: ${player ? `${player}'s` : "this player's"} build in this game` : `${champ}: no build recorded for this game`}
                           onClick={() => setBuild(on ? undefined : buildParam(d, r))}>
                           <span className="slot-icon"><ChampIcon id={d.picks[r]} name={champ} role={r} size="lg" /></span>
-                          <span className="slot-text"><span className={`role-tag role-${r}`}>{r}</span><span className="slot-name truncate">{champ}</span></span>
+                          <span className="slot-text"><span className={`role-tag role-${r}`}>{r}</span><span className="slot-name truncate">{champ}</span>
+                            {player && <span className="slot-player truncate">{player}</span>}</span>
                         </button>
                       </div>
                     );

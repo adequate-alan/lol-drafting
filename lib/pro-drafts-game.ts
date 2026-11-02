@@ -61,14 +61,48 @@ export const carryBuild = (current: string | undefined, next: Pick<ProDraft, "id
 // First pick is Gol.gg's "First Pick" mark, never inferred from side, winner or pick order; a game without it is unknown.
 // `order` is the side's five picks in the order the Gol.gg game page draws them (`pickOrder`), stored only when the page
 // draws the turns; `picks` names each champion's role. Both feed the Draft order view below.
-interface FactSide { team: string; bans: string[]; order?: string[]; picks?: Partial<Record<Role, string>> }
+interface FactSide { team: string; bans: string[]; order?: string[]; picks?: Partial<Record<Role, string>>; players?: SidePlayers }
 export interface GameFacts { firstPick?: "blue" | "red"; blue: FactSide; red: FactSide; /** Day the refresh imported it. */ added?: string }
 export type GameFactBook = Record<number, GameFacts>;
 
 type RecordSide = { team: string; bans: string[]; pickOrder?: string[]; picks?: Partial<Record<Role, string>> };
-const factSide = (s: RecordSide): FactSide => ({ team: s.team, bans: s.bans, ...(s.pickOrder ? { order: s.pickOrder, picks: s.picks } : {}) });
-export const gameFacts = (records: { id: number; firstPick?: "blue" | "red"; blue: RecordSide; red: RecordSide; checkedOn?: string }[]): GameFactBook =>
-  Object.fromEntries(records.map((g) => [g.id, { firstPick: g.firstPick, blue: factSide(g.blue), red: factSide(g.red), ...(g.checkedOn ? { added: g.checkedOn } : {}) }]));
+const factSide = (s: RecordSide, players?: SidePlayers): FactSide =>
+  ({ team: s.team, bans: s.bans, ...(s.pickOrder ? { order: s.pickOrder, picks: s.picks } : {}), ...(players && Object.keys(players).length ? { players } : {}) });
+export const gameFacts = (records: { id: number; firstPick?: "blue" | "red"; blue: RecordSide; red: RecordSide; checkedOn?: string }[], players: GamePlayers = {}): GameFactBook =>
+  Object.fromEntries(records.map((g) => [g.id, { firstPick: g.firstPick, blue: factSide(g.blue, players[g.id]?.blue), red: factSide(g.red, players[g.id]?.red), ...(g.checkedOn ? { added: g.checkedOn } : {}) }]));
+
+// Player names (alan, 2026-11-02, "the players' names in the pro drafts section"): who played each pick, from the
+// recorded builds (data/pro-builds.json: Gol.gg's player name and player id per game, side and role). A name is attached
+// only when the build's champion is the game record's pick in that side and role, so a name never lands on a pick it was
+// not recorded for. A game or pick without a recorded build has no name: nothing is shown, never guessed.
+export interface PlayerRef { name: string; id: number; champion: string }
+export type SidePlayers = Partial<Record<Role, PlayerRef>>;
+export type GamePlayers = Record<number, Partial<Record<PickSide, SidePlayers>>>;
+export function gamePlayers(
+  builds: { game: number; side: PickSide; role: Role; champion: string; player: string; playerId: number }[],
+  records: { id: number; blue: { picks?: Partial<Record<Role, string>> }; red: { picks?: Partial<Record<Role, string>> } }[],
+): GamePlayers {
+  const byId = new Map(records.map((g) => [g.id, g]));
+  const out: GamePlayers = {};
+  for (const b of builds) {
+    const g = byId.get(b.game);
+    if (!g || !b.player || g[b.side].picks?.[b.role] !== b.champion) continue;
+    ((out[b.game] ??= {})[b.side] ??= {})[b.role] = { name: b.player, id: b.playerId, champion: b.champion };
+  }
+  return out;
+}
+
+/** The player recorded on a team's pick in a role: the game record's side must be this team, named the same or (the
+ *  LCK archive drafts spell teams short, "HLE") holding the same five champions in the same roles, and the pick must be
+ *  the same champion; undefined otherwise (shown as nothing). */
+export function playerOf(d: Pick<ProDraft, "id" | "sources" | "side" | "team" | "picks">, role: Role, book: GameFactBook): PlayerRef | undefined {
+  const g = book[gameIdOf(d)], side = sideOf(d);
+  if (!g || side === "none") return undefined;
+  const s = g[side];
+  if (s.team !== d.team && !ROLES.every((r) => s.players?.[r]?.champion === d.picks[r])) return undefined;
+  const p = s.players?.[role];
+  return p && p.champion === d.picks[role] ? p : undefined;
+}
 
 const factsFor = (d: Pick<ProDraft, "id" | "sources" | "side" | "team">, book: GameFactBook) => {
   const g = book[gameIdOf(d)], side = sideOf(d);
@@ -121,7 +155,7 @@ export function latestBatch(games: { id: number; added: string | null }[]): { id
 // other teams, has no draft order: the view says it is unavailable and why. Observed Pro Evidence only: a pick made
 // after an opponent's is an observed response, never a counter, and nothing here scores or orders anything.
 export type PickSide = "blue" | "red";
-export interface OrderPick { champion: string; role?: Role }
+export interface OrderPick { champion: string; role?: Role; player?: string }
 export interface OrderStep {
   turns: number[]; // global turns 1-10 (one, or a paired turn of two)
   side: PickSide;
@@ -149,7 +183,10 @@ export function draftOrder(gameId: number, book: GameFactBook, teams: { team: st
     const s = g[side];
     const idx = turns.map((t) => [0, 1, 2, 3, 4].find((i) => turnOf(i, side === first) === t)!);
     const letter = side === "blue" ? "B" : "R";
-    return { turns, side, label: idx.map((i) => `${letter}${i + 1}`).join(" · "), rotation: rotationOf(turns[0]), picks: idx.map((i) => ({ champion: s.order![i], role: roleOf(s, s.order![i]) })) };
+    return { turns, side, label: idx.map((i) => `${letter}${i + 1}`).join(" · "), rotation: rotationOf(turns[0]), picks: idx.map((i) => {
+      const role = roleOf(s, s.order![i]), player = role && s.players?.[role];
+      return { champion: s.order![i], role, ...(player && player.champion === s.order![i] ? { player: player.name } : {}) };
+    }) };
   });
   return { ok: true, firstPick: first, steps, bans: { blue: banPhases(g.blue.bans), red: banPhases(g.red.bans) } };
 }

@@ -2,7 +2,7 @@
 // as a drill-down, every count with its sample, win-loss as context only.
 import { describe, expect, it } from "vitest";
 import { getBuildGameRecords } from "@/lib/data";
-import { breakdown, coverage, filterPicks, isOrdered, orderGame, orderedPicks, pickRows, slotOf, slotTeam, type OrderGame } from "@/lib/pick-order";
+import { breakdown, coverage, filterPicks, isOrdered, NO_PLAYER, orderGame, playerName, orderedPicks, pickRows, slotOf, slotTeam, type OrderGame } from "@/lib/pick-order";
 
 const ROLE_ORDER = ["TOP", "JUNGLE", "MID", "BOT", "SUPPORT"] as const;
 const side = (team: string, order: string[] | undefined, lineup: string[]) => ({
@@ -83,10 +83,21 @@ describe("champion rows", () => {
     expect(breakdown(all, "x", "patch").map((l) => [l.key, l.picks])).toEqual([["26.20", 1], ["26.18", 1]]);
     expect(breakdown(all, "x", "scope")[0].key).toBe("worlds-2026:swiss");
   });
+
+  it("breaks a champion down by player (Gol.gg id, so same-name players stay apart); no build, no name", () => {
+    const g = game(500, { firstPick: "blue" });
+    const named = orderGame({ ...g, blue: { team: g.blue.team, pickOrder: g.blue.order, picks: g.blue.picks }, red: { team: g.red.team, pickOrder: g.red.order, picks: g.red.picks } },
+      { 500: { blue: { TOP: { name: "Zeus", id: 7 } } } });
+    const ps = orderedPicks([named]);
+    expect(ps.find((p) => p.champion === "b-top")?.player).toBe("7:Zeus");
+    expect(ps.find((p) => p.champion === "b-jg")?.player).toBeUndefined();
+    expect(breakdown(ps, "b-top", "player").map((l) => [playerName(l.key), l.picks])).toEqual([["Zeus", 1]]);
+    expect(breakdown(ps, "b-jg", "player")[0].key).toBe(NO_PLAYER);
+  });
 });
 
 describe("recorded games", () => {
-  const games = getBuildGameRecords().map(orderGame);
+  const games = getBuildGameRecords().map((g) => orderGame(g));
   const picks = orderedPicks(games);
 
   it("every verified game gives exactly ten picks on ten distinct turns, five per team", () => {

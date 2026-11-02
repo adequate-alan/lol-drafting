@@ -406,6 +406,9 @@ th .role-tag, .seg .role-tag { font-size: inherit; color: inherit; font-weight: 
 /* Champion with its name, in table cells and lists */
 .cell-champ { display: inline-flex; align-items: center; gap: var(--s3); white-space: nowrap; }
 .cell-champ.hit { color: var(--accent-text); }
+/* A quiet second line under the name (Pro Drafts: who played the pick). */
+.cell-stack { display: grid; min-width: 0; line-height: 1.2; }
+.cell-sub { font-family: var(--font); font-size: var(--fs-xs); font-weight: 400; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; }
 .mate { display: inline-flex; align-items: center; gap: 4px; font-size: var(--fs-sm); white-space: nowrap; }
 .mate.in-comp { font-weight: var(--w-strong); color: var(--text); }
 
@@ -1278,6 +1281,7 @@ button.slot-body:hover .slot-name { text-decoration: underline; text-decoration-
 .slot-icon { display: inline-flex; flex: none; }
 .slot-text { display: grid; gap: 2px; flex: 1; min-width: 0; }
 .slot-name { display: block; font-size: var(--fs-xl); line-height: 1.15; }
+.slot-player { display: block; font-family: var(--font); font-size: var(--fs-sm); font-weight: 400; color: var(--text-muted); line-height: 1.2; }
 .ghost .champ { opacity: .5; box-shadow: 0 0 0 1px var(--accent); }
 /* My team: locked = gold rule on top; open = dashed; the role being picked = gold outline and a pointer */
 .draft-slot.locked:not(.enemy) { border-color: var(--border-strong); box-shadow: inset 0 2px 0 var(--accent); }
@@ -1646,6 +1650,7 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
   .draft-slot.locked .slot-text { justify-items: center; width: 100%; }
   .draft-slot.locked .role-tag { display: none; }
   .draft-slot.locked .slot-name, .draft-slot.enemy.locked .slot-name { max-width: 52px; font-size: var(--fs-2xs); text-align: center; }
+  .draft-slot.locked .slot-player { max-width: 52px; font-size: var(--fs-2xs); text-align: center; }
   .draft-slot.locked .champ.xxl, .draft-slot.locked .champ.lg { --size: 34px; }
   /* My slot's builds shortcut moves to the My Role bar, a full-size tap target that covers no slot */
   .slot-builds { display: none; }
