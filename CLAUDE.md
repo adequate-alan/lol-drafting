@@ -680,6 +680,13 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   (localStorage `pro-drafts:seen-worlds`, kept for the visit in sessionStorage; the first visit flags nothing), and the
   games the latest refresh added are always marked too (alan, 2026-10-31; `latestBatch`, the newest import day,
   `checkedOn` on the game record).
+- **Player names** (alan, 2026-11-02; `gamePlayers` / `playerOf` in `lib/pro-drafts-game.ts`, tests in
+  `tests/pro-drafts-game.test.ts` and `tests/pick-order.test.ts`): each pick in Pro Drafts names its player (Gol.gg's
+  name from the recorded builds, `data/pro-builds.json`) as a quiet line under the champion in the game rows (hidden on
+  phones with the champion names), the open game's Composition and Draft order, and a Player breakdown in the Pick order
+  tab (keyed by Gol.gg player id). A name attaches only when the build's champion is the record's pick in that side and
+  role, and the record's side is the row's team (same name, or the archive's short name with the same five picks); no
+  recorded build, no name (LCK finals G3, 82964), never guessed.
 - **Pro Drafts game inspection** (alan, 2026-10-12; `lib/pro-drafts-game.ts`, `tests/pro-drafts-game.test.ts`): a row
   click (or its game link) opens the whole game in place, unfolded under its own two rows (alan, 2026-10-16; above the
   table only when the filters hide the game; `?id=`; clicking the open row again or Escape folds it, focus back on the

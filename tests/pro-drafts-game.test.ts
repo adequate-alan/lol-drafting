@@ -1,8 +1,8 @@
 // Pro Drafts game inspection (alan, 2026-10-12): the open game is both teams of one Gol.gg game, and each champion in
 // it opens that player's recorded build for that exact game, named by game id, side and role, never by row position.
 import { describe, expect, it } from "vitest";
-import { getBuildGameRecords, getBuildGames, getProDrafts } from "@/lib/data";
-import { banPhases, bansOf, buildFor, buildParam, carryBuild, draftOrder, gameFacts, gameIdOf, gameView, latestBatch, newSince, parseBuildParam, pickedFirst } from "@/lib/pro-drafts-game";
+import { getBuildGameRecords, getBuildGames, getGamePlayers, getProDrafts } from "@/lib/data";
+import { banPhases, bansOf, buildFor, buildParam, carryBuild, draftOrder, gameFacts, gameIdOf, gamePlayers, gameView, latestBatch, newSince, parseBuildParam, pickedFirst, playerOf } from "@/lib/pro-drafts-game";
 import { rows } from "@/lib/pro-builds-bundle";
 import { ROLES, type Role } from "@/lib/schema";
 
@@ -197,5 +197,66 @@ describe("the draft order view", () => {
       expect(o.ok, String(g.id)).toBe(!!g.firstPick && !!g.blue.pickOrder && !!g.red.pickOrder);
       if (o.ok) expect(o.steps.flatMap((s) => s.picks).every((p) => p.role)).toBe(true);
     }
+  });
+});
+
+// Player names (alan, 2026-11-02): who played each pick, from the recorded builds; nothing when not recorded.
+describe("player names on picks", () => {
+  const records = getBuildGameRecords();
+  const book = gameFacts(records, getGamePlayers());
+
+  it("names the recorded player on each pick of a recorded game, archive drafts included", () => {
+    for (const d of [imported, stored]) {
+      const g = book[gameIdOf(d)];
+      for (const r of ROLES) {
+        const p = playerOf(d, r, book);
+        const b = rows.find((x) => x.game.id === gameIdOf(d) && x.side === d.side && x.build.role === r);
+        expect(p?.name, `${d.id} ${r}`).toBe(b?.build.player);
+        if (p) expect(p.champion).toBe(d.picks[r]);
+      }
+      expect(g).toBeDefined();
+    }
+  });
+
+  it("never attaches a name to another champion, another team or an unrecorded game", () => {
+    const rec = { id: 1, blue: { team: "A", bans: [], picks: { TOP: "aatrox" } }, red: { team: "B", bans: [], picks: { TOP: "gnar" } } };
+    const players = gamePlayers([
+      { game: 1, side: "blue", role: "TOP", champion: "aatrox", player: "Zeus", playerId: 7 },
+      { game: 1, side: "red", role: "TOP", champion: "ksante", player: "Wrong", playerId: 8 }, // champion differs from the record
+      { game: 2, side: "blue", role: "TOP", champion: "aatrox", player: "Nobody", playerId: 9 }, // no game record
+    ], [rec]);
+    expect(players).toEqual({ 1: { blue: { TOP: { name: "Zeus", id: 7, champion: "aatrox" } } } });
+    const f = gameFacts([rec], players);
+    const d = { id: "golgg-1-blue", sources: [], side: "blue" as const, team: "A", picks: { TOP: "aatrox", JUNGLE: "", MID: "", BOT: "", SUPPORT: "" } };
+    expect(playerOf(d, "TOP", f)?.name).toBe("Zeus");
+    expect(playerOf({ ...d, team: "C" }, "TOP", f)).toBeUndefined();
+    expect(playerOf({ ...d, picks: { ...d.picks, TOP: "gnar" } }, "TOP", f)).toBeUndefined();
+    expect(playerOf({ ...d, id: "golgg-1-red", side: "red", team: "B" }, "TOP", f)).toBeUndefined();
+  });
+
+  it("archive drafts with a short team name get names only when all five picks match the record", () => {
+    const short = drafts.find((x) => x.id === "lck26po-finals-g4-hle")!;
+    expect(ROLES.map((r) => playerOf(short, r, book)?.name)).toEqual(["Zeus", "Kanavi", "Zeka", "Gumayusi", "Delight"]);
+    expect(playerOf({ ...short, picks: { ...short.picks, BOT: "ezreal" } }, "TOP", book)).toBeUndefined();
+  });
+
+  it("every recorded draft names its players, except the LCK finals G3 with no recorded builds", () => {
+    for (const d of drafts) for (const r of ROLES)
+      if (gameIdOf(d) !== 82964 && withBuilds.has(gameIdOf(d))) expect(playerOf(d, r, book), `${d.id} ${r}`).toBeDefined();
+  });
+
+  it("every recorded build with a matching pick names a player", () => {
+    const players = getGamePlayers();
+    const named = Object.values(players).flatMap((g) => Object.values(g).flatMap((s) => Object.values(s ?? {})));
+    expect(named.length).toBeGreaterThan(1000);
+    for (const p of named) expect(p!.name.trim()).not.toBe("");
+  });
+
+  it("the draft order carries the player of each pick", () => {
+    const d = drafts.find((x) => { const o = draftOrder(gameIdOf(x), book, [{ team: x.team, side: x.side ?? "none" }]); return o.ok; })!;
+    const o = draftOrder(gameIdOf(d), book, [{ team: d.team, side: d.side ?? "none" }]);
+    if (!o.ok) throw new Error("no ordered game");
+    const mine = o.steps.filter((s) => s.side === d.side).flatMap((s) => s.picks);
+    for (const p of mine) expect(p.player).toBe(p.role ? playerOf(d, p.role, book)?.name : undefined);
   });
 });
