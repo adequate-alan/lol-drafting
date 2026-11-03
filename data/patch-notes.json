@@ -3,6 +3,718 @@
   "source": "https://www.leagueoflegends.com/en-us/news/tags/patch-notes/",
   "patches": [
     {
+      "patch": "26.22",
+      "short": "16.22",
+      "title": "League of Legends Patch 26.22 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-22-notes/",
+      "published": "2026-11-03",
+      "rev": "sYxq06V058LuRexg580iEP",
+      "midPatch": [],
+      "excluded": [
+        "Patch Highlights",
+        "TFT Standalone Client",
+        "ARAM: Mayhem",
+        "Classic",
+        "Classic Pass Progress",
+        "Upcoming Skins & Chromas"
+      ],
+      "bugfixesLeftOut": 1,
+      "entries": [
+        {
+          "id": "champion-aurelion-sol",
+          "kind": "champion",
+          "subject": "Aurelion Sol",
+          "anchor": "patch-aurelionsol",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/champion/AurelionSol.png",
+          "context": "The majority of Aurelion Sol players have made it pretty clear that they would much rather rank up his Singularity (E) second over his Astral Flight (W) even though it’s a much weaker second max. We agree that his (E) is a very cool signature spell, so we’re giving him a buff there to help make doing the intuitive fun thing the right thing.",
+          "groups": [
+            {
+              "title": "E - Singularity",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/spell/AurelionSolE.png",
+              "changes": [
+                {
+                  "text": "Total Magic Damage: 50 / 75 / 100 / 125 / 150 (+60% AP) over 5s ⇒ 50 / 80 / 110 / 140 / 170 (+60 / 65 / 70 / 75 / 80% AP) over 5s",
+                  "label": "Total Magic Damage",
+                  "before": "50 / 75 / 100 / 125 / 150 (+60% AP) over 5s",
+                  "after": "50 / 80 / 110 / 140 / 170 (+60 / 65 / 70 / 75 / 80% AP) over 5s"
+                }
+              ]
+            }
+          ],
+          "ref": "aurelion-sol",
+          "category": "buff",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        },
+        {
+          "id": "champion-corki",
+          "kind": "champion",
+          "subject": "Corki",
+          "anchor": "patch-corki",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/champion/Corki.png",
+          "context": "We were cautious about Corki’s power level going into Worlds, but now (like Azir and Orianna), he has some more space to be better for everyone.",
+          "groups": [
+            {
+              "title": "R - Missile Barrage",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/spell/MissileBarrage.png",
+              "changes": [
+                {
+                  "text": "Damage: 90 / 170 / 250 (+85% bonus AD) ⇒ 100 / 190 / 280 (+90% bonus AD)",
+                  "label": "Damage",
+                  "before": "90 / 170 / 250 (+85% bonus AD)",
+                  "after": "100 / 190 / 280 (+90% bonus AD)"
+                },
+                {
+                  "text": "Big One Damage: 180 / 340 / 500 (+170% bonus AD) ⇒ 200 / 380 / 560 (+180% bonus AD)",
+                  "label": "Big One Damage",
+                  "before": "180 / 340 / 500 (+170% bonus AD)",
+                  "after": "200 / 380 / 560 (+180% bonus AD)"
+                }
+              ]
+            }
+          ],
+          "ref": "corki",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        },
+        {
+          "id": "champion-kayle",
+          "kind": "champion",
+          "subject": "Kayle",
+          "anchor": "patch-kayle",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/champion/Kayle.png",
+          "context": "We've seen Kayle's relevance decrease steadily from earlier this year as the game’s moved past the top lane shake up from role quests. We’re giving her a small bump to help out her early laning since we believe that top lane could use some more scaling options.",
+          "groups": [
+            {
+              "title": "Q - Radiant Blast",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/spell/KayleQ.png",
+              "changes": [
+                {
+                  "text": "Cooldown: 12 / 11 / 10 / 9 / 8s ⇒ 10 / 9.5 / 9 / 8.5 / 8s",
+                  "label": "Cooldown",
+                  "before": "12 / 11 / 10 / 9 / 8s",
+                  "after": "10 / 9.5 / 9 / 8.5 / 8s"
+                }
+              ]
+            },
+            {
+              "title": "R - Divine Judgment",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/spell/KayleR.png",
+              "changes": [
+                {
+                  "text": "Cooldown: 160 / 120 / 80s ⇒ 140 / 110 / 80s",
+                  "label": "Cooldown",
+                  "before": "160 / 120 / 80s",
+                  "after": "140 / 110 / 80s"
+                }
+              ]
+            }
+          ],
+          "ref": "kayle",
+          "category": "buff",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        },
+        {
+          "id": "champion-locke",
+          "kind": "champion",
+          "subject": "Locke",
+          "anchor": "patch-leesin",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.18.1/img/champion/Locke.png",
+          "context": "While Locke's performance in general is within reason, he's proven to be a much deeper champion than we initially expected and players who have reached that level of Locke play have shown him to still be clearly too strong, especially early game.",
+          "groups": [
+            {
+              "title": "Q - Ritual Nails",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.18.1/img/spell/LockeQ.png",
+              "changes": [
+                {
+                  "text": "Stack Bonus Damage: 18 / 26 / 34 / 42 / 50 ⇒ 15 / 22 / 29 / 36 / 43",
+                  "label": "Stack Bonus Damage",
+                  "before": "18 / 26 / 34 / 42 / 50",
+                  "after": "15 / 22 / 29 / 36 / 43"
+                },
+                {
+                  "text": "Maximum Stack Damage: 75.6 / 109.2 / 142.8 / 176.4 / 210 ⇒ 63 / 92.4 / 121.8 / 151.2 / 180.6",
+                  "label": "Maximum Stack Damage",
+                  "before": "75.6 / 109.2 / 142.8 / 176.4 / 210",
+                  "after": "63 / 92.4 / 121.8 / 151.2 / 180.6"
+                }
+              ]
+            },
+            {
+              "title": "W - Soul Ignition",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.18.1/img/spell/LockeW.png",
+              "changes": [
+                {
+                  "text": "Duration: 6s ⇒ 5s",
+                  "label": "Duration",
+                  "before": "6s",
+                  "after": "5s"
+                }
+              ]
+            }
+          ],
+          "ref": "locke",
+          "category": "nerf",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        },
+        {
+          "id": "champion-maokai",
+          "kind": "champion",
+          "subject": "Maokai",
+          "anchor": "patch-maokai",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/champion/Maokai.png",
+          "context": "Maokai has remained a very still tree this year, and has been almost entirely stuck in support. We’re buffing him in a way that helps out his top and jungle more.",
+          "groups": [
+            {
+              "title": "Q - Bramble Smash",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/spell/MaokaiQ.png",
+              "changes": [
+                {
+                  "text": "Damage: 75 / 120 / 165 / 210 / 255 (+2 / 2.5 / 3 / 3.5 / 4% Target Maximum Health) (+50% AP) ⇒ 75 / 120 / 165 / 210 / 255 (+2.5 / 3 / 3.5 / 4 / 4.5% Target Maximum Health) (+50% AP)",
+                  "label": "Damage",
+                  "before": "75 / 120 / 165 / 210 / 255 (+2 / 2.5 / 3 / 3.5 / 4% Target Maximum Health) (+50% AP)",
+                  "after": "75 / 120 / 165 / 210 / 255 (+2.5 / 3 / 3.5 / 4 / 4.5% Target Maximum Health) (+50% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "maokai",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        },
+        {
+          "id": "champion-mel",
+          "kind": "champion",
+          "subject": "Mel",
+          "anchor": "patch-mel",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/champion/Mel.png",
+          "context": "This patch, Mel is getting a midscope adjustment. You can read more about it here. For the spark notes version, she is having some power moved from early game to scaling, her W is being reworked into an Area-of-Effect missile destruction that retaliates rather than reflects effects, and her Q and R are getting adjustments to lower their cooldowns later on in the game so she can stack her passive to ever higher amounts.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Health: 640 + 99/Level ⇒ 590 + 107/Level",
+                  "label": "Health",
+                  "before": "640 + 99/Level",
+                  "after": "590 + 107/Level"
+                },
+                {
+                  "text": "Mana: 480 + 28/Level ⇒ 455 + 38/Level",
+                  "label": "Mana",
+                  "before": "480 + 28/Level",
+                  "after": "455 + 38/Level"
+                },
+                {
+                  "text": "AR: +5.2/Level ⇒ +5.4/Level",
+                  "label": "AR",
+                  "before": "+5.2/Level",
+                  "after": "+5.4/Level"
+                },
+                {
+                  "text": "AD: 54 + 3.3/Level ⇒ 52 + 3.3/Level",
+                  "label": "AD",
+                  "before": "54 + 3.3/Level",
+                  "after": "52 + 3.3/Level"
+                },
+                {
+                  "text": "AS: 2.5%/Level ⇒ 2.75%/Level",
+                  "label": "AS",
+                  "before": "2.5%/Level",
+                  "after": "2.75%/Level"
+                }
+              ]
+            },
+            {
+              "title": "Passive - Searing Brilliance",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/passive/Mel_Passive.png",
+              "changes": [
+                {
+                  "text": "Bonus Damage Per Bolt: 8 - 30 (+4% AP) ⇒ 4 - 30 (+4% AP)",
+                  "label": "Bonus Damage Per Bolt",
+                  "before": "8 - 30 (+4% AP)",
+                  "after": "4 - 30 (+4% AP)"
+                },
+                {
+                  "text": "First Stack Damage Against Minions: 50% Less ⇒ 45% Less",
+                  "label": "First Stack Damage Against Minions",
+                  "before": "50% Less",
+                  "after": "45% Less"
+                }
+              ]
+            },
+            {
+              "title": "Q - Radiant Volley",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/spell/MelQ.png",
+              "changes": [
+                {
+                  "text": "First Hit Damage: 60 / 85 / 110 / 135 / 160 (+55% AP) ⇒ 60 (+25% AP)",
+                  "label": "First Hit Damage",
+                  "before": "60 / 85 / 110 / 135 / 160 (+55% AP)",
+                  "after": "60 (+25% AP)"
+                },
+                {
+                  "text": "Multi-Hit Damage: 5 / 7 / 9 / 11 / 13 (+5% AP) ⇒ 5 / 10 / 15 / 20 / 25 (+8% AP)",
+                  "label": "Multi-Hit Damage",
+                  "before": "5 / 7 / 9 / 11 / 13 (+5% AP)",
+                  "after": "5 / 10 / 15 / 20 / 25 (+8% AP)"
+                },
+                {
+                  "text": "Total Damage: 85 - 277 (+80 - 100% AP) ⇒ 85 - 285 (+65 - 97% AP)",
+                  "label": "Total Damage",
+                  "before": "85 - 277 (+80 - 100% AP)",
+                  "after": "85 - 285 (+65 - 97% AP)"
+                },
+                {
+                  "text": "New - Now Refunds CD it hits an enemy champion at least once: 0.5s - 1.0s Refund (scaling with Champion Level)",
+                  "label": "New - Now Refunds CD it hits an enemy champion at least once",
+                  "value": "0.5s - 1.0s Refund (scaling with Champion Level)"
+                },
+                {
+                  "text": "Mana Cost: 70 / 75 / 80 / 85 / 90 ⇒ 60 / 65 / 70 / 75 / 80",
+                  "label": "Mana Cost",
+                  "before": "70 / 75 / 80 / 85 / 90",
+                  "after": "60 / 65 / 70 / 75 / 80"
+                },
+                {
+                  "text": "Missile Speed: 3800 ⇒ 3200 (takes .047s longer to travel to max range)",
+                  "label": "Missile Speed",
+                  "before": "3800",
+                  "after": "3200 (takes .047s longer to travel to max range)"
+                }
+              ]
+            },
+            {
+              "title": "W - Rebuttal - Reworked",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/spell/MelW.png",
+              "changes": [
+                {
+                  "text": "Unleashes a nova that expands to 400u Radius over 0.75 seconds. The nova destroys enemy projectiles and shields and grants move speed to Mel and Allies within. Destroyed missiles are retaliated against at the end of the nova."
+                },
+                {
+                  "text": "Retaliation Damage: 35 / 40 / 45 / 50 / 55 (+10% AP), reduced to 5 / 10 / 15 / 20 / 25 (+5% AP) for subsequent hits against the same enemy, up to 7 retaliations per enemy for a total of 65 - 205 (+40% AP)",
+                  "label": "Retaliation Damage",
+                  "value": "35 / 40 / 45 / 50 / 55 (+10% AP), reduced to 5 / 10 / 15 / 20 / 25 (+5% AP) for subsequent hits against the same enemy, up to 7 retaliations per enemy for a total of 65 - 205 (+40% AP)"
+                },
+                {
+                  "text": "Shield: 80 / 110 / 140 / 170 / 200 (+70% AP) for 2 seconds",
+                  "label": "Shield",
+                  "value": "80 / 110 / 140 / 170 / 200 (+70% AP) for 2 seconds"
+                },
+                {
+                  "text": "Move Speed: 10 - 30% (scaling with Champion Level) for 2 seconds",
+                  "label": "Move Speed",
+                  "value": "10 - 30% (scaling with Champion Level) for 2 seconds"
+                },
+                {
+                  "text": "Mana Cost: 100 / 80 / 60 / 40 / 0",
+                  "label": "Mana Cost",
+                  "value": "100 / 80 / 60 / 40 / 0"
+                },
+                {
+                  "text": "Cooldown: 30 / 28.5 / 27 / 25.5 / 24",
+                  "label": "Cooldown",
+                  "value": "30 / 28.5 / 27 / 25.5 / 24"
+                }
+              ]
+            },
+            {
+              "title": "E - Solar Snare",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/spell/MelE.png",
+              "changes": [
+                {
+                  "text": "Root Duration: 1.5 seconds ⇒ [0.8 - 1.6] / [0.85 - 1.75] / [0.9 - 1.9] / [0.95 - 2.05] / [1.0 - 2.2] seconds, increasing with distance",
+                  "label": "Root Duration",
+                  "before": "1.5 seconds",
+                  "after": "[0.8 - 1.6] / [0.85 - 1.75] / [0.9 - 1.9] / [0.95 - 2.05] / [1.0 - 2.2] seconds, increasing with distance"
+                },
+                {
+                  "text": "Slow Amount: 30% ⇒ 20 / 25 / 30 / 35 / 40%",
+                  "label": "Slow Amount",
+                  "before": "30%",
+                  "after": "20 / 25 / 30 / 35 / 40%"
+                },
+                {
+                  "text": "Mana Cost: 50 / 60 / 70 / 80 / 90 ⇒ 40 / 50 / 60 / 70 / 80",
+                  "label": "Mana Cost",
+                  "before": "50 / 60 / 70 / 80 / 90",
+                  "after": "40 / 50 / 60 / 70 / 80"
+                }
+              ]
+            },
+            {
+              "title": "R - Golden Eclipse",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/spell/MelR.png",
+              "changes": [
+                {
+                  "text": "Cooldown: 120 / 100 / 80 seconds ⇒ 120 / 90 / 60 seconds",
+                  "label": "Cooldown",
+                  "before": "120 / 100 / 80 seconds",
+                  "after": "120 / 90 / 60 seconds"
+                }
+              ]
+            }
+          ],
+          "ref": "mel",
+          "category": "rework",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        },
+        {
+          "id": "champion-naafiri",
+          "kind": "champion",
+          "subject": "Naafiri",
+          "anchor": "patch-naafiri",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/champion/Naafiri.png",
+          "context": "After a series of nerfs earlier this year, Naafiri has largely fallen out of mid lane entirely and has been pretty mediocre in the jungle. We’re giving her a buff that should primarily help out her mid, bringing her role power closer to parity.",
+          "groups": [
+            {
+              "title": "Q - Darkin Daggers",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/spell/NaafiriQ.png",
+              "changes": [
+                {
+                  "text": "Heal: 45 / 60 / 75 / 90 / 105 (+40% bonus AD) ⇒ 55 / 70 / 85 / 100 / 115 (+45% bonus AD)",
+                  "label": "Heal",
+                  "before": "45 / 60 / 75 / 90 / 105 (+40% bonus AD)",
+                  "after": "55 / 70 / 85 / 100 / 115 (+45% bonus AD)"
+                }
+              ]
+            },
+            {
+              "title": "W - The Call of the Pack",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/spell/NaafiriR.png",
+              "changes": [
+                {
+                  "text": "Bonus Attack Damage: 20% ⇒ 22%",
+                  "label": "Bonus Attack Damage",
+                  "before": "20%",
+                  "after": "22%"
+                }
+              ]
+            }
+          ],
+          "ref": "naafiri",
+          "category": "buff",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        },
+        {
+          "id": "champion-rumble",
+          "kind": "champion",
+          "subject": "Rumble",
+          "anchor": "patch-rumble",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/champion/Rumble.png",
+          "context": "Similar to Corki, Rumble was tuned for pro play. This change should help out the average rumble a bit more than pros when they catch back up to the patch cycle.",
+          "groups": [
+            {
+              "title": "R - The Equalizer",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/spell/RumbleCarpetBomb.png",
+              "changes": [
+                {
+                  "text": "Damage per Second: 120 / 200 / 280 (+35% AP) ⇒ (+40% AP)",
+                  "label": "Damage per Second",
+                  "before": "120 / 200 / 280 (+35% AP)",
+                  "after": "(+40% AP)"
+                },
+                {
+                  "text": "Maximum Damage Ability Power Ratio: 175% AP ⇒ 200% AP",
+                  "label": "Maximum Damage Ability Power Ratio",
+                  "before": "175% AP",
+                  "after": "200% AP"
+                }
+              ]
+            }
+          ],
+          "ref": "rumble",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        },
+        {
+          "id": "champion-shen",
+          "kind": "champion",
+          "subject": "Shen",
+          "anchor": "patch-shen",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/champion/Shen.png",
+          "context": "Along with Maokai, Shen jungle has been pushed too far out of the meta. We were watching to see if some of the previous patches’ changes to help jungle tanks would bring him back up, but now we’re confident we can just buff him .",
+          "groups": [
+            {
+              "title": "Q - Twilight Assault",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/spell/ShenQ.png",
+              "changes": [
+                {
+                  "text": "Monster Damage Modifier: 100 / 125 / 150 / 175 / 200 ⇒ 120 / 140 / 160 / 180 / 200",
+                  "label": "Monster Damage Modifier",
+                  "before": "100 / 125 / 150 / 175 / 200",
+                  "after": "120 / 140 / 160 / 180 / 200"
+                }
+              ]
+            }
+          ],
+          "ref": "shen",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        },
+        {
+          "id": "champion-smolder",
+          "kind": "champion",
+          "subject": "Smolder",
+          "anchor": "patch-smolder",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/champion/Smolder.png",
+          "context": "Our buffs a few patches ago landed a bit softer than we expected, but he’s ended up with a good balance between his Crit and Caster builds, so we’re giving him a more generic buff this time. We also expect the Doran’s Bow nerf in this patch to help him out a bit.",
+          "groups": [
+            {
+              "title": "W - ACHOOO!",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/spell/SmolderW.png",
+              "changes": [
+                {
+                  "text": "Explosion Damage: 10 / 35 / 60 / 85 / 110 (+50% bonus AD) (+80% AP) ⇒ 25 / 50 / 75 / 100 / 125 (+50% bonus AD) (+80% AP)",
+                  "label": "Explosion Damage",
+                  "before": "10 / 35 / 60 / 85 / 110 (+50% bonus AD) (+80% AP)",
+                  "after": "25 / 50 / 75 / 100 / 125 (+50% bonus AD) (+80% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "smolder",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        },
+        {
+          "id": "champion-thresh",
+          "kind": "champion",
+          "subject": "Thresh",
+          "anchor": "patch-thresh",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/champion/Thresh.png",
+          "context": "Despite our prior nerf, Thresh has remained at the very top of the support pecking order for top tier players, so it’s time for another.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Attack Damage: 56 ⇒ 54",
+                  "label": "Attack Damage",
+                  "before": "56",
+                  "after": "54"
+                }
+              ]
+            },
+            {
+              "title": "R - The Box",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/spell/ThreshRPenta.png",
+              "changes": [
+                {
+                  "text": "Damage: 250 / 400 / 550 (+100% AP) ⇒ 200 / 350 / 500 (+100% AP)",
+                  "label": "Damage",
+                  "before": "250 / 400 / 550 (+100% AP)",
+                  "after": "200 / 350 / 500 (+100% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "thresh",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        },
+        {
+          "id": "champion-viktor",
+          "kind": "champion",
+          "subject": "Viktor",
+          "anchor": "patch-viktor",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/champion/Viktor.png",
+          "context": "Last patch's nerf to Viktor hit him harder than we expected - but we are happy about the impact it had on his early game bullying, so we are buffing him back in scaling.",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Health Growth: 100/Level ⇒ 105/Level",
+                  "label": "Health Growth",
+                  "before": "100/Level",
+                  "after": "105/Level"
+                }
+              ]
+            },
+            {
+              "title": "R - Arcane Storm",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.18.1/img/spell/ViktorR.png",
+              "changes": [
+                {
+                  "text": "Conjure Damage: 100 / 175 / 250 (+50% AP) ⇒ 100 / 175 / 250 (+60% AP)",
+                  "label": "Conjure Damage",
+                  "before": "100 / 175 / 250 (+50% AP)",
+                  "after": "100 / 175 / 250 (+60% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "viktor",
+          "category": "buff",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        },
+        {
+          "id": "champion-yasuo",
+          "kind": "champion",
+          "subject": "Yasuo",
+          "anchor": "patch-yasuo",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/champion/Yasuo.png",
+          "context": "We were on the fence last patch with whether Yasuo would also need a nerf like Yone, but he's also continued growing in winrate as players migrate to crit builds and banrate reflecting that so he's getting the same treatment.",
+          "groups": [
+            {
+              "title": "Q - Steel Tempest",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.21.1/img/spell/YasuoQ1Wrapper.png",
+              "changes": [
+                {
+                  "text": "Damage: 20 / 45 / 70 / 95 / 120 (+105% total AD) ⇒ 20 / 45 / 70 / 95 / 120 (+100% total AD)",
+                  "label": "Damage",
+                  "before": "20 / 45 / 70 / 95 / 120 (+105% total AD)",
+                  "after": "20 / 45 / 70 / 95 / 120 (+100% total AD)"
+                }
+              ]
+            }
+          ],
+          "ref": "yasuo",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        },
+        {
+          "id": "champion-zaahen",
+          "kind": "champion",
+          "subject": "Zaahen",
+          "anchor": "patch-zaahen",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/champion/Zaahen.png",
+          "context": "Zaahen is living up to his scaling fantasies, but hasn’t had enough to do in lane. This should make his early scrapping and skirmishing much more satisfying.",
+          "groups": [
+            {
+              "title": "Q - The Darkin Glaive",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.19.1/img/spell/ZaahenQ.png",
+              "changes": [
+                {
+                  "text": "Cooldown: 10 / 9 / 8 / 7 / 6s",
+                  "label": "Cooldown",
+                  "value": "10 / 9 / 8 / 7 / 6s"
+                },
+                {
+                  "text": "⇒ 8 / 7.5 / 7 / 6.5 / 6s",
+                  "after": "8 / 7.5 / 7 / 6.5 / 6s"
+                }
+              ]
+            }
+          ],
+          "ref": "zaahen",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        },
+        {
+          "id": "item-dorans-bow",
+          "kind": "item",
+          "subject": "Doran's Bow",
+          "anchor": "patch-Dorans-Bow",
+          "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/f4dd1e2c39c1e953c0483e15c18a7ed22d0e9945-512x512.jpg",
+          "context": "We’re nerfing Doran's Bow by a minor amount, as it’s settled into a spot that is slightly but clearly too strong, resulting in marksmen that we expect to be leaning towards Doran's Blade instead being almost purely Doran's Bow users.",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Attack Damage: 8 ⇒ 7",
+                  "label": "Attack Damage",
+                  "before": "8",
+                  "after": "7"
+                }
+              ]
+            }
+          ],
+          "ref": "dorans-bow",
+          "categories": [
+            "stats"
+          ],
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        },
+        {
+          "id": "item-overlords-bloodmail",
+          "kind": "item",
+          "subject": "Overlord's Bloodmail",
+          "anchor": "patch-Overlords-Bloodmail",
+          "icon": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/4dfded60c670e9702fb5b1c95a34231b05e3d546-512x512.png",
+          "context": "Overlord's should be one of the premier juggernaut capstone items, but outside of Sett hasn't been able to carry enough power to justify greeding for. We are adjusting Overlords in a way that should be a net buff for most other users while hopefully not ballooning its power level too far on Sett, who benefits the most from the Retribution passive because of synergy with his Haymaker (W).",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Attack Damage: 30 ⇒ 40",
+                  "label": "Attack Damage",
+                  "before": "30",
+                  "after": "40"
+                },
+                {
+                  "text": "Retribution: +0 - 12% total AD, based on % Missing Health ⇒ +0 - 10% total AD, based on % Missing Health",
+                  "label": "Retribution",
+                  "before": "+0 - 12% total AD, based on % Missing Health",
+                  "after": "+0 - 10% total AD, based on % Missing Health"
+                }
+              ]
+            }
+          ],
+          "ref": "overlords-bloodmail",
+          "categories": [
+            "stats",
+            "effect"
+          ],
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        },
+        {
+          "id": "system-bug-fixes",
+          "kind": "system",
+          "subject": "Bug fixes",
+          "category": "bugfix",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Fixed a bug where Aurora's (R) was blockable by Samira (W)"
+                },
+                {
+                  "text": "Fixed a bug where Quinn’s (R) will deal double the damage when she gains (R) from recalling or respawning."
+                },
+                {
+                  "text": "Fixed a bug where Hail of Blades would be inconsistent on Ekko."
+                },
+                {
+                  "text": "Fixed a bug where Viego may miss out on a jungle treat if he transforms into an enemy champion when it's granted."
+                },
+                {
+                  "text": "Fixed a bug where Renekton would cancel abilities after comboing with R by right clicking at the same time."
+                },
+                {
+                  "text": "Fixed a bug where Kog’Maw’s (W) ability would deal damage to structures if cast while an auto is midair."
+                }
+              ]
+            }
+          ],
+          "affects": [
+            "aurora",
+            "samira",
+            "quinn",
+            "ekko",
+            "viego",
+            "renekton"
+          ],
+          "updatedAt": "2026-11-03T20:16:21.992Z"
+        }
+      ],
+      "updatedAt": "2026-11-03T20:16:21.992Z"
+    },
+    {
       "patch": "26.21",
       "short": "16.21",
       "title": "League of Legends Patch 26.21 Notes",
