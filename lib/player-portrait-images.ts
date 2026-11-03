@@ -2,66 +2,129 @@
 // (assets/players/<playerId>.webp), so the build fingerprints them under the site's base path. Do not edit by hand.
 import type { StaticImageData } from "next/image";
 import p48 from "@/assets/players/48.webp";
+import p109 from "@/assets/players/109.webp";
+import p257 from "@/assets/players/257.webp";
+import p386 from "@/assets/players/386.webp";
+import p388 from "@/assets/players/388.webp";
 import p564 from "@/assets/players/564.webp";
 import p650 from "@/assets/players/650.webp";
 import p685 from "@/assets/players/685.webp";
+import p732 from "@/assets/players/732.webp";
 import p733 from "@/assets/players/733.webp";
 import p799 from "@/assets/players/799.webp";
+import p802 from "@/assets/players/802.webp";
 import p854 from "@/assets/players/854.webp";
 import p983 from "@/assets/players/983.webp";
+import p1075 from "@/assets/players/1075.webp";
 import p1115 from "@/assets/players/1115.webp";
+import p1135 from "@/assets/players/1135.webp";
 import p1169 from "@/assets/players/1169.webp";
+import p1226 from "@/assets/players/1226.webp";
+import p1228 from "@/assets/players/1228.webp";
 import p1242 from "@/assets/players/1242.webp";
 import p1250 from "@/assets/players/1250.webp";
 import p1258 from "@/assets/players/1258.webp";
 import p1265 from "@/assets/players/1265.webp";
+import p1267 from "@/assets/players/1267.webp";
+import p1269 from "@/assets/players/1269.webp";
+import p1270 from "@/assets/players/1270.webp";
+import p1301 from "@/assets/players/1301.webp";
+import p1310 from "@/assets/players/1310.webp";
+import p1364 from "@/assets/players/1364.webp";
+import p1461 from "@/assets/players/1461.webp";
+import p1501 from "@/assets/players/1501.webp";
+import p1561 from "@/assets/players/1561.webp";
 import p1584 from "@/assets/players/1584.webp";
 import p1629 from "@/assets/players/1629.webp";
+import p1634 from "@/assets/players/1634.webp";
 import p1671 from "@/assets/players/1671.webp";
 import p1708 from "@/assets/players/1708.webp";
 import p1909 from "@/assets/players/1909.webp";
+import p1922 from "@/assets/players/1922.webp";
 import p1931 from "@/assets/players/1931.webp";
 import p1971 from "@/assets/players/1971.webp";
+import p1979 from "@/assets/players/1979.webp";
 import p2078 from "@/assets/players/2078.webp";
 import p2085 from "@/assets/players/2085.webp";
+import p2329 from "@/assets/players/2329.webp";
+import p2348 from "@/assets/players/2348.webp";
+import p2358 from "@/assets/players/2358.webp";
 import p2359 from "@/assets/players/2359.webp";
 import p2360 from "@/assets/players/2360.webp";
+import p2545 from "@/assets/players/2545.webp";
+import p2588 from "@/assets/players/2588.webp";
+import p2606 from "@/assets/players/2606.webp";
 import p2648 from "@/assets/players/2648.webp";
+import p2671 from "@/assets/players/2671.webp";
+import p2709 from "@/assets/players/2709.webp";
+import p2717 from "@/assets/players/2717.webp";
+import p2719 from "@/assets/players/2719.webp";
+import p2887 from "@/assets/players/2887.webp";
 import p2906 from "@/assets/players/2906.webp";
 import p3047 from "@/assets/players/3047.webp";
+import p3116 from "@/assets/players/3116.webp";
+import p3245 from "@/assets/players/3245.webp";
 import p3247 from "@/assets/players/3247.webp";
+import p3322 from "@/assets/players/3322.webp";
+import p3323 from "@/assets/players/3323.webp";
 import p3324 from "@/assets/players/3324.webp";
 import p3326 from "@/assets/players/3326.webp";
 import p3327 from "@/assets/players/3327.webp";
+import p3330 from "@/assets/players/3330.webp";
+import p3344 from "@/assets/players/3344.webp";
 import p3350 from "@/assets/players/3350.webp";
+import p3352 from "@/assets/players/3352.webp";
+import p3353 from "@/assets/players/3353.webp";
+import p3406 from "@/assets/players/3406.webp";
 import p3411 from "@/assets/players/3411.webp";
 import p3421 from "@/assets/players/3421.webp";
 import p3424 from "@/assets/players/3424.webp";
+import p3434 from "@/assets/players/3434.webp";
 import p3436 from "@/assets/players/3436.webp";
 import p3439 from "@/assets/players/3439.webp";
 import p3482 from "@/assets/players/3482.webp";
+import p3537 from "@/assets/players/3537.webp";
+import p3544 from "@/assets/players/3544.webp";
+import p3640 from "@/assets/players/3640.webp";
 import p3658 from "@/assets/players/3658.webp";
 import p3706 from "@/assets/players/3706.webp";
+import p3737 from "@/assets/players/3737.webp";
 import p3741 from "@/assets/players/3741.webp";
 import p3895 from "@/assets/players/3895.webp";
+import p3906 from "@/assets/players/3906.webp";
 import p4119 from "@/assets/players/4119.webp";
 import p4233 from "@/assets/players/4233.webp";
+import p4234 from "@/assets/players/4234.webp";
+import p4244 from "@/assets/players/4244.webp";
+import p4246 from "@/assets/players/4246.webp";
 import p4247 from "@/assets/players/4247.webp";
 import p4259 from "@/assets/players/4259.webp";
+import p4310 from "@/assets/players/4310.webp";
 import p4411 from "@/assets/players/4411.webp";
+import p4427 from "@/assets/players/4427.webp";
 import p4455 from "@/assets/players/4455.webp";
+import p4500 from "@/assets/players/4500.webp";
 import p4561 from "@/assets/players/4561.webp";
 import p4612 from "@/assets/players/4612.webp";
+import p4634 from "@/assets/players/4634.webp";
 import p4755 from "@/assets/players/4755.webp";
 import p4758 from "@/assets/players/4758.webp";
 import p4765 from "@/assets/players/4765.webp";
+import p4776 from "@/assets/players/4776.webp";
+import p4861 from "@/assets/players/4861.webp";
 import p4885 from "@/assets/players/4885.webp";
+import p4900 from "@/assets/players/4900.webp";
 import p4918 from "@/assets/players/4918.webp";
 import p4919 from "@/assets/players/4919.webp";
 import p4925 from "@/assets/players/4925.webp";
 import p4940 from "@/assets/players/4940.webp";
+import p4946 from "@/assets/players/4946.webp";
+import p4976 from "@/assets/players/4976.webp";
 import p5122 from "@/assets/players/5122.webp";
+import p5123 from "@/assets/players/5123.webp";
 import p5137 from "@/assets/players/5137.webp";
+import p5156 from "@/assets/players/5156.webp";
+import p5166 from "@/assets/players/5166.webp";
 import p5204 from "@/assets/players/5204.webp";
 import p5358 from "@/assets/players/5358.webp";
 import p5359 from "@/assets/players/5359.webp";
@@ -73,69 +136,134 @@ import p5456 from "@/assets/players/5456.webp";
 import p5566 from "@/assets/players/5566.webp";
 import p5599 from "@/assets/players/5599.webp";
 import p5923 from "@/assets/players/5923.webp";
+import p5939 from "@/assets/players/5939.webp";
+import p6419 from "@/assets/players/6419.webp";
 
 export const PORTRAIT_IMAGES: Record<number, StaticImageData> = {
   48: p48,
+  109: p109,
+  257: p257,
+  386: p386,
+  388: p388,
   564: p564,
   650: p650,
   685: p685,
+  732: p732,
   733: p733,
   799: p799,
+  802: p802,
   854: p854,
   983: p983,
+  1075: p1075,
   1115: p1115,
+  1135: p1135,
   1169: p1169,
+  1226: p1226,
+  1228: p1228,
   1242: p1242,
   1250: p1250,
   1258: p1258,
   1265: p1265,
+  1267: p1267,
+  1269: p1269,
+  1270: p1270,
+  1301: p1301,
+  1310: p1310,
+  1364: p1364,
+  1461: p1461,
+  1501: p1501,
+  1561: p1561,
   1584: p1584,
   1629: p1629,
+  1634: p1634,
   1671: p1671,
   1708: p1708,
   1909: p1909,
+  1922: p1922,
   1931: p1931,
   1971: p1971,
+  1979: p1979,
   2078: p2078,
   2085: p2085,
+  2329: p2329,
+  2348: p2348,
+  2358: p2358,
   2359: p2359,
   2360: p2360,
+  2545: p2545,
+  2588: p2588,
+  2606: p2606,
   2648: p2648,
+  2671: p2671,
+  2709: p2709,
+  2717: p2717,
+  2719: p2719,
+  2887: p2887,
   2906: p2906,
   3047: p3047,
+  3116: p3116,
+  3245: p3245,
   3247: p3247,
+  3322: p3322,
+  3323: p3323,
   3324: p3324,
   3326: p3326,
   3327: p3327,
+  3330: p3330,
+  3344: p3344,
   3350: p3350,
+  3352: p3352,
+  3353: p3353,
+  3406: p3406,
   3411: p3411,
   3421: p3421,
   3424: p3424,
+  3434: p3434,
   3436: p3436,
   3439: p3439,
   3482: p3482,
+  3537: p3537,
+  3544: p3544,
+  3640: p3640,
   3658: p3658,
   3706: p3706,
+  3737: p3737,
   3741: p3741,
   3895: p3895,
+  3906: p3906,
   4119: p4119,
   4233: p4233,
+  4234: p4234,
+  4244: p4244,
+  4246: p4246,
   4247: p4247,
   4259: p4259,
+  4310: p4310,
   4411: p4411,
+  4427: p4427,
   4455: p4455,
+  4500: p4500,
   4561: p4561,
   4612: p4612,
+  4634: p4634,
   4755: p4755,
   4758: p4758,
   4765: p4765,
+  4776: p4776,
+  4861: p4861,
   4885: p4885,
+  4900: p4900,
   4918: p4918,
   4919: p4919,
   4925: p4925,
   4940: p4940,
+  4946: p4946,
+  4976: p4976,
   5122: p5122,
+  5123: p5123,
   5137: p5137,
+  5156: p5156,
+  5166: p5166,
   5204: p5204,
   5358: p5358,
   5359: p5359,
@@ -147,4 +275,6 @@ export const PORTRAIT_IMAGES: Record<number, StaticImageData> = {
   5566: p5566,
   5599: p5599,
   5923: p5923,
+  5939: p5939,
+  6419: p6419,
 };

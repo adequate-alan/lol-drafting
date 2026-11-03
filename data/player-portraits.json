@@ -1151,6 +1151,1046 @@
         "size": 297
       },
       "checkedOn": "2026-10-12"
+    },
+    {
+      "playerId": 4427,
+      "provider": "dpm.lol",
+      "name": "NaakNako",
+      "team": "Team Vitality",
+      "file": "assets/players/4427.webp",
+      "source": "https://dpm.lol/pro/Naak%20Nako",
+      "original": "https://dpm.lol/esport/players/naaknako.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 1075,
+      "provider": "dpm.lol",
+      "name": "TheShy",
+      "team": "Invictus Gaming",
+      "file": "assets/players/1075.webp",
+      "source": "https://dpm.lol/pro/TheShy",
+      "original": "https://dpm.lol/esport/players/theshy.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 388,
+      "provider": "dpm.lol",
+      "name": "Wei",
+      "team": "Invictus Gaming",
+      "file": "assets/players/388.webp",
+      "source": "https://dpm.lol/pro/Wei",
+      "original": "https://dpm.lol/esport/players/wei.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 109,
+      "provider": "dpm.lol",
+      "name": "RooKie",
+      "team": "Invictus Gaming",
+      "file": "assets/players/109.webp",
+      "source": "https://dpm.lol/pro/Rookie",
+      "original": "https://dpm.lol/esport/players/rookie.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 5939,
+      "provider": "dpm.lol",
+      "name": "JiaQi",
+      "team": "Invictus Gaming",
+      "file": "assets/players/5939.webp",
+      "source": "https://dpm.lol/pro/JiaQi",
+      "original": "https://dpm.lol/esport/players/jiaqi.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 386,
+      "provider": "dpm.lol",
+      "name": "meiko",
+      "team": "Invictus Gaming",
+      "file": "assets/players/386.webp",
+      "source": "https://dpm.lol/pro/Meiko",
+      "original": "https://dpm.lol/esport/players/meiko.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 2545,
+      "provider": "dpm.lol",
+      "name": "Morgan",
+      "team": "Team Liquid",
+      "file": "assets/players/2545.webp",
+      "source": "https://dpm.lol/pro/Morgan",
+      "original": "https://dpm.lol/esport/players/morgan.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 1364,
+      "provider": "dpm.lol",
+      "name": "Josedeodo",
+      "team": "Team Liquid",
+      "file": "assets/players/1364.webp",
+      "source": "https://dpm.lol/pro/Josedeodo",
+      "original": "https://dpm.lol/esport/players/josedeodo.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 4246,
+      "provider": "dpm.lol",
+      "name": "Quid",
+      "team": "Team Liquid",
+      "file": "assets/players/4246.webp",
+      "source": "https://dpm.lol/pro/Quid",
+      "original": "https://dpm.lol/esport/players/quid.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 47,
+        "top": 0,
+        "size": 281
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 3537,
+      "provider": "dpm.lol",
+      "name": "Yeon",
+      "team": "Team Liquid",
+      "file": "assets/players/3537.webp",
+      "source": "https://dpm.lol/pro/Yeon",
+      "original": "https://dpm.lol/esport/players/yeon.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 257,
+      "provider": "dpm.lol",
+      "name": "CoreJJ",
+      "team": "Team Liquid",
+      "file": "assets/players/257.webp",
+      "source": "https://dpm.lol/pro/CoreJJ",
+      "original": "https://dpm.lol/esport/players/corejj.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 4,
+        "top": 0,
+        "size": 212
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 2588,
+      "provider": "dpm.lol",
+      "name": "Shad0w",
+      "team": "CTBC Flying Oyster",
+      "file": "assets/players/2588.webp",
+      "source": "https://dpm.lol/pro/Shad0w",
+      "original": "https://dpm.lol/esport/players/shad0w.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 3737,
+      "provider": "dpm.lol",
+      "name": "Doggo",
+      "team": "CTBC Flying Oyster",
+      "file": "assets/players/3737.webp",
+      "source": "https://dpm.lol/pro/Doggo",
+      "original": "https://dpm.lol/esport/players/doggo.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 2671,
+      "provider": "dpm.lol",
+      "name": "Canna",
+      "team": "Karmine Corp",
+      "file": "assets/players/2671.webp",
+      "source": "https://dpm.lol/pro/Canna",
+      "original": "https://dpm.lol/esport/players/canna.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 3406,
+      "provider": "dpm.lol",
+      "name": "Yike",
+      "team": "Karmine Corp",
+      "file": "assets/players/3406.webp",
+      "source": "https://dpm.lol/pro/Yike",
+      "original": "https://dpm.lol/esport/players/yike.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 4900,
+      "provider": "dpm.lol",
+      "name": "Caliste",
+      "team": "Karmine Corp",
+      "file": "assets/players/4900.webp",
+      "source": "https://dpm.lol/pro/Caliste",
+      "original": "https://dpm.lol/esport/players/caliste.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 4500,
+      "provider": "dpm.lol",
+      "name": "Busio",
+      "team": "Karmine Corp",
+      "file": "assets/players/4500.webp",
+      "source": "https://dpm.lol/pro/Busio",
+      "original": "https://dpm.lol/esport/players/busio.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 16,
+        "top": 0,
+        "size": 189
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 2348,
+      "provider": "dpm.lol",
+      "name": "Breathe",
+      "team": "Anyone s Legend",
+      "file": "assets/players/2348.webp",
+      "source": "https://dpm.lol/pro/Breathe",
+      "original": "https://dpm.lol/esport/players/breathe.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 1226,
+      "provider": "dpm.lol",
+      "name": "Tarzan",
+      "team": "Anyone s Legend",
+      "file": "assets/players/1226.webp",
+      "source": "https://dpm.lol/pro/Tarzan",
+      "original": "https://dpm.lol/esport/players/tarzan.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 3344,
+      "provider": "dpm.lol",
+      "name": "Shanks",
+      "team": "Anyone s Legend",
+      "file": "assets/players/3344.webp",
+      "source": "https://dpm.lol/pro/Shanks",
+      "original": "https://dpm.lol/esport/players/shanks.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 1561,
+      "provider": "dpm.lol",
+      "name": "Hope",
+      "team": "Anyone s Legend",
+      "file": "assets/players/1561.webp",
+      "source": "https://dpm.lol/pro/Hope",
+      "original": "https://dpm.lol/esport/players/hope.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 3323,
+      "provider": "dpm.lol",
+      "name": "Kael",
+      "team": "Anyone s Legend",
+      "file": "assets/players/3323.webp",
+      "source": "https://dpm.lol/pro/Kael",
+      "original": "https://dpm.lol/esport/players/kael.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 1310,
+      "provider": "dpm.lol",
+      "name": "BrokenBlade",
+      "team": "G2 Esports",
+      "file": "assets/players/1310.webp",
+      "source": "https://dpm.lol/pro/BrokenBlade",
+      "original": "https://dpm.lol/esport/players/brokenblade.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 4946,
+      "provider": "dpm.lol",
+      "name": "SkewMond",
+      "team": "G2 Esports",
+      "file": "assets/players/4946.webp",
+      "source": "https://dpm.lol/pro/SkewMond",
+      "original": "https://dpm.lol/esport/players/skewmond.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 802,
+      "provider": "dpm.lol",
+      "name": "Caps",
+      "team": "G2 Esports",
+      "file": "assets/players/802.webp",
+      "source": "https://dpm.lol/pro/Caps",
+      "original": "https://dpm.lol/esport/players/caps.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 732,
+      "provider": "dpm.lol",
+      "name": "Hans Sama",
+      "team": "G2 Esports",
+      "file": "assets/players/732.webp",
+      "source": "https://dpm.lol/pro/Hans%20Sama",
+      "original": "https://dpm.lol/esport/players/hanssama.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 2887,
+      "provider": "dpm.lol",
+      "name": "Labrov",
+      "team": "G2 Esports",
+      "file": "assets/players/2887.webp",
+      "source": "https://dpm.lol/pro/Labrov",
+      "original": "https://dpm.lol/esport/players/labrov.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 1922,
+      "provider": "dpm.lol",
+      "name": "369",
+      "team": "Top Esports",
+      "file": "assets/players/1922.webp",
+      "source": "https://dpm.lol/pro/369",
+      "original": "https://dpm.lol/esport/players/369.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 1269,
+      "provider": "dpm.lol",
+      "name": "Tian",
+      "team": "Top Esports",
+      "file": "assets/players/1269.webp",
+      "source": "https://dpm.lol/pro/Tian",
+      "original": "https://dpm.lol/esport/players/tian.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 3906,
+      "provider": "dpm.lol",
+      "name": "Creme",
+      "team": "Top Esports",
+      "file": "assets/players/3906.webp",
+      "source": "https://dpm.lol/pro/Creme",
+      "original": "https://dpm.lol/esport/players/creme.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 1267,
+      "provider": "dpm.lol",
+      "name": "JackeyLove",
+      "team": "Top Esports",
+      "file": "assets/players/1267.webp",
+      "source": "https://dpm.lol/pro/JackeyLove",
+      "original": "https://dpm.lol/esport/players/jackeylove.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 3352,
+      "provider": "dpm.lol",
+      "name": "Zhuo",
+      "team": "Top Esports",
+      "file": "assets/players/3352.webp",
+      "source": "https://dpm.lol/pro/Zhuo",
+      "original": "https://dpm.lol/esport/players/zhuo.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 4244,
+      "provider": "dpm.lol",
+      "name": "Zest",
+      "team": "Los Grandes",
+      "file": "assets/players/4244.webp",
+      "source": "https://dpm.lol/pro/Zest",
+      "original": "https://dpm.lol/esport/players/zest.webp",
+      "originalWidth": 784,
+      "crop": {
+        "left": 82,
+        "top": 0,
+        "size": 621
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 4234,
+      "provider": "dpm.lol",
+      "name": "Feisty",
+      "team": "Los Grandes",
+      "file": "assets/players/4234.webp",
+      "source": "https://dpm.lol/pro/Feisty",
+      "original": "https://dpm.lol/esport/players/feisty.webp",
+      "originalWidth": 750,
+      "crop": {
+        "left": 78,
+        "top": 0,
+        "size": 594
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 3640,
+      "provider": "dpm.lol",
+      "name": "Ackerman",
+      "team": "Los Grandes",
+      "file": "assets/players/3640.webp",
+      "source": "https://dpm.lol/pro/Ackerman",
+      "original": "https://dpm.lol/esport/players/ackerman.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 1135,
+      "provider": "dpm.lol",
+      "name": "Dhokla",
+      "team": "LYON",
+      "file": "assets/players/1135.webp",
+      "source": "https://dpm.lol/pro/Dhokla",
+      "original": "https://dpm.lol/esport/players/dhokla.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 1501,
+      "provider": "dpm.lol",
+      "name": "Inspired",
+      "team": "LYON",
+      "file": "assets/players/1501.webp",
+      "source": "https://dpm.lol/pro/Inspired",
+      "original": "https://dpm.lol/esport/players/inspired.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 5123,
+      "provider": "dpm.lol",
+      "name": "Saint",
+      "team": "LYON",
+      "file": "assets/players/5123.webp",
+      "source": "https://dpm.lol/pro/Saint",
+      "original": "https://dpm.lol/esport/players/saint.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 3322,
+      "provider": "dpm.lol",
+      "name": "Berserker",
+      "team": "LYON",
+      "file": "assets/players/3322.webp",
+      "source": "https://dpm.lol/pro/Berserker",
+      "original": "https://dpm.lol/esport/players/berserker.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 2358,
+      "provider": "dpm.lol",
+      "name": "Isles",
+      "team": "LYON",
+      "file": "assets/players/2358.webp",
+      "source": "https://dpm.lol/pro/Isles",
+      "original": "https://dpm.lol/esport/players/isles.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 3245,
+      "provider": "dpm.lol",
+      "name": "Eddie",
+      "team": "Team Secret Whales",
+      "file": "assets/players/3245.webp",
+      "source": "https://dpm.lol/pro/Eddie",
+      "original": "https://dpm.lol/esport/players/eddie.webp",
+      "originalWidth": 1024,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 1024
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 1461,
+      "provider": "dpm.lol",
+      "name": "Bie",
+      "team": "Team Secret Whales",
+      "file": "assets/players/1461.webp",
+      "source": "https://dpm.lol/pro/Bie",
+      "original": "https://dpm.lol/esport/players/bie.webp",
+      "originalWidth": 750,
+      "crop": {
+        "left": 78,
+        "top": 0,
+        "size": 594
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 4310,
+      "provider": "dpm.lol",
+      "name": "Myrwn",
+      "team": "Movistar KOI",
+      "file": "assets/players/4310.webp",
+      "source": "https://dpm.lol/pro/Myrwn",
+      "original": "https://dpm.lol/esport/players/myrwn.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 2719,
+      "provider": "dpm.lol",
+      "name": "Elyoya",
+      "team": "Movistar KOI",
+      "file": "assets/players/2719.webp",
+      "source": "https://dpm.lol/pro/Elyoya",
+      "original": "https://dpm.lol/esport/players/elyoya.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 3544,
+      "provider": "dpm.lol",
+      "name": "jojopyun",
+      "team": "Movistar KOI",
+      "file": "assets/players/3544.webp",
+      "source": "https://dpm.lol/pro/Jojopyun",
+      "original": "https://dpm.lol/esport/players/jojopyun.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 2717,
+      "provider": "dpm.lol",
+      "name": "Supa",
+      "team": "Movistar KOI",
+      "file": "assets/players/2717.webp",
+      "source": "https://dpm.lol/pro/Supa",
+      "original": "https://dpm.lol/esport/players/supa.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 4634,
+      "provider": "dpm.lol",
+      "name": "Alvaro",
+      "team": "Movistar KOI",
+      "file": "assets/players/4634.webp",
+      "source": "https://dpm.lol/pro/Alvaro",
+      "original": "https://dpm.lol/esport/players/alvaro.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 2606,
+      "provider": "dpm.lol",
+      "name": "Bin",
+      "team": "Bilibili Gaming",
+      "file": "assets/players/2606.webp",
+      "source": "https://dpm.lol/pro/Bin",
+      "original": "https://dpm.lol/esport/players/bin.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 3330,
+      "provider": "dpm.lol",
+      "name": "XUN",
+      "team": "Bilibili Gaming",
+      "file": "assets/players/3330.webp",
+      "source": "https://dpm.lol/pro/Xun",
+      "original": "https://dpm.lol/esport/players/xun.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 1270,
+      "provider": "dpm.lol",
+      "name": "Knight",
+      "team": "Bilibili Gaming",
+      "file": "assets/players/1270.webp",
+      "source": "https://dpm.lol/pro/Knight",
+      "original": "https://dpm.lol/esport/players/knight.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 1228,
+      "provider": "dpm.lol",
+      "name": "Viper",
+      "team": "Bilibili Gaming",
+      "file": "assets/players/1228.webp",
+      "source": "https://dpm.lol/pro/Viper",
+      "original": "https://dpm.lol/esport/players/viper.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 3353,
+      "provider": "dpm.lol",
+      "name": "ON",
+      "team": "Bilibili Gaming",
+      "file": "assets/players/3353.webp",
+      "source": "https://dpm.lol/pro/ON",
+      "original": "https://dpm.lol/esport/players/on.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 5156,
+      "provider": "dpm.lol",
+      "name": "Gury",
+      "team": "MVK Esports",
+      "file": "assets/players/5156.webp",
+      "source": "https://dpm.lol/pro/Gury",
+      "original": "https://dpm.lol/esport/players/gury.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 5166,
+      "provider": "dpm.lol",
+      "name": "Harky",
+      "team": "MVK Esports",
+      "file": "assets/players/5166.webp",
+      "source": "https://dpm.lol/pro/Harky",
+      "original": "https://dpm.lol/esport/players/harky.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 3116,
+      "provider": "dpm.lol",
+      "name": "Guigo",
+      "team": "FURIA",
+      "file": "assets/players/3116.webp",
+      "source": "https://dpm.lol/pro/Guigo",
+      "original": "https://dpm.lol/esport/players/guigo.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 4776,
+      "provider": "dpm.lol",
+      "name": "Tatu",
+      "team": "FURIA",
+      "file": "assets/players/4776.webp",
+      "source": "https://dpm.lol/pro/Tatu",
+      "original": "https://dpm.lol/esport/players/tatu.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 2709,
+      "provider": "dpm.lol",
+      "name": "Tutsz",
+      "team": "FURIA",
+      "file": "assets/players/2709.webp",
+      "source": "https://dpm.lol/pro/Tutsz",
+      "original": "https://dpm.lol/esport/players/tutsz.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 4976,
+      "provider": "dpm.lol",
+      "name": "Ayu",
+      "team": "FURIA",
+      "file": "assets/players/4976.webp",
+      "source": "https://dpm.lol/pro/Ayu",
+      "original": "https://dpm.lol/esport/players/ayu.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 2329,
+      "provider": "dpm.lol",
+      "name": "JoJo",
+      "team": "FURIA",
+      "file": "assets/players/2329.webp",
+      "source": "https://dpm.lol/pro/JoJo",
+      "original": "https://dpm.lol/esport/players/jojo.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 3434,
+      "provider": "dpm.lol",
+      "name": "Thanatos",
+      "team": "Cloud9",
+      "file": "assets/players/3434.webp",
+      "source": "https://dpm.lol/pro/Thanatos",
+      "original": "https://dpm.lol/esport/players/thanatos.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 1634,
+      "provider": "dpm.lol",
+      "name": "Blaber",
+      "team": "Cloud9",
+      "file": "assets/players/1634.webp",
+      "source": "https://dpm.lol/pro/Blaber",
+      "original": "https://dpm.lol/esport/players/blaber.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 4861,
+      "provider": "dpm.lol",
+      "name": "Loki",
+      "team": "Cloud9",
+      "file": "assets/players/4861.webp",
+      "source": "https://dpm.lol/pro/Loki",
+      "original": "https://dpm.lol/esport/players/loki.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 1979,
+      "provider": "dpm.lol",
+      "name": "Tactical",
+      "team": "Cloud9",
+      "file": "assets/players/1979.webp",
+      "source": "https://dpm.lol/pro/Tactical",
+      "original": "https://dpm.lol/esport/players/tactical.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 23,
+        "top": 0,
+        "size": 174
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 1301,
+      "provider": "dpm.lol",
+      "name": "Vulcan",
+      "team": "Cloud9",
+      "file": "assets/players/1301.webp",
+      "source": "https://dpm.lol/pro/VULCAN",
+      "original": "https://dpm.lol/esport/players/vulcan.webp",
+      "originalWidth": 375,
+      "crop": {
+        "left": 39,
+        "top": 0,
+        "size": 297
+      },
+      "checkedOn": "2026-11-02"
+    },
+    {
+      "playerId": 6419,
+      "provider": "dpm.lol",
+      "name": "SanSan",
+      "team": "MVK Esports",
+      "file": "assets/players/6419.webp",
+      "source": "https://dpm.lol/pro/SanSan",
+      "original": "https://dpm.lol/esport/players/sansan.webp",
+      "originalWidth": 220,
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "size": 220
+      },
+      "checkedOn": "2026-11-02"
     }
   ]
 }
