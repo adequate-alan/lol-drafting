@@ -11937,6 +11937,28 @@
             "maxrank": 3
           }
         },
+        "vayne": {
+          "Q": {
+            "name": "Tumble",
+            "icon": "VayneTumble.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Silver Bolts",
+            "icon": "VayneSilveredBolts.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Condemn",
+            "icon": "VayneCondemn.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Final Hour",
+            "icon": "VayneInquisition.png",
+            "maxrank": 3
+          }
+        },
         "velkoz": {
           "Q": {
             "name": "Plasma Fission",
