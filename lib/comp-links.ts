@@ -33,7 +33,7 @@ export function savedLinks(role: Role, slots: Slots, data: LinkData, name: (id: 
   if (bot && (role === "BOT" || role === "SUPPORT")) {
     const other = role === "BOT" ? "SUPPORT" : "BOT";
     if (bot.clashDefault.includes(slots.SUPPORT)) add(other, "default", `Saved pairing: ${name(slots.SUPPORT)} is the preferred support for ${name(slots.BOT)}`);
-    else if (bot.alternatives.includes(slots.SUPPORT)) add(other, "alt", `Saved pairing: ${name(slots.SUPPORT)} is an alternative support for ${name(slots.BOT)}${bot.alternativeNotes[slots.SUPPORT] ? ` (${bot.alternativeNotes[slots.SUPPORT]})` : ""}`);
+    else if (bot.alternatives.includes(slots.SUPPORT)) add(other, "alt", `${bot.proAlternatives?.includes(slots.SUPPORT) ? "Pro-derived alternative" : "Saved pairing"}: ${name(slots.SUPPORT)} is an alternative support for ${name(slots.BOT)}${bot.alternativeNotes[slots.SUPPORT] ? ` (${bot.alternativeNotes[slots.SUPPORT]})` : ""}`);
   }
   // Mid / jungle records, anchored on either side.
   for (const r of ["MID", "JUNGLE"] as const) {
@@ -41,7 +41,7 @@ export function savedLinks(role: Role, slots: Slots, data: LinkData, name: (id: 
     const p = PARTNER_ROLE[r];
     if (!rec || (role !== r && role !== p)) continue;
     if (rec.clashDefault.includes(slots[p])) add(role === r ? p : r, "default", `Saved pairing: ${name(slots[p])} is the primary ${label(p)} for ${name(slots[r])}`);
-    else if (rec.alternatives.includes(slots[p])) add(role === r ? p : r, "alt", `Saved pairing: ${name(slots[p])} is a secondary ${label(p)} for ${name(slots[r])}${rec.alternativeNotes[slots[p]] ? ` (${rec.alternativeNotes[slots[p]]})` : ""}`);
+    else if (rec.alternatives.includes(slots[p])) add(role === r ? p : r, "alt", `${rec.proAlternatives?.includes(slots[p]) ? "Pro-derived alternative" : "Saved pairing"}: ${name(slots[p])} is a secondary ${label(p)} for ${name(slots[r])}${rec.alternativeNotes[slots[p]] ? ` (${rec.alternativeNotes[slots[p]]})` : ""}`);
   }
   // Surrounding comps on bot and top records.
   const around: [Role, { jungle: string[]; mid: string[] } | undefined][] = [["BOT", bot?.surrounding], ["TOP", data.topPicks.find((t) => t.champion === slots.TOP)?.surrounding]];

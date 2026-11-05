@@ -6,6 +6,7 @@ import { ChampionRow, SectionHeader, SourceLinks } from "@/components/ui";
 import { getDrawerData, getGenG, getMeta, getProDrafts, getTeamPlayers } from "@/lib/data";
 import { profileHref } from "@/lib/pinned-players";
 import { nameMap, sourceMap } from "@/lib/lookup";
+import { patchLabel } from "@/lib/patch";
 import { ROLES, type GenGPattern, type Role } from "@/lib/schema";
 
 const ROLE_NAME: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
@@ -27,6 +28,11 @@ export default function GenG() {
   // The LCK playoff sample only: current-meta events (Demacia Cup, Worlds 2026 imports) stay off this page.
   const drafts = getProDrafts().filter((d) => d.team === "Gen.G" && d.tournament === getMeta().tournament.name);
   const label = Object.fromEntries(drafts.map((d) => [d.id, d.seriesGame]));
+  // Worlds 2026 (alan, 2026-11-05): Gen.G's recorded Worlds games in their own section, newest first, records only
+  // (picks, side, result, Gol.gg source). They never feed the LCK patterns above them or any saved pairing.
+  const worlds = getProDrafts().filter((d) => d.team === "Gen.G" && d.tournament.startsWith("Worlds 2026"));
+  const worldsWins = worlds.filter((d) => d.won).length;
+  const worldsPatches = [...new Set(worlds.flatMap((d) => (d.patch ? [patchLabel(d.patch)] : [])))].join(", ");
   const current = patterns.filter((p) => p.era !== "earlier-2026").length;
   // Gen.G players with recorded builds (their latest recorded team), each opening their Pro Builds profile.
   const players = getTeamPlayers("Gen.G");
@@ -35,7 +41,7 @@ export default function GenG() {
       <div className="brand-band">
         <div className="band-text">
           <h1>Gen.G</h1>
-          <span className="desc">{drafts.length} recorded playoff drafts and {current} current patterns from the LCK. Earlier-2026 tendencies are marked as such.</span>
+          <span className="desc">{worlds.length > 0 && <>{worlds.length} recorded Worlds 2026 games. </>}{drafts.length} recorded drafts and {current} patterns from the LCK 2026 Playoffs archive (patch 26.16); earlier-2026 tendencies are marked as such.</span>
         </div>
         <GenRang variant="full" size={84} className="band-mascot" />
       </div>
@@ -51,6 +57,29 @@ export default function GenG() {
           ))}
         </ul>
       )}
+      {worlds.length > 0 && (
+        <section className="geng-worlds" aria-labelledby="geng-worlds">
+          <SectionHeader title={<span id="geng-worlds">Worlds 2026</span>} meta={`${worlds.length} recorded games · ${worldsWins}–${worlds.length - worldsWins} · patch ${worldsPatches}`} />
+          <div className="table-wrap">
+            <table>
+              <thead><tr><th>Game</th><th>Stage</th><th>Date</th><th>Side</th>{ROLES.map((r) => <th key={r}><span className={`role-tag role-${r}`}>{r}</span></th>)}<th>Source</th></tr></thead>
+              <tbody>
+                {worlds.map((d) => (
+                  <tr key={d.id}>
+                    <td className="nowrap"><Link className="cell-link" href={`/pro-drafts?team=Gen.G&id=${d.id}`}>{d.seriesGame}</Link>{d.won != null && <span className={`res ${d.won ? "win" : "loss"}`}>{d.won ? "W" : "L"}</span>}</td>
+                    <td className="muted nowrap">{d.stage ?? "—"}</td>
+                    <td className="muted nowrap tnum">{d.date ?? "—"}</td>
+                    <td className="muted">{d.side === "blue" ? "Blue" : d.side === "red" ? "Red" : "—"}</td>
+                    {ROLES.map((r) => <td key={r}><ChampionRow id={d.picks[r]} name={names[d.picks[r]] ?? d.picks[r]} role={r} /></td>)}
+                    <td><SourceLinks ids={d.sources} sources={sources} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+      <SectionHeader title="LCK 2026 Playoffs · archive" meta="patch 26.16" />
       <div className="patterns">
         {KINDS.map(({ kind, title }) => {
           const list = patterns.filter((p) => p.kind === kind);
@@ -77,7 +106,7 @@ export default function GenG() {
           );
         })}
       </div>
-      <SectionHeader title="Exact Gen.G drafts" meta={`${drafts.length} recorded games`} />
+      <SectionHeader title="Exact Gen.G drafts · LCK 2026 Playoffs" meta={`${drafts.length} recorded games`} />
       <div className="table-wrap">
         <table>
           <thead><tr><th>Game</th><th>vs</th>{ROLES.map((r) => <th key={r}><span className={`role-tag role-${r}`}>{r}</span></th>)}<th>Read</th><th>Source</th></tr></thead>

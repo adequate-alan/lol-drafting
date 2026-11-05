@@ -3,7 +3,7 @@ import { ProFreshness } from "@/components/ProFreshness";
 import type { Freshness } from "@/lib/pro-games";
 import { useSearchParams } from "next/navigation";
 import { resultsToTop } from "@/lib/motion";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import type { DrawerData } from "@/lib/data";
 import { ChampionProvider, InteractiveChampion } from "@/components/ChampionInteraction";
 import type { DrawerContext } from "@/lib/drawer";
@@ -25,6 +25,10 @@ export function MetaView({ names, sources, input, rules, drawerData, freshness }
   // View state lives in the URL so it can be shared; window.location keeps the GitHub Pages base path.
   const initial = useSearchParams();
   const [params, setParams] = useState(() => new URLSearchParams(initial.toString()));
+  // A link to this page while it is open, Back and Forward replace what is shown (as in Pro Builds), so the view
+  // never keeps filters the URL no longer names.
+  const urlQuery = initial.toString();
+  useEffect(() => { setParams((p) => (p.toString() === urlQuery ? p : new URLSearchParams(urlQuery))); }, [urlQuery]);
   const get = (k: string) => params.get(k) || undefined;
   const set = (k: string, v: string | undefined) => {
     const next = new URLSearchParams(params);
@@ -118,7 +122,7 @@ export function MetaView({ names, sources, input, rules, drawerData, freshness }
                   const x = c.cells[e.id];
                   return <td key={e.id} className="num">{x ? <>{x.picks != null ? `${x.picks} picks` : "—"}{x.presence != null ? <span className="xs muted"> · {pct(x.presence)}</span> : ""}<span className="faint"> · {x.games} rec.</span></> : DASH}</td>;
                 })}
-                <td className="xs">{c.seenIn.length === hub.events.length ? <b>Both</b> : <span className="muted">{c.seenIn.map((id) => hub.events.find((e) => e.id === id)?.short).join(", ")} only</span>}</td>
+                <td className="xs">{c.seenIn.length === hub.events.length ? <b>All {hub.events.length}</b> : <span className="muted">{c.seenIn.map((id) => hub.events.find((e) => e.id === id)?.short).join(", ")} only</span>}</td>
               </tr>
             ))}
           </tbody>

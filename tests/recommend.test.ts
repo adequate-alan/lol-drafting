@@ -117,7 +117,13 @@ describe("pro evidence never moves a score", () => {
       const r = recommend({ BOT: b }, [], data, 50).SUPPORT!.find((x) => x.champion === s)!;
       expect(r.saved, `${b}+${s}`).toBe("alt");
       expect(r.parts.find((p) => p.kind === "saved")!.text).toMatch(/from pro games, not hand-saved/);
+      // Never worded as a hand-saved pairing (alan, 2026-11-05).
+      expect(r.parts.find((p) => p.kind === "saved")!.text).toMatch(/^Pro-derived alternative: /);
     }
+    const nautilus = recommend({ BOT: "ziggs" }, [], data, 50).SUPPORT!.find((x) => x.champion === "nautilus")!;
+    expect(nautilus.parts.find((p) => p.kind === "saved")!.text).toMatch(/^Saved pairing: /);
+    const skarner = recommend({ MID: "syndra" }, [], data, 50).JUNGLE!.find((x) => x.champion === "skarner")!;
+    expect(skarner.parts.find((p) => p.kind === "saved")!.text).toMatch(/^Pro-derived alternative: secondary jungle/);
   });
 });
 

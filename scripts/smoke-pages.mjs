@@ -1375,6 +1375,21 @@ await open("/patch-notes/");
   await open("/patch-notes/?patch=26.18#champion-nautilus");
   await page.waitForTimeout(300);
   check("patch notes: an entry link scrolls to and marks the entry", (await page.locator("#champion-nautilus.pn-target").count()) === 1 && await page.locator("#champion-nautilus").isVisible(), "");
+  // A link to Patch Notes while it is open replaces the view (alan's site audit, 2026-11-05): a champion history's
+  // patch tag opens that patch, and Back returns to the history.
+  await open("/patch-notes/?champion=varus");
+  const tag = page.locator("a.pn-patch").first();
+  if (await tag.count()) {
+    const want = new URL(await tag.evaluate((a) => a.href)).searchParams.get("patch");
+    await tag.click();
+    await page.waitForTimeout(400);
+    const desc2 = await text("main .page-header .desc");
+    const opened = await shown();
+    await page.goBack();
+    await page.waitForTimeout(400);
+    const back = await text("main .page-header .desc");
+    check("patch notes: an in-page patch link replaces the champion history, Back restores it", opened === want && !/Every recorded change/.test(desc2) && /Every recorded change/.test(back), `${want} | ${desc2.slice(0, 60)} | ${back.slice(0, 60)}`);
+  } else check("patch notes: an in-page patch link replaces the champion history, Back restores it", false, "no patch tag on Varus's history");
   await open("/patch-notes/?view=compare");
   check("patch notes: compare lists changed champions since the first patch", (await page.locator(".pn-compare tbody tr").count()) > 10, "");
   await open("/pool/?role=SUPPORT&champ=nautilus");
@@ -1403,6 +1418,13 @@ for (const path of ["/", "/pool/", "/meta/", "/pro-drafts/", "/pro-builds/", "/c
 }
 await open("/geng/");
 check("GenRang on the Gen.G page", (await page.locator(".brand-band img.genrang").count()) === 1 && await mascotOk(), "");
+{
+  // Worlds 2026 sits in its own section above the LCK archive (alan, 2026-11-05).
+  const rows = await page.locator(".geng-worlds tbody tr").count();
+  const heads = await page.$$eval("main .section-header h2", (hs) => hs.map((h) => h.textContent ?? ""));
+  check("Gen.G: Worlds 2026 games in their own section, before the labelled LCK archive", rows >= 8 && heads.indexOf("Worlds 2026") >= 0
+    && heads.indexOf("Worlds 2026") < heads.indexOf("LCK 2026 Playoffs · archive"), `${rows} rows · ${heads.join(" | ")}`);
+}
 // Review screenshots: desktop and mobile, light and dark
 if (shots) {
   for (const theme of ["light", "dark"]) {
