@@ -36,6 +36,10 @@ export function PatchNotesView({ notes, names, implications, kitReview = {}, dra
   // Filters live in the URL so a view can be shared; window.location keeps the GitHub Pages base path.
   const initial = useSearchParams();
   const [params, setParams] = useState(() => new URLSearchParams(initial.toString()));
+  // A link to this page while it is open, Back and Forward replace what is shown (as in Pro Builds), so the view
+  // never keeps filters the URL no longer names.
+  const urlQuery = initial.toString();
+  useEffect(() => { setParams((p) => (p.toString() === urlQuery ? p : new URLSearchParams(urlQuery))); }, [urlQuery]);
   const get = (k: string) => params.get(k) || undefined;
   const update = (changes: Record<string, string | undefined>) => {
     const next = new URLSearchParams(params);

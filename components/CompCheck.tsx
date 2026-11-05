@@ -112,7 +112,8 @@ export function CompStatus({ read: p }: { read: PlanRead }) {
   const weak = real.filter((w) => w.tier === "weakness" && w.severity !== "minor").length;
   // A pick without a kit: the read is incomplete, so it never says the comp is clean (alan, 2026-10-16).
   const partial = p.unread.length > 0 && <span className="badge">Incomplete read</span>;
-  if (!p.critical.length && !needed && !weak) return partial || <span className="badge success">No major weak points</span>;
+  // Two or three picks are an early read (the rail and the phone line say so): never a clean bill of health yet.
+  if (!p.critical.length && !needed && !weak) return partial || (p.confidence === "early" ? <span className="badge">Early read</span> : <span className="badge success">No major weak points</span>);
   return (
     <span className="row tight">
       {partial}

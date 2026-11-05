@@ -28,6 +28,10 @@ export function PoolView({ names, data, bot, midJungle, top, proposed, freshness
   // Filters live in the URL so a view can be shared; window.location keeps the GitHub Pages base path.
   const initial = useSearchParams();
   const [params, setParams] = useState(() => new URLSearchParams(initial.toString()));
+  // A link to this page while it is open, Back and Forward replace what is shown (as in Pro Builds), so the view
+  // never keeps filters the URL no longer names.
+  const urlQuery = initial.toString();
+  useEffect(() => { setParams((p) => (p.toString() === urlQuery ? p : new URLSearchParams(urlQuery))); }, [urlQuery]);
   const get = (k: string) => params.get(k) || undefined;
   const set = (k: string, v: string | undefined) => {
     const next = new URLSearchParams(params);
@@ -45,9 +49,12 @@ export function PoolView({ names, data, bot, midJungle, top, proposed, freshness
   // ?champ=id (with ?role=) opens that row, e.g. from the champion drawer's "View in Champion Pool".
   const focus = get("champ");
   const [open, setOpen] = useState<string | undefined>(focus && role ? role + focus : undefined);
+  // Every deep link to a row opens and scrolls to it, not only the first one the page was opened with.
   useEffect(() => {
-    if (focus && role) document.getElementById(`pool-${role}-${focus}`)?.scrollIntoView({ block: "center" });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!focus || !role) return;
+    setOpen(role + focus);
+    document.getElementById(`pool-${role}-${focus}`)?.scrollIntoView({ block: "center" });
+  }, [focus, role]);
 
   const events = data.meta.events;
   const eventMap: EventMap = useMemo(() => Object.fromEntries(events.map((e) => [e.id, e])), [events]);
