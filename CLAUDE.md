@@ -25,14 +25,16 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   pro pairing (`observedProPairings`, not earlier-2026) that is not already a default or alternative becomes an
   alternative automatically: derived at load in `lib/pro-alternatives.ts`, never written to `data/`, listed in
   `proAlternatives` and noted "from pro games, not hand-saved" wherever alternatives show. It gets the alternative
-  bonus and, for supports, the locked-bot eligibility like any alternative.
+  bonus and, for supports, the locked-bot eligibility like any alternative (rule confirmed by alan, 2026-11-05); its reason
+  reads "Pro-derived alternative: …", never "Saved pairing".
 - Pro usage informs alan's defaults but never silently overwrites them. Ask before changing a saved-pairing field.
 - Never delete valid pro evidence because it is not one of alan's saved picks. Pairings the workbook cites without a
   recorded draft stay, flagged `backedByGame: false`.
 - Evidence sets are events in `meta.json` `events` (LCK 2026 playoffs on 16.16, archive; Demacia Cup 2026 on 16.18 and
   Worlds 2026 once listed, refreshed daily, see below).
   Pro evidence shows event, patch and date, newest patch first (`lib/evidence.ts`). A current-meta event never edits saved
-  pairings and stays off the Gen.G page (`tests/demacia-cup.test.ts`).
+  pairings and stays out of the Gen.G page's LCK patterns (`tests/demacia-cup.test.ts`); Gen.G's recorded Worlds 2026
+  games show in their own "Worlds 2026" section above the labelled LCK archive, records only (alan, 2026-11-05).
 - Keep priority (pick/ban presence) separate from win rate, and mark small samples (`lowSample`, fewer than 5 picks).
 - Tournament aggregates (`meta.json` stats: picks, bans, win rate, verified `rolePicks`; totals in `events[].games`) and
   recorded games (stored drafts and game pages, `proGames` in `lib/pool-stats.ts`) are two datasets (alan, 2026-10-10).
