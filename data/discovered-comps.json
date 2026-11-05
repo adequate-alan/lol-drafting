@@ -1738,6 +1738,23 @@
     {
       "of": "pro-83653-red",
       "picks": {
+        "TOP": "jax",
+        "JUNGLE": "lee-sin",
+        "MID": "orianna",
+        "BOT": "ezreal",
+        "SUPPORT": "nautilus"
+      },
+      "addedOn": "2026-11-04",
+      "games": [
+        {
+          "game": 83699,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "pro-83653-red",
+      "picks": {
         "TOP": "zaahen",
         "JUNGLE": "lee-sin",
         "MID": "annie",
@@ -1783,6 +1800,23 @@
         {
           "game": 83680,
           "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "side-carry-scaling",
+      "picks": {
+        "TOP": "gangplank",
+        "JUNGLE": "trundle",
+        "MID": "anivia",
+        "BOT": "corki",
+        "SUPPORT": "alistar"
+      },
+      "addedOn": "2026-11-04",
+      "games": [
+        {
+          "game": 83701,
+          "side": "red"
         }
       ]
     },

@@ -59,12 +59,12 @@
       "golgg": "Worlds 2026 Main Event",
       "status": "ongoing",
       "series": 37,
-      "seriesPlayed": 34,
-      "games": 55,
-      "recorded": 55,
+      "seriesPlayed": 35,
+      "games": 58,
+      "recorded": 58,
       "matchlist": "https://gol.gg/tournament/tournament-matchlist/Worlds%202026%20Main%20Event/",
-      "lastUpdate": "2026-11-04T20:25:33.385Z",
-      "lastCheck": "2026-11-04T20:25:33.385Z"
+      "lastUpdate": "2026-11-05T03:24:22.906Z",
+      "lastCheck": "2026-11-05T03:24:22.906Z"
     }
   ],
   "games": [
@@ -7983,6 +7983,198 @@
       "url": "https://gol.gg/game/stats/83697/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83697/page-fullstats/",
       "checkedOn": "2026-11-04"
+    },
+    {
+      "id": 83699,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83699,
+      "series": "Gen.G vs LYON",
+      "game": 1,
+      "stage": "QUARTERFINALS",
+      "date": "2026-11-04",
+      "patch": "16.20",
+      "blue": {
+        "team": "Gen.G",
+        "picks": {
+          "TOP": "olaf",
+          "JUNGLE": "qiyana",
+          "MID": "galio",
+          "BOT": "jhin",
+          "SUPPORT": "leona"
+        },
+        "bans": [
+          "nocturne",
+          "renata-glasc",
+          "cassiopeia",
+          "rumble",
+          "ksante"
+        ],
+        "pickOrder": [
+          "qiyana",
+          "jhin",
+          "leona",
+          "olaf",
+          "galio"
+        ]
+      },
+      "red": {
+        "team": "LYON",
+        "picks": {
+          "TOP": "jax",
+          "JUNGLE": "lee-sin",
+          "MID": "orianna",
+          "BOT": "ezreal",
+          "SUPPORT": "nautilus"
+        },
+        "bans": [
+          "akali",
+          "syndra",
+          "vi",
+          "jayce",
+          "locke"
+        ],
+        "pickOrder": [
+          "ezreal",
+          "lee-sin",
+          "nautilus",
+          "jax",
+          "orianna"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83699/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83699/page-fullstats/",
+      "checkedOn": "2026-11-05"
+    },
+    {
+      "id": 83700,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83699,
+      "series": "Gen.G vs LYON",
+      "game": 2,
+      "stage": "QUARTERFINALS",
+      "date": "2026-11-04",
+      "patch": "16.20",
+      "blue": {
+        "team": "Gen.G",
+        "picks": {
+          "TOP": "sion",
+          "JUNGLE": "jarvan-iv",
+          "MID": "viktor",
+          "BOT": "ashe",
+          "SUPPORT": "seraphine"
+        },
+        "bans": [
+          "nocturne",
+          "renata-glasc",
+          "lucian",
+          "lulu",
+          "zeri"
+        ],
+        "pickOrder": [
+          "jarvan-iv",
+          "ashe",
+          "seraphine",
+          "sion",
+          "viktor"
+        ]
+      },
+      "red": {
+        "team": "LYON",
+        "picks": {
+          "TOP": "jayce",
+          "JUNGLE": "wukong",
+          "MID": "cassiopeia",
+          "BOT": "mel",
+          "SUPPORT": "pyke"
+        },
+        "bans": [
+          "akali",
+          "syndra",
+          "vi",
+          "ksante",
+          "rumble"
+        ],
+        "pickOrder": [
+          "cassiopeia",
+          "wukong",
+          "jayce",
+          "mel",
+          "pyke"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83700/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83700/page-fullstats/",
+      "checkedOn": "2026-11-05"
+    },
+    {
+      "id": 83701,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83699,
+      "series": "Gen.G vs LYON",
+      "game": 3,
+      "stage": "QUARTERFINALS",
+      "date": "2026-11-04",
+      "patch": "16.20",
+      "blue": {
+        "team": "Gen.G",
+        "picks": {
+          "TOP": "aurora",
+          "JUNGLE": "pantheon",
+          "MID": "taliyah",
+          "BOT": "xayah",
+          "SUPPORT": "rakan"
+        },
+        "bans": [
+          "renata-glasc",
+          "nocturne",
+          "caitlyn",
+          "akali",
+          "ahri"
+        ],
+        "pickOrder": [
+          "pantheon",
+          "xayah",
+          "rakan",
+          "aurora",
+          "taliyah"
+        ]
+      },
+      "red": {
+        "team": "LYON",
+        "picks": {
+          "TOP": "gangplank",
+          "JUNGLE": "trundle",
+          "MID": "anivia",
+          "BOT": "corki",
+          "SUPPORT": "alistar"
+        },
+        "bans": [
+          "vi",
+          "syndra",
+          "lulu",
+          "ambessa",
+          "gnar"
+        ],
+        "pickOrder": [
+          "alistar",
+          "trundle",
+          "corki",
+          "anivia",
+          "gangplank"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "blue",
+      "url": "https://gol.gg/game/stats/83701/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83701/page-fullstats/",
+      "checkedOn": "2026-11-05"
     },
     {
       "id": 83593,

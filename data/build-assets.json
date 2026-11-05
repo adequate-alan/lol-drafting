@@ -10529,6 +10529,28 @@
             "maxrank": 3
           }
         },
+        "gangplank": {
+          "Q": {
+            "name": "Parrrley",
+            "icon": "GangplankQWrapper.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Remove Scurvy",
+            "icon": "GangplankW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Powder Keg",
+            "icon": "GangplankE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Cannon Barrage",
+            "icon": "GangplankR.png",
+            "maxrank": 3
+          }
+        },
         "gnar": {
           "Q": {
             "name": "Boomerang Throw / Boulder Toss",
@@ -11670,6 +11692,28 @@
           "R": {
             "name": "Stand United",
             "icon": "ShenR.png",
+            "maxrank": 3
+          }
+        },
+        "sion": {
+          "Q": {
+            "name": "Decimating Smash",
+            "icon": "SionQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Soul Furnace",
+            "icon": "SionW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Roar of the Slayer",
+            "icon": "SionE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "Unstoppable Onslaught",
+            "icon": "SionR.png",
             "maxrank": 3
           }
         },
