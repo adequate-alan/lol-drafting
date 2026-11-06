@@ -59,12 +59,12 @@
       "golgg": "Worlds 2026 Main Event",
       "status": "ongoing",
       "series": 37,
-      "seriesPlayed": 35,
-      "games": 58,
-      "recorded": 58,
+      "seriesPlayed": 36,
+      "games": 61,
+      "recorded": 61,
       "matchlist": "https://gol.gg/tournament/tournament-matchlist/Worlds%202026%20Main%20Event/",
-      "lastUpdate": "2026-11-05T03:24:22.906Z",
-      "lastCheck": "2026-11-05T03:24:22.906Z"
+      "lastUpdate": "2026-11-06T03:24:36.133Z",
+      "lastCheck": "2026-11-06T03:24:36.133Z"
     }
   ],
   "games": [
@@ -8175,6 +8175,198 @@
       "url": "https://gol.gg/game/stats/83701/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83701/page-fullstats/",
       "checkedOn": "2026-11-05"
+    },
+    {
+      "id": 83704,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83704,
+      "series": "Dplus KIA vs BLG",
+      "game": 1,
+      "stage": "QUARTERFINALS",
+      "date": "2026-11-05",
+      "patch": "16.20",
+      "blue": {
+        "team": "Bilibili Gaming",
+        "picks": {
+          "TOP": "ambessa",
+          "JUNGLE": "naafiri",
+          "MID": "galio",
+          "BOT": "cassiopeia",
+          "SUPPORT": "nautilus"
+        },
+        "bans": [
+          "vi",
+          "olaf",
+          "lee-sin",
+          "kaisa",
+          "syndra"
+        ],
+        "pickOrder": [
+          "nautilus",
+          "naafiri",
+          "ambessa",
+          "cassiopeia",
+          "galio"
+        ]
+      },
+      "red": {
+        "team": "Dplus KIA",
+        "picks": {
+          "TOP": "rumble",
+          "JUNGLE": "qiyana",
+          "MID": "akali",
+          "BOT": "corki",
+          "SUPPORT": "rell"
+        },
+        "bans": [
+          "renata-glasc",
+          "nocturne",
+          "jarvan-iv",
+          "orianna",
+          "ezreal"
+        ],
+        "pickOrder": [
+          "qiyana",
+          "rell",
+          "rumble",
+          "corki",
+          "akali"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83704/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83704/page-fullstats/",
+      "checkedOn": "2026-11-06"
+    },
+    {
+      "id": 83705,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83704,
+      "series": "Dplus KIA vs BLG",
+      "game": 2,
+      "stage": "QUARTERFINALS",
+      "date": "2026-11-05",
+      "patch": "16.20",
+      "blue": {
+        "team": "Dplus KIA",
+        "picks": {
+          "TOP": "kennen",
+          "JUNGLE": "jarvan-iv",
+          "MID": "ryze",
+          "BOT": "yunara",
+          "SUPPORT": "lulu"
+        },
+        "bans": [
+          "renata-glasc",
+          "nocturne",
+          "jayce",
+          "locke",
+          "alistar"
+        ],
+        "pickOrder": [
+          "jarvan-iv",
+          "yunara",
+          "lulu",
+          "ryze",
+          "kennen"
+        ]
+      },
+      "red": {
+        "team": "Bilibili Gaming",
+        "picks": {
+          "TOP": "gnar",
+          "JUNGLE": "lee-sin",
+          "MID": "orianna",
+          "BOT": "ezreal",
+          "SUPPORT": "leona"
+        },
+        "bans": [
+          "vi",
+          "olaf",
+          "lucian",
+          "vayne",
+          "syndra"
+        ],
+        "pickOrder": [
+          "lee-sin",
+          "ezreal",
+          "gnar",
+          "orianna",
+          "leona"
+        ]
+      },
+      "winner": "red",
+      "firstPick": "blue",
+      "url": "https://gol.gg/game/stats/83705/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83705/page-fullstats/",
+      "checkedOn": "2026-11-06"
+    },
+    {
+      "id": 83706,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83704,
+      "series": "Dplus KIA vs BLG",
+      "game": 3,
+      "stage": "QUARTERFINALS",
+      "date": "2026-11-05",
+      "patch": "16.20",
+      "blue": {
+        "team": "Dplus KIA",
+        "picks": {
+          "TOP": "olaf",
+          "JUNGLE": "pantheon",
+          "MID": "viktor",
+          "BOT": "aphelios",
+          "SUPPORT": "thresh"
+        },
+        "bans": [
+          "nocturne",
+          "renata-glasc",
+          "locke",
+          "skarner",
+          "yone"
+        ],
+        "pickOrder": [
+          "olaf",
+          "pantheon",
+          "viktor",
+          "aphelios",
+          "thresh"
+        ]
+      },
+      "red": {
+        "team": "Bilibili Gaming",
+        "picks": {
+          "TOP": "jax",
+          "JUNGLE": "trundle",
+          "MID": "ahri",
+          "BOT": "lucian",
+          "SUPPORT": "milio"
+        },
+        "bans": [
+          "vi",
+          "caitlyn",
+          "syndra",
+          "seraphine",
+          "rakan"
+        ],
+        "pickOrder": [
+          "lucian",
+          "milio",
+          "jax",
+          "trundle",
+          "ahri"
+        ]
+      },
+      "winner": "red",
+      "firstPick": "blue",
+      "url": "https://gol.gg/game/stats/83706/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83706/page-fullstats/",
+      "checkedOn": "2026-11-06"
     },
     {
       "id": 83593,

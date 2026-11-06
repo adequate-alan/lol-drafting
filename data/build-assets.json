@@ -11871,6 +11871,28 @@
             "maxrank": 3
           }
         },
+        "thresh": {
+          "Q": {
+            "name": "Death Sentence",
+            "icon": "ThreshQ.png",
+            "maxrank": 5
+          },
+          "W": {
+            "name": "Dark Passage",
+            "icon": "ThreshW.png",
+            "maxrank": 5
+          },
+          "E": {
+            "name": "Flay",
+            "icon": "ThreshE.png",
+            "maxrank": 5
+          },
+          "R": {
+            "name": "The Box",
+            "icon": "ThreshRPenta.png",
+            "maxrank": 3
+          }
+        },
         "tristana": {
           "Q": {
             "name": "Rapid Fire",

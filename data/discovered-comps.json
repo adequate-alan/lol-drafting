@@ -1,5 +1,5 @@
 {
-  "lastAddition": "2026-11-04",
+  "lastAddition": "2026-11-05",
   "comps": [
     {
       "id": "pro-83448-blue",
@@ -1477,6 +1477,23 @@
         {
           "game": 83630,
           "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "pro-83521-red",
+      "picks": {
+        "TOP": "jax",
+        "JUNGLE": "trundle",
+        "MID": "ahri",
+        "BOT": "lucian",
+        "SUPPORT": "milio"
+      },
+      "addedOn": "2026-11-05",
+      "games": [
+        {
+          "game": 83706,
+          "side": "red"
         }
       ]
     },
