@@ -675,8 +675,9 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   one-click filter chips under the menus (only when something is pinned), and a pinned team is starred in the table.
   **Gol.gg-style rows** (alan, 2026-10-16; `bansOf`, `pickedFirst`, `banPhases`, `newSince` in `lib/pro-drafts-game.ts`):
   under each team name its five bans as small muted 20px portraits (Gol.gg's order, split 3 | 2 as Gol.gg draws the ban
-  phases), picks stay the larger interactive portraits; bans stay compact in the open game too. A gold "1st" tag marks
-  the team carrying Gol.gg's First Pick mark (from the game record, LCK archive records included), never inferred; an
+  phases), picks stay the larger interactive portraits; bans stay compact in the open game too. A "1st pick" tag marks
+  the team carrying Gol.gg's First Pick mark (alan, 2026-11-07: quieter than W / L, which leads; both sit in fixed slots
+  at the right of the team cell so the result lines up row to row; "1st" on phones only, for width) (from the game record, LCK archive records included), never inferred; an
   unmarked game shows none and the open game says so. A Stage menu appears once a tournament with several stages is
   chosen. Worlds games this browser had not seen on its last visit get a "New" marker and a toolbar count
   (localStorage `pro-drafts:seen-worlds`, kept for the visit in sessionStorage; the first visit flags nothing), and the
