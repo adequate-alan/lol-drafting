@@ -101,9 +101,11 @@ function Bans({ ids, names, team }: { ids: string[]; names: Record<string, strin
   );
 }
 
-/** Gol.gg's First Pick mark for this team; nothing when the team did not pick first or the game has no mark. */
+/** Gol.gg's First Pick mark for this team; nothing when the team did not pick first or the game has no mark. Spelled
+ *  out and quieter than W / L (alan, 2026-11-07): the result reads first, draft order second. Phone game rows have no
+ *  room for the full word beside a team name, so there (only) it reads "1st". */
 const FirstPick = ({ on }: { on?: boolean }) => on
-  ? <span className="first-pick" title="Picked first in this game (Gol.gg First Pick mark)"><span aria-hidden="true">1st</span><span className="sr-only">First pick</span></span>
+  ? <span className="first-pick" title="Picked first in this game (Gol.gg First Pick mark)"><span aria-hidden="true"><span className="fp-full">1st pick</span><span className="fp-short">1st</span></span><span className="sr-only">First pick</span></span>
   : null;
 
 /** Draft order (alan, 2026-10-24): the open game's picks as they were made, blue on the left and red on the right, one
@@ -201,8 +203,12 @@ const GameRows = memo(function GameRows({ g, meta, href, isOpen, openId, fresh, 
             <span className="sr-only">{SIDE_LABEL[side]}: </span>
             <span className="team-line">
               {pinned.has(d.team) && <PinIcon on />}<span className="team-name truncate">{d.team}</span>
-              {d.won != null && <span className={`res ${d.won ? "win" : "loss"}`} title={d.won ? "Won" : "Lost"}>{d.won ? "W" : "L"}</span>}
-              <FirstPick on={pickedFirst(d, facts)} />
+              {/* Game facts in fixed slots at the right (alan, 2026-11-07): W / L lines up down the table, "1st pick"
+                  after it only when Gol.gg marks it; the empty slot keeps the result in place on the other team. */}
+              <span className="team-marks">
+                <span className="team-mark-res">{d.won != null && <span className={`res ${d.won ? "win" : "loss"}`} title={d.won ? "Won" : "Lost"}>{d.won ? "W" : "L"}</span>}</span>
+                <span className="team-mark-first"><FirstPick on={pickedFirst(d, facts)} /></span>
+              </span>
             </span>
             <Bans ids={bansOf(d, facts)} names={names} team={d.team} />
             {!g.paired && <span className="team-vs xs muted truncate">vs {d.opponent}</span>}
