@@ -59,12 +59,12 @@
       "golgg": "Worlds 2026 Main Event",
       "status": "ongoing",
       "series": 37,
-      "seriesPlayed": 36,
-      "games": 61,
-      "recorded": 61,
+      "seriesPlayed": 37,
+      "games": 65,
+      "recorded": 65,
       "matchlist": "https://gol.gg/tournament/tournament-matchlist/Worlds%202026%20Main%20Event/",
-      "lastUpdate": "2026-11-06T03:24:36.133Z",
-      "lastCheck": "2026-11-06T03:24:36.133Z"
+      "lastUpdate": "2026-11-07T03:24:21.708Z",
+      "lastCheck": "2026-11-07T03:24:21.708Z"
     }
   ],
   "games": [
@@ -8367,6 +8367,262 @@
       "url": "https://gol.gg/game/stats/83706/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83706/page-fullstats/",
       "checkedOn": "2026-11-06"
+    },
+    {
+      "id": 83709,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83709,
+      "series": "KC vs T1",
+      "game": 1,
+      "stage": "QUARTERFINALS",
+      "date": "2026-11-06",
+      "patch": "16.20",
+      "blue": {
+        "team": "T1",
+        "picks": {
+          "TOP": "ornn",
+          "JUNGLE": "jarvan-iv",
+          "MID": "viktor",
+          "BOT": "yunara",
+          "SUPPORT": "lulu"
+        },
+        "bans": [
+          "cassiopeia",
+          "vi",
+          "qiyana",
+          "wukong",
+          "pantheon"
+        ],
+        "pickOrder": [
+          "lulu",
+          "jarvan-iv",
+          "yunara",
+          "ornn",
+          "viktor"
+        ]
+      },
+      "red": {
+        "team": "Karmine Corp",
+        "picks": {
+          "TOP": "rumble",
+          "JUNGLE": "lee-sin",
+          "MID": "syndra",
+          "BOT": "ezreal",
+          "SUPPORT": "leona"
+        },
+        "bans": [
+          "nocturne",
+          "renata-glasc",
+          "galio",
+          "locke",
+          "orianna"
+        ],
+        "pickOrder": [
+          "rumble",
+          "ezreal",
+          "leona",
+          "syndra",
+          "lee-sin"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83709/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83709/page-fullstats/",
+      "checkedOn": "2026-11-07"
+    },
+    {
+      "id": 83710,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83709,
+      "series": "KC vs T1",
+      "game": 2,
+      "stage": "QUARTERFINALS",
+      "date": "2026-11-06",
+      "patch": "16.20",
+      "blue": {
+        "team": "Karmine Corp",
+        "picks": {
+          "TOP": "ambessa",
+          "JUNGLE": "pantheon",
+          "MID": "orianna",
+          "BOT": "tristana",
+          "SUPPORT": "rell"
+        },
+        "bans": [
+          "vi",
+          "qiyana",
+          "nocturne",
+          "xin-zhao",
+          "wukong"
+        ],
+        "pickOrder": [
+          "orianna",
+          "pantheon",
+          "ambessa",
+          "rell",
+          "tristana"
+        ]
+      },
+      "red": {
+        "team": "T1",
+        "picks": {
+          "TOP": "olaf",
+          "JUNGLE": "trundle",
+          "MID": "cassiopeia",
+          "BOT": "kaisa",
+          "SUPPORT": "nautilus"
+        },
+        "bans": [
+          "locke",
+          "akali",
+          "renata-glasc",
+          "alistar",
+          "xayah"
+        ],
+        "pickOrder": [
+          "cassiopeia",
+          "olaf",
+          "nautilus",
+          "kaisa",
+          "trundle"
+        ]
+      },
+      "winner": "red",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83710/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83710/page-fullstats/",
+      "checkedOn": "2026-11-07"
+    },
+    {
+      "id": 83711,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83709,
+      "series": "KC vs T1",
+      "game": 3,
+      "stage": "QUARTERFINALS",
+      "date": "2026-11-06",
+      "patch": "16.20",
+      "blue": {
+        "team": "Karmine Corp",
+        "picks": {
+          "TOP": "ksante",
+          "JUNGLE": "xin-zhao",
+          "MID": "anivia",
+          "BOT": "ashe",
+          "SUPPORT": "seraphine"
+        },
+        "bans": [
+          "vi",
+          "qiyana",
+          "nocturne",
+          "sylas",
+          "galio"
+        ],
+        "pickOrder": [
+          "ashe",
+          "seraphine",
+          "xin-zhao",
+          "anivia",
+          "ksante"
+        ]
+      },
+      "red": {
+        "team": "T1",
+        "picks": {
+          "TOP": "jayce",
+          "JUNGLE": "sejuani",
+          "MID": "taliyah",
+          "BOT": "zeri",
+          "SUPPORT": "yuumi"
+        },
+        "bans": [
+          "renata-glasc",
+          "locke",
+          "wukong",
+          "camille",
+          "akali"
+        ],
+        "pickOrder": [
+          "jayce",
+          "zeri",
+          "yuumi",
+          "sejuani",
+          "taliyah"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83711/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83711/page-fullstats/",
+      "checkedOn": "2026-11-07"
+    },
+    {
+      "id": 83712,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83709,
+      "series": "KC vs T1",
+      "game": 4,
+      "stage": "QUARTERFINALS",
+      "date": "2026-11-06",
+      "patch": "16.20",
+      "blue": {
+        "team": "Karmine Corp",
+        "picks": {
+          "TOP": "renekton",
+          "JUNGLE": "wukong",
+          "MID": "ahri",
+          "BOT": "xayah",
+          "SUPPORT": "rakan"
+        },
+        "bans": [
+          "vi",
+          "qiyana",
+          "caitlyn",
+          "ryze",
+          "sylas"
+        ],
+        "pickOrder": [
+          "xayah",
+          "rakan",
+          "wukong",
+          "ahri",
+          "renekton"
+        ]
+      },
+      "red": {
+        "team": "T1",
+        "picks": {
+          "TOP": "camille",
+          "JUNGLE": "nocturne",
+          "MID": "annie",
+          "BOT": "miss-fortune",
+          "SUPPORT": "neeko"
+        },
+        "bans": [
+          "renata-glasc",
+          "akali",
+          "maokai",
+          "jax",
+          "galio"
+        ],
+        "pickOrder": [
+          "nocturne",
+          "neeko",
+          "miss-fortune",
+          "annie",
+          "camille"
+        ]
+      },
+      "winner": "red",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83712/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83712/page-fullstats/",
+      "checkedOn": "2026-11-07"
     },
     {
       "id": 83593,
