@@ -1,5 +1,5 @@
 {
-  "lastAddition": "2026-11-05",
+  "lastAddition": "2026-11-07",
   "comps": [
     {
       "id": "pro-83448-blue",
@@ -1141,6 +1141,23 @@
       ]
     },
     {
+      "of": "objective-zone",
+      "picks": {
+        "TOP": "rumble",
+        "JUNGLE": "nocturne",
+        "MID": "sylas",
+        "BOT": "lucian",
+        "SUPPORT": "milio"
+      },
+      "addedOn": "2026-11-07",
+      "games": [
+        {
+          "game": 83714,
+          "side": "red"
+        }
+      ]
+    },
+    {
       "of": "poke-catch",
       "picks": {
         "TOP": "ksante",
@@ -1647,6 +1664,23 @@
         {
           "game": 83663,
           "side": "blue"
+        }
+      ]
+    },
+    {
+      "of": "pro-83565-red",
+      "picks": {
+        "TOP": "camille",
+        "JUNGLE": "wukong",
+        "MID": "taliyah",
+        "BOT": "yunara",
+        "SUPPORT": "nautilus"
+      },
+      "addedOn": "2026-11-07",
+      "games": [
+        {
+          "game": 83715,
+          "side": "red"
         }
       ]
     },

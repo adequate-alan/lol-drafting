@@ -59,12 +59,12 @@
       "golgg": "Worlds 2026 Main Event",
       "status": "ongoing",
       "series": 39,
-      "seriesPlayed": 37,
-      "games": 65,
-      "recorded": 65,
+      "seriesPlayed": 38,
+      "games": 68,
+      "recorded": 68,
       "matchlist": "https://gol.gg/tournament/tournament-matchlist/Worlds%202026%20Main%20Event/",
-      "lastUpdate": "2026-11-07T18:02:02.605Z",
-      "lastCheck": "2026-11-07T18:02:02.605Z"
+      "lastUpdate": "2026-11-08T03:24:31.803Z",
+      "lastCheck": "2026-11-08T03:24:31.803Z"
     }
   ],
   "games": [
@@ -8623,6 +8623,198 @@
       "url": "https://gol.gg/game/stats/83712/page-game/",
       "rolesUrl": "https://gol.gg/game/stats/83712/page-fullstats/",
       "checkedOn": "2026-11-07"
+    },
+    {
+      "id": 83713,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83713,
+      "series": "IG vs Gen.G",
+      "game": 1,
+      "stage": "SEMIFINALS",
+      "date": "2026-11-07",
+      "patch": "16.20",
+      "blue": {
+        "team": "Gen.G",
+        "picks": {
+          "TOP": "olaf",
+          "JUNGLE": "qiyana",
+          "MID": "cassiopeia",
+          "BOT": "jhin",
+          "SUPPORT": "leona"
+        },
+        "bans": [
+          "lulu",
+          "nocturne",
+          "ksante",
+          "kaisa",
+          "zeri"
+        ],
+        "pickOrder": [
+          "olaf",
+          "qiyana",
+          "cassiopeia",
+          "jhin",
+          "leona"
+        ]
+      },
+      "red": {
+        "team": "Invictus Gaming",
+        "picks": {
+          "TOP": "kled",
+          "JUNGLE": "vi",
+          "MID": "syndra",
+          "BOT": "xayah",
+          "SUPPORT": "rakan"
+        },
+        "bans": [
+          "locke",
+          "ezreal",
+          "renata-glasc",
+          "nautilus",
+          "seraphine"
+        ],
+        "pickOrder": [
+          "vi",
+          "kled",
+          "syndra",
+          "xayah",
+          "rakan"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83713/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83713/page-fullstats/",
+      "checkedOn": "2026-11-08"
+    },
+    {
+      "id": 83714,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83713,
+      "series": "IG vs Gen.G",
+      "game": 2,
+      "stage": "SEMIFINALS",
+      "date": "2026-11-07",
+      "patch": "16.20",
+      "blue": {
+        "team": "Gen.G",
+        "picks": {
+          "TOP": "gwen",
+          "JUNGLE": "lee-sin",
+          "MID": "ahri",
+          "BOT": "ashe",
+          "SUPPORT": "seraphine"
+        },
+        "bans": [
+          "lulu",
+          "orianna",
+          "zeri",
+          "lissandra",
+          "annie"
+        ],
+        "pickOrder": [
+          "seraphine",
+          "ashe",
+          "lee-sin",
+          "ahri",
+          "gwen"
+        ]
+      },
+      "red": {
+        "team": "Invictus Gaming",
+        "picks": {
+          "TOP": "rumble",
+          "JUNGLE": "nocturne",
+          "MID": "sylas",
+          "BOT": "lucian",
+          "SUPPORT": "milio"
+        },
+        "bans": [
+          "pantheon",
+          "galio",
+          "renata-glasc",
+          "locke",
+          "akali"
+        ],
+        "pickOrder": [
+          "nocturne",
+          "lucian",
+          "milio",
+          "sylas",
+          "rumble"
+        ]
+      },
+      "winner": "blue",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83714/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83714/page-fullstats/",
+      "checkedOn": "2026-11-08"
+    },
+    {
+      "id": 83715,
+      "event": "worlds-2026",
+      "tournament": "Worlds 2026 Main Event",
+      "seriesId": 83713,
+      "series": "IG vs Gen.G",
+      "game": 3,
+      "stage": "SEMIFINALS",
+      "date": "2026-11-07",
+      "patch": "16.20",
+      "blue": {
+        "team": "Invictus Gaming",
+        "picks": {
+          "TOP": "gnar",
+          "JUNGLE": "naafiri",
+          "MID": "locke",
+          "BOT": "ezreal",
+          "SUPPORT": "alistar"
+        },
+        "bans": [
+          "jayce",
+          "pantheon",
+          "jarvan-iv",
+          "kaisa",
+          "corki"
+        ],
+        "pickOrder": [
+          "alistar",
+          "naafiri",
+          "locke",
+          "ezreal",
+          "gnar"
+        ]
+      },
+      "red": {
+        "team": "Gen.G",
+        "picks": {
+          "TOP": "camille",
+          "JUNGLE": "wukong",
+          "MID": "taliyah",
+          "BOT": "yunara",
+          "SUPPORT": "nautilus"
+        },
+        "bans": [
+          "renata-glasc",
+          "orianna",
+          "lulu",
+          "sivir",
+          "renekton"
+        ],
+        "pickOrder": [
+          "nautilus",
+          "wukong",
+          "taliyah",
+          "camille",
+          "yunara"
+        ]
+      },
+      "winner": "red",
+      "firstPick": "red",
+      "url": "https://gol.gg/game/stats/83715/page-game/",
+      "rolesUrl": "https://gol.gg/game/stats/83715/page-fullstats/",
+      "checkedOn": "2026-11-08"
     },
     {
       "id": 83593,
