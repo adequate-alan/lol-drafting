@@ -1,5 +1,5 @@
 {
-  "lastAddition": "2026-11-07",
+  "lastAddition": "2026-11-08",
   "comps": [
     {
       "id": "pro-83448-blue",
@@ -1345,6 +1345,23 @@
       ]
     },
     {
+      "of": "pro-83462-red",
+      "picks": {
+        "TOP": "olaf",
+        "JUNGLE": "lee-sin",
+        "MID": "syndra",
+        "BOT": "jhin",
+        "SUPPORT": "poppy"
+      },
+      "addedOn": "2026-11-08",
+      "games": [
+        {
+          "game": 83719,
+          "side": "blue"
+        }
+      ]
+    },
+    {
       "of": "pro-83469-blue",
       "picks": {
         "TOP": "renekton",
@@ -1680,6 +1697,23 @@
       "games": [
         {
           "game": 83715,
+          "side": "red"
+        }
+      ]
+    },
+    {
+      "of": "pro-83565-red",
+      "picks": {
+        "TOP": "camille",
+        "JUNGLE": "qiyana",
+        "MID": "leblanc",
+        "BOT": "kaisa",
+        "SUPPORT": "alistar"
+      },
+      "addedOn": "2026-11-08",
+      "games": [
+        {
+          "game": 83719,
           "side": "red"
         }
       ]
