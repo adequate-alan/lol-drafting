@@ -1,4 +1,4 @@
-# Comp Library review · 2026-11-08
+# Comp Library review · 2026-11-09
 
 Read 328 lineups from 164 recorded games (latest 2026-11-08). Demacia Cup: 70/71 games recorded, complete; Worlds 2026 Main Event: 72/72 games recorded, ongoing; Worlds 2026 Play-In: 22/22 games recorded, complete. LCK 2026 playoff drafts are used for comparison only.
 
@@ -6,19 +6,13 @@ Read 328 lineups from 164 recorded games (latest 2026-11-08). Demacia Cup: 70/71
 
 None this week.
 
-## New variations of existing compositions (2)
+## New variations of existing compositions (0)
 
-- **Pick + Skirmish · Ryze**: Syndra for Ryze, Poppy for Bard
-  - [T1 vs Bilibili Gaming G2](https://gol.gg/game/stats/83719/page-game/) (Worlds 2026 Main Event, 26.20, 2026-11-08, win)
-- **Dive · Kai'Sa**: Qiyana for Wukong, LeBlanc for Ahri, Alistar for Nautilus
-  - [Bilibili Gaming vs T1 G2](https://gol.gg/game/stats/83719/page-game/) (Worlds 2026 Main Event, 26.20, 2026-11-08, loss)
+None this week.
 
-## Existing compositions seeing new professional play (2)
+## Existing compositions seeing new professional play (0)
 
-- **Pick + Skirmish · Ryze**: 1 new game
-  - [T1 vs Bilibili Gaming G2](https://gol.gg/game/stats/83719/page-game/) (Worlds 2026 Main Event, 26.20, 2026-11-08, win)
-- **Dive · Kai'Sa**: 1 new game
-  - [Bilibili Gaming vs T1 G2](https://gol.gg/game/stats/83719/page-game/) (Worlds 2026 Main Event, 26.20, 2026-11-08, loss)
+None this week.
 
 ## May be outdated (4)
 
