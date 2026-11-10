@@ -7,6 +7,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { BuildOverview, PurchaseTimeline, RunePage, SkillGrid, SkillNotes, SkillSummaryLine, Spell } from "@/components/BuildParts";
 import { InteractiveChampion } from "@/components/InteractiveChampion";
+import { BuildItemNotice, ItemMarks } from "@/components/ItemChanges";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { ChampIcon, Panel } from "@/components/ui";
 import { shortDate } from "@/lib/evidence";
@@ -39,6 +40,7 @@ export function GameHeader({ r, name, evName, compact, end }: { r: BuildRow; nam
           title={`Gol.gg builds page for this game\nRead ${b.checkedOn}`}>Gol.gg source ↗</a>
         {end}
       </div>
+      <BuildItemNotice check={r.itemCheck} />
       {b.missing && <p className="xs caution-text game-missing">Partial record: {b.missing.join(", ")} not given by the source for this game.</p>}
     </div>
   );
@@ -46,6 +48,7 @@ export function GameHeader({ r, name, evName, compact, end }: { r: BuildRow; nam
 
 export function GameDetail({ r, name, evName, end }: { r: BuildRow; name: (id: string) => string; evName: (r: BuildRow) => string; end?: ReactNode }) {
   return (
+    <ItemMarks.Provider value={r.itemCheck?.byId ?? {}}>
     <div className="game-detail">
       <GameHeader r={r} name={name} evName={evName} end={end} />
       <div className="builds-cols">
@@ -58,5 +61,6 @@ export function GameDetail({ r, name, evName, end }: { r: BuildRow; name: (id: s
         <PurchaseTimeline r={r} />
       </Panel>
     </div>
+    </ItemMarks.Provider>
   );
 }

@@ -19,6 +19,8 @@ import type { DrawerContext } from "@/lib/drawer";
 const PRO_BUILDS: DrawerContext = { page: "pro-builds" };
 import { BuildsTabs } from "@/components/BuildsTabs";
 import { GameDetail, GameHeader } from "@/components/GameBuild";
+import { CommonItemNotice, ItemMarks } from "@/components/ItemChanges";
+import { commonMarks } from "@/lib/item-history";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { PinIcon, PinPicker, useMigratePlayerPins, usePins } from "@/components/PlayerPicker";
 import { playerDirectory, profileHref } from "@/lib/pinned-players";
@@ -316,12 +318,16 @@ function CommonView({ c, rows, champion, evName }: { c: Common; rows: BuildRow[]
   const none = <span className="xs muted">Not recorded</span>;
   const scope = [...new Set(rows.map(evName))].join(", ") + " · " + [...new Set(rows.map((r) => patchLabel(r.game.patch)))].sort((x, y) => comparePatch(y, x)).join(", ");
   const abilities = a?.abilities[champion];
+  // Each item against the games in scope that bought it, each on its own patch (never one patch for the whole scope).
+  const items = commonMarks(rows);
   return (
+    <ItemMarks.Provider value={items?.byId ?? {}}>
     <div className="common-build">
       <p className="small common-scope">
         <b className="tnum">{c.games} recorded game{c.games > 1 ? "s" : ""}</b><span className="muted"> · {c.players.length} player{c.players.length > 1 ? "s" : ""} · {scope}.</span>
         <span className="muted"> Each number counts games that showed it, against the games that recorded that field. Common is not the same as best.</span>
       </p>
+      <CommonItemNotice check={items} />
       <div className="builds-cols">
         <Panel title="Runes" meta={c.runePages.of < c.games ? `${c.runePages.of} of ${c.games} games have the full page` : undefined}>
           <h3 className="build-sub label">Full rune pages</h3>
@@ -378,6 +384,7 @@ function CommonView({ c, rows, champion, evName }: { c: Common; rows: BuildRow[]
         </dl>
       </Panel>
     </div>
+    </ItemMarks.Provider>
   );
 }
 
@@ -404,12 +411,14 @@ function CompareView({ rows, a: ka, b: kb, label, name, evName, onPick }: {
         <Differences A={A} B={B} />
         <div className="compare-cols">
           {[A, B].map((r) => (
-            <div key={r.key} className="compare-col">
+            <ItemMarks.Provider key={r.key} value={r.itemCheck?.byId ?? {}}>
+            <div className="compare-col">
               <GameHeader r={r} name={name} evName={evName} compact />
               <Panel title="Runes"><RunePage r={r} compact /></Panel>
               <Panel title="Skill order"><SkillSummaryLine r={r} /><SkillGrid r={r} /></Panel>
               <Panel title="Item progression"><BuildOverview r={r} /></Panel>
             </div>
+            </ItemMarks.Provider>
           ))}
         </div>
       </>}
@@ -431,7 +440,7 @@ function Differences({ A, B }: { A: BuildRow; B: BuildRow }) {
   const oa = overview(A.build, A.assets), ob = overview(B.build, B.assets);
   const same = <span className="xs muted">Same</span>;
   const pair = (x: React.ReactNode, y: React.ReactNode) => <span className="diff-pair"><span>{x}</span><span className="faint">vs</span><span>{y}</span></span>;
-  const items = (ids: number[], r: BuildRow) => ids.length ? <span className="build-row-items tight">{ids.map((id, i) => <Item key={i} a={r.assets} id={id} size="sm" />)}</span> : <span className="xs muted">none</span>;
+  const items = (ids: number[], r: BuildRow) => ids.length ? <ItemMarks.Provider value={r.itemCheck?.byId ?? {}}><span className="build-row-items tight">{ids.map((id, i) => <Item key={i} a={r.assets} id={id} size="sm" />)}</span></ItemMarks.Provider> : <span className="xs muted">none</span>;
   const spells = (r: BuildRow) => r.build.spells ? r.build.spells.map((s) => spellName(r.assets, s)).join(" + ") : "not recorded";
   const sameSpells = A.build.spells && B.build.spells && [...A.build.spells].sort().join() === [...B.build.spells].sort().join();
   return (
