@@ -5,6 +5,7 @@
 // Pro evidence answers "who played it, against what, what happened" from the recorded games only (lib/pro-evidence.ts).
 // Results, sides, enemy drafts and source status appear only when recorded; pick order never is, so no game is shown
 // as a draft response. A champion on the other team is an observed matchup, never a counter.
+import type { CounterClaim } from "@/lib/enemy-roles";
 import Link from "next/link";
 import { useState } from "react";
 import { FIRST_ROTATION, type StartGame, type StartingPick } from "@/lib/starting-picks";
@@ -28,6 +29,7 @@ export interface ProCtx {
   drafts: ProDraft[]; sources: Record<string, Source>; enemy: Partial<Record<Role, string>>; names: Record<string, string>;
   counterFresh?: CounterFreshness; // the Counter card's patch line: the DPM data's patch against the newest one
   matchupBook?: MatchupBook; // the Counter card's kit read: stored kit facts, General Draft Logic, never the statistic
+  counterClaim?: CounterClaim; // how surely the lane opponent is there (lib/enemy-roles.ts): the label, never the evidence
 }
 
 // `mate`: the Jungle row's "With <mid> · n games" label, which counts every recorded game (LCK archive included); the
@@ -140,15 +142,18 @@ function MiniDraft({ team, opponent, ours, theirs, hl, vs, n }: {
 
 const STRENGTH = { confirmed: "Strong · pro agrees", strong: "Strong", favorable: "Favorable" } as const;
 
-export function CounterTrigger({ c, names, fresh, book }: { c: Counter; names: Record<string, string>; fresh?: CounterFreshness; book?: MatchupBook }) {
+export function CounterTrigger({ c, names, fresh, book, claim }: { c: Counter; names: Record<string, string>; fresh?: CounterFreshness; book?: MatchupBook; claim?: CounterClaim }) {
   const n = (id: string) => names[id] ?? id;
   const e = c.evidence;
+  const label = claim?.label ?? "Counter";
+  const unsure = !!claim && claim.kind !== "confirmed";
   return (
-    <Popover label={`Counter evidence for ${n(c.champion)}`} triggerClass="sig counter" className="ce" trigger="Counter">
+    <Popover label={`${label} evidence for ${n(c.champion)}`} triggerClass={`sig counter ${unsure ? `counter-${claim!.kind}` : ""}`.trim()} className="ce" trigger={label}>
       {() => (
         <div className="ce-card">
-          <header className="pop-head"><span className="pop-title counter">Counter</span><span>{STRENGTH[c.strength]}</span></header>
+          <header className="pop-head"><span className="pop-title counter">{label}</span><span>{STRENGTH[c.strength]}</span></header>
           <p className="pop-sub">{n(c.champion)} into {list(e.vs.map(n))}{e.with ? ` with ${n(e.with)}` : ""}: a statistically favourable {e.scope === "duo" ? "duo" : "lane"} matchup.</p>
+          {unsure && <p className="pop-sub">{claim!.detail}: the enemy role is not confirmed, so this matchup may not happen. The DPM evidence below is unchanged.</p>}
           <dl className="pop-kv">
             <dt>Matchup</dt><dd><a href={e.url} target="_blank" rel="noopener noreferrer" title={`DPM.LOL, updated ${e.updated}`}>DPM.LOL</a> <span className="mono">{(e.winRate * 100).toFixed(1)}%</span> over <span className="mono">{e.games.toLocaleString("en-US")}</span> games · <span className="mono">{patchLabel(e.patch)}</span>{e.rank ? ` · ${e.rank}` : ""}</dd>
             {e.delta !== undefined && <><dt>DPM shows</dt><dd><span className="mono">{e.delta > 0 ? "+" : ""}{e.delta.toFixed(1)}</span> beside this row in its list: DPM&apos;s own relative figure, kept apart from the win rate above and never read as one.</dd></>}

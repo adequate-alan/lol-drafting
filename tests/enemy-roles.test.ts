@@ -4,7 +4,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { applyRole, cleanPicks, enemyPicksParam, parseEnemyPicks, placeInSlot, readEnemy, roleWeights, sanitizePicks, type EnemyPick, type RoleBook } from "@/lib/enemy-roles";
+import { applyRole, cleanPicks, counterClaim, enemyPicksParam, parseEnemyPicks, placeInSlot, readEnemy, roleWeights, sanitizePicks, type EnemyPick, type RoleBook } from "@/lib/enemy-roles";
 import { foesOf, openingBoard, sanitizeBoard, writeBoard } from "@/lib/draft-persist";
 import { recommend } from "@/lib/recommend";
 import { getChampions, getDraftData, getEnemyRoleBook } from "@/lib/data";
@@ -68,6 +68,31 @@ describe("Placement of the whole enemy lineup", () => {
     const r = readEnemy([{ id: "poppy" }, { id: "vi" }, { id: "ornn" }, { id: "ahri" }, { id: "jinx" }], champions, book, patch);
     for (const p of r.placements) if (p.role) expect([...p.roster, ...Object.keys(book[p.id]?.all ?? {})]).toContain(p.role);
     expect(new Set(Object.values(r.byRole)).size).toBe(Object.values(r.byRole).length);
+  });
+});
+
+describe("How a counter is claimed (alan, 2026-11-10)", () => {
+  const SUP: Role[] = ["BOT", "SUPPORT"];
+  const N = { poppy: "Poppy", vi: "Vi", ornn: "Ornn" };
+  it("Poppy alone in jungle, support still possible: Conditional counter, If Poppy plays JG", () => {
+    expect(counterClaim(read([{ id: "poppy" }]), ["JUNGLE"], N)).toEqual({ kind: "conditional", label: "Conditional counter", detail: "If Poppy plays JG" });
+  });
+  it("once Vi is revealed Poppy is placed support: Potential counter, Poppy likely SUP", () => {
+    expect(counterClaim(read([{ id: "poppy" }, { id: "vi" }]), SUP, N)).toEqual({ kind: "potential", label: "Potential counter", detail: "Poppy likely SUP" });
+    // and the jungle lane, Vi a one-role champion placed automatically, is a potential counter too
+    expect(counterClaim(read([{ id: "poppy" }, { id: "vi" }]), ["JUNGLE"], N)?.kind).toBe("potential");
+  });
+  it("a role the user confirms is a Counter, with no uncertainty line", () => {
+    expect(counterClaim(read([{ id: "poppy", role: "SUPPORT" }, { id: "vi" }]), SUP, N)).toEqual({ kind: "confirmed", label: "Counter" });
+  });
+  it("a flexible champion stays conditional between its roles", () => {
+    expect(counterClaim(read([{ id: "poppy", flex: ["JUNGLE", "SUPPORT"] }]), ["JUNGLE"], N)?.kind).toBe("conditional");
+  });
+  it("an enemy with no supported role assignment never produces a lane claim", () => {
+    const r = read([{ id: "ornn" }, { id: "sion", role: "TOP" }]);
+    expect(counterClaim(r, ["TOP"], N)?.kind).toBe("confirmed"); // Sion, not Ornn
+    expect(counterClaim(r, ["JUNGLE"], N)).toBeUndefined();
+    expect(counterClaim(read([]), ["MID"], N)).toBeUndefined();
   });
 });
 
@@ -138,7 +163,7 @@ describe("The placement never scores", () => {
   });
   it("the Draft Room labels a lane opponent that is not confirmed", () => {
     const room = readFileSync(join(process.cwd(), "components/DraftRoom.tsx"), "utf8");
-    expect(room).toMatch(/role not confirmed/);
+    expect(room).toMatch(/counterClaim\(dRead, LANE\[active\]/); // Potential / Conditional counter labels
     expect(room).toMatch(/\(likely\)/);
     expect(readFileSync(join(process.cwd(), "components/LaneMatchups.tsx"), "utf8")).toMatch(/likely opponent/);
   });

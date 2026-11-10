@@ -221,6 +221,12 @@ await open("/?vs=top:aatrox");
 await page.locator(".role-tab.role-TOP").click();
 const dpmCounters = await page.locator(".recs .fit-row .sig.counter").count();
 check("Counters show stored DPM matchups (Top vs Aatrox)", dpmCounters > 0 && !/not proof that .* has no counters/.test(await text(".recs")), `${dpmCounters} counters`);
+const counterLabels = await page.locator(".recs .fit-row .sig.counter").allInnerTexts();
+check("a confirmed lane opponent's counters read \"Counter\" (top:aatrox)", counterLabels.length > 0 && counterLabels.every((t) => t.trim() === "Counter"), counterLabels.slice(0, 3).join(", "));
+await open("/?vs=aatrox");
+await page.locator(".role-tab.role-TOP").click();
+const autoLabels = await page.locator(".recs .fit-row .sig.counter").allInnerTexts();
+check("an automatically placed opponent's counters are not plain \"Counter\" (bare aatrox)", autoLabels.length > 0 && autoLabels.every((t) => /^(Potential|Conditional) counter$/.test(t.trim())), autoLabels.slice(0, 3).join(", "));
 check("no Clash wording on the Draft Room", !/Clash/.test(await text("body")), "");
 // Enemy flex picks (alan, 2026-11-10; lib/enemy-roles.ts): an enemy added without a role is placed with the whole
 // lineup and marked "likely"; a later pick re-places it; a confirmed role is kept and goes in the link.
