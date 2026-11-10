@@ -190,7 +190,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   older links read the same way) and the stored board keeps `foes` (older boards read as confirmed). Scoring and Comp
   Check read the enemy champions, never their roles, so nothing scores the placement; counters and lane matchups read the
   placed board and say "likely" / "role not confirmed", and each possible other opponent gets a conditional line ("If
-  Pantheon plays support: counters …") from the same DPM rows. Any discount of counters for an unconfirmed role is alan's call.
+  Pantheon plays support: counters …") from the same DPM rows. Counter labels say how sure the lane opponent is (alan, 2026-11-10; `counterClaim`): "Counter" with the role confirmed, "Potential counter · Poppy likely SUP" when placed automatically, "Conditional counter · If Poppy plays JG" while another assignment is plausible, and no lane claim for an unplaced enemy; the DPM win rate, sample and thresholds never change, no confidence multiplier, never the score or the order.
 - **Synergy · Proposed** (alan, 2026-10-10, "Complete Champion Synergy Expansion"): `data/proposed-synergy.json` holds
   Claude's kit-based partners for every playable champion and role (preferred / alternatives, a specific reason and a
   kit-fit confidence `strong` / `moderate` / `provisional` per partner). It sits inside Synergy but apart from alan's

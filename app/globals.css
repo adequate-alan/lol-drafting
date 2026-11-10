@@ -1438,6 +1438,7 @@ button.mini-slot:hover { border-color: var(--text-faint); }
 .sig.pro { color: var(--pro); }
 .sig.fix, .sig.fit { color: var(--logic); }
 .sig.counter { color: var(--counter); }
+.sig.counter.counter-potential, .sig.counter.counter-conditional { font-weight: 400; } /* unconfirmed lane opponent: quieter, same evidence */
 .sig.theory { color: var(--text-faint); }
 .sig.risk { color: var(--caution); }
 .sig.prio { color: var(--pro); opacity: .85; }

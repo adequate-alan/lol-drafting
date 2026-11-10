@@ -38,7 +38,7 @@ import { comparePatch } from "@/lib/patch";
 import { COMPARE_MAX, effectLine, pruneCompare, readCompare, sameCompare, tabStore, toggleCompare, writeCompare, type CompareState, type PreviewEffect } from "@/lib/candidate-preview";
 import { ComparePanel, EffectList, PreviewBlock } from "./CandidateCompare";
 import type { BlindLine } from "@/lib/top-blind";
-import { applyRole, enemyPicksParam, placeInSlot, readEnemy, type EnemyPick, type EnemyRead, type Placement, type RoleAction } from "@/lib/enemy-roles";
+import { applyRole, counterClaim, enemyPicksParam, placeInSlot, readEnemy, type EnemyPick, type EnemyRead, type Placement, type RoleAction } from "@/lib/enemy-roles";
 import { EnemyAdd, EnemyRoleMenu, UnplacedEnemies, roleTagNote, laneFoeNote } from "./EnemyRoles";
 
 const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
@@ -247,7 +247,6 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
       shells: similarShells(dDraft, data.shells),
     };
   }, [dDraft, dRead, data, sources, roomPatch, drawerData.priority, reader]);
-  const proCtx: ProCtx = useMemo(() => ({ drafts: data.proDrafts, sources, enemy: enemyDraft, names, counterFresh: data.counterFreshness, matchupBook: data.matchupBook }), [data.proDrafts, sources, enemyDraft, names, data.counterFreshness, data.matchupBook]);
   // Lane matchups: both sides of a lane locked, read from DPM rows only (labels, never the ranking).
   const laneReads = useMemo(() => laneMatchups(draft, foeRead.byRole, data.counters.dpm, data.newestPatch), [draft, foeRead, data.counters.dpm, data.newestPatch]);
   const placementAt = (r: Role): Placement | undefined => foeRead.placements.find((p) => p.role === r);
@@ -276,6 +275,9 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   const partnered = open.filter((r) => PARTNER[r] && draft[PARTNER[r]!]);
   const active: Role | undefined = focus && open.includes(focus) ? focus
     : [...(partnered.length ? partnered : open)].sort((a, b) => topScore(b) - topScore(a))[0];
+  // How surely the active lane's opponent is there: Counter, Potential counter or Conditional counter (lib/enemy-roles.ts).
+  const claim = useMemo(() => (active ? counterClaim(dRead, LANE[active], names) : undefined), [active, dRead, names]);
+  const proCtx: ProCtx = useMemo(() => ({ drafts: data.proDrafts, sources, enemy: enemyDraft, names, counterFresh: data.counterFreshness, matchupBook: data.matchupBook, counterClaim: claim }), [data.proDrafts, sources, enemyDraft, names, data.counterFreshness, data.matchupBook, claim]);
   const activeRows = active ? unified[active] ?? [] : [];
   const previewId = previewed && previewed.role === active && !takenNow.includes(previewed.id) ? previewed.id : undefined;
   const compared = useMemo(() => (active ? (compare[active] ?? []).filter((id) => !takenNow.includes(id)) : []), [active, compare, takenNow]);
@@ -335,9 +337,8 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   const proIds = active ? (proAll[active] ?? []).map((s) => s.champion) : [];
   const proSourceLine = `Recorded Gol.gg games next to your picks: ${(data.events ?? []).map((e) => `${e.short} ${patchLabel(e.patch)}${e.status === "ongoing" ? " (ongoing)" : ""}`).join(" · ")}. Evidence, never part of the order.`;
   const laneFoes = active ? LANE[active].map((r) => enemy[ROLES.indexOf(r)]).filter((e): e is string => !!e) : [];
-  // Enemy roles not confirmed: the lane opponent is the likely one, and champions placed elsewhere who could play the
-  // lane are possible opponents. Their counters are read as conditional advice from the same DPM rows (labels only).
-  const unsureFoes = laneFoes.filter((id) => foeRead.placements.find((p) => p.id === id)?.status !== "confirmed");
+  // Champions placed elsewhere who could play the lane are possible opponents. Their counters are read as conditional
+  // advice from the same DPM rows (labels only).
   const laneAlts = active ? [...new Set(LANE[active].flatMap((r) => foeRead.possible[r] ?? []))].filter((id) => !laneFoes.includes(id)) : [];
   const ifCounters = useMemo(() => {
     if (!active || !started) return [];
@@ -502,7 +503,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                         {activeCounters.note ? ` ${activeCounters.note}` : ""}
                         {activeCounters.counters.some((c) => c.evidence.stale) ? ` From DPM.LOL patch ${patchLabel(activeCounters.counters[0].evidence.patch)}, older than ${patchLabel(data.newestPatch!)}: historical matchups that may no longer reflect current balance.` : ""}
                         {filter === "counter" && activeCounters.coverage.preliminary.length > 0 ? ` ${preliminaryText(activeCounters.coverage, (id) => names[id] ?? id)}` : ""}
-                        {unsureFoes.length > 0 ? ` ${unsureFoes.map((id) => names[id] ?? id).join(" and ")}: placed automatically, role not confirmed.` : ""}
+                        {claim && claim.kind !== "confirmed" ? ` ${claim.label}s · ${claim.detail}.` : ""}
                       </p>
                     )}
                     {ifCounters.length > 0 && (filter === "counter" || !!activeCounters) && (
@@ -707,7 +708,7 @@ function chipsOf(c: Candidate, names: Record<string, string>, bot?: string, tier
   if (r.bestFix && c.bestFit) out.push({ key: "fix", label: "Best fix and fit", title: `Best fix: ${FIX.toLowerCase()}. Best fit: ${FIT.toLowerCase()}` });
   else if (r.bestFix) out.push({ key: "fix", label: "Best fix", title: FIX });
   else if (c.bestFit) out.push({ key: "fit", label: "Best fit", title: FIT });
-  if (c.counter) out.push({ key: "counter", label: "Counter" }); // rendered as the Counter popover
+  if (c.counter) out.push({ key: "counter", label: "Counter" }); // rendered as the Counter popover, labelled by the opponent's role status
   if (c.priority) out.push({ key: "prio", label: `Pro priority · ${Math.round(c.priority.presence * 100)}%`, title: priorityTitle(c) });
   const tu = top?.mark;
   if (tu) {
@@ -806,7 +807,7 @@ function FitRow({ c, tier, bot, names, proCtx, hovered, previewed, compareAt, co
           {chips.length > 0 && <span className="sig-line">{chips.map((s) => s.key === "pro" && c.pro
             ? <ProEvidenceTrigger key={s.key} pro={c.pro} champion={c.champion} role={c.role} ctx={proCtx}
               mate={tctx?.mid && tctx.allyMid ? { name: names[tctx.allyMid] ?? tctx.allyMid, games: tctx.mid.games } : undefined} />
-            : s.key === "counter" && counter ? <CounterTrigger key={s.key} c={counter} names={names} fresh={proCtx.counterFresh} book={proCtx.matchupBook} />
+            : s.key === "counter" && counter ? <CounterTrigger key={s.key} c={counter} names={names} fresh={proCtx.counterFresh} book={proCtx.matchupBook} claim={proCtx.counterClaim} />
               : metaChip.has(s.key) && c.meta ? <MetaEvidenceTrigger key={s.key} s={c.meta} label={s.label} cls={s.key} names={names} />
               : s.href ? <Link key={s.key} className={`sig ${s.key} sig-link`} href={s.href} title={s.title}>{s.label}</Link>
                 : <span key={s.key} className={`sig ${s.key}`} title={s.title}>{s.label}</span>)}</span>}

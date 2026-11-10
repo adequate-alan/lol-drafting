@@ -223,3 +223,30 @@ export function sanitizePicks(value: unknown, championIds: ReadonlySet<string>, 
 export const STATUS_LABEL: Record<PlacementStatus, string> = {
   confirmed: "Confirmed", flex: "Flex", likely: "Likely", uncertain: "Likely", unresolved: "Not placed",
 };
+
+// ---------- how a counter is claimed (alan, 2026-11-10) ----------
+// The DPM evidence is the same whatever the enemy role's status; only how surely the matchup will happen changes.
+// Confirmed lane opponent: Counter. Placed automatically: Potential counter. Another assignment still plausible (the
+// opponent may play elsewhere, or someone else may play this lane): Conditional counter. No placed opponent: no claim.
+// Never a weight on the win rate, never the score or the order.
+
+export type CounterClaimKind = "confirmed" | "potential" | "conditional";
+export interface CounterClaim { kind: CounterClaimKind; label: string; detail?: string }
+
+const SHORT_ROLE: Record<Role, string> = { TOP: "TOP", JUNGLE: "JG", MID: "MID", BOT: "BOT", SUPPORT: "SUP" };
+export const COUNTER_LABEL: Record<CounterClaimKind, string> = { confirmed: "Counter", potential: "Potential counter", conditional: "Conditional counter" };
+
+/** How a counter against the enemy in these lane roles is labelled; undefined when no enemy is placed there. */
+export function counterClaim(read: EnemyRead, lane: Role[], names: Record<string, string> = {}): CounterClaim | undefined {
+  const foes = lane.flatMap((r) => { const p = read.placements.find((x) => x.role === r); return p ? [{ p, r }] : []; });
+  if (!foes.length) return undefined;
+  const n = (id: string) => names[id] ?? id;
+  const open = foes.filter(({ p }) => p.status !== "confirmed");
+  if (!open.length) return { kind: "confirmed", label: COUNTER_LABEL.confirmed };
+  const mixed = open.some(({ p, r }) => p.alternatives.length > 0 || (read.possible[r] ?? []).length > 0);
+  const kind: CounterClaimKind = mixed ? "conditional" : "potential";
+  const detail = mixed
+    ? open.map(({ p, r }) => `If ${n(p.id)} plays ${SHORT_ROLE[r]}`).join(" and ")
+    : open.map(({ p, r }) => `${n(p.id)} likely ${SHORT_ROLE[r]}`).join(" · ");
+  return { kind, label: COUNTER_LABEL[kind], detail };
+}
