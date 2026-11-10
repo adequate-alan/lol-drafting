@@ -163,7 +163,7 @@ describe("The placement never scores", () => {
   });
   it("the Draft Room labels a lane opponent that is not confirmed", () => {
     const room = readFileSync(join(process.cwd(), "components/DraftRoom.tsx"), "utf8");
-    expect(room).toMatch(/role not confirmed/);
+    expect(room).toMatch(/counterClaim\(dRead, LANE\[active\]/); // Potential / Conditional counter labels
     expect(room).toMatch(/\(likely\)/);
     expect(readFileSync(join(process.cwd(), "components/LaneMatchups.tsx"), "utf8")).toMatch(/likely opponent/);
   });
