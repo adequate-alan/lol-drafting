@@ -229,6 +229,6 @@ describe("patch notes never change saved data", () => {
     const script = readFileSync(join(process.cwd(), "scripts/refresh-patch-notes.mjs"), "utf8");
     expect([...script.matchAll(/writeFileSync\(join\(dataDir, "([^"]+)"\)/g)].map((m) => m[1])).toEqual(["patch-notes.json"]);
     const wf = readFileSync(join(process.cwd(), ".github/workflows/refresh-patch-notes.yml"), "utf8");
-    expect(wf).toMatch(/git add data\/patch-notes\.json\n/);
+    expect(wf).toMatch(/git add data\/patch-notes\.json data\/item-changes\.json\n/); // the item history follows the notes
   });
 });
