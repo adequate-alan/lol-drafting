@@ -178,6 +178,19 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   (`draft-room:compare`), follows the real board (locked champions leave, a locked role's list closes) and Clear draft
   empties it. Once drafting starts the filters are All / Synergy / Pro / Best fit / Counters plus one "Pro meta" menu
   (First rotation, Blind, Pro priority); the empty room keeps its four starting views.
+- **Enemy flex picks** (alan, 2026-11-10; `lib/enemy-roles.ts`, `components/EnemyRoles.tsx`, `tests/enemy-roles.test.ts`,
+  smoke "flex:"): an enemy champion can be added without a role ("+ Add" beside Enemy); the whole enemy lineup is placed at
+  once (`readEnemy`) from the roster's roles (listed first = main) and verified pro role picks (`getEnemyRoleBook`: the
+  newest patch with 3+ picks, else every patch, else none; a pro-only role needs 2+ picks), weights in `ROLE_INFERENCE`,
+  never shown as a probability. A role typed into an enemy slot, or chosen in the slot's role menu, is confirmed and never
+  moved; confirming a role another confirmed champion holds swaps them. Automatic placements are re-read on every add or
+  removal: "likely" (dashed slot), "likely · or …" when a whole-lineup placement within `margin` gives another role,
+  "flex …" when the user limited the roles, "Not placed" (a role choice under the board) when no open role fits; never
+  guessed off-role. `?vs=` keeps entry order (`top:aatrox` confirmed, `jungle|support:poppy` flexible, bare id automatic;
+  older links read the same way) and the stored board keeps `foes` (older boards read as confirmed). Scoring and Comp
+  Check read the enemy champions, never their roles, so nothing scores the placement; counters and lane matchups read the
+  placed board and say "likely" / "role not confirmed", and each possible other opponent gets a conditional line ("If
+  Pantheon plays support: counters …") from the same DPM rows. Any discount of counters for an unconfirmed role is alan's call.
 - **Synergy · Proposed** (alan, 2026-10-10, "Complete Champion Synergy Expansion"): `data/proposed-synergy.json` holds
   Claude's kit-based partners for every playable champion and role (preferred / alternatives, a specific reason and a
   kit-fit confidence `strong` / `moderate` / `provisional` per partner). It sits inside Synergy but apart from alan's

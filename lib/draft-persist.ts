@@ -7,12 +7,14 @@
 // link, Back to Draft Room) always wins and replaces what was stored; only a bare room URL restores. Clear draft empties
 // the stored picks. Stored ids are checked against the roster: unknown ids are dropped, a champion appears once.
 import { ROLES, type Role } from "./schema";
+import { sanitizePicks, type EnemyPick } from "./enemy-roles";
 
 export const DRAFT_BOARD_KEY = "draft-room:board";
 
 export type StoredBoard = {
   ally: Partial<Record<Role, string>>;
-  enemy: Partial<Record<Role, string>>;
+  enemy: Partial<Record<Role, string>>; // the board as shown (older stored boards hold only this: read as confirmed roles)
+  foes?: EnemyPick[]; // the enemy picks in entry order with their confirmed or flexible roles (lib/enemy-roles.ts)
   focus?: Role; // the role tab chosen, only while that role is open
   filter?: string; // the list filter, when not "all"
   patch?: string; // a chosen pro meta patch, as the room keeps it
@@ -27,7 +29,10 @@ const PLAIN = /^[a-z0-9._ -]{1,40}$/i;
 /** Whether the URL brings its own board, which then wins over anything stored. */
 export const explicitBoard = (q: Pick<URLSearchParams, "has">) => BOARD_KEYS.some((k) => q.has(k));
 
-const isEmpty = (b: StoredBoard) => !ROLES.some((r) => b.ally[r] || b.enemy[r]);
+const isEmpty = (b: StoredBoard) => !ROLES.some((r) => b.ally[r] || b.enemy[r]) && !b.foes?.length;
+
+/** The enemy picks a board holds: its stored list, else (older boards) each shown champion confirmed in its slot. */
+export const foesOf = (b: StoredBoard): EnemyPick[] => b.foes ?? ROLES.flatMap((r) => (b.enemy[r] ? [{ id: b.enemy[r]!, role: r }] : []));
 
 /**
  * A stored board made safe to load: only known champions, each at most once (ally slots first, in role order), a focus
@@ -49,6 +54,7 @@ export function sanitizeBoard(value: unknown, championIds: ReadonlySet<string>, 
   const ally = side(v.ally), enemy = side(v.enemy);
   const focus = roleOf(v.focus);
   const board: StoredBoard = { ally, enemy };
+  if (Array.isArray(v.foes)) board.foes = sanitizePicks(v.foes, championIds, new Set(Object.values(ally) as string[]));
   if (focus && !ally[focus]) board.focus = focus;
   if (typeof v.filter === "string" && v.filter !== "all" && filters.includes(v.filter)) board.filter = v.filter;
   if (typeof v.patch === "string" && PLAIN.test(v.patch)) board.patch = v.patch;
@@ -67,6 +73,7 @@ export function writeBoard(store: Store | undefined, board: StoredBoard): void {
   if (!store) return;
   const clean: StoredBoard = { ally: {}, enemy: {} };
   for (const r of ROLES) { if (board.ally[r]) clean.ally[r] = board.ally[r]; if (board.enemy[r]) clean.enemy[r] = board.enemy[r]; }
+  if (board.foes?.length) clean.foes = board.foes.map((p) => ({ ...p }));
   if (board.focus && !board.ally[board.focus]) clean.focus = board.focus;
   if (board.filter && board.filter !== "all") clean.filter = board.filter;
   if (board.patch) clean.patch = board.patch;

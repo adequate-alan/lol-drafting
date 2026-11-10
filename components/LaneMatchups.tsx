@@ -11,7 +11,10 @@ import { Popover } from "./Popover";
 const ROLE_SHORT = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" } as const;
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
 
-export function LaneMatchups({ reads, names, fresh }: { reads: LaneMatchup[]; names: Record<string, string>; fresh?: CounterFreshness }) {
+export function LaneMatchups({ reads, names, fresh, unconfirmed = {} }: {
+  reads: LaneMatchup[]; names: Record<string, string>; fresh?: CounterFreshness;
+  unconfirmed?: Partial<Record<LaneMatchup["role"], boolean>>; // the enemy champion was placed automatically: a likely opponent, not a confirmed one
+}) {
   if (!reads.length) return null;
   const n = (id: string) => names[id] ?? id;
   return (
@@ -19,11 +22,11 @@ export function LaneMatchups({ reads, names, fresh }: { reads: LaneMatchup[]; na
       <span className="lane-reads-k">Lane matchups</span>
       {reads.map((m) => (
         <Popover key={m.role} label={`${ROLE_SHORT[m.role]} matchup: ${n(m.mine)} vs ${n(m.theirs)}`} triggerClass={`lane-read ${m.verdict}`} className="ce"
-          trigger={<><span className="lane-read-role">{ROLE_SHORT[m.role]}</span> {LANE_VERDICT_LABEL[m.verdict]}{m.winRate != null && m.verdict !== "no-data" && m.verdict !== "insufficient" ? <span className="mono"> {pct(m.winRate)}</span> : null}{m.stale ? " · older patch" : ""}</>}>
+          trigger={<><span className="lane-read-role">{ROLE_SHORT[m.role]}</span> {LANE_VERDICT_LABEL[m.verdict]}{m.winRate != null && m.verdict !== "no-data" && m.verdict !== "insufficient" ? <span className="mono"> {pct(m.winRate)}</span> : null}{m.stale ? " · older patch" : ""}{unconfirmed[m.role] ? <span className="faint"> · likely opponent</span> : null}</>}>
           {() => (
             <div className="ce-card">
               <header className="pop-head"><span className="pop-title counter">Lane matchup</span><span>{LANE_VERDICT_LABEL[m.verdict]}{m.strong ? " · strong" : ""}</span></header>
-              <p className="pop-sub">{n(m.mine)} (yours) against {n(m.theirs)} in {ROLE_SHORT[m.role].toLowerCase()}.</p>
+              <p className="pop-sub">{n(m.mine)} (yours) against {n(m.theirs)} in {ROLE_SHORT[m.role].toLowerCase()}.{unconfirmed[m.role] ? ` ${n(m.theirs)} was placed in ${ROLE_SHORT[m.role].toLowerCase()} automatically: the likely lane opponent, role not confirmed.` : ""}</p>
               <dl className="pop-kv">
                 {m.verdict === "no-data" ? <><dt>Matchup</dt><dd>No DPM.LOL row for this pair yet. A gap in our data, not a read on the lane.</dd></> : <>
                   <dt>Matchup</dt>

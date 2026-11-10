@@ -135,8 +135,8 @@ describe("Wiring", () => {
   const room = readFileSync(join(process.cwd(), "components/DraftRoom.tsx"), "utf8");
   it("the page restores through openingBoard and the room saves every board change", () => {
     expect(view).toMatch(/openingBoard\(q, /);
-    expect(room).toMatch(/writeBoard\(localStore\(\), \{ ally: draft, enemy: enemyDraftOf\(enemy\), focus, filter, patch: chosenPatch \}\)/);
-    expect(room).toMatch(/\[draft, enemy, focus, filter, chosenPatch\]/);
+    expect(room).toMatch(/writeBoard\(localStore\(\), \{ ally: draft, enemy: enemyDraftOf\(enemy\), foes, focus, filter, patch: chosenPatch \}\)/);
+    expect(room).toMatch(/\[draft, enemy, foes, focus, filter, chosenPatch\]/);
   });
   it("the board is not tied to scoring: nothing in lib/recommend or lib/candidates reads storage", () => {
     for (const f of ["lib/recommend.ts", "lib/candidates.ts"]) expect(readFileSync(join(process.cwd(), f), "utf8")).not.toMatch(/draft-persist|localStorage/);

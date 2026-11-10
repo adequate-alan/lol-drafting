@@ -3,12 +3,12 @@ import { useSearchParams } from "next/navigation";
 import { useRef } from "react";
 import { ownQuery } from "@/lib/my-role";
 import { DraftRoom } from "@/components/DraftRoom";
-import { parseEnemy } from "@/lib/counters";
+import { parseEnemyPicks } from "@/lib/enemy-roles";
 import type { DraftData, DrawerData } from "@/lib/data";
 import { ROLES, type Role, type Source } from "@/lib/schema";
 import { parseRole } from "@/lib/my-role";
 import type { Filter } from "@/lib/candidates";
-import { localStore, openingBoard, readBoard } from "@/lib/draft-persist";
+import { foesOf, localStore, openingBoard, readBoard } from "@/lib/draft-persist";
 
 const FILTERS: Filter[] = ["all", "synergy", "pro", "fit", "counter", "priority", "rotation", "blind"];
 
@@ -27,7 +27,8 @@ export function DraftRoomView({ data, sources, drawerData, metaPicks }: {
     const v = stored ? stored.ally[role] : shell ? shell.slots[role].champion : q.get(role.toLowerCase());
     if (typeof v === "string" && ids.has(v)) initial[role] = v;
   }
-  const initialEnemy = stored ? { ...stored.enemy } : parseEnemy(q.get("vs"), data.champions, Object.values(initial) as string[]);
+  // Enemy picks keep their entry order and how each role was set: `top:aatrox` confirmed, a bare id placed automatically.
+  const initialEnemy = stored ? foesOf(stored) : parseEnemyPicks(q.get("vs"), data.champions, Object.values(initial) as string[]);
   // Coming back from Pro Builds: the role being picked and the list filter the draft was left on.
   const focus = stored ? stored.focus : parseRole(q.get("focus"));
   const initialFocus = focus && !initial[focus] ? focus : undefined;

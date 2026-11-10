@@ -23,6 +23,7 @@ import { factBook } from "./jungle-kits";
 import { matchupBook } from "./matchup-kits";
 import type { MatchupBook } from "./matchup-read";
 import { bucket, patchesOf } from "./pro-priority";
+import type { RoleBook } from "./enemy-roles";
 
 // Data lives in /data and is read at build time; the static export embeds what each page renders.
 type FileName = keyof typeof Files;
@@ -135,7 +136,23 @@ export function getDraftData() {
     laneUsage: Object.fromEntries(LANE_ROLES.map((r) => [r, ((t) => topUsageMarks(t.selections, t.dpm, t.blind, undefined, t.duos))(getLaneDraft(r))])) as Record<LaneRole, TopUsageMarks>,
     jungleBoard: getJungleBoard(), // Jungle composition responses (a label, General Draft Logic over the enemy board)
     matchupBook: getMatchupBook(), // the Counter card's kit read (General Draft Logic over the stored kits, never a score)
+    enemyRoles: getEnemyRoleBook(), // recorded pro picks per role: where an enemy champion is placed automatically (a label, never a score)
   };
+}
+
+let enemyRoleBook: { patch?: string; book: RoleBook } | undefined;
+/** Verified pro role picks per champion on the newest patch and on every recorded patch (lib/enemy-roles.ts). */
+export function getEnemyRoleBook() {
+  if (enemyRoleBook) return enemyRoleBook;
+  const d = getPriority();
+  const patch = patchesOf(d)[0];
+  const book: RoleBook = {};
+  const add = (key: "recent" | "all", rows: ReturnType<typeof bucket>["rows"]) => {
+    for (const r of rows) if (ROLES.some((x) => r.rolePicks[x])) (book[r.id] ??= {})[key] = { ...r.rolePicks };
+  };
+  if (patch) add("recent", bucket(d, { patch }).rows);
+  add("all", bucket(d, {}).rows);
+  return (enemyRoleBook = { patch, book });
 }
 
 let facts: FactBook | undefined;
