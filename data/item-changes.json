@@ -299,7 +299,7 @@
     {
       "id": "26.19/item-world-atlas-and-runic-compass/worldatlas",
       "item": "World Atlas",
-      "itemId": null,
+      "itemId": "3865",
       "patch": "26.19",
       "type": "changed",
       "basis": "mixed",
@@ -328,7 +328,7 @@
     {
       "id": "26.19/item-world-atlas-and-runic-compass/runiccompass",
       "item": "Runic Compass",
-      "itemId": null,
+      "itemId": "3866",
       "patch": "26.19",
       "type": "changed",
       "basis": "mixed",
@@ -382,7 +382,7 @@
     {
       "id": "26.17/item-stormrazor",
       "item": "Stormrazor",
-      "itemId": null,
+      "itemId": "3095",
       "patch": "26.17",
       "type": "buff",
       "basis": "stat-lines",
@@ -729,7 +729,7 @@
     {
       "id": "26.9/item-opportunity",
       "item": "Opportunity",
-      "itemId": null,
+      "itemId": "6701",
       "patch": "26.9",
       "type": "removed",
       "basis": "externally-provided",
@@ -751,5 +751,26 @@
       }
     }
   ],
-  "ids": {}
+  "ids": {
+    "Opportunity": {
+      "id": "6701",
+      "source": "Data Dragon 16.8.1",
+      "checkedOn": "2026-11-10"
+    },
+    "World Atlas": {
+      "id": "3865",
+      "source": "Data Dragon 16.19.1",
+      "checkedOn": "2026-11-10"
+    },
+    "Runic Compass": {
+      "id": "3866",
+      "source": "Data Dragon 16.19.1",
+      "checkedOn": "2026-11-10"
+    },
+    "Stormrazor": {
+      "id": "3095",
+      "source": "Data Dragon 16.17.1",
+      "checkedOn": "2026-11-10"
+    }
+  }
 }
