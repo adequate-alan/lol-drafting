@@ -1295,6 +1295,26 @@ button.slot-body:hover .slot-name { text-decoration: underline; text-decoration-
 .draft-slot.enemy .slot-name { font-size: var(--fs-lg); }
 .draft-slot.enemy.locked { background: var(--enemy-subtle); border-color: var(--border-strong); box-shadow: inset 0 2px 0 var(--enemy-line); }
 .draft-slot.enemy.open { border-color: var(--border); }
+/* Enemy flex picks (lib/enemy-roles.ts): a role placed automatically is dashed and says "likely"; a confirmed one is solid */
+.draft-slot.enemy.provisional { border-style: dashed; }
+.slot-auto { margin-left: var(--s2); min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 400; letter-spacing: 0; color: var(--text-faint); }
+.draft-slot.enemy .role-tag { max-width: 100%; }
+.enemy-add-btn { padding: 0 var(--s2); border: 1px dashed var(--border-strong); border-radius: var(--r-sm); background: transparent; font: inherit; font-size: var(--fs-2xs); color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: color var(--t-fast), border-color var(--t-fast); }
+.enemy-add-btn:hover { color: var(--text); border-color: var(--text-faint); }
+.team-row.enemy .team-label { flex-wrap: wrap; position: relative; z-index: 3; }
+.enemy-add { position: absolute; top: calc(100% + 4px); left: 0; z-index: 31; display: block; width: 200px; }
+.enemy-add input { width: 100%; height: 28px; padding: 0 var(--s3); font-size: var(--fs-sm); }
+.enemy-add .picker-list { width: 240px; }
+.enemy-unplaced { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s4); margin-left: calc(64px + var(--s4)); color: var(--text-muted); }
+.enemy-unplaced-k { font-family: var(--font-display); font-weight: var(--w-control); color: var(--enemy); }
+.enemy-unplaced-pick { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--s3); }
+.enemy-unplaced .seg button { padding-inline: var(--s3); }
+.role-menu { display: grid; gap: var(--s2); max-width: 340px; }
+.role-menu-k { margin-top: var(--s3); }
+.role-menu-roles button, .role-menu-flex .seg button { padding-inline: var(--s3); }
+.role-menu-flex { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); }
+.role-menu-actions { justify-content: flex-start; }
+.fit-if { margin-top: 0; }
 /* A pick just locked here acknowledges itself once; picks restored from a link or Back to Draft Room sit still. */
 .draft-slot.locked.fresh .slot-icon { animation: lock-in var(--dur-select) var(--ease-out) both; }
 @keyframes lock-in { from { opacity: .5; transform: scale(.94); } }
@@ -1608,6 +1628,7 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 }
 @media (max-width: 1180px) {
   .team-row { grid-template-columns: minmax(0, 1fr); gap: var(--s2); }
+  .enemy-unplaced { margin-left: 0; }
   .draft-slot .champ.xxl { --size: var(--icon-md); }
   .draft-layout { grid-template-columns: minmax(0, 1fr); }
   .comp-check { position: static; max-height: none; overflow: visible; padding: var(--s5) 0 0; border-left: 0; border-top: 1px solid var(--border); }

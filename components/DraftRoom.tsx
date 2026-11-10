@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Fragment, useDeferredValue, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { Fragment, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import { picksOf, profile, RULES, warnings, type Draft, type DraftWarning } from "@/lib/evaluate";
 import { teamNeeds, type Need, type Recommendation } from "@/lib/recommend";
 import { blank, compFitOf, draftCandidates, hasSignal, startingCandidates, type Candidate, type Filter } from "@/lib/candidates";
@@ -11,7 +11,7 @@ import type { PriorityData } from "@/lib/pro-priority";
 import { describeLine } from "@/lib/evidence";
 import { patchKey, patchLabel, patchesOf, priorityMarks } from "@/lib/pro-priority";
 import { blindLabel, defaultPatch, engineReader, rotationLabel, sortForView, startLine, startingPicks, type StartView, type StartingPick } from "@/lib/starting-picks";
-import { describeEvidence, describePro, emptyText, enemyParam, laneMatchups, poolTier, preliminaryText, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
+import { counterPicks, describeEvidence, describePro, emptyText, laneMatchups, poolTier, preliminaryText, tierLabel, type Counter, type EnemyDraft, type RoleCounters } from "@/lib/counters";
 import { similarProDrafts, similarShells, type ProSuggestion, type SuggestData } from "@/lib/suggest";
 import type { DraftData, DrawerData } from "@/lib/data";
 import { ChampionDrawer, useDrawerIndex, type DrawerTarget } from "./ChampionDrawer";
@@ -38,6 +38,8 @@ import { comparePatch } from "@/lib/patch";
 import { COMPARE_MAX, effectLine, pruneCompare, readCompare, sameCompare, tabStore, toggleCompare, writeCompare, type CompareState, type PreviewEffect } from "@/lib/candidate-preview";
 import { ComparePanel, EffectList, PreviewBlock } from "./CandidateCompare";
 import type { BlindLine } from "@/lib/top-blind";
+import { applyRole, enemyPicksParam, placeInSlot, readEnemy, type EnemyPick, type EnemyRead, type Placement, type RoleAction } from "@/lib/enemy-roles";
+import { EnemyAdd, EnemyRoleMenu, UnplacedEnemies, roleTagNote, laneFoeNote } from "./EnemyRoles";
 
 const ROLE_LABEL: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
 // Lane partner: with Bot locked, Support is the natural next pick (and the other way round).
@@ -78,7 +80,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   sources: Record<string, Source>;
   drawerData: DrawerData;
   initial: Draft;
-  initialEnemy: EnemyDraft; // roles from ?vs=top:aatrox, or detected for bare ids
+  initialEnemy: EnemyPick[]; // from ?vs= (top:aatrox confirmed, a bare id placed automatically) or the stored board
   initialFocus?: Role; initialFilter?: Filter; // restored on the way back from Pro Builds
   initialPatch?: string; // ?patch=: the pro meta patch, when chosen
   restored?: boolean; // the board came back from this browser's storage (lib/draft-persist.ts), not from the URL
@@ -86,8 +88,12 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   legacyCheck?: boolean; // ?legacy=1: a debugging switch that adds the previous Comp Check rules under Full analysis
 }) {
   const [draft, setDraft] = useState<Draft>(initial);
-  // One enemy slot per role, in ROLES order.
-  const [enemy, setEnemy] = useState<(string | undefined)[]>(() => ROLES.map((r) => initialEnemy[r]));
+  // The enemy picks in the order they were entered, each with a confirmed or flexible role or none (lib/enemy-roles.ts).
+  // The board places the whole lineup at once; `enemy` is that board, one slot per role in ROLES order.
+  const [foes, setFoes] = useState<EnemyPick[]>(initialEnemy);
+  const readFoes = useCallback((list: EnemyPick[]) => readEnemy(list, data.champions, data.enemyRoles.book, data.enemyRoles.patch), [data.champions, data.enemyRoles]);
+  const foeRead = useMemo(() => readFoes(foes), [readFoes, foes]);
+  const enemy = useMemo(() => ROLES.map((r) => foeRead.byRole[r]), [foeRead]);
   const [focus, setFocus] = useState<Role | undefined>(initialFocus);
   const [hover, setHover] = useState<string>();
   // The slot preview follows the row the pointer rests on, not every row it crosses: a short intent delay, and leaving
@@ -124,7 +130,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   const [cmpFolded, setCmpFolded] = useState(false);
   const setCompare = (next: CompareState) => { setCompareState(next); writeCompare(tabStore(), next); };
   // Clear draft keeps the last board for a few seconds so one misclick in champion select is recoverable.
-  const [cleared, setCleared] = useState<{ draft: Draft; enemy: (string | undefined)[]; compare: CompareState }>();
+  const [cleared, setCleared] = useState<{ draft: Draft; enemy: EnemyPick[]; compare: CompareState }>();
   useEffect(() => {
     if (!cleared) return;
     const t = setTimeout(() => setCleared(undefined), 8000);
@@ -152,15 +158,15 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
     return () => io.disconnect();
   }, []);
 
-  const update = (next: Draft, nextEnemy = enemy, nextPatch = chosenPatch) => {
+  const update = (next: Draft, nextEnemy = foes, nextPatch = chosenPatch) => {
     setDraft(next);
-    setEnemy(nextEnemy);
+    setFoes(nextEnemy);
     writeUrl(next, nextEnemy, nextPatch, focus);
   };
-  const writeUrl = (next: Draft, nextEnemy: (string | undefined)[], nextPatch: string | undefined, nextFocus: Role | undefined) => {
+  const writeUrl = (next: Draft, nextEnemy: EnemyPick[], nextPatch: string | undefined, nextFocus: Role | undefined) => {
     const q = new URLSearchParams();
     ROLES.forEach((r) => next[r] && q.set(r.toLowerCase(), next[r]!));
-    const vs = enemyParam(enemyDraftOf(nextEnemy));
+    const vs = enemyPicksParam(nextEnemy);
     if (vs) q.set("vs", vs);
     if (nextPatch) q.set("patch", patchLabel(nextPatch));
     // The role tab the user chose, so a refresh or Back keeps it (only while that role is open).
@@ -169,7 +175,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
     // window.location keeps the GitHub Pages base path; usePathname() would drop it. Marked as the room's own write so
     // the page keeps this room (components/views/DraftRoomView.tsx).
     markOwnQuery(q.toString());
-    window.history.replaceState(null, "", `${window.location.pathname}${q.size ? `?${q.toString().replace(/%2C/g, ",")}` : ""}`);
+    window.history.replaceState(null, "", `${window.location.pathname}${q.size ? `?${q.toString().replace(/%2C/g, ",").replace(/%7C/g, "|").replace(/%3A/g, ":")}` : ""}`);
   };
   const lock = (role: Role, id: string | undefined) => {
     clearTimeout(previewTimer.current);
@@ -180,9 +186,22 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
     update(next);
     // Only a confirmed lock of my own role opens Pro Builds, and only with the preference on (alan, 2026-10-12).
     if (opensBuilds({ myRole, auto: autoBuilds, role, champion: id, previous: draft[role], hasBuilds: !!id && !!buildsEntry(drawerData.builds, id, role) }))
-      router.push(myBuildsHref(drawerData.builds, id!, role, draftQuery({ draft: next, vs: enemyParam(enemyDraftOf(enemy)), focus, filter })));
+      router.push(myBuildsHref(drawerData.builds, id!, role, draftQuery({ draft: next, vs: enemyPicksParam(foes), focus, filter })));
   };
-  const lockEnemy = (i: number, id: string | undefined) => { setFresh(`enemy:${ROLES[i]}`); update(draft, enemy.map((e, j) => (j === i ? id : e))); };
+  // A champion typed into an enemy role slot is confirmed there; one added without a role is placed with the whole
+  // lineup, and every automatic placement is read again (confirmed roles never move).
+  const lockEnemy = (i: number, id: string | undefined) => { setFresh(`enemy:${ROLES[i]}`); update(draft, placeInSlot(foes, ROLES[i], enemy[i], id)); };
+  const addEnemy = (id: string) => {
+    const next = [...foes.filter((p) => p.id !== id), { id }];
+    const at = readFoes(next).placements.find((p) => p.id === id)?.role;
+    if (at) setFresh(`enemy:${at}`);
+    update(draft, next);
+  };
+  const setEnemyRole = (id: string, action: RoleAction) => {
+    const current = foeRead.placements.find((p) => p.id === id)?.role;
+    if (action.kind === "confirm") setFresh(`enemy:${action.role}`);
+    update(draft, applyRole(foes, id, action, current));
+  };
 
   // Everything read from the board is derived once per board change. Hovering a row, opening a card, switching the
   // filter or the role tab re-renders the room without re-ranking the roster (they were 70-160ms long tasks).
@@ -191,16 +210,18 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   // task on a slow phone). Until it catches up the list is marked busy and keeps its previous rows.
   // Only a lock on a board already in play is deferred: a first pick, a removal or Clear changes which roles and views
   // exist, so those rank at once rather than show a list for the wrong board.
-  const deferredDraft = useDeferredValue(draft), deferredEnemy = useDeferredValue(enemy);
-  const inPlay = (d: Draft, e: (string | undefined)[]) => Object.values(d).some(Boolean) || e.some(Boolean);
-  const deferOk = inPlay(draft, enemy) && inPlay(deferredDraft, deferredEnemy) && ROLES.every((r) => !(deferredDraft[r] && !draft[r]));
-  const dDraft = deferOk ? deferredDraft : draft, dEnemy = deferOk ? deferredEnemy : enemy;
-  const ranking = dDraft !== draft || dEnemy !== enemy;
-  const takenNow = useMemo(() => [...Object.values(draft), ...enemy].filter((x): x is string => !!x), [draft, enemy]);
+  const deferredDraft = useDeferredValue(draft), deferredRead = useDeferredValue(foeRead);
+  const inPlay = (d: Draft, e: EnemyRead) => Object.values(d).some(Boolean) || e.placements.length > 0;
+  const deferOk = inPlay(draft, foeRead) && inPlay(deferredDraft, deferredRead) && ROLES.every((r) => !(deferredDraft[r] && !draft[r]));
+  const dDraft = deferOk ? deferredDraft : draft, dRead = deferOk ? deferredRead : foeRead;
+  const ranking = dDraft !== draft || dRead !== foeRead;
+  // Every enemy champion is taken, placed or not.
+  const takenNow = useMemo(() => [...Object.values(draft), ...foes.map((p) => p.id)].filter((x): x is string => !!x), [draft, foes]);
   const { boardHits, enemyIds, picks, prof, warns, needs, enemyDraft, proAll, fits, counters, unified, starting, recs, similar, shells } = useMemo(() => {
-    const enemyIds = dEnemy.filter((e): e is string => !!e);
+    // The draft-fit score and Comp Check read every enemy champion, whatever its role; only the counters read roles.
+    const enemyIds = dRead.placements.map((p) => p.id);
     const picks = picksOf(dDraft, data.champions);
-    const enemyDraft = enemyDraftOf(dEnemy);
+    const enemyDraft = dRead.byRole;
     // Pro meta starting picks for every open role on the room's patch: the list before any pick, labels after.
     const taken = [...(Object.values(dDraft).filter(Boolean) as string[]), ...enemyIds];
     const marks = roomPatch ? priorityMarks(drawerData.priority, roomPatch) : {};
@@ -225,10 +246,11 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
       similar: similarProDrafts(dDraft, data.proDrafts),
       shells: similarShells(dDraft, data.shells),
     };
-  }, [dDraft, dEnemy, data, sources, roomPatch, drawerData.priority, reader]);
+  }, [dDraft, dRead, data, sources, roomPatch, drawerData.priority, reader]);
   const proCtx: ProCtx = useMemo(() => ({ drafts: data.proDrafts, sources, enemy: enemyDraft, names, counterFresh: data.counterFreshness, matchupBook: data.matchupBook }), [data.proDrafts, sources, enemyDraft, names, data.counterFreshness, data.matchupBook]);
   // Lane matchups: both sides of a lane locked, read from DPM rows only (labels, never the ranking).
-  const laneReads = useMemo(() => laneMatchups(draft, enemyDraft, data.counters.dpm, data.newestPatch), [draft, enemyDraft, data.counters.dpm, data.newestPatch]);
+  const laneReads = useMemo(() => laneMatchups(draft, foeRead.byRole, data.counters.dpm, data.newestPatch), [draft, foeRead, data.counters.dpm, data.newestPatch]);
+  const placementAt = (r: Role): Placement | undefined => foeRead.placements.find((p) => p.role === r);
   const open = ROLES.filter((r) => !draft[r]);
   const lockedCount = ROLES.length - open.length;
   const started = lockedCount > 0 || enemyIds.length > 0;
@@ -246,7 +268,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
     const next = pruneCompare(base, draft, takenNow);
     if (!sameCompare(next, compare)) setCompare(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [draft, enemy]);
+  }, [draft, foes]);
 
   // The role being picked: the one the user chose, else the open lane partner of a locked pick, else the open role
   // with the strongest fit.
@@ -271,7 +293,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   // Back on an empty board in this tab (the sidebar's Draft Room link): highlight the role left highlighted (read before
   // the effect below records this render's role).
   useEffect(() => {
-    const r = restoredDraftRole(sessionStore(), { urlFocus: initialFocus, emptyBoard: !Object.values(initial).some(Boolean) && !Object.values(initialEnemy).some(Boolean) });
+    const r = restoredDraftRole(sessionStore(), { urlFocus: initialFocus, emptyBoard: !Object.values(initial).some(Boolean) && !initialEnemy.length });
     if (r && r !== initialFocus) setFocus(r);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -282,17 +304,17 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   useEffect(() => {
     if (focusWritten.current === focus) return;
     focusWritten.current = focus;
-    writeUrl(draft, enemy, chosenPatch, focus);
+    writeUrl(draft, foes, chosenPatch, focus);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focus]);
   // The room is a workspace (alan, 2026-10-18): every board change is kept in this browser, so leaving, refreshing or
   // reopening the site brings it back; Clear draft empties it. A restored board also goes back in the URL so it can be
   // shared and Back / refresh read it as before.
   useEffect(() => {
-    writeBoard(localStore(), { ally: draft, enemy: enemyDraftOf(enemy), focus, filter, patch: chosenPatch });
-  }, [draft, enemy, focus, filter, chosenPatch]);
+    writeBoard(localStore(), { ally: draft, enemy: enemyDraftOf(enemy), foes, focus, filter, patch: chosenPatch });
+  }, [draft, enemy, foes, focus, filter, chosenPatch]);
   useEffect(() => {
-    if (restored) writeUrl(draft, enemy, chosenPatch, focus);
+    if (restored) writeUrl(draft, foes, chosenPatch, focus);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // Nothing locked: only the starting views apply, each in its own order (real counts, lib/starting-picks.ts).
@@ -309,10 +331,24 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   // The first starting pick outside your pool gets a divider in the Recommended order.
   const firstOut = !started && startView === "all" ? visibleRows.find((c) => !c.meta?.tier && visibleRows.some((x) => x.meta?.tier))?.champion : undefined;
   const scope = roomPatch ? patchLabel(roomPatch) : undefined;
-  const choosePatch = (p: string) => { const next = p === defaultPatch(drawerData.priority) ? undefined : p; setChosenPatch(next); update(draft, enemy, next); };
+  const choosePatch = (p: string) => { const next = p === defaultPatch(drawerData.priority) ? undefined : p; setChosenPatch(next); update(draft, foes, next); };
   const proIds = active ? (proAll[active] ?? []).map((s) => s.champion) : [];
   const proSourceLine = `Recorded Gol.gg games next to your picks: ${(data.events ?? []).map((e) => `${e.short} ${patchLabel(e.patch)}${e.status === "ongoing" ? " (ongoing)" : ""}`).join(" · ")}. Evidence, never part of the order.`;
   const laneFoes = active ? LANE[active].map((r) => enemy[ROLES.indexOf(r)]).filter((e): e is string => !!e) : [];
+  // Enemy roles not confirmed: the lane opponent is the likely one, and champions placed elsewhere who could play the
+  // lane are possible opponents. Their counters are read as conditional advice from the same DPM rows (labels only).
+  const unsureFoes = laneFoes.filter((id) => foeRead.placements.find((p) => p.id === id)?.status !== "confirmed");
+  const laneAlts = active ? [...new Set(LANE[active].flatMap((r) => foeRead.possible[r] ?? []))].filter((id) => !laneFoes.includes(id)) : [];
+  const ifCounters = useMemo(() => {
+    if (!active || !started) return [];
+    return LANE[active].flatMap((r) => (dRead.possible[r] ?? []).flatMap((id) => {
+      const board = dRead.alt[id]?.[r];
+      if (!board) return [];
+      const rc = counterPicks(dDraft, board, data, fits)[active];
+      const list = rc ? rc.counters.filter((c) => !c.theoretical).slice(0, 3).map((c) => c.champion) : [];
+      return rc ? [{ id, role: r, list, coverage: list.length ? undefined : rc.coverage }] : [];
+    }));
+  }, [active, started, dRead, dDraft, data, fits]);
   const countOf = (f: Filter) => !active ? 0 : started ? (f === "all" ? activeRows.length : activeRows.filter((c) => hasSignal(c, f)).length)
     : sortForView(starting[active] ?? [], f as StartView).length;
 
@@ -335,7 +371,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   const setAutoBuilds = (on: boolean) => { setAutoBuildsState(on); store(AUTO_BUILDS_KEY, on ? "1" : undefined); };
   const mine = myRole ? draft[myRole] : undefined;
   const myEntry = mine && myRole ? buildsEntry(drawerData.builds, mine, myRole) : undefined;
-  const myHref = mine && myRole ? myBuildsHref(drawerData.builds, mine, myRole, draftQuery({ draft, vs: enemyParam(enemyDraft), focus, filter })) : undefined;
+  const myHref = mine && myRole ? myBuildsHref(drawerData.builds, mine, myRole, draftQuery({ draft, vs: enemyPicksParam(foes), focus, filter })) : undefined;
 
   const slotProps = { names, byName, champions: data.champions, taken: takenNow, onOpen: (id: string, role?: Role) => { hoverCard.hide(); setDrawer({ id, role }); },
     onHover: hoverCard.hover, onUnhover: hoverCard.unhover };
@@ -349,7 +385,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
           {lockedCount >= 2 && <CompStatus read={planRead} />}
           {cleared
             ? <button className="btn sm" onClick={() => { update(cleared.draft, cleared.enemy); setCompare(cleared.compare); setCleared(undefined); }}>Draft cleared · Undo</button>
-            : <button className="btn sm" title="Unlock every pick on both teams" onClick={() => { setCleared({ draft, enemy, compare }); setFocus(undefined); setPreviewed(undefined); setCompare({}); update({}, ROLES.map(() => undefined)); }} disabled={!started && !Object.keys(compare).length}>Clear draft</button>}
+            : <button className="btn sm" title="Unlock every pick on both teams" onClick={() => { setCleared({ draft, enemy: foes, compare }); setFocus(undefined); setPreviewed(undefined); setCompare({}); update({}, []); }} disabled={!started && !Object.keys(compare).length}>Clear draft</button>}
         </div>
       </header>
 
@@ -386,16 +422,22 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
           </div>
         </div>
         <div className="team-row enemy">
-          <div className="team-label">Enemy</div>
+          <div className="team-label">Enemy<EnemyAdd champions={data.champions} taken={takenNow} byName={byName} full={foes.length >= ROLES.length} onAdd={addEnemy} /></div>
           <div className="draft-slots">
-            {ROLES.map((role, i) => (
-              <DraftSlot key={role} side="enemy" role={role} value={enemy[i]} fresh={fresh === `enemy:${role}`} onLock={(v) => lockEnemy(i, v)} {...slotProps} />
-            ))}
+            {ROLES.map((role, i) => {
+              const p = placementAt(role);
+              return (
+                <DraftSlot key={role} side="enemy" role={role} value={enemy[i]} fresh={fresh === `enemy:${role}`} onLock={(v) => lockEnemy(i, v)} {...slotProps}
+                  tagNote={p ? roleTagNote(p) : undefined} provisional={!!p && p.status !== "confirmed"}
+                  menu={p ? (replace, close) => <EnemyRoleMenu placement={p} read={foeRead} names={names} patch={data.enemyRoles.patch} onSet={(a) => { close(); setEnemyRole(p.id, a); }} onReplace={replace} /> : undefined} />
+              );
+            })}
           </div>
         </div>
+        <UnplacedEnemies read={foeRead} names={names} onSet={setEnemyRole} />
       </div>
 
-      <LaneMatchups reads={laneReads} names={names} fresh={data.counterFreshness} />
+      <LaneMatchups reads={laneReads} names={names} fresh={data.counterFreshness} unconfirmed={Object.fromEntries(ROLES.map((r) => [r, placementAt(r)?.status !== "confirmed"]))} />
 
       {/* Narrow screens put Comp Check below the list: one line says what the draft is missing, here and pinned */}
       <CompSummaryLine read={planRead} active={active} className="cc-summary-board" preview={previewLine} />
@@ -439,7 +481,8 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                           onChange={(v) => setFilter((v || "all") as Filter)} />
                       )}
                       {laneFoes.length
-                        ? <span className="vs">vs {laneFoes.map((id, i) => <span key={id}>{i > 0 && " + "}<b>{names[id]}</b></span>)}</span>
+                        ? <span className="vs" title={laneFoeNote(active, foeRead, names)}>vs {laneFoes.map((id, i) => <span key={id}>{i > 0 && " + "}<b>{names[id]}</b>{foeRead.placements.find((p) => p.id === id)?.status !== "confirmed" && <span className="faint"> (likely)</span>}</span>)}
+                          {laneAlts.length > 0 && <span className="faint"> · or {laneAlts.map((id) => names[id] ?? id).join(", ")}</span>}</span>
                         : enemyIds.length ? <span className="vs muted">vs {enemyIds.map((id) => names[id]).join(" · ")}</span> : null}
                       {started ? <span className="order-note xs faint" title={ORDER_NOTE}>Preferred, then comp fit</span>
                         : <span className="order-note xs faint" title={START_NOTE}>Pro meta starting picks</span>}
@@ -459,6 +502,12 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                         {activeCounters.note ? ` ${activeCounters.note}` : ""}
                         {activeCounters.counters.some((c) => c.evidence.stale) ? ` From DPM.LOL patch ${patchLabel(activeCounters.counters[0].evidence.patch)}, older than ${patchLabel(data.newestPatch!)}: historical matchups that may no longer reflect current balance.` : ""}
                         {filter === "counter" && activeCounters.coverage.preliminary.length > 0 ? ` ${preliminaryText(activeCounters.coverage, (id) => names[id] ?? id)}` : ""}
+                        {unsureFoes.length > 0 ? ` ${unsureFoes.map((id) => names[id] ?? id).join(" and ")}: placed automatically, role not confirmed.` : ""}
+                      </p>
+                    )}
+                    {ifCounters.length > 0 && (filter === "counter" || !!activeCounters) && (
+                      <p className="fit-note fit-if xs muted">
+                        {ifCounters.map((x) => <span key={x.id}>If {names[x.id] ?? x.id} plays {ROLE_LABEL[x.role].toLowerCase()}: {x.list.length ? `counters ${x.list.map((id) => names[id] ?? id).join(", ")}` : emptyText(x.coverage!, names[x.id] ?? x.id, data.newestPatch)}. </span>)}
                       </p>
                     )}
                     {compared.length > 0 && (
@@ -562,7 +611,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
           leaving={quick.leaving} onGone={quick.end} onEnter={hoverCard.keep} onLeave={hoverCard.unhover} />
       )}
       {drawer && <ChampionDrawer target={drawer} data={drawerData} index={drawerIndex} onClose={() => setDrawer(undefined)} onSelect={setDrawer}
-        context={{ page: "draft", locked: [...Object.values(draft), ...enemy].filter((x): x is string => !!x), from: draftQuery({ draft, vs: enemyParam(enemyDraft), focus, filter }) }} />}
+        context={{ page: "draft", locked: [...Object.values(draft), ...enemy].filter((x): x is string => !!x), from: draftQuery({ draft, vs: enemyPicksParam(foes), focus, filter }) }} />}
     </div>
   );
 }
@@ -885,9 +934,11 @@ type SlotShared = {
   onHover: (t: DrawerTarget, el: HTMLElement) => void; onUnhover: () => void;
 };
 
-function DraftSlot({ side, role, value, fresh = false, active = false, mine = false, builds, preview, onActivate, onLock, suggested = [], names, byName, champions, taken, onOpen, onHover, onUnhover }: SlotShared & {
+function DraftSlot({ side, role, value, fresh = false, active = false, mine = false, builds, preview, onActivate, onLock, suggested = [], names, byName, champions, taken, onOpen, onHover, onUnhover, tagNote, provisional = false, menu }: SlotShared & {
   side: "ally" | "enemy"; role: Role; value?: string; fresh?: boolean; active?: boolean; mine?: boolean; builds?: string; preview?: string;
   onActivate?: () => void; onLock: (id: string | undefined) => void; suggested?: Recommendation[];
+  // Enemy slots (lib/enemy-roles.ts): how the role was set, and the role menu in place of "Change".
+  tagNote?: string; provisional?: boolean; menu?: (replace: () => void, close: () => void) => React.ReactNode;
 }) {
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
@@ -961,8 +1012,8 @@ function DraftSlot({ side, role, value, fresh = false, active = false, mine = fa
     }
     else if (editing && !text && (e.key === "Delete" || e.key === "Backspace")) { e.preventDefault(); remove(); }
   };
-  const cls = `draft-slot ${ally ? `role-${role}` : "enemy"} ${value ? "locked" : "open"} ${active ? "active" : ""} ${mine ? "mine" : ""} ${fresh ? "fresh" : ""}`;
-  const roleTag = <span className={`role-tag role-${role}`}>{role}{mine && <span className="slot-you">You</span>}</span>;
+  const cls = `draft-slot ${ally ? `role-${role}` : "enemy"} ${value ? "locked" : "open"} ${active ? "active" : ""} ${mine ? "mine" : ""} ${fresh ? "fresh" : ""} ${value && provisional ? "provisional" : ""}`;
+  const roleTag = <span className={`role-tag role-${role}`}>{role}{mine && <span className="slot-you">You</span>}{value && tagNote && <span className="slot-auto">{tagNote}</span>}</span>;
 
   if (value && !editing) {
     const name = names[value] ?? value;
@@ -975,10 +1026,15 @@ function DraftSlot({ side, role, value, fresh = false, active = false, mine = fa
           <span className="slot-icon" key={value}><ChampIcon id={value} name={name} role={ally ? role : undefined} size={ally ? "xxl" : "lg"} /></span>
           <span className="slot-text">{roleTag}<span className="slot-name truncate">{name}</span></span>
         </button>
-        <button className="slot-change" onClick={() => setEditing(true)} aria-label={`Change ${label} (${name})`} title={`Pick a different ${ROLE_LABEL[role]}, or remove ${name}`}>
-          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true"><path d="M7.8 2.2 9.8 4.2 4.3 9.7 1.8 10.2 2.3 7.7Z" /></svg>
-          <span className="slot-change-text">Change</span>
-        </button>
+        {menu
+          ? <Popover label={`Role of ${name}: confirm, mark flexible, replace or remove`} triggerClass="slot-change" className="role-menu-pop"
+              trigger={<><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true"><path d="M7.8 2.2 9.8 4.2 4.3 9.7 1.8 10.2 2.3 7.7Z" /></svg><span className="slot-change-text">{provisional ? "Role" : "Change"}</span></>}>
+              {(api) => menu(() => { api.close(); setEditing(true); }, api.close)}
+            </Popover>
+          : <button className="slot-change" onClick={() => setEditing(true)} aria-label={`Change ${label} (${name})`} title={`Pick a different ${ROLE_LABEL[role]}, or remove ${name}`}>
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true"><path d="M7.8 2.2 9.8 4.2 4.3 9.7 1.8 10.2 2.3 7.7Z" /></svg>
+              <span className="slot-change-text">Change</span>
+            </button>}
         {builds && <Link className="slot-builds" href={builds} title={`${name}'s recorded pro builds in this role`}>Pro Builds →</Link>}
       </div>
     );

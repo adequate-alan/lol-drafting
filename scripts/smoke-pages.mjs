@@ -222,11 +222,31 @@ await page.locator(".role-tab.role-TOP").click();
 const dpmCounters = await page.locator(".recs .fit-row .sig.counter").count();
 check("Counters show stored DPM matchups (Top vs Aatrox)", dpmCounters > 0 && !/not proof that .* has no counters/.test(await text(".recs")), `${dpmCounters} counters`);
 check("no Clash wording on the Draft Room", !/Clash/.test(await text("body")), "");
+// Enemy flex picks (alan, 2026-11-10; lib/enemy-roles.ts): an enemy added without a role is placed with the whole
+// lineup and marked "likely"; a later pick re-places it; a confirmed role is kept and goes in the link.
+{
+  await open("/?bot=jinx&vs=poppy");
+  const slot = (r) => page.locator(`.team-row.enemy .draft-slot[data-role="${r}"]`);
+  check("flex: an enemy without a role is placed automatically and not shown as confirmed",
+    /Poppy/.test(await slot("JUNGLE").innerText()) && (await slot("JUNGLE").getAttribute("class"))?.includes("provisional") && /likely/.test(await slot("JUNGLE").innerText()), await slot("JUNGLE").innerText());
+  await page.locator(".enemy-add-btn").click();
+  await page.keyboard.type("Vi");
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(300);
+  check("flex: adding an only-jungle champion moves Poppy to support", /Vi/.test(await slot("JUNGLE").innerText()) && /Poppy/.test(await slot("SUPPORT").innerText()) && page.url().includes("vs=poppy,vi"), page.url());
+  await slot("SUPPORT").locator(".slot-change").click();
+  await page.locator(".role-menu-roles button", { hasText: "TOP" }).click();
+  await page.waitForTimeout(300);
+  check("flex: confirming a role keeps it and writes it in the link", /Poppy/.test(await slot("TOP").innerText()) && !(await slot("TOP").getAttribute("class"))?.includes("provisional") && page.url().includes("vs=top:poppy,vi"), page.url());
+  await page.evaluate(() => localStorage.removeItem("draft-room:board"));
+}
 // Draft Room workspace: the open role drives the list, one row per champion, Comp Check rail, pinned draft bar
 await open("/?bot=sivir&vs=renekton,,,ezreal,karma");
 check("Bot locked: Support is the active role", (await page.locator(".draft-slot.role-SUPPORT.active").count()) === 1
   && /Support/.test(await text(".role-tab.active")), await text(".role-tab.active"));
-check("Support recommendations read vs the enemy bot lane", /vs Ezreal \+ Karma/.test(await text(".recs .fit-context .vs")), await text(".recs .fit-context .vs"));
+// Bare ids in ?vs= are placed automatically, so each opponent is read as the likely one (lib/enemy-roles.ts).
+check("Support recommendations read vs the enemy bot lane", /vs Ezreal( \(likely\))? \+ Karma/.test(await text(".recs .fit-context .vs")), await text(".recs .fit-context .vs"));
 const rowNames = await page.locator(".recs .fit-head .name").allTextContents();
 check("each champion appears once in the recommendation list", rowNames.length > 0 && new Set(rowNames).size === rowNames.length, rowNames.join(", "));
 const recBox = await page.locator("section.recs").boundingBox();
