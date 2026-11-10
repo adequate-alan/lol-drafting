@@ -3,7 +3,8 @@ name: Refresh patch notes
 # Daily check of Riot's official League of Legends patch notes (leagueoflegends.com) for new patches from 26.16 on, for
 # corrections to a published patch (the article's revision changed) and for mid-patch updates. Summoner's Rift content
 # only. Commits data/patch-notes.json and deploys only when that content changed; a refused or failed request writes
-# nothing. Earlier patches stay in the archive. Saved pairings, pool tiers and recommendations are never touched.
+# nothing. Earlier patches stay in the archive. Saved pairings, pool tiers and recommendations are never touched. The item
+# history Pro Builds reads (data/item-changes.json) is regenerated from the notes in the same run and committed with them.
 #
 # 8:47 AM Eastern all year, half an hour after the pro-data refresh (minute 47 keeps off the busy top and half hour; GitHub
 # starts those late under load): both 12:47 and 13:47 UTC are scheduled and the gate
@@ -60,13 +61,26 @@ jobs:
         name: Check Riot's patch notes
         run: node scripts/refresh-patch-notes.mjs ${{ inputs.dry_run && '--dry-run' || '' }} ${{ inputs.force && '--force' || '' }}
 
-      - if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
+      - if: steps.gate.outputs.run == 'true'
         run: npm ci
-      - if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
+
+      # Item history for historical Pro Builds (alan, 2026-11-10; lib/item-history.ts): regenerates
+      # data/item-changes.json from the patch notes, reads Riot's page for any reported earlier change still pending (and
+      # Data Dragon for missing Summoner's Rift item ids), and lists builds holding an item they could not have held.
+      # A refusal or challenge stops the verification only; nothing is invented.
+      - id: items
+        if: steps.gate.outputs.run == 'true'
+        name: Item history
+        run: npx tsx scripts/item-history.ts --verify ${{ inputs.dry_run && '--dry-run' || '' }}
+
+      - id: any
+        if: steps.gate.outputs.run == 'true'
+        run: echo "changed=${{ (steps.refresh.outputs.changed == 'true' || steps.items.outputs.changed == 'true') && !inputs.dry_run }}" >> "$GITHUB_OUTPUT"
+      - if: steps.any.outputs.changed == 'true'
         run: npm test
-      - if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
+      - if: steps.any.outputs.changed == 'true'
         run: npm run typecheck
-      - if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
+      - if: steps.any.outputs.changed == 'true'
         run: npm run build
 
       # Kit review queue (alan, 2026-10-22): champions whose changes touch their stored kit values, for a person to recheck.
@@ -89,12 +103,12 @@ jobs:
           [ -d node_modules ] || npm ci
           npx tsx scripts/dpm-freshness.ts | tee -a "$GITHUB_STEP_SUMMARY"
       - id: commit
-        if: steps.refresh.outputs.changed == 'true' && !inputs.dry_run
+        if: steps.any.outputs.changed == 'true'
         name: Commit refreshed patch notes
         run: |
           git config user.name "adequate-alan"
           git config user.email "54249725+adequate-alan@users.noreply.github.com"
-          git add data/patch-notes.json
+          git add data/patch-notes.json data/item-changes.json
           git diff --cached --quiet && { echo "Nothing staged."; exit 0; }
           git commit -m "Patch notes: daily Riot check $(date -u +%Y-%m-%d)" -m "$(node -e 'const p=require("./data/patch-notes.json");console.log(p.patches.slice(0,3).map(x=>`${x.patch} (${x.short}): ${x.entries.length} entries${x.midPatch.length?`, mid-patch ${x.midPatch.length}`:""}`).join("\n"))')"
           for i in 1 2 3; do

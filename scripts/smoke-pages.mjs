@@ -1119,6 +1119,16 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await open("/pro-builds/?champion=jhin&role=BOT");
   await page.locator(".builds-head, .builds-empty").first().waitFor({ timeout: 8000 }).catch(() => {});
   check("builds: an explicit champion URL opens that champion and role", (await page.locator(".builds-title h2").textContent().catch(() => "")) === "Jhin" && /BOT/.test(await page.locator(".pick-rail li button.active").innerText().catch(() => "")), page.url());
+  // Item changes on historical builds (alan, 2026-11-10): a Demacia Cup game (26.18) names its patch and the live one,
+  // marks the items Riot changed since, and a mark opens what changed with Riot's source.
+  await open("/pro-builds/?champion=yunara&role=BOT&game=83447");
+  await page.locator(".item-notice").first().waitFor({ timeout: 8000 }).catch(() => {});
+  const notice = await page.locator(".game-detail .item-notice").first().innerText().catch(() => "");
+  const marked = await page.locator(".game-detail .bicon.has-mark").count();
+  await page.locator(".game-detail .pop-trigger.item-mark-trigger").first().click().catch(() => {});
+  const card = await page.locator(".popover .item-change-card").first().innerText().catch(() => "");
+  await page.keyboard.press("Escape");
+  check("builds: an older game says its patch, the live patch and its changed items; a mark opens Riot's change", /Historical build · Played on 26\.18 · Current patch 26\.\d+/.test(notice) && marked > 0 && /Riot patch 26\.\d+ notes/.test(card), `${notice} · ${marked} marks`);
   // Pinned players first (alan, 2026-10-13): with Ruler (Gol.gg 685) pinned, Ashe Bot opens his newest Ashe game (the
   // first of his in the newest-first strip) on any patch; a chosen player, an explicit patch and unpinning are respected.
   // Relationships only: Ruler keeps playing Ashe, so which patch his newest game is on changes with the data.

@@ -377,6 +377,20 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   The drawer shows only a count, players, latest patch and "View Pro Builds →" (`getBuildIndex`); Synergies and Pro
   Drafts (each pick of a recorded game) link in too. Observed Pro Evidence only: it never scores and never touches saved
   pairings, rankings, Comp Check or pool tiers.
+- **Item changes since the game** (alan, 2026-11-10; `lib/item-history.ts`, `components/ItemChanges.tsx`,
+  `scripts/item-history.ts`, `tests/item-history.test.ts`, smoke "builds: an older game"): `data/item-changes.json` is the
+  Summoner's Rift item history, one record per item per patch (Data Dragon id, patch, type, mode, Riot's source and exact
+  lines). `changes` is generated from `patch-notes.json` (never hand-edited; the test keeps them in step), `external`
+  holds earlier changes (Opportunity removed in 26.9, alan's claim, pending until the runner reads Riot's page), `ids`
+  are Data Dragon ids the runner looked up. The daily patch-notes workflow regenerates, verifies and commits it. Type
+  follows Riot's stated intent; mixed or unstated is "Changed", plain one-way stat lines with Riot silent read as buff /
+  nerf (`basis` names which). The live patch is the newest stored patch notes. A change counts when its patch is after the
+  game's (numeric order) up to the live patch, or a same-patch mid-patch update dated after the game. Each changed item
+  gets a corner mark that opens what changed (patch, Riot's before / after, Riot's link); the build keeps every item as
+  bought and says once "Historical build · Played on 26.18 · Current patch 26.22. N items have changed since this game",
+  says which patches' notes are missing instead of calling the build checked, and names a data-quality flag when a game
+  holds an item its history says it could not (bought after its removal). Common builds read each item against the
+  games that bought it, each on its own patch. Items only; never a replacement item, never a score.
 - A rune page with only the keystone (`missing: ["full rune page"]`) shows the keystone and says the full page is
   unavailable; never fill in the rest.
 - **My Role** (alan, 2026-10-12; `lib/my-role.ts`, `tests/my-role.test.ts`): Draft Room's "I'm playing" selector is the

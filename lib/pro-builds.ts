@@ -10,6 +10,7 @@
 // are labelled as derived, and say so when the log is incomplete.
 import { comparePatch, patchKey, samePatch } from "./patch";
 import { newestGamesFirst, recordStamp } from "./chronology";
+import type { ItemCheck } from "./item-history";
 import type { PatchAssets, ProBuild, ProGame, Role } from "./schema";
 
 export type Skill = "Q" | "W" | "E" | "R";
@@ -27,6 +28,8 @@ export interface BuildRow {
   won: boolean;
   opponent?: { champion: string; player?: string }; // same role on the other side
   assets?: PatchAssets; // this game's patch
+  /** Items Riot changed since this game (lib/item-history.ts); attached where the build chunk loads. */
+  itemCheck?: ItemCheck;
 }
 
 export function buildRows(builds: ProBuild[], games: ProGame[], assets: Record<string, PatchAssets>): BuildRow[] {

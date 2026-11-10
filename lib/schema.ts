@@ -632,6 +632,43 @@ export type PatchNote = z.infer<typeof PatchNote>;
 export const PatchNotes = z.object({ firstPatch: PatchLabel, source: z.string().url(), patches: z.array(PatchNote) });
 export type PatchNotes = z.infer<typeof PatchNotes>;
 
+// ---------- item-changes.json (item history for historical Pro Builds, alan 2026-11-10) ----------
+// Every Summoner's Rift item change Riot published, one record per item per patch, so a build played on an older patch can
+// say which of its items changed since. `changes` is generated from patch-notes.json by scripts/item-history.ts (run by
+// the daily patch-notes workflow; tests/item-history.test.ts keeps the two in step); `external` holds changes from before
+// the archive began, each with its source and whether the site's own check has read that page yet; `ids` are Data Dragon
+// item ids by name, read on a runner. A change's type follows Riot's stated intent; anything mixed or unstated is "changed".
+export const ITEM_CHANGE_TYPES = ["removed", "rework", "nerf", "buff", "changed", "new"] as const;
+export type ItemChangeType = (typeof ITEM_CHANGE_TYPES)[number];
+export const ItemChange = z.object({
+  id: z.string().min(1), // "26.22/item-dorans-bow", unique
+  item: z.string().min(1), // Riot's item name
+  itemId: z.string().regex(/^\d+$/).nullable(), // Data Dragon id on Summoner's Rift, null when not yet resolved
+  patch: PatchLabel,
+  midPatch: z.object({ title: z.string(), date: Day.nullable() }).optional(),
+  type: z.enum(ITEM_CHANGE_TYPES),
+  // riot-wording: Riot's first-person intent; stat-lines: Riot silent, every line one stat moving one way; riot-tag:
+  // Riot's NEW / REMOVED tag; mixed: Riot's wording or the lines go both ways (type "changed"); unstated: nothing to read.
+  basis: z.enum(["riot-wording", "stat-lines", "riot-tag", "mixed", "unstated", "reviewed", "externally-provided"]),
+  mode: z.literal("summoners-rift"),
+  source: z.object({ url: z.string().url(), anchor: z.string().optional(), entry: z.string().optional() }),
+  lines: z.array(z.object({ label: z.string().optional(), before: z.string().optional(), after: z.string().optional(), text: z.string().optional() })),
+  context: z.string().optional(), // Riot's reason, verbatim
+  origin: z.enum(["riot-patch-notes", "externally-provided"]),
+  refreshStatus: z.enum(["verified", "not-refreshed"]),
+  lastChecked: Day.nullable(),
+  pendingClaim: z.object({ claim: z.string(), providedOn: Day }).optional(),
+});
+export type ItemChange = z.infer<typeof ItemChange>;
+export const ItemChanges = z.object({
+  note: z.string(),
+  archive: z.object({ first: PatchLabel, latest: PatchLabel, patches: z.array(z.object({ patch: PatchLabel, url: z.string().url(), published: Day.nullable() })) }),
+  changes: z.array(ItemChange),
+  external: z.array(ItemChange),
+  ids: z.record(z.object({ id: z.string().regex(/^\d+$/), source: z.string(), checkedOn: Day })),
+});
+export type ItemChanges = z.infer<typeof ItemChanges>;
+
 // ---------- kit-review.json (alan's decisions on flagged kits) ----------
 // lib/kit-review.ts flags a champion whose crowd control, mobility, range, damage profile or mechanics Riot changed.
 // A flag leaves the queue only through a decision recorded here, after alan reviewed it; nothing writes this file on its own.
@@ -708,6 +745,7 @@ export const Files = {
   "counters.json": Counters,
   "proposed-synergy.json": ProposedSynergy,
   "patch-notes.json": PatchNotes,
+  "item-changes.json": ItemChanges,
   "kit-review.json": KitReview,
   "analyst-commentary.json": AnalystCommentary,
 } as const;

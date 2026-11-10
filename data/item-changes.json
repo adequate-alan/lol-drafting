@@ -1,0 +1,776 @@
+{
+  "note": "Summoner's Rift item history for historical Pro Builds. `archive` and `changes` are generated from patch-notes.json by scripts/item-history.ts (daily patch-notes workflow); `external` holds earlier changes with their source and check status; `ids` are Data Dragon item ids read on a runner.",
+  "archive": {
+    "first": "26.16",
+    "latest": "26.22",
+    "patches": [
+      {
+        "patch": "26.22",
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-22-notes/",
+        "published": "2026-11-03"
+      },
+      {
+        "patch": "26.21",
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-21-notes/",
+        "published": "2026-10-20"
+      },
+      {
+        "patch": "26.20",
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-20-notes/",
+        "published": "2026-10-06"
+      },
+      {
+        "patch": "26.19",
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-19-notes/",
+        "published": "2026-09-22"
+      },
+      {
+        "patch": "26.18",
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-18-notes/",
+        "published": "2026-09-09"
+      },
+      {
+        "patch": "26.17",
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-17-notes/",
+        "published": "2026-08-25"
+      },
+      {
+        "patch": "26.16",
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
+        "published": "2026-08-11"
+      }
+    ]
+  },
+  "changes": [
+    {
+      "id": "26.22/item-dorans-bow",
+      "item": "Doran's Bow",
+      "itemId": "1086",
+      "patch": "26.22",
+      "type": "nerf",
+      "basis": "riot-wording",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-22-notes/",
+        "anchor": "patch-Dorans-Bow",
+        "entry": "item-dorans-bow"
+      },
+      "lines": [
+        {
+          "label": "Attack Damage",
+          "before": "8",
+          "after": "7"
+        }
+      ],
+      "context": "We’re nerfing Doran's Bow by a minor amount, as it’s settled into a spot that is slightly but clearly too strong, resulting in marksmen that we expect to be leaning towards Doran's Blade instead being almost purely Doran's Bow users.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-11-03"
+    },
+    {
+      "id": "26.22/item-overlords-bloodmail",
+      "item": "Overlord's Bloodmail",
+      "itemId": "2501",
+      "patch": "26.22",
+      "type": "changed",
+      "basis": "mixed",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-22-notes/",
+        "anchor": "patch-Overlords-Bloodmail",
+        "entry": "item-overlords-bloodmail"
+      },
+      "lines": [
+        {
+          "label": "Attack Damage",
+          "before": "30",
+          "after": "40"
+        },
+        {
+          "label": "Retribution",
+          "before": "+0 - 12% total AD, based on % Missing Health",
+          "after": "+0 - 10% total AD, based on % Missing Health"
+        }
+      ],
+      "context": "Overlord's should be one of the premier juggernaut capstone items, but outside of Sett hasn't been able to carry enough power to justify greeding for. We are adjusting Overlords in a way that should be a net buff for most other users while hopefully not ballooning its power level too far on Sett, who benefits the most from the Retribution passive because of synergy with his Haymaker (W).",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-11-03"
+    },
+    {
+      "id": "26.21/item-bastion-breaker",
+      "item": "Bastion Breaker",
+      "itemId": "2520",
+      "patch": "26.21",
+      "type": "nerf",
+      "basis": "riot-wording",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-21-notes/",
+        "anchor": "patch-Dawncore",
+        "entry": "item-bastion-breaker"
+      },
+      "lines": [
+        {
+          "label": "Lethality",
+          "before": "22",
+          "after": "18"
+        },
+        {
+          "label": "Shaped Charge Damage",
+          "before": "50 Melee + 1.5/Lethality / 25 Ranged + 0.75/Lethality",
+          "after": "40 Melee + 1.5/Lethality / 20 Ranged + 0.75/Lethality"
+        },
+        {
+          "label": "Sabotage Duration",
+          "before": "90s",
+          "after": "Infinite"
+        },
+        {
+          "label": "Sabotage Duration Context",
+          "text": "Sabotage Duration Context: This is how long you have to use the bonus damage against objectives."
+        }
+      ],
+      "context": "Bastion Breaker was buffed into being a bit of a generic stat stick in order to give it a proper swing in the meta. Now, we’re nerfing that generic power with a QoL improvement to keep it a satisfying item in its niche.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-24"
+    },
+    {
+      "id": "26.21/item-dawncore",
+      "item": "Dawncore",
+      "itemId": "6621",
+      "patch": "26.21",
+      "type": "buff",
+      "basis": "riot-wording",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-21-notes/",
+        "anchor": "patch-Dawncore",
+        "entry": "item-dawncore"
+      },
+      "lines": [
+        {
+          "label": "Ability Power per 100% Base Mana Regeneration",
+          "before": "10",
+          "after": "15"
+        }
+      ],
+      "context": "Dawncore is the enchanter capstone that isn’t, and currently only Soraka picks it up. Even when other supports get to full build, they often prefer other purchases. We’re buffing its AP value to make it less purely bound to Healing and Shielding.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-24"
+    },
+    {
+      "id": "26.21/item-gluttonous-greaves",
+      "item": "Gluttonous Greaves",
+      "itemId": "3008",
+      "patch": "26.21",
+      "type": "nerf",
+      "basis": "riot-wording",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-21-notes/",
+        "anchor": "patch-Dawncore",
+        "entry": "item-gluttonous-greaves"
+      },
+      "lines": [
+        {
+          "label": "Total Cost",
+          "before": "1000g",
+          "after": "1100g"
+        }
+      ],
+      "context": "The greaves are overperforming for marksmen, even when getting very few stacks, so we’re hitting it with a nerf to its cost to delay early acquisitions from getting too much value.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-24"
+    },
+    {
+      "id": "26.21/item-hubris",
+      "item": "Hubris",
+      "itemId": "6697",
+      "patch": "26.21",
+      "type": "changed",
+      "basis": "mixed",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-21-notes/",
+        "anchor": "patch-Hubris",
+        "entry": "item-hubris"
+      },
+      "lines": [
+        {
+          "label": "Base Bonus Attack Damage",
+          "before": "12",
+          "after": "15 Melee / 10 Ranged"
+        },
+        {
+          "label": "Bonus Attack Damage per Stack",
+          "before": "3",
+          "after": "3 Melee / 2 Ranged"
+        }
+      ],
+      "context": "While Hubris has been a bit weak for melee champions, it’s clearly been overperforming for ranged users. We’re delineating between the two now to encourage melees and disincentivize ranged users from building it.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-24"
+    },
+    {
+      "id": "26.20/item-experimental-hexplate",
+      "item": "Experimental Hexplate",
+      "itemId": "3073",
+      "patch": "26.20",
+      "type": "changed",
+      "basis": "unstated",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-20-notes/",
+        "anchor": "patch-Experimental-Hexplate",
+        "entry": "item-experimental-hexplate"
+      },
+      "lines": [
+        {
+          "label": "Ranged Mod",
+          "before": "70% of Value (35% Attack Speed, 14% Move Speed)",
+          "after": "50% of Value (25% Attack Speed, 10% Move Speed)"
+        }
+      ],
+      "context": "We've been fairly unhappy with how this item has played out for ranged users, especially as a first rush in top lane where it makes them too resilient to burst and too lethal during all ins.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.20/item-hextech-rocketbelt",
+      "item": "Hextech Rocketbelt",
+      "itemId": "3152",
+      "patch": "26.20",
+      "type": "changed",
+      "basis": "mixed",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-20-notes/",
+        "anchor": "patch-Hextech-Rocketbelt",
+        "entry": "item-hextech-rocketbelt"
+      },
+      "lines": [
+        {
+          "label": "Ability Haste",
+          "before": "20",
+          "after": "10"
+        },
+        {
+          "label": "Active Damage",
+          "before": "100 (+10% AP)",
+          "after": "135 (+15% AP)"
+        }
+      ],
+      "context": "Rocketbelt continues to be used a bit too much as an escape compared to a risky engage tool, so we are pulling back on its generic value in favor of emphasizing aggressive action with it, especially for AP Bruisers who rely on it for all ins.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.20/item-runaans-hurricane",
+      "item": "Runaan's Hurricane",
+      "itemId": "3085",
+      "patch": "26.20",
+      "type": "nerf",
+      "basis": "riot-wording",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-20-notes/",
+        "anchor": "patch-Runaans-Hurricane",
+        "entry": "item-runaans-hurricane"
+      },
+      "lines": [
+        {
+          "label": "Attack Damage per Bolt",
+          "before": "65%",
+          "after": "60%"
+        }
+      ],
+      "context": "This item was slightly overbuffed, so pulling back on that a bit.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.19/item-world-atlas-and-runic-compass/worldatlas",
+      "item": "World Atlas",
+      "itemId": "3865",
+      "patch": "26.19",
+      "type": "changed",
+      "basis": "mixed",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-19-notes/",
+        "entry": "item-world-atlas-and-runic-compass"
+      },
+      "lines": [
+        {
+          "label": "Health",
+          "before": "30 / 100 / 200",
+          "after": "0 / 60 / 200"
+        },
+        {
+          "label": "Health Regeneration",
+          "before": "25% / 50% / 75%",
+          "after": "50% / 75% / 75%"
+        }
+      ],
+      "context": "We think melee supports have too much of their power in roaming and all-ins and are too weak in sustained laning. In response, we're shifting the flat health to health regen on World Atlas and Runic Compass, which will benefit them more due to their higher base health regen values.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.19/item-world-atlas-and-runic-compass/runiccompass",
+      "item": "Runic Compass",
+      "itemId": "3866",
+      "patch": "26.19",
+      "type": "changed",
+      "basis": "mixed",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-19-notes/",
+        "entry": "item-world-atlas-and-runic-compass"
+      },
+      "lines": [
+        {
+          "label": "Health",
+          "before": "30 / 100 / 200",
+          "after": "0 / 60 / 200"
+        },
+        {
+          "label": "Health Regeneration",
+          "before": "25% / 50% / 75%",
+          "after": "50% / 75% / 75%"
+        }
+      ],
+      "context": "We think melee supports have too much of their power in roaming and all-ins and are too weak in sustained laning. In response, we're shifting the flat health to health regen on World Atlas and Runic Compass, which will benefit them more due to their higher base health regen values.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.18/item-guinsoos-rageblade",
+      "item": "Guinsoo's Rageblade",
+      "itemId": "3124",
+      "patch": "26.18",
+      "type": "buff",
+      "basis": "riot-wording",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-18-notes/",
+        "anchor": "patch-Guinsoos-Rageblade",
+        "entry": "item-guinsoos-rageblade"
+      },
+      "lines": [
+        {
+          "label": "Seething Strike Stack Duration",
+          "before": "3s",
+          "after": "4s"
+        }
+      ],
+      "context": "In light of the bugfix nerfing rageblade by a minor amount by pushing back when the first double hit triggers, we are compensating with a similarly minor QoL buff to help players get it stacked up and keep it stacked.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.17/item-stormrazor",
+      "item": "Stormrazor",
+      "itemId": "3095",
+      "patch": "26.17",
+      "type": "buff",
+      "basis": "stat-lines",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-17-notes/",
+        "anchor": "patch-Stormrazor",
+        "entry": "item-stormrazor"
+      },
+      "lines": [
+        {
+          "label": "Attack Speed",
+          "before": "20%",
+          "after": "25%"
+        }
+      ],
+      "context": "Stormrazor almost had its time in the sun earlier this year, but has ended up remaining second fiddle.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.17/item-sundered-sky",
+      "item": "Sundered Sky",
+      "itemId": "6610",
+      "patch": "26.17",
+      "type": "nerf",
+      "basis": "stat-lines",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-17-notes/",
+        "anchor": "patch-Sundered-Sky",
+        "entry": "item-sundered-sky"
+      },
+      "lines": [
+        {
+          "label": "Health",
+          "before": "450",
+          "after": "400"
+        },
+        {
+          "label": "Attack Damage",
+          "before": "45",
+          "after": "40"
+        }
+      ],
+      "context": "Last patch’s Sundered Sky nerf was a step in the right direction, but landed a bit under-target given all of the other moving pieces of that patch.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.16/item-berserkers-greaves",
+      "item": "Berserker's Greaves",
+      "itemId": "3006",
+      "patch": "26.16",
+      "type": "buff",
+      "basis": "riot-wording",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
+        "anchor": "patch-Berserkers-Greaves",
+        "entry": "item-berserkers-greaves"
+      },
+      "lines": [
+        {
+          "label": "Attack Speed",
+          "before": "25%",
+          "after": "30%"
+        },
+        {
+          "label": "T3 Attack Speed",
+          "before": "40%",
+          "after": "45%"
+        }
+      ],
+      "context": "Berserker's Greaves have been sitting at a particularly low state of power for a while now, and with the state of AD champions in both bot and mid, we feel this is the right time to buff them.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.16/item-black-cleaver",
+      "item": "Black Cleaver",
+      "itemId": "3071",
+      "patch": "26.16",
+      "type": "changed",
+      "basis": "mixed",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
+        "anchor": "patch-Black-Cleaver",
+        "entry": "item-black-cleaver"
+      },
+      "lines": [
+        {
+          "label": "Attack Damage",
+          "before": "40",
+          "after": "45"
+        },
+        {
+          "label": "Fervor Move Speed",
+          "before": "20 for 2s",
+          "after": "[20 Melee || 10 Ranged] for 2s"
+        }
+      ],
+      "context": "Black Cleaver has become a Smolder / Senna item more than a core AD fighter item. We are re-adding the Melee / Ranged split on the move speed effect to buy space to buff it for AD fighters without pushing it over the top for its ranged user base.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.16/item-eclipse",
+      "item": "Eclipse",
+      "itemId": "6692",
+      "patch": "26.16",
+      "type": "buff",
+      "basis": "riot-wording",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
+        "anchor": "patch-Eclipse",
+        "entry": "item-eclipse"
+      },
+      "lines": [
+        {
+          "label": "Damage",
+          "before": "[6% Melee || 4% Ranged] Target Maximum Health",
+          "after": "[8% Melee || 5% Ranged] Target Maximum Health"
+        },
+        {
+          "label": "Shield",
+          "before": "[160 + 40% bonus Attack Damage Melee || 80 + 20% bonus Attack Damage Ranged]",
+          "after": "[150 + 40% bonus Attack Damage Melee || 75 + 20% bonus Attack Damage Ranged]"
+        }
+      ],
+      "context": "Eclipse has similarly fallen behind as an option for AD champions as a high ticket early AD item that isn't in the Lethality space. We feel it has clear space for a buff.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.16/item-runaans-hurricane",
+      "item": "Runaan's Hurricane",
+      "itemId": "3085",
+      "patch": "26.16",
+      "type": "buff",
+      "basis": "riot-wording",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
+        "anchor": "patch-Runaans-Hurricane",
+        "entry": "item-runaans-hurricane"
+      },
+      "lines": [
+        {
+          "label": "Move Speed",
+          "before": "4%",
+          "after": "5%"
+        },
+        {
+          "label": "Wind's Fury Bolt Damage",
+          "before": "55% Attack Damage",
+          "after": "65% Attack Damage"
+        }
+      ],
+      "context": "Runaan's Hurricane has lost all of its core users over the course of the year as ADCs have moved to a wider variety of AS Crit itemization. We are buffing its unique effect and movespeed to help players capitalize on the positioning requirements of that unique effect.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.16/item-steraks-gage",
+      "item": "Sterak's Gage",
+      "itemId": "3053",
+      "patch": "26.16",
+      "type": "buff",
+      "basis": "stat-lines",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
+        "anchor": "patch-Steraks-Gage",
+        "entry": "item-steraks-gage"
+      },
+      "lines": [
+        {
+          "label": "Bonus Attack Damage",
+          "before": "45% of Base Attack Damage",
+          "after": "50% of Base Attack Damage"
+        }
+      ],
+      "context": "Sterak's Gage has also lost its position as the premium juggernaut / diver teamfight item, with Guardian Angel taking its place. We think Sterak's is a much healthier fit for these champions to take.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.16/item-sundered-sky",
+      "item": "Sundered Sky",
+      "itemId": "6610",
+      "patch": "26.16",
+      "type": "nerf",
+      "basis": "riot-wording",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
+        "anchor": "patch-Sundered-Sky",
+        "entry": "item-sundered-sky"
+      },
+      "lines": [
+        {
+          "label": "Recipe",
+          "before": "Tunneler (1150g) + Caulfield's (1050g) + Ruby Crystal (400g) + 500g",
+          "after": "Tunneler (1150g) + Caulfield's (1050g) + 900g"
+        },
+        {
+          "label": "Healing",
+          "before": "[100% Melee || 50% Ranged] Base Attack Damage + 6% Missing Health",
+          "after": "[90% Melee || 45% Ranged] Base Attack Damage + 4% Missing Health"
+        },
+        {
+          "label": "Health",
+          "before": "400",
+          "after": "450"
+        }
+      ],
+      "context": "Sundered Sky, on the other hand, has been the meta dominant AD fighter item for the last year. While we do find it exciting to see when players manage to chain its triggers through a teamfight and barely survive risky engages, we think it's a bit too performant when optimized to the point where it's healing for more than even lifesteal based items.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.16/item-sunfire-cape",
+      "item": "Sunfire Cape",
+      "itemId": null,
+      "patch": "26.16",
+      "type": "changed",
+      "basis": "mixed",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
+        "anchor": "patch-Sunfire-Cape",
+        "entry": "item-sunfire-cape"
+      },
+      "lines": [
+        {
+          "label": "Damage",
+          "before": "20 (+1% bonus Health)",
+          "after": "20 (+1.5% bonus Health)"
+        },
+        {
+          "label": "Minion / Monster Modifier",
+          "before": "160% Minion, 200% Monster",
+          "after": "150% Minion, 180% Monster"
+        },
+        {
+          "label": "Recipe",
+          "before": "600g",
+          "after": "700g"
+        }
+      ],
+      "context": "Sunfire Cape has remained a powerful item in League, both in purchase and winrate, but players have repeatedly called out dissatisfaction with the item because of how directly it's compared against Hollow Radiance. We are upping its cost to match Hollow Radiance and shifting its power towards PvP damage to give the item more comparable advantages.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.16/item-chainlaced-crushers",
+      "item": "Chainlaced Crushers",
+      "itemId": "3173",
+      "patch": "26.16",
+      "type": "nerf",
+      "basis": "riot-wording",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
+        "anchor": "patch-Chainlaced-Crushers",
+        "entry": "item-chainlaced-crushers"
+      },
+      "lines": [
+        {
+          "label": "Magic Resistance",
+          "before": "30",
+          "after": "25"
+        }
+      ],
+      "context": "We continue to feel that defensive boot optimizations in mid lane stifle action. Since we are looking to shift mage power back from bot lane to mid lane this patch, we are also taking the time to nerf down mid lane counter itemization against mages.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.16/item-spellslingers-shoes",
+      "item": "Spellslinger's Shoes",
+      "itemId": "3175",
+      "patch": "26.16",
+      "type": "buff",
+      "basis": "riot-wording",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
+        "anchor": "patch-Spellslingers-Shoes",
+        "entry": "item-spellslingers-shoes"
+      },
+      "lines": [
+        {
+          "label": "Magic Penetration",
+          "before": "18 + 8%",
+          "after": "20 + 8%"
+        }
+      ],
+      "context": "Along with Chainlaced Crushers' change, we are buffing Spellslinger's Shoes to further affect mid vs bot mage balance.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    },
+    {
+      "id": "26.16/item-tiamat",
+      "item": "Tiamat",
+      "itemId": "3077",
+      "patch": "26.16",
+      "type": "buff",
+      "basis": "stat-lines",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
+        "anchor": "patch-Tiamat",
+        "entry": "item-tiamat"
+      },
+      "lines": [
+        {
+          "label": "Attack Damage",
+          "before": "20",
+          "after": "25"
+        }
+      ],
+      "context": "Tiamat has ended up in a state where even if you are buying a Hydra item, it's optimal NOT to purchase it until you have all the other components. That's pretty lame, yo.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-10-12"
+    }
+  ],
+  "external": [
+    {
+      "id": "26.9/item-opportunity",
+      "item": "Opportunity",
+      "itemId": "6701",
+      "patch": "26.9",
+      "type": "removed",
+      "basis": "externally-provided",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-gb/news/game-updates/league-of-legends-patch-26-9-notes/"
+      },
+      "lines": [
+        {
+          "text": "Removed from Summoner's Rift."
+        }
+      ],
+      "origin": "externally-provided",
+      "refreshStatus": "not-refreshed",
+      "lastChecked": null,
+      "pendingClaim": {
+        "claim": "Riot removed Opportunity from Summoner's Rift in patch 26.9 (patch notes of April 28, 2026).",
+        "providedOn": "2026-11-10"
+      }
+    }
+  ],
+  "ids": {
+    "Opportunity": {
+      "id": "6701",
+      "source": "Data Dragon 16.8.1",
+      "checkedOn": "2026-11-10"
+    },
+    "World Atlas": {
+      "id": "3865",
+      "source": "Data Dragon 16.19.1",
+      "checkedOn": "2026-11-10"
+    },
+    "Runic Compass": {
+      "id": "3866",
+      "source": "Data Dragon 16.19.1",
+      "checkedOn": "2026-11-10"
+    },
+    "Stormrazor": {
+      "id": "3095",
+      "source": "Data Dragon 16.17.1",
+      "checkedOn": "2026-11-10"
+    }
+  }
+}

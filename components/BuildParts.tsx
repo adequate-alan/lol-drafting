@@ -9,6 +9,8 @@ import {
   type BuildRow, type FullRunes, type Skill,
 } from "@/lib/pro-builds";
 import type { PatchAssets } from "@/lib/schema";
+import { ItemChangeCard, markClass, markLabel, useItemMark } from "@/components/ItemChanges";
+import { Popover } from "@/components/Popover";
 
 export type IconSize = "xs" | "sm" | "md" | "lg";
 export const SKILLS: Skill[] = ["Q", "W", "E", "R"];
@@ -19,15 +21,25 @@ export function Icon({ src, label, tip, size = "md", dim, struck, chosen, classN
   // Remember which src failed, not just that one did: switching games reuses this slot for another icon.
   const [bad, setBad] = useState<string>();
   return (
-    <span className={`bicon ${size} ${dim ? "dim" : ""} ${struck ? "struck" : ""} ${chosen ? "chosen" : ""} ${className}`} title={tip ?? label}>
+    <span className={`bicon ${size} ${dim ? "dim" : ""} ${struck ? "struck" : ""} ${chosen ? "chosen" : ""} ${className}`} title={tip === "" ? undefined : tip ?? label}>
       {src && bad !== src ? <img key={src} src={src} alt={label} loading="lazy" decoding="async" draggable={false} onError={() => setBad(src)} />
         : <span className="bicon-fallback" aria-label={label}>{label.slice(0, 2)}</span>}
     </span>
   );
 }
 
-export const Item = ({ a, id, extra, size, struck, className }: { a?: PatchAssets; id: number; extra?: string; size?: IconSize; struck?: boolean; className?: string }) =>
-  <Icon src={a ? itemIcon(a, id) : undefined} label={a?.items[id]?.name ?? `Item ${id}`} tip={itemTip(a, id, extra)} size={size} struck={struck} className={className} />;
+/** An item icon. One Riot changed since the game (components/ItemChanges.tsx) carries a corner mark and opens what changed. */
+export function Item({ a, id, extra, size, struck, className = "" }: { a?: PatchAssets; id: number; extra?: string; size?: IconSize; struck?: boolean; className?: string }) {
+  const mark = useItemMark(id);
+  const label = a?.items[id]?.name ?? mark?.name ?? `Item ${id}`;
+  if (!mark) return <Icon src={a ? itemIcon(a, id) : undefined} label={label} tip={itemTip(a, id, extra)} size={size} struck={struck} className={className} />;
+  return (
+    <Popover label={`${label}: ${markLabel(mark)}`} triggerClass="item-mark-trigger" trigger={
+      <Icon src={a ? itemIcon(a, id) : undefined} label={`${label}, ${markLabel(mark)}`} tip="" size={size} struck={struck} className={`${className} ${markClass(mark)}`} />}>
+      {() => <ItemChangeCard mark={mark} extra={extra} />}
+    </Popover>
+  );
+}
 
 export const itemName = (a: PatchAssets | undefined, id: number) => a?.items[id]?.name ?? `Item ${id}`;
 export const runeName = (a: PatchAssets | undefined, id: number) => a?.runes[id]?.name ?? `Rune ${id}`;
