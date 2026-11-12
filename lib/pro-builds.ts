@@ -26,10 +26,33 @@ export interface BuildRow {
   team: string;
   opponentTeam: string;
   won: boolean;
-  opponent?: { champion: string; player?: string }; // same role on the other side
+  /** The lane opponent (lib/pro-builds.ts `laneOpponent`): set only when the game record verifies it. */
+  opponent?: LaneOpponent;
+  /** Why no lane opponent is shown, when the records do not verify one. Never a guess in its place. */
+  opponentUnknown?: string;
   assets?: PatchAssets; // this game's patch
   /** Items Riot changed since this game (lib/item-history.ts); attached where the build chunk loads. */
   itemCheck?: ItemCheck;
+}
+
+/** The opposing player in the same role in the same game. */
+export interface LaneOpponent { champion: string; player?: string; playerId?: number }
+
+/**
+ * The lane opponent of one build (alan, 2026-11-12), read only from that Gol.gg game's ten-champion record: both
+ * teams' picks by role as Gol.gg's role table assigns them (`rolesUrl`). Never from draft position, and never "some
+ * champion on the other team". The opponent is verified when the record puts this build's champion in its role on its
+ * side and names the other side's champion in the same role, and the opposing player's own build (when recorded) is
+ * that champion. Anything else is an explicit unknown with its reason.
+ */
+export function laneOpponent(b: Pick<ProBuild, "champion" | "role" | "side">, g: Pick<ProGame, "blue" | "red">, theirs?: Pick<ProBuild, "champion" | "player" | "playerId">):
+  { opponent: LaneOpponent } | { unknown: string } {
+  const other = b.side === "blue" ? "red" : "blue";
+  if (g[b.side].picks[b.role] !== b.champion) return { unknown: "The game's role table does not list this champion in this role, so the lane opponent is not verified." };
+  const opp = g[other].picks[b.role];
+  if (!opp) return { unknown: "The game record has no opposing champion in this role." };
+  if (theirs && theirs.champion !== opp) return { unknown: "The opposing player's build and the game's role table name different champions, so the lane opponent is not verified." };
+  return { opponent: { champion: opp, ...(theirs ? { player: theirs.player, playerId: theirs.playerId } : {}) } };
 }
 
 export function buildRows(builds: ProBuild[], games: ProGame[], assets: Record<string, PatchAssets>): BuildRow[] {
@@ -40,12 +63,12 @@ export function buildRows(builds: ProBuild[], games: ProGame[], assets: Record<s
     const g = byGame.get(b.game);
     if (!g) continue;
     const other = b.side === "blue" ? "red" : "blue";
-    const opp = g[other].picks[b.role];
+    const lane = laneOpponent(b, g, byPlayer.get(`${b.game}-${other}-${b.role}`));
     rows.push({
       key: `${b.game}-${b.side}-${b.role}`, build: b,
       game: { id: g.id, event: g.event, tournament: g.tournament, series: g.series, seriesId: g.seriesId, game: g.game, stage: g.stage, date: g.date, patch: g.patch, url: g.url },
       side: b.side, team: g[b.side].team, opponentTeam: g[other].team, won: g.winner === b.side,
-      opponent: opp ? { champion: opp, player: byPlayer.get(`${b.game}-${other}-${b.role}`)?.player } : undefined,
+      ...("opponent" in lane ? { opponent: lane.opponent } : { opponentUnknown: lane.unknown }),
       assets: assets[g.patch],
     });
   }
@@ -59,11 +82,24 @@ export const rowsFor = (rows: BuildRow[], champion: string, role: Role) => rows.
 export const buildsHref = (champion: string, role: Role, game?: number) =>
   `/pro-builds/?champion=${champion}&role=${role}${game ? `&game=${game}` : ""}`;
 
+/** A champion's builds into one lane opponent: the matchup a row shows, optionally on one patch. */
+export const matchupHref = (r: Pick<BuildRow, "build" | "opponent">, patch?: string) =>
+  r.opponent ? `${buildsHref(r.build.champion, r.build.role)}&vs=${r.opponent.champion}${patch ? `&patch=${encodeURIComponent(patch)}` : ""}` : undefined;
+
+/** The lane opponents in a set of builds, with how many builds faced each: most builds first, then by name. */
+export function matchups(rows: BuildRow[], name: (id: string) => string = (x) => x): { champion: string; builds: number }[] {
+  const n = new Map<string, number>();
+  for (const r of rows) if (r.opponent) n.set(r.opponent.champion, (n.get(r.opponent.champion) ?? 0) + 1);
+  return [...n].map(([champion, builds]) => ({ champion, builds })).sort((a, b) => b.builds - a.builds || name(a.champion).localeCompare(name(b.champion)));
+}
+
 /** The filters of the Pro Builds page. Patches compare in either notation (26.18 = 16.18). Empty means any. */
-export interface BuildScope { champion?: string; role?: Role; event?: string; patch?: string; team?: string; player?: string }
+/** `vs` is the matchup: only builds whose verified lane opponent is that champion (an unverified one never matches). */
+export interface BuildScope { champion?: string; role?: Role; event?: string; patch?: string; team?: string; player?: string; vs?: string }
 export const inScope = (r: BuildRow, s: BuildScope) =>
   (!s.champion || r.build.champion === s.champion) && (!s.role || r.build.role === s.role) && (!s.event || r.game.event === s.event)
-  && (!s.patch || samePatch(r.game.patch, s.patch)) && (!s.team || r.team === s.team) && (!s.player || samePlayer(r, s.player));
+  && (!s.patch || samePatch(r.game.patch, s.patch)) && (!s.team || r.team === s.team) && (!s.player || samePlayer(r, s.player))
+  && (!s.vs || r.opponent?.champion === s.vs);
 /** `player` is Gol.gg's player id; a name (links made before ids, 2026-10-12) still matches by name. */
 export const samePlayer = (r: BuildRow, player: string) => (/^\d+$/.test(player) ? String(r.build.playerId) === player : r.build.player === player);
 export const scoped = (rows: BuildRow[], s: BuildScope) => rows.filter((r) => inScope(r, s));

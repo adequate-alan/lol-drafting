@@ -1100,7 +1100,7 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   const firstRow = page.locator(".recent-builds tbody tr").first();
   const rowPlayer = (await firstRow.locator("td").first().locator("b").textContent())?.trim();
   const rowChamp = (await firstRow.locator(".champ-cell .champ-name").textContent())?.trim();
-  await firstRow.click();
+  await firstRow.locator("td").nth(5).click(); // the patch cell: the Opponent cell is its own matchup link
   await page.locator(".game-head").waitFor({ timeout: 8000 }).catch(() => {});
   const opened = new URL(page.url()).searchParams;
   check("builds overview: a recent build opens that exact game and player", !!opened.get("champion") && !!opened.get("game") && !!opened.get("player") && (await page.locator(".builds-title h2").textContent()) === rowChamp && (await page.locator(".game-head .game-player").innerText()).includes(rowPlayer), `${rowPlayer} ${rowChamp} → ${page.url()}`);
@@ -1122,6 +1122,23 @@ check("GenRang loads in the sidebar under the base path", await mascotOk(), "");
   await page.locator(".builds-home-link").click();
   await page.waitForTimeout(400);
   check("builds: the overview link returns from a champion", (await page.locator(".builds-head").count()) === 0 && (await page.locator(".recent-builds").count()) === 1, page.url());
+  // Matchups (alan, 2026-11-12): the Opponent cell names the verified lane opponent; a click opens this champion's builds
+  // against it, every listed game faces that champion, the count shows, and Clear filters drops the matchup.
+  const opp = page.locator(".recent-builds tbody tr .opp-cell").first();
+  const oppName = (await opp.locator("b").textContent().catch(() => ""))?.trim();
+  const oppChamp = (await opp.locator("xpath=ancestor::tr").locator(".champ-cell .champ-name").textContent().catch(() => ""))?.trim();
+  await opp.click();
+  await page.locator(".build-pick").first().waitFor({ timeout: 8000 }).catch(() => {});
+  const vsUrl = new URL(page.url()).searchParams;
+  const strip = await page.$$eval(".build-pick .build-pick-vs", (xs) => xs.map((x) => x.textContent?.trim()));
+  const count = await page.locator(".builds-count").textContent().catch(() => "");
+  check("matchups: an opponent portrait opens that champion's builds against that opponent", !!vsUrl.get("vs") && (await page.locator(".builds-vs").textContent().catch(() => ""))?.trim().endsWith(oppName ?? "?") && strip.length > 0 && strip.every((x) => x === oppName) && /^\d+ of \d+ builds$/.test(count ?? ""), `${oppChamp} vs ${oppName} → ${page.url()} · ${strip.length} games · ${count}`);
+  await page.reload({ waitUntil: "networkidle" });
+  await page.locator(".build-pick").first().waitFor({ timeout: 8000 }).catch(() => {});
+  check("matchups: a matchup link survives a reload", new URL(page.url()).searchParams.get("vs") === vsUrl.get("vs") && (await page.$$eval(".build-pick .build-pick-vs", (xs) => xs.map((x) => x.textContent?.trim()))).every((x) => x === oppName), page.url());
+  await page.locator(".builds-tools button", { hasText: "Clear filters" }).click();
+  await page.waitForTimeout(300);
+  check("matchups: Clear filters drops the matchup", !new URL(page.url()).searchParams.get("vs") && (await page.locator(".builds-vs").count()) === 0, page.url());
   await open("/pro-builds/?champion=jhin&role=BOT");
   await page.locator(".builds-head, .builds-empty").first().waitFor({ timeout: 8000 }).catch(() => {});
   check("builds: an explicit champion URL opens that champion and role", (await page.locator(".builds-title h2").textContent().catch(() => "")) === "Jhin" && /BOT/.test(await page.locator(".pick-rail li button.active").innerText().catch(() => "")), page.url());

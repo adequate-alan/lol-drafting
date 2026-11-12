@@ -12,7 +12,7 @@ import { PinIcon, usePins } from "@/components/PlayerPicker";
 import { shortDate } from "@/lib/evidence";
 import { patchLabel } from "@/lib/patch";
 import { gameHref, playerDirectory, playerProfile, profileHref } from "@/lib/pinned-players";
-import { buildsHref, type BuildRow } from "@/lib/pro-builds";
+import { buildsHref, matchupHref, type BuildRow } from "@/lib/pro-builds";
 import { readViewed, recentBuilds, RECENT_KEY, type HomeFilter, type Viewed } from "@/lib/pro-builds-home";
 import type { Role } from "@/lib/schema";
 
@@ -95,8 +95,8 @@ export function BuildsHome({ rows, failed, filter, notFound, name, evName, onCle
             <div className="table-wrap">
               <table className="recent-builds">
                 <thead><tr>
-                  <th>Player</th><th>Champion</th><th className="hide-phone">Role</th><th className="hide-phone">Opponent</th>
-                  <th className="hide-phone">Tournament</th><th>Patch</th><th>Date</th><th>Result</th>
+                  <th>Player</th><th>Champion</th><th className="hide-phone">Role</th><th>Opponent</th>
+                  <th className="hide-phone">Tournament</th><th>Patch</th><th className="hide-phone">Date</th><th>Result</th>
                 </tr></thead>
                 <tbody>
                   {recent.slice(0, shown).map((r) => {
@@ -107,11 +107,19 @@ export function BuildsHome({ rows, failed, filter, notFound, name, evName, onCle
                         <td><Link className="cell-link champ-cell" href={href} onClick={(e) => e.stopPropagation()} title={`${r.build.player}'s exact ${name(r.build.champion)} build in this game`}>
                           <ChampIcon id={r.build.champion} name={name(r.build.champion)} role={r.build.role} size="sm" /><span className="champ-name">{name(r.build.champion)}</span></Link></td>
                         <td className="hide-phone">{ROLE_NAME[r.build.role]}</td>
-                        <td className="hide-phone nowrap"><span className="muted">vs</span> {r.opponentTeam}{r.opponent && <> <ChampIcon id={r.opponent.champion} name={`${name(r.opponent.champion)}${r.opponent.player ? ` · ${r.opponent.player}` : ""}`} size="xs" /></>}</td>
+                        {/* The lane matchup leads (alan, 2026-11-12): the verified opposing champion, then player and team. A click
+                            opens this champion's builds against that opponent. */}
+                        <td>{r.opponent ? (
+                          <Link className="cell-link champ-cell opp-cell" href={matchupHref(r, filter.patch && patchLabel(filter.patch))!} onClick={(e) => e.stopPropagation()}
+                            title={`${name(r.build.champion)} builds against ${name(r.opponent.champion)}`} aria-label={`${name(r.build.champion)} builds against ${name(r.opponent.champion)}${r.opponent.player ? `, ${r.opponent.player}` : ""}, ${r.opponentTeam}`}>
+                            <ChampIcon id={r.opponent.champion} name={name(r.opponent.champion)} role={r.build.role} size="sm" />
+                            <span className="home-player-text opp-text"><b>{name(r.opponent.champion)}</b><span className="muted">{[r.opponent.player, r.opponentTeam].filter(Boolean).join(" · ")}</span></span>
+                          </Link>
+                        ) : <span className="home-player-text opp-text" title={r.opponentUnknown}><span className="muted">Not verified</span><span className="muted">{r.opponentTeam}</span></span>}</td>
                         <td className="hide-phone nowrap">{evName(r)}</td>
                         <td className="tnum nowrap">{patchLabel(r.game.patch)}</td>
-                        <td className="tnum nowrap">{shortDate(r.game.date) ?? "—"}</td>
-                        <td><span className={r.won ? "win" : "loss"}>{r.won ? "Win" : "Loss"}</span></td>
+                        <td className="tnum nowrap hide-phone">{shortDate(r.game.date) ?? "—"}</td>
+                        <td><span className={r.won ? "win" : "loss"}>{r.won ? <>W<span className="res-rest">in</span></> : <>L<span className="res-rest">oss</span></>}</span></td>
                       </tr>
                     );
                   })}

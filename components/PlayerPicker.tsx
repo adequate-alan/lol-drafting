@@ -90,15 +90,18 @@ const NOUN: Record<PinKind, [string, string]> = {
  * A typeable, pinnable filter: "" means all. `options` are [value, label] in the current scope (a tournament is pinned
  * by its event id and shown by its name).
  */
-export function PinPicker({ kind, value, options: entries, onChange, placeholder }: {
+export function PinPicker({ kind, value, options: entries, onChange, placeholder, nouns }: {
   kind: PinKind; value: string; options: [string, string][]; onChange: (v: string) => void; placeholder?: string;
+  /** What the menu names its rows when they are not the pin kind itself (Pro Builds' Matchup lists champions). */
+  nouns?: [string, string];
 }) {
   // Players show their portrait (or initials) and champions their icon beside the name; the rest show text only.
   const avatar = (v: string) => (!v ? null : kind === "player" ? <PlayerAvatar id={v} name={labelOf.get(v) ?? v} size="xs" />
     : kind === "champion" ? <ChampIcon id={v} name={labelOf.get(v) ?? v} size="xs" /> : null);
   const id = useId();
   const { isPinned, toggle } = usePins(kind);
-  const [noun, plural] = NOUN[kind];
+  const [noun, plural] = nouns ?? NOUN[kind];
+  const pinNoun = NOUN[kind][0].toLowerCase();
   const labelOf = new Map(entries);
   const label = (v: string) => (v ? labelOf.get(v) ?? v : `All ${plural}`);
   const players = entries.map(([v]) => v);
@@ -197,7 +200,7 @@ export function PinPicker({ kind, value, options: entries, onChange, placeholder
               <span className="select-label player-chip">{avatar(p)}{label(p)}</span>
               {p && (
                 <button type="button" className="pin-btn" aria-pressed={isPinned(p)} aria-label={`${isPinned(p) ? "Unpin" : "Pin"} ${label(p)}`}
-                  title={isPinned(p) ? "Pinned: listed first, saved in this browser" : `Pin this ${noun.toLowerCase()}`}
+                  title={isPinned(p) ? "Pinned: listed first, saved in this browser" : `Pin this ${pinNoun}`}
                   onMouseDown={(e) => e.preventDefault()} onClick={(e) => { e.stopPropagation(); toggle(p, label(p)); }}>
                   <PinIcon on={isPinned(p)} />
                 </button>

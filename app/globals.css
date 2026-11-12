@@ -1091,7 +1091,18 @@ button.link:focus-visible { box-shadow: var(--focus-ring); border-radius: var(--
 .recent-builds td { height: 40px; }
 .recent-builds .champ-cell { display: inline-flex; align-items: center; gap: var(--s3); font-family: var(--font-display); font-weight: var(--w-control); }
 .recent-builds .player-chip { gap: var(--s3); }
+.recent-builds .opp-cell .home-player-text b { font-weight: var(--w-control); }
+.recent-builds .opp-cell:hover b { color: var(--accent-text); }
+.builds-vs { display: inline-flex; align-items: center; gap: var(--s3); margin-left: var(--s4); }
+.builds-vs .faint { font-size: var(--fs-md); font-weight: var(--w-control); }
+.builds-count { align-self: center; }
+.build-pick-vs { font-weight: var(--w-control); color: var(--text); }
 @media (max-width: 760px) {
+  /* Phones: the lane matchup stays (both portraits and names); teams, date and the long result word give way. */
+  .recent-builds th, .recent-builds td { padding-inline: var(--s2); }
+  .recent-builds .opp-text .muted, .recent-builds .player-chip .muted, .recent-builds .res-rest { display: none; }
+  .recent-builds .champ-cell .champ-name, .recent-builds .opp-text b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .recent-builds .champ-cell, .recent-builds .player-chip { gap: var(--s2); }
   .builds-home-tools .builds-search { max-width: none; flex-basis: 100%; }
   .builds-home-tools .seg { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; max-width: 100%; }
 }

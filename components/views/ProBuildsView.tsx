@@ -6,7 +6,9 @@
 //   Common  - counts across the games in the chosen scope, each against the games that recorded that field. Full rune
 //             pages count only games with the complete page. Never one player's build, never "best".
 //   Compare - two recorded games of the champion side by side, with what differs.
-// Selections live in the URL (champion, role, event, patch, team, player, game, mode, a, b) so a build can be shared.
+// Selections live in the URL (champion, role, event, patch, team, player, vs, game, mode, a, b) so a build can be shared.
+// `vs` is the matchup (alan, 2026-11-12): only builds whose verified lane opponent (lib/pro-builds.ts `laneOpponent`,
+// the game's ten-champion role record) is that champion; it combines with every other filter.
 // The rail renders from the build-time index; the build records load as their own chunk (lib/pro-builds-bundle.ts).
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -30,7 +32,7 @@ import type { DrawerData } from "@/lib/data";
 import { shortDate } from "@/lib/evidence";
 import { comparePatch, patchKey, patchLabel } from "@/lib/patch";
 import {
-  abilityIcon, common, fullRunes, maxRanks, overview, pageKey, scoped as inScope, skillSummary, spellIcon,
+  abilityIcon, common, fullRunes, matchups, maxRanks, overview, pageKey, scoped as inScope, skillSummary, spellIcon,
   type BuildRow, type BuildScope, type ChampionBuilds, type Common, type Tally,
 } from "@/lib/pro-builds";
 import { ROLES, type Role } from "@/lib/schema";
@@ -42,7 +44,7 @@ import { browse, buildPatches, defaultGame, latestPatch, parseRole, readViewed, 
 type Mode = "games" | "common" | "compare";
 const MODES: [Mode, string][] = [["games", "Games"], ["common", "Common build"], ["compare", "Compare"]];
 const ROLE_NAME: Record<Role, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" };
-const FILTERS = ["event", "patch", "team", "player"] as const;
+const FILTERS = ["event", "patch", "team", "player", "vs"] as const;
 
 let loaded: Promise<BuildRow[]> | undefined;
 const load = () => (loaded ??= import("@/lib/pro-builds-bundle").then((m) => m.rows));
@@ -125,7 +127,7 @@ export function ProBuildsView({ index, names, events, drawerData }: {
     // A player found by name is selected by id when the build data is in (a name shared by two players picks the one on this champion).
     const hit = player && all?.find((r) => r.build.player === player && r.build.champion === e.champion && r.build.role === e.role);
     const sameChampion = e.champion === champion;
-    update({ champion: e.champion, role: e.role, game: undefined, a: undefined, b: undefined, event: undefined, team: undefined,
+    update({ champion: e.champion, role: e.role, game: undefined, a: undefined, b: undefined, event: undefined, team: undefined, vs: undefined,
       patch: scopePatch && (e.patches[patchKey(scopePatch)] ?? 0) > 0 ? scopePatch : undefined,
       player: hit ? String(hit.build.playerId) : player }, !sameChampion);
     if (!sameChampion && home) window.scrollTo({ top: 0 });
@@ -147,8 +149,14 @@ export function ProBuildsView({ index, names, events, drawerData }: {
 
   // Scope
   const mine = useMemo(() => (all && champion && role ? inScope(all, { champion, role }) : []), [all, champion, role]);
-  const scope: BuildScope = { champion, role, event: get("event"), patch: get("patch"), team: get("team"), player: get("player") };
+  const vs = get("vs");
+  const scope: BuildScope = { champion, role, event: get("event"), patch: get("patch"), team: get("team"), player: get("player"), vs };
   const rows = inScope(mine, scope);
+  // Matchup menu: the lane opponents faced within the other filters, with how many builds each (the chosen one always listed).
+  const faced = matchups(inScope(mine, { ...scope, vs: undefined }), name);
+  if (vs && !faced.some((m) => m.champion === vs)) faced.push({ champion: vs, builds: 0 });
+  const unverified = mine.filter((r) => !r.opponent).length;
+  const toMatchup = (opp: string) => update({ vs: opp, game: undefined, a: undefined, b: undefined });
   const mode: Mode = (MODES.find(([m]) => m === get("mode"))?.[0]) ?? "games";
 
   const uniq = (xs: [string, string][]) => [...new Map(xs).entries()];
@@ -235,7 +243,7 @@ export function ProBuildsView({ index, names, events, drawerData }: {
             <div className="builds-head">
               <ChampIcon id={champion} name={name(champion)} role={role} size="xxl" />
               <div className="builds-title">
-                <h2>{name(champion)}</h2>
+                <h2>{name(champion)}{vs && <span className="builds-vs"><span className="faint">vs</span><ChampIcon id={vs} name={name(vs)} role={role} size="md" />{name(vs)}</span>}</h2>
                 <span className="small muted tnum">{entry.games} recorded game{entry.games > 1 ? "s" : ""} · {entry.players} player{entry.players > 1 ? "s" : ""} · latest {patchLabel(entry.latest)}</span>
               </div>
               {(() => {
@@ -261,6 +269,10 @@ export function ProBuildsView({ index, names, events, drawerData }: {
                 <PinPicker key={x.k} kind={x.k} value={get(x.k) ?? ""} options={x.opts}
                   onChange={(v) => update({ [x.k]: v || undefined, game: undefined, a: undefined, b: undefined })} />
               ))}
+              <PinPicker kind="champion" nouns={["Matchup", "matchups"]} value={vs ?? ""}
+                options={faced.map((m): [string, string] => [m.champion, `${name(m.champion)} · ${m.builds}`])}
+                onChange={(v) => update({ vs: v || undefined, game: undefined, a: undefined, b: undefined })} />
+              {all && active.length > 0 && <span className="xs muted tnum builds-count" title={vs && unverified ? `${unverified} build${unverified > 1 ? "s" : ""} of this champion have no verified lane opponent and never match a matchup.` : undefined}>{rows.length} of {mine.length} builds</span>}
               {active.length > 0 && <button type="button" className="btn sm ghost" onClick={() => update(Object.fromEntries([...active, "game", "a", "b"].map((k) => [k, undefined])))}>Clear filters</button>}
               <div className="seg push" role="tablist" aria-label="View" onKeyDown={(e) => rovingKeys(e)}>
                 {MODES.map(([m, l]) => <button key={m} type="button" role="tab" aria-selected={mode === m} tabIndex={rovingIndex(mode === m)} className={mode === m ? "active" : undefined} onClick={() => update({ mode: m === "games" ? undefined : m })}>{l}</button>)}
@@ -269,10 +281,10 @@ export function ProBuildsView({ index, names, events, drawerData }: {
 
             {failed ? <p className="small muted">Build data could not be loaded.</p>
               : !all ? <p className="small faint" aria-busy="true">Loading builds…</p>
-              : !rows.length ? <p className="small muted">No recorded games match these filters.{get("patch") && <> <button type="button" className="btn sm ghost" onClick={() => update({ patch: undefined, game: undefined, a: undefined, b: undefined })}>Show every patch</button></>}</p>
+              : !rows.length ? <p className="small muted">No recorded games match these filters.{get("patch") && <> <button type="button" className="btn sm ghost" onClick={() => update({ patch: undefined, game: undefined, a: undefined, b: undefined })}>Show every patch</button></>}{vs && <> <button type="button" className="btn sm ghost" onClick={() => update({ vs: undefined, game: undefined, a: undefined, b: undefined })}>Show every matchup</button></>}</p>
               : mode === "common" ? <CommonView c={common(rows)} rows={rows} champion={champion} evName={evName} />
               : mode === "compare" ? <CompareView rows={rows} a={get("a")} b={get("b")} label={gameLabel} name={name} evName={evName} onPick={(k, v) => update({ [k]: v })} />
-              : <GamesView rows={rows} current={get("game")} player={get("player")} name={name} evName={evName} onPick={(g) => update({ game: String(g) })} />}
+              : <GamesView rows={rows} current={get("game")} player={get("player")} vs={vs} name={name} evName={evName} onPick={(g) => update({ game: String(g) })} onMatchup={toMatchup} />}
           </>}
         </div>
       </div>
@@ -281,8 +293,9 @@ export function ProBuildsView({ index, names, events, drawerData }: {
 }
 
 // ---------- individual games ----------
-function GamesView({ rows, current, player, name, evName, onPick }: {
-  rows: BuildRow[]; current?: string; player?: string; name: (id: string) => string; evName: (r: BuildRow) => string; onPick: (game: number) => void;
+function GamesView({ rows, current, player, vs, name, evName, onPick, onMatchup }: {
+  rows: BuildRow[]; current?: string; player?: string; vs?: string; name: (id: string) => string; evName: (r: BuildRow) => string;
+  onPick: (game: number) => void; onMatchup: (champion: string) => void;
 }) {
   const { pins, isPinned } = usePins();
   const team = usePins("team");
@@ -300,13 +313,13 @@ function GamesView({ rows, current, player, name, evName, onPick }: {
       <div className="build-picks" ref={strip} role="listbox" aria-label="Recorded games" onKeyDown={(e) => rovingKeys(e, "[role='option']")}>
         {rows.map((x) => (
           <button key={x.key} type="button" role="option" aria-selected={x === r} tabIndex={rovingIndex(x === r)} className={`build-pick side-${x.side} ${x === r ? "active" : ""}`} onClick={() => onPick(x.game.id)}
-            title={`${x.build.player} (${x.team}) vs ${x.opponentTeam}\n${evName(x)} · ${patchLabel(x.game.patch)} · ${shortDate(x.game.date)} · ${x.side} side · ${x.won ? "win" : "loss"}`}>
+            title={`${x.build.player} (${x.team}) vs ${x.opponent ? `${x.opponent.player ?? "?"} · ${name(x.opponent.champion)} (${x.opponentTeam})` : `${x.opponentTeam}, lane opponent not verified`}\n${evName(x)} · ${patchLabel(x.game.patch)} · ${shortDate(x.game.date)} · ${x.side} side · ${x.won ? "win" : "loss"}`}>
             <span className="small nowrap"><PlayerAvatar id={x.build.playerId} name={x.build.player} size="xs" /> {isPinned(String(x.build.playerId)) && <PinIcon on />}<b>{x.build.player}</b> <span className="muted">{team.isPinned(x.team) && <PinIcon on />}{x.team}</span></span>
-            <span className="xs muted nowrap">{x.opponent && <>vs {name(x.opponent.champion)} · </>}{shortDate(x.game.date)} <span className={x.won ? "win" : "loss"}>{x.won ? "W" : "L"}</span></span>
+            <span className="xs muted nowrap">{x.opponent ? <>vs <b className="build-pick-vs">{name(x.opponent.champion)}</b> · </> : <>vs ? · </>}{shortDate(x.game.date)} <span className={x.won ? "win" : "loss"}>{x.won ? "W" : "L"}</span></span>
           </button>
         ))}
       </div>
-      <GameDetail r={r} name={name} evName={evName} />
+      <GameDetail r={r} name={name} evName={evName} matchup={vs ? undefined : onMatchup} />
     </>
   );
 }
