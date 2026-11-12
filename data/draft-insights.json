@@ -302,6 +302,63 @@
           "video": "is1BFqUWweQ",
           "t": 67
         }
+      ],
+      "takeaway": "Use the type to know the lane plan; check the champion pair before calling the lane won or lost.",
+      "caveat": "Type averages are one creator's Master+ figures.",
+      "matchups": [
+        {
+          "kind": "versus",
+          "a": [
+            "sona"
+          ],
+          "b": [
+            "karma"
+          ],
+          "edge": "a",
+          "text": "Both enchanters, yet one wins the pair clearly: the type didn't decide it.",
+          "source": {
+            "video": "D7DemQewZqM",
+            "t": 80
+          },
+          "stat": {
+            "text": "Sona wins about 60%",
+            "patch": "26.22"
+          }
+        },
+        {
+          "kind": "versus",
+          "a": [
+            "garen"
+          ],
+          "b": [
+            "jax"
+          ],
+          "edge": "a",
+          "text": "Two juggernauts into Jax: Garen's E still hits through Counter Strike, Darius's autos don't.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 0
+          }
+        },
+        {
+          "kind": "versus",
+          "a": [
+            "darius"
+          ],
+          "b": [
+            "jax"
+          ],
+          "edge": "b",
+          "text": "Darius leans on a Q Jax can step out of and autos Counter Strike dodges.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 0
+          },
+          "stat": {
+            "text": "Darius wins about 47%",
+            "patch": "26.21"
+          }
+        }
       ]
     },
     {
@@ -369,6 +426,14 @@
           "video": "vQCDKJx0rHM",
           "t": 556
         }
+      ],
+      "takeaway": "Don't read pick rate as strength, or a hard champion's average as weakness.",
+      "caveat": "The difficulty explanation is the creator's reading, not separated in the data.",
+      "showcase": [
+        "karma",
+        "ezreal",
+        "lee-sin",
+        "jayce"
       ]
     },
     {
@@ -419,7 +484,9 @@
           "video": "D7DemQewZqM",
           "t": 1111
         }
-      ]
+      ],
+      "takeaway": "Learn one to three champions' exact matchups instead of every class tree.",
+      "caveat": "Advice for one player's pool, not for a team's flexibility."
     },
     {
       "id": "support-types",
@@ -500,6 +567,104 @@
           "video": "D7DemQewZqM",
           "t": 1111
         }
+      ],
+      "takeaway": "Name your support's type, then check what the enemy type does to it and whether your champion is an exception.",
+      "caveat": "Exceptions are common: Nautilus, Braum, Janna and Yuumi all break the tree.",
+      "groups": [
+        {
+          "label": "Enchanters",
+          "champions": [
+            "lulu",
+            "nami",
+            "milio",
+            "sona",
+            "janna"
+          ],
+          "plan": "Keep one carry alive; poke once per wave, save the shield or heal for their trade.",
+          "vs": "Beat mages and misfits; lose to engage and hooks.",
+          "source": {
+            "video": "D7DemQewZqM",
+            "t": 85
+          },
+          "note": "Karma is popular but last in win rate among enchanters."
+        },
+        {
+          "label": "Engage",
+          "champions": [
+            "leona",
+            "alistar",
+            "rell",
+            "rakan",
+            "nautilus"
+          ],
+          "plan": "Hit level 2 first and chain crowd control onto the ADC.",
+          "vs": "Beat enchanters. Nautilus loses to the other engage supports.",
+          "source": {
+            "video": "D7DemQewZqM",
+            "t": 199
+          }
+        },
+        {
+          "label": "Wardens",
+          "champions": [
+            "braum",
+            "taric",
+            "poppy",
+            "tahm-kench",
+            "shen"
+          ],
+          "plan": "Stand by the carry and cancel the enemy's first move.",
+          "vs": "Beat enchanters; lose lane, win long games. Braum loses to walk-in engage.",
+          "source": {
+            "video": "D7DemQewZqM",
+            "t": 308
+          }
+        },
+        {
+          "label": "Hooks",
+          "champions": [
+            "thresh",
+            "blitzcrank",
+            "pyke",
+            "morgana"
+          ],
+          "plan": "Play the lane around one long skillshot.",
+          "vs": "Beat enchanters and misfits; even against engage.",
+          "source": {
+            "video": "D7DemQewZqM",
+            "t": 439
+          }
+        },
+        {
+          "label": "Mage supports",
+          "champions": [
+            "lux",
+            "velkoz",
+            "seraphine",
+            "zilean",
+            "neeko"
+          ],
+          "plan": "Out-range and out-damage the lane; take plates.",
+          "vs": "Win lane, lose games: anything that closes distance beats them.",
+          "source": {
+            "video": "D7DemQewZqM",
+            "t": 536
+          }
+        },
+        {
+          "label": "Misfits",
+          "champions": [
+            "senna",
+            "bard",
+            "yuumi"
+          ],
+          "plan": "Each plays its own lane: a second carry, a roamer, an attached buffer.",
+          "vs": "Yuumi beats poke supports and loses to every hook and engage.",
+          "source": {
+            "video": "D7DemQewZqM",
+            "t": 617
+          }
+        }
       ]
     },
     {
@@ -571,6 +736,118 @@
         {
           "video": "is1BFqUWweQ",
           "t": 59
+        }
+      ],
+      "takeaway": "Know what your ADC's archetype wants from the lane before you pick the duo or decide how hard to trade.",
+      "caveat": "The grid is lane tendency, not a game result; single champions break it often.",
+      "groups": [
+        {
+          "label": "Scalers",
+          "champions": [
+            "jinx",
+            "aphelios",
+            "kog-maw",
+            "twitch",
+            "vayne",
+            "smolder"
+          ],
+          "plan": "Lose lane as little as possible, reach items, win later fights.",
+          "vs": "Win nothing in lane, even into skirmishers. A hyper scaler can be outscaled by another (Twitch over Jinx).",
+          "source": {
+            "video": "is1BFqUWweQ",
+            "t": 105
+          }
+        },
+        {
+          "label": "Lane bullies",
+          "champions": [
+            "draven",
+            "lucian",
+            "kalista",
+            "miss-fortune",
+            "samira"
+          ],
+          "plan": "Fight as much as possible early and turn the lead into objectives.",
+          "vs": "Beat scalers and skirmishers in lane; can't stick to poke.",
+          "source": {
+            "video": "is1BFqUWweQ",
+            "t": 234
+          },
+          "note": "Caitlyn is a bully on range who still scales."
+        },
+        {
+          "label": "Poke / casters",
+          "champions": [
+            "jhin",
+            "varus",
+            "ashe",
+            "ezreal"
+          ],
+          "plan": "Win trades from range until the enemy can't stand in lane.",
+          "vs": "Harass scalers and skirmishers; can die to bullies when greedy. Winning trades doesn't win all-ins.",
+          "source": {
+            "video": "is1BFqUWweQ",
+            "t": 340
+          },
+          "note": "Jhin and Ashe are utility casters; Varus depends on his build."
+        },
+        {
+          "label": "Skirmishers",
+          "champions": [
+            "kaisa",
+            "xayah",
+            "tristana",
+            "yunara"
+          ],
+          "plan": "Fight on mobility in each champion's own window.",
+          "vs": "Take time to scale; weaker into poke and bullies.",
+          "source": {
+            "video": "is1BFqUWweQ",
+            "t": 415
+          },
+          "note": "Zeri is technically a caster: her Q is her auto attack."
+        },
+        {
+          "label": "Mage bots",
+          "champions": [
+            "karthus",
+            "velkoz",
+            "hwei",
+            "syndra",
+            "ziggs",
+            "xerath"
+          ],
+          "plan": "Out-range everyone, clear waves, peak in the mid game.",
+          "vs": "Win lane against every archetype in the creator's 26.21 data; immobile once reached. Short-range mages like Cassiopeia don't fit.",
+          "source": {
+            "video": "is1BFqUWweQ",
+            "t": 462
+          }
+        }
+      ],
+      "matchups": [
+        {
+          "kind": "versus",
+          "a": [
+            "kalista",
+            "alistar"
+          ],
+          "b": [
+            "ezreal",
+            "bard"
+          ],
+          "edge": "a",
+          "text": "A bully with an engage support doing its job against a poke duo: the lane is decided early.",
+          "source": {
+            "video": "is1BFqUWweQ",
+            "t": 290
+          },
+          "aLabel": "Bully + engage",
+          "bLabel": "Poke + roamer",
+          "stat": {
+            "text": "About 1,500 gold up at 15 in the example game",
+            "patch": "26.21"
+          }
         }
       ]
     },
@@ -651,6 +928,113 @@
           "video": "vQCDKJx0rHM",
           "t": 99
         }
+      ],
+      "takeaway": "Ask which part of your class's pattern the opponent can deny.",
+      "caveat": "Class win rates barely differ in top lane; use the tree as vocabulary, not prediction.",
+      "groups": [
+        {
+          "label": "Juggernauts",
+          "champions": [
+            "darius",
+            "garen",
+            "mordekaiser",
+            "nasus",
+            "illaoi"
+          ],
+          "plan": "Long trades up close.",
+          "vs": "Beat tanks; get kited by ranged top laners.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 102
+          },
+          "note": "Sett sits between juggernaut and bruiser."
+        },
+        {
+          "label": "Divers / bruisers",
+          "champions": [
+            "renekton",
+            "pantheon",
+            "olaf",
+            "aatrox",
+            "ambessa"
+          ],
+          "plan": "Burst in, trade, get out.",
+          "vs": "Jump ranged top laners; lose to tanks.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 218
+          },
+          "note": "Aatrox is almost a juggernaut."
+        },
+        {
+          "label": "Skirmishers",
+          "champions": [
+            "fiora",
+            "camille",
+            "jax",
+            "irelia",
+            "yone",
+            "tryndamere"
+          ],
+          "plan": "Short bursts and strong duels.",
+          "vs": "Strong into tanks; struggle against what they can't auto-attack.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 292
+          }
+        },
+        {
+          "label": "Tanks",
+          "champions": [
+            "malphite",
+            "ornn",
+            "shen",
+            "ksante",
+            "sion",
+            "chogath"
+          ],
+          "plan": "Trade on cooldowns and win by being hard to kill.",
+          "vs": "Beat divers and ranged; weak to kiting, %HP damage and hyper scalers.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 365
+          }
+        },
+        {
+          "label": "Ranged",
+          "champions": [
+            "gnar",
+            "jayce",
+            "teemo",
+            "kayle",
+            "kennen",
+            "rumble"
+          ],
+          "plan": "Abuse range with autos and abilities.",
+          "vs": "Kite juggernauts; fear hard engage.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 494
+          },
+          "note": "Gangplank is a hybrid with barrels and Q."
+        }
+      ],
+      "matchups": [
+        {
+          "kind": "versus",
+          "a": [
+            "renekton"
+          ],
+          "b": [
+            "darius"
+          ],
+          "edge": "b",
+          "text": "Renekton trades well, but Darius pulls him back as he dashes out and wins the extended fight.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 99
+          }
+        }
       ]
     },
     {
@@ -726,6 +1110,113 @@
           "video": "jgHpbaX9wYE",
           "t": 450
         }
+      ],
+      "takeaway": "Every jungler farms and ganks only when it's guaranteed; pick by what it does with a lead.",
+      "caveat": "The jungle matchup itself matters least: junglers can avoid each other.",
+      "groups": [
+        {
+          "label": "Tempo gankers",
+          "champions": [
+            "lee-sin",
+            "elise"
+          ],
+          "plan": "Reach gankable lanes first and snowball the team.",
+          "vs": "Out-pace farmers and tanks; the right one beats skirmishers in 2v2s.",
+          "source": {
+            "video": "jgHpbaX9wYE",
+            "t": 120
+          },
+          "note": "Nunu leans tempo because his ganks are so strong."
+        },
+        {
+          "label": "Power farmers",
+          "champions": [
+            "master-yi"
+          ],
+          "plan": "Farm to a 2–3 item spike; gank only what's guaranteed.",
+          "vs": "Lose early to almost everyone except tanks.",
+          "source": {
+            "video": "jgHpbaX9wYE",
+            "t": 167
+          },
+          "note": "Cho'Gath leans farmer: he stacks his ultimate first."
+        },
+        {
+          "label": "Skirmishers",
+          "champions": [
+            "hecarim"
+          ],
+          "plan": "Win river 2v2s and 3v3s.",
+          "vs": "Strong against almost everyone early.",
+          "source": {
+            "video": "jgHpbaX9wYE",
+            "t": 241
+          }
+        },
+        {
+          "label": "Tanks",
+          "champions": [
+            "nunu-willump",
+            "skarner",
+            "sejuani",
+            "zac"
+          ],
+          "plan": "Start fights; stay useful far behind on gold.",
+          "vs": "Lose most matchups but don't need to worry about assassins.",
+          "source": {
+            "video": "jgHpbaX9wYE",
+            "t": 286
+          }
+        },
+        {
+          "label": "Assassins",
+          "champions": [
+            "khazix",
+            "qiyana"
+          ],
+          "plan": "Pick one target and snowball off them.",
+          "vs": "Punish farmers; can't take the long fights tanks and skirmishers want.",
+          "source": {
+            "video": "jgHpbaX9wYE",
+            "t": 349
+          }
+        }
+      ],
+      "matchups": [
+        {
+          "kind": "versus",
+          "a": [
+            "hecarim"
+          ],
+          "b": [
+            "qiyana"
+          ],
+          "edge": "a",
+          "text": "A skirmisher forces early fights an assassin can't take yet.",
+          "source": {
+            "video": "jgHpbaX9wYE",
+            "t": 280
+          },
+          "stat": {
+            "text": "Hecarim wins 57% (1,252 games)",
+            "patch": "26.21"
+          }
+        },
+        {
+          "kind": "versus",
+          "a": [
+            "khazix"
+          ],
+          "b": [
+            "qiyana"
+          ],
+          "edge": "a",
+          "text": "Once ahead, an assassin invades the moment the other is seen: assassin against assassin depends on who has the lead.",
+          "source": {
+            "video": "jgHpbaX9wYE",
+            "t": 360
+          }
+        }
       ]
     },
     {
@@ -795,6 +1286,55 @@
           "video": "vQCDKJx0rHM",
           "t": 359
         }
+      ],
+      "takeaway": "Before trusting a lane, check for one enemy ability that switches off what your champion wins with.",
+      "caveat": "Interactions decide trades, not whole lanes.",
+      "matchups": [
+        {
+          "kind": "versus",
+          "a": [
+            "garen"
+          ],
+          "b": [
+            "jax"
+          ],
+          "edge": "a",
+          "text": "Counter Strike dodges autos, not abilities: Garen's E keeps hitting.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 185
+          }
+        },
+        {
+          "kind": "versus",
+          "a": [
+            "shen"
+          ],
+          "b": [
+            "ambessa"
+          ],
+          "edge": "a",
+          "text": "Shen's W blocks the autos Ambessa weaves between abilities, and his E forces the trade when she's out of them.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 360
+          }
+        },
+        {
+          "kind": "versus",
+          "a": [
+            "malphite"
+          ],
+          "b": [
+            "irelia"
+          ],
+          "edge": "a",
+          "text": "Malphite's E cuts Irelia's attack speed; she can barely auto him.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 330
+          }
+        }
       ]
     },
     {
@@ -860,6 +1400,74 @@
         {
           "video": "vQCDKJx0rHM",
           "t": 327
+        }
+      ],
+      "takeaway": "Melee into ranged only works if your kit reliably reaches the target; name the gap-closer and their answer.",
+      "caveat": "Winning lane still needs converting.",
+      "matchups": [
+        {
+          "kind": "versus",
+          "a": [
+            "nasus"
+          ],
+          "b": [
+            "jayce"
+          ],
+          "edge": "a",
+          "text": "Wither slows Jayce enough that he can't kite.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 170
+          },
+          "stat": {
+            "text": "Nasus wins about 57%",
+            "patch": "26.21"
+          }
+        },
+        {
+          "kind": "versus",
+          "a": [
+            "vayne"
+          ],
+          "b": [
+            "darius"
+          ],
+          "edge": "a",
+          "text": "Darius has to Flash to reach Vayne and still gets kited.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 162
+          }
+        },
+        {
+          "kind": "versus",
+          "a": [
+            "irelia"
+          ],
+          "b": [
+            "jayce"
+          ],
+          "edge": "a",
+          "text": "Irelia dashes through minions to reach Jayce.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 345
+          }
+        },
+        {
+          "kind": "versus",
+          "a": [
+            "jayce"
+          ],
+          "b": [
+            "yone"
+          ],
+          "edge": "a",
+          "text": "Yone runs at Jayce with E and gets pushed off by hammer E.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 345
+          }
         }
       ]
     },
@@ -929,6 +1537,59 @@
         {
           "video": "D7DemQewZqM",
           "t": 922
+        }
+      ],
+      "takeaway": "Projectile blockers stop hooks, not engage that walks or dashes in.",
+      "caveat": "Braum is half of all warden games in the data.",
+      "matchups": [
+        {
+          "kind": "versus",
+          "a": [
+            "braum"
+          ],
+          "b": [
+            "nautilus"
+          ],
+          "edge": "a",
+          "text": "Braum's shield eats the hook.",
+          "source": {
+            "video": "D7DemQewZqM",
+            "t": 415
+          },
+          "stat": {
+            "text": "Braum wins 56%",
+            "patch": "26.22"
+          }
+        },
+        {
+          "kind": "versus",
+          "a": [
+            "rell"
+          ],
+          "b": [
+            "braum"
+          ],
+          "edge": "a",
+          "text": "Rell throws nothing for the shield to block; Leona and Alistar beat Braum the same way.",
+          "source": {
+            "video": "D7DemQewZqM",
+            "t": 420
+          }
+        },
+        {
+          "kind": "versus",
+          "a": [
+            "alistar"
+          ],
+          "b": [
+            "nautilus"
+          ],
+          "edge": "a",
+          "text": "Alistar walks in while the hook is on cooldown.",
+          "source": {
+            "video": "D7DemQewZqM",
+            "t": 280
+          }
         }
       ]
     },
@@ -1000,6 +1661,40 @@
         {
           "video": "D7DemQewZqM",
           "t": 848
+        }
+      ],
+      "takeaway": "Hold the disengage for the engage; while it's down, step back.",
+      "caveat": "In a team fight several engage tools arrive at once.",
+      "matchups": [
+        {
+          "kind": "versus",
+          "a": [
+            "poppy"
+          ],
+          "b": [
+            "nautilus"
+          ],
+          "edge": "a",
+          "text": "Poppy's W stops Nautilus mid-dash, so the all-in never happens.",
+          "source": {
+            "video": "D7DemQewZqM",
+            "t": 815
+          }
+        },
+        {
+          "kind": "versus",
+          "a": [
+            "thresh"
+          ],
+          "b": [
+            "janna"
+          ],
+          "edge": "a",
+          "text": "Janna's knock-up needs time to charge; a hook doesn't wait.",
+          "source": {
+            "video": "D7DemQewZqM",
+            "t": 820
+          }
         }
       ]
     },
@@ -1076,6 +1771,25 @@
           "video": "is1BFqUWweQ",
           "t": 518
         }
+      ],
+      "takeaway": "Facing a long-range mage, pick something that reaches it; picking one, check what can reach you.",
+      "caveat": "Mage bot strength is a 26.21 observation.",
+      "matchups": [
+        {
+          "kind": "versus",
+          "a": [
+            "pyke"
+          ],
+          "b": [
+            "lux"
+          ],
+          "edge": "a",
+          "text": "Pyke's execute finds a squishy mage support; a tank never drops low enough.",
+          "source": {
+            "video": "D7DemQewZqM",
+            "t": 505
+          }
+        }
       ]
     },
     {
@@ -1125,6 +1839,15 @@
           "video": "D7DemQewZqM",
           "t": 880
         }
+      ],
+      "takeaway": "Against an off-role support, give up the level 2 fight and win after lane.",
+      "caveat": "Elise keeps value later.",
+      "showcase": [
+        "pantheon",
+        "camille",
+        "zoe",
+        "sylas",
+        "elise"
       ]
     },
     {
@@ -1213,6 +1936,61 @@
           "video": "is1BFqUWweQ",
           "t": 621
         }
+      ],
+      "takeaway": "Pick the support for what your ADC wants: early fights, protection until items, or room to trade.",
+      "caveat": "A solo-queue heuristic: pro bully lanes often pair with supports who don't start fights.",
+      "matchups": [
+        {
+          "kind": "pair",
+          "a": [
+            "ezreal",
+            "nautilus"
+          ],
+          "fit": "clashes",
+          "text": "Two goals: an all-in support with a carry who wants to trade from range.",
+          "source": {
+            "video": "D7DemQewZqM",
+            "t": 1000
+          },
+          "stat": {
+            "text": "About 42%",
+            "patch": "26.22"
+          }
+        },
+        {
+          "kind": "pair",
+          "a": [
+            "yunara",
+            "braum"
+          ],
+          "fit": "fits",
+          "text": "A warden keeps a scaling carry alive until she carries.",
+          "source": {
+            "video": "D7DemQewZqM",
+            "t": 397
+          },
+          "stat": {
+            "text": "57.1%",
+            "patch": "26.22"
+          }
+        },
+        {
+          "kind": "pair",
+          "a": [
+            "xayah",
+            "rakan"
+          ],
+          "fit": "fits",
+          "text": "Engage that dashes back to the carry it fights beside.",
+          "source": {
+            "video": "D7DemQewZqM",
+            "t": 290
+          },
+          "stat": {
+            "text": "55.1% over 2,970 games",
+            "patch": "26.22"
+          }
+        }
       ]
     },
     {
@@ -1276,6 +2054,25 @@
         {
           "video": "vQCDKJx0rHM",
           "t": 452
+        }
+      ],
+      "takeaway": "An early pick needs a comp that can turn its lead into objectives.",
+      "caveat": "Bullies with a real lead still win 63% in the creator's data.",
+      "matchups": [
+        {
+          "kind": "versus",
+          "a": [
+            "jayce"
+          ],
+          "b": [
+            "malphite"
+          ],
+          "edge": "none",
+          "text": "Jayce wins the lane, but one gank resets him: a ranged top who isn't ahead is behind.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 575
+          }
         }
       ]
     },
@@ -1357,6 +2154,40 @@
           "video": "D7DemQewZqM",
           "t": 321
         }
+      ],
+      "takeaway": "Judge a scaler or tank by the fight it arrives at, not by lane gold.",
+      "caveat": "Tanks fall behind hyper scalers.",
+      "matchups": [
+        {
+          "kind": "versus",
+          "a": [
+            "kayle"
+          ],
+          "b": [
+            "ksante"
+          ],
+          "edge": "none",
+          "text": "K'Sante wins the early lane; Kayle outscales and kills him through his ultimate.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 418
+          }
+        },
+        {
+          "kind": "versus",
+          "a": [
+            "shen"
+          ],
+          "b": [
+            "jayce"
+          ],
+          "edge": "none",
+          "text": "Jayce is 1,400 gold up after lane; Shen still forces the fights that matter.",
+          "source": {
+            "video": "vQCDKJx0rHM",
+            "t": 452
+          }
+        }
       ]
     },
     {
@@ -1403,6 +2234,25 @@
         {
           "video": "jgHpbaX9wYE",
           "t": 413
+        }
+      ],
+      "takeaway": "An early tempo comp has to end, or break the map, before scaling arrives.",
+      "caveat": "One illustrative game.",
+      "matchups": [
+        {
+          "kind": "versus",
+          "a": [
+            "lee-sin"
+          ],
+          "b": [
+            "zac"
+          ],
+          "edge": "none",
+          "text": "Lee Sin's 2,000 gold lead, soul and two Barons, then the Elder fight goes to Zac and the enemy hyper carries.",
+          "source": {
+            "video": "jgHpbaX9wYE",
+            "t": 413
+          }
         }
       ]
     }

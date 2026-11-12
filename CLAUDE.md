@@ -785,7 +785,12 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   himself is never presented as consensus. Lessons view (topic, champion, video, text filters in the URL; `?lesson=` opens
   and marks one) and Videos view (summary, lessons by timestamp, chapters). Transcripts are never republished. Selective
   "Learn why" links (`FINDING_LESSONS`, `COUNTER_NO_READ_LESSON`) from Comp Check findings and the Counter card's no-reason
-  read: links only. Commentary on one pro game goes to Analyst perspectives instead. New videos go through a review in the
+  read: links only. Visual pass (alan, 2026-11-12): one reading column with a sticky lesson index; each lesson leads with a
+  `takeaway`, its visual (archetype `groups` with portraits, plan and how they fare; `matchups`, versus or duo pair, with the
+  side the example favours and any creator stat with its patch; or a small `showcase`), "Use it when" and a short `caveat`,
+  then the full explanation behind a Disclosure. Every group and matchup names its video moment and uses only the champions
+  the video names for that point; a champion sits in one group per lesson and hybrids go in the group's note. `?video=`
+  shows the video's intro and its lessons in video order. Commentary on one pro game goes to Analyst perspectives instead. New videos go through a review in the
   thread first; never auto-ingest a creator.
 - **Identity-first headers** (alan, 2026-10-12, DPM.LOL as the hierarchy reference, never its branding or layout): a
   player or champion page leads with the subject, on one surface, not a card: a large portrait or champion icon, a

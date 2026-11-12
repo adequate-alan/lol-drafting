@@ -26,18 +26,25 @@ export function filterInsights(data: DraftInsights, f: { category?: string; cham
   const q = f.q?.trim().toLowerCase();
   return data.insights.filter((i) =>
     (!f.category || i.category === f.category)
-    && (!f.champion || i.related.champions.includes(f.champion))
+    && (!f.champion || championsOf(i).includes(f.champion))
     && (!f.video || i.sources.some((s) => s.video === f.video))
     && (!q || textOf(i, names).includes(q)));
 }
 
+/** Every champion a lesson names: its related list plus the champions in its groups, matchups and showcase. */
+export const championsOf = (i: DraftInsight) => [...new Set([
+  ...i.related.champions, ...(i.groups ?? []).flatMap((g) => g.champions),
+  ...(i.matchups ?? []).flatMap((m) => (m.kind === "versus" ? [...m.a, ...m.b] : m.a)), ...(i.showcase ?? []),
+])];
+
 const textOf = (i: DraftInsight, names: Record<string, string>) => [
-  i.title, i.principle, i.why, i.example.text, i.when, i.limits, i.siteNote ?? "", i.disagreement ?? "",
-  ...i.claims.map((c) => c.text), ...i.related.concepts, ...i.related.champions.map((c) => names[c] ?? c),
+  i.title, i.takeaway, i.caveat, i.principle, i.why, i.example.text, i.when, i.limits, i.siteNote ?? "", i.disagreement ?? "",
+  ...i.claims.map((c) => c.text), ...i.related.concepts, ...championsOf(i).map((c) => names[c] ?? c),
+  ...(i.groups ?? []).flatMap((g) => [g.label, g.plan, g.vs, g.note ?? ""]), ...(i.matchups ?? []).map((m) => m.text),
 ].join(" ").toLowerCase();
 
 /** Every champion a lesson names, for the champion filter. */
-export const insightChampions = (data: DraftInsights) => [...new Set(data.insights.flatMap((i) => i.related.champions))];
+export const insightChampions = (data: DraftInsights) => [...new Set(data.insights.flatMap(championsOf))];
 
 /** A video's lessons, each at its earliest moment in that video, in video order. */
 export function lessonsOfVideo(data: DraftInsights, video: string) {

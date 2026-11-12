@@ -1476,6 +1476,18 @@ await open("/insights/");
   await open("/insights/?lesson=disengage-is-a-cooldown");
   await page.waitForTimeout(300);
   check("insights: a lesson link opens and marks the lesson", (await page.locator("#lesson-disengage-is-a-cooldown.pn-target details[open]").count()) === 1 && await page.locator("#lesson-disengage-is-a-cooldown").isVisible(), "");
+  // Visual pass (alan, 2026-11-12): one video's lessons in video order under its intro, archetype groups with portraits,
+  // duo-versus-duo comparisons, and a portrait opens the champion drawer.
+  await open("/insights/?video=is1BFqUWweQ");
+  const groups = await page.$$eval("#lesson-adc-archetypes .ins-group h4", (hs) => hs.map((h) => h.childNodes[0].textContent.trim()));
+  check("insights: the ADC guide shows its five archetypes with portraits", groups.join("|") === "Scalers|Lane bullies|Poke / casters|Skirmishers|Mage bots"
+    && (await page.locator("#lesson-adc-archetypes .ins-group .champ[data-icon='image']").count()) >= 20, groups.join("|"));
+  check("insights: a video opens with its intro and a learning list", (await page.locator(".ins-intro .ins-learn-list li").count()) >= 5 && (await page.locator(".ins-main > .pn-section").count()) === 0, "");
+  check("insights: Kalista + Alistar vs Ezreal + Bard shows four portraits", (await page.locator("#lesson-adc-archetypes .ins-matchup.wide .champ").count()) === 4, "");
+  await page.locator("#lesson-adc-archetypes .ins-group .ins-portrait").first().click();
+  await page.locator(".drawer").waitFor({ timeout: 4000 }).catch(() => {});
+  check("insights: a portrait opens the champion drawer", (await text(".drawer h2")) === "Jinx", await text(".drawer h2"));
+  await page.keyboard.press("Escape");
   await open("/insights/?view=videos");
   check("insights: the Videos view lists every video with its lessons", (await page.locator(".ins-video").count()) === 4 && (await page.locator(".ins-video .ins-moments li").count()) >= 17, "");
 }

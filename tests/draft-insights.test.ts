@@ -50,6 +50,34 @@ describe("the data", () => {
     }
   });
 
+  it("grounds every portrait group and matchup in a moment of a video the lesson cites", () => {
+    let visuals = 0;
+    for (const i of data.insights) {
+      const cited = new Set(i.sources.map((s) => s.video));
+      const aids = [...(i.groups ?? []), ...(i.matchups ?? [])];
+      for (const a of aids) {
+        visuals++;
+        expect(cited, `${i.id}: ${a.source.video}`).toContain(a.source.video);
+        expect(a.source.t, i.id).toBeLessThan(data.videos[a.source.video].duration);
+      }
+      for (const g of i.groups ?? []) for (const c of g.champions) expect(champions, `${i.id} ${g.label}: ${c}`).toContain(c);
+      for (const m of i.matchups ?? []) for (const c of m.kind === "versus" ? [...m.a, ...m.b] : m.a) expect(champions, `${i.id}: ${c}`).toContain(c);
+      for (const c of i.showcase ?? []) expect(champions, `${i.id}: ${c}`).toContain(c);
+      // a champion sits in one group of a lesson, never two: hybrids are named in the group's note instead
+      const grouped = (i.groups ?? []).flatMap((g) => g.champions);
+      expect(new Set(grouped).size, i.id).toBe(grouped.length);
+    }
+    expect(visuals).toBeGreaterThan(30);
+  });
+
+  it("gives the ADC guide its five archetypes and the Kalista + Alistar vs Ezreal + Bard lane", () => {
+    const adc = data.insights.find((i) => i.id === "adc-archetypes")!;
+    expect(adc.groups!.map((g) => g.label)).toEqual(["Scalers", "Lane bullies", "Poke / casters", "Skirmishers", "Mage bots"]);
+    const lane = adc.matchups![0];
+    expect(lane.kind === "versus" && [lane.a, lane.b]).toEqual([["kalista", "alistar"], ["ezreal", "bard"]]);
+    expect(lane.stat?.patch).toBe("26.21");
+  });
+
   it("keeps the one-creator caveat: no lesson claims agreement between creators", () => {
     expect(Object.keys(data.creators)).toHaveLength(1);
     for (const i of data.insights) expect(`${i.why} ${i.siteNote ?? ""}`, i.id).not.toMatch(/creators agree|consensus/i);
@@ -60,6 +88,7 @@ describe("browsing", () => {
   it("filters by topic, champion, video and text", () => {
     expect(filterInsights(data, { category: "bot-duo" }).map((i) => i.id)).toEqual(["match-support-to-adc"]);
     expect(filterInsights(data, { champion: "jax" }).map((i) => i.id)).toContain("abilities-against-abilities");
+    expect(filterInsights(data, { champion: "hwei" }).map((i) => i.id)).toContain("adc-archetypes"); // from a group, not the related list
     expect(filterInsights(data, { video: "jgHpbaX9wYE" }).every((i) => i.sources.some((s) => s.video === "jgHpbaX9wYE"))).toBe(true);
     expect(filterInsights(data, { q: "Braum" }, { braum: "Braum" }).length).toBeGreaterThan(1);
     expect(filterInsights(data, { q: "zzzz" })).toEqual([]);
