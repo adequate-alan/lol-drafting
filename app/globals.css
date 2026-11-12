@@ -2470,13 +2470,50 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
   .pn-list { columns: 1; }
 }
 
-/* Draft Insights (alan, 2026-11-12): lessons reuse the Patch Notes entry surface; two columns on wide screens. */
-.ins-list { columns: 2 460px; column-gap: var(--s4); }
+/* Draft Insights (alan, 2026-11-12, visual pass): one reading column of lessons (Patch Notes' entry surface), a sticky
+   lesson index beside it on wide screens, champion portraits beside the point they illustrate. */
+.ins-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s6); align-items: start; }
+@media (min-width: 1180px) { .ins-layout { grid-template-columns: minmax(0, 1fr) 240px; } }
+.ins-main { min-width: 0; max-width: 980px; }
+.ins-index { position: sticky; top: 72px; display: none; max-height: calc(100vh - 96px); overflow-y: auto; font-size: var(--fs-xs); }
+@media (min-width: 1180px) { .ins-index { display: grid; gap: var(--s4); } }
+.ins-index ol { display: grid; gap: var(--s1); margin: var(--s2) 0 0; padding: 0; list-style: none; }
+.ins-index a { color: var(--text-muted); }
+.ins-index a:hover { color: var(--text); }
+.ins-index-topic { font-family: var(--font-display); font-weight: var(--w-strong); color: var(--text) !important; }
+.ins-list { display: grid; gap: var(--s4); }
+.ins-list > .pn-entry { margin-bottom: 0; }
 .ins-entry h3 { margin: 0; font-size: var(--fs-md); }
+.ins-takeaway { margin: 0; font-size: var(--fs-md); color: var(--text); max-width: 72ch; }
 .ins-principle, .ins-summary { margin: 0; color: var(--text); max-width: 72ch; }
+.ins-portraits { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); }
+.ins-portrait { display: inline-flex; align-items: center; gap: var(--s2); padding: 0; background: none; border: 0; color: var(--text); font: inherit; font-size: var(--fs-sm); cursor: pointer; }
+.ins-portrait:hover .ins-pname { text-decoration: underline; }
+.ins-groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--s3); }
+.ins-group { display: grid; gap: var(--s2); align-content: start; padding: var(--s3); background: var(--surface-sunken); border: 1px solid var(--border); border-radius: var(--r); }
+.ins-group h4 { display: flex; align-items: baseline; gap: var(--s2); margin: 0; font-family: var(--font-display); font-size: var(--fs-sm); }
+.ins-group p { margin: 0; font-size: var(--fs-sm); }
+.ins-group b, .ins-glance dt { font-weight: var(--w-strong); color: var(--text-muted); font-size: var(--fs-xs); margin-right: var(--s1); }
+.ins-matchups { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--s3); margin: 0; padding: 0; list-style: none; }
+.ins-matchup { display: grid; gap: var(--s2); align-content: start; padding: var(--s3); border: 1px solid var(--border); border-radius: var(--r); }
+.ins-vs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); }
+.ins-side { display: grid; gap: 2px; padding: var(--s1) var(--s2); border-radius: var(--r-sm); box-shadow: inset 0 0 0 1px transparent; }
+.ins-side.edge { box-shadow: inset 0 0 0 1px var(--accent); }
+.ins-side-label { font-size: var(--fs-2xs); color: var(--text-muted); }
+.ins-vs-mark { font-family: var(--font-display); font-size: var(--fs-xs); color: var(--text-faint); text-transform: uppercase; }
+.ins-fit { font-size: var(--fs-xs); font-weight: var(--w-strong); }
+.ins-fit.fits { color: var(--success); }
+.ins-fit.clashes { color: var(--caution); }
+.ins-mtext { margin: 0; font-size: var(--fs-sm); max-width: 72ch; }
+.ins-matchup.wide { grid-column: 1 / -1; }
+.ins-mmeta { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3); margin: 0; }
+.ins-stat { white-space: nowrap; color: var(--caution); font-size: var(--fs-xs); }
+.ins-moment { font-size: var(--fs-xs); color: var(--text-muted); white-space: nowrap; }
+.ins-moment:hover { color: var(--text); }
+.ins-glance { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--s1) var(--s3); margin: 0; font-size: var(--fs-sm); }
+.ins-glance dt { margin: 0; padding-top: 1px; }
+.ins-glance dd { margin: 0; max-width: 72ch; }
 .ins-sources { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s1) var(--s3); font-size: var(--fs-xs); }
-.ins-sources a { color: var(--text-muted); }
-.ins-sources a:hover { color: var(--text); }
 .ins-more > summary { font-size: var(--fs-xs); }
 .ins-dl { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s1); margin: 0; }
 .ins-dl dt { margin-top: var(--s2); font-size: var(--fs-xs); font-weight: var(--w-strong); color: var(--text-muted); }
@@ -2486,7 +2523,10 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .ins-basis.mechanic { color: var(--success); }
 .ins-basis.creator-stat { color: var(--caution); }
 .ins-related { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); margin-top: var(--s4); }
-.ins-champs { display: inline-flex; flex-wrap: wrap; gap: 2px; }
+.ins-intro { display: grid; gap: var(--s2); margin-bottom: var(--s5); padding-bottom: var(--s4); border-bottom: 1px solid var(--border); }
+.ins-intro h2 { margin: 0; font-size: var(--fs-lg); }
+.ins-intro h2 a { color: var(--text); }
+.ins-learn-list { display: grid; gap: var(--s1); margin: 0; padding-left: var(--s5); font-size: var(--fs-sm); }
 .ins-videos { display: grid; gap: var(--s6); }
 .ins-video { display: grid; gap: var(--s3); scroll-margin-top: 72px; }
 .ins-video .section-header a { color: var(--text); }
@@ -2494,7 +2534,10 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .ins-moments li { display: flex; gap: var(--s3); align-items: baseline; }
 .ins-moments li > .num { flex: none; min-width: 3.2em; color: var(--text-muted); }
 .ins-learn { font-size: var(--fs-xs); white-space: nowrap; }
-@media (max-width: 620px) { .ins-list { columns: 1; } }
+@media (max-width: 620px) {
+  .ins-groups { grid-template-columns: minmax(0, 1fr); }
+  .ins-glance { grid-template-columns: minmax(0, 1fr); }
+}
 
 /* Touch (coarse pointers): the same layout, larger hit areas. Segmented controls and tabs grow to 32-40px; small
    inline triggers get an invisible margin so a tap that lands just beside a label opens the label, never the row's

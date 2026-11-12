@@ -745,6 +745,24 @@ export const DraftInsight = z.object({
     concepts: z.array(z.string()),
     tools: z.array(z.object({ label: z.string(), href: z.string().regex(/^\//) })),
   }),
+  takeaway: z.string().min(20).max(160), // the one actionable line shown at a glance
+  caveat: z.string().min(10).max(120), // the most important limit, shown at a glance; `limits` keeps the full text
+  // Visual teaching aids (alan, 2026-11-12, visual overhaul). Each one names the moment it comes from, and its champions
+  // are the ones the video uses for that point, never a guess from the related list.
+  groups: z.array(z.object({
+    label: z.string(), champions: z.array(ChampionId).min(1).max(6),
+    plan: z.string().min(10), vs: z.string().min(10), note: z.string().optional(), // note: hybrids and exceptions
+    source: InsightSource,
+  })).optional(),
+  matchups: z.array(z.discriminatedUnion("kind", [
+    z.object({ kind: z.literal("versus"), a: z.array(ChampionId).min(1).max(2), b: z.array(ChampionId).min(1).max(2),
+      aLabel: z.string().optional(), bLabel: z.string().optional(),
+      edge: z.enum(["a", "b", "none"]), // who the example favours; "none" when the point is how it changes over time
+      text: z.string().min(10), stat: z.object({ text: z.string(), patch: z.string().regex(/^\d+\.\d+$/) }).optional(), source: InsightSource }),
+    z.object({ kind: z.literal("pair"), a: z.array(ChampionId).length(2), fit: z.enum(["fits", "clashes"]),
+      text: z.string().min(10), stat: z.object({ text: z.string(), patch: z.string().regex(/^\d+\.\d+$/) }).optional(), source: InsightSource }),
+  ])).optional(),
+  showcase: z.array(ChampionId).max(5).optional(), // representative champions when there is no group or matchup
   siteNote: z.string().optional(), // how Draft Assistant already handles (or doesn't handle) the idea
   disagreement: z.string().optional(), // a tension between sources, shown as it is, never resolved
   claims: z.array(z.object({
