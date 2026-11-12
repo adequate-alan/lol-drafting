@@ -423,7 +423,14 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
           </div>
         </div>
         <div className="team-row enemy">
-          <div className="team-label">Enemy<EnemyAdd champions={data.champions} taken={takenNow} byName={byName} full={foes.length >= ROLES.length} onAdd={addEnemy} /></div>
+          {/* Know their role? Click the slot. Unsure? Add champion places them with the whole lineup (lib/enemy-roles.ts). */}
+          <div className="enemy-head">
+            <div className="team-label">Enemy</div>
+            <div className="enemy-head-actions">
+              <EnemyAdd champions={data.champions} taken={takenNow} byName={byName} full={foes.length >= ROLES.length} onAdd={addEnemy} />
+              {!foes.length && <span className="enemy-add-hint">Unsure of their role? Add a champion and we&rsquo;ll place them automatically.</span>}
+            </div>
+          </div>
           <div className="draft-slots">
             {ROLES.map((role, i) => {
               const p = placementAt(role);

@@ -1310,11 +1310,16 @@ button.slot-body:hover .slot-name { text-decoration: underline; text-decoration-
 .draft-slot.enemy.provisional { border-style: dashed; }
 .slot-auto { margin-left: var(--s2); min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 400; letter-spacing: 0; color: var(--text-faint); }
 .draft-slot.enemy .role-tag { max-width: 100%; }
-.enemy-add-btn { padding: 0 var(--s2); border: 1px dashed var(--border-strong); border-radius: var(--r-sm); background: transparent; font: inherit; font-size: var(--fs-2xs); color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: color var(--t-fast), border-color var(--t-fast); }
-.enemy-add-btn:hover { color: var(--text); border-color: var(--text-faint); }
-.team-row.enemy .team-label { flex-wrap: wrap; position: relative; z-index: 3; }
-.enemy-add { position: absolute; top: calc(100% + 4px); left: 0; z-index: 31; display: block; width: 200px; }
-.enemy-add input { width: 100%; height: 28px; padding: 0 var(--s3); font-size: var(--fs-sm); }
+/* Enemy header: the label, then "+ Add champion" (a secondary button) lined up with the slots below */
+.enemy-head { grid-column: 1 / -1; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: var(--s4); align-items: center; position: relative; z-index: 3; }
+.team-row.enemy { row-gap: var(--s2); }
+.team-row.enemy > .draft-slots { grid-column: 2; }
+.enemy-head-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s4); min-width: 0; }
+.enemy-add-btn { gap: var(--s2); }
+.enemy-add-btn:disabled:hover { border-color: var(--border-strong); background: var(--surface); color: var(--text); }
+.enemy-add-hint { font-size: var(--fs-xs); color: var(--text-muted); min-width: 0; }
+.enemy-add { display: block; width: 200px; z-index: 31; }
+.enemy-add input { width: 100%; height: var(--control-h-sm); padding: 0 var(--s3); font-size: var(--fs-sm); }
 .enemy-add .picker-list { width: 240px; }
 .enemy-unplaced { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s4); margin-left: calc(64px + var(--s4)); color: var(--text-muted); }
 .enemy-unplaced-k { font-family: var(--font-display); font-weight: var(--w-control); color: var(--enemy); }
@@ -1640,6 +1645,9 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 }
 @media (max-width: 1180px) {
   .team-row { grid-template-columns: minmax(0, 1fr); gap: var(--s2); }
+  .team-row.enemy > .draft-slots { grid-column: 1; }
+  .enemy-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s4); }
+  .enemy-head-actions { display: contents; }
   .enemy-unplaced { margin-left: 0; }
   .draft-slot .champ.xxl { --size: var(--icon-md); }
   .draft-layout { grid-template-columns: minmax(0, 1fr); }
@@ -1662,6 +1670,7 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 /* Phones: each team scrolls sideways inside its row; the picker opens below the row. */
 @media (max-width: 760px) {
   .team-row { grid-template-columns: minmax(0, 1fr); gap: var(--s2); }
+  .enemy-add-hint { flex-basis: 100%; }
   .draft-slots { display: flex; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; }
   /* The slot being picked fills what the others leave, so a whole team fits across a 390px phone */
   .draft-slot { position: static; flex: 1 0 104px; min-height: 58px; padding-left: var(--s3); scroll-snap-align: start; }

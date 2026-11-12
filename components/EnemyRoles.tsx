@@ -141,7 +141,8 @@ export function UnplacedEnemies({ read, names, onSet }: { read: EnemyRead; names
 
 /**
  * Add an enemy champion as it is revealed, without choosing a role: type, Enter, next. The field stays open for the
- * next pick; Escape or leaving it closes it.
+ * next pick; Escape (focus back on the button) or leaving it closes it. A secondary action in the enemy header, there for
+ * the whole draft (disabled once five are in); clicking an enemy slot still confirms that role directly.
  */
 export function EnemyAdd({ champions, taken, byName, full, onAdd }: {
   champions: Champion[]; taken: string[]; byName: Map<string, string>; full: boolean; onAdd: (id: string) => void;
@@ -161,25 +162,29 @@ export function EnemyAdd({ champions, taken, byName, full, onAdd }: {
     if (!id) return;
     onAdd(id); setText(""); setHi(0);
   };
-  const close = () => { setOpen(false); setText(""); setHi(0); };
+  const btn = useRef<HTMLButtonElement>(null);
+  const close = (refocus = false) => {
+    setOpen(false); setText(""); setHi(0);
+    if (refocus) requestAnimationFrame(() => btn.current?.focus());
+  };
   const scrollTo = (i: number) => (listRef.current?.children[i] as HTMLElement | undefined)?.scrollIntoView({ block: "nearest" });
   const onKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "ArrowDown") { e.preventDefault(); const i = Math.min(hi + 1, matches.length - 1); setHi(i); scrollTo(i); }
     else if (e.key === "ArrowUp") { e.preventDefault(); const i = Math.max(hi - 1, 0); setHi(i); scrollTo(i); }
     else if (e.key === "Enter") { e.preventDefault(); const exact = byName.get(q); add(exact && !taken.includes(exact) ? exact : matches[hi]?.id); }
-    else if (e.key === "Escape") { e.preventDefault(); close(); }
+    else if (e.key === "Escape") { e.preventDefault(); close(true); }
   };
-  if (full) return null;
   if (!open) return (
-    <button type="button" className="enemy-add-btn" title="Add an enemy pick without choosing its role: it is placed with the whole lineup, and you can confirm the role later"
-      onClick={() => { setOpen(true); requestAnimationFrame(() => input.current?.focus()); }}>+ Add</button>
+    <button ref={btn} type="button" className="btn sm enemy-add-btn" disabled={full} aria-haspopup="listbox"
+      title={full ? "All five enemy champions are in: change one from its slot" : "Placed with the whole lineup and marked likely; confirm the role from its slot later"}
+      onClick={() => { setOpen(true); requestAnimationFrame(() => input.current?.focus()); }}>+ Add champion</button>
   );
   return (
     <span className="enemy-add picker">
       <input ref={input} value={text} placeholder="Enemy champion" aria-label="Add an enemy champion (role placed automatically)"
         role="combobox" aria-autocomplete="list" aria-expanded={matches.length > 0} aria-controls="enemy-add-list"
         aria-activedescendant={matches[hi] ? `enemy-add-${matches[hi].id}` : undefined}
-        onChange={(e) => { setText(e.target.value); setHi(0); if (listRef.current) listRef.current.scrollTop = 0; }} onKeyDown={onKey} onBlur={close} />
+        onChange={(e) => { setText(e.target.value); setHi(0); if (listRef.current) listRef.current.scrollTop = 0; }} onKeyDown={onKey} onBlur={() => close()} />
       {matches.length > 0 && (
         <ul id="enemy-add-list" ref={listRef} role="listbox" tabIndex={-1} className="picker-list">
           {matches.map((c, i) => (
