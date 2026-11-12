@@ -235,6 +235,7 @@ check("no Clash wording on the Draft Room", !/Clash/.test(await text("body")), "
   const slot = (r) => page.locator(`.team-row.enemy .draft-slot[data-role="${r}"]`);
   check("flex: an enemy without a role is placed automatically and not shown as confirmed",
     /Poppy/.test(await slot("JUNGLE").innerText()) && (await slot("JUNGLE").getAttribute("class"))?.includes("provisional") && /likely/.test(await slot("JUNGLE").innerText()), await slot("JUNGLE").innerText());
+  check("flex: \"+ Add champion\" sits in the enemy header", (await page.locator(".team-row.enemy .enemy-head .enemy-add-btn").innerText()).trim() === "+ Add champion", "");
   await page.locator(".enemy-add-btn").click();
   await page.keyboard.type("Vi");
   await page.keyboard.press("Enter");
@@ -245,6 +246,18 @@ check("no Clash wording on the Draft Room", !/Clash/.test(await text("body")), "
   await page.locator(".role-menu-roles button", { hasText: "TOP" }).click();
   await page.waitForTimeout(300);
   check("flex: confirming a role keeps it and writes it in the link", /Poppy/.test(await slot("TOP").innerText()) && !(await slot("TOP").getAttribute("class"))?.includes("provisional") && page.url().includes("vs=top:poppy,vi"), page.url());
+  await page.evaluate(() => localStorage.removeItem("draft-room:board"));
+  // Add champion is a visible header action: explained on an empty enemy team, opened by keyboard, Escape returns focus
+  await open("/?bot=jinx");
+  check("flex: an empty enemy team explains Add champion", /Unsure of their role\? Add a champion/.test(await text(".team-row.enemy .enemy-head")), await text(".team-row.enemy .enemy-head"));
+  await page.locator(".enemy-add-btn").focus();
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("Poppy");
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(300);
+  check("flex: Add champion works from the keyboard and Escape returns to the button",
+    page.url().includes("vs=poppy") && await page.evaluate(() => document.activeElement?.classList.contains("enemy-add-btn")) && (await page.locator(".enemy-add-hint").count()) === 0, page.url());
   await page.evaluate(() => localStorage.removeItem("draft-room:board"));
 }
 // Draft Room workspace: the open role drives the list, one row per champion, Comp Check rail, pinned draft bar

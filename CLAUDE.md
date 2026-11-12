@@ -179,7 +179,9 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   empties it. Once drafting starts the filters are All / Synergy / Pro / Best fit / Counters plus one "Pro meta" menu
   (First rotation, Blind, Pro priority); the empty room keeps its four starting views.
 - **Enemy flex picks** (alan, 2026-11-10; `lib/enemy-roles.ts`, `components/EnemyRoles.tsx`, `tests/enemy-roles.test.ts`,
-  smoke "flex:"): an enemy champion can be added without a role ("+ Add" beside Enemy); the whole enemy lineup is placed at
+  smoke "flex:"): an enemy champion can be added without a role ("+ Add champion", a secondary `.btn sm` in the enemy
+  header, there for the whole draft, disabled once five are in; an empty enemy team adds "Unsure of their role? Add a
+  champion and we'll place them automatically."; alan, 2026-11-12: know the role, click the slot; unsure, Add champion); the whole enemy lineup is placed at
   once (`readEnemy`) from the roster's roles (listed first = main) and verified pro role picks (`getEnemyRoleBook`: the
   newest patch with 3+ picks, else every patch, else none; a pro-only role needs 2+ picks), weights in `ROLE_INFERENCE`,
   never shown as a probability. A role typed into an enemy slot, or chosen in the slot's role menu, is confirmed and never
