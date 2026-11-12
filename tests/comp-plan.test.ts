@@ -165,6 +165,24 @@ describe("following an engage (alan's review: four different things)", () => {
     }
   });
 
+  // alan's Draft Insights review (2026-11-12): an early-game carry who commits real damage inside the lockdown finishes the
+  // all-in with the support's crowd control; a carry who only adds damage from range keeps the minor note. Not a
+  // lane-bully label, and no score reads it.
+  it("Draven + Leona, Caitlyn + Neeko, Lucian + Nautilus: early damage that commits, no ranged follow-up note", () => {
+    for (const [bot, sup] of [["draven", "leona"], ["caitlyn", "neeko"], ["lucian", "nautilus"], ["draven", "nautilus"]]) {
+      const r = plan({ TOP: "ornn", JUNGLE: "vi", MID: "orianna", BOT: bot, SUPPORT: sup });
+      expect(all(r).map((w) => w.id), `${bot} + ${sup}`).not.toContain("duo-engage-ranged-follow");
+      expect(all(r).map((w) => w.id), `${bot} + ${sup}`).not.toContain("duo-engage-no-follow");
+    }
+  });
+
+  it("Ezreal, Corki, Ziggs and Senna with an engage support keep the ranged follow-up note", () => {
+    for (const [bot, sup] of [["ezreal", "nautilus"], ["corki", "alistar"], ["ziggs", "nautilus"], ["senna", "nautilus"]]) {
+      const r = plan({ TOP: "ornn", JUNGLE: "vi", MID: "orianna", BOT: bot, SUPPORT: sup });
+      expect(all(r).find((w) => w.id === "duo-engage-ranged-follow")?.severity, `${bot} + ${sup}`).toBe("minor");
+    }
+  });
+
   it("Kai'Sa + Nautilus: a diving carry is not a short-range carry without a protector", () => {
     const r = plan({ TOP: "ksante", JUNGLE: "vi", MID: "ahri", BOT: "kaisa", SUPPORT: "nautilus" });
     expect(all(r).map((w) => w.id)).not.toContain("duo-short-no-peel");

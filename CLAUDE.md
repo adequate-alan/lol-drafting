@@ -905,7 +905,7 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   missing, so nothing is silently dropped (`merged` names the job). Bot duo reads only (Mid/Jungle pair facts showed no
   signal). alan's review (2026-10-14): following an engage is four things (`followOf`: all-in, ranged, joins, extended
   trade; kit values unchanged), so a carry who only follows from range gets a minor "ranged follow-up, not an all-in";
-  the read is structural, and enemy picks only tag a finding "exploited" / "less relevant" (`exposure`), never its
+  an early-game carry who commits real damage inside the lockdown (`commits`: curve.early 3 with burst or sustained damage 2+; Draven, Lucian, Caitlyn) finishes the all-in and gets no note, not a lane-bully label (alan, 2026-11-12); the read is structural, and enemy picks only tag a finding "exploited" / "less relevant" (`exposure`), never its
   tier; with four picks a critical gap an available champion closes is "Needed from the <role>" with the champions
   that close it (saved-bot support rule applied, others theoretical), real severity only at five. Accuracy pass (alan,
   2026-10-14, "critical = a serious inability to execute the plan"): one frontliner is a frontline and missing depth is

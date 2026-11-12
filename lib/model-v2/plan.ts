@@ -110,6 +110,10 @@ export const followOf = (s: Slot) => ({
   ranged: s.threat >= 2 && s.c.kit.range >= 2,                    // hits the locked target from standard range or further
   joins: s.c.kit.backlineAccess >= 2 || (s.threat >= 2 && s.c.kit.range <= 1), // reaches it, or is already standing there
   extended: s.c.attrs.sustainedDps >= 2,                          // keeps dealing damage in the longer trade that follows
+  // Commits real damage while the support's lockdown lasts (alan, 2026-11-12, Draft Insights review): an early-game carry
+  // (curve.early 3) whose burst or sustained damage is 2+ turns the lockdown into a kill without crowd control of its own
+  // (Draven, Lucian, Caitlyn). Not a lane-bully label: Ezreal, Corki, Ziggs and Senna stay ranged follow-up.
+  commits: s.c.kit.curve.early >= 3 && (s.c.attrs.burst >= 2 || s.c.attrs.sustainedDps >= 2),
 });
 
 // ---------- plan jobs ----------
@@ -371,11 +375,12 @@ function interactions(slots: Slot[], f: Facts, plan: IdentityId | null): PlanFin
     if (starter(sup)) {
       // Following an engage is four different things (alan's review, 2026-10-14), read from the kit fields as they are:
       // an all-in (crowd control or burst of their own on the locked target, followUp 2+), damage from range onto it,
-      // physically joining (reach, or a short-range carry who is already there) and staying in the extended trade.
+      // physically joining (reach, or a short-range carry who is already there) and staying in the extended trade. A carry
+      // who commits early damage inside the lockdown (`commits`) finishes the all-in with the support's crowd control.
       const f2 = followOf(bot);
       if (!f2.allIn && !f2.ranged && !f2.joins)
         add("duo-engage-no-follow", "weakness", "moderate", "Support engages, carry cannot follow", `${sup.c.name} starts fights in lane and at dragon, but ${bot.c.name} can neither reach the target nor hit it from range in time.`, ["follow-up"], "duo");
-      else if (!f2.allIn)
+      else if (!f2.allIn && !f2.commits)
         add("duo-engage-ranged-follow", "weakness", "minor", "Engage gets ranged follow-up, not an all-in", `${bot.c.name} adds damage from range once ${sup.c.name} lands, but brings no crowd control or burst of their own to finish the all-in${f2.extended ? `; ${bot.c.name} is at home in the longer trade that follows` : ""}. Lane all-ins and dragon engages lean on the jungler or mid to finish the target.`, ["follow-up"], "duo");
     }
     // A diving carry (Kai'Sa into Nautilus) goes in with the engage on purpose; only a carry who must stand close
