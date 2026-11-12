@@ -80,6 +80,8 @@ export const getPatchIndex = () => (patchIndex ??= buildPatchIndex(getPatchNotes
 /** Champions whose Riot changes touch their stored kit values and that alan has not reviewed yet (lib/kit-review.ts). */
 /** Analyst perspectives per Gol.gg game id (counts only; the text loads as its own chunk, lib/analyst-commentary-bundle.ts). */
 export const getCommentaryCounts = () => commentaryCounts(load("analyst-commentary.json"));
+/** Draft Insights: lessons from approved creator videos. Read by the Draft Insights page only; never by a score or a ranking. */
+export const getDraftInsights = () => load("draft-insights.json");
 export const getKitQueue = () => storedKitQueue(getPatchNotes(), getChampions(), load("kit-review.json").decisions);
 let counterFresh: CounterFreshness | undefined;
 /** The DPM data's patch against the newest patch the site recognises (Riot's patch notes and recorded pro games). */

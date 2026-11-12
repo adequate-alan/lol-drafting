@@ -4,6 +4,7 @@
 // alan's approval, 2026-10-14). The plan and its jobs, critical gaps, weaknesses and accepted tradeoffs, what the open
 // role should bring, and the timing curve up front; enemy opportunities and identity scores behind "Full analysis".
 // Explanatory only: pro evidence never feeds it and it never feeds a score.
+import Link from "next/link";
 import { useMemo, useRef, type ReactNode } from "react";
 import { analyze, bestFix, CONFIDENCE_LABEL, IDENTITY_LABEL, SIEGE_LABEL, type Insight } from "@/lib/model-v2/analyze";
 import type { Draft } from "@/lib/model-v2/analyze";
@@ -14,6 +15,7 @@ import type { BotPairing, Champion, Role } from "@/lib/schema";
 import { SourceBadge } from "./ui";
 import { compSummary, summaryText } from "@/lib/comp-summary";
 import { scrollBehavior } from "@/lib/motion";
+import { FINDING_LESSONS, lessonHref } from "@/lib/draft-insights";
 
 const SEVERITY = { major: "Major", moderate: "Moderate", minor: "Minor" } as const;
 
@@ -51,6 +53,7 @@ function PlanPoint({ w, open }: { w: PlanFinding; open: Role | null }) {
       <summary><span className={`sev ${sev}`}>{tierLabel(w, open)}</span>{w.label}</summary>
       <p>{w.why}{w.tier === "needed" ? ` ${fixersText(w)}` : ""}{switchText(w)}</p>
       <Exposure w={w} />
+      {FINDING_LESSONS[w.id] && <Link className="ins-learn" href={lessonHref(FINDING_LESSONS[w.id])}>Learn why · Draft Insights</Link>}
     </details>
   );
 }

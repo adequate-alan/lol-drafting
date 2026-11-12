@@ -2461,6 +2461,32 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
   .pn-list { columns: 1; }
 }
 
+/* Draft Insights (alan, 2026-11-12): lessons reuse the Patch Notes entry surface; two columns on wide screens. */
+.ins-list { columns: 2 460px; column-gap: var(--s4); }
+.ins-entry h3 { margin: 0; font-size: var(--fs-md); }
+.ins-principle, .ins-summary { margin: 0; color: var(--text); max-width: 72ch; }
+.ins-sources { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s1) var(--s3); font-size: var(--fs-xs); }
+.ins-sources a { color: var(--text-muted); }
+.ins-sources a:hover { color: var(--text); }
+.ins-more > summary { font-size: var(--fs-xs); }
+.ins-dl { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s1); margin: 0; }
+.ins-dl dt { margin-top: var(--s2); font-size: var(--fs-xs); font-weight: var(--w-strong); color: var(--text-muted); }
+.ins-dl dd { margin: 0; max-width: 72ch; }
+.ins-claims { display: grid; gap: var(--s2); margin: var(--s4) 0 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
+.ins-basis { display: inline-block; margin-right: var(--s2); padding: 0 4px; font-size: var(--fs-2xs); color: var(--text-muted); border: 1px solid var(--border-strong); border-radius: var(--r-sm); white-space: nowrap; }
+.ins-basis.mechanic { color: var(--success); }
+.ins-basis.creator-stat { color: var(--caution); }
+.ins-related { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); margin-top: var(--s4); }
+.ins-champs { display: inline-flex; flex-wrap: wrap; gap: 2px; }
+.ins-videos { display: grid; gap: var(--s6); }
+.ins-video { display: grid; gap: var(--s3); scroll-margin-top: 72px; }
+.ins-video .section-header a { color: var(--text); }
+.ins-moments { display: grid; gap: var(--s1); margin: 0; padding: 0; list-style: none; }
+.ins-moments li { display: flex; gap: var(--s3); align-items: baseline; }
+.ins-moments li > .num { flex: none; min-width: 3.2em; color: var(--text-muted); }
+.ins-learn { font-size: var(--fs-xs); white-space: nowrap; }
+@media (max-width: 620px) { .ins-list { columns: 1; } }
+
 /* Touch (coarse pointers): the same layout, larger hit areas. Segmented controls and tabs grow to 32-40px; small
    inline triggers get an invisible margin so a tap that lands just beside a label opens the label, never the row's
    lock or another control. WCAG 2.2 target size (24px) at least, without making desktop any less dense. */

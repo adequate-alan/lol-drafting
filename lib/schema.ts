@@ -724,6 +724,54 @@ export const AnalystCommentary = z.object({
 export type AnalystCommentary = z.infer<typeof AnalystCommentary>;
 export type CommentaryObservation = z.infer<typeof CommentaryObservation>;
 
+// Draft Insights (alan, 2026-11-12): drafting lessons distilled from approved creator videos, each with its source
+// moments. A learning layer, not an evidence layer: never read by scoring, rankings, Synergies, Counters, kits, pool
+// tiers or Comp Library. Commentary on one specific pro game belongs in Analyst Perspectives instead. Every claim keeps
+// its basis apart (an established mechanic, a creator-reported statistic with its patch, a creator opinion, or our
+// interpretation), so an opinion is never shown as a fact. New videos go through a review in the thread first.
+export const INSIGHT_BASES = ["mechanic", "creator-stat", "opinion", "interpretation"] as const;
+export const InsightSource = z.object({ video: z.string(), t: z.number().int().nonnegative() });
+export const DraftInsight = z.object({
+  id: z.string().regex(/^[a-z0-9-]+$/),
+  title: z.string().min(10).max(90),
+  category: z.string(),
+  principle: z.string().min(40),
+  why: z.string().min(40),
+  example: z.object({ kind: z.enum(["video", "illustrative"]), text: z.string().min(20) }),
+  when: z.string().min(20),
+  limits: z.string().min(20),
+  related: z.object({
+    champions: z.array(ChampionId),
+    concepts: z.array(z.string()),
+    tools: z.array(z.object({ label: z.string(), href: z.string().regex(/^\//) })),
+  }),
+  siteNote: z.string().optional(), // how Draft Assistant already handles (or doesn't handle) the idea
+  disagreement: z.string().optional(), // a tension between sources, shown as it is, never resolved
+  claims: z.array(z.object({
+    text: z.string().min(10),
+    basis: z.enum(INSIGHT_BASES),
+    patch: z.string().regex(/^\d+\.\d+$/).optional(), // required for a creator-stat: the patch the figure was shown for
+  })).min(1),
+  sources: z.array(InsightSource).min(1),
+});
+export const DraftInsights = z.object({
+  reviewed: Day,
+  creators: z.record(z.string(), z.object({ name: z.string(), url: z.string().url() })),
+  videos: z.record(z.string(), z.object({
+    creator: z.string(), title: z.string(), url: z.string().url(), uploaded: Day,
+    duration: z.number().int().positive(), // seconds
+    role: Role.optional(),
+    period: z.string(), // the population and patch the video's statistics come from
+    audience: z.string(), summary: z.string().min(40),
+    chapters: z.array(z.tuple([z.number().int().nonnegative(), z.string()])),
+    skipped: z.string().optional(), // parts of the video left out, and why
+  })),
+  categories: z.array(z.object({ id: z.string(), title: z.string(), blurb: z.string() })),
+  insights: z.array(DraftInsight),
+});
+export type DraftInsights = z.infer<typeof DraftInsights>;
+export type DraftInsight = z.infer<typeof DraftInsight>;
+
 export const Files = {
   "champions.json": z.array(Champion),
   "sources.json": z.array(Source),
@@ -748,4 +796,5 @@ export const Files = {
   "item-changes.json": ItemChanges,
   "kit-review.json": KitReview,
   "analyst-commentary.json": AnalystCommentary,
+  "draft-insights.json": DraftInsights,
 } as const;
