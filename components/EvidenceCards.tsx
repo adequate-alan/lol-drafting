@@ -11,6 +11,7 @@ import { useState } from "react";
 import { FIRST_ROTATION, type StartGame, type StartingPick } from "@/lib/starting-picks";
 import { describePro, laneOpponent, type Counter } from "@/lib/counters";
 import { matchupRead, NO_READ_TEXT, READ_DISCLAIMER, UNREAD_TEXT, type MatchupBook } from "@/lib/matchup-read";
+import { COUNTER_NO_READ_LESSON, lessonHref } from "@/lib/draft-insights";
 import type { CounterFreshness } from "@/lib/counter-freshness";
 import { shortDate } from "@/lib/evidence";
 import { evidenceGames, type EvidenceGame, type Picks } from "@/lib/pro-evidence";
@@ -187,7 +188,7 @@ function KitRead({ c, book, n }: { c: Counter; book: MatchupBook; n: (id: string
           <p className="ce-read-lead">Plausibly, from the stored kits:</p>
           <ul className="ce-read-lines">{read.lines.map((l) => <li key={l.kind}>{l.text} <span className="mono faint">{l.values}</span></li>)}</ul>
         </>
-      ) : <p className="ce-read-lead">{read.status === "none" ? NO_READ_TEXT : UNREAD_TEXT}</p>}
+      ) : <p className="ce-read-lead">{read.status === "none" ? <>{NO_READ_TEXT} <Link className="ins-learn" href={lessonHref(COUNTER_NO_READ_LESSON)}>Learn why</Link></> : UNREAD_TEXT}</p>}
       {read.against.length > 0 && <p className="ce-read-against">The kits also give {n(them)}: {read.against.map((l) => l.text).join(" ")}</p>}
       <p className="ce-read-note">{READ_DISCLAIMER}</p>
     </section>

@@ -44,7 +44,7 @@ async function h1() { return (await page.locator("main h1").first().textContent(
 
 // Sections, direct loads and refreshes
 const sections = [["/", "Draft Room"], ...["top", "jungle", "mid", "bot", "support"].map((t) => [`/synergies/${t}/`, "Champion Synergies"]),
-  ["/comps/", "Comp Library"], ["/pool/", "Champion Pool"], ["/pro-drafts/", "Pro Drafts"], ["/pro-builds/", "Pro Builds"], ["/geng/", "Gen.G"], ["/meta/", "Meta / Research"], ["/patch-notes/", "Patch Notes"]];
+  ["/comps/", "Comp Library"], ["/pool/", "Champion Pool"], ["/pro-drafts/", "Pro Drafts"], ["/pro-builds/", "Pro Builds"], ["/geng/", "Gen.G"], ["/meta/", "Meta / Research"], ["/patch-notes/", "Patch Notes"], ["/insights/", "Draft Insights"]];
 for (const [path, title] of sections) {
   const res = await open(path);
   const t = await h1();
@@ -1462,8 +1462,25 @@ await open("/patch-notes/");
   check("drawer: a partner opens its pairing in place and Back returns to Nautilus", /Nautilus \+ /.test(pairTitle) && (await page.locator(".drawer").count()) === 1 && (await page.locator(".drawer .dw-pairing").count()) === 0 && (await text(".drawer h2")) === "Nautilus", pairTitle);
   await page.keyboard.press("Escape");
 }
+// Draft Insights (alan, 2026-11-12): lessons from approved videos, filters in the URL, every lesson linked to its moment,
+// a lesson link opens and marks the lesson, and the Videos view lists each video's lessons in order.
+await open("/insights/");
+{
+  const lessons = await page.locator(".ins-entry").count();
+  const links = await page.$$eval(".ins-sources a", (as) => as.map((a) => a.href));
+  check("insights: lessons listed, each linked to a video moment", lessons >= 10 && links.length >= lessons && links.every((h) => /^https:\/\/www\.youtube\.com\/watch\?v=[\w-]+&t=\d+s$/.test(h)), `${lessons} lessons, ${links.length} links`);
+  check("insights: the sidebar marks Draft Insights", (await text(".nav-item.active")) === "Draft Insights", "");
+  await open("/insights/?champion=jax");
+  const titles = await page.$$eval(".ins-entry h3", (hs) => hs.map((h) => h.textContent));
+  check("insights: the champion filter narrows the lessons", titles.length > 0 && titles.length < lessons && titles.some((t) => /abilities work against theirs/.test(t)), titles.join(" | "));
+  await open("/insights/?lesson=disengage-is-a-cooldown");
+  await page.waitForTimeout(300);
+  check("insights: a lesson link opens and marks the lesson", (await page.locator("#lesson-disengage-is-a-cooldown.pn-target details[open]").count()) === 1 && await page.locator("#lesson-disengage-is-a-cooldown").isVisible(), "");
+  await open("/insights/?view=videos");
+  check("insights: the Videos view lists every video with its lessons", (await page.locator(".ins-video").count()) === 4 && (await page.locator(".ins-video .ins-moments li").count()) >= 17, "");
+}
 // One patch label (alan, 2026-10-12): the site writes Riot's 26.xx; Gol.gg's 16.xx stays in data and source URLs only.
-for (const path of ["/", "/pool/", "/meta/", "/pro-drafts/", "/pro-builds/", "/comps/", "/synergies/bot/", "/patch-notes/"]) {
+for (const path of ["/", "/pool/", "/meta/", "/pro-drafts/", "/pro-builds/", "/comps/", "/synergies/bot/", "/patch-notes/", "/insights/"]) {
   await open(path);
   const shown = await page.evaluate(() => [document.body.innerText, ...[...document.querySelectorAll("[title],[aria-label]")].map((e) => `${e.getAttribute("title") ?? ""} ${e.getAttribute("aria-label") ?? ""}`)].join("\n"));
   const hit = shown.match(/(^|[^\d.\/])1[56]\.\d{1,2}(?![\d.])/);

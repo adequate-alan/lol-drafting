@@ -16,6 +16,7 @@ const I = {
   meta: <path d="M2.5 13.5h11M4 11V7.5M7 11V4M10 11V6M13 11V2.5" />,
   builds: <path d="M3 2.5h4.5v4.5H3zM8.5 2.5H13v4.5H8.5zM3 9h4.5v4.5H3zM10.75 9v4.5M8.5 11.25H13" />,
   patch: <path d="M4 1.75h5.5L12.5 4.75v9.5H4zM9.5 1.75v3h3M6 8h4.5M6 10.5h4.5" />,
+  insights: <path d="M2.5 3.25c2-.75 3.75-.5 5.5.75v9c-1.75-1.25-3.5-1.5-5.5-.75zM13.5 3.25c-2-.75-3.75-.5-5.5.75v9c1.75-1.25 3.5-1.5 5.5-.75z" />,
 };
 const GROUPS = [
   ["Draft", [
@@ -23,6 +24,7 @@ const GROUPS = [
     ["/synergies", "Synergies", I.synergy],
     ["/comps", "Comp Library", I.comps],
     ["/pool", "Champion Pool", I.pool],
+    ["/insights", "Draft Insights", I.insights],
   ]],
   ["Pro evidence", [
     ["/pro-drafts", "Pro Drafts", I.pro],

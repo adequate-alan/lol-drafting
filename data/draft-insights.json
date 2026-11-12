@@ -1,0 +1,1410 @@
+{
+  "reviewed": "2026-11-12",
+  "creators": {
+    "therealraven": {
+      "name": "TheRealRaven",
+      "url": "https://www.youtube.com/@TheRealRaven"
+    }
+  },
+  "videos": {
+    "vQCDKJx0rHM": {
+      "creator": "therealraven",
+      "title": "The Only Top Lane Matchup Tree Guide You'll Ever Need",
+      "url": "https://www.youtube.com/watch?v=vQCDKJx0rHM",
+      "uploaded": "2026-10-29",
+      "duration": 676,
+      "role": "TOP",
+      "period": "Master+ ranked, patch 26.21",
+      "audience": "Solo-queue top laners choosing a champion for their lane.",
+      "summary": "Five top lane classes (Riot's labels) and a tree of which class beats which, then the real point: class win rates barely differ, and single ability interactions decide most top matchups.",
+      "chapters": [
+        [
+          0,
+          "Intro"
+        ],
+        [
+          24,
+          "The archetype tree"
+        ],
+        [
+          102,
+          "Juggernauts"
+        ],
+        [
+          218,
+          "Divers / bruisers"
+        ],
+        [
+          292,
+          "Skirmishers / duelists"
+        ],
+        [
+          365,
+          "Tanks"
+        ],
+        [
+          494,
+          "Ranged top laners"
+        ]
+      ]
+    },
+    "is1BFqUWweQ": {
+      "creator": "therealraven",
+      "title": "The Only ADC Matchup Tree Guide You'll Ever Need",
+      "url": "https://www.youtube.com/watch?v=is1BFqUWweQ",
+      "uploaded": "2026-10-30",
+      "duration": 659,
+      "role": "BOT",
+      "period": "Master+ ranked, patch 26.21",
+      "audience": "Solo-queue ADC players choosing a carry for their support and the enemy bot lane.",
+      "summary": "Five ADC archetypes (scalers, lane bullies, poke, skirmishers, mage bots), the lane grid between them, why a lane lead only wins when converted, and which supports each archetype wants.",
+      "chapters": [
+        [
+          0,
+          "Intro"
+        ],
+        [
+          31,
+          "The five archetypes"
+        ],
+        [
+          105,
+          "Scalers"
+        ],
+        [
+          234,
+          "Lane bullies"
+        ],
+        [
+          340,
+          "Poke / casters"
+        ],
+        [
+          462,
+          "Mage bots"
+        ],
+        [
+          552,
+          "Supports matter too"
+        ]
+      ]
+    },
+    "jgHpbaX9wYE": {
+      "creator": "therealraven",
+      "title": "The Only Jungle Matchup Tree Guide You'll Ever Need",
+      "url": "https://www.youtube.com/watch?v=jgHpbaX9wYE",
+      "uploaded": "2026-11-01",
+      "duration": 480,
+      "role": "JUNGLE",
+      "period": "Master+ ranked, patch 26.21",
+      "audience": "Solo-queue junglers choosing a champion and a game plan.",
+      "summary": "Five jungle archetypes defined by their goal (tempo gankers, power farmers, skirmishers, tanks, assassins). All share one loop, farm and gank only when it's guaranteed, and differ in what they do with a lead.",
+      "chapters": [
+        [
+          0,
+          "Intro"
+        ],
+        [
+          42,
+          "The archetypes"
+        ],
+        [
+          75,
+          "The matchup tree"
+        ],
+        [
+          120,
+          "Tempo gankers"
+        ],
+        [
+          167,
+          "Power farmers"
+        ],
+        [
+          230,
+          "The importance of a jungle lead"
+        ],
+        [
+          241,
+          "Skirmishers"
+        ],
+        [
+          286,
+          "Tanks"
+        ],
+        [
+          349,
+          "Assassins"
+        ]
+      ]
+    },
+    "D7DemQewZqM": {
+      "creator": "therealraven",
+      "title": "The Only Support Matchup Guide You'll Ever Need",
+      "url": "https://www.youtube.com/watch?v=D7DemQewZqM",
+      "uploaded": "2026-11-11",
+      "duration": 1144,
+      "role": "SUPPORT",
+      "period": "Master+ ranked, patch 26.22",
+      "audience": "Solo-queue supports choosing a champion for their ADC and the enemy bot lane.",
+      "summary": "Six support types, each with one plan and one tool, the tree between them, the champions that break it, why disengage is not a counter by itself, and how to match the support to what the ADC wants.",
+      "chapters": [
+        [
+          0,
+          "Nautilus loses to every engage"
+        ],
+        [
+          38,
+          "The six types"
+        ],
+        [
+          85,
+          "Enchanters"
+        ],
+        [
+          199,
+          "Engage supports"
+        ],
+        [
+          308,
+          "Wardens"
+        ],
+        [
+          439,
+          "Hook supports"
+        ],
+        [
+          536,
+          "Mage supports"
+        ],
+        [
+          617,
+          "Misfits"
+        ],
+        [
+          755,
+          "Disengage"
+        ],
+        [
+          860,
+          "Off-role picks"
+        ],
+        [
+          914,
+          "The matchup tree"
+        ],
+        [
+          957,
+          "What your ADC wants"
+        ],
+        [
+          1019,
+          "The fine print"
+        ],
+        [
+          1111,
+          "The checklist"
+        ]
+      ],
+      "skipped": "The fine print (level 2 timing, support quest, roaming, vision, control wards) is laning and itemization, not drafting."
+    }
+  },
+  "categories": [
+    {
+      "id": "fundamentals",
+      "title": "Draft fundamentals",
+      "blurb": "How to read a lane before you pick into it."
+    },
+    {
+      "id": "archetypes",
+      "title": "Lane archetypes",
+      "blurb": "What each type of champion wants, and which types it beats."
+    },
+    {
+      "id": "matchups",
+      "title": "Matchups and counters",
+      "blurb": "Why one ability can matter more than the class label."
+    },
+    {
+      "id": "bot-duo",
+      "title": "Bot lane pairing",
+      "blurb": "Choosing a support and an ADC who want the same lane."
+    },
+    {
+      "id": "win-conditions",
+      "title": "Win conditions and timing",
+      "blurb": "When a pick is meant to win, and what it needs to get there."
+    }
+  ],
+  "insights": [
+    {
+      "id": "type-plan-champion-outcome",
+      "title": "The archetype gives the plan; the champion decides the matchup",
+      "category": "fundamentals",
+      "principle": "Knowing a champion's type tells you how its lane wants to be played. Whether that plan works against a particular opponent depends on the two champions' actual kits.",
+      "why": "Types are averages over very different kits. Between whole types the creator's ranked data sits close to even, while single champion pairs inside one type swing far wider, so a type label is a starting read, not a verdict.",
+      "example": {
+        "kind": "video",
+        "text": "Sona and Karma are both enchanters, yet Sona beats Karma about 60% of the time. Garen and Darius are both juggernauts; Garen is good into Jax and Darius is not."
+      },
+      "when": "Use the type to decide what your lane is trying to do (trade, scale, all-in, poke). Use a champion-level matchup before you count a lane as won or lost.",
+      "limits": "The type averages and swings are one creator's Master+ figures on 26.21–26.22. A champion that sits between types (Sett, Aatrox, Zeri) inherits neither type's plan cleanly.",
+      "related": {
+        "champions": [
+          "sona",
+          "karma",
+          "garen",
+          "darius",
+          "jax"
+        ],
+        "concepts": [
+          "Matchups",
+          "Lane plan"
+        ],
+        "tools": [
+          {
+            "label": "Counters in the Draft Room",
+            "href": "/"
+          }
+        ]
+      },
+      "siteNote": "Draft Assistant already works at champion level: Counter labels come from per-champion DPM.LOL rows, never from a type. The Counter card's kit read says when the stored kits can't explain an edge.",
+      "claims": [
+        {
+          "text": "Type against type sits between 46% and 54%; inside one type a matchup can swing from 40% to 60%.",
+          "basis": "creator-stat",
+          "patch": "26.22"
+        },
+        {
+          "text": "Sona beats Karma about 60% of the time.",
+          "basis": "creator-stat",
+          "patch": "26.22"
+        },
+        {
+          "text": "Top lane class win rates barely differ; the champion decides.",
+          "basis": "opinion"
+        }
+      ],
+      "sources": [
+        {
+          "video": "D7DemQewZqM",
+          "t": 65
+        },
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 0
+        },
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 66
+        },
+        {
+          "video": "is1BFqUWweQ",
+          "t": 67
+        }
+      ]
+    },
+    {
+      "id": "popular-is-not-strong",
+      "title": "Popularity and win rate are not the same as strength",
+      "category": "fundamentals",
+      "principle": "A champion picked often can still lose more than it wins, and a hard champion's low win rate says as much about execution as about the champion.",
+      "why": "Pick rate follows comfort and reputation. Win rate across a whole ladder mixes the champion's power with how many players can execute it, so mechanically demanding champions look weaker in averages than in skilled hands.",
+      "example": {
+        "kind": "video",
+        "text": "Karma is among the most picked supports and wins about 48%. Ezreal, Lee Sin and Jayce are frequent picks with poor averages that the creator puts down to difficulty."
+      },
+      "when": "Before treating a popular pick as safe, or a low win rate as a reason to avoid a champion someone on your team plays well.",
+      "limits": "A difficulty explanation is the creator's interpretation; the videos don't separate skill from strength in their numbers. Ranked averages are not pro priority, which Draft Assistant keeps apart.",
+      "related": {
+        "champions": [
+          "karma",
+          "ezreal",
+          "lee-sin",
+          "jayce",
+          "bard"
+        ],
+        "concepts": [
+          "Win rate",
+          "Pick rate",
+          "Sample"
+        ],
+        "tools": [
+          {
+            "label": "Meta / Research",
+            "href": "/meta"
+          },
+          {
+            "label": "Champion Pool",
+            "href": "/pool"
+          }
+        ]
+      },
+      "siteNote": "Pro priority on Meta / Research keeps picks, bans, presence and win rate in separate columns and never reads presence as strength.",
+      "claims": [
+        {
+          "text": "Karma is the fourth most picked support at Master+ and wins about 48%.",
+          "basis": "creator-stat",
+          "patch": "26.22"
+        },
+        {
+          "text": "Ezreal's, Lee Sin's and Jayce's low win rates reflect difficulty more than weakness.",
+          "basis": "opinion"
+        }
+      ],
+      "sources": [
+        {
+          "video": "D7DemQewZqM",
+          "t": 155
+        },
+        {
+          "video": "is1BFqUWweQ",
+          "t": 358
+        },
+        {
+          "video": "jgHpbaX9wYE",
+          "t": 159
+        },
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 556
+        }
+      ]
+    },
+    {
+      "id": "narrow-pool-deep-matchups",
+      "title": "Know a few champions' exact matchups rather than every class",
+      "category": "fundamentals",
+      "principle": "Because single abilities decide matchups, a player is better served knowing one to three champions' specific good and bad matchups than knowing class trees for every champion.",
+      "why": "The class tree is too coarse to predict a lane. What actually transfers from game to game is knowing which enemy abilities beat your champion's kit, and that knowledge only builds on a small pool.",
+      "example": {
+        "kind": "video",
+        "text": "The top lane video closes on playing one to three top laners, so you know exactly which champions you're good against, bad against, and why."
+      },
+      "when": "When building a role pool, and when deciding whether to blind a comfort pick or wait for a counter.",
+      "limits": "Advice for an individual player's pool. A team draft still needs flexibility across roles, which the videos don't discuss.",
+      "related": {
+        "champions": [],
+        "concepts": [
+          "Champion pool",
+          "Matchups"
+        ],
+        "tools": [
+          {
+            "label": "Champion Pool",
+            "href": "/pool"
+          },
+          {
+            "label": "Synergies",
+            "href": "/synergies"
+          }
+        ]
+      },
+      "claims": [
+        {
+          "text": "Play one to three champions in a role and learn their exact matchups.",
+          "basis": "opinion"
+        }
+      ],
+      "sources": [
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 576
+        },
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 622
+        },
+        {
+          "video": "D7DemQewZqM",
+          "t": 1111
+        }
+      ]
+    },
+    {
+      "id": "support-types",
+      "title": "Six support types, each with one plan and one tool",
+      "category": "archetypes",
+      "principle": "Enchanters keep one carry alive, engage supports chain crowd control onto a target, wardens cancel the enemy's first move, hooks play around one long skillshot, mage supports win on range and damage, and misfits play a different lane altogether.",
+      "why": "Each type wins with one tool: a shield or heal, chained crowd control, a cancel, a hook, range control. The tree follows from those tools: engage, wardens and hooks beat enchanters; enchanters beat mages and misfits; anything that closes distance beats mages; wardens lose lane and win long games.",
+      "example": {
+        "kind": "video",
+        "text": "Leona's E roots and her Q stuns, about a second and a half of chained crowd control: a full combo at level 2 or 3 is usually a kill. Braum's shield instead decides how a fight ends by eating the enemy's projectiles."
+      },
+      "when": "Before locking a support, name its type and ask what the enemy type does to it, then check whether your champion is one of the exceptions.",
+      "limits": "Exceptions are frequent: Nautilus loses to other engage supports, Braum loses to walk-in engage, Janna beats engage but loses to hooks, Yuumi beats mages but loses to hooks and engage. Type placement for hybrids (Karma, Seraphine, Neeko, Zilean) is the creator's choice.",
+      "related": {
+        "champions": [
+          "lulu",
+          "nami",
+          "milio",
+          "leona",
+          "alistar",
+          "rell",
+          "rakan",
+          "nautilus",
+          "braum",
+          "taric",
+          "poppy",
+          "thresh",
+          "blitzcrank",
+          "pyke",
+          "morgana",
+          "lux",
+          "velkoz",
+          "seraphine",
+          "senna",
+          "bard",
+          "yuumi"
+        ],
+        "concepts": [
+          "Support",
+          "Engage",
+          "Peel",
+          "Hook"
+        ],
+        "tools": [
+          {
+            "label": "Support Synergies",
+            "href": "/synergies/support"
+          }
+        ]
+      },
+      "siteNote": "The kit model stores how a champion starts fights (primary engage, catch, follow-up) and its peel and disengage, which cover the engage, hook and enchanter distinctions. It does not label support types.",
+      "claims": [
+        {
+          "text": "Type win rates: wardens 51.7%, engage 51.2%, hooks 51.2%, enchanters 50.1%, mage supports about 47–49%.",
+          "basis": "creator-stat",
+          "patch": "26.22"
+        },
+        {
+          "text": "Wardens are about 290 gold behind at 15 minutes yet win 64% of long games; mage supports are about 280 gold ahead and win least.",
+          "basis": "creator-stat",
+          "patch": "26.22"
+        },
+        {
+          "text": "The type tree and which champion belongs to which type.",
+          "basis": "opinion"
+        }
+      ],
+      "sources": [
+        {
+          "video": "D7DemQewZqM",
+          "t": 38
+        },
+        {
+          "video": "D7DemQewZqM",
+          "t": 914
+        },
+        {
+          "video": "D7DemQewZqM",
+          "t": 1111
+        }
+      ]
+    },
+    {
+      "id": "adc-archetypes",
+      "title": "Five ADC archetypes and the lane grid between them",
+      "category": "archetypes",
+      "principle": "Scalers want items and experience and win later; lane bullies want to fight as much as possible early; poke carries win trades from range; skirmishers fight on mobility; mage bot laners out-range everyone. Bullies beat skirmishers and scalers, poke beats scalers and skirmishers, and scalers win nothing in lane by design.",
+      "why": "Each archetype spends its strongest window differently. A bully that doesn't fight early wastes its window; a scaler that fights early spends health it needs to reach its items.",
+      "example": {
+        "kind": "video",
+        "text": "Kalista and Alistar into Ezreal and Bard are about 1,500 gold up at 15 minutes: a bully with an engage support doing exactly its job."
+      },
+      "when": "Choosing a carry for the lane and the support you have, and deciding how hard to contest early trades.",
+      "limits": "Caitlyn is a bully who still scales. Skirmishers are champion-specific (Kai'Sa's engage, Xayah's feathers). Mage bot strength is a 26.21 meta observation.",
+      "related": {
+        "champions": [
+          "jinx",
+          "aphelios",
+          "kog-maw",
+          "twitch",
+          "vayne",
+          "smolder",
+          "draven",
+          "lucian",
+          "kalista",
+          "miss-fortune",
+          "caitlyn",
+          "samira",
+          "jhin",
+          "varus",
+          "ashe",
+          "ezreal",
+          "kaisa",
+          "xayah",
+          "tristana",
+          "zeri",
+          "yunara"
+        ],
+        "concepts": [
+          "ADC",
+          "Lane bully",
+          "Scaling",
+          "Poke"
+        ],
+        "tools": [
+          {
+            "label": "Bot Synergies",
+            "href": "/synergies/bot"
+          }
+        ]
+      },
+      "siteNote": "Each kit stores a power curve (early, mid, late) and lane pressure, which is how the site already tells a bully from a scaler.",
+      "claims": [
+        {
+          "text": "The archetype lane grid.",
+          "basis": "opinion"
+        },
+        {
+          "text": "Kalista + Alistar about 1,500 gold up at 15 minutes in the example game.",
+          "basis": "creator-stat",
+          "patch": "26.21"
+        }
+      ],
+      "sources": [
+        {
+          "video": "is1BFqUWweQ",
+          "t": 31
+        },
+        {
+          "video": "is1BFqUWweQ",
+          "t": 59
+        }
+      ]
+    },
+    {
+      "id": "top-classes",
+      "title": "Top lane classes: purpose and weakness",
+      "category": "archetypes",
+      "principle": "Juggernauts want long trades up close and struggle to get there; divers burst in and out and suffer when their engage is denied; skirmishers duel in short bursts and struggle against what they can't auto-attack; tanks trade on cooldowns and fear kiting and percent-health damage; ranged top laners abuse range and fear hard engage.",
+      "why": "Each class's weakness is the thing its win pattern depends on. That gives the tree: juggernauts beat tanks, divers jump ranged champions, skirmishers beat tanks, tanks beat divers and ranged champions, and ranged champions kite juggernauts.",
+      "example": {
+        "kind": "video",
+        "text": "Renekton dives in, trades, and tries to E out; Darius pulls him back and wins the extended fight. A diver who can get further out avoids the pull."
+      },
+      "when": "As the first question about a top matchup: which part of my class's pattern can this opponent deny?",
+      "limits": "The creator says himself that class win rates barely differ in top lane and that specific abilities overturn the tree often. Treat the tree as a vocabulary, not a prediction.",
+      "related": {
+        "champions": [
+          "darius",
+          "garen",
+          "mordekaiser",
+          "nasus",
+          "illaoi",
+          "sett",
+          "renekton",
+          "pantheon",
+          "olaf",
+          "aatrox",
+          "ambessa",
+          "fiora",
+          "camille",
+          "jax",
+          "irelia",
+          "yone",
+          "tryndamere",
+          "malphite",
+          "ornn",
+          "shen",
+          "ksante",
+          "sion",
+          "chogath",
+          "gnar",
+          "jayce",
+          "teemo",
+          "kayle",
+          "kennen",
+          "rumble",
+          "gangplank"
+        ],
+        "concepts": [
+          "Top",
+          "Juggernaut",
+          "Diver",
+          "Tank"
+        ],
+        "tools": [
+          {
+            "label": "Top Synergies",
+            "href": "/synergies/top"
+          }
+        ]
+      },
+      "claims": [
+        {
+          "text": "Class labels are Riot's; the tree between them is the creator's.",
+          "basis": "opinion"
+        }
+      ],
+      "sources": [
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 0
+        },
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 24
+        },
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 99
+        }
+      ]
+    },
+    {
+      "id": "jungle-archetypes",
+      "title": "Jungle archetypes share one loop and differ in their goal",
+      "category": "archetypes",
+      "principle": "Tempo gankers, power farmers, skirmishers, tanks and assassins all farm and gank only when the gank is close to guaranteed. They differ in what they do with a lead and in when they need it.",
+      "why": "A tempo ganker converts ganks more reliably, a farmer converts gold into a later spike, a skirmisher wins river 2v2s and 3v3s, a tank gets value from crowd control and ultimates whatever its gold, and an assassin snowballs off one target. Forcing ganks a champion can't convert costs the camps it needed.",
+      "example": {
+        "kind": "video",
+        "text": "Master Yi power farms and only takes dragon when he knows Lee Sin is far away, but takes tower dives when his Q makes them safe. Hecarim forces river fights into a Qiyana because he wins the early skirmishes."
+      },
+      "when": "Choosing a jungler for the lanes you have, and judging whether the enemy jungler's early pressure is a real threat to your plan.",
+      "limits": "The jungle matchup itself matters least, because junglers can avoid each other; a bad jungle matchup can still be a good team matchup. Archetype placements (Elise tempo, Cho'Gath leaning farmer, Nunu leaning tempo) are the creator's.",
+      "related": {
+        "champions": [
+          "lee-sin",
+          "elise",
+          "master-yi",
+          "hecarim",
+          "qiyana",
+          "nunu-willump",
+          "skarner",
+          "sejuani",
+          "chogath",
+          "khazix",
+          "nidalee",
+          "zac"
+        ],
+        "concepts": [
+          "Jungle",
+          "Tempo",
+          "Scaling",
+          "Gank"
+        ],
+        "tools": [
+          {
+            "label": "Jungle Synergies",
+            "href": "/synergies/jungle"
+          }
+        ]
+      },
+      "siteNote": "The Jungle tab shows which junglers pros paired with which mids and what was on the enemy board at the pick; the kit curve separates early tempo junglers from farmers.",
+      "claims": [
+        {
+          "text": "Hecarim beats Qiyana 57% (1,252 games).",
+          "basis": "creator-stat",
+          "patch": "26.21"
+        },
+        {
+          "text": "The jungler's win rate depends most on their own gold lead of any role.",
+          "basis": "opinion"
+        },
+        {
+          "text": "Jungle matchups are the least important of the five lanes.",
+          "basis": "opinion"
+        }
+      ],
+      "sources": [
+        {
+          "video": "jgHpbaX9wYE",
+          "t": 31
+        },
+        {
+          "video": "jgHpbaX9wYE",
+          "t": 63
+        },
+        {
+          "video": "jgHpbaX9wYE",
+          "t": 401
+        },
+        {
+          "video": "jgHpbaX9wYE",
+          "t": 450
+        }
+      ]
+    },
+    {
+      "id": "abilities-against-abilities",
+      "title": "Ask whether your abilities work against theirs",
+      "category": "matchups",
+      "principle": "Before trusting a matchup, check whether the opponent has one ability that switches off the thing your champion wins with.",
+      "why": "Several top and support matchups hinge on a single interaction. Jax's E dodges basic attacks but not abilities, so ability-based juggernauts keep their damage while auto-attack juggernauts lose theirs. Shen's W blocks basic attacks, which removes an auto-weaving champion's trades.",
+      "example": {
+        "kind": "video",
+        "text": "Garen's E keeps hitting Jax through Counter Strike and his ultimate finishes the trade; Darius and Sett lose much of their damage while it is up. Irelia can barely auto Malphite or Shen in a trade."
+      },
+      "when": "Picking into a revealed lane opponent, and reading a counter label: does the edge come from an ability interaction?",
+      "limits": "Interactions decide individual trades, not whole lanes: wave state, jungle help and items still move the result. The win rates attached are the creator's ranked figures.",
+      "related": {
+        "champions": [
+          "jax",
+          "garen",
+          "darius",
+          "sett",
+          "shen",
+          "malphite",
+          "irelia",
+          "ambessa"
+        ],
+        "concepts": [
+          "Matchups",
+          "Ability interaction"
+        ],
+        "tools": [
+          {
+            "label": "Counter card in the Draft Room",
+            "href": "/"
+          }
+        ]
+      },
+      "siteNote": "The Counter card's kit read compares stored kit values only and says so: cooldowns and ability interactions like these are not stored, so it can't explain an edge that rests on them.",
+      "claims": [
+        {
+          "text": "Jax's Counter Strike dodges basic attacks; abilities still hit him.",
+          "basis": "mechanic"
+        },
+        {
+          "text": "Shen's Spirit's Refuge blocks basic attacks.",
+          "basis": "mechanic"
+        },
+        {
+          "text": "Three ability-based juggernauts win 54–56% into Jax; Darius and Sett win 47%.",
+          "basis": "creator-stat",
+          "patch": "26.21"
+        }
+      ],
+      "sources": [
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 0
+        },
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 185
+        },
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 327
+        },
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 359
+        }
+      ]
+    },
+    {
+      "id": "close-the-gap",
+      "title": "Melee into ranged: can you actually close the gap?",
+      "category": "matchups",
+      "principle": "A melee champion only beats a ranged one if its kit reliably reaches the target; a ranged champion only escapes if it has the tool to answer that reach.",
+      "why": "A ranged laner wins by trading from where the melee can't answer. A hard gap-closer (Nasus's W slowing the target, Irelia dashing through minions, Pantheon's jump) removes that space; without one the melee champion pays health to walk in and gets kited.",
+      "example": {
+        "kind": "video",
+        "text": "Darius has to Flash to reach Vayne and still gets kited out; Nasus's W slows Jayce enough that Nasus wins about 57%. Irelia beats Jayce but Yone, also a skirmisher, gets pushed off by hammer E."
+      },
+      "when": "Picking a melee laner into a ranged one, or a ranged laner into a melee one: name the gap-closer and the answer (Kennen's E speed, Gangplank's W cleanse, Jayce's knockback).",
+      "limits": "Ranged laners that win lane still need to convert the lead, and late-game value can reverse the matchup (see the conversion lesson).",
+      "related": {
+        "champions": [
+          "darius",
+          "vayne",
+          "nasus",
+          "jayce",
+          "irelia",
+          "yone",
+          "pantheon",
+          "renekton",
+          "kennen",
+          "gangplank",
+          "gnar",
+          "teemo"
+        ],
+        "concepts": [
+          "Range",
+          "Gap close",
+          "Kiting"
+        ],
+        "tools": [
+          {
+            "label": "Counter card in the Draft Room",
+            "href": "/"
+          }
+        ]
+      },
+      "siteNote": "Stored kits keep range and self-peel (the site's proxy for mobility) and reach to a protected target; the Counter card names range and mobility differences when they are one-sided.",
+      "claims": [
+        {
+          "text": "Gangplank's W cleanses crowd control.",
+          "basis": "mechanic"
+        },
+        {
+          "text": "Nasus beats Jayce about 57%.",
+          "basis": "creator-stat",
+          "patch": "26.21"
+        }
+      ],
+      "sources": [
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 165
+        },
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 263
+        },
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 327
+        }
+      ]
+    },
+    {
+      "id": "projectile-vs-walk-in",
+      "title": "Projectile blockers lose to engage that walks in",
+      "category": "matchups",
+      "principle": "Tools that stop projectiles beat hook engage and do nothing against supports who walk or dash in; and a hook engage is helpless while its hook is on cooldown.",
+      "why": "Braum's shield eats Nautilus's hook, so Braum wins that lane. Rell, Leona and Alistar don't throw anything: they run at you, so the shield has nothing to block. Nautilus's hook also stops on the first unit hit, which lets other engage supports close the distance while it is down.",
+      "example": {
+        "kind": "video",
+        "text": "Alistar walks in while Nautilus's hook is on cooldown and Nautilus has nothing left to answer with. Braum puts his wall between Blitzcrank and his ADC and the hook never lands."
+      },
+      "when": "Picking a support into a revealed engage or hook support, or choosing between a warden and an enchanter against them.",
+      "limits": "Individual matchups, Master+ ranked; Braum's overall strength in the data (half of all warden games) inflates the warden average.",
+      "related": {
+        "champions": [
+          "braum",
+          "nautilus",
+          "rell",
+          "leona",
+          "alistar",
+          "blitzcrank",
+          "thresh"
+        ],
+        "concepts": [
+          "Engage",
+          "Hook",
+          "Warden"
+        ],
+        "tools": [
+          {
+            "label": "Support Synergies",
+            "href": "/synergies/support"
+          }
+        ]
+      },
+      "siteNote": "Not modelled: the kit model stores how a champion starts a fight, not whether the start is a projectile, so the Counter card can't use this to explain an edge.",
+      "claims": [
+        {
+          "text": "Braum's Unbreakable blocks projectiles, not dashes.",
+          "basis": "mechanic"
+        },
+        {
+          "text": "Nautilus's Q stops on the first unit hit.",
+          "basis": "mechanic"
+        },
+        {
+          "text": "Braum beats Nautilus 56% and loses to Rell, Leona and Alistar.",
+          "basis": "creator-stat",
+          "patch": "26.22"
+        }
+      ],
+      "sources": [
+        {
+          "video": "D7DemQewZqM",
+          "t": 0
+        },
+        {
+          "video": "D7DemQewZqM",
+          "t": 258
+        },
+        {
+          "video": "D7DemQewZqM",
+          "t": 401
+        },
+        {
+          "video": "D7DemQewZqM",
+          "t": 922
+        }
+      ]
+    },
+    {
+      "id": "disengage-is-a-cooldown",
+      "title": "Disengage is a cooldown, not a counter",
+      "category": "matchups",
+      "principle": "A disengage tool cancels one engage. It wins the lane only if it is held for that engage, and while it is on cooldown the engage support has the window.",
+      "why": "Disengage supports as a group go even against engage supports. Each tool also has gaps: Braum's shield doesn't stop a dash, Milio's ultimate doesn't remove knock-ups, Morgana's Black Shield doesn't block physical damage, and Janna's knock-up needs time that a hook doesn't give.",
+      "example": {
+        "kind": "video",
+        "text": "Nautilus hooks in and Poppy's W stops him mid-dash, so the all-in never happens. Janna beats Alistar, Leona and Rakan but loses to Thresh."
+      },
+      "when": "Choosing a peel or disengage support into engage: check which engage tool it actually stops, and plan to hold it rather than spend it on poke.",
+      "limits": "A lane habit as much as a draft rule. In team fights several engage tools arrive at once and one cancel covers only one of them.",
+      "related": {
+        "champions": [
+          "janna",
+          "lulu",
+          "morgana",
+          "milio",
+          "braum",
+          "poppy",
+          "rakan",
+          "thresh",
+          "alistar"
+        ],
+        "concepts": [
+          "Disengage",
+          "Engage",
+          "Peel"
+        ],
+        "tools": [
+          {
+            "label": "Comp Check in the Draft Room",
+            "href": "/"
+          }
+        ]
+      },
+      "siteNote": "Comp Check already counts disengage and counter-engage as separate kit facts and reads a missing anti-engage plan as a weakness.",
+      "claims": [
+        {
+          "text": "Poppy's Steadfast Presence stops dashes around her.",
+          "basis": "mechanic"
+        },
+        {
+          "text": "Milio's ultimate does not remove knock-ups.",
+          "basis": "mechanic"
+        },
+        {
+          "text": "Morgana's Black Shield blocks magic damage and crowd control, not physical damage.",
+          "basis": "mechanic"
+        },
+        {
+          "text": "Disengage supports together win 50% against engage supports.",
+          "basis": "creator-stat",
+          "patch": "26.22"
+        }
+      ],
+      "sources": [
+        {
+          "video": "D7DemQewZqM",
+          "t": 755
+        },
+        {
+          "video": "D7DemQewZqM",
+          "t": 815
+        },
+        {
+          "video": "D7DemQewZqM",
+          "t": 848
+        }
+      ]
+    },
+    {
+      "id": "reach-the-mage",
+      "title": "Immobile mages lose to anything that reaches them",
+      "category": "matchups",
+      "principle": "A long-range mage wins the lane on range, but once something reaches it there is no dash or shield to save it.",
+      "why": "Mage supports have the best lane of any support type and the lowest win rate; engage beats them about 61% of the time. In bot lane, mage carries out-range even Caitlyn, and the counterplay is the same: most of them can't move away.",
+      "example": {
+        "kind": "video",
+        "text": "Pyke's ultimate executes a squishy mage support like Lux; a tank never drops low enough. Ziggs and Xerath clear and poke from far beyond Caitlyn, but are immobile once reached."
+      },
+      "when": "Facing a mage support or mage bot laner: pick a champion that closes distance. Picking a mage: check whether the enemy can reach you.",
+      "limits": "Range only wins while the mage can keep it; Cassiopeia's short range is why she doesn't fit bot lane. Mage bot strength is a 26.21 meta observation and may not last.",
+      "related": {
+        "champions": [
+          "lux",
+          "velkoz",
+          "seraphine",
+          "zilean",
+          "neeko",
+          "pyke",
+          "karthus",
+          "hwei",
+          "syndra",
+          "ziggs",
+          "xerath",
+          "cassiopeia",
+          "caitlyn"
+        ],
+        "concepts": [
+          "Range",
+          "Engage",
+          "Mage"
+        ],
+        "tools": [
+          {
+            "label": "Counter card in the Draft Room",
+            "href": "/"
+          }
+        ]
+      },
+      "claims": [
+        {
+          "text": "Mage supports win about 47–49%; engage supports beat them about 61%.",
+          "basis": "creator-stat",
+          "patch": "26.22"
+        },
+        {
+          "text": "Mage bot laners: Karthus about 58–60%, Vel'Koz, Aurelion Sol, Hwei and Syndra 54% or more.",
+          "basis": "creator-stat",
+          "patch": "26.21"
+        },
+        {
+          "text": "Mage bots peak in the mid game, so the game is often decided before the ADC outscales.",
+          "basis": "interpretation"
+        }
+      ],
+      "sources": [
+        {
+          "video": "D7DemQewZqM",
+          "t": 536
+        },
+        {
+          "video": "D7DemQewZqM",
+          "t": 503
+        },
+        {
+          "video": "is1BFqUWweQ",
+          "t": 462
+        },
+        {
+          "video": "is1BFqUWweQ",
+          "t": 518
+        }
+      ]
+    },
+    {
+      "id": "refuse-the-level-two-fight",
+      "title": "Off-role lane winners: refuse the first all-in",
+      "category": "matchups",
+      "principle": "Off-role supports like Pantheon, Camille and Zoe are built to win the first all-in. Against them, don't take the level 2 fight and the game turns in your favour once laning ends.",
+      "why": "Their lead comes from one early window; outside lane most of them win 48% or less. Denying that window removes their plan.",
+      "example": {
+        "kind": "video",
+        "text": "Camille and Zoe supports average over 500 gold up at 15 minutes, yet Pantheon, Camille and Sylas win 48% or less. Only Elise is above 50%."
+      },
+      "when": "Facing an off-role support in bot lane: play behind minions and give up the first trade.",
+      "limits": "Only applies when the enemy pick is a genuine lane-only plan; Elise and some others carry value later.",
+      "related": {
+        "champions": [
+          "pantheon",
+          "camille",
+          "zoe",
+          "sylas",
+          "elise"
+        ],
+        "concepts": [
+          "Support",
+          "Lane plan"
+        ],
+        "tools": [
+          {
+            "label": "Support Synergies",
+            "href": "/synergies/support"
+          }
+        ]
+      },
+      "claims": [
+        {
+          "text": "Camille +525 and Zoe +532 gold at 15; Pantheon +362.",
+          "basis": "creator-stat",
+          "patch": "26.22"
+        }
+      ],
+      "sources": [
+        {
+          "video": "D7DemQewZqM",
+          "t": 860
+        },
+        {
+          "video": "D7DemQewZqM",
+          "t": 880
+        }
+      ]
+    },
+    {
+      "id": "match-support-to-adc",
+      "title": "Match the support to what the ADC wants",
+      "category": "bot-duo",
+      "principle": "A bot lane works when both champions want the same thing: a bully wants a support who starts fights early, a scaler wants one who keeps it alive until its items, and a poke carry wants room to trade from range.",
+      "why": "An early bully paired with a support who can't start a fight has nothing to convert its damage into; a scaler paired with an all-in support is dragged into fights before it is ready. The duo's ADC type matters more than the support's type.",
+      "example": {
+        "kind": "video",
+        "text": "Ezreal + Nautilus wins about 42%: two different goals. Lane bully + mage support wins about 43%. Wardens with a scaling ADC win about 57%, Braum + Yunara 57.1%, Rakan + Xayah 55.1%."
+      },
+      "when": "Picking the second half of a bot lane. With a Leona, lock a Samira or Draven; with a Lulu, a Xayah or someone who scales.",
+      "limits": "Pairings have their own exceptions (Lulu with Kog'Maw, Twitch or Yunara; Janna with Aphelios). The averages favour engage over enchanters partly because enchanters have a lower base win rate, as the ADC video itself notes. Pro bot lanes often pair a bully with a support who doesn't start fights: Lucian + Milio and Kalista + Renata Glasc are among the most recorded pairs in this site's 2026 pro games, so read this as a solo-queue lane heuristic, not a rule.",
+      "related": {
+        "champions": [
+          "draven",
+          "samira",
+          "leona",
+          "alistar",
+          "lulu",
+          "xayah",
+          "rakan",
+          "ezreal",
+          "nautilus",
+          "braum",
+          "yunara",
+          "jinx",
+          "milio",
+          "thresh",
+          "kog-maw",
+          "twitch",
+          "janna",
+          "aphelios",
+          "senna",
+          "jhin"
+        ],
+        "concepts": [
+          "Bot duo",
+          "Lane bully",
+          "Scaling",
+          "Engage"
+        ],
+        "tools": [
+          {
+            "label": "Bot Synergies",
+            "href": "/synergies/bot"
+          },
+          {
+            "label": "Comp Check in the Draft Room",
+            "href": "/"
+          }
+        ]
+      },
+      "siteNote": "Comp Check reads the bot duo's engage and follow-up (\"Support engages, carry cannot follow\", \"Short-range carry without a protector\"). It does not warn about a bully without an engage support, because recorded pro play contradicts that as a rule.",
+      "disagreement": "The support video says Lulu with hyper scalers has a huge win rate and Aphelios + Lulu only 44%; the ADC video says hyper scalers do better with engage supports who also peel, then concedes the engage edge mostly reflects enchanters' lower base win rate. The series never controls for that base rate, so neither reading is established.",
+      "claims": [
+        {
+          "text": "Ezreal + Nautilus about 42%; mage support + lane bully about 43%; wardens + scaling ADC about 57%.",
+          "basis": "creator-stat",
+          "patch": "26.22"
+        },
+        {
+          "text": "Lane bullies want engage supports.",
+          "basis": "opinion"
+        }
+      ],
+      "sources": [
+        {
+          "video": "D7DemQewZqM",
+          "t": 957
+        },
+        {
+          "video": "D7DemQewZqM",
+          "t": 990
+        },
+        {
+          "video": "is1BFqUWweQ",
+          "t": 295
+        },
+        {
+          "video": "is1BFqUWweQ",
+          "t": 550
+        },
+        {
+          "video": "is1BFqUWweQ",
+          "t": 621
+        }
+      ]
+    },
+    {
+      "id": "convert-the-lead",
+      "title": "A lane lead wins nothing until it is converted",
+      "category": "win-conditions",
+      "principle": "Lane bullies, ranged top laners and tempo junglers win by turning an early lead into objectives and pressure; the gold alone does not win the game.",
+      "why": "Early champions trade late-game value for an early window. If the lead isn't pushed into towers, dragons and map pressure while the window is open, the scaling side catches up and the lead stops mattering.",
+      "example": {
+        "kind": "video",
+        "text": "A Grandmaster Draven is 3,500 gold up at 15 minutes and still loses the Baron fight and the game. Jayce beats Malphite in lane, but one gank resets him, and Shen out-impacts a Jayce 1,400 gold ahead once fights start."
+      },
+      "when": "Drafting an early-game pick: make sure the rest of the comp can take objectives with that lead (lane priority, a jungler who follows, a way to start fights).",
+      "limits": "Some bullies scale fine (Caitlyn). Lane bullies with a real lead (300+ gold at 15) win 63% in the creator's data, so the lesson is about conversion, not about avoiding bullies.",
+      "related": {
+        "champions": [
+          "draven",
+          "lucian",
+          "jayce",
+          "malphite",
+          "shen",
+          "caitlyn"
+        ],
+        "concepts": [
+          "Early game",
+          "Objectives",
+          "Conversion"
+        ],
+        "tools": [
+          {
+            "label": "Comp Check timing",
+            "href": "/"
+          }
+        ]
+      },
+      "siteNote": "Comp Check's timing read and the tempo plan already ask whether an early comp has a way to use its window; lane priority for sieges is a separate check.",
+      "claims": [
+        {
+          "text": "Lane bullies with a 300+ gold lead at 15 minutes win 63%.",
+          "basis": "creator-stat",
+          "patch": "26.21"
+        },
+        {
+          "text": "The lead isn't what wins the game, it's the conversion.",
+          "basis": "opinion"
+        }
+      ],
+      "sources": [
+        {
+          "video": "is1BFqUWweQ",
+          "t": 0
+        },
+        {
+          "video": "is1BFqUWweQ",
+          "t": 320
+        },
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 578
+        },
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 452
+        }
+      ]
+    },
+    {
+      "id": "lose-lane-by-design",
+      "title": "Scalers, tanks and wardens are judged by the late game",
+      "category": "win-conditions",
+      "principle": "Some picks are meant to lose lane: their job is to lose as little as possible and arrive at the late game, where they decide fights.",
+      "why": "Scalers win once their items arrive; tanks and wardens get their value from crowd control, ultimates and protection rather than gold, so they matter even from behind. Judging them by lane gold misreads the plan.",
+      "example": {
+        "kind": "video",
+        "text": "Jinx is almost always behind after laning and still matches lane bullies' win rate. Kayle loses lane to K'Sante and dominates later. A Nunu 3,000 gold down still out-impacts the enemy jungler."
+      },
+      "when": "Drafting a scaling carry or a tank: protect the lane rather than contest it, and make sure the comp can survive until its spike.",
+      "limits": "Tanks fall behind hyper scalers who are as strong as them early and outscale them later. A comp of only late picks still has to survive the early game.",
+      "related": {
+        "champions": [
+          "jinx",
+          "aphelios",
+          "twitch",
+          "kayle",
+          "ksante",
+          "shen",
+          "nunu-willump",
+          "zac",
+          "braum"
+        ],
+        "concepts": [
+          "Scaling",
+          "Tank",
+          "Late game"
+        ],
+        "tools": [
+          {
+            "label": "Comp Check timing",
+            "href": "/"
+          }
+        ]
+      },
+      "siteNote": "Stored power curves and resource demand already separate scalers and low-economy tanks; Comp Check names a scaling plan and its timing.",
+      "claims": [
+        {
+          "text": "Tank junglers have the highest win rate of any archetype when behind.",
+          "basis": "creator-stat",
+          "patch": "26.21"
+        },
+        {
+          "text": "Wardens win 46% of short games, 56% of medium and 64% of long ones.",
+          "basis": "creator-stat",
+          "patch": "26.22"
+        },
+        {
+          "text": "Tanks never really win lane, and never really lose it.",
+          "basis": "opinion"
+        }
+      ],
+      "sources": [
+        {
+          "video": "is1BFqUWweQ",
+          "t": 163
+        },
+        {
+          "video": "is1BFqUWweQ",
+          "t": 230
+        },
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 418
+        },
+        {
+          "video": "vQCDKJx0rHM",
+          "t": 458
+        },
+        {
+          "video": "jgHpbaX9wYE",
+          "t": 321
+        },
+        {
+          "video": "D7DemQewZqM",
+          "t": 321
+        }
+      ]
+    },
+    {
+      "id": "tempo-has-a-deadline",
+      "title": "A tempo lead has a deadline",
+      "category": "win-conditions",
+      "principle": "A comp built on early tempo must end the game, or at least break the map open, before the enemy's scaling and tank value arrive.",
+      "why": "Tempo junglers and early carries are strongest in the first half of the game; tanks and hyper carries keep gaining value. A lead that is still a lead at Elder is often already lost.",
+      "example": {
+        "kind": "video",
+        "text": "Lee Sin is about 2,000 gold up at 15 minutes and takes soul and two Barons, then loses the Elder fight to Zac and the enemy hyper carries."
+      },
+      "when": "Choosing between an early jungler and a scaling one: does the rest of the comp help end the game early, or does it want time?",
+      "limits": "One illustrative game. Whether a team 'should have ended' is the creator's interpretation.",
+      "related": {
+        "champions": [
+          "lee-sin",
+          "zac",
+          "elise"
+        ],
+        "concepts": [
+          "Tempo",
+          "Scaling",
+          "Objectives"
+        ],
+        "tools": [
+          {
+            "label": "Comp Check timing",
+            "href": "/"
+          }
+        ]
+      },
+      "claims": [
+        {
+          "text": "Lee Sin did nothing wrong; his team didn't end the game in time.",
+          "basis": "interpretation"
+        }
+      ],
+      "sources": [
+        {
+          "video": "jgHpbaX9wYE",
+          "t": 0
+        },
+        {
+          "video": "jgHpbaX9wYE",
+          "t": 413
+        }
+      ]
+    }
+  ]
+}

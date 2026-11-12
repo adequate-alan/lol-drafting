@@ -775,6 +775,18 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   analyst, draft before post-game, each line linked to its video moment. Transcripts come from YouTube captions fetched on
   alan's Mac with yt-dlp (YouTube answers Claude's cloud environments with a bot check); garbled, cut-off, in-game or
   ambiguous lines go in `excluded` with the reason. Expanding to more analysts or games waits on alan's review.
+- **Draft Insights** (alan, 2026-11-12; `/insights/`, sidebar "Draft Insights"; `data/draft-insights.json`, `DraftInsights` in
+  `lib/schema.ts`, `lib/draft-insights.ts`, `components/views/DraftInsightsView.tsx`, `tests/draft-insights.test.ts`, smoke
+  "insights:"): drafting lessons from videos alan approved (four TheRealRaven matchup-tree guides, Master+ ranked, 26.21–26.22;
+  research and the Draft Room review in `docs/draft-insights/`). A learning layer, not an evidence layer: never read by
+  scoring, rankings, Synergies, Counters, kits, pool tiers or Comp Library. Each lesson has principle, why, example (video or
+  illustrative), when, limits, optional site note and disagreement, claims each with a basis (game mechanic, creator stat
+  with its patch, creator opinion, interpretation) and source moments inside the video; one creator's agreement with
+  himself is never presented as consensus. Lessons view (topic, champion, video, text filters in the URL; `?lesson=` opens
+  and marks one) and Videos view (summary, lessons by timestamp, chapters). Transcripts are never republished. Selective
+  "Learn why" links (`FINDING_LESSONS`, `COUNTER_NO_READ_LESSON`) from Comp Check findings and the Counter card's no-reason
+  read: links only. Commentary on one pro game goes to Analyst perspectives instead. New videos go through a review in the
+  thread first; never auto-ingest a creator.
 - **Identity-first headers** (alan, 2026-10-12, DPM.LOL as the hierarchy reference, never its branding or layout): a
   player or champion page leads with the subject, on one surface, not a card: a large portrait or champion icon, a
   large Space Grotesk name (`--fs-4xl` for a player profile, `--fs-3xl` elsewhere), team and role in medium weight
