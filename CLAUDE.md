@@ -391,6 +391,17 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   says which patches' notes are missing instead of calling the build checked, and names a data-quality flag when a game
   holds an item its history says it could not (bought after its removal). Common builds read each item against the
   games that bought it, each on its own patch. Items only; never a replacement item, never a score.
+- **Matchups** (alan, 2026-11-12; `laneOpponent`, `matchups`, `matchupHref` in `lib/pro-builds.ts`,
+  `tests/build-matchups.test.ts`, smoke "matchups:"): each build's lane opponent is read only from its own game's
+  ten-champion record (both sides' picks by role, Gol.gg's role table): verified when the record puts the build's champion
+  in its role and side, names the other side's champion in that role, and the opposing player's build (when recorded) is
+  that champion; otherwise `opponentUnknown` with the reason, shown as "Not verified" / "lane opponent not verified",
+  never guessed from draft position or the rest of the enemy team. Recent pro builds' Opponent column leads with the
+  opposing champion (portrait, name; player · team below, phones keep portraits and names); a click opens that champion's
+  builds against it (`?vs=<champion>`, patch carried). On a champion page `vs` is the Matchup menu (typeable, opponents
+  faced within the other filters with build counts), combines with tournament, patch, team and player, shows "N of M
+  builds", the title reads "Champion vs Opponent", the open game's header offers "Builds vs X", and Clear filters drops
+  it. Observed Pro Evidence only: no build data, score or order changes.
 - A rune page with only the keystone (`missing: ["full rune page"]`) shows the keystone and says the full page is
   unavailable; never fill in the rest.
 - **My Role** (alan, 2026-10-12; `lib/my-role.ts`, `tests/my-role.test.ts`): Draft Room's "I'm playing" selector is the

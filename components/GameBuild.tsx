@@ -15,7 +15,11 @@ import { patchLabel } from "@/lib/patch";
 import { profileHref } from "@/lib/pinned-players";
 import type { BuildRow } from "@/lib/pro-builds";
 
-export function GameHeader({ r, name, evName, compact, end }: { r: BuildRow; name: (id: string) => string; evName: (r: BuildRow) => string; compact?: boolean; end?: ReactNode }) {
+export function GameHeader({ r, name, evName, compact, end, matchup }: {
+  r: BuildRow; name: (id: string) => string; evName: (r: BuildRow) => string; compact?: boolean; end?: ReactNode;
+  /** Pro Builds only: narrow the champion's builds to this lane matchup. */
+  matchup?: (champion: string) => void;
+}) {
   const b = r.build;
   return (
     <div className={`game-head side-${r.side} ${compact ? "compact" : ""}`}>
@@ -27,8 +31,11 @@ export function GameHeader({ r, name, evName, compact, end }: { r: BuildRow; nam
         {r.opponent && (
           <span className="small game-vs"><span className="faint">vs</span>
             <InteractiveChampion id={r.opponent.champion} role={b.role}><ChampIcon id={r.opponent.champion} name={name(r.opponent.champion)} size="xs" /> {name(r.opponent.champion)}</InteractiveChampion>
-            {r.opponent.player && <span className="muted">{r.opponent.player}</span>}<span className="muted">{r.opponentTeam}</span></span>
+            {r.opponent.player && <span className="muted">{r.opponent.player}</span>}<span className="muted">{r.opponentTeam}</span>
+            {matchup && <button type="button" className="btn sm ghost" onClick={() => matchup(r.opponent!.champion)}
+              title={`Only ${name(b.champion)} builds against ${name(r.opponent.champion)} in ${b.role.toLowerCase()}`}>Builds vs {name(r.opponent.champion)}</button>}</span>
         )}
+        {!r.opponent && <span className="small game-vs"><span className="faint">vs</span><span className="muted" title={r.opponentUnknown}>{r.opponentTeam} · lane opponent not verified</span></span>}
       </div>
       <div className="game-meta xs muted tnum">
         <span>{evName(r)}{r.game.stage ? ` · ${r.game.stage.charAt(0) + r.game.stage.slice(1).toLowerCase().replace(/(\d)/, " $1")}` : ""}</span>
@@ -46,11 +53,11 @@ export function GameHeader({ r, name, evName, compact, end }: { r: BuildRow; nam
   );
 }
 
-export function GameDetail({ r, name, evName, end }: { r: BuildRow; name: (id: string) => string; evName: (r: BuildRow) => string; end?: ReactNode }) {
+export function GameDetail({ r, name, evName, end, matchup }: { r: BuildRow; name: (id: string) => string; evName: (r: BuildRow) => string; end?: ReactNode; matchup?: (champion: string) => void }) {
   return (
     <ItemMarks.Provider value={r.itemCheck?.byId ?? {}}>
     <div className="game-detail">
-      <GameHeader r={r} name={name} evName={evName} end={end} />
+      <GameHeader r={r} name={name} evName={evName} end={end} matchup={matchup} />
       <div className="builds-cols">
         <Panel title="Runes">{<RunePage r={r} />}</Panel>
         <Panel title="Skill order"><SkillSummaryLine r={r} /><SkillGrid r={r} /><SkillNotes r={r} /></Panel>
