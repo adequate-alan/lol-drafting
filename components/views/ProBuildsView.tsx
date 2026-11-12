@@ -315,7 +315,7 @@ function GamesView({ rows, current, player, vs, name, evName, onPick, onMatchup 
           <button key={x.key} type="button" role="option" aria-selected={x === r} tabIndex={rovingIndex(x === r)} className={`build-pick side-${x.side} ${x === r ? "active" : ""}`} onClick={() => onPick(x.game.id)}
             title={`${x.build.player} (${x.team}) vs ${x.opponent ? `${x.opponent.player ?? "?"} · ${name(x.opponent.champion)} (${x.opponentTeam})` : `${x.opponentTeam}, lane opponent not verified`}\n${evName(x)} · ${patchLabel(x.game.patch)} · ${shortDate(x.game.date)} · ${x.side} side · ${x.won ? "win" : "loss"}`}>
             <span className="small nowrap"><PlayerAvatar id={x.build.playerId} name={x.build.player} size="xs" /> {isPinned(String(x.build.playerId)) && <PinIcon on />}<b>{x.build.player}</b> <span className="muted">{team.isPinned(x.team) && <PinIcon on />}{x.team}</span></span>
-            <span className="xs muted nowrap">{x.opponent ? <>vs <b className="build-pick-vs">{name(x.opponent.champion)}</b> · </> : <>vs ? · </>}{shortDate(x.game.date)} <span className={x.won ? "win" : "loss"}>{x.won ? "W" : "L"}</span></span>
+            <span className="xs muted nowrap">{x.opponent ? <>vs <span className="build-pick-vs">{name(x.opponent.champion)}</span> · </> : <>vs ? · </>}{shortDate(x.game.date)} <span className={x.won ? "win" : "loss"}>{x.won ? "W" : "L"}</span></span>
           </button>
         ))}
       </div>
