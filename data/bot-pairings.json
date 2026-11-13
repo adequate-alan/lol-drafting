@@ -110,7 +110,7 @@
       ]
     },
     "logic": {
-      "warning": "Current playoff sample is tiny. Do not overreact to one Finals game."
+      "warning": "Corki + Alistar is a recorded pro pairing, not a saved one. Games played say how often teams drafted it, not that the lane is strong or the matchup favourable."
     },
     "confidence": "medium",
     "identities": [
@@ -118,7 +118,7 @@
       "scaling",
       "sustained-lane-trading"
     ],
-    "playoffRead": "Your old Corki+Nami read is still a good lane default. The playoffs only gave a clear late-stage Corki+Alistar example, so Nami stays the preferred support while Alistar is the current observed variant.",
+    "playoffRead": "Your old Corki+Nami read is still a good lane default, so Nami stays the preferred support. Corki + Alistar is the observed pro variant: 5 recorded games across 3 teams as of 2026-11-13. Four are from the Worlds 2026 Main Event on 26.20 (LYON and Hanwha Life Esports, two each: Swiss rounds 4 and 5 and a quarterfinal) and one is Gen.G's LCK 2026 playoffs Finals game on 26.16 (archive). The teams went 3-2 in those games, which are game results, not lane results.",
     "status": "keep",
     "sources": [
       "golgg-game-82965",
