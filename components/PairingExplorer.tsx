@@ -13,6 +13,7 @@ import { InteractiveChampion } from "./InteractiveChampion";
 import { ProposedTag } from "./ProposedSynergy";
 import { draftHref, proDraftHref, synergiesHref } from "@/lib/drawer";
 import { localStore, readBoard, withPair, writeBoard } from "@/lib/draft-persist";
+import { scrollBehavior } from "@/lib/motion";
 import { lessonHref, clock, momentUrl } from "@/lib/draft-insights";
 import { shortDate } from "@/lib/evidence";
 import { patchLabel } from "@/lib/patch";
@@ -133,7 +134,12 @@ export function PairingExplorer({ data, champions, botPairings, proposed, names,
 
       {bot && support && (
         <PairDetail bot={bot} support={support} names={names} data={data} botPairings={botPairings} proposed={proposed} read={readOf(bot, support)}
-          note={noteFor(data.notes, bot, support)} context={context} />
+          note={noteFor(data.notes, bot, support)} context={context} comparing={compare}
+          onCompareSaved={(def) => {
+            // An unsaved pair against the saved default: both as supports of the same ADC, side by side.
+            set({ from: "BOT", compare: [def, support] });
+            requestAnimationFrame(() => document.getElementById("px-compare")?.scrollIntoView({ behavior: scrollBehavior(), block: "nearest" }));
+          }} />
       )}
     </div>
   );
@@ -260,12 +266,15 @@ function allBoardIds(store: ReturnType<typeof localStore>): string[] {
   } catch { return []; }
 }
 
-function PairDetail({ bot, support, names, data, botPairings, proposed, read, note, context }: {
+function PairDetail({ bot, support, names, data, botPairings, proposed, read, note, context, comparing, onCompareSaved }: {
   bot: string; support: string; names: Names; data: PairingData; botPairings: BotPairing[]; proposed: ProposedRecord[];
-  read?: DuoRead; note?: PairingNote; context: "insights" | "synergies";
+  read?: DuoRead; note?: PairingNote; context: "insights" | "synergies"; comparing: string[]; onCompareSaved: (def: string) => void;
 }) {
   const nm = (id: string) => names[id] ?? id;
   const saved = savedLink(bot, support, botPairings);
+  // The saved preferred support this pair can be set beside (the first when the record names several).
+  const savedDefault = saved?.kind === "default" ? undefined : botPairings.find((b) => b.champion === bot)?.clashDefault.find((id) => id !== support);
+  const beside = !!savedDefault && comparing.includes(savedDefault) && comparing.includes(support);
   const prop = saved ? undefined : proposedLink(proposed, bot, "BOT", support, "SUPPORT");
   const games = data.rows.filter((r) => r.picks.BOT === bot && r.picks.SUPPORT === support);
   const ev = games.length ? evidenceOf(support, games, data.newestPatch) : undefined;
@@ -295,6 +304,9 @@ function PairDetail({ bot, support, names, data, botPairings, proposed, read, no
         {saved ? <p className="small"><b>{SAVED_LABEL[saved.kind]}</b> for {nm(bot)}{saved.kind === "pro" && <span className="muted"> · added from pro games, not hand-saved</span>}{saved.note && <span className="muted"> · {saved.note}</span>}</p>
           : prop ? <p className="small">{prop.reason} <span className={`prop-conf ${prop.confidence} xs`}>· {CONFIDENCE_LABEL[prop.confidence]}</span></p>
           : <p className="small muted">Not one of your saved pairings{botPairings.some((b) => b.champion === bot) ? `: ${nm(bot)}'s saved record decides the Draft Room's supports` : ""}.</p>}
+        {savedDefault && !beside && (
+          <p><button type="button" className="btn sm" onClick={() => onCompareSaved(savedDefault)} title="Two plans side by side, not a ranking">Compare with {nm(bot)} + {nm(savedDefault)}, your saved preferred</button></p>
+        )}
       </section>
 
       <section className="layer logic">
@@ -406,7 +418,7 @@ function Compare({ a, b, anchorRole, names, data, botPairings, proposed, readOf,
     <tr><th scope="row">{label}</th>{cols.map((c) => <td key={c.partner}>{f(c)}</td>)}</tr>
   );
   return (
-    <section className="px-compare panel" aria-label="Compare two partners">
+    <section id="px-compare" className="px-compare panel" aria-label="Compare two partners">
       <header className="px-compare-head">
         <h3>{nm(anchor)} with {nm(cols[0].partner)} or {nm(cols[1].partner)}</h3>
         <span className="xs faint">Two plans side by side, not a ranking.</span>
@@ -424,6 +436,9 @@ function Compare({ a, b, anchorRole, names, data, botPairings, proposed, readOf,
             {row("Weak point", (c) => <span className="small bad">{(c.note?.weaknesses ?? c.read?.weaknesses.map((l) => l.text) ?? [])[0] ?? <span className="muted">None the kits show</span>}</span>)}
             {row("Power curve", (c) => <span className="small">{c.note?.curve ?? c.read?.curve.text ?? "—"}</span>)}
             {row("Pro games", (c) => c.ev ? <span className="tnum">{evidenceText(c.ev)} · {c.ev.wins}–{c.ev.losses}{c.ev.teams.length < PAIR_FEW_TEAMS ? <span className="caution-text"> · small sample</span> : null}</span> : <span className="muted">None recorded</span>)}
+            {row("Events and patches", (c) => c.ev
+              ? <span className="small tnum">{c.ev.events.map((e) => `${data.events[e.event]?.short ?? e.event} ${patchLabel(e.patch)} · ${e.games}`).join(" · ")}{c.ev.archiveOnly ? <span className="muted"> · archive only</span> : c.ev.current === 0 ? <span className="muted"> · none on {data.newestPatch ? patchLabel(data.newestPatch) : "the newest patch"}</span> : null}</span>
+              : <span className="muted">—</span>)}
             {row("Creator lesson", (c) => c.lesson ? <span className="small">{c.lesson.text}{c.lesson.stat && <span className="ins-stat"> {c.lesson.stat.text} · {c.lesson.stat.patch} solo queue</span>}</span> : <span className="muted">—</span>)}
           </tbody>
         </table>

@@ -1517,6 +1517,14 @@ await open("/insights/?view=pairings&bot=ezreal&support=nautilus");
   await page.locator(".px-group").first().locator(".px-cmp").nth(1).click();
   check("pairings: two partners compare side by side", (await page.locator(".px-compare-table thead th[scope=col]").count()) === 2, "");
 }
+// An observed pairing that is not saved opens beside the saved preferred support in one click, with events and patches.
+await open("/insights/?view=pairings&bot=ezreal&support=leona");
+{
+  await page.locator(".px-detail .layer.clash button", { hasText: "Compare with Ezreal + Karma" }).click();
+  await page.waitForSelector("#px-compare");
+  const cmp = await text("#px-compare");
+  check("pairings: an observed pair compares with the saved preferred", /Karma/.test(cmp) && /Leona/.test(cmp) && /Saved preferred/.test(cmp) && /Not saved/.test(cmp) && /Events and patches/.test(cmp) && /26\.\d+/.test(cmp), cmp.slice(0, 80));
+}
 await open("/synergies/bot/?champ=yunara&view=pro");
 {
   const lulu = await page.locator(".pro-table tbody tr", { hasText: "Lulu" }).first().locator("td.num").first().textContent();
