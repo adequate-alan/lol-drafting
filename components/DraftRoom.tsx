@@ -31,6 +31,8 @@ import { noteDraftRole, restoredDraftRole, sessionStore } from "@/lib/synergy-na
 import { localStore, writeBoard } from "@/lib/draft-persist";
 import { ChampIcon, ChampionRow, Checkbox, WarningBadge, type Severity } from "./ui";
 import { scrollBehavior } from "@/lib/motion";
+import { duoRead, explorerHref, kitsById, noteFor, type ChampionKit } from "@/lib/pairings";
+import type { PairingNote } from "@/lib/schema";
 import { rovingIndex, rovingKeys } from "./roving";
 import { isLaneRole, PAIR_LABEL, USAGE_LABEL, type MidPair, type TopUsageMark, type TopUsageMarks } from "@/lib/top-draft";
 import { boardTraits, TRAIT_LABEL, type CompResponse, type TraitHit } from "@/lib/jungle-context";
@@ -279,6 +281,11 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   const claim = useMemo(() => (active ? counterClaim(dRead, LANE[active], names) : undefined), [active, dRead, names]);
   const proCtx: ProCtx = useMemo(() => ({ drafts: data.proDrafts, sources, enemy: enemyDraft, names, counterFresh: data.counterFreshness, matchupBook: data.matchupBook, counterClaim: claim }), [data.proDrafts, sources, enemyDraft, names, data.counterFreshness, data.matchupBook, claim]);
   const activeRows = active ? unified[active] ?? [] : [];
+  // Bot lane plan on a previewed row: with the other half of the bot lane locked, the pair's written read or kit read
+  // (lib/pairings.ts, General Draft Logic) and a link to the Pairing Explorer. A line in the preview, never a score.
+  const kitMap = useMemo(() => kitsById(data.champions), [data.champions]);
+  const duoPartner = active === "BOT" ? draft.SUPPORT : active === "SUPPORT" ? draft.BOT : undefined;
+  const duo = active && duoPartner ? { role: active, partner: duoPartner, kits: kitMap, notes: data.pairingNotes } : undefined;
   const previewId = previewed && previewed.role === active && !takenNow.includes(previewed.id) ? previewed.id : undefined;
   const compared = useMemo(() => (active ? (compare[active] ?? []).filter((id) => !takenNow.includes(id)) : []), [active, compare, takenNow]);
   // Each candidate's read is the board with it in the open role, read by the Comp Check itself (useCandidateReads) from
@@ -529,7 +536,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
                         ? visibleRows.map((c) => (
                           <Fragment key={c.champion}>
                             {c.champion === firstOut && <p className="fit-divider xs faint">Outside your pool</p>}
-                            <FitRow c={c} tier={poolTier(data.pool, c.champion, active)} bot={draft.BOT ? names[draft.BOT] ?? draft.BOT : undefined} names={names} proCtx={proCtx} hovered={hover === c.champion}
+                            <FitRow c={c} duo={duo} tier={poolTier(data.pool, c.champion, active)} bot={draft.BOT ? names[draft.BOT] ?? draft.BOT : undefined} names={names} proCtx={proCtx} hovered={hover === c.champion}
                               previewed={previewId === c.champion} compareAt={compared.indexOf(c.champion) + 1} compareFull={compared.length >= COMPARE_MAX} effect={previewId === c.champion ? effects[c.champion] : undefined}
                               onPreview={() => togglePreview(c.champion)} onCompare={() => toggleCompareOf(c.champion)}
                               onHover={(h) => preview(h ? c.champion : undefined)} onPick={() => lockCandidate(c.champion)} onOpen={() => setDrawer({ id: c.champion, role: active })}
@@ -777,8 +784,17 @@ function whyOf(c: Candidate): string | undefined {
 // A click anywhere on a row previews it; its controls (the name, portrait, evidence labels, score, buttons) handle their own.
 const OWN = "button, a, input, summary, [role='button'], .fit-detail, .fit-preview";
 
-function FitRow({ c, tier, bot, names, proCtx, hovered, previewed, compareAt, compareFull, effect, onHover, onPick, onOpen, onPreview, onCompare, top }: {
-  c: Candidate; tier?: Tier | null; bot?: string; names: Record<string, string>; proCtx: ProCtx; hovered: boolean; top?: TopCtx;
+type DuoCtx = { role: Role; partner: string; kits: Map<string, ChampionKit>; notes: PairingNote[] };
+function laneLine(duo: DuoCtx, id: string, names: Record<string, string>) {
+  const [b, s] = duo.role === "BOT" ? [id, duo.partner] : [duo.partner, id];
+  const note = noteFor(duo.notes, b, s);
+  const read = duoRead(duo.kits.get(b), duo.kits.get(s), { bot: names[b] ?? b, sup: names[s] ?? s });
+  const text = note?.plan ?? read?.plan.text;
+  return text ? { label: read?.plan.label, text, href: explorerHref(b, s) } : undefined;
+}
+
+function FitRow({ c, duo, tier, bot, names, proCtx, hovered, previewed, compareAt, compareFull, effect, onHover, onPick, onOpen, onPreview, onCompare, top }: {
+  c: Candidate; duo?: DuoCtx; tier?: Tier | null; bot?: string; names: Record<string, string>; proCtx: ProCtx; hovered: boolean; top?: TopCtx;
   previewed: boolean; compareAt: number; compareFull: boolean; effect?: PreviewEffect;
   onHover: (on: boolean) => void; onPick: () => void; onOpen: () => void; onPreview: () => void; onCompare: () => void;
 }) {
@@ -793,6 +809,7 @@ function FitRow({ c, tier, bot, names, proCtx, hovered, previewed, compareAt, co
   const read = rec.parts.length > 0;
   const canCompare = compareAt > 0 || !compareFull;
   const why = previewed ? whyOf(c) : undefined;
+  const lane = previewed && duo ? laneLine(duo, c.champion, names) : undefined;
   const onRow = (e: MouseEvent<HTMLDivElement>) => { if (!(e.target as HTMLElement).closest(OWN)) onPreview(); };
   // Enter / Space preview (the button's own click); Shift+Enter locks; C compares; Escape ends the preview.
   const onNameKey = (e: KeyboardEvent<HTMLButtonElement>) => {
@@ -833,6 +850,7 @@ function FitRow({ c, tier, bot, names, proCtx, hovered, previewed, compareAt, co
           <dl className="cmp-effect">
             {why && <><dt>Why</dt><dd>{why}</dd></>}
             {rec.tradeoffs.length > 0 && <><dt>Tradeoff</dt><dd className="bad">{rec.tradeoffs.join("; ")}</dd></>}
+            {lane && <><dt>Lane plan</dt><dd title="Draft logic from the two kits, not a score">{lane.label && <b>{lane.label}. </b>}{lane.text} <Link className="xs" href={lane.href}>Pairing details</Link></dd></>}
           </dl>
           {effect ? <EffectList e={effect} /> : <p className="xs faint">Reading the comp…</p>}
           <div className="cmp-actions">

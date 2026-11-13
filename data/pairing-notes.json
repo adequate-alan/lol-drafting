@@ -1,0 +1,538 @@
+{
+ "updated": "2026-11-13",
+ "basis": "Written from each champion's abilities and the stored kit values, for the Pairing Explorer. General Draft Logic, not yet reviewed by alan: never a saved pairing, a score or a ranking.",
+ "notes": [
+  {
+   "a": "ezreal",
+   "aRole": "BOT",
+   "b": "karma",
+   "bRole": "SUPPORT",
+   "plan": "Win the lane in short trades from range and take plates while staying hard to all-in.",
+   "why": [
+    "Karma's Inner Flame and Ezreal's Mystic Shot both poke from range, so most trades end before the enemy can answer.",
+    "Karma's Inspire shield and speed turns an enemy all-in into a walk-away for Ezreal, who still has Arcane Shift."
+   ],
+   "strengths": [
+    "Lane priority and plates without committing.",
+    "Hard to kill: two speed or escape tools plus a shield."
+   ],
+   "weaknesses": [
+    "Neither starts a real fight: a lead has to be turned into objectives by the jungler or mid.",
+    "Karma's lane strength peaks early; a long, even lane favours most scaling bot lanes."
+   ],
+   "curve": "Karma is strongest before items, Ezreal through the mid game: the lane wants an early lead.",
+   "lessons": [
+    "match-support-to-adc"
+   ]
+  },
+  {
+   "a": "ezreal",
+   "aRole": "BOT",
+   "b": "nautilus",
+   "bRole": "SUPPORT",
+   "plan": "Nautilus wants committed engages; Ezreal wants to trade from range. The pair works when Ezreal follows the hook with damage rather than expecting to finish an all-in himself.",
+   "why": [
+    "Dredge Line and Depth Charge give Ezreal a target that cannot dodge Mystic Shot or Essence Flux.",
+    "Ezreal adds damage from range but no crowd control, so Nautilus's root and knock-up are the whole lockdown."
+   ],
+   "strengths": [
+    "Threat of a hook keeps the enemy lane from walking up to poke.",
+    "Point-click Depth Charge for dragon fights."
+   ],
+   "weaknesses": [
+    "The kill often needs the jungler: Ezreal's damage alone rarely finishes a target Nautilus has locked.",
+    "If the hook misses, Ezreal is in a short-range fight he did not want."
+   ],
+   "lessons": [
+    "match-support-to-adc"
+   ]
+  },
+  {
+   "a": "draven",
+   "aRole": "BOT",
+   "b": "leona",
+   "bRole": "SUPPORT",
+   "plan": "Kill lane: Leona locks a target from level 2 and Draven's axes finish it.",
+   "why": [
+    "Zenith Blade into Shield of Daybreak stuns long enough for Draven to land two or three Spinning Axes.",
+    "Draven's attacks detonate Leona's Sunlight on the target she marked, adding damage to every all-in."
+   ],
+   "strengths": [
+    "Wins the first levels decisively and snowballs Draven's gold lead."
+   ],
+   "weaknesses": [
+    "Both commit forward: once Leona has gone in there is no peel left for Draven.",
+    "Into strong disengage (Janna, Poppy) or a lane that can out-range the first engage, the plan stalls."
+   ],
+   "curve": "Both peak before items: a lead has to be converted while it lasts.",
+   "lessons": [
+    "match-support-to-adc",
+    "convert-the-lead"
+   ]
+  },
+  {
+   "a": "draven",
+   "aRole": "BOT",
+   "b": "nautilus",
+   "bRole": "SUPPORT",
+   "plan": "Kill lane: Nautilus's hook and auto-attack root give Draven a stationary target.",
+   "why": [
+    "Staggering Blow roots on Nautilus's first attack, which keeps a target in place for Draven's axes.",
+    "Dredge Line can start a fight from range when the enemy stands behind minions less carefully."
+   ],
+   "strengths": [
+    "Two layers of lockdown (hook, root, Depth Charge) for one target."
+   ],
+   "weaknesses": [
+    "A missed hook leaves Nautilus far forward and Draven without his engage.",
+    "Little peel once Nautilus commits."
+   ],
+   "curve": "Both strong early; Draven's gold lead has to be converted.",
+   "lessons": [
+    "match-support-to-adc"
+   ]
+  },
+  {
+   "a": "lucian",
+   "aRole": "BOT",
+   "b": "milio",
+   "bRole": "SUPPORT",
+   "plan": "Win short trades often and keep them winning: Milio keeps Lucian healthy and in range for the next trade, rather than starting fights.",
+   "why": [
+    "Lucian's Vigilance adds damage to his next attacks when an ally shields or heals him, so every Milio shield adds damage to the trade.",
+    "Milio's Cozy Campfire extends Lucian's short attack range, and Breath of Life cleanses the crowd control that would end a Lucian dash."
+   ],
+   "strengths": [
+    "Sustain lets the lane keep trading instead of backing."
+   ],
+   "weaknesses": [
+    "No hard engage: Lucian's lead comes from trades, not from Milio starting kills.",
+    "Lucian falls off late; the lane's advantage has to become plates, dragons and tempo."
+   ],
+   "curve": "Lucian peaks before items; Milio keeps the lane alive long enough to use that window.",
+   "lessons": [
+    "match-support-to-adc",
+    "tempo-has-a-deadline"
+   ]
+  },
+  {
+   "a": "kalista",
+   "aRole": "BOT",
+   "b": "renata-glasc",
+   "bRole": "SUPPORT",
+   "plan": "Skirmish around Kalista's lane pressure, with Renata turning fights and saving Kalista in them.",
+   "why": [
+    "Renata's Bailout lets Kalista keep fighting through a lost trade, and Kalista's hops keep her alive long enough for it to matter.",
+    "Handshake roots or throws a target Kalista is already stacking Rend on; Fate's Call can throw Renata back into a fight or pull her out."
+   ],
+   "strengths": [
+    "Strong dragon control: Rend executes objectives.",
+    "Hostile Takeover turns enemy engages around."
+   ],
+   "weaknesses": [
+    "Kalista falls off late and needs her lane lead to become objectives.",
+    "Renata starts no reliable fight herself; Kalista's own Fate's Call is the duo's engage."
+   ],
+   "curve": "Strongest early and mid game; weaker once the enemy carries reach full items.",
+   "lessons": [
+    "convert-the-lead"
+   ]
+  },
+  {
+   "a": "yunara",
+   "aRole": "BOT",
+   "b": "braum",
+   "bRole": "SUPPORT",
+   "plan": "Protect the carry until her items: Braum stands beside Yunara and cancels the enemy's first move.",
+   "why": [
+    "Every Yunara attack adds a stack of Braum's Concussive Blows, so her attack speed turns Braum's passive into a fast stun.",
+    "Unbreakable blocks the projectiles aimed at Yunara, and Glacial Fissure stops a dive on her."
+   ],
+   "strengths": [
+    "Very good against hooks and projectile engage."
+   ],
+   "weaknesses": [
+    "Engage that walks or dashes in (Leona, Alistar, Rell) gives Unbreakable nothing to block.",
+    "Weak early: the lane is played to reach items, not to win."
+   ],
+   "curve": "Both weak early; Yunara peaks late.",
+   "lessons": [
+    "match-support-to-adc",
+    "projectile-vs-walk-in",
+    "lose-lane-by-design"
+   ]
+  },
+  {
+   "a": "yunara",
+   "aRole": "BOT",
+   "b": "lulu",
+   "bRole": "SUPPORT",
+   "plan": "Protect to scale: Lulu makes Yunara very hard to kill until her items let her carry fights.",
+   "why": [
+    "Whimsy turns a diver into a critter, and Wild Growth knocks up whoever is on Yunara and gives her the health to keep attacking.",
+    "Help, Pix! shields Yunara and adds damage to her attacks."
+   ],
+   "strengths": [
+    "Very hard to dive: two separate tools stop an engage on Yunara."
+   ],
+   "weaknesses": [
+    "Little lane pressure: an engage lane that wins level 2 sets the tempo.",
+    "Few ways to start a fight; the comp needs engage elsewhere."
+   ],
+   "curve": "Yunara is weak early and peaks late; Lulu keeps the lane even until then.",
+   "lessons": [
+    "lose-lane-by-design"
+   ]
+  },
+  {
+   "a": "xayah",
+   "aRole": "BOT",
+   "b": "rakan",
+   "bRole": "SUPPORT",
+   "plan": "Fight on Rakan's engage: Rakan goes in, Xayah's feathers root everything he gathers.",
+   "why": [
+    "Rakan's Battle Dance reaches Xayah from further away, so he can engage and dash straight back to her.",
+    "The Quickness and Grand Entrance knock up a group that Xayah then roots by recalling her feathers with Bladecaller."
+   ],
+   "strengths": [
+    "Shared recall and the dash range are unique to this pair.",
+    "Featherstorm makes Xayah untargetable when the fight turns."
+   ],
+   "weaknesses": [
+    "Rakan has to go in to start: a missed engage leaves Xayah with only Featherstorm to escape.",
+    "Both mid-game strong rather than early lane winners."
+   ],
+   "lessons": [
+    "match-support-to-adc"
+   ]
+  },
+  {
+   "a": "caitlyn",
+   "aRole": "BOT",
+   "b": "bard",
+   "bRole": "SUPPORT",
+   "plan": "Caitlyn holds the lane alone with her range while Bard roams, then the two set up traps on targets Bard holds still.",
+   "why": [
+    "Caitlyn's range lets her keep farming and pressuring while Bard collects chimes and roams.",
+    "Cosmic Binding stuns and Tempered Fate freezes a target, and Caitlyn places Yordle Snap Traps under it."
+   ],
+   "strengths": [
+    "Map pressure: Bard's roams pull the enemy away from Caitlyn's lane.",
+    "Siege: Caitlyn's traps and range take towers."
+   ],
+   "weaknesses": [
+    "Bard's roams leave Caitlyn two against one; she survives on range, not on peel.",
+    "Bard's ultimate can ruin a fight as easily as win it."
+   ],
+   "curve": "Caitlyn is strongest early and stays useful late; Bard grows through the game with chimes.",
+   "lessons": []
+  },
+  {
+   "a": "caitlyn",
+   "aRole": "BOT",
+   "b": "karma",
+   "bRole": "SUPPORT",
+   "plan": "Range-bully lane: both poke, push and take plates from the first levels.",
+   "why": [
+    "Inner Flame and Caitlyn's Piltover Peacemaker trade from range, and Karma's Focused Resolve root gives Caitlyn a target for a trap.",
+    "Inspire's speed lets Caitlyn chase a low target or walk away from an all-in."
+   ],
+   "strengths": [
+    "Lane priority and the strongest early plate pressure of the saved Caitlyn pairs."
+   ],
+   "weaknesses": [
+    "No hard engage: a lead has to be converted with the jungler.",
+    "Karma peaks early; into scaling lanes the advantage has to become plates and towers."
+   ],
+   "curve": "Both strong early; Caitlyn stays useful late, Karma fades.",
+   "lessons": [
+    "convert-the-lead"
+   ]
+  },
+  {
+   "a": "sivir",
+   "aRole": "BOT",
+   "b": "lulu",
+   "bRole": "SUPPORT",
+   "plan": "Protect to scale with fast waveclear: Lulu keeps Sivir alive while her Ricochet clears waves and Sivir's team speed decides fights later.",
+   "why": [
+    "Whimsy's speed and Wild Growth stack with Sivir's On The Hunt for engages or retreats.",
+    "Lulu's peel covers Sivir, whose only defensive tool is Spell Shield."
+   ],
+   "strengths": [
+    "Waveclear and speed for the team: good for front-to-back fights and keeping vision."
+   ],
+   "weaknesses": [
+    "Weak early lane: an engage lane can force fights before Sivir has items.",
+    "Neither starts fights; the comp needs engage elsewhere."
+   ],
+   "curve": "Sivir is weak early and peaks late.",
+   "lessons": [
+    "lose-lane-by-design"
+   ]
+  },
+  {
+   "a": "sivir",
+   "aRole": "BOT",
+   "b": "karma",
+   "bRole": "SUPPORT",
+   "plan": "Speed and tempo: Karma's lane pressure covers Sivir's weak early lane, and both give the team speed to engage or leave.",
+   "why": [
+    "Karma's Mantra-empowered Inspire and Sivir's On The Hunt both speed up the whole team, which makes engages and retreats faster than the enemy's.",
+    "Karma's poke wins the early trades Sivir cannot win alone."
+   ],
+   "strengths": [
+    "Tempo: rotations and objective setups happen faster."
+   ],
+   "weaknesses": [
+    "Karma peaks early and Sivir late: the lane is strongest early, the fights later.",
+    "No hard engage in the duo."
+   ],
+   "lessons": [
+    "tempo-has-a-deadline"
+   ]
+  },
+  {
+   "a": "ziggs",
+   "aRole": "BOT",
+   "b": "nautilus",
+   "bRole": "SUPPORT",
+   "plan": "Nautilus provides the reliable start Ziggs lacks; Ziggs turns locked targets and sieges into damage from long range.",
+   "why": [
+    "Depth Charge and Dredge Line hold a target still for Bouncing Bomb and Hexplosive Minefield.",
+    "Ziggs's Satchel Charge and range take towers and plates once the lane has priority."
+   ],
+   "strengths": [
+    "Siege and plates from range.",
+    "A start the carry cannot provide for himself."
+   ],
+   "weaknesses": [
+    "Ziggs is immobile: once Nautilus has gone in, a diver reaching Ziggs has nobody to stop it.",
+    "A missed hook leaves the lane without its start."
+   ],
+   "lessons": [
+    "match-support-to-adc"
+   ]
+  },
+  {
+   "a": "ziggs",
+   "aRole": "BOT",
+   "b": "leona",
+   "bRole": "SUPPORT",
+   "plan": "Leona's stuns give Ziggs a stationary target; Ziggs adds damage and siege from long range.",
+   "why": [
+    "Zenith Blade and Solar Flare hold targets inside Hexplosive Minefield and under Mega Inferno Bomb.",
+    "Ziggs's bombs detonate Leona's Sunlight from range."
+   ],
+   "strengths": [
+    "Reliable engage and long-range follow-up."
+   ],
+   "weaknesses": [
+    "Leona has little peel once she commits; Ziggs is immobile against divers.",
+    "Leona falls off late."
+   ],
+   "lessons": [
+    "match-support-to-adc"
+   ]
+  },
+  {
+   "a": "ashe",
+   "aRole": "BOT",
+   "b": "seraphine",
+   "bRole": "SUPPORT",
+   "plan": "Long-range control lane: Ashe's slows set up Seraphine's roots, and both ultimates start fights from far away.",
+   "why": [
+    "Ashe's attacks slow, and Beat Drop roots a target that is already slowed, so Seraphine's E turns every Ashe hit into a root.",
+    "Enchanted Crystal Arrow and Encore both start fights from long range, and Encore travels further through allies."
+   ],
+   "strengths": [
+    "Picks and fight starts from range."
+   ],
+   "weaknesses": [
+    "Neither can stop a committed dive for long; the comp needs frontline.",
+    "Both deal utility damage more than carry damage: mid or top has to supply real damage."
+   ],
+   "lessons": []
+  },
+  {
+   "a": "jhin",
+   "aRole": "BOT",
+   "b": "alistar",
+   "bRole": "SUPPORT",
+   "plan": "Alistar starts the fight and Jhin's long-range root and burst finish it.",
+   "why": [
+    "Alistar's Headbutt and Pulverize combo lands a target Jhin's Deadly Flourish can then root, chaining two lockdowns.",
+    "Jhin's Curtain Call adds long-range damage after Alistar's engage."
+   ],
+   "strengths": [
+    "Alistar's combo also peels divers off Jhin when used defensively."
+   ],
+   "weaknesses": [
+    "Jhin's four-shot cadence and immobility make a lost fight dangerous for him.",
+    "Alistar can engage or peel, not both in one fight."
+   ],
+   "lessons": [
+    "match-support-to-adc"
+   ]
+  },
+  {
+   "a": "jhin",
+   "aRole": "BOT",
+   "b": "leona",
+   "bRole": "SUPPORT",
+   "plan": "Leona's stuns hold targets still for Jhin's root and four-shot burst.",
+   "why": [
+    "Zenith Blade and Solar Flare lock a target for Deadly Flourish and Curtain Call.",
+    "Jhin's high-damage shots detonate Leona's Sunlight."
+   ],
+   "strengths": [
+    "Reliable engage for a carry who needs setup."
+   ],
+   "weaknesses": [
+    "No peel left once Leona commits; Jhin is immobile.",
+    "Leona falls off late."
+   ],
+   "lessons": []
+  },
+  {
+   "a": "ezreal",
+   "aRole": "BOT",
+   "b": "alistar",
+   "bRole": "SUPPORT",
+   "plan": "Alistar engages and peels; Ezreal adds damage from range and stays safe behind him.",
+   "why": [
+    "Alistar's Headbutt-Pulverize combo either starts a fight or knocks a diver off Ezreal.",
+    "Ezreal's Mystic Shot and Essence Flux hit a target Alistar has locked without walking in."
+   ],
+   "strengths": [
+    "Both engage and protection in one support."
+   ],
+   "weaknesses": [
+    "Ezreal brings no crowd control, so an all-in leans on Alistar and the jungler to finish.",
+    "Alistar's combo is one cooldown: after an engage there is no peel left for a while."
+   ],
+   "lessons": [
+    "match-support-to-adc"
+   ]
+  },
+  {
+   "a": "ezreal",
+   "aRole": "BOT",
+   "b": "leona",
+   "bRole": "SUPPORT",
+   "plan": "Leona engages; Ezreal follows from range and detonates her Sunlight without walking in.",
+   "why": [
+    "Ezreal's Mystic Shot detonates Leona's Sunlight from range, adding damage to every Leona engage.",
+    "Zenith Blade and Solar Flare give Ezreal a stationary target."
+   ],
+   "strengths": [
+    "Reliable engage for a safe carry."
+   ],
+   "weaknesses": [
+    "Ezreal brings no crowd control: the all-in still needs the jungler to finish.",
+    "Leona has no peel once she commits."
+   ],
+   "lessons": [
+    "match-support-to-adc"
+   ]
+  },
+  {
+   "a": "kaisa",
+   "aRole": "BOT",
+   "b": "nautilus",
+   "bRole": "SUPPORT",
+   "plan": "Dive together: Nautilus's crowd control marks the target and Kai'Sa follows onto it with Killer Instinct.",
+   "why": [
+    "Every Nautilus immobilise adds Caustic Wounds stacks, and Killer Instinct lets Kai'Sa dash onto any target carrying her plasma.",
+    "Depth Charge and the auto-attack root give Kai'Sa time to finish the target."
+   ],
+   "strengths": [
+    "Reach: the duo can hit a carry behind a frontline."
+   ],
+   "weaknesses": [
+    "Both commit to the same target: if the dive fails there is no peel.",
+    "Kai'Sa wants items; an even early lane is fine, a lost one is not."
+   ],
+   "lessons": []
+  },
+  {
+   "a": "zeri",
+   "aRole": "BOT",
+   "b": "yuumi",
+   "bRole": "SUPPORT",
+   "plan": "Yuumi attaches to Zeri and keeps her healthy and fast while Zeri farms toward her late-game damage.",
+   "why": [
+    "Zeri's Spark Surge and Lightning Crash move Yuumi with her, and Yuumi's Zoomies heals and speeds her up.",
+    "You and Me! keeps Yuumi untargetable while attached."
+   ],
+   "strengths": [
+    "Mobility and sustain late."
+   ],
+   "weaknesses": [
+    "Very weak to hooks and walk-in engage in lane; Yuumi cannot stop an all-in.",
+    "Little lane pressure: the lane is played to reach items."
+   ],
+   "curve": "Both weak early; Zeri peaks late.",
+   "lessons": [
+    "lose-lane-by-design"
+   ]
+  },
+  {
+   "a": "corki",
+   "aRole": "BOT",
+   "b": "nami",
+   "bRole": "SUPPORT",
+   "plan": "Trade and sustain: Nami's empowered attacks and heals keep Corki winning short trades until his items.",
+   "why": [
+    "Tidecaller's Blessing empowers Corki's next attacks with a slow and bonus damage, and Ebb and Flow heals him while hitting the enemy.",
+    "Aqua Prison gives Corki a stationary target for Missile Barrage."
+   ],
+   "strengths": [
+    "Sustain and poke in lane."
+   ],
+   "weaknesses": [
+    "Nami's bubble is the duo's only start; a miss leaves the lane passive.",
+    "Corki is weak to hard engage early."
+   ],
+   "lessons": []
+  },
+  {
+   "a": "corki",
+   "aRole": "BOT",
+   "b": "alistar",
+   "bRole": "SUPPORT",
+   "plan": "Alistar starts fights and peels; Corki adds burst and poke from range.",
+   "why": [
+    "Alistar's combo starts a fight Corki can follow with Missile Barrage and Phosphorus Bomb.",
+    "When defended, the same combo knocks a diver off Corki."
+   ],
+   "strengths": [
+    "Engage and protection in one support."
+   ],
+   "weaknesses": [
+    "Corki's follow-up is from range; the all-in leans on Alistar and the jungler.",
+    "Alistar's combo is one cooldown."
+   ],
+   "lessons": []
+  },
+  {
+   "a": "miss-fortune",
+   "aRole": "BOT",
+   "b": "neeko",
+   "bRole": "SUPPORT",
+   "plan": "Wombo lane: Neeko's Pop Blossom stuns a group and Miss Fortune's Bullet Time hits everyone stunned.",
+   "why": [
+    "Pop Blossom and Tangle-Barbs hold several enemies still for the whole Bullet Time channel.",
+    "Neeko's disguise can hide the engage until it lands."
+   ],
+   "strengths": [
+    "Area damage in grouped fights."
+   ],
+   "weaknesses": [
+    "Both are immobile when caught; Bullet Time breaks if Miss Fortune is stopped.",
+    "Few tools against a hard dive on Miss Fortune."
+   ],
+   "lessons": []
+  }
+ ]
+}

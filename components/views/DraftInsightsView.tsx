@@ -8,17 +8,19 @@ import { useEffect, useMemo, useState } from "react";
 import { ChampionProvider } from "@/components/ChampionInteraction";
 import { Disclosure } from "@/components/Disclosure";
 import { InteractiveChampion } from "@/components/InteractiveChampion";
+import { PairingExplorer, type PairState } from "@/components/PairingExplorer";
 import { Select } from "@/components/Select";
 import { ChampIcon, PageHeader, SectionHeader } from "@/components/ui";
-import type { DrawerData } from "@/lib/data";
+import type { DrawerData, PairingData } from "@/lib/data";
 import { OTHER } from "@/lib/drawer";
 import { BASIS_LABEL, BASIS_TITLE, clock, filterInsights, insightChampions, lessonHref, lessonsOfVideo, momentUrl, statPatches } from "@/lib/draft-insights";
 import { shortDate } from "@/lib/evidence";
+import { explorerHref } from "@/lib/pairings";
 import type { DraftInsight, DraftInsights } from "@/lib/schema";
 
 const ROLE_WORD: Record<string, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "ADC", SUPPORT: "Support" };
 
-export function DraftInsightsView({ data, names, drawerData }: { data: DraftInsights; names: Record<string, string>; drawerData: DrawerData }) {
+export function DraftInsightsView({ data, names, drawerData, pairing }: { data: DraftInsights; names: Record<string, string>; drawerData: DrawerData; pairing: PairingData }) {
   // Filters live in the URL so a view can be shared (as on Patch Notes); Back and Forward replace what is shown.
   const initial = useSearchParams();
   const [params, setParams] = useState(() => new URLSearchParams(initial.toString()));
@@ -32,7 +34,13 @@ export function DraftInsightsView({ data, names, drawerData }: { data: DraftInsi
     window.history.replaceState(null, "", `${window.location.pathname}${next.size ? `?${next}` : ""}`);
   };
 
-  const view = get("view") === "videos" ? "videos" : "lessons";
+  const view = get("view") === "videos" ? "videos" : get("view") === "pairings" ? "pairings" : "lessons";
+  // Pairing explorer state: ?bot=&support=&from=&compare= (comma list), all shareable.
+  const pairState: PairState = {
+    bot: get("bot"), support: get("support"), from: get("from") === "SUPPORT" ? "SUPPORT" : get("from") === "BOT" ? "BOT" : undefined,
+    compare: get("compare")?.split(",").filter(Boolean),
+  };
+  const setPair = (s: PairState) => update({ bot: s.bot, support: s.support, from: s.from, compare: s.compare?.length ? s.compare.join(",") : undefined });
   const category = data.categories.some((c) => c.id === get("category")) ? get("category") : undefined;
   const champion = get("champion");
   const video = get("video") && data.videos[get("video")!] ? get("video") : undefined;
@@ -61,6 +69,7 @@ export function DraftInsightsView({ data, names, drawerData }: { data: DraftInsi
         <nav className="seg" aria-label="Browse by">
           <button className={view === "lessons" ? "active" : undefined} aria-pressed={view === "lessons"} onClick={() => update({ view: undefined })}>Lessons <span className="count">{data.insights.length}</span></button>
           <button className={view === "videos" ? "active" : undefined} aria-pressed={view === "videos"} onClick={() => update({ view: "videos", lesson: undefined })}>Videos <span className="count">{videoList.length}</span></button>
+          <button className={view === "pairings" ? "active" : undefined} aria-pressed={view === "pairings"} onClick={() => update({ view: "pairings", lesson: undefined })}>Bot lane pairings</button>
         </nav>
         {view === "lessons" && <>
           <Select label="Topic" value={category ?? ""} onChange={(v) => update({ category: v || undefined, lesson: undefined })}
@@ -74,7 +83,12 @@ export function DraftInsightsView({ data, names, drawerData }: { data: DraftInsi
         </>}
       </div>
 
-      {view === "videos" ? (
+      {view === "pairings" ? (
+        <div className="ins-main">
+          <PairingExplorer data={pairing} champions={drawerData.champions} botPairings={drawerData.botPairings} proposed={drawerData.proposed} names={names}
+            state={pairState} onChange={setPair} context="insights" />
+        </div>
+      ) : view === "videos" ? (
         <div className="ins-videos">
           {videoList.filter(([id]) => !video || id === video).map(([id, v]) => {
             const lessons = lessonsOfVideo(data, id);
@@ -221,7 +235,8 @@ function Lesson({ i, data, names, open, topic }: { i: DraftInsight; data: DraftI
                 </div>
               )}
               <p className="ins-mtext">{m.text}</p>
-              <p className="ins-mmeta">{m.stat && <span className="ins-stat" title="Creator-reported ranked figure for this example and patch; not a prediction">{m.stat.text} · {m.stat.patch}</span>}<Moment data={data} s={m.source} /></p>
+              <p className="ins-mmeta">{m.stat && <span className="ins-stat" title="Creator-reported ranked figure for this example and patch; not a prediction">{m.stat.text} · {m.stat.patch}</span>}<Moment data={data} s={m.source} />
+                {m.kind !== "versus" && i.category === "bot-duo" && m.a.length === 2 && <Link className="xs" href={explorerHref(m.a[0], m.a[1])}>Explore this pair</Link>}</p>
             </li>
           ))}
         </ul>
@@ -233,6 +248,7 @@ function Lesson({ i, data, names, open, topic }: { i: DraftInsight; data: DraftI
         <dt>Use it when</dt><dd>{i.when}</dd>
         <dt>Caveat</dt><dd>{i.caveat}</dd>
       </dl>
+      {i.category === "bot-duo" && <p className="small"><Link href={explorerHref()}>Explore other bot lane pairings →</Link></p>}
 
       <Disclosure summary="Explanation, evidence and sources" open={open} className="ins-more">
         <dl className="ins-dl">

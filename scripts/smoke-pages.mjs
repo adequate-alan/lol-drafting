@@ -556,7 +556,8 @@ await page.locator(".theme-toggle").click();
   await page.evaluate(() => localStorage.removeItem("pro-builds:pinned-players"));
   await open("/synergies/bot/?champ=ezreal&view=pro");
   const karmaRow = await page.locator(".pro-table tr", { hasText: "Karma" }).first().innerText().catch(() => "");
-  check("pro pairings show games, event, patch and date (Ezreal + Karma)", /1\s+Demacia Cup.*\s+26\.18\s+Oct 3/.test(karmaRow), karmaRow.replace(/\s+/g, " "));
+  // Counted from every recorded game since alan's Synergies audit (2026-11-13): games, teams, W–L, each event with its patch, latest date.
+  check("pro pairings show games, teams, events with patch and date (Ezreal + Karma)", /Karma\s+\d+\s+\d+\s+\d+–\d+\s+.*Demacia Cup 26\.18.*\s+\w{3} \d+/.test(karmaRow), karmaRow.replace(/\s+/g, " "));
 }
 // Comp Library champion drawer
 {
@@ -1504,6 +1505,26 @@ await open("/insights/");
   await open("/insights/?view=videos");
   check("insights: the Videos view lists every video with its lessons", (await page.locator(".ins-video").count()) === 4 && (await page.locator(".ins-video .ins-moments li").count()) >= 17, "");
 }
+// Pairing Explorer (alan, 2026-11-13): an ADC + support by portrait, three separate partner groups, one pair open with its
+// read and recorded games, two partners side by side; Synergies Bot / Partners and the Pro pairings table count every game.
+await open("/insights/?view=pairings&bot=ezreal&support=nautilus");
+{
+  const groups = await page.locator(".px-group").count();
+  check("pairings: three partner groups for Ezreal", groups === 3, `${groups}`);
+  check("pairings: Ezreal + Nautilus opens with a lane plan and pro games", /Ezreal \+ Nautilus/.test(await text(".px-detail h3")) && (await page.locator(".px-read dt").count()) >= 4 && /\d+ games? · \d+ teams?/.test(await text(".px-detail .layer.pro .layer-label")), await text(".px-detail .layer.pro .layer-label"));
+  check("pairings: Ezreal's saved default leads its saved group", /^Karma/.test((await page.locator(".px-group").first().locator(".px-card-name").first().textContent()) ?? ""), "");
+  await page.locator(".px-group").first().locator(".px-cmp").nth(0).click();
+  await page.locator(".px-group").first().locator(".px-cmp").nth(1).click();
+  check("pairings: two partners compare side by side", (await page.locator(".px-compare-table thead th[scope=col]").count()) === 2, "");
+}
+await open("/synergies/bot/?champ=yunara&view=pro");
+{
+  const lulu = await page.locator(".pro-table tbody tr", { hasText: "Lulu" }).first().locator("td.num").first().textContent();
+  check("synergies: Yunara + Lulu is counted from every recorded game", Number(lulu) >= 20, `${lulu}`);
+  check("synergies: the LCK read is labelled as the archive", /LCK playoffs read \(26\.16\)/.test(await text(".scout-read")) || (await page.locator(".scout-read").count()) === 0, "");
+}
+await open("/synergies/bot/?champ=caitlyn&view=partners");
+check("synergies: Bot Partners shows the explorer anchored on the rail champion", (await page.locator(".top-report .px-slot[disabled]").count()) === 1 && (await page.locator(".px-group").count()) === 3, "");
 // One patch label (alan, 2026-10-12): the site writes Riot's 26.xx; Gol.gg's 16.xx stays in data and source URLs only.
 for (const path of ["/", "/pool/", "/meta/", "/pro-drafts/", "/pro-builds/", "/comps/", "/synergies/bot/", "/patch-notes/", "/insights/"]) {
   await open(path);

@@ -23,13 +23,15 @@ import {
 } from "@/lib/top-draft";
 
 type Names = Record<string, string>;
-export type TopView = "overview" | "usage" | "duo" | "mates" | "matchups" | "synergies" | "pro";
+export type TopView = "overview" | "partners" | "usage" | "duo" | "mates" | "matchups" | "synergies" | "pro";
 export const TOP_VIEWS: [TopView, string][] = [["overview", "Overview"], ["usage", "Draft usage"], ["matchups", "Matchups"], ["synergies", "Synergies"], ["pro", "Pro evidence"]];
 /** Report tabs per lane. Off Top, the saved partners sit on Overview (they are that lane's saved record), so there is no
  *  separate Synergies tab; Bot and Support add Duo drafting, Jungle adds Mid/Jungle. */
 export const laneViews = (role: LaneRole): [TopView, string][] => role === "TOP" ? TOP_VIEWS
   : role === "JUNGLE" ? [["overview", "Overview"], ["usage", "Draft usage"], ["mates", "Mid/Jungle"], ["matchups", "Matchups"], ["pro", "Pro evidence"]]
-  : [["overview", "Overview"], ["usage", "Draft usage"], ...(role === "MID" ? [] : [["duo", "Duo drafting"] as [TopView, string]]), ["matchups", "Matchups"], ["pro", "Pro evidence"]];
+  : role === "MID" ? [["overview", "Overview"], ["usage", "Draft usage"], ["matchups", "Matchups"], ["pro", "Pro evidence"]]
+  // Bot and Support: Partners is the Pairing Explorer (components/PairingExplorer.tsx), anchored on the rail champion.
+  : [["overview", "Overview"], ["partners", "Partners"], ["usage", "Draft usage"], ["duo", "Duo drafting"], ["matchups", "Matchups"], ["pro", "Pro evidence"]];
 
 /** How each lane is named in prose: "the enemy top", "the enemy ADC". */
 export const LANE_WORD: Record<LaneRole, string> = { TOP: "top", JUNGLE: "jungler", MID: "mid", BOT: "ADC", SUPPORT: "support" };
@@ -204,11 +206,12 @@ export function GameRows({ list, names, bundle, open, setOpen, pair, opponent = 
 
 // ---------- the report ----------
 
-export function TopUsageReport({ id, row, prio, prioLabel, bundle, names, view, setView, saved, logic, synergies, proEvidence, scopeLabel, scope, savedMates }: {
+export function TopUsageReport({ id, row, prio, prioLabel, bundle, names, view, setView, saved, logic, synergies, proEvidence, scopeLabel, scope, savedMates, partners }: {
   id: string; row?: TopRow; prio?: PriorityBrief; prioLabel: string; bundle: TopDraftBundle; names: Names; view: TopView; setView: (v: TopView) => void;
   saved?: { grade: string; tier?: string; gives?: string; avoid?: string }; // Top's saved blind grade
   logic: BlindLine[]; synergies: React.ReactNode; proEvidence: React.ReactNode; scopeLabel: string; scope: TopScope;
   savedMates?: { preferred: string[]; alternatives: string[] }; // Jungle: alan's saved mids for this jungler
+  partners?: React.ReactNode; // Bot / Support: the Pairing Explorer
 }) {
   const [open, setOpen] = useState<string>();
   const [pairOpen, setPairOpen] = useState<string>();
@@ -238,6 +241,7 @@ export function TopUsageReport({ id, row, prio, prioLabel, bundle, names, view, 
       </div>
       <div role="tabpanel">
         {shown === "overview" && <Overview role={role} row={row} prio={prio} prioLabel={prioLabel} saved={saved} logic={logic} names={names} scopeLabel={scopeLabel} synergies={role === "TOP" ? undefined : synergies} />}
+        {shown === "partners" && <div className="scout-sec">{partners}</div>}
         {shown === "usage" && <Usage id={id} row={row} names={names} bundle={bundle} open={open} setOpen={setOpen} scopeLabel={scopeLabel} scope={scope} />}
         {shown === "duo" && <DuoView id={id} names={names} bundle={bundle} scope={scope} scopeLabel={scopeLabel} />}
         {shown === "mates" && <MatesView id={id} names={names} bundle={bundle} scope={scope} scopeLabel={scopeLabel} saved={savedMates} />}

@@ -8,6 +8,13 @@ import { groupObserved, shortDate, type EventMap } from "@/lib/evidence";
 import type { CardRecord } from "./PairingCard";
 import { ChampIcon, Chip, ChipList, Duo, SourceLinks } from "./ui";
 import { patchLabel } from "@/lib/patch";
+import { createContext, useContext } from "react";
+import { pairEvidence, PAIR_FEW_TEAMS, type PairGame } from "@/lib/pairings";
+
+/** Every recorded game (tracked tournaments and the LCK archive records, lib/pairings.ts), so the Pro pairings table
+ *  counts from the games themselves instead of the counts the workbook stored (alan's Synergies audit, 2026-11-13). */
+export interface RecordedPairs { rows: PairGame[]; newestPatch?: string; events: Record<string, { short: string }> }
+const Recorded = createContext<(RecordedPairs & { anchor: string; role: Role }) | undefined>(undefined);
 
 // Champion Synergies scouting report: one selected champion, read top to bottom as header, Synergy, Pro Pairings, Warning,
 // Sources. Presentation only; the three layers keep their own sections and colors. The Draft Room keeps PairingCard.
@@ -53,6 +60,8 @@ function Header({ role, id, name, confidence, identities, children }: {
 function ProTable({ list, names, sources, events, role, partnerLabel, draftLabels }: {
   list: ObservedPairing[]; names: Names; sources: Sources; events: EventMap; role: Role; partnerLabel: string; draftLabels?: Record<string, string>;
 }) {
+  const rec = useContext(Recorded);
+  if (rec) return <RecordedTable rec={rec} list={list} names={names} sources={sources} role={role} partnerLabel={partnerLabel} draftLabels={draftLabels} />;
   if (!list.length) return <p className="muted xs">No recorded pro game shows a pairing for this pick.</p>;
   return (
     <div className="scout-table">
@@ -85,6 +94,58 @@ function ProTable({ list, names, sources, events, role, partnerLabel, draftLabel
   );
 }
 
+/** Pro pairings counted from the recorded games: games, teams, W–L, each event with its newest patch. A pairing the
+ *  workbook cited that no recorded game shows stays listed below, with its old note. */
+function RecordedTable({ rec, list, names, sources, role, partnerLabel, draftLabels }: {
+  rec: RecordedPairs & { anchor: string; role: Role }; list: ObservedPairing[]; names: Names; sources: Sources; role: Role; partnerLabel: string; draftLabels?: Record<string, string>;
+}) {
+  const ev = [...pairEvidence(rec.rows, rec.anchor, rec.role, role, rec.newestPatch).values()]
+    .sort((a, b) => b.teams.length - a.teams.length || b.games.length - a.games.length || (b.newest ?? "").localeCompare(a.newest ?? ""));
+  const cited = list.filter((o) => !ev.some((e) => e.partner === o.champion));
+  const short = (id: string) => rec.events[id]?.short ?? id;
+  return (
+    <>
+      {!ev.length ? <p className="muted xs">No recorded pro game has {names[rec.anchor] ?? rec.anchor} with a {partnerLabel.toLowerCase()} partner here.</p> : (
+        <div className="scout-table">
+          <table className="pro-table">
+            <thead><tr><th>{partnerLabel}</th><th className="num">Games</th><th className="num">Teams</th><th className="num">W–L</th><th>Events</th><th>Latest</th></tr></thead>
+            <tbody>
+              {ev.map((e) => (
+                <tr key={e.partner}>
+                  <td><Chip id={e.partner} name={names[e.partner] ?? e.partner} role={role} /></td>
+                  <td className="num">{e.games.length}</td>
+                  <td className="num" title={e.teams.join(", ")}>{e.teams.length}{e.teams.length < PAIR_FEW_TEAMS && <span className="faint xs" title="Fewer than three teams: a small sample"> small</span>}</td>
+                  <td className="num" title="Game results, not lane results">{e.wins}–{e.losses}</td>
+                  <td className="notes">{e.events.map((x) => `${short(x.event)} ${patchLabel(x.patch)}${e.events.length > 1 ? ` · ${x.games}` : ""}`).join(", ")}{e.archiveOnly && <span className="faint"> · archive only</span>}</td>
+                  <td className="tnum">{shortDate(e.newest) ?? "–"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="xs faint">Counted from every recorded game, the LCK playoffs archive included. W–L are game results, not lane results; teams are the independent sample (Fearless allows a pairing once per series).</p>
+        </div>
+      )}
+      {cited.length > 0 && (
+        <Disclosure summary="Cited without a recorded game" meta={cited.length}>
+          <ul className="xs scout-cited">
+            {cited.map((o) => {
+              const pending = o.sources.length > 0 && o.sources.every((id) => sources[id]?.pendingClaim);
+              return (
+                <li key={o.champion + o.context}>
+                  <Chip id={o.champion} name={names[o.champion] ?? o.champion} role={role} /> <span className="muted">{o.context}</span>
+                  {" "}{pending ? <span className="faint">· pending refresh</span> : <span className="caution-text">· not in recorded drafts</span>}
+                  {o.era === "earlier-2026" && <span className="faint"> · earlier 2026</span>}
+                  {o.proDraftIds.length > 0 && draftLabels && <span className="faint"> · {o.proDraftIds.map((d) => draftLabels[d] ?? d).join(", ")}</span>}
+                </li>
+              );
+            })}
+          </ul>
+        </Disclosure>
+      )}
+    </>
+  );
+}
+
 function ProShapes({ list, names, anchor, draftLabels }: { list: ObservedBotShape[]; names: Names; anchor: string; draftLabels?: Record<string, string> }) {
   if (!list.length) return null;
   return (
@@ -104,7 +165,8 @@ function ProShapes({ list, names, anchor, draftLabels }: { list: ObservedBotShap
   );
 }
 
-const Read = ({ text }: { text?: string }) => (text ? <p className="scout-read"><b>Current playoff read:</b> {text}</p> : null);
+// Written for the LCK 2026 playoffs (patch 26.16): an archive read, labelled as such (alan's Synergies audit, 2026-11-13).
+const Read = ({ text }: { text?: string }) => (text ? <p className="scout-read"><b>LCK playoffs read (26.16):</b> {text}</p> : null);
 
 function Warning({ title = "Warning", children }: { title?: string; children: React.ReactNode }) {
   return <Section layer="logic" title={title}><div className="scout-callout">{children}</div></Section>;
@@ -199,7 +261,14 @@ function GameList({ games, role, names }: { games: ProGame[]; role: Role; names:
   );
 }
 
-export function ScoutingReport({ item, names, sources, events, draftLabels, proposed = [], proCount, games = [], bot = [], shells = [], only }: {
+export function ScoutingReport({ recorded, ...props }: Parameters<typeof Report>[0] & { recorded?: RecordedPairs }) {
+  const it = props.item;
+  const anchor = it.kind === "proposed" ? undefined : it.kind === "bot" ? { anchor: it.record.champion, role: "BOT" as Role }
+    : it.kind === "mid-jungle" ? { anchor: it.record.anchor, role: it.record.role } : { anchor: it.record.champion, role: "TOP" as Role };
+  return <Recorded.Provider value={recorded && anchor ? { ...recorded, ...anchor } : undefined}><Report {...props} /></Recorded.Provider>;
+}
+
+function Report({ item, names, sources, events, draftLabels, proposed = [], proCount, games = [], bot = [], shells = [], only }: {
   item: CardRecord; names: Names; sources: Sources; events: EventMap; draftLabels?: Record<string, string>;
   proposed?: ProposedLink[]; proCount?: ProCount; games?: ProGame[]; bot?: BotPairing[]; shells?: CompShell[];
   /** Lane tabs (components/TopDraft.tsx): one part of a report, without its header, inside a report tab. */

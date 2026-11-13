@@ -16,6 +16,7 @@ import {
   type RoleNeed, type Severity, type Slot, type Confidence, enemyDraft,
 } from "./analyze";
 import type { ChampionKit } from "./schema";
+import { followOf } from "./follow";
 import { ANALYSIS as T } from "./thresholds";
 
 // Every threshold the plan read uses, in one place for review. Heuristics on the 0–3 kit scales.
@@ -104,17 +105,8 @@ const reaches = (s: Slot) => s.threat >= 2 && s.c.kit.backlineAccess >= 2;
 const stuck = (s: Slot) => s.threat >= 2 && s.c.kit.range === 0 && s.c.kit.backlineAccess < 2;
 const starter = (s: Slot) => s.c.fightStart === "primary";
 const catcher = (s: Slot) => s.c.fightStart === "catch";
-/** How a carry follows an ally's engage, from the unreviewed kit fields (no value is changed for this read). */
-export const followOf = (s: Slot) => ({
-  allIn: s.c.kit.followUp >= 2,                                  // crowd control or burst of their own on the locked target
-  ranged: s.threat >= 2 && s.c.kit.range >= 2,                    // hits the locked target from standard range or further
-  joins: s.c.kit.backlineAccess >= 2 || (s.threat >= 2 && s.c.kit.range <= 1), // reaches it, or is already standing there
-  extended: s.c.attrs.sustainedDps >= 2,                          // keeps dealing damage in the longer trade that follows
-  // Commits real damage while the support's lockdown lasts (alan, 2026-11-12, Draft Insights review): an early-game carry
-  // (curve.early 3) whose burst or sustained damage is 2+ turns the lockdown into a kill without crowd control of its own
-  // (Draven, Lucian, Caitlyn). Not a lane-bully label: Ezreal, Corki, Ziggs and Senna stay ranged follow-up.
-  commits: s.c.kit.curve.early >= 3 && (s.c.attrs.burst >= 2 || s.c.attrs.sustainedDps >= 2),
-});
+// followOf lives in ./follow.ts so the Pairing Explorer's bot lane read can use the same definition without the plan read.
+export { followOf } from "./follow";
 
 // ---------- plan jobs ----------
 

@@ -6,7 +6,7 @@ import { PageLoading } from "@/components/ui";
 import { SynergiesView } from "@/components/views/SynergiesView";
 import { LEGACY_MID_JUNGLE, TAB_ROLE, TABS, type Tab } from "@/components/views/synergy-tabs";
 import type { LaneRole } from "@/lib/top-draft";
-import { getBotPairings, getCompShells, getDrawerData, getMeta, getMidJungle, getPool, getProDrafts, getLaneDraft, getProFreshness, getTopPicks, jungleOnlyIds } from "@/lib/data";
+import { getBotPairings, getCompShells, getDrawerData, getMeta, getMidJungle, getPool, getProDrafts, getLaneDraft, getPairingData, getProFreshness, getTopPicks, jungleOnlyIds } from "@/lib/data";
 import { eventMap, nameMap, sourceMap } from "@/lib/lookup";
 
 export const dynamicParams = false;
@@ -29,7 +29,7 @@ export default async function Synergies({ params }: { params: Promise<{ tab: str
     <Suspense fallback={<PageLoading title="Champion Synergies" />}>
       <SynergiesView tab={tab as Tab} names={nameMap()} sources={sourceMap()} events={eventMap()} stats={stats} draftLabels={draftLabels}
         bot={getBotPairings()} midJungle={getMidJungle()} top={getTopPicks()} pool={getPool()} drawerData={getDrawerData()} freshness={getProFreshness()} shells={getCompShells()}
-        laneDraft={getLaneDraft(TAB_ROLE[tab as Tab] as LaneRole)} />
+        laneDraft={getLaneDraft(TAB_ROLE[tab as Tab] as LaneRole)} pairing={getPairingData()} />
     </Suspense>
   );
 }

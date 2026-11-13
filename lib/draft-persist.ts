@@ -97,3 +97,22 @@ export function openingBoard(q: Pick<URLSearchParams, "has" | "get">, stored: St
 
 /** Browser helper (client only). */
 export const localStore = (): Store | undefined => safe(() => window.localStorage);
+
+/**
+ * The stored board with a pair placed on the allied side (Pairing Explorer's "Use in Draft Room", alan 2026-11-13): each
+ * champion goes to its role, replacing only that slot; the same champion anywhere else on the board leaves it (a champion
+ * appears once); every other pick, the enemy team and the room's settings stay as they were. The open tab moves to the
+ * first role still empty, if any.
+ */
+export function withPair(board: StoredBoard | undefined, picks: Partial<Record<Role, string>>): StoredBoard {
+  const b: StoredBoard = board ? { ...board, ally: { ...board.ally }, enemy: { ...board.enemy }, foes: board.foes?.map((f) => ({ ...f })) } : { ally: {}, enemy: {} };
+  const ids = new Set(Object.values(picks).filter(Boolean) as string[]);
+  for (const r of ROLES) {
+    if (b.ally[r] && ids.has(b.ally[r]!)) delete b.ally[r];
+    if (b.enemy[r] && ids.has(b.enemy[r]!)) delete b.enemy[r];
+  }
+  if (b.foes) b.foes = b.foes.filter((f) => !ids.has(f.id));
+  for (const r of ROLES) if (picks[r]) b.ally[r] = picks[r];
+  b.focus = ROLES.find((r) => !b.ally[r]);
+  return b;
+}
