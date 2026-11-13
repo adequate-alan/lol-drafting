@@ -33,7 +33,7 @@ export interface TopScopeState {
   events: { id: string; short: string }[];
   duo: boolean;
   duoUsers: Set<string>; // champions in a duo completed with enemy bot-lane information (full or split)
-  href: (next: Partial<Record<"champ" | "patch" | "event" | "use" | "sort" | "view", string | undefined>>) => string;
+  href: (next: Partial<Record<"champ" | "patch" | "event" | "use" | "sort" | "view" | "partner" | "compare", string | undefined>>) => string;
 }
 
 export function useTopScope(bundle: TopDraftBundle | undefined, params: ReadonlyURLSearchParams, tab: string): TopScopeState | undefined {

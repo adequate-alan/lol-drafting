@@ -10,7 +10,7 @@ import type { DrawerContext } from "@/lib/drawer";
 const SYNERGIES: DrawerContext = { page: "synergies" };
 import type { CardRecord } from "@/components/PairingCard";
 import { ScoutingReport } from "@/components/ScoutingReport";
-import type { DrawerData } from "@/lib/data";
+import type { DrawerData, PairingData } from "@/lib/data";
 import { PageHeader } from "@/components/ui";
 import type { EventMap } from "@/lib/evidence";
 import { TAB_ROLE, TABS, type Tab } from "./synergy-tabs";
@@ -20,6 +20,7 @@ import { proGames } from "@/lib/pool-stats";
 import { proposedCard, proposedPartners, shownPartners } from "@/lib/proposed";
 import { buildsHref } from "@/lib/pro-builds";
 import { TopUsageReport } from "@/components/TopDraft";
+import { PairingExplorer } from "@/components/PairingExplorer";
 import { TopRailTools, topRail, useTopScope } from "@/components/TopRail";
 import { patchToRestore, readStoredPatch, storePatch } from "@/lib/synergy-patch";
 import { poolTier, tierLabel } from "@/lib/counters";
@@ -36,10 +37,11 @@ const replaceQuery = (href: string) => {
   window.history.replaceState(null, "", `${window.location.pathname}${q ? `?${q}` : ""}`);
 };
 
-export function SynergiesView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top, pool, drawerData, freshness, shells, laneDraft }: {
+export function SynergiesView({ tab, names, sources, events, stats, draftLabels, bot, midJungle, top, pool, drawerData, freshness, shells, laneDraft, pairing }: {
   drawerData: DrawerData; tab: Tab; names: Record<string, string>; sources: Record<string, Source>; events: EventMap; stats: Record<string, MetaStat & { winRate: number }>;
   draftLabels: Record<string, string>; bot: BotPairing[]; midJungle: MidJunglePairing[]; top: TopPick[]; pool: PoolEntry[]; freshness: Freshness[]; shells: CompShell[];
   laneDraft?: TopDraftBundle; // every role: observed draft usage (lib/top-draft.ts)
+  pairing?: PairingData; // every recorded game for the Pro pairings tables; Bot / Support also feed the Pairing Explorer
 }) {
   const params = useSearchParams();
   const champ = params.get("champ") || undefined;
@@ -148,7 +150,7 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
               const active = isSelected(x);
               return (
                 <li key={x.id} className={x.proposed ? "proposed" : undefined}>
-                  <Link href={topScope ? topScope.href({ champ: x.id }) : `/synergies/${tab}?champ=${x.id}`} className={active ? "active" : undefined} aria-current={active ? "page" : undefined}>
+                  <Link href={topScope ? topScope.href({ champ: x.id, partner: undefined, compare: undefined }) : `/synergies/${tab}?champ=${x.id}`} className={active ? "active" : undefined} aria-current={active ? "page" : undefined}>
                     <ChampIcon id={x.id} name={x.label} role={TAB_ROLE[tab]} size="md" />
                     <span className="rail-text"><span className="rail-name">{x.label}</span><span className="rail-sub">{x.sub}</span></span>
                   </Link>
@@ -165,14 +167,20 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
               {topScope && laneDraft ? (
                 <TopUsageReport id={selectedId} row={topScope.rows.find((r) => r.champion === selectedId)} prio={topScope.prio[selectedId]} prioLabel={topScope.prioLabel} bundle={laneDraft} names={names}
                   view={topScope.view} setView={(v) => replaceQuery(topScope.href({ view: v === "overview" ? undefined : v }))}
+                  partners={pairing && (selectedRole === "BOT" || selectedRole === "SUPPORT") ? (
+                    <PairingExplorer data={pairing} champions={drawerData.champions} botPairings={drawerData.botPairings} proposed={drawerData.proposed} names={names}
+                      fixed={{ id: selectedId, role: selectedRole }} context="synergies"
+                      state={{ [selectedRole === "BOT" ? "support" : "bot"]: params.get("partner") || undefined, compare: params.get("compare")?.split(",").filter(Boolean) }}
+                      onChange={(s) => replaceQuery(topScope.href({ partner: (selectedRole === "BOT" ? s.support : s.bot) || undefined, compare: s.compare?.length ? s.compare.join(",") : undefined }))} />
+                  ) : undefined}
                   scopeLabel={topScope.label} scope={{ patch: topScope.patch, events: topScope.event ? [topScope.event] : undefined }}
                   saved={selected.kind === "top" ? { grade: selected.record.blindGrade, tier: tierOf(pool, selectedId), gives: selected.record.logic.gives, avoid: selected.record.logic.avoid } : undefined}
                   logic={laneDraft.blind[selectedId] ?? []}
                   savedMates={selected.kind === "mid-jungle" && selected.record.role === "JUNGLE" ? { preferred: selected.record.clashDefault, alternatives: selected.record.alternatives } : undefined}
-                  synergies={<ScoutingReport item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels} proposed={extra} proCount={proCount} games={myGames} bot={bot} shells={shells} only="synergy" />}
-                  proEvidence={<ScoutingReport item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels} proposed={extra} proCount={proCount} games={myGames} bot={bot} shells={shells} only="pro" />} />
+                  synergies={<ScoutingReport recorded={pairing} item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels} proposed={extra} proCount={proCount} games={myGames} bot={bot} shells={shells} only="synergy" />}
+                  proEvidence={<ScoutingReport recorded={pairing} item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels} proposed={extra} proCount={proCount} games={myGames} bot={bot} shells={shells} only="pro" />} />
               ) : (
-                <ScoutingReport item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels}
+                <ScoutingReport recorded={pairing} item={selected} names={names} sources={sources} events={events} draftLabels={draftLabels}
                   proposed={extra} proCount={proCount} games={myGames} bot={bot} shells={shells} />
               )}
             </ChampionProvider>

@@ -794,6 +794,22 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   the video names for that point; a champion sits in one group per lesson and hybrids go in the group's note. `?video=`
   shows the video's intro and its lessons in video order. Commentary on one pro game goes to Analyst perspectives instead. New videos go through a review in the
   thread first; never auto-ingest a creator.
+- **Pairing Explorer** (alan, 2026-11-13; `lib/pairings.ts`, `components/PairingExplorer.tsx`, `data/pairing-notes.json`,
+  `tests/pairings.test.ts`, smoke "pairings:"; audit script `scripts/pairing-audit.ts`): Bot + Support first. Choose an ADC
+  or a support by portrait, see partners in three groups that never merge (Saved preferences in record order, Observed in
+  pro games not saved by teams then games, Other kit-compatible options from the proposed layer), open one pair (Synergy
+  status, Draft logic: lane plan / why it works / strengths / weaknesses / power curve, Pro evidence with games, teams,
+  W–L "game results, not lane results", events and patches, small sample under 3 teams, Creator lessons labelled solo
+  queue with their patch) and compare two partners ("not a ranking"). Draft logic is a written read
+  (`pairing-notes.json`, champion-specific, unreviewed, never cites pro frequency) or `duoRead` from the stored kits, each
+  line naming its kit values. Recorded games are `getPairGames` (tracked tournaments plus LCK archive records, each team
+  draft once). Draft Insights `?view=pairings&bot=&support=&from=&compare=`; Synergies Bot / Support "Partners" tab
+  (`?view=partners&partner=&compare=`, anchored on the rail champion); Draft Room preview shows a "Lane plan" line with
+  "Pairing details" when the other half of the bot lane is locked. "Use in Draft Room" writes the pair into the stored
+  board (`withPair`, every other pick kept) and opens the room; nothing locks from the explorer. Synergies' Pro pairings
+  tables count from the recorded games (games, teams, W–L, events, latest), workbook citations without a game listed
+  under "Cited without a recorded game"; the stored `observedProPairings` still drive `withProAlternatives` (scores
+  unchanged). Nothing that scores, orders or picks candidates reads it (tested).
 - **Identity-first headers** (alan, 2026-10-12, DPM.LOL as the hierarchy reference, never its branding or layout): a
   player or champion page leads with the subject, on one surface, not a card: a large portrait or champion icon, a
   large Space Grotesk name (`--fs-4xl` for a player profile, `--fs-3xl` elsewhere), team and role in medium weight

@@ -14,6 +14,7 @@ import { storedKitQueue } from "./kit-review";
 import { commentaryCounts } from "./analyst-commentary";
 import { championIndex, type ChampionBuilds } from "./pro-builds";
 import { withoutConfirmed } from "./proposed";
+import { lessonBook, newestPatchOf, pairGames, type PairGame } from "./pairings";
 import { gamePlayers, type GamePlayers } from "./pro-drafts-game";
 import { Files, ROLES, type Role } from "./schema";
 import { brief, duoSelections, LANE_ROLES, laneSelections, roleBook, topUsageMarks, type LaneRole, type TopDraftBundle, type TopUsageMarks } from "./top-draft";
@@ -82,6 +83,23 @@ export const getPatchIndex = () => (patchIndex ??= buildPatchIndex(getPatchNotes
 export const getCommentaryCounts = () => commentaryCounts(load("analyst-commentary.json"));
 /** Draft Insights: lessons from approved creator videos. Read by the Draft Insights page only; never by a score or a ranking. */
 export const getDraftInsights = () => load("draft-insights.json");
+// Pairing Explorer (alan, 2026-11-13): every recorded team draft once (tracked events, the LCK archive and the stored drafts
+// of games neither holds), the written pair reads and the Draft Insights moments it links. Observed Pro Evidence, General
+// Draft Logic and learning material, each in its own field; nothing here is read by a score or a ranking.
+let pairRows: PairGame[] | undefined;
+export const getPairGames = () => (pairRows ??= pairGames(getProGames().games, (load("pro-builds.json").games ?? []).filter((g) => !getProGames().games.some((t) => t.id === g.id)),
+  load("pro-drafts.json"), Object.fromEntries(getSources().map((s) => [s.id, s])), (name) => getMeta().events.find((e) => e.name === name || e.id === name)?.id));
+export function getPairingData() {
+  const rows = getPairGames();
+  return {
+    rows,
+    newestPatch: newestPatchOf(rows),
+    notes: load("pairing-notes.json").notes,
+    lessons: lessonBook(getDraftInsights()),
+    events: Object.fromEntries(getMeta().events.map((e) => [e.id, { short: e.short }])) as Record<string, { short: string }>,
+  };
+}
+export type PairingData = ReturnType<typeof getPairingData>;
 export const getKitQueue = () => storedKitQueue(getPatchNotes(), getChampions(), load("kit-review.json").decisions);
 let counterFresh: CounterFreshness | undefined;
 /** The DPM data's patch against the newest patch the site recognises (Riot's patch notes and recorded pro games). */
@@ -139,6 +157,7 @@ export function getDraftData() {
     jungleBoard: getJungleBoard(), // Jungle composition responses (a label, General Draft Logic over the enemy board)
     matchupBook: getMatchupBook(), // the Counter card's kit read (General Draft Logic over the stored kits, never a score)
     enemyRoles: getEnemyRoleBook(), // recorded pro picks per role: where an enemy champion is placed automatically (a label, never a score)
+    pairingNotes: load("pairing-notes.json").notes, // written bot-lane reads for the preview's Lane plan line (never a score)
   };
 }
 

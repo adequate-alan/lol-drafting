@@ -790,6 +790,22 @@ export const DraftInsights = z.object({
 export type DraftInsights = z.infer<typeof DraftInsights>;
 export type DraftInsight = z.infer<typeof DraftInsight>;
 
+// ---------- pairing-notes.json (General Draft Logic, alan 2026-11-13: Pairing Explorer) ----------
+// Written reads of specific pairs (lane plan, ability interactions, strengths, weaknesses, power curve), kept apart from
+// alan's saved records and from pro evidence. Analysis, unreviewed: never read by a score, a ranking or a saved record.
+export const PairingNote = z.object({
+  a: ChampionId, aRole: Role, b: ChampionId, bRole: Role,
+  plan: z.string().min(20), // what the pair wants to do, one sentence
+  why: z.array(z.string().min(20)).min(1), // the specific champion interactions
+  strengths: z.array(z.string()).default([]),
+  weaknesses: z.array(z.string()).min(1),
+  curve: z.string().optional(),
+  lessons: z.array(z.string()).default([]), // Draft Insights lesson ids that explain the pair
+});
+export type PairingNote = z.infer<typeof PairingNote>;
+export const PairingNotes = z.object({ updated: Day, basis: z.string(), notes: z.array(PairingNote) });
+export type PairingNotes = z.infer<typeof PairingNotes>;
+
 export const Files = {
   "champions.json": z.array(Champion),
   "sources.json": z.array(Source),
@@ -815,4 +831,5 @@ export const Files = {
   "kit-review.json": KitReview,
   "analyst-commentary.json": AnalystCommentary,
   "draft-insights.json": DraftInsights,
+  "pairing-notes.json": PairingNotes,
 } as const;
