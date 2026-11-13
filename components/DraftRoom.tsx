@@ -710,9 +710,7 @@ function chipsOf(c: Candidate, names: Record<string, string>, bot?: string, tier
   out.push(tier ? { key: `tier ${tier}`, label: tierLabel(tier), title: `Your Champion Pool: ${tierLabel(tier)} (${ROLE_LABEL[c.role]})` }
     : { key: "tier out", label: "Not in pool", title: `Not in your ${ROLE_LABEL[c.role]} pool` });
   if (r.eligible && r.saved) {
-    out.push(r.savedFromPro
-      ? { key: "syn alt", label: "Synergy · Alt (pro)", title: "Alternative from pro games, not hand-saved" }
-      : { key: `syn ${r.saved}`, label: `Synergy · ${STATUS[r.saved]}`, title: "Your saved pairing with a locked pick" });
+    out.push({ key: `syn ${r.saved}`, label: `Synergy · ${STATUS[r.saved]}`, title: "Your saved pairing with a locked pick" });
   } else if (r.eligible && r.proposed) {
     out.push({ key: "syn proposed", label: "Proposed", title: "Proposed synergy with a locked pick: kit-based synergy that hasn't been added to your saved pairings." });
   }

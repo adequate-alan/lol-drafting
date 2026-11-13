@@ -14,10 +14,11 @@ const clash = (id: string) => [...bot(id).clashDefault, ...bot(id).alternatives]
 const handAlts = (id: string) => bot(id).alternatives.filter((a) => !bot(id).proAlternatives?.includes(a));
 
 describe("bot lane Clash defaults", () => {
-  it("Corki → Nami; Alistar is a pro-derived alternative, never the default", () => {
+  it("Corki → Nami; Alistar is a pro pairing only, never saved", () => {
     expect(bot("corki").clashDefault).toEqual(["nami"]);
     expect(handAlts("corki")).not.toContain("alistar");
     expect(bot("corki").proAlternatives).toContain("alistar");
+    expect(bot("corki").alternatives).not.toContain("alistar"); // no saved bonus from pro games (alan, 2026-11-13)
     expect(observed("corki")).toContain("alistar");
   });
 

@@ -17,7 +17,7 @@ const lower = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 /** The candidate's Synergy label, as its row shows it. */
 export function synergyText(c: Candidate): string | undefined {
   const r = c.fit;
-  if (r.eligible && r.saved) return r.savedFromPro ? "Alt (pro)" : `Saved · ${STATUS[r.saved]}`;
+  if (r.eligible && r.saved) return `Saved · ${STATUS[r.saved]}`;
   if (r.eligible && r.proposed) return "Proposed";
   return undefined;
 }
