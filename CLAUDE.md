@@ -36,7 +36,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   Worlds 2026 once listed, refreshed daily, see below).
   Pro evidence shows event, patch and date, newest patch first (`lib/evidence.ts`). A current-meta event never edits saved
   pairings and stays out of the Gen.G page's LCK patterns (`tests/demacia-cup.test.ts`); Gen.G's recorded Worlds 2026
-  games show in their own "Worlds 2026" section above the labelled LCK archive, records only (alan, 2026-11-05).
+  games show in their own "Worlds 2026" view apart from the labelled LCK archive, records only (alan, 2026-11-05; the Finals hub below since 2026-11-14).
 - Keep priority (pick/ban presence) separate from win rate, and mark small samples (`lowSample`, fewer than 5 picks).
 - Tournament aggregates (`meta.json` stats: picks, bans, win rate, verified `rolePicks`; totals in `events[].games`) and
   recorded games (stored drafts and game pages, `proGames` in `lib/pool-stats.ts`) are two datasets (alan, 2026-10-10).
@@ -831,6 +831,24 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   both records ("Saved alternative on Vex's record · Vi's record does not list Vex"). Draft logic is `coreRead` from the
   stored kits (who starts and who follows, early priority, damage mix, frontline, power curve; no written notes yet),
   General Draft Logic, never a score. An unsaved pair offers "Compare with <saved preferred pair>".
+- **Gen.G Finals hub** (alan, 2026-11-14; `lib/finals.ts`, `getFinals` in `lib/data.ts`, `components/FinalsHub.tsx`,
+  `components/FinalsLab.tsx`, `components/GengViews.tsx`, `tests/finals.test.ts`, smoke "finals:"): the Gen.G page has two
+  views, Worlds 2026 (default) and the LCK 2026 Playoffs archive (`?view=lck`), never mixed. The Worlds view is the
+  Worlds 2026 Grand Final hub (Gen.G vs Bilibili Gaming): header, Road to the Finals (each main-event series from the
+  game records, newest first, side / result / First Pick mark per game, links to Pro Drafts' draft order, the comp
+  check's identity as analysis), the Gen.G vs BLG draft preview (player matchups and pools from the recorded builds,
+  bans by and against, first rotation, blind picks and blind / response by role from the pick-order engine, repeated
+  Mid + Jungle and Bot + Support pairs, comp identities, generated "Notable differences", presence table) and the Finals
+  Draft Lab (choose champions each team has played; it only builds a Draft Room link, Gen.G as the team, BLG as confirmed
+  enemies; no analysis of its own). Observed Pro Evidence: every count has its denominator, frequency is never strength,
+  nothing scores. The page follows the records and needs no code change after the final: no final game = "Scheduled";
+  some = "n games recorded so far" (never "live": there is no live source); three wins = the result, the champion named
+  for either team (Gen.G are finalists until then), plus "The final, draft by draft" (picks, new picks, bans, new bans
+  against each team's earlier games). The preview is always counted over the main event before the final (`preFinal`),
+  so it stays the pre-final read. A final game is Gen.G vs BLG at the main event in a final stage or dated from
+  2026-11-14 (`isFinalGame`). Schedule, venue and the watch link (`FINAL_INFO`) were supplied by alan and are labelled
+  as supplied, not as Gol.gg records. No team logos (no permitted source): GenRang and wordmarks only. The Draft Room
+  shows one `.finals-notice` line linking to the hub until the result is recorded, then drops it on its own.
   **Top + Jungle** (alan, 2026-11-14; `savedTop`, `topRead`, `LANE_KEYS` in `lib/pairings.ts`): the third pairing type on
   the same explorer (Bot + Support | Mid + Jungle | Top + Jungle; `?view=pairings&lane=top-jungle&top=&jungle=`; the two
   jungle pairings share `jungle`, so the jungler carries across). Saved = the junglers on the top's saved record
