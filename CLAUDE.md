@@ -831,6 +831,15 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   both records ("Saved alternative on Vex's record · Vi's record does not list Vex"). Draft logic is `coreRead` from the
   stored kits (who starts and who follows, early priority, damage mix, frontline, power curve; no written notes yet),
   General Draft Logic, never a score. An unsaved pair offers "Compare with <saved preferred pair>".
+  **Top + Jungle** (alan, 2026-11-14; `savedTop`, `topRead`, `LANE_KEYS` in `lib/pairings.ts`): the third pairing type on
+  the same explorer (Bot + Support | Mid + Jungle | Top + Jungle; `?view=pairings&lane=top-jungle&top=&jungle=`; the two
+  jungle pairings share `jungle`, so the jungler carries across). Saved = the junglers on the top's saved record
+  (`top.json` `surrounding.jungle`, one list: "Saved pairing", no preferred / alternative; junglers keep no list of
+  tops, so a jungler anchor lists the tops whose record names it). Observed = recorded games with both, games and unique
+  teams, never saved. Draft logic is `topRead` from the stored kits (gank setup and who follows, early 2v2, tower dives,
+  wave priority, side pressure against objective control, gold, damage mix, power curve), each line naming its values;
+  never a lane matchup, win rate or ranking. `laneOf("JUNGLE")` stays the mid + jungle core: anything starting from a
+  jungler in the top pairing passes its lane. No score, order or saved record reads it.
 - **Identity-first headers** (alan, 2026-10-12, DPM.LOL as the hierarchy reference, never its branding or layout): a
   player or champion page leads with the subject, on one surface, not a card: a large portrait or champion icon, a
   large Space Grotesk name (`--fs-4xl` for a player profile, `--fs-3xl` elsewhere), team and role in medium weight

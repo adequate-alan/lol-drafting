@@ -15,7 +15,7 @@ import type { DrawerData, PairingData } from "@/lib/data";
 import { OTHER } from "@/lib/drawer";
 import { BASIS_LABEL, BASIS_TITLE, championsOf, clock, filterInsights, insightChampions, insightsView, lessonHref, lessonsOfVideo, momentUrl, statPatches } from "@/lib/draft-insights";
 import { shortDate } from "@/lib/evidence";
-import { explorerHref, LANES, type LaneKey } from "@/lib/pairings";
+import { explorerHref, LANE_KEYS, LANES, type LaneKey } from "@/lib/pairings";
 import type { Champion, DraftInsight, DraftInsights } from "@/lib/schema";
 
 const ROLE_WORD: Record<string, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "ADC", SUPPORT: "Support" };
@@ -39,9 +39,10 @@ export function DraftInsightsView({ data, names, drawerData, pairing }: { data: 
 
   const view = insightsView(params);
   // Pairing explorer state, all shareable: the bot lane is ?bot=&support=, the mid + jungle core ?lane=mid-jungle&mid=&jungle=,
-  // each with &from=&compare= (comma list). Each pairing keeps its own slots in the URL while the other is shown.
-  const lane: LaneKey = get("lane") === "mid-jungle" ? "mid-jungle" : "bot";
-  const slotA = LANES[lane].a.toLowerCase(), slotB = LANES[lane].b.toLowerCase();
+  // top + jungle ?lane=top-jungle&top=&jungle=, each with &from=&compare= (comma list). Each pairing keeps its own slots in
+  // the URL while another is shown; the two jungle pairings share the jungler, so it carries from one to the other.
+  const lane: LaneKey = LANE_KEYS.find((l) => l === get("lane")) ?? "bot";
+  const [slotA, slotB] = slotsOf(lane);
   const fromParam = get("from");
   const pairState: PairState = {
     a: get(slotA), b: get(slotB), from: fromParam === LANES[lane].a || fromParam === LANES[lane].b ? fromParam : undefined,
@@ -71,8 +72,8 @@ export function DraftInsightsView({ data, names, drawerData, pairing }: { data: 
   const byId = useMemo(() => new Map(drawerData.champions.map((c) => [c.id, c])), [drawerData.champions]);
   // Lesson → Pairings: a champion opens as the anchor of its lane, a named duo opens as the pair. In place, as a history step.
   const explore = (lane: LaneKey, a?: string, b?: string, from?: string) =>
-    update({ view: "pairings", lane: lane === "bot" ? undefined : lane, bot: undefined, support: undefined, mid: undefined, jungle: undefined,
-      [LANES[lane].a.toLowerCase()]: a, [LANES[lane].b.toLowerCase()]: b, from, compare: undefined }, true);
+    update({ view: "pairings", lane: lane === "bot" ? undefined : lane, bot: undefined, support: undefined, mid: undefined, jungle: undefined, top: undefined,
+      [slotsOf(lane)[0]]: a, [slotsOf(lane)[1]]: b, from, compare: undefined }, true);
   const openLesson = (id: string) => update({ view: "lessons", lesson: id, category: undefined, champion: undefined, video: undefined, q: undefined }, true);
 
   const videoList = Object.entries(data.videos).sort(([, a], [, b]) => b.uploaded.localeCompare(a.uploaded));
@@ -109,9 +110,10 @@ export function DraftInsightsView({ data, names, drawerData, pairing }: { data: 
             <span className="seg ins-lane" role="group" aria-label="Pairing type">
               <button className={lane === "bot" ? "active" : undefined} aria-pressed={lane === "bot"} onClick={() => update({ lane: undefined, from: undefined, compare: undefined })}>Bot + Support</button>
               <button className={lane === "mid-jungle" ? "active" : undefined} aria-pressed={lane === "mid-jungle"} onClick={() => update({ lane: "mid-jungle", from: undefined, compare: undefined })}>Mid + Jungle</button>
+              <button className={lane === "top-jungle" ? "active" : undefined} aria-pressed={lane === "top-jungle"} onClick={() => update({ lane: "top-jungle", from: undefined, compare: undefined })}>Top + Jungle</button>
             </span>
           </div>
-          <PairingExplorer key={lane} lane={lane} data={pairing} champions={drawerData.champions} botPairings={drawerData.botPairings} midJungle={drawerData.midJungle} proposed={drawerData.proposed} names={names}
+          <PairingExplorer key={lane} lane={lane} data={pairing} champions={drawerData.champions} botPairings={drawerData.botPairings} midJungle={drawerData.midJungle} topPicks={drawerData.topPicks} proposed={drawerData.proposed} names={names}
             state={pairState} onChange={setPair} onLesson={openLesson} context="insights" />
         </div>
       ) : view === "videos" ? (
@@ -228,16 +230,21 @@ function VideoIntro({ id, data, shown, creator }: { id: string; data: DraftInsig
 
 type Explore = (lane: LaneKey, a?: string, b?: string, from?: string) => void;
 
-/** The lane a champion anchors in the Pairing Explorer, from its main role; none for a top laner. */
-function anchorOf(c?: Champion): { lane: LaneKey; role: "BOT" | "SUPPORT" | "MID" | "JUNGLE" } | undefined {
+/** The URL parameters of a pairing's two slots. */
+const slotsOf = (lane: LaneKey): [string, string] => [LANES[lane].a.toLowerCase(), LANES[lane].b.toLowerCase()];
+
+/** The lane a champion anchors in the Pairing Explorer, from its main role (a jungler opens the mid + jungle core,
+ *  unless the lesson is about the top lane). */
+function anchorOf(c?: Champion, prefer?: LaneKey): { lane: LaneKey; role: "BOT" | "SUPPORT" | "MID" | "JUNGLE" | "TOP" } | undefined {
   const r = c && !c.rosterOnly ? c.roles[0] : undefined;
-  return r === "BOT" || r === "SUPPORT" ? { lane: "bot", role: r } : r === "MID" || r === "JUNGLE" ? { lane: "mid-jungle", role: r } : undefined;
+  return r === "BOT" || r === "SUPPORT" ? { lane: "bot", role: r } : r === "MID" ? { lane: "mid-jungle", role: r }
+    : r === "JUNGLE" ? { lane: prefer === "top-jungle" ? "top-jungle" : "mid-jungle", role: r } : r === "TOP" ? { lane: "top-jungle", role: r } : undefined;
 }
 /** Two champions as a pair of one lane ([first slot, second slot]), when their roles make one. */
 function duoOf(ids: string[], byId: Map<string, Champion>, prefer: LaneKey): { lane: LaneKey; a: string; b: string } | undefined {
   if (ids.length !== 2) return undefined;
   const plays = (id: string, r: string) => !!byId.get(id)?.roles.includes(r as Champion["roles"][number]);
-  for (const lane of prefer === "bot" ? (["bot", "mid-jungle"] as const) : (["mid-jungle", "bot"] as const)) {
+  for (const lane of [prefer, ...LANE_KEYS.filter((l) => l !== prefer)]) {
     const { a: RA, b: RB } = LANES[lane];
     if (plays(ids[0], RA) && plays(ids[1], RB)) return { lane, a: ids[0], b: ids[1] };
     if (plays(ids[1], RA) && plays(ids[0], RB)) return { lane, a: ids[1], b: ids[0] };
@@ -253,8 +260,8 @@ function Lesson({ i, data, names, byId, explore, open, topic }: { i: DraftInsigh
   const [expanded, setExpanded] = useState(open);
   useEffect(() => { if (open) setExpanded(true); }, [open]);
   const champs = championsOf(i);
-  const anchors = champs.filter((c) => anchorOf(byId.get(c))).slice(0, 6);
-  const prefer: LaneKey = i.category === "bot-duo" || i.id === "adc-archetypes" || i.id === "support-types" ? "bot" : "mid-jungle";
+  const prefer: LaneKey = i.category === "bot-duo" || i.id === "adc-archetypes" || i.id === "support-types" ? "bot" : i.id === "top-classes" ? "top-jungle" : "mid-jungle";
+  const anchors = champs.filter((c) => anchorOf(byId.get(c), prefer)).slice(0, 6);
   return (
     <article className={`pn-entry ins-entry${open ? " pn-target" : ""}${expanded ? " open" : ""}`} id={`lesson-${i.id}`}>
       <button type="button" className="ins-row" aria-expanded={expanded} aria-controls={`lesson-body-${i.id}`} onClick={() => setExpanded((x) => !x)}>
@@ -327,7 +334,7 @@ function Lesson({ i, data, names, byId, explore, open, topic }: { i: DraftInsigh
         <p className="ins-try">
           <span className="label">Try it in Pairings</span>
           {anchors.map((c) => {
-            const at = anchorOf(byId.get(c))!;
+            const at = anchorOf(byId.get(c), prefer)!;
             const [a, b] = at.role === LANES[at.lane].a ? [c, undefined] : [undefined, c];
             return (
               <Link key={c} className="ins-try-champ" href={explorerHref(a, b, undefined, at.lane)} onClick={(e) => { e.preventDefault(); explore(at.lane, a, b, at.role); }} title={`Explore partners for ${names[c] ?? c}`}>
