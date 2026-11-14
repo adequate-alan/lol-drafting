@@ -1579,11 +1579,31 @@ for (const path of ["/", "/pool/", "/meta/", "/pro-drafts/", "/pro-builds/", "/c
 await open("/geng/");
 check("GenRang on the Gen.G page", (await page.locator(".brand-band img.genrang").count()) === 1 && await mascotOk(), "");
 {
-  // Worlds 2026 sits in its own section above the LCK archive (alan, 2026-11-05).
-  const rows = await page.locator(".geng-worlds tbody tr").count();
-  const heads = await page.$$eval("main .section-header h2", (hs) => hs.map((h) => h.textContent ?? ""));
-  check("Gen.G: Worlds 2026 games in their own section, before the labelled LCK archive", rows >= 8 && heads.indexOf("Worlds 2026") >= 0
-    && heads.indexOf("Worlds 2026") < heads.indexOf("LCK 2026 Playoffs · archive"), `${rows} rows · ${heads.join(" | ")}`);
+  // Finals hub (alan, 2026-11-14): Worlds 2026 is the default view with the final's header, Gen.G's road from the
+  // records, the comparison and the Draft Lab; the LCK archive is its own view. Relationships only: the data changes.
+  await page.waitForSelector(".finals-head");
+  const head = await page.locator(".finals-head").innerText();
+  check("finals: the header names the Grand Final and both teams, and never calls the match live", /Grand Final/.test(head) && /Gen\.G/.test(head) && /Bilibili Gaming/.test(head) && !/\blive\b/i.test(head), head.slice(0, 160));
+  check("finals: champions are named only with a recorded result", /champions/.test(head) === /final result/.test(head), head.slice(0, 160));
+  const rows = await page.locator("#road > .table-wrap tbody tr:not(.road-head)").count();
+  const series = await page.locator("#road > .table-wrap .road-series:not(.upcoming)").count();
+  check("finals: Road to the Finals lists Gen.G's recorded series and games, each game linking to Pro Drafts", rows >= 11 && series >= 5
+    && (await page.locator("#road > .table-wrap .road-game a[href*='pro-drafts']").count()) === rows, `${series} series · ${rows} games`);
+  check("finals: five player matchups, each count with its sample", (await page.locator(".matchups .mu-row").count()) === 5
+    && (await page.$$eval(".matchups .count", (xs) => xs.length > 20 && xs.every((x) => /^\d+\/\d+$/.test(x.textContent ?? "")))), "");
+  check("finals: the LCK archive is a separate, hidden view until chosen", await page.locator("#geng-view-lck").isHidden() && await page.locator("#geng-view-worlds").isVisible(), "");
+  await page.locator(".lab-side").first().locator(".lab-pick").first().click();
+  await page.locator(".lab-side").nth(1).locator(".lab-pick").first().click();
+  const lab = await page.locator(".lab-actions a").getAttribute("href");
+  check("finals: the Draft Lab builds a Draft Room link from the chosen champions, Gen.G as the team and BLG as the enemy", /[?&]top=[a-z-]+/.test(lab ?? "") && /vs=top:[a-z-]+/.test(lab ?? ""), lab ?? "");
+  await page.getByRole("tab", { name: /LCK 2026 Playoffs/ }).click();
+  await page.waitForTimeout(200);
+  const heads = await page.$$eval("#geng-view-lck .section-header h2", (hs) => hs.map((h) => h.textContent ?? ""));
+  check("Gen.G: the LCK archive keeps its patterns and drafts in its own view", page.url().includes("view=lck") && await page.locator("#geng-view-worlds").isHidden()
+    && heads.includes("LCK 2026 Playoffs · archive") && (await page.locator("#geng-view-lck .pattern").count()) > 5, heads.join(" | "));
+  await open("/");
+  const notice = await page.locator(".finals-notice").count();
+  check("finals: the Draft Room points to the hub only while no result is recorded", notice === (/final result/.test(head) ? 0 : 1), `${notice}`);
 }
 // Review screenshots: desktop and mobile, light and dark
 if (shots) {

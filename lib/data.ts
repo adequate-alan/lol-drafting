@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { z } from "zod";
 import { buildLibrary, type Library } from "./comp-library";
-import { lineupJobsReader, lineupReader } from "./comp-discovery";
+import { IDENTITY_LABEL, lineupJobsReader, lineupReader } from "./comp-discovery";
 import { withProAlternatives } from "./pro-alternatives";
 import { golggGameId, newestGameFirst, withGameSides } from "./draft-side";
 import { draftsFromGames, freshness, resultsFromGames, sourcesFromGames } from "./pro-games";
@@ -25,6 +25,8 @@ import { matchupBook } from "./matchup-kits";
 import type { MatchupBook } from "./matchup-read";
 import { bucket, patchesOf } from "./pro-priority";
 import type { RoleBook } from "./enemy-roles";
+import { BLG, finalChanges, finalRead, GENG, isFinalGame, matchups as playerMatchups, preFinal, presence, repeatsInSeries, seriesOf, tendencies } from "./finals";
+import { patchLabel } from "./patch";
 
 // Data lives in /data and is read at build time; the static export embeds what each page renders.
 type FileName = keyof typeof Files;
@@ -275,3 +277,31 @@ export function getLaneDraft(role: LaneRole): TopDraftBundle {
   return bundle;
 }
 export const getTopDraft = () => getLaneDraft("TOP");
+
+// Gen.G's Worlds 2026 run and the Grand Final against Bilibili Gaming (alan, 2026-11-14; lib/finals.ts). Observed Pro
+// Evidence from the recorded games; the comp read beside each lineup is the comp check's (General Draft Logic).
+export function getFinals() {
+  const games = getProGames().games;
+  const pre = preFinal(games);
+  // Roles are read from the games before the final, so the pre-final read stays what it was once the final is recorded.
+  const book = roleBook(getChampions(), getBuildGameRecords().filter((g) => !isFinalGame(g)));
+  const selections = LANE_ROLES.flatMap((r) => laneSelections(pre, book, r));
+  const players = getGamePlayers();
+  const read = lineupReader(getChampions());
+  const identity = (picks: Record<Role, string>) => { const r = read(picks); return r.ok ? { primary: IDENTITY_LABEL[r.read.primary], secondary: r.read.secondary ? IDENTITY_LABEL[r.read.secondary] : null, winCondition: r.read.winCondition } : null; };
+  const team = (name: string) => {
+    const series = seriesOf(name, games);
+    const reads = Object.fromEntries(series.flatMap((s) => s.games.map((g) => [g.id, identity(g.picks)])));
+    return { name, series, reads, tendencies: tendencies(name, pre, selections) };
+  };
+  const final = finalRead(games);
+  const geng = team(GENG), blg = team(BLG);
+  const finalGames = games.filter(isFinalGame);
+  return {
+    final, geng, blg, matchups: playerMatchups(pre, players), presence: presence(pre), repeats: repeatsInSeries(pre),
+    patches: [...new Set(pre.map((g) => patchLabel(g.patch)))],
+    changes: final.games.length ? { geng: finalChanges(GENG, finalGames, geng.tendencies), blg: finalChanges(BLG, finalGames, blg.tendencies) } : null,
+    finalPlayers: final.games.length ? playerMatchups(finalGames, players) : null,
+  };
+}
+export type FinalsData = ReturnType<typeof getFinals>;
