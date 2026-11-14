@@ -1,0 +1,22 @@
+# One-off (alan, 2026-11-14): fetch candidate team logos on a runner for review. Removed before the branch is merged.
+name: Fetch team logo candidates
+on:
+  push:
+    branches: [claude/project-thread-d8635q]
+    paths: [scripts/team-logos/fetch.mjs, .github/workflows/fetch-team-logos.yml]
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scripts/team-logos/fetch.mjs
+      - run: |
+          git config user.name "adequate-alan"
+          git config user.email "54249725+adequate-alan@users.noreply.github.com"
+          git add assets/teams/candidates
+          git commit -m "Team logo candidates for review (one-off fetch)" || echo "nothing to commit"
+          git push
