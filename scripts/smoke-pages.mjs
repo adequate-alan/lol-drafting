@@ -1621,6 +1621,8 @@ check("GenRang on the Gen.G page", (await page.locator(".brand-band img.genrang"
   await page.waitForSelector(".finals-head");
   const head = await page.locator(".finals-head").innerText();
   check("finals: the header names the Grand Final and both teams, and never calls the match live", /Grand Final/.test(head) && /Gen\.G/.test(head) && /Bilibili Gaming/.test(head) && !/\blive\b/i.test(head), head.slice(0, 160));
+  const logos = await page.locator(".finals-head .team-logo img").evaluateAll((imgs) => imgs.map((i) => ({ alt: i.alt, ok: i.complete && i.naturalWidth > 0, w: i.width, h: i.height })));
+  check("finals: both team logos load in the header at a fixed size", logos.length === 2 && logos.every((l) => l.ok && l.w > 0 && l.h > 0) && /Gen\.G/.test(logos[0]?.alt ?? "") && /Bilibili/.test(logos[1]?.alt ?? ""), JSON.stringify(logos));
   check("finals: champions are named only with a recorded result", /champions/.test(head) === /final result/.test(head), head.slice(0, 160));
   const rows = await page.locator("#road > .table-wrap tbody tr:not(.road-head)").count();
   const series = await page.locator("#road > .table-wrap .road-series:not(.upcoming)").count();

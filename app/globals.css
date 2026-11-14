@@ -43,6 +43,7 @@
   --pad-card: var(--s5);      /* inside cards and panels */
 
   /* Shape */
+  --team-logo: 56px;
   --r-sm: 2px; --r: 2px; --r-lg: 3px;
 
   /* Sizes */
@@ -2369,6 +2370,8 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .finals-kicker { margin: 0; color: var(--accent-text); font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--w-strong); }
 .finals-title { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s3) var(--s6); margin: 0; font-family: var(--font-display); font-size: var(--fs-3xl); font-weight: var(--w-title); letter-spacing: -.01em; line-height: 1.1; }
 .finals-team { display: inline-flex; align-items: center; gap: var(--s4); }
+.team-logo { flex: none; display: inline-grid; place-items: center; width: var(--team-logo); height: var(--team-logo); background: var(--ivory); border: 1px solid var(--border); border-radius: var(--r-lg); }
+.team-logo img { display: block; user-select: none; }
 .finals-team.won { color: var(--accent-text); }
 .finals-vs { color: var(--text-faint); font-size: var(--fs-xl); font-weight: var(--w-control); }
 .finals-score { font-family: var(--font-mono); font-size: var(--fs-2xl); }
