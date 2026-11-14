@@ -6,20 +6,25 @@ import { LANE_VERDICT_LABEL, type LaneMatchup } from "@/lib/counters";
 import { DPM_MIN_GAMES } from "@/lib/counters";
 import type { CounterFreshness } from "@/lib/counter-freshness";
 import { patchLabel } from "@/lib/patch";
+import Link from "next/link";
+import { explorerHref } from "@/lib/pairings";
+import { topMatchupsHref } from "@/lib/top-matchups";
 import { Popover } from "./Popover";
 
 const ROLE_SHORT = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "Bot", SUPPORT: "Support" } as const;
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
 
-export function LaneMatchups({ reads, names, fresh, unconfirmed = {} }: {
+export function LaneMatchups({ reads, names, fresh, unconfirmed = {}, top }: {
   reads: LaneMatchup[]; names: Record<string, string>; fresh?: CounterFreshness;
+  /** My locked top laner (alan, 2026-11-14): links to its lane matchups and its junglers, with or without an enemy top. */
+  top?: { id: string; jungle?: string };
   unconfirmed?: Partial<Record<LaneMatchup["role"], boolean>>; // the enemy champion was placed automatically: a likely opponent, not a confirmed one
 }) {
-  if (!reads.length) return null;
+  if (!reads.length && !top) return null;
   const n = (id: string) => names[id] ?? id;
   return (
     <div className="lane-reads" role="group" aria-label="Lane matchups from DPM.LOL">
-      <span className="lane-reads-k">Lane matchups</span>
+      {reads.length > 0 && <span className="lane-reads-k">Lane matchups</span>}
       {reads.map((m) => (
         <Popover key={m.role} label={`${ROLE_SHORT[m.role]} matchup: ${n(m.mine)} vs ${n(m.theirs)}`} triggerClass={`lane-read ${m.verdict}`} className="ce"
           trigger={<><span className="lane-read-role">{ROLE_SHORT[m.role]}</span> {LANE_VERDICT_LABEL[m.verdict]}{m.winRate != null && m.verdict !== "no-data" && m.verdict !== "insufficient" ? <span className="mono"> {pct(m.winRate)}</span> : null}{m.stale ? " · older patch" : ""}{unconfirmed[m.role] ? <span className="faint"> · likely opponent</span> : null}</>}>
@@ -36,12 +41,21 @@ export function LaneMatchups({ reads, names, fresh, unconfirmed = {} }: {
                   {m.stale && <><dt>Older patch</dt><dd>Collected on <span className="mono">{patchLabel(m.patch!)}</span>{fresh?.newest ? <> (current <span className="mono">{patchLabel(fresh.newest)}</span>)</> : ""}: may no longer reflect current balance.</dd></>}
                 </>}
                 {m.note && <><dt>Limits</dt><dd>{m.note}</dd></>}
+                {m.role === "TOP" && <><dt>Read more</dt><dd><Link href={topMatchupsHref(m.mine, m.theirs)}>Kit read and what a jungler changes</Link>{unconfirmed.TOP ? `, if ${n(m.theirs)} is their top` : ""}</dd></>}
               </dl>
               <footer className="pop-foot"><span>Ranked matchup data only, apart from Synergy and Comp Check; never part of any score or order. 48–52% reads as even.</span></footer>
             </div>
           )}
         </Popover>
       ))}
+      {top && (
+        <span className="lane-reads-more">
+          <span className="lane-read-role">{n(top.id)}</span>{" "}
+          <Link href={topMatchupsHref(top.id)} title={`${n(top.id)}'s favourable and difficult lane opponents, from ranked matchup data and the kits`}>lane matchups</Link>
+          {" · "}
+          <Link href={explorerHref(top.id, top.jungle, undefined, "top-jungle")} title={`Junglers for ${n(top.id)}: saved pairings, pro pairs and the gank plan with each. Opens Draft Insights; your draft stays as it is.`}>jungle partners</Link>
+        </span>
+      )}
     </div>
   );
 }

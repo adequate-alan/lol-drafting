@@ -150,7 +150,7 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
               const active = isSelected(x);
               return (
                 <li key={x.id} className={x.proposed ? "proposed" : undefined}>
-                  <Link href={topScope ? topScope.href({ champ: x.id, partner: undefined, compare: undefined }) : `/synergies/${tab}?champ=${x.id}`} className={active ? "active" : undefined} aria-current={active ? "page" : undefined}>
+                  <Link href={topScope ? topScope.href({ champ: x.id, partner: undefined, compare: undefined, vs: undefined }) : `/synergies/${tab}?champ=${x.id}`} className={active ? "active" : undefined} aria-current={active ? "page" : undefined}>
                     <ChampIcon id={x.id} name={x.label} role={TAB_ROLE[tab]} size="md" />
                     <span className="rail-text"><span className="rail-name">{x.label}</span><span className="rail-sub">{x.sub}</span></span>
                   </Link>
@@ -167,12 +167,13 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
               {topScope && laneDraft ? (
                 <TopUsageReport id={selectedId} row={topScope.rows.find((r) => r.champion === selectedId)} prio={topScope.prio[selectedId]} prioLabel={topScope.prioLabel} bundle={laneDraft} names={names}
                   view={topScope.view} setView={(v) => replaceQuery(topScope.href({ view: v === "overview" ? undefined : v }))}
-                  partners={pairing && selectedRole && selectedRole !== "TOP" ? (
-                    // Bot / Support: the bot lane. Mid / Jungle: the mid + jungle core. The rail champion is the anchor.
-                    <PairingExplorer data={pairing} champions={drawerData.champions} botPairings={drawerData.botPairings} midJungle={drawerData.midJungle} proposed={drawerData.proposed} names={names}
+                  vs={params.get("vs") || undefined} setVs={(e) => replaceQuery(topScope.href({ vs: e }))} lessons={pairing?.lessons}
+                  partners={pairing && selectedRole ? (
+                    // Bot / Support: the bot lane. Mid / Jungle: the mid + jungle core. Top: its junglers. The rail champion is the anchor.
+                    <PairingExplorer data={pairing} champions={drawerData.champions} botPairings={drawerData.botPairings} midJungle={drawerData.midJungle} topPicks={drawerData.topPicks} proposed={drawerData.proposed} names={names}
                       fixed={{ id: selectedId, role: selectedRole }} context="synergies"
-                      state={{ [selectedRole === "BOT" || selectedRole === "MID" ? "b" : "a"]: params.get("partner") || undefined, compare: params.get("compare")?.split(",").filter(Boolean) }}
-                      onChange={(s) => replaceQuery(topScope.href({ partner: (selectedRole === "BOT" || selectedRole === "MID" ? s.b : s.a) || undefined, compare: s.compare?.length ? s.compare.join(",") : undefined }))} />
+                      state={{ [selectedRole === "BOT" || selectedRole === "MID" || selectedRole === "TOP" ? "b" : "a"]: params.get("partner") || undefined, compare: params.get("compare")?.split(",").filter(Boolean) }}
+                      onChange={(s) => replaceQuery(topScope.href({ partner: (selectedRole === "BOT" || selectedRole === "MID" || selectedRole === "TOP" ? s.b : s.a) || undefined, compare: s.compare?.length ? s.compare.join(",") : undefined }))} />
                   ) : undefined}
                   scopeLabel={topScope.label} scope={{ patch: topScope.patch, events: topScope.event ? [topScope.event] : undefined }}
                   saved={selected.kind === "top" ? { grade: selected.record.blindGrade, tier: tierOf(pool, selectedId), gives: selected.record.logic.gives, avoid: selected.record.logic.avoid } : undefined}

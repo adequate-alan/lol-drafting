@@ -440,6 +440,8 @@ th .role-tag, .seg .role-tag { font-size: inherit; color: inherit; font-weight: 
 .layer.clash .layer-label { color: var(--clash); }
 .layer.pro .layer-label { color: var(--pro); }
 .layer.logic .layer-label { color: var(--logic); }
+.layer.counter::before { background: var(--counter-line); }
+.layer.counter .layer-label { color: var(--counter); }
 .detail-label { margin: var(--s4) 0 var(--s2); font-weight: var(--w-control); }
 .detail-label:first-child { margin-top: 0; }
 .kv { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: var(--s3) var(--s4); align-items: center; margin: 0; }
@@ -1267,6 +1269,8 @@ button.link:focus-visible { box-shadow: var(--focus-ring); border-radius: var(--
 .board { position: relative; z-index: 7; display: grid; gap: var(--s3); margin-bottom: var(--s6); }
 /* Lane matchups under the board (DPM.LOL evidence, counter styling only on the lane that favors them). */
 .lane-reads { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s1) var(--s4); margin: calc(-1 * var(--s4)) 0 var(--s5); font-size: var(--fs-xs); color: var(--text-muted); }
+.lane-reads-more a { color: var(--text-muted); text-decoration: underline; text-decoration-color: var(--border-strong); text-underline-offset: 2px; }
+.lane-reads-more a:hover { color: var(--text); }
 .lane-reads-k { font-family: var(--font-display); font-weight: var(--w-control); color: var(--text); }
 .lane-read { font-weight: var(--w-control); }
 .lane-read-role { color: var(--text); }
@@ -2712,6 +2716,35 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .px-group { min-width: 0; padding-top: 0; padding-bottom: 0; }
 .px-group .layer-label .count { color: var(--text-faint); font-weight: 400; }
 .px-note { margin: 0 0 var(--s2); }
+/* Top-lane matchups (Synergies Top, Matchups tab): opponents as chips by what the ranked data says, one opened in place. */
+.scout .tm .tm-title { color: var(--counter); }
+.tm-blind { margin: 0 0 var(--s4); max-width: 90ch; }
+.tm-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4) var(--s6); margin-bottom: var(--s4); }
+.tm-h { margin: 0 0 var(--s2); }
+.tm-h.favourable { color: var(--accent-text); }
+.tm-h.difficult { color: var(--counter); }
+.tm-chips { display: flex; flex-wrap: wrap; gap: var(--s1); margin: 0; padding: 0; list-style: none; }
+.tm-chip { display: inline-flex; align-items: center; gap: var(--s2); min-height: 28px; padding: 2px var(--s3) 2px var(--s1); font: inherit; font-size: var(--fs-xs); color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); cursor: pointer; transition: border-color var(--t-fast), background var(--t-fast); }
+.tm-chip:hover { border-color: var(--border-strong); }
+.tm-chip.open { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.tm-chip .mono { font-size: var(--fs-2xs); color: var(--text-muted); }
+.tm-chip.favourable .mono { color: var(--accent-text); }
+.tm-chip.difficult .mono { color: var(--counter); }
+.tm .disclosure { margin-bottom: var(--s3); }
+.tm-detail { margin-top: var(--s4); padding: 0; scroll-margin-top: 72px; }
+.tm-detail-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s4); padding: var(--s4) var(--pad-card); border-bottom: 1px solid var(--border); }
+.tm-detail-id { flex: 1; min-width: 160px; }
+.tm-detail-id h4 { margin: 0; font-family: var(--font-display); font-size: var(--fs-lg); }
+.tm-verdict { margin: 2px 0 0; font-size: var(--fs-xs); font-weight: var(--w-strong); color: var(--text-muted); }
+.tm-verdict.favourable { color: var(--accent-text); }
+.tm-verdict.difficult { color: var(--counter); }
+.tm-detail .layer + .layer { border-top: 1px solid var(--border); }
+.tm-detail .layer p { margin: 0 0 var(--s2); }
+.tm-detail .layer p:last-child { margin-bottom: 0; }
+.tm-curve { margin-top: var(--s3); }
+@media (max-width: 620px) { .tm-cols { grid-template-columns: minmax(0, 1fr); } }
+@media (pointer: coarse) { .tm-chip { min-height: 36px; } }
+
 .px-cards { display: grid; gap: var(--s1); margin: 0; padding: 0; list-style: none; }
 .px-card { min-width: 0; display: flex; align-items: stretch; gap: var(--s1); border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); transition: border-color var(--t-fast); }
 .px-card:hover { border-color: var(--border-strong); }

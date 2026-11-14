@@ -1,3 +1,5 @@
+import { factOf } from "./matchup-read";
+import type { LaneData } from "./top-matchups";
 import "server-only";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -231,6 +233,25 @@ export const jungleOnlyIds = () => {
 // players, Pro Drafts ids, per-patch priority and the DPM matchup rows they need. Observed Pro Evidence only.
 const laneDrafts = new Map<LaneRole, TopDraftBundle>();
 /** Observed draft usage for one lane (alan, 2026-10-13): Top, Mid, and Bot / Support with their duos. */
+/** Every stored DPM.LOL top row, compact, with the kit facts of the champions in them (lib/top-matchups.ts). The rows are
+ *  the Counter data as stored: nothing is computed, and one collection (patch, bracket, date) is expected. */
+function topLanes(): LaneData {
+  const rows = getCounters().dpm.filter((r) => r.role === "TOP");
+  const by: LaneData["rows"] = {}, urls: LaneData["urls"] = {};
+  for (const r of rows) {
+    (by[r.champion] ??= []).push([r.enemy, Math.round(r.winRate * 10000), r.games, r.shown ? 1 : 0]);
+    urls[r.champion] = r.url;
+  }
+  const collections = new Set(rows.map((r) => `${r.patch}|${r.rank}|${r.updated}`));
+  if (collections.size > 1) throw new Error(`top DPM rows come from ${collections.size} collections; the lane explorer shows one`);
+  const book = getMatchupBook();
+  const ids = new Set(rows.flatMap((r) => [r.champion, r.enemy]));
+  for (const c of getChampions()) if (c.roles.includes("TOP")) ids.add(c.id);
+  const facts: LaneData["book"] = {};
+  for (const id of ids) { const f = factOf(book, id, "TOP"); if (f) facts[id] = { TOP: f }; }
+  return { rows: by, urls, patch: rows[0]?.patch ?? "", rank: rows[0]?.rank ?? "", updated: rows[0]?.updated ?? "", newest: getCounterFreshness().newest ?? undefined, book: facts };
+}
+
 export function getLaneDraft(role: LaneRole): TopDraftBundle {
   const hit = laneDrafts.get(role);
   if (hit) return hit;
@@ -272,7 +293,7 @@ export function getLaneDraft(role: LaneRole): TopDraftBundle {
       return [`${s.game}:${s.side}`, boardTraits(visible, kits)];
     }));
   }
-  const bundle: TopDraftBundle = { role, selections, games: Object.fromEntries(records.map((g) => [g.id, brief(g)])), players, drafts, priority, dpm, events, blind, ...(duos ? { duos } : {}), ...(context ? { context } : {}) };
+  const bundle: TopDraftBundle = { role, selections, games: Object.fromEntries(records.map((g) => [g.id, brief(g)])), players, drafts, priority, dpm, events, blind, ...(duos ? { duos } : {}), ...(context ? { context } : {}), ...(role === "TOP" ? { lanes: topLanes() } : {}) };
   laneDrafts.set(role, bundle);
   return bundle;
 }
