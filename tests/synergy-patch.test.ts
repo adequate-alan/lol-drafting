@@ -23,7 +23,7 @@ describe("synergies patch scope", () => {
 
   it("each lane has its own report tabs; Duo drafting only on Bot and Support", () => {
     const ids = (r: Parameters<typeof laneViews>[0]) => laneViews(r).map(([v]) => v);
-    expect(ids("TOP")).toEqual(["overview", "usage", "matchups", "synergies", "pro"]);
+    expect(ids("TOP")).toEqual(["overview", "usage", "matchups", "partners", "synergies", "pro"]); // Junglers: the top + jungle Pairing Explorer (alan, 2026-11-14)
     expect(ids("MID")).toEqual(["overview", "partners", "usage", "matchups", "pro"]); // Partners: the mid + jungle Pairing Explorer (alan, 2026-11-14)
     expect(ids("BOT")).toContain("duo");
     expect(ids("SUPPORT")).toContain("duo");

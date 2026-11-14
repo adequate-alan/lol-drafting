@@ -22,6 +22,7 @@ import {
   type DuoRead, type DuoRole, type LaneKey, type PairEvidence, type PairLesson, type PartnerOption, type SavedRecords,
 } from "@/lib/pairings";
 import { stageLabel } from "@/lib/pro-games";
+import { topMatchupsHref } from "@/lib/top-matchups";
 import { CONFIDENCE_LABEL, proposedLink } from "@/lib/proposed";
 import type { BotPairing, Champion, MidJunglePairing, PairingNote, ProposedRecord, TopPick } from "@/lib/schema";
 import type { PairingData } from "@/lib/data";
@@ -455,7 +456,8 @@ function PairDetail({ a, b, lane, names, data, saved: records, proposed, read, n
         </div>
         <span className="px-actions">
           <Link className="btn sm primary" href="/" onClick={() => usePair({ [RA]: a, [RB]: b })} title={`Puts ${nm(a)} ${ROLE_AT[RA]} and ${nm(b)} ${ROLE_AT[RB]} on your current draft; every other pick stays. Nothing is locked until you open the room.`}>Use in Draft Room</Link>
-          {context !== "synergies" && <Link className="btn sm" href={lane === "top-jungle" ? synergiesHref(a, RA) + "&view=synergies" : synergiesHref(a, RA) + `&view=partners&partner=${b}`}>Open in Synergies</Link>}
+          {lane === "top-jungle" && <Link className="btn sm" href={topMatchupsHref(a)} title={`${nm(a)}'s lane opponents: ranked matchup data, kit read and what a jungler changes`}>Lane matchups</Link>}
+          {context !== "synergies" && <Link className="btn sm" href={synergiesHref(a, RA) + `&view=partners&partner=${b}`}>Open in Synergies</Link>}
         </span>
       </header>
 

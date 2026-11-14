@@ -113,7 +113,9 @@ describe("a learning layer only", () => {
     const allowed = new Set(["lib/draft-insights.ts", "lib/data.ts", "lib/schema.ts", "components/views/DraftInsightsView.tsx",
       "app/(app)/insights/page.tsx", "components/CompCheck.tsx", "components/EvidenceCards.tsx",
       // The Pairing Explorer (alan, 2026-11-13) shows a pair's lessons as text with their moments and links, labelled solo queue.
-      "lib/pairings.ts", "components/PairingExplorer.tsx"]);
+      "lib/pairings.ts", "components/PairingExplorer.tsx",
+      // Top-lane matchups (alan, 2026-11-14): the top class lesson named beside a matchup, a label and a link only.
+      "components/TopMatchups.tsx"]);
     const walk = (dir: string): string[] => readdirSync(join(process.cwd(), dir), { withFileTypes: true })
       .flatMap((e) => e.isDirectory() ? walk(`${dir}/${e.name}`) : /\.tsx?$/.test(e.name) ? [`${dir}/${e.name}`] : []);
     const users = ["lib", "components", "app"].flatMap(walk)

@@ -15,6 +15,8 @@ import { scopeKey, scopeLabel } from "@/lib/tournament-scope";
 import { buildsHref } from "@/lib/pro-builds";
 import { DRAFT_LABEL_MIN, orderText } from "@/lib/pro-priority";
 import { BoardContext, ContextView, MatesView } from "./JungleDraft";
+import { TopMatchups } from "./TopMatchups";
+import type { LessonBook } from "@/lib/pairings";
 import type { Role } from "@/lib/schema";
 import type { BlindLine } from "@/lib/top-blind";
 import {
@@ -24,7 +26,7 @@ import {
 
 type Names = Record<string, string>;
 export type TopView = "overview" | "partners" | "usage" | "duo" | "mates" | "matchups" | "synergies" | "pro";
-export const TOP_VIEWS: [TopView, string][] = [["overview", "Overview"], ["usage", "Draft usage"], ["matchups", "Matchups"], ["synergies", "Synergies"], ["pro", "Pro evidence"]];
+export const TOP_VIEWS: [TopView, string][] = [["overview", "Overview"], ["usage", "Draft usage"], ["matchups", "Matchups"], ["partners", "Junglers"], ["synergies", "Synergies"], ["pro", "Pro evidence"]];
 /** Report tabs per lane. Off Top, the saved partners sit on Overview (they are that lane's saved record), so there is no
  *  separate Synergies tab; Bot and Support add Duo drafting, Jungle adds Mid/Jungle. */
 export const laneViews = (role: LaneRole): [TopView, string][] => role === "TOP" ? TOP_VIEWS
@@ -207,12 +209,13 @@ export function GameRows({ list, names, bundle, open, setOpen, pair, opponent = 
 
 // ---------- the report ----------
 
-export function TopUsageReport({ id, row, prio, prioLabel, bundle, names, view, setView, saved, logic, synergies, proEvidence, scopeLabel, scope, savedMates, partners }: {
+export function TopUsageReport({ id, row, prio, prioLabel, bundle, names, view, setView, saved, logic, synergies, proEvidence, scopeLabel, scope, savedMates, partners, vs, setVs, lessons }: {
   id: string; row?: TopRow; prio?: PriorityBrief; prioLabel: string; bundle: TopDraftBundle; names: Names; view: TopView; setView: (v: TopView) => void;
   saved?: { grade: string; tier?: string; gives?: string; avoid?: string }; // Top's saved blind grade
   logic: BlindLine[]; synergies: React.ReactNode; proEvidence: React.ReactNode; scopeLabel: string; scope: TopScope;
   savedMates?: { preferred: string[]; alternatives: string[] }; // Jungle: alan's saved mids for this jungler
-  partners?: React.ReactNode; // Bot / Support: the Pairing Explorer
+  partners?: React.ReactNode; // the Pairing Explorer, anchored on the rail champion (Top: its junglers)
+  vs?: string; setVs?: (enemy?: string) => void; lessons?: LessonBook; // Top: the open lane matchup (?vs=)
 }) {
   const [open, setOpen] = useState<string>();
   const [pairOpen, setPairOpen] = useState<string>();
@@ -246,6 +249,7 @@ export function TopUsageReport({ id, row, prio, prioLabel, bundle, names, view, 
         {shown === "usage" && <Usage id={id} row={row} names={names} bundle={bundle} open={open} setOpen={setOpen} scopeLabel={scopeLabel} scope={scope} />}
         {shown === "duo" && <DuoView id={id} names={names} bundle={bundle} scope={scope} scopeLabel={scopeLabel} />}
         {shown === "mates" && <MatesView id={id} names={names} bundle={bundle} scope={scope} scopeLabel={scopeLabel} saved={savedMates} />}
+        {shown === "matchups" && role === "TOP" && bundle.lanes && <TopMatchups id={id} data={bundle.lanes} names={names} row={row} grade={saved?.grade} lessons={lessons} vs={vs} setVs={setVs ?? (() => {})} scopeLabel={scopeLabel} />}
         {shown === "matchups" && <Matchups id={id} row={row} names={names} bundle={bundle} open={open} setOpen={setOpen} pairOpen={pairOpen} setPairOpen={setPairOpen} />}
         {shown === "matchups" && role === "JUNGLE" && row && <ContextView row={row} bundle={bundle} names={names} scope={scope} />}
         {shown === "synergies" && synergies}

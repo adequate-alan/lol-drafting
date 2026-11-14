@@ -18,6 +18,7 @@
 // between them on the source, so a partner picked in the same turn is "together", never before or after.
 // A response is not a counter. "Repeated" needs the same response in two different series; "supported counter" needs a
 // DPM.LOL matchup row that clears the counter thresholds (lib/counters.ts). Win / loss never decides either.
+import type { LaneData } from "./top-matchups";
 import { inTournament, scopeKey } from "./tournament-scope";
 import { newestGamesFirst, recordStamp } from "./chronology";
 import { DPM_MIN_GAMES, DPM_MIN_WIN_RATE, DPM_STRONG_WIN_RATE } from "./counters";
@@ -508,6 +509,8 @@ export interface TopDraftBundle {
   duos?: DuoSelection[]; // BOT and SUPPORT: every team's bot lane
   /** JUNGLE: enemy board traits at each jungle pick, by `${game}:${side}` (General Draft Logic, lib/jungle-context.ts). */
   context?: Record<string, { trait: string; champions: string[] }[]>;
+  /** TOP: every stored DPM.LOL top matchup row and the kit facts, for the lane matchup explorer (lib/top-matchups.ts). */
+  lanes?: LaneData;
 }
 export type LaneDraftBundle = TopDraftBundle;
 
