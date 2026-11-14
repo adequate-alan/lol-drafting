@@ -15,7 +15,7 @@ import type { DrawerData, PairingData } from "@/lib/data";
 import { OTHER } from "@/lib/drawer";
 import { BASIS_LABEL, BASIS_TITLE, clock, filterInsights, insightChampions, lessonHref, lessonsOfVideo, momentUrl, statPatches } from "@/lib/draft-insights";
 import { shortDate } from "@/lib/evidence";
-import { explorerHref } from "@/lib/pairings";
+import { explorerHref, LANES, type LaneKey } from "@/lib/pairings";
 import type { DraftInsight, DraftInsights } from "@/lib/schema";
 
 const ROLE_WORD: Record<string, string> = { TOP: "Top", JUNGLE: "Jungle", MID: "Mid", BOT: "ADC", SUPPORT: "Support" };
@@ -35,12 +35,16 @@ export function DraftInsightsView({ data, names, drawerData, pairing }: { data: 
   };
 
   const view = get("view") === "videos" ? "videos" : get("view") === "pairings" ? "pairings" : "lessons";
-  // Pairing explorer state: ?bot=&support=&from=&compare= (comma list), all shareable.
+  // Pairing explorer state, all shareable: the bot lane is ?bot=&support=, the mid + jungle core ?lane=mid-jungle&mid=&jungle=,
+  // each with &from=&compare= (comma list). Each pairing keeps its own slots in the URL while the other is shown.
+  const lane: LaneKey = get("lane") === "mid-jungle" ? "mid-jungle" : "bot";
+  const slotA = LANES[lane].a.toLowerCase(), slotB = LANES[lane].b.toLowerCase();
+  const fromParam = get("from");
   const pairState: PairState = {
-    bot: get("bot"), support: get("support"), from: get("from") === "SUPPORT" ? "SUPPORT" : get("from") === "BOT" ? "BOT" : undefined,
+    a: get(slotA), b: get(slotB), from: fromParam === LANES[lane].a || fromParam === LANES[lane].b ? fromParam : undefined,
     compare: get("compare")?.split(",").filter(Boolean),
   };
-  const setPair = (s: PairState) => update({ bot: s.bot, support: s.support, from: s.from, compare: s.compare?.length ? s.compare.join(",") : undefined });
+  const setPair = (s: PairState) => update({ [slotA]: s.a, [slotB]: s.b, from: s.from, compare: s.compare?.length ? s.compare.join(",") : undefined });
   const category = data.categories.some((c) => c.id === get("category")) ? get("category") : undefined;
   const champion = get("champion");
   const video = get("video") && data.videos[get("video")!] ? get("video") : undefined;
@@ -69,8 +73,14 @@ export function DraftInsightsView({ data, names, drawerData, pairing }: { data: 
         <nav className="seg" aria-label="Browse by">
           <button className={view === "lessons" ? "active" : undefined} aria-pressed={view === "lessons"} onClick={() => update({ view: undefined })}>Lessons <span className="count">{data.insights.length}</span></button>
           <button className={view === "videos" ? "active" : undefined} aria-pressed={view === "videos"} onClick={() => update({ view: "videos", lesson: undefined })}>Videos <span className="count">{videoList.length}</span></button>
-          <button className={view === "pairings" ? "active" : undefined} aria-pressed={view === "pairings"} onClick={() => update({ view: "pairings", lesson: undefined })}>Bot lane pairings</button>
+          <button className={view === "pairings" ? "active" : undefined} aria-pressed={view === "pairings"} onClick={() => update({ view: "pairings", lesson: undefined })}>Pairings</button>
         </nav>
+        {view === "pairings" && (
+          <span className="seg" role="group" aria-label="Pairing">
+            <button className={lane === "bot" ? "active" : undefined} aria-pressed={lane === "bot"} onClick={() => update({ lane: undefined, from: undefined, compare: undefined })}>Bot + Support</button>
+            <button className={lane === "mid-jungle" ? "active" : undefined} aria-pressed={lane === "mid-jungle"} onClick={() => update({ lane: "mid-jungle", from: undefined, compare: undefined })}>Mid + Jungle</button>
+          </span>
+        )}
         {view === "lessons" && <>
           <Select label="Topic" value={category ?? ""} onChange={(v) => update({ category: v || undefined, lesson: undefined })}
             options={[{ value: "", label: "All topics" }, ...data.categories.map((c) => ({ value: c.id, label: `${c.title} (${counts[c.id]})` }))]} />
@@ -85,7 +95,7 @@ export function DraftInsightsView({ data, names, drawerData, pairing }: { data: 
 
       {view === "pairings" ? (
         <div className="ins-main">
-          <PairingExplorer data={pairing} champions={drawerData.champions} botPairings={drawerData.botPairings} proposed={drawerData.proposed} names={names}
+          <PairingExplorer key={lane} lane={lane} data={pairing} champions={drawerData.champions} botPairings={drawerData.botPairings} midJungle={drawerData.midJungle} proposed={drawerData.proposed} names={names}
             state={pairState} onChange={setPair} context="insights" />
         </div>
       ) : view === "videos" ? (

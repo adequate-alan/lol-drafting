@@ -8,6 +8,8 @@
 //                           pairings that are not saved, and kit-based proposals. Each champion is listed once.
 //   duoRead(...)            General Draft Logic for a bot lane from the stored kits: lane plan, interactions, strengths,
 //                           weaknesses, power curve, each line naming the values it rests on
+//   coreRead(...)           the same read for a mid + jungle core (alan, 2026-11-14): who starts and who follows, early
+//                           pressure, damage mix, power curve
 //   pairLessons(...)        Draft Insights moments that speak to the pair (creator opinions and solo-queue stats, labelled)
 //
 // Four layers stay apart: a recorded game is Observed Pro Evidence and never becomes a saved pairing or a score; a kit read
@@ -19,7 +21,7 @@ import type { ChampionKit } from "./model-v2/schema";
 import { comparePatch } from "./patch";
 import { handAlts } from "./pro-alternatives";
 import { proposedPartners, type ProposedLink } from "./proposed";
-import type { BotPairing, DraftInsights, PairingNote, ProDraft, ProGame, ProposedRecord, Role, Source } from "./schema";
+import type { BotPairing, DraftInsights, MidJunglePairing, PairingNote, ProDraft, ProGame, ProposedRecord, Role, Source } from "./schema";
 
 type Side = "blue" | "red";
 
@@ -161,22 +163,30 @@ export const PAIR_FEW_TEAMS = 3;
 
 // ---------- partners of one anchor, in three groups ----------
 
-export type DuoRole = "BOT" | "SUPPORT";
+// Two pairings share the layer (alan, 2026-11-14): the bot lane (ADC + support) and the mid + jungle core. `a` is the
+// carry slot shown first (ADC, mid), `b` its partner slot (support, jungler); a pair is always written [a, b].
+export type LaneKey = "bot" | "mid-jungle";
+export type DuoRole = "BOT" | "SUPPORT" | "MID" | "JUNGLE";
+export const LANES: Record<LaneKey, { a: DuoRole; b: DuoRole }> = { bot: { a: "BOT", b: "SUPPORT" }, "mid-jungle": { a: "MID", b: "JUNGLE" } };
+export const laneOf = (r: DuoRole): LaneKey => (r === "BOT" || r === "SUPPORT" ? "bot" : "mid-jungle");
 export type SavedKind = "default" | "alt";
 export const SAVED_LABEL: Record<SavedKind, string> = { default: "Saved preferred", alt: "Saved alternative" };
+/** alan's saved records, by lane. Bot lanes are saved on the ADC's record; a mid + jungle pair on either champion's. */
+export interface SavedRecords { botPairings: BotPairing[]; midJungle?: MidJunglePairing[] }
 
 export interface PartnerOption {
   id: string; // the partner
   role: DuoRole; // the partner's role
   group: "saved" | "observed" | "proposed";
-  saved?: { kind: SavedKind; note?: string };
+  /** `on`: whose record holds the link for a mid + jungle pair (the Draft Room scores it only with that champion locked). */
+  saved?: { kind: SavedKind; note?: string; on?: "a" | "b" | "both"; sides?: { a?: SavedKind; b?: SavedKind } };
   proposed?: ProposedLink;
   evidence?: PairEvidence;
 }
 
 export interface PartnerGroups { saved: PartnerOption[]; observed: PartnerOption[]; proposed: PartnerOption[] }
 
-export const partnerRoleOf = (r: DuoRole): DuoRole => (r === "BOT" ? "SUPPORT" : "BOT");
+export const partnerRoleOf = (r: DuoRole): DuoRole => (r === "BOT" ? "SUPPORT" : r === "SUPPORT" ? "BOT" : r === "MID" ? "JUNGLE" : "MID");
 
 /** alan's saved link between a bot and a support, from the bot's record. A pairing only seen in pro games is never one (alan, 2026-11-13). */
 export function savedLink(bot: string, support: string, botPairings: BotPairing[]): PartnerOption["saved"] {
@@ -187,10 +197,33 @@ export function savedLink(bot: string, support: string, botPairings: BotPairing[
   return undefined;
 }
 
+const KIND_ORDER: Record<SavedKind, number> = { default: 0, alt: 1 };
+
+/**
+ * alan's saved link between a mid and a jungler. Each champion has its own record, so the link can sit on the mid's
+ * record, the jungler's, or both, and the two records may rank it differently (Cho'Gath's record prefers Syndra; Syndra's
+ * lists Cho'Gath as an alternative). `kind` is the kind on the `view` side's record when that record holds the link,
+ * else the other record's; `sides` keeps both so neither is hidden.
+ */
+export function savedCore(mid: string, jungle: string, midJungle: MidJunglePairing[], view: "a" | "b" = "a"): PartnerOption["saved"] {
+  const kindOn = (anchor: string, role: "MID" | "JUNGLE", partner: string) => {
+    const rec = midJungle.find((m) => m.anchor === anchor && m.role === role);
+    const kind: SavedKind | undefined = rec?.clashDefault.includes(partner) ? "default" : rec?.alternatives.includes(partner) ? "alt" : undefined;
+    return kind && { kind, note: rec!.alternativeNotes[partner] };
+  };
+  const a = kindOn(mid, "MID", jungle), b = kindOn(jungle, "JUNGLE", mid);
+  if (!a && !b) return undefined;
+  const mine = view === "a" ? a ?? b : b ?? a;
+  return { kind: mine!.kind, note: mine!.note, on: a && b ? "both" : a ? "a" : "b", sides: { a: a?.kind, b: b?.kind } };
+}
+
+/** The saved link of a pair [a, b] in its lane, read from the `view` slot's side where the lane keeps two records. */
+export const savedPair = (lane: LaneKey, a: string, b: string, saved: SavedRecords, view: "a" | "b" = "a"): PartnerOption["saved"] =>
+  lane === "bot" ? savedLink(a, b, saved.botPairings) : savedCore(a, b, saved.midJungle ?? [], view);
+
 const byEvidence = (a: PartnerOption, b: PartnerOption) =>
   (b.evidence?.teams.length ?? 0) - (a.evidence?.teams.length ?? 0) || (b.evidence?.games.length ?? 0) - (a.evidence?.games.length ?? 0)
   || (b.evidence?.newest ?? "").localeCompare(a.evidence?.newest ?? "");
-const KIND_ORDER: Record<SavedKind, number> = { default: 0, alt: 1 };
 
 /**
  * The partners of one champion, grouped and ordered without a score:
@@ -200,25 +233,35 @@ const KIND_ORDER: Record<SavedKind, number> = { default: 0, alt: 1 };
  *   proposed  kit-based proposals not already above: the proposed layer's own order (preferred, then confidence)
  * Each champion appears once, in the first group it qualifies for; its other signals ride along as labels.
  */
-export function partnerOptions(anchor: { id: string; role: DuoRole }, input: { botPairings: BotPairing[]; proposed: ProposedRecord[]; rows: PairGame[]; playable: (id: string, role: DuoRole) => boolean; newestPatch?: string }): PartnerGroups {
+export function partnerOptions(anchor: { id: string; role: DuoRole }, input: SavedRecords & { proposed: ProposedRecord[]; rows: PairGame[]; playable: (id: string, role: DuoRole) => boolean; newestPatch?: string }): PartnerGroups {
   const other = partnerRoleOf(anchor.role);
+  const lane = laneOf(anchor.role);
+  const isA = LANES[lane].a === anchor.role;
   const ev = pairEvidence(input.rows, anchor.id, anchor.role, other, input.newestPatch);
-  const pair = (p: string) => (anchor.role === "BOT" ? [anchor.id, p] : [p, anchor.id]) as [string, string];
+  const pair = (p: string) => (isA ? [anchor.id, p] : [p, anchor.id]) as [string, string];
   const props = proposedPartners(input.proposed, anchor.id, anchor.role, other);
   const propOf = (p: string) => props.find((l) => l.id === p);
   const seen = new Set<string>([anchor.id]);
   const make = (id: string, group: PartnerOption["group"]): PartnerOption => {
     seen.add(id);
-    const [b, s] = pair(id);
-    return { id, role: other, group, saved: savedLink(b, s, input.botPairings), proposed: propOf(id), evidence: ev.get(id) };
+    const [a, b] = pair(id);
+    return { id, role: other, group, saved: savedPair(lane, a, b, input, isA ? "a" : "b"), proposed: propOf(id), evidence: ev.get(id) };
   };
+  const byKind = (a: PartnerOption, b: PartnerOption) => KIND_ORDER[a.saved!.kind] - KIND_ORDER[b.saved!.kind] || byEvidence(a, b);
   let saved: PartnerOption[];
   if (anchor.role === "BOT") {
     const rec = input.botPairings.find((b) => b.champion === anchor.id);
     saved = rec ? [...rec.clashDefault, ...handAlts(rec)].filter((id) => !seen.has(id)).map((id) => make(id, "saved")) : [];
+  } else if (anchor.role === "SUPPORT") {
+    saved = input.botPairings.filter((b) => b.clashDefault.includes(anchor.id) || b.alternatives.includes(anchor.id)).map((b) => make(b.champion, "saved")).sort(byKind);
   } else {
-    saved = input.botPairings.filter((b) => b.clashDefault.includes(anchor.id) || b.alternatives.includes(anchor.id)).map((b) => make(b.champion, "saved"))
-      .sort((a, b) => KIND_ORDER[a.saved!.kind] - KIND_ORDER[b.saved!.kind] || byEvidence(a, b));
+    // Mid or jungle: the anchor's own record in its order, then the partners whose records list the anchor.
+    const records = input.midJungle ?? [];
+    const rec = records.find((m) => m.anchor === anchor.id && m.role === anchor.role);
+    const own = rec ? [...rec.clashDefault, ...handAlts(rec)].filter((id) => !seen.has(id)).map((id) => make(id, "saved")) : [];
+    const theirs = records.filter((m) => m.role === other && !seen.has(m.anchor) && (m.clashDefault.includes(anchor.id) || m.alternatives.includes(anchor.id)))
+      .map((m) => make(m.anchor, "saved")).sort(byKind);
+    saved = [...own, ...theirs];
   }
   const observed = [...ev.keys()].filter((id) => !seen.has(id)).map((id) => make(id, "observed")).sort(byEvidence);
   const proposed = props.filter((l) => !seen.has(l.id) && input.playable(l.id, other)).map((l) => make(l.id, "proposed"));
@@ -338,6 +381,101 @@ export function duoRead(bot: ChampionKit | undefined, sup: ChampionKit | undefin
   return { plan, works, strengths, weaknesses, curve };
 }
 
+// ---------- General Draft Logic for a mid + jungle core ----------
+
+const starts = (c: ChampionKit) => c.fightStart === "primary" || c.fightStart === "catch";
+const startWord = (c: ChampionKit) => (c.fightStart === "primary" ? "primary fight start" : c.fightStart === "catch" ? "catch start" : c.fightStart === "follow-up" ? "follow-up only" : "no fight start");
+const roleDamage = (c: ChampionKit, role: Role) => c.damageByRole[role] ?? Object.values(c.damageByRole)[0];
+const mostly = (c: ChampionKit, role: Role): "magic" | "physical" | undefined => {
+  const d = roleDamage(c, role);
+  return !d || d.damageThreat < 2 ? undefined : d.damageSplit.magic >= 0.6 ? "magic" : d.damageSplit.physical >= 0.6 ? "physical" : undefined;
+};
+
+/**
+ * The mid + jungle core read from the two kits as stored (unreviewed heuristics except where noted in kits.ts): who
+ * starts a fight and who follows, what the pair does early, its damage mix and its power curve. Same shape and rules as
+ * the bot lane read: `split` means the two kits want different things, never that the pair is bad, and every line names
+ * the stored values it rests on. Nothing here is read by a score or an order.
+ */
+export function coreRead(mid: ChampionKit | undefined, jng: ChampionKit | undefined, names: { mid: string; jungle: string }): DuoRead | undefined {
+  if (!mid || !jng) return undefined;
+  const M = names.mid, J = names.jungle;
+  const mS = starts(mid), jS = starts(jng);
+  const mF = mid.kit.followUp >= 2, jF = jng.kit.followUp >= 2;
+  const b = `${M}: ${startWord(mid)}, follow-up ${mid.kit.followUp}; ${J}: ${startWord(jng)}, follow-up ${jng.kit.followUp}`;
+  const lateBoth = mid.kit.curve.late >= 3 && jng.kit.curve.late >= 3 && mid.kit.curve.early <= 1 && jng.kit.curve.early <= 1;
+  const jP = jng.fightStart === "primary", mP = mid.fightStart === "primary";
+  const dive = mid.kit.backlineAccess >= 2 && jng.kit.backlineAccess >= 2;
+  const plan = ((): DuoRead["plan"] => {
+    if (jS && dive) return { label: "Dive together", fit: "shared", basis: `${b}; backline access ${M} ${mid.kit.backlineAccess}, ${J} ${jng.kit.backlineAccess}`,
+      text: `${J} goes in and ${M} reaches the same target: the pair collapses on one champion rather than fighting front to back.` };
+    if (jP && mP) return { label: "Two engages", fit: "shared", basis: b, text: `Both can start a full fight, so the team engages from two angles and a missed start is not the only one.` };
+    if (jP) return mF
+      ? { label: "Jungler engages, mid follows", fit: "shared", basis: b, text: `${J} starts the fight and ${M} follows at once with crowd control or burst of their own.` }
+      : mS ? { label: "Engage plus a mid catch", fit: "neutral", basis: b, text: `${J} starts the team fight; ${M} threatens a separate catch but adds little to ${J}'s engage itself.` }
+      : mid.kit.setupDependency >= 2 || mid.flags.includes("needs-setup")
+        ? { label: "Setup for the mid", fit: "shared", basis: `${b}; ${M}: setup dependency ${mid.kit.setupDependency}`, text: `${M} needs someone else to create the angle; ${J} provides it.` }
+        : { label: "Jungler engages, mid adds damage", fit: "neutral", basis: b, text: `${J} starts the fight; ${M} adds damage but little to lock the target down.` };
+    if (mP) return jF || jS
+      ? { label: "Mid engages, jungler follows", fit: "shared", basis: b, text: `${M} starts the fight and ${J} follows onto the same target.` }
+      : { label: "Mid engages, jungler adds damage", fit: "neutral", basis: b, text: `${M} starts the fight; ${J} adds damage but little crowd control of their own.` };
+    if (jS && mS) return { label: "Two pick threats", fit: mF || jF ? "shared" : "neutral", basis: b,
+      text: `Both look for one target at a time${mF || jF ? ` and each can follow the other's catch` : ``}: the pair wins by picks before objectives, not by a full engage.` };
+    if (jS) return mF
+      ? { label: "Jungler catches, mid follows", fit: "shared", basis: b, text: `${J} catches one target and ${M} follows at once with crowd control or burst of their own.` }
+      : { label: "Jungler catches, mid adds damage", fit: "neutral", basis: b, text: `${J} catches one target; ${M} adds damage but little to hold it.` };
+    if (mS) return jF
+      ? { label: "Mid catches, jungler follows", fit: "shared", basis: b, text: `${M} catches one target and ${J} follows at once onto it.` }
+      : { label: "Mid catches, jungler adds damage", fit: "neutral", basis: b, text: `${M} catches one target; ${J} adds damage but little crowd control of their own.` };
+    if (lateBoth) return { label: "Scale together", fit: "neutral", basis: `${M} ${curveText(mid)}; ${J} ${curveText(jng)}`, text: `Neither starts fights and both peak late: the pair plays for items and needs the side lanes to hold.` };
+    return { label: "No start between them", fit: "split", basis: b, text: `Neither ${M} nor ${J} starts a fight: the engage has to come from top or support.` };
+  })();
+
+  const works: ReadLine[] = [], strengths: ReadLine[] = [], weaknesses: ReadLine[] = [];
+  if (mid.attrs.lanePressure >= 2 && jng.kit.curve.early >= 2)
+    works.push({ text: `${M}'s lane priority lets ${J} move first: invades and early objectives arrive with the mid already there.`, basis: `${M}: lane pressure ${mid.attrs.lanePressure}; ${J}: early curve ${jng.kit.curve.early}` });
+  if (mS && !jS && jng.kit.curve.early >= 2)
+    works.push({ text: `${M}'s crowd control sets up ${J}'s ganks in the mid lane.`, basis: `${M}: ${startWord(mid)}; ${J}: early curve ${jng.kit.curve.early}` });
+  if (dive && !jS)
+    works.push({ text: `Both reach the backline, so they collapse on the same target.`, basis: `backline access ${M} ${mid.kit.backlineAccess}, ${J} ${jng.kit.backlineAccess}` });
+  // Said once: a plan that already names the follow-up does not repeat it as a reason.
+  if (/follows/.test(plan.label)) { /* the plan line says it */ }
+  else if (mF && jS)
+    works.push({ text: `${M} follows ${J}'s start with crowd control or burst of their own.`, basis: `${M}: follow-up ${mid.kit.followUp}; ${J}: ${startWord(jng)}` });
+  else if (jF && mS)
+    works.push({ text: `${J} follows ${M}'s start at once.`, basis: `${J}: follow-up ${jng.kit.followUp}; ${M}: ${startWord(mid)}` });
+  if (mid.kit.aoeCc >= 2 && jng.kit.aoeCc >= 2)
+    works.push({ text: `Their area crowd control overlaps in a grouped fight.`, basis: `area crowd control ${M} ${mid.kit.aoeCc}, ${J} ${jng.kit.aoeCc}` });
+  const mD = mostly(mid, "MID"), jD = mostly(jng, "JUNGLE");
+  if (mD && jD && mD !== jD) strengths.push({ text: `Mixed damage: ${M} deals mostly ${mD} and ${J} mostly ${jD}, so one defensive stat does not answer both.`, basis: `damage split ${M} ${mD}, ${J} ${jD}` });
+  if (mD && jD && mD === jD) weaknesses.push({ text: `Both deal mostly ${mD} damage: the other lanes have to bring the rest, or the enemy stacks one resistance.`, basis: `damage split ${M} ${mD}, ${J} ${jD}` });
+  if (jng.attrs.objectiveControl >= 2 && (mid.kit.waveclear >= 2 || mid.attrs.lanePressure >= 2))
+    strengths.push({ text: `Objective setups: ${M} clears the wave first and ${J} secures the objective.`, basis: `${J}: objective control ${jng.attrs.objectiveControl}; ${M}: waveclear ${mid.kit.waveclear}, lane pressure ${mid.attrs.lanePressure}` });
+  if (mid.kit.global || jng.kit.global)
+    strengths.push({ text: `A map-wide ultimate turns a side lane into a fight the pair picks.`, basis: `${mid.kit.global ? M : J}: global ultimate` });
+  if (mid.attrs.frontline <= 1 && jng.attrs.frontline <= 1)
+    weaknesses.push({ text: `Neither stands in front: the frontline has to come from top or support.`, basis: `frontline ${M} ${mid.attrs.frontline}, ${J} ${jng.attrs.frontline}` });
+  if (mid.kit.curve.early <= 1 && jng.kit.curve.early <= 1)
+    weaknesses.push({ text: `Weak early: the enemy mid and jungler get the first move on river fights and early objectives.`, basis: `early curve ${M} ${mid.kit.curve.early}, ${J} ${jng.kit.curve.early}` });
+  if (mid.flags.includes("needs-peel") && jng.attrs.peel <= 1 && jng.kit.backlineAccess >= 2)
+    weaknesses.push({ text: `Once ${J} goes in, ${M} is left without a protector from this pair.`, basis: `${M}: needs peel; ${J}: peel ${jng.attrs.peel}, backline access ${jng.kit.backlineAccess}` });
+  if (!mS && !jS && plan.fit !== "split")
+    weaknesses.push({ text: `Neither starts a fight: the engage has to come from top or support.`, basis: b });
+
+  const cb = `${M} ${curveText(mid)}; ${J} ${curveText(jng)}`;
+  const curve: ReadLine = mid.kit.curve.early >= 3 && jng.kit.curve.early >= 3
+    ? { text: `Strongest early: both peak before items, so the lead has to be converted${mid.kit.curve.late <= 1 || jng.kit.curve.late <= 1 ? " before they fall off" : ""}.`, basis: cb }
+    : lateBoth ? { text: `Both peak late: the pair is played to reach items, not to win early.`, basis: cb }
+    : jng.kit.curve.early >= 3 && mid.kit.curve.late >= 3 && mid.kit.curve.early <= 2 ? { text: `${J} carries the early game while ${M} scales into the late game.`, basis: cb }
+    : mid.kit.curve.early >= 3 && jng.kit.curve.late >= 3 && jng.kit.curve.early <= 2 ? { text: `${M} wins the early mid lane while ${J} scales into the late game.`, basis: cb }
+    : { text: `${Math.max(mid.kit.curve.early, jng.kit.curve.early) >= 3 ? "Strong early" : "Even early"}, ${Math.max(mid.kit.curve.mid, jng.kit.curve.mid) >= 3 ? "strongest in the mid game" : "steady through the mid game"}${mid.kit.curve.late >= 3 || jng.kit.curve.late >= 3 ? ", still strong late" : mid.kit.curve.late <= 1 && jng.kit.curve.late <= 1 ? ", falling off late" : ""}.`, basis: cb };
+  return { plan, works, strengths, weaknesses, curve };
+}
+
+/** The kit read of a pair [a, b] in its lane. */
+export const pairRead = (lane: LaneKey, a: ChampionKit | undefined, b: ChampionKit | undefined, names: { a: string; b: string }) =>
+  lane === "bot" ? duoRead(a, b, { bot: names.a, sup: names.b }) : coreRead(a, b, { mid: names.a, jungle: names.b });
+
 // ---------- Draft Insights moments for a pair ----------
 
 export interface PairLesson {
@@ -363,7 +501,7 @@ export const lessonBook = (d: DraftInsights): LessonBook => ({
 });
 
 /** The creator lessons that speak to this pair: the pair itself when a lesson shows it, then each champion's archetype. */
-export function pairLessons(insights: LessonBook, bot: string, support: string, extra: string[] = []): PairLesson[] {
+export function pairLessons(insights: LessonBook, bot: string, support: string, extra: string[] = [], lane: LaneKey = "bot"): PairLesson[] {
   const out: PairLesson[] = [];
   const src = (s: { video: string; t: number }) => ({ ...s, url: insights.videos[s.video]?.url ?? "" });
   const period = (s: { video: string }) => insights.videos[s.video]?.period;
@@ -374,7 +512,8 @@ export function pairLessons(insights: LessonBook, bot: string, support: string, 
       out.push({ lesson: i.id, title: i.title, kind: "pair", text: m.text, fit: m.kind === "pair" ? m.fit : undefined, stat: m.stat, period: period(m.source), source: src(m.source) });
     }
   }
-  for (const [lid, id, kind] of [["adc-archetypes", bot, "adc"], ["support-types", support, "support"]] as const) {
+  // The ADC and support archetype lessons speak to bot lanes only.
+  for (const [lid, id, kind] of lane === "bot" ? ([["adc-archetypes", bot, "adc"], ["support-types", support, "support"]] as const) : []) {
     const i = insights.insights.find((x) => x.id === lid);
     const g = i?.groups?.find((x) => x.champions.includes(id));
     if (i && g) out.push({ lesson: i.id, title: `${g.label}`, kind, text: g.plan, period: period(g.source), source: src(g.source) });
@@ -391,7 +530,7 @@ export function pairLessons(insights: LessonBook, bot: string, support: string, 
 // ---------- written reads ----------
 
 /** The written read for a pair, when one exists (data/pairing-notes.json, General Draft Logic, unreviewed). */
-export const noteFor = (notes: PairingNote[], bot: string, support: string) => notes.find((n) => n.a === bot && n.b === support && n.aRole === "BOT" && n.bRole === "SUPPORT");
+export const noteFor = (notes: PairingNote[], a: string, b: string, lane: LaneKey = "bot") => notes.find((n) => n.a === a && n.b === b && n.aRole === LANES[lane].a && n.bRole === LANES[lane].b);
 
 // ---------- links ----------
 
@@ -399,11 +538,12 @@ export const noteFor = (notes: PairingNote[], bot: string, support: string) => n
 export const kitsById = (champions: Parameters<typeof convertKits>[0]) => new Map(convertKits(champions).map((k) => [k.id, k]));
 export type { ChampionKit };
 
-/** The explorer on Draft Insights with a pair (either half may be missing). */
-export const explorerHref = (bot?: string, support?: string, compare?: string[]) => {
+/** The explorer on Draft Insights with a pair [a, b] of a lane (either half may be missing). */
+export const explorerHref = (a?: string, b?: string, compare?: string[], lane: LaneKey = "bot") => {
   const q = new URLSearchParams({ view: "pairings" });
-  if (bot) q.set("bot", bot);
-  if (support) q.set("support", support);
+  if (lane !== "bot") q.set("lane", lane);
+  if (a) q.set(LANES[lane].a.toLowerCase(), a);
+  if (b) q.set(LANES[lane].b.toLowerCase(), b);
   if (compare?.length) q.set("compare", compare.join(","));
   return `/insights/?${q}`;
 };

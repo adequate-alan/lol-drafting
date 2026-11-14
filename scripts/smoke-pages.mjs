@@ -1525,6 +1525,20 @@ await open("/insights/?view=pairings&bot=ezreal&support=leona");
   const cmp = await text("#px-compare");
   check("pairings: an observed pair compares with the saved preferred", /Karma/.test(cmp) && /Leona/.test(cmp) && /Saved preferred/.test(cmp) && /Not saved/.test(cmp) && /Events and patches/.test(cmp) && /26\.\d+/.test(cmp), cmp.slice(0, 80));
 }
+// Mid + Jungle explorer (alan, 2026-11-14): the same three groups; an observed pair is never saved and compares with the
+// saved preferred jungler; Synergies Mid has the Partners tab; a one-sided saved link names whose record holds it.
+await open("/insights/?view=pairings&lane=mid-jungle&mid=syndra&jungle=lee-sin");
+{
+  check("pairings: three partner groups for Syndra's junglers", (await page.locator(".px-group").count()) === 3, "");
+  const syn = await text(".px-detail .layer.clash");
+  check("pairings: Syndra + Lee Sin is observed, not saved, with its recorded games", /Syndra \+ Lee Sin/.test(await text(".px-detail h3")) && /Not one of your saved pairings/.test(syn) && /\d+ games? · \d+ teams?/.test(await text(".px-detail .layer.pro .layer-label")) && (await page.locator(".px-read dt").count()) >= 4, syn.slice(0, 80));
+  await page.locator(".px-detail .layer.clash button", { hasText: "your saved preferred" }).click();
+  await page.waitForSelector("#px-compare");
+  const cmp = await text("#px-compare");
+  check("pairings: an observed mid + jungle pair compares with the saved preferred", /Lee Sin/.test(cmp) && /Saved preferred/.test(cmp) && /Not saved/.test(cmp) && /Events and patches/.test(cmp), cmp.slice(0, 80));
+}
+await open("/synergies/jungle/?champ=vi&view=partners&partner=vex");
+check("pairings: Synergies Jungle partners says whose record saves Vex + Vi", /on Vex.s record/.test(await text(".px-detail .layer.clash")) && /Vi.s record does not list Vex/.test(await text(".px-detail .layer.clash")), await text(".px-detail .layer.clash"));
 await open("/synergies/bot/?champ=yunara&view=pro");
 {
   const lulu = await page.locator(".pro-table tbody tr", { hasText: "Lulu" }).first().locator("td.num").first().textContent();

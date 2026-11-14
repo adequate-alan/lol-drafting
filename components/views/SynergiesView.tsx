@@ -167,11 +167,12 @@ export function SynergiesView({ tab, names, sources, events, stats, draftLabels,
               {topScope && laneDraft ? (
                 <TopUsageReport id={selectedId} row={topScope.rows.find((r) => r.champion === selectedId)} prio={topScope.prio[selectedId]} prioLabel={topScope.prioLabel} bundle={laneDraft} names={names}
                   view={topScope.view} setView={(v) => replaceQuery(topScope.href({ view: v === "overview" ? undefined : v }))}
-                  partners={pairing && (selectedRole === "BOT" || selectedRole === "SUPPORT") ? (
-                    <PairingExplorer data={pairing} champions={drawerData.champions} botPairings={drawerData.botPairings} proposed={drawerData.proposed} names={names}
+                  partners={pairing && selectedRole && selectedRole !== "TOP" ? (
+                    // Bot / Support: the bot lane. Mid / Jungle: the mid + jungle core. The rail champion is the anchor.
+                    <PairingExplorer data={pairing} champions={drawerData.champions} botPairings={drawerData.botPairings} midJungle={drawerData.midJungle} proposed={drawerData.proposed} names={names}
                       fixed={{ id: selectedId, role: selectedRole }} context="synergies"
-                      state={{ [selectedRole === "BOT" ? "support" : "bot"]: params.get("partner") || undefined, compare: params.get("compare")?.split(",").filter(Boolean) }}
-                      onChange={(s) => replaceQuery(topScope.href({ partner: (selectedRole === "BOT" ? s.support : s.bot) || undefined, compare: s.compare?.length ? s.compare.join(",") : undefined }))} />
+                      state={{ [selectedRole === "BOT" || selectedRole === "MID" ? "b" : "a"]: params.get("partner") || undefined, compare: params.get("compare")?.split(",").filter(Boolean) }}
+                      onChange={(s) => replaceQuery(topScope.href({ partner: (selectedRole === "BOT" || selectedRole === "MID" ? s.b : s.a) || undefined, compare: s.compare?.length ? s.compare.join(",") : undefined }))} />
                   ) : undefined}
                   scopeLabel={topScope.label} scope={{ patch: topScope.patch, events: topScope.event ? [topScope.event] : undefined }}
                   saved={selected.kind === "top" ? { grade: selected.record.blindGrade, tier: tierOf(pool, selectedId), gives: selected.record.logic.gives, avoid: selected.record.logic.avoid } : undefined}
