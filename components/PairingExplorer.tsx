@@ -23,15 +23,15 @@ import {
 } from "@/lib/pairings";
 import { stageLabel } from "@/lib/pro-games";
 import { CONFIDENCE_LABEL, proposedLink } from "@/lib/proposed";
-import type { BotPairing, Champion, MidJunglePairing, PairingNote, ProposedRecord } from "@/lib/schema";
+import type { BotPairing, Champion, MidJunglePairing, PairingNote, ProposedRecord, TopPick } from "@/lib/schema";
 import type { PairingData } from "@/lib/data";
 
 type Names = Record<string, string>;
-const ROLE_WORD: Record<DuoRole, string> = { BOT: "ADC", SUPPORT: "Support", MID: "Mid", JUNGLE: "Jungler" };
-const ROLE_PLURAL: Record<DuoRole, string> = { BOT: "ADCs", SUPPORT: "supports", MID: "mids", JUNGLE: "junglers" };
-const ROLE_ONE: Record<DuoRole, string> = { BOT: "an ADC", SUPPORT: "a support", MID: "a mid", JUNGLE: "a jungler" };
-const ROLE_AT: Record<DuoRole, string> = { BOT: "at bot", SUPPORT: "at support", MID: "at mid", JUNGLE: "in the jungle" };
-const LANE_LABEL: Record<LaneKey, string> = { bot: "Bot lane pair", "mid-jungle": "Mid and jungle pair" };
+const ROLE_WORD: Record<DuoRole, string> = { BOT: "ADC", SUPPORT: "Support", MID: "Mid", JUNGLE: "Jungler", TOP: "Top" };
+const ROLE_PLURAL: Record<DuoRole, string> = { BOT: "ADCs", SUPPORT: "supports", MID: "mids", JUNGLE: "junglers", TOP: "tops" };
+const ROLE_ONE: Record<DuoRole, string> = { BOT: "an ADC", SUPPORT: "a support", MID: "a mid", JUNGLE: "a jungler", TOP: "a top laner" };
+const ROLE_AT: Record<DuoRole, string> = { BOT: "at bot", SUPPORT: "at support", MID: "at mid", JUNGLE: "in the jungle", TOP: "at top" };
+const LANE_LABEL: Record<LaneKey, string> = { bot: "Bot lane pair", "mid-jungle": "Mid and jungle pair", "top-jungle": "Top and jungle pair" };
 const FIT_TITLE = {
   shared: "The two kits want the same plan (General Draft Logic from the stored kit values)",
   split: "The two kits want different things: playable, but one of them adapts. Not a verdict on the pair.",
@@ -41,20 +41,20 @@ const FIT_TITLE = {
 /** `a` is the lane's first slot (ADC or mid), `b` its partner slot (support or jungler). */
 export interface PairState { a?: string; b?: string; from?: DuoRole; compare?: string[] }
 
-export function PairingExplorer({ data, champions, botPairings, midJungle, proposed, names, state, onChange, onLesson, fixed, context, lane: laneProp }: {
-  data: PairingData; champions: Champion[]; botPairings: BotPairing[]; midJungle?: MidJunglePairing[]; proposed: ProposedRecord[]; names: Names;
+export function PairingExplorer({ data, champions, botPairings, midJungle, topPicks, proposed, names, state, onChange, onLesson, fixed, context, lane: laneProp }: {
+  data: PairingData; champions: Champion[]; botPairings: BotPairing[]; midJungle?: MidJunglePairing[]; topPicks?: TopPick[]; proposed: ProposedRecord[]; names: Names;
   state: PairState; onChange: (s: PairState) => void;
   /** Draft Insights: a lesson opens in place (the pair stays in the URL); elsewhere a lesson is a plain link. */
   onLesson?: (id: string) => void;
   /** Synergies: the champion chosen in the page's rail is the anchor and is not changed here. */
   fixed?: { id: string; role: DuoRole };
   context: "insights" | "synergies";
-  /** Which pairing: the bot lane (default) or the mid + jungle core. A fixed anchor decides it. */
+  /** Which pairing: the bot lane (default), the mid + jungle core or top + jungle. A fixed anchor decides it. */
   lane?: LaneKey;
 }) {
   const lane: LaneKey = fixed ? laneOf(fixed.role) : laneProp ?? "bot";
   const RA = LANES[lane].a, RB = LANES[lane].b;
-  const savedRecords: SavedRecords = useMemo(() => ({ botPairings, midJungle }), [botPairings, midJungle]);
+  const savedRecords: SavedRecords = useMemo(() => ({ botPairings, midJungle, topPicks }), [botPairings, midJungle, topPicks]);
   const kits = useMemo(() => kitsById(champions), [champions]);
   const byId = useMemo(() => new Map(champions.map((c) => [c.id, c])), [champions]);
   const playable = (id: string, role: DuoRole) => !!byId.get(id)?.roles.includes(role) && !byId.get(id)?.rosterOnly;
@@ -72,9 +72,9 @@ export function PairingExplorer({ data, champions, botPairings, midJungle, propo
   const set = (s: Partial<PairState>) => onChange({ ...state, ...s });
   const key = (r: DuoRole) => (r === RA ? "a" : "b");
 
-  const groups = useMemo(() => anchor ? partnerOptions({ id: anchor, role: from }, { ...savedRecords, proposed, rows: data.rows, playable, newestPatch: data.newestPatch }) : undefined,
+  const groups = useMemo(() => anchor ? partnerOptions({ id: anchor, role: from, lane }, { ...savedRecords, proposed, rows: data.rows, playable, newestPatch: data.newestPatch }) : undefined,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [anchor, from, savedRecords, proposed, data]);
+    [anchor, from, lane, savedRecords, proposed, data]);
   const readOf = (x?: string, y?: string) => (x && y ? pairRead(lane, kits.get(x), kits.get(y), { a: nm(x), b: nm(y) }) : undefined);
   const pairOf = (p: string) => (from === RA ? [anchor!, p] : [p, anchor!]) as [string, string];
   const compare = (state.compare ?? []).filter((id) => id !== anchor).slice(0, 2);
@@ -102,7 +102,7 @@ export function PairingExplorer({ data, champions, botPairings, midJungle, propo
   };
   const anchorHasRecord = !!anchor && (lane === "bot" ? from === "BOT" && botPairings.some((r) => r.champion === anchor) : false);
 
-  const groupProps = { names, from, partner, compare, pickPartner, toggleCompare, readOf, pairOf };
+  const groupProps = { names, from, lane, partner, compare, pickPartner, toggleCompare, readOf, pairOf };
   const slots = (
     <div className="px-slots" role="group" aria-label={LANE_LABEL[lane]}>
       {([RA, RB] as const).map((r, i) => {
@@ -120,7 +120,7 @@ export function PairingExplorer({ data, champions, botPairings, midJungle, propo
                 <span className="px-name">{id ? nm(id) : `Choose ${ROLE_ONE[r]}`}</span>
               </span>
             </button>
-            {id && !locked && <button type="button" className="px-clear" aria-label={`Clear ${ROLE_WORD[r]}`} title="Clear" onClick={() => onChange({ ...state, [key(r)]: undefined, from: r === from ? partnerRoleOf(r) : from, compare: r === from ? [] : state.compare })}>×</button>}
+            {id && !locked && <button type="button" className="px-clear" aria-label={`Clear ${ROLE_WORD[r]}`} title="Clear" onClick={() => onChange({ ...state, [key(r)]: undefined, from: r === from ? partnerRoleOf(r, lane) : from, compare: r === from ? [] : state.compare })}>×</button>}
           </div>
         );
       })}
@@ -132,12 +132,13 @@ export function PairingExplorer({ data, champions, botPairings, midJungle, propo
       )}
     </div>
   );
-  const picker = picking && (picking === RA || picking === RB) && <Picker role={picking} champions={champions} saved={savedRecords} data={data} names={names} current={picking === RA ? a : b}
+  const picker = picking && (picking === RA || picking === RB) && <Picker role={picking} lane={lane} champions={champions} saved={savedRecords} data={data} names={names} current={picking === RA ? a : b}
     taken={picking === RA ? b : a} onPick={(id) => choose(picking, id)} onClose={() => setPicking(undefined)} />;
   const lists = anchor && groups && (
     <div className="px-groups">
-      <Group title="Saved preferences" layer="clash" list={groups.saved} empty={from === "SUPPORT" ? `No saved bot record lists ${nm(anchor)}.` : `No saved ${ROLE_PLURAL[partnerRoleOf(from)]} for ${nm(anchor)}.`}
-        note={lane === "mid-jungle" ? `${nm(anchor)}'s own saved ${ROLE_PLURAL[partnerRoleOf(from)]} first, then the ${ROLE_PLURAL[partnerRoleOf(from)]} whose saved record lists ${nm(anchor)}.` : undefined}
+      <Group title="Saved preferences" layer="clash" list={groups.saved} empty={from === "SUPPORT" ? `No saved bot record lists ${nm(anchor)}.` : lane === "top-jungle" && from === "JUNGLE" ? `No saved top record lists ${nm(anchor)}.` : `No saved ${ROLE_PLURAL[partnerRoleOf(from, lane)]} for ${nm(anchor)}.`}
+        note={lane === "mid-jungle" ? `${nm(anchor)}'s own saved ${ROLE_PLURAL[partnerRoleOf(from, lane)]} first, then the ${ROLE_PLURAL[partnerRoleOf(from, lane)]} whose saved record lists ${nm(anchor)}.`
+          : lane === "top-jungle" ? (from === "TOP" ? `The junglers on ${nm(anchor)}'s saved top record, in its order.` : `Tops whose saved record lists ${nm(anchor)} as a jungler.`) : undefined}
         {...groupProps} />
       <Group title="Observed in pro games, not saved" layer="pro" list={groups.observed} empty="No other recorded pairing." collapse={split ? 4 : 6}
         note="Recorded together in pro games. An observed pairing is not a recommendation." {...groupProps} />
@@ -210,7 +211,7 @@ export function PairingExplorer({ data, champions, botPairings, midJungle, propo
         {comparison}
         {detail}
         {!detail && !comparison && groups && (
-          <Guide anchor={anchor} role={from} names={names} groups={groups} lessons={anchorLessons(data.lessons, anchor, from)} onPick={pickPartner} onLesson={onLesson} />
+          <Guide anchor={anchor} role={from} lane={lane} names={names} groups={groups} lessons={anchorLessons(data.lessons, anchor, from)} onPick={pickPartner} onLesson={onLesson} />
         )}
       </div>
     </div>
@@ -225,6 +226,7 @@ function quickStart(lane: LaneKey, records: SavedRecords, data: PairingData) {
   const RA = LANES[lane].a, RB = LANES[lane].b;
   const saved: [string, string][] = (lane === "bot"
     ? records.botPairings.filter((r) => r.clashDefault.length).map((r) => [r.champion, r.clashDefault[0]] as [string, string])
+    : lane === "top-jungle" ? (records.topPicks ?? []).filter((t) => t.surrounding.jungle.length).map((t) => [t.champion, t.surrounding.jungle[0]] as [string, string])
     : (records.midJungle ?? []).filter((m) => m.role === RA && m.clashDefault.length).map((m) => [m.anchor, m.clashDefault[0]] as [string, string])).slice(0, 5);
   const recent: [string, string][] = [];
   const rows = [...data.rows].sort((x, y) => (y.date ?? "").localeCompare(x.date ?? "") || y.game - x.game);
@@ -235,25 +237,25 @@ function quickStart(lane: LaneKey, records: SavedRecords, data: PairingData) {
     if (recent.length === 5) break;
   }
   return [
-    { title: "Saved pairs", sub: "your preferred partners", hint: "The first saved records, in their stored order", pairs: saved },
+    { title: "Saved pairs", sub: lane === "top-jungle" ? "from your saved top records" : "your preferred partners", hint: "The first saved records, in their stored order", pairs: saved },
     { title: "Played recently by pros", sub: "newest recorded games", hint: "The pairs of the newest recorded pro games; recency, not strength", pairs: recent },
   ];
 }
 
-/** The lessons that name this one champion's type (bot lane and jungle archetype lessons). */
+/** The lessons that name this one champion's type (ADC, support, jungle and top archetype lessons). */
 function anchorLessons(book: PairingData["lessons"], id: string, role: DuoRole) {
-  const lid = role === "BOT" ? "adc-archetypes" : role === "SUPPORT" ? "support-types" : role === "JUNGLE" ? "jungle-archetypes" : undefined;
+  const lid = role === "BOT" ? "adc-archetypes" : role === "SUPPORT" ? "support-types" : role === "JUNGLE" ? "jungle-archetypes" : role === "TOP" ? "top-classes" : undefined;
   const i = book.insights.find((x) => x.id === lid);
   const g = i?.groups?.find((x) => x.champions.includes(id));
   return i && g ? [{ lesson: i.id, label: g.label, text: g.plan }] : [];
 }
 
-function Guide({ anchor, role, names, groups, lessons, onPick, onLesson }: {
-  anchor: string; role: DuoRole; names: Names; groups: { saved: PartnerOption[]; observed: PartnerOption[]; proposed: PartnerOption[] };
+function Guide({ anchor, role, lane, names, groups, lessons, onPick, onLesson }: {
+  anchor: string; role: DuoRole; lane: LaneKey; names: Names; groups: { saved: PartnerOption[]; observed: PartnerOption[]; proposed: PartnerOption[] };
   lessons: { lesson: string; label: string; text: string }[]; onPick: (id: string) => void; onLesson?: (id: string) => void;
 }) {
   const nm = (id: string) => names[id] ?? id;
-  const other = partnerRoleOf(role);
+  const other = partnerRoleOf(role, lane);
   const starts = [groups.saved[0] && { o: groups.saved[0], why: SAVED_LABEL[groups.saved[0].saved?.kind ?? "default"] }, groups.observed[0] && { o: groups.observed[0], why: "Most recorded pro pairing that is not saved" }]
     .filter(Boolean) as { o: PartnerOption; why: string }[];
   return (
@@ -275,7 +277,7 @@ function Guide({ anchor, role, names, groups, lessons, onPick, onLesson }: {
         <dt>Kit-compatible <span className="tnum faint">{groups.proposed.length}</span></dt><dd>Proposed from the stored kits. Analysis, not saved.</dd>
       </dl>
       {lessons.map((l) => (
-        <p key={l.lesson} className="small px-guide-lesson"><span className="px-lesson-kind">{ROLE_WORD[role]} type · {l.label}</span> {l.text}{" "}
+        <p key={l.lesson} className="small px-guide-lesson"><span className="px-lesson-kind">{role === "TOP" ? "Top class" : `${ROLE_WORD[role]} type`} · {l.label}</span> {l.text}{" "}
           <LessonLink id={l.lesson} onLesson={onLesson}>Read the lesson</LessonLink></p>
       ))}
     </section>
@@ -289,8 +291,8 @@ function LessonLink({ id, onLesson, children }: { id: string; onLesson?: (id: st
 
 // ---------- champion picker ----------
 
-function Picker({ role, champions, saved: records, data, names, current, taken, onPick, onClose }: {
-  role: DuoRole; champions: Champion[]; saved: SavedRecords; data: PairingData; names: Names; current?: string; taken?: string;
+function Picker({ role, lane, champions, saved: records, data, names, current, taken, onPick, onClose }: {
+  role: DuoRole; lane: LaneKey; champions: Champion[]; saved: SavedRecords; data: PairingData; names: Names; current?: string; taken?: string;
   onPick: (id: string) => void; onClose: () => void;
 }) {
   const [q, setQ] = useState("");
@@ -300,12 +302,14 @@ function Picker({ role, champions, saved: records, data, names, current, taken, 
     const played = new Map<string, number>();
     for (const r of data.rows) { const id = r.picks[role]; if (id) played.set(id, (played.get(id) ?? 0) + 1); }
     const mj = records.midJungle ?? [];
-    const saved = new Set(role === "BOT" ? records.botPairings.map((b) => b.champion)
+    const tops = records.topPicks ?? [];
+    const saved = new Set(lane === "top-jungle" ? (role === "TOP" ? tops.map((t) => t.champion) : tops.flatMap((t) => t.surrounding.jungle))
+      : role === "BOT" ? records.botPairings.map((b) => b.champion)
       : role === "SUPPORT" ? records.botPairings.flatMap((b) => [...b.clashDefault, ...b.alternatives])
       : [...mj.filter((m) => m.role === role).map((m) => m.anchor), ...mj.filter((m) => m.role !== role).flatMap((m) => [...m.clashDefault, ...m.alternatives])]);
     const all = champions.filter((c) => c.roles.includes(role) || played.has(c.id)).sort((a, b) => a.name.localeCompare(b.name));
     return { common: all.filter((c) => saved.has(c.id) || played.has(c.id)), rest: all.filter((c) => !saved.has(c.id) && !played.has(c.id)) };
-  }, [role, champions, records, data.rows]);
+  }, [role, lane, champions, records, data.rows]);
   const needle = q.trim().toLowerCase();
   const match = (c: Champion) => !needle || c.name.toLowerCase().includes(needle) || c.aliases.some((a) => a.toLowerCase().includes(needle));
   const shown = [...common, ...rest].filter(match);
@@ -338,9 +342,9 @@ function Picker({ role, champions, saved: records, data, names, current, taken, 
 
 // ---------- partner groups ----------
 
-function Group({ title, layer, list, empty, note, collapse, names, from, partner, compare, pickPartner, toggleCompare, readOf, pairOf }: {
+function Group({ title, layer, list, empty, note, collapse, names, from, lane, partner, compare, pickPartner, toggleCompare, readOf, pairOf }: {
   title: string; layer: "clash" | "pro" | "proposed"; list: PartnerOption[]; empty: string; note?: string; collapse?: number;
-  names: Names; from: DuoRole; partner?: string; compare: string[]; pickPartner: (id: string) => void; toggleCompare: (id: string) => void;
+  names: Names; from: DuoRole; lane: LaneKey; partner?: string; compare: string[]; pickPartner: (id: string) => void; toggleCompare: (id: string) => void;
   readOf: (b?: string, s?: string) => DuoRead | undefined; pairOf: (p: string) => [string, string];
 }) {
   const [all, setAll] = useState(false);
@@ -354,7 +358,7 @@ function Group({ title, layer, list, empty, note, collapse, names, from, partner
           {shown.map((o) => {
             const [b, s] = pairOf(o.id);
             const read = readOf(b, s);
-            return <PartnerCard key={o.id} o={o} names={names} from={from} read={read} open={partner === o.id} comparing={compare.includes(o.id)}
+            return <PartnerCard key={o.id} o={o} names={names} from={from} lane={lane} read={read} open={partner === o.id} comparing={compare.includes(o.id)}
               onOpen={() => pickPartner(o.id)} onCompare={() => toggleCompare(o.id)} />;
           })}
         </ul>
@@ -366,18 +370,18 @@ function Group({ title, layer, list, empty, note, collapse, names, from, partner
 
 const evidenceText = (e: PairEvidence) => `${e.games.length} game${e.games.length === 1 ? "" : "s"} · ${e.teams.length} team${e.teams.length === 1 ? "" : "s"}`;
 
-function PartnerCard({ o, names, from, read, open, comparing, onOpen, onCompare }: {
-  o: PartnerOption; names: Names; from: DuoRole; read?: DuoRead; open: boolean; comparing: boolean; onOpen: () => void; onCompare: () => void;
+function PartnerCard({ o, names, from, lane, read, open, comparing, onOpen, onCompare }: {
+  o: PartnerOption; names: Names; from: DuoRole; lane: LaneKey; read?: DuoRead; open: boolean; comparing: boolean; onOpen: () => void; onCompare: () => void;
 }) {
   const name = names[o.id] ?? o.id;
   return (
     <li className={`px-card${open ? " open" : ""}`}>
       <button type="button" className="px-card-main" aria-pressed={open} onClick={onOpen} title={open ? "Close this pairing" : `Inspect ${name}`}>
-        <ChampIcon id={o.id} name={name} role={partnerRoleOf(from)} size="md" />
+        <ChampIcon id={o.id} name={name} role={partnerRoleOf(from, lane)} size="md" />
         <span className="px-card-text">
           <span className="px-card-name">{name}</span>
           <span className="px-tags">
-            {o.saved && <span className="px-tag clash" title={o.saved.note}>{SAVED_LABEL[o.saved.kind]}{o.saved.sides && !o.saved.sides[LANES[laneOf(from)].a === from ? "a" : "b"] ? ` · ${name}'s record` : ""}</span>}
+            {o.saved && <span className="px-tag clash" title={o.saved.note}>{SAVED_LABEL[o.saved.kind]}{o.saved.sides && !o.saved.sides[LANES[lane].a === from ? "a" : "b"] ? ` · ${name}'s record` : ""}</span>}
             {o.evidence && <span className="px-tag pro tnum" title={`Recorded pro games with both on one team: ${o.evidence.wins}–${o.evidence.losses}, ${o.evidence.teams.join(", ")}`}>Pro · {evidenceText(o.evidence)}</span>}
             {o.proposed && !o.saved && <span className="px-tag proposed" title={o.proposed.reason}>Proposed · {CONFIDENCE_LABEL[o.proposed.confidence].toLowerCase()}</span>}
           </span>
@@ -424,8 +428,9 @@ function PairDetail({ a, b, lane, names, data, saved: records, proposed, read, n
   // (Synergies), only a comparison among that champion's partners is offered.
   const prefOf = (id: string, role: DuoRole, not: string) => (lane === "bot"
     ? (role === "BOT" ? records.botPairings.find((r) => r.champion === id)?.clashDefault : undefined)
+    : lane === "top-jungle" ? (role === "TOP" ? records.topPicks?.find((t) => t.champion === id)?.surrounding.jungle : undefined)
     : records.midJungle?.find((m) => m.anchor === id && m.role === role)?.clashDefault)?.find((x) => x !== not);
-  const beside = saved?.kind === "default" ? undefined
+  const beside = saved?.kind === "default" || saved?.kind === "fits" ? undefined
     : [{ role: RA, anchor: a, mine: b, def: prefOf(a, RA, b) }, { role: RB, anchor: b, mine: a, def: prefOf(b, RB, a) }]
       .find((c) => c.def && (!fixedRole || fixedRole === c.role));
   const shown = !!beside && comparing.includes(beside.def!) && comparing.includes(beside.mine);
@@ -450,13 +455,16 @@ function PairDetail({ a, b, lane, names, data, saved: records, proposed, read, n
         </div>
         <span className="px-actions">
           <Link className="btn sm primary" href="/" onClick={() => usePair({ [RA]: a, [RB]: b })} title={`Puts ${nm(a)} ${ROLE_AT[RA]} and ${nm(b)} ${ROLE_AT[RB]} on your current draft; every other pick stays. Nothing is locked until you open the room.`}>Use in Draft Room</Link>
-          {context !== "synergies" && <Link className="btn sm" href={synergiesHref(a, RA) + `&view=partners&partner=${b}`}>Open in Synergies</Link>}
+          {context !== "synergies" && <Link className="btn sm" href={lane === "top-jungle" ? synergiesHref(a, RA) + "&view=synergies" : synergiesHref(a, RA) + `&view=partners&partner=${b}`}>Open in Synergies</Link>}
         </span>
       </header>
 
       <section className={`layer clash${!saved && prop ? " proposed" : ""}`}>
         <div className="layer-label"><span className="ldot" />Synergy{!saved && prop && <span className="push"><ProposedTag /></span>}</div>
-        {saved ? (lane === "bot" || !saved.sides
+        {saved ? (lane === "top-jungle"
+            // Only a top laner's record lists junglers, in one list with no preferred / alternative split.
+            ? <p className="small"><b>{SAVED_LABEL[saved.kind]}</b> <span className="muted">· {nm(b)} is one of the junglers on {nm(a)}&apos;s saved top record</span></p>
+            : lane === "bot" || !saved.sides
             ? <p className="small"><b>{SAVED_LABEL[saved.kind]}</b> for {nm(a)}{saved.note && <span className="muted"> · {saved.note}</span>}</p>
             // Each champion keeps its own record; the Draft Room reads the record of the champion that is locked.
             : <p className="small" title="Each champion has its own saved record. The Draft Room uses the record of the champion that is locked.">
@@ -470,7 +478,7 @@ function PairDetail({ a, b, lane, names, data, saved: records, proposed, read, n
           : <p className="small muted">Not one of your saved pairings{hasBotRecord ? `: ${nm(a)}'s saved record decides the Draft Room's supports` : ""}.</p>}
         {beside && !shown && (
           <p><button type="button" className="btn sm" onClick={() => onCompareSaved(beside.role, [beside.def!, beside.mine])} title="Two plans side by side, not a ranking">
-            Compare with {beside.role === RA ? `${nm(a)} + ${nm(beside.def!)}` : `${nm(beside.def!)} + ${nm(b)}`}, your saved preferred</button></p>
+            Compare with {beside.role === RA ? `${nm(a)} + ${nm(beside.def!)}` : `${nm(beside.def!)} + ${nm(b)}`}, {lane === "top-jungle" ? "a saved pairing" : "your saved preferred"}</button></p>
         )}
       </section>
 
@@ -478,10 +486,10 @@ function PairDetail({ a, b, lane, names, data, saved: records, proposed, read, n
         <div className="layer-label"><span className="ldot" />Draft logic<span className="push xs faint">{note ? "written read from the kits · not yet reviewed" : "read from the stored kit values"}</span></div>
         {!read && !note ? <p className="small muted">One of these champions has no stored kit yet, so nothing is read for this pair.</p> : (
           <dl className="px-read">
-            <dt>{lane === "bot" ? "Lane plan" : "Plan"}</dt><dd>{note?.plan ?? read?.plan.text}</dd>
+            <dt>{lane === "bot" ? "Lane plan" : lane === "top-jungle" ? "Gank plan" : "Plan"}</dt><dd>{note?.plan ?? read?.plan.text}</dd>
             <dt>Why it works</dt><dd>{lines(note?.why ?? read?.works.map((l) => l.text), read?.works)}</dd>
             {(note?.strengths.length || read?.strengths.length) ? <><dt>Strengths</dt><dd>{lines(note?.strengths.length ? note.strengths : read?.strengths.map((l) => l.text), note?.strengths.length ? undefined : read?.strengths)}</dd></> : null}
-            <dt>Weaknesses</dt><dd className="bad">{lines(note?.weaknesses ?? read?.weaknesses.map((l) => l.text), note ? undefined : read?.weaknesses, lane === "bot" ? "No weakness the stored kits show for the pair itself; the enemy lane decides the rest." : "No weakness the stored kits show for the pair itself; the rest of the draft decides.")}</dd>
+            <dt>Weaknesses</dt><dd className="bad">{lines(note?.weaknesses ?? read?.weaknesses.map((l) => l.text), note ? undefined : read?.weaknesses, lane === "bot" ? "No weakness the stored kits show for the pair itself; the enemy lane decides the rest." : lane === "top-jungle" ? "No weakness the stored kits show for the pair itself; the enemy top and jungler decide the rest." : "No weakness the stored kits show for the pair itself; the rest of the draft decides.")}</dd>
             {(note?.curve || read) && <><dt>Power curve</dt><dd title={note ? undefined : read?.curve.basis}>{note?.curve ?? read?.curve.text}</dd></>}
           </dl>
         )}
@@ -547,7 +555,7 @@ function Lessons({ list, onLesson }: { list: PairLesson[]; onLesson?: (id: strin
       <ul className="px-lesson-list">
         {list.map((l, i) => (
           <li key={i}>
-            <span className="px-lesson-kind">{l.kind === "pair" ? "This pair" : l.kind === "adc" ? `ADC type · ${l.title}` : l.kind === "support" ? `Support type · ${l.title}` : l.kind === "jungle" ? `Jungler type · ${l.title}` : "Lesson"}</span>
+            <span className="px-lesson-kind">{l.kind === "pair" ? "This pair" : l.kind === "adc" ? `ADC type · ${l.title}` : l.kind === "support" ? `Support type · ${l.title}` : l.kind === "jungle" ? `Jungler type · ${l.title}` : l.kind === "top" ? `Top class · ${l.title}` : "Lesson"}</span>
             <span>{l.fit && <b className={`ins-fit ${l.fit}`}>{l.fit === "fits" ? "Same plan" : "Clashing plans"} · </b>}{l.text}</span>
             {l.stat && <span className="ins-stat" title={`Creator-reported ranked figure (${l.period ?? "solo queue"}); not checked independently and not a pro statistic`}>{l.stat.text} · {l.stat.patch} solo queue</span>}
             <span className="px-lesson-links">
@@ -594,10 +602,10 @@ function Compare({ a, b, anchorRole, lane, names, data, saved: records, proposed
         <table className="px-compare-table">
           <thead><tr><th />{cols.map((c) => (
             <th key={c.partner} scope="col"><button type="button" className="px-cmp-name" onClick={() => onOpen(c.partner)} title={`Inspect ${nm(c.bot)} + ${nm(c.sup)}`}>
-              <ChampIcon id={c.partner} name={nm(c.partner)} role={partnerRoleOf(anchorRole)} size="sm" />{nm(c.partner)}</button></th>))}</tr></thead>
+              <ChampIcon id={c.partner} name={nm(c.partner)} role={partnerRoleOf(anchorRole, lane)} size="sm" />{nm(c.partner)}</button></th>))}</tr></thead>
           <tbody>
             {row("Synergy", (c) => c.saved ? <span className="clash-text">{SAVED_LABEL[c.saved.kind]}{c.saved.sides && !c.saved.sides[anchorRole === RA ? "a" : "b"] ? ` · on ${nm(c.partner)}'s record` : ""}</span> : c.prop ? <span>Proposed · {CONFIDENCE_LABEL[c.prop.confidence].toLowerCase()}</span> : <span className="muted">Not saved</span>)}
-            {row(lane === "bot" ? "Lane plan" : "Plan", (c) => c.read ? <><span className={`px-plan ${c.read.plan.fit}`}>{c.read.plan.label}</span><span className="xs muted"> {c.note?.plan ?? c.read.plan.text}</span></> : <span className="muted">No kit read</span>)}
+            {row(lane === "bot" ? "Lane plan" : lane === "top-jungle" ? "Gank plan" : "Plan", (c) => c.read ? <><span className={`px-plan ${c.read.plan.fit}`}>{c.read.plan.label}</span><span className="xs muted"> {c.note?.plan ?? c.read.plan.text}</span></> : <span className="muted">No kit read</span>)}
             {row("Why it works", (c) => <span className="small">{(c.note?.why ?? c.read?.works.map((l) => l.text) ?? [])[0] ?? <span className="muted">Nothing specific in the stored kits</span>}</span>)}
             {row("Weak point", (c) => <span className="small bad">{(c.note?.weaknesses ?? c.read?.weaknesses.map((l) => l.text) ?? [])[0] ?? <span className="muted">None the kits show</span>}</span>)}
             {row("Power curve", (c) => <span className="small">{c.note?.curve ?? c.read?.curve.text ?? "—"}</span>)}

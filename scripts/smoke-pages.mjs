@@ -1559,6 +1559,20 @@ await open("/insights/?view=pairings&lane=mid-jungle&mid=syndra&jungle=lee-sin")
   const cmp = await text("#px-compare");
   check("pairings: an observed mid + jungle pair compares with the saved preferred", /Lee Sin/.test(cmp) && /Saved preferred/.test(cmp) && /Not saved/.test(cmp) && /Events and patches/.test(cmp), cmp.slice(0, 80));
 }
+// Top + Jungle (alan, 2026-11-14): the third pairing type on the same explorer; a top's saved junglers, recorded pro
+// pairs with games and teams, a gank plan read from the kits.
+await open("/insights/?view=pairings&lane=top-jungle&top=jax&jungle=sejuani");
+{
+  const seg = await text(".ins-lane");
+  check("pairings: three pairing types, Top + Jungle chosen", /Bot \+ Support/.test(seg) && /Mid \+ Jungle/.test(seg) && /Top \+ Jungle/.test(await text(".ins-lane button.active")), seg);
+  check("pairings: three partner groups for Jax's junglers", (await page.locator(".px-group").count()) === 3, "");
+  const syn = await text(".px-detail .layer.clash");
+  check("pairings: Jax + Sejuani is a saved pairing with a gank plan", /Jax \+ Sejuani/.test(await text(".px-detail h3")) && /Saved pairing/.test(syn) && /Gank plan/.test(await text(".px-read")) && (await page.locator(".px-read dt").count()) >= 4, syn.slice(0, 80));
+  const obs = await text(".px-group.pro");
+  check("pairings: observed top + jungle pairs show games and teams", /Pro · \d+ games? · \d+ teams?/.test(obs), obs.slice(0, 80));
+  await page.locator(".ins-lane button", { hasText: "Mid + Jungle" }).click();
+  check("pairings: switching the pairing type keeps the jungler", /lane=mid-jungle/.test(page.url()) && /jungle=sejuani/.test(page.url()) && /top=jax/.test(page.url()), page.url());
+}
 await open("/synergies/jungle/?champ=vi&view=partners&partner=vex");
 check("pairings: Synergies Jungle partners says whose record saves Vex + Vi", /on Vex.s record/.test(await text(".px-detail .layer.clash")) && /Vi.s record does not list Vex/.test(await text(".px-detail .layer.clash")), await text(".px-detail .layer.clash"));
 await open("/synergies/bot/?champ=yunara&view=pro");

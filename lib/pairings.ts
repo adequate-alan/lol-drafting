@@ -10,6 +10,8 @@
 //                           weaknesses, power curve, each line naming the values it rests on
 //   coreRead(...)           the same read for a mid + jungle core (alan, 2026-11-14): who starts and who follows, early
 //                           pressure, damage mix, power curve
+//   topRead(...)            the same read for a top laner and a jungler (alan, 2026-11-14): gank setup and follow-up, the
+//                           early 2v2, tower dives, wave priority, side pressure and whether the two play to one clock
 //   pairLessons(...)        Draft Insights moments that speak to the pair (creator opinions and solo-queue stats, labelled)
 //
 // Four layers stay apart: a recorded game is Observed Pro Evidence and never becomes a saved pairing or a score; a kit read
@@ -21,7 +23,7 @@ import type { ChampionKit } from "./model-v2/schema";
 import { comparePatch } from "./patch";
 import { handAlts } from "./pro-alternatives";
 import { proposedPartners, type ProposedLink } from "./proposed";
-import type { BotPairing, DraftInsights, MidJunglePairing, PairingNote, ProDraft, ProGame, ProposedRecord, Role, Source } from "./schema";
+import type { BotPairing, DraftInsights, MidJunglePairing, PairingNote, ProDraft, ProGame, ProposedRecord, Role, Source, TopPick } from "./schema";
 
 type Side = "blue" | "red";
 
@@ -163,16 +165,20 @@ export const PAIR_FEW_TEAMS = 3;
 
 // ---------- partners of one anchor, in three groups ----------
 
-// Two pairings share the layer (alan, 2026-11-14): the bot lane (ADC + support) and the mid + jungle core. `a` is the
-// carry slot shown first (ADC, mid), `b` its partner slot (support, jungler); a pair is always written [a, b].
-export type LaneKey = "bot" | "mid-jungle";
-export type DuoRole = "BOT" | "SUPPORT" | "MID" | "JUNGLE";
-export const LANES: Record<LaneKey, { a: DuoRole; b: DuoRole }> = { bot: { a: "BOT", b: "SUPPORT" }, "mid-jungle": { a: "MID", b: "JUNGLE" } };
-export const laneOf = (r: DuoRole): LaneKey => (r === "BOT" || r === "SUPPORT" ? "bot" : "mid-jungle");
-export type SavedKind = "default" | "alt";
-export const SAVED_LABEL: Record<SavedKind, string> = { default: "Saved preferred", alt: "Saved alternative" };
-/** alan's saved records, by lane. Bot lanes are saved on the ADC's record; a mid + jungle pair on either champion's. */
-export interface SavedRecords { botPairings: BotPairing[]; midJungle?: MidJunglePairing[] }
+// Three pairings share the layer (alan, 2026-11-14): the bot lane (ADC + support), the mid + jungle core and top + jungle.
+// `a` is the lane slot shown first (ADC, mid, top), `b` its partner slot (support, jungler); a pair is always written
+// [a, b]. A jungler sits in two pairings, so anything that starts from a jungler names its lane (`laneOf` gives the core).
+export type LaneKey = "bot" | "mid-jungle" | "top-jungle";
+export type DuoRole = "BOT" | "SUPPORT" | "MID" | "JUNGLE" | "TOP";
+export const LANES: Record<LaneKey, { a: DuoRole; b: DuoRole }> = { bot: { a: "BOT", b: "SUPPORT" }, "mid-jungle": { a: "MID", b: "JUNGLE" }, "top-jungle": { a: "TOP", b: "JUNGLE" } };
+export const LANE_KEYS = Object.keys(LANES) as LaneKey[];
+export const laneOf = (r: DuoRole): LaneKey => (r === "BOT" || r === "SUPPORT" ? "bot" : r === "TOP" ? "top-jungle" : "mid-jungle");
+// `fits`: a top laner's saved record lists its junglers in one list, with no preferred / alternative split.
+export type SavedKind = "default" | "alt" | "fits";
+export const SAVED_LABEL: Record<SavedKind, string> = { default: "Saved preferred", alt: "Saved alternative", fits: "Saved pairing" };
+/** alan's saved records, by lane. Bot lanes are saved on the ADC's record; a mid + jungle pair on either champion's; a
+ *  top + jungle pair on the top laner's record only (its `surrounding.jungle`). */
+export interface SavedRecords { botPairings: BotPairing[]; midJungle?: MidJunglePairing[]; topPicks?: TopPick[] }
 
 export interface PartnerOption {
   id: string; // the partner
@@ -186,7 +192,7 @@ export interface PartnerOption {
 
 export interface PartnerGroups { saved: PartnerOption[]; observed: PartnerOption[]; proposed: PartnerOption[] }
 
-export const partnerRoleOf = (r: DuoRole): DuoRole => (r === "BOT" ? "SUPPORT" : r === "SUPPORT" ? "BOT" : r === "MID" ? "JUNGLE" : "MID");
+export const partnerRoleOf = (r: DuoRole, lane: LaneKey = laneOf(r)): DuoRole => (LANES[lane].a === r ? LANES[lane].b : LANES[lane].a);
 
 /** alan's saved link between a bot and a support, from the bot's record. A pairing only seen in pro games is never one (alan, 2026-11-13). */
 export function savedLink(bot: string, support: string, botPairings: BotPairing[]): PartnerOption["saved"] {
@@ -197,7 +203,7 @@ export function savedLink(bot: string, support: string, botPairings: BotPairing[
   return undefined;
 }
 
-const KIND_ORDER: Record<SavedKind, number> = { default: 0, alt: 1 };
+const KIND_ORDER: Record<SavedKind, number> = { default: 0, alt: 1, fits: 0 };
 
 /**
  * alan's saved link between a mid and a jungler. Each champion has its own record, so the link can sit on the mid's
@@ -219,7 +225,13 @@ export function savedCore(mid: string, jungle: string, midJungle: MidJunglePairi
 
 /** The saved link of a pair [a, b] in its lane, read from the `view` slot's side where the lane keeps two records. */
 export const savedPair = (lane: LaneKey, a: string, b: string, saved: SavedRecords, view: "a" | "b" = "a"): PartnerOption["saved"] =>
-  lane === "bot" ? savedLink(a, b, saved.botPairings) : savedCore(a, b, saved.midJungle ?? [], view);
+  lane === "bot" ? savedLink(a, b, saved.botPairings) : lane === "top-jungle" ? savedTop(a, b, saved.topPicks ?? []) : savedCore(a, b, saved.midJungle ?? [], view);
+
+/** alan's saved link between a top laner and a jungler: the top's record lists the jungler among its junglers. One list,
+ *  so neither preferred nor alternative; junglers keep no list of tops, so the link always sits on the top's record. */
+export function savedTop(top: string, jungle: string, topPicks: TopPick[]): PartnerOption["saved"] {
+  return topPicks.find((t) => t.champion === top)?.surrounding.jungle.includes(jungle) ? { kind: "fits", on: "a", sides: { a: "fits" } } : undefined;
+}
 
 const byEvidence = (a: PartnerOption, b: PartnerOption) =>
   (b.evidence?.teams.length ?? 0) - (a.evidence?.teams.length ?? 0) || (b.evidence?.games.length ?? 0) - (a.evidence?.games.length ?? 0)
@@ -233,9 +245,9 @@ const byEvidence = (a: PartnerOption, b: PartnerOption) =>
  *   proposed  kit-based proposals not already above: the proposed layer's own order (preferred, then confidence)
  * Each champion appears once, in the first group it qualifies for; its other signals ride along as labels.
  */
-export function partnerOptions(anchor: { id: string; role: DuoRole }, input: SavedRecords & { proposed: ProposedRecord[]; rows: PairGame[]; playable: (id: string, role: DuoRole) => boolean; newestPatch?: string }): PartnerGroups {
-  const other = partnerRoleOf(anchor.role);
-  const lane = laneOf(anchor.role);
+export function partnerOptions(anchor: { id: string; role: DuoRole; lane?: LaneKey }, input: SavedRecords & { proposed: ProposedRecord[]; rows: PairGame[]; playable: (id: string, role: DuoRole) => boolean; newestPatch?: string }): PartnerGroups {
+  const lane = anchor.lane ?? laneOf(anchor.role);
+  const other = partnerRoleOf(anchor.role, lane);
   const isA = LANES[lane].a === anchor.role;
   const ev = pairEvidence(input.rows, anchor.id, anchor.role, other, input.newestPatch);
   const pair = (p: string) => (isA ? [anchor.id, p] : [p, anchor.id]) as [string, string];
@@ -254,6 +266,11 @@ export function partnerOptions(anchor: { id: string; role: DuoRole }, input: Sav
     saved = rec ? [...rec.clashDefault, ...handAlts(rec)].filter((id) => !seen.has(id)).map((id) => make(id, "saved")) : [];
   } else if (anchor.role === "SUPPORT") {
     saved = input.botPairings.filter((b) => b.clashDefault.includes(anchor.id) || b.alternatives.includes(anchor.id)).map((b) => make(b.champion, "saved")).sort(byKind);
+  } else if (lane === "top-jungle") {
+    // The top's own junglers in record order; for a jungler, the tops whose records list it, by recorded teams.
+    saved = isA
+      ? (input.topPicks?.find((t) => t.champion === anchor.id)?.surrounding.jungle ?? []).filter((id) => !seen.has(id)).map((id) => make(id, "saved"))
+      : (input.topPicks ?? []).filter((t) => t.champion !== anchor.id && t.surrounding.jungle.includes(anchor.id)).map((t) => make(t.champion, "saved")).sort(byEvidence);
   } else {
     // Mid or jungle: the anchor's own record in its order, then the partners whose records list the anchor.
     const records = input.midJungle ?? [];
@@ -472,16 +489,103 @@ export function coreRead(mid: ChampionKit | undefined, jng: ChampionKit | undefi
   return { plan, works, strengths, weaknesses, curve };
 }
 
+// ---------- General Draft Logic for a top laner and a jungler ----------
+
+/**
+ * Top + jungle read from the two kits as stored (unreviewed heuristics except where noted in kits.ts): how a gank on the
+ * top lane starts and who follows, the early 2v2, tower dives, wave priority, pressure on the top side of the map and
+ * whether the two play to one clock. Same shape and rules as the other reads: `split` means the kits want different
+ * things, never that the pair is bad, and every line names the stored values it rests on. No lane matchup is read here
+ * (the enemy top decides that; see Counters), and nothing is read by a score or an order.
+ */
+export function topRead(top: ChampionKit | undefined, jng: ChampionKit | undefined, names: { top: string; jungle: string }): DuoRead | undefined {
+  if (!top || !jng) return undefined;
+  const T = names.top, J = names.jungle;
+  const tS = starts(top), jS = starts(jng);
+  const tF = top.kit.followUp >= 2, jF = jng.kit.followUp >= 2;
+  const tE = top.kit.curve.early, jE = jng.kit.curve.early;
+  const b = `${T}: ${startWord(top)}, follow-up ${top.kit.followUp}, early curve ${tE}; ${J}: ${startWord(jng)}, follow-up ${jng.kit.followUp}, early curve ${jE}`;
+  const splitter = top.attrs.sidePressure >= 3;
+  const lateBoth = top.kit.curve.late >= 3 && jng.kit.curve.late >= 3 && tE <= 1 && jE <= 1;
+  const needsSetup = top.kit.setupDependency >= 2 || top.flags.includes("needs-setup");
+  const plan = ((): DuoRead["plan"] => {
+    if (tS && jS) return { label: "Either can start the gank", fit: "shared", basis: b, text: `${T} and ${J} both bring a start of their own, so a gank on the top lane works from either side and a missed one is not the only chance.` };
+    if (jS) return tF
+      ? { label: "Jungler starts, top follows", fit: "shared", basis: b, text: `${J} starts the gank and ${T} follows at once with crowd control or burst of their own.` }
+      : needsSetup
+        ? { label: "Jungler brings the lockdown", fit: "shared", basis: `${b}; ${T}: setup dependency ${top.kit.setupDependency}`, text: `${T} needs someone else to hold the target; ${J}'s gank provides it.` }
+        : { label: "Jungler starts, top adds damage", fit: "neutral", basis: b, text: `${J} starts the gank; ${T} adds damage but little to keep the target in place.` };
+    if (tS) return jF || jE >= 2
+      ? { label: "Top sets up the gank", fit: "shared", basis: b, text: `${T}'s crowd control holds the enemy top, so ${J} only has to arrive${jF ? " and follows with their own" : ""}.` }
+      : { label: "Top sets up, jungler arrives late", fit: "neutral", basis: b, text: `${T} can hold a target for a gank, but ${J} is weak in the levels when top-lane ganks usually happen.` };
+    if (splitter && jng.fightStart !== "primary" && tE <= 1 && jE >= 3) return { label: "Different clocks", fit: "split", basis: `${b}; ${T}: side pressure ${top.attrs.sidePressure}`, text: `${J} wants fights early; ${T} wants a quiet lane and a side lane later. One of them plays the other's game.` };
+    if (lateBoth) return { label: "Scale on the top side", fit: "neutral", basis: `${T} ${curveText(top)}; ${J} ${curveText(jng)}`, text: `Neither forces the top lane early and both peak late: the pair plays for items and concedes early pressure.` };
+    if (tE >= 2 && jE >= 2 && (tF || jF)) return { label: "Win the 2v2 on damage", fit: "neutral", basis: b, text: `Neither holds a target down, but both fight well early: the pair wins top-side skirmishes on damage rather than on a gank that locks someone in place.` };
+    if (top.attrs.frontline >= 2 && jng.attrs.frontline <= 1) return { label: "Top holds, jungler adds damage", fit: "neutral", basis: `${b}; frontline ${T} ${top.attrs.frontline}, ${J} ${jng.attrs.frontline}`, text: `${T} absorbs the lane while ${J} adds damage; neither starts the gank with crowd control.` };
+    return { label: "No gank setup between them", fit: "split", basis: b, text: `Neither ${T} nor ${J} brings a start: a gank on the top lane depends on the enemy top stepping too far forward.` };
+  })();
+
+  const works: ReadLine[] = [], strengths: ReadLine[] = [], weaknesses: ReadLine[] = [];
+  if (!/follows/.test(plan.label)) {
+    if (tF && jS) works.push({ text: `${T} follows ${J}'s start with crowd control or burst of their own.`, basis: `${T}: follow-up ${top.kit.followUp}; ${J}: ${startWord(jng)}` });
+    else if (jF && tS && !/sets up/.test(plan.label)) works.push({ text: `${J} follows ${T}'s start at once.`, basis: `${J}: follow-up ${jng.kit.followUp}; ${T}: ${startWord(top)}` });
+  }
+  if ((tS || jS) && (top.attrs.frontline >= 2 || jng.attrs.frontline >= 2) && tE >= 2 && jE >= 2)
+    works.push({ text: `Tower dives are on the table: one of them holds the target, one of them can take tower shots, and both are strong enough early to finish.`, basis: `${b}; frontline ${T} ${top.attrs.frontline}, ${J} ${jng.attrs.frontline}` });
+  if (top.attrs.lanePressure >= 2 && jE >= 2)
+    works.push({ text: `${T}'s wave priority lets ${J} invade or take the top-side objective with the top laner able to move first.`, basis: `${T}: lane pressure ${top.attrs.lanePressure}; ${J}: early curve ${jE}` });
+  if (top.kit.resourceDemand >= 3 && jng.kit.resourceDemand <= 1)
+    works.push({ text: `${J} needs little gold, so the top side's farm and kills can go to ${T}.`, basis: `resource demand ${T} ${top.kit.resourceDemand}, ${J} ${jng.kit.resourceDemand}` });
+  if (top.kit.aoeCc >= 2 && jng.kit.aoeCc >= 2)
+    works.push({ text: `Their area crowd control overlaps in a grouped fight.`, basis: `area crowd control ${T} ${top.kit.aoeCc}, ${J} ${jng.kit.aoeCc}` });
+  if (tE >= 2 && jE >= 2 && tE + jE >= 5)
+    strengths.push({ text: `Early 2v2: both are strong in the first levels, so a top-side skirmish against the enemy top and jungler is one they can take.`, basis: `early curve ${T} ${tE}, ${J} ${jE}` });
+  if (splitter && jng.attrs.objectiveControl >= 2)
+    strengths.push({ text: `Cross-map pressure: ${T} draws defenders to a side lane while ${J} controls the objective on the other side.`, basis: `${T}: side pressure ${top.attrs.sidePressure}; ${J}: objective control ${jng.attrs.objectiveControl}` });
+  if (top.attrs.frontline >= 2 && jng.attrs.frontline <= 1 && (roleDamage(jng, "JUNGLE")?.damageThreat ?? 0) >= 2)
+    strengths.push({ text: `${T} stands in front, which frees ${J} to be a damage jungler.`, basis: `frontline ${T} ${top.attrs.frontline}, ${J} ${jng.attrs.frontline}` });
+  const tD = mostly(top, "TOP"), jD = mostly(jng, "JUNGLE");
+  if (tD && jD && tD !== jD) strengths.push({ text: `Mixed damage: ${T} deals mostly ${tD} and ${J} mostly ${jD}, so one defensive stat does not answer both.`, basis: `damage split ${T} ${tD}, ${J} ${jD}` });
+  if (top.kit.global || jng.kit.global)
+    strengths.push({ text: `A map-wide ultimate lets the pair join each other's fights from across the map.`, basis: `${top.kit.global ? T : J}: global ultimate` });
+  if (tD && jD && tD === jD) weaknesses.push({ text: `Both deal mostly ${tD} damage: the other lanes have to bring the rest, or the enemy stacks one resistance.`, basis: `damage split ${T} ${tD}, ${J} ${jD}` });
+  if (tE <= 1 && jE <= 1)
+    weaknesses.push({ text: `Weak early: the enemy top and jungler get the first move on the top side, and a dive on ${T} is hard to answer.`, basis: `early curve ${T} ${tE}, ${J} ${jE}` });
+  else if (jE >= 3 && tE <= 1 && plan.fit !== "split")
+    weaknesses.push({ text: `${J}'s strongest window comes while ${T} is still weak: early ganks top have less to work with.`, basis: `early curve ${T} ${tE}, ${J} ${jE}` });
+  if (splitter && jng.fightStart === "primary" && !top.kit.global)
+    weaknesses.push({ text: `${J}'s engage wants five together while ${T} wants to be in a side lane: the fight can start without the top laner.`, basis: `${T}: side pressure ${top.attrs.sidePressure}, no global ultimate; ${J}: primary fight start` });
+  if (top.kit.resourceDemand >= 3 && jng.kit.resourceDemand >= 3)
+    weaknesses.push({ text: `Both want gold: the top side cannot feed two carries, so one of them plays on less.`, basis: `resource demand ${T} ${top.kit.resourceDemand}, ${J} ${jng.kit.resourceDemand}` });
+  if (top.attrs.frontline <= 1 && jng.attrs.frontline <= 1)
+    weaknesses.push({ text: `Neither stands in front: the frontline has to come from the support.`, basis: `frontline ${T} ${top.attrs.frontline}, ${J} ${jng.attrs.frontline}` });
+  if (top.attrs.frontline >= 3 && jng.attrs.frontline >= 3)
+    weaknesses.push({ text: `Two frontliners: the damage has to come from mid and bot.`, basis: `frontline ${T} ${top.attrs.frontline}, ${J} ${jng.attrs.frontline}` });
+  if (top.attrs.lanePressure <= 1 && jE >= 3)
+    weaknesses.push({ text: `${T} rarely has the wave, so ${J}'s early invades and top-side objectives arrive without the top laner.`, basis: `${T}: lane pressure ${top.attrs.lanePressure}; ${J}: early curve ${jE}` });
+  if (!tS && !jS && plan.fit !== "split")
+    weaknesses.push({ text: `Neither holds a target in place: ganks top rely on damage or on the enemy overextending.`, basis: b });
+
+  const cb = `${T} ${curveText(top)}; ${J} ${curveText(jng)}`;
+  const curve: ReadLine = tE >= 3 && jE >= 3
+    ? { text: `Strongest early: both peak before items, so the lead has to be converted${top.kit.curve.late <= 1 || jng.kit.curve.late <= 1 ? " before they fall off" : ""}.`, basis: cb }
+    : lateBoth ? { text: `Both peak late: the pair is played to reach items, not to win early.`, basis: cb }
+    : jE >= 3 && top.kit.curve.late >= 3 && tE <= 2 ? { text: `${J} carries the early game while ${T} scales into the late game.`, basis: cb }
+    : tE >= 3 && jng.kit.curve.late >= 3 && jE <= 2 ? { text: `${T} wins the early lane while ${J} scales into the late game.`, basis: cb }
+    : { text: `${Math.max(tE, jE) >= 3 ? "Strong early" : "Even early"}, ${Math.max(top.kit.curve.mid, jng.kit.curve.mid) >= 3 ? "strongest in the mid game" : "steady through the mid game"}${top.kit.curve.late >= 3 || jng.kit.curve.late >= 3 ? ", still strong late" : top.kit.curve.late <= 1 && jng.kit.curve.late <= 1 ? ", falling off late" : ""}.`, basis: cb };
+  return { plan, works, strengths, weaknesses, curve };
+}
+
 /** The kit read of a pair [a, b] in its lane. */
 export const pairRead = (lane: LaneKey, a: ChampionKit | undefined, b: ChampionKit | undefined, names: { a: string; b: string }) =>
-  lane === "bot" ? duoRead(a, b, { bot: names.a, sup: names.b }) : coreRead(a, b, { mid: names.a, jungle: names.b });
+  lane === "bot" ? duoRead(a, b, { bot: names.a, sup: names.b }) : lane === "top-jungle" ? topRead(a, b, { top: names.a, jungle: names.b }) : coreRead(a, b, { mid: names.a, jungle: names.b });
 
 // ---------- Draft Insights moments for a pair ----------
 
 export interface PairLesson {
   lesson: string; // Draft Insights lesson id
   title: string;
-  kind: "pair" | "adc" | "support" | "jungle" | "note";
+  kind: "pair" | "adc" | "support" | "jungle" | "top" | "note";
   text: string;
   fit?: "fits" | "clashes";
   stat?: { text: string; patch: string };
@@ -513,7 +617,8 @@ export function pairLessons(insights: LessonBook, bot: string, support: string, 
     }
   }
   // The ADC and support archetype lessons speak to bot lanes only, the jungle archetype lesson to the jungler.
-  for (const [lid, id, kind] of lane === "bot" ? ([["adc-archetypes", bot, "adc"], ["support-types", support, "support"]] as const) : ([["jungle-archetypes", support, "jungle"]] as const)) {
+  for (const [lid, id, kind] of lane === "bot" ? ([["adc-archetypes", bot, "adc"], ["support-types", support, "support"]] as const)
+    : lane === "top-jungle" ? ([["top-classes", bot, "top"], ["jungle-archetypes", support, "jungle"]] as const) : ([["jungle-archetypes", support, "jungle"]] as const)) {
     const i = insights.insights.find((x) => x.id === lid);
     const g = i?.groups?.find((x) => x.champions.includes(id));
     if (i && g) out.push({ lesson: i.id, title: `${g.label}`, kind, text: g.plan, period: period(g.source), source: src(g.source) });

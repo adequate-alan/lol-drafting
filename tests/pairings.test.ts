@@ -4,10 +4,10 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { getBotPairings, getChampions, getMidJungle, getPairingData, getProposed } from "@/lib/data";
+import { getBotPairings, getChampions, getDrawerData, getMidJungle, getPairingData, getProposed } from "@/lib/data";
 import { withPair } from "@/lib/draft-persist";
 import { convertKits } from "@/lib/model-v2/kits";
-import { coreRead, duoRead, explorerHref, noteFor, pairEvidence, pairLessons, partnerOptions, savedCore, savedLink } from "@/lib/pairings";
+import { coreRead, duoRead, explorerHref, noteFor, pairEvidence, pairLessons, partnerOptions, partnerRoleOf, savedCore, savedLink, savedPair, savedTop, topRead } from "@/lib/pairings";
 import { Files, type Role } from "@/lib/schema";
 
 const data = getPairingData();
@@ -175,6 +175,77 @@ describe("mid + jungle", () => {
 
   it("links into the explorer", () => {
     expect(explorerHref("syndra", "lee-sin", undefined, "mid-jungle")).toBe("/insights/?view=pairings&lane=mid-jungle&mid=syndra&jungle=lee-sin");
+  });
+});
+
+// Top + Jungle (alan, 2026-11-14): the third pairing on the same layer. A top's saved record lists its junglers in one
+// list; junglers keep no list of tops; a recorded pair is evidence, never saved.
+describe("top + jungle", () => {
+  const tops = getDrawerData().topPicks;
+  const input = { botPairings: bots, midJungle: getMidJungle(), topPicks: tops, proposed, rows: data.rows, playable, newestPatch: data.newestPatch };
+
+  it("lists a top's saved junglers in record order, each champion once, groups apart", () => {
+    for (const t of tops) {
+      const g = partnerOptions({ id: t.champion, role: "TOP" }, input);
+      expect(g.saved.map((o) => o.id), t.champion).toEqual(t.surrounding.jungle.filter((j) => j !== t.champion));
+      const ids = [...g.saved, ...g.observed, ...g.proposed].map((o) => o.id);
+      expect(new Set(ids).size, t.champion).toBe(ids.length);
+      for (const o of g.saved) expect(o.saved, `${t.champion} + ${o.id}`).toMatchObject({ kind: "fits", on: "a" });
+      for (const o of [...g.observed, ...g.proposed]) expect(o.saved, `${t.champion} + ${o.id}`).toBeUndefined();
+      for (const o of g.observed) expect(o.evidence!.games.length).toBeGreaterThan(0);
+      for (const o of [...g.saved, ...g.observed, ...g.proposed]) expect(o.role).toBe("JUNGLE");
+    }
+  });
+
+  it("a jungler in the top pairing lists tops, and only tops whose record names it are saved", () => {
+    const g = partnerOptions({ id: "sejuani", role: "JUNGLE", lane: "top-jungle" }, input);
+    const want = tops.filter((t) => t.surrounding.jungle.includes("sejuani")).map((t) => t.champion).sort();
+    expect(g.saved.map((o) => o.id).sort()).toEqual(want);
+    for (const o of [...g.saved, ...g.observed, ...g.proposed]) expect(o.role).toBe("TOP");
+    // The same jungler without a lane is still the mid + jungle core.
+    expect(partnerRoleOf("JUNGLE")).toBe("MID");
+    expect(partnerRoleOf("JUNGLE", "top-jungle")).toBe("TOP");
+    for (const o of partnerOptions({ id: "sejuani", role: "JUNGLE" }, input).saved) expect(o.role).toBe("MID");
+  });
+
+  it("a recorded top + jungle pair is counted from its games and never saved by them", () => {
+    const seen = new Map<string, number>();
+    for (const r of data.rows) if (r.picks.TOP && r.picks.JUNGLE) seen.set(`${r.picks.TOP}|${r.picks.JUNGLE}`, (seen.get(`${r.picks.TOP}|${r.picks.JUNGLE}`) ?? 0) + 1);
+    expect(seen.size).toBeGreaterThan(100);
+    for (const [k, n] of seen) {
+      const [t, j] = k.split("|");
+      const listed = !!tops.find((x) => x.champion === t)?.surrounding.jungle.includes(j);
+      expect(!!savedTop(t, j, tops), k).toBe(listed);
+      expect(!!savedPair("top-jungle", t, j, input), k).toBe(listed);
+      expect(pairEvidence(data.rows, t, "TOP", "JUNGLE").get(j)!.games.length, k).toBe(n);
+    }
+  });
+
+  it("reads gank setup from the kits, each line with the values it rests on, and never a matchup or a rate", () => {
+    const names = (id: string) => byId.get(id)!.name;
+    let reads = 0;
+    for (const t of champions.filter((c) => c.roles.includes("TOP") && !c.rosterOnly)) for (const j of champions.filter((c) => c.roles.includes("JUNGLE") && !c.rosterOnly)) {
+      if (t.id === j.id) continue;
+      const r = topRead(kits.get(t.id), kits.get(j.id), { top: t.name, jungle: j.name });
+      if (!r) continue;
+      reads++;
+      for (const l of [r.plan, ...r.works, ...r.strengths, ...r.weaknesses, r.curve]) {
+        expect(l.basis, `${t.id} + ${j.id}`).toBeTruthy();
+        expect(l.text, `${t.id} + ${j.id}`).not.toMatch(/%|win rate|counter|always|guarantee/i);
+      }
+    }
+    expect(reads).toBeGreaterThan(500);
+    // A jungler with a start and a top who follows; a top who holds the target himself.
+    expect(topRead(kits.get("jax"), kits.get("lee-sin"), { top: names("jax"), jungle: names("lee-sin") })!.plan.label).toBe("Jungler starts, top follows");
+    expect(topRead(kits.get("ornn"), kits.get("viego"), { top: names("ornn"), jungle: names("viego") })!.plan.label).toBe("Top sets up the gank");
+    expect(topRead(undefined, kits.get("viego"), { top: "x", jungle: "Viego" })).toBeUndefined();
+  });
+
+  it("links into the explorer and names the top class lesson", () => {
+    expect(explorerHref("jax", "lee-sin", undefined, "top-jungle")).toBe("/insights/?view=pairings&lane=top-jungle&top=jax&jungle=lee-sin");
+    const l = pairLessons(data.lessons, "jax", "lee-sin", [], "top-jungle");
+    for (const x of l) expect(["pair", "top", "jungle"]).toContain(x.kind);
+    for (const x of l.filter((y) => y.kind === "top")) expect(x.lesson).toBe("top-classes");
   });
 });
 
