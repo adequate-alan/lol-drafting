@@ -28,9 +28,10 @@ export const TOP_VIEWS: [TopView, string][] = [["overview", "Overview"], ["usage
 /** Report tabs per lane. Off Top, the saved partners sit on Overview (they are that lane's saved record), so there is no
  *  separate Synergies tab; Bot and Support add Duo drafting, Jungle adds Mid/Jungle. */
 export const laneViews = (role: LaneRole): [TopView, string][] => role === "TOP" ? TOP_VIEWS
-  : role === "JUNGLE" ? [["overview", "Overview"], ["usage", "Draft usage"], ["mates", "Mid/Jungle"], ["matchups", "Matchups"], ["pro", "Pro evidence"]]
-  : role === "MID" ? [["overview", "Overview"], ["usage", "Draft usage"], ["matchups", "Matchups"], ["pro", "Pro evidence"]]
-  // Bot and Support: Partners is the Pairing Explorer (components/PairingExplorer.tsx), anchored on the rail champion.
+  // Off Top, Partners is the Pairing Explorer (components/PairingExplorer.tsx), anchored on the rail champion: the bot
+  // lane on Bot and Support, the mid + jungle core on Mid and Jungle (alan, 2026-11-14).
+  : role === "JUNGLE" ? [["overview", "Overview"], ["partners", "Partners"], ["usage", "Draft usage"], ["mates", "Mid/Jungle"], ["matchups", "Matchups"], ["pro", "Pro evidence"]]
+  : role === "MID" ? [["overview", "Overview"], ["partners", "Partners"], ["usage", "Draft usage"], ["matchups", "Matchups"], ["pro", "Pro evidence"]]
   : [["overview", "Overview"], ["partners", "Partners"], ["usage", "Draft usage"], ["duo", "Duo drafting"], ["matchups", "Matchups"], ["pro", "Pro evidence"]];
 
 /** How each lane is named in prose: "the enemy top", "the enemy ADC". */

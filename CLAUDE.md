@@ -811,6 +811,14 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   board (`withPair`, every other pick kept) and opens the room; nothing locks from the explorer. Synergies' Pro pairings
   tables count from the recorded games (games, teams, W–L, events, latest), workbook citations without a game listed
   under "Cited without a recorded game"; the stored `observedProPairings` only list `proAlternatives` for display (never scored). Nothing that scores, orders or picks candidates reads it (tested).
+  **Mid + Jungle** (alan, 2026-11-14; `LANES`, `savedCore`, `coreRead`, `pairRead` in `lib/pairings.ts`): the same explorer
+  for the mid + jungle core, same three groups. Draft Insights `?view=pairings&lane=mid-jungle&mid=&jungle=` (a Bot +
+  Support | Mid + Jungle switch); Synergies Mid and Jungle "Partners" tab. Each champion has its own saved record, so a
+  link can sit on the mid's record, the jungler's or both and the two may rank it differently: a card shows the anchor's
+  own record first (then partners whose record lists the anchor, tagged "<partner>'s record"), and the open pair names
+  both records ("Saved alternative on Vex's record · Vi's record does not list Vex"). Draft logic is `coreRead` from the
+  stored kits (who starts and who follows, early priority, damage mix, frontline, power curve; no written notes yet),
+  General Draft Logic, never a score. An unsaved pair offers "Compare with <saved preferred pair>".
 - **Identity-first headers** (alan, 2026-10-12, DPM.LOL as the hierarchy reference, never its branding or layout): a
   player or champion page leads with the subject, on one surface, not a card: a large portrait or champion icon, a
   large Space Grotesk name (`--fs-4xl` for a player profile, `--fs-3xl` elsewhere), team and role in medium weight

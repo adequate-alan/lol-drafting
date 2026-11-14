@@ -4,18 +4,18 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { getBotPairings, getChampions, getPairingData, getProposed } from "@/lib/data";
+import { getBotPairings, getChampions, getMidJungle, getPairingData, getProposed } from "@/lib/data";
 import { withPair } from "@/lib/draft-persist";
 import { convertKits } from "@/lib/model-v2/kits";
-import { duoRead, explorerHref, noteFor, pairEvidence, pairLessons, partnerOptions, savedLink } from "@/lib/pairings";
-import { Files } from "@/lib/schema";
+import { coreRead, duoRead, explorerHref, noteFor, pairEvidence, pairLessons, partnerOptions, savedCore, savedLink } from "@/lib/pairings";
+import { Files, type Role } from "@/lib/schema";
 
 const data = getPairingData();
 const champions = getChampions();
 const bots = getBotPairings();
 const proposed = getProposed().records;
 const byId = new Map(champions.map((c) => [c.id, c]));
-const playable = (id: string, role: "BOT" | "SUPPORT") => !!byId.get(id)?.roles.includes(role) && !byId.get(id)?.rosterOnly;
+const playable = (id: string, role: Role) => !!byId.get(id)?.roles.includes(role) && !byId.get(id)?.rosterOnly;
 const kits = new Map(convertKits(champions).map((k) => [k.id, k]));
 const src = (f: string) => readFileSync(join(process.cwd(), f), "utf8");
 
@@ -105,6 +105,76 @@ describe("reads", () => {
     const list = pairLessons(data.lessons, "ezreal", "nautilus");
     expect(list.some((l) => l.kind === "pair")).toBe(true);
     for (const l of list) if (l.stat) expect(l.stat.patch, l.text).toMatch(/\d/);
+  });
+});
+
+// Mid + Jungle (alan, 2026-11-14): the same three groups and the same separation for the mid + jungle core.
+describe("mid + jungle", () => {
+  const mj = getMidJungle();
+  const input = { botPairings: bots, midJungle: mj, proposed, rows: data.rows, playable, newestPatch: data.newestPatch };
+
+  it("keeps saved, observed and proposed apart for every saved mid and jungler", () => {
+    for (const m of mj) {
+      const other = m.role === "MID" ? "JUNGLE" : "MID";
+      const g = partnerOptions({ id: m.anchor, role: m.role }, input);
+      const ids = [...g.saved, ...g.observed, ...g.proposed].map((o) => o.id);
+      expect(new Set(ids).size, m.anchor).toBe(ids.length);
+      // Saved: the anchor's own record first, in its order, then partners whose record lists the anchor. Nothing else.
+      const own = [...m.clashDefault, ...m.alternatives];
+      expect(g.saved.slice(0, own.length).map((o) => o.id), m.anchor).toEqual(own);
+      for (const o of g.saved.slice(own.length)) {
+        const theirs = mj.find((x) => x.anchor === o.id && x.role === other)!;
+        expect([...theirs.clashDefault, ...theirs.alternatives], `${m.anchor}+${o.id}`).toContain(m.anchor);
+        expect(o.saved?.on, `${m.anchor}+${o.id}`).toBe(m.role === "MID" ? "b" : "a");
+      }
+      for (const o of g.observed) {
+        expect(o.saved, `${m.anchor}+${o.id}`).toBeUndefined();
+        expect(o.evidence?.games.length, `${m.anchor}+${o.id}`).toBeGreaterThan(0);
+      }
+      // A pairing only seen in pro games is saved only where the partner's own record lists the anchor by hand.
+      for (const id of m.proAlternatives ?? []) {
+        const theirs = mj.find((x) => x.anchor === id && x.role === other);
+        const byHand = !!theirs && [...theirs.clashDefault, ...theirs.alternatives].includes(m.anchor);
+        expect(g.saved.some((o) => o.id === id), `${m.anchor}+${id}`).toBe(byHand);
+      }
+    }
+  });
+
+  it("a pairing only seen in pro games is observed, never saved: Syndra + Lee Sin, Cassiopeia + Vi", () => {
+    for (const [mid, jungle] of [["syndra", "lee-sin"], ["cassiopeia", "vi"]]) {
+      // Whatever alan saves later decides this; today neither record lists the other.
+      const listed = mj.some((m) => (m.anchor === mid && m.role === "MID" && [...m.clashDefault, ...m.alternatives].includes(jungle)) || (m.anchor === jungle && m.role === "JUNGLE" && [...m.clashDefault, ...m.alternatives].includes(mid)));
+      expect(!!savedCore(mid, jungle, mj), `${mid}+${jungle}`).toBe(listed);
+      const g = partnerOptions({ id: mid, role: "MID" }, input);
+      const o = [...g.saved, ...g.observed].find((x) => x.id === jungle)!;
+      expect(o.group, `${mid}+${jungle}`).toBe(listed ? "saved" : "observed");
+      expect(o.evidence!.games.length).toBeGreaterThan(0);
+      expect(o.evidence!.teams.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("says where a one-sided saved link sits", () => {
+    // Vex's record lists Vi; Vi's record does not list Vex (alan's saved records, tests/locked-conclusions.test.ts).
+    expect(savedCore("vex", "vi", mj)).toMatchObject({ kind: "alt", on: "a" });
+    // Two records can rank one pair differently; each view shows its own record's kind and both stay readable.
+    const sc = savedCore("syndra", "chogath", mj, "a")!, cs = savedCore("syndra", "chogath", mj, "b")!;
+    expect([sc.kind, cs.kind, sc.sides]).toEqual(["alt", "default", { a: "alt", b: "default" }]);
+    expect(savedCore("ahri", "vi", mj)).toMatchObject({ kind: "default", on: "both" });
+    expect(savedCore("ziggs", "vi", mj)).toBeUndefined();
+  });
+
+  it("reads the core from the kits, each line with the values it rests on", () => {
+    const read = coreRead(kits.get("syndra"), kits.get("lee-sin"), { mid: "Syndra", jungle: "Lee Sin" })!;
+    expect(read.plan.label).toBeTruthy();
+    for (const l of [read.plan, ...read.works, ...read.strengths, ...read.weaknesses, read.curve]) expect(l.basis, l.text).toBeTruthy();
+    // Not one label for every pair.
+    const labels = new Set(mj.filter((m) => m.role === "MID").flatMap((m) => m.clashDefault.map((j) => coreRead(kits.get(m.anchor), kits.get(j), { mid: m.anchor, jungle: j })?.plan.label)));
+    expect(labels.size).toBeGreaterThan(2);
+    expect(JSON.stringify(read)).not.toMatch(/\b(pro games?|win rate)\b/i);
+  });
+
+  it("links into the explorer", () => {
+    expect(explorerHref("syndra", "lee-sin", undefined, "mid-jungle")).toBe("/insights/?view=pairings&lane=mid-jungle&mid=syndra&jungle=lee-sin");
   });
 });
 
