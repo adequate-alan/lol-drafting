@@ -31,7 +31,7 @@ import { noteDraftRole, restoredDraftRole, sessionStore } from "@/lib/synergy-na
 import { localStore, writeBoard } from "@/lib/draft-persist";
 import { ChampIcon, ChampionRow, Checkbox, WarningBadge, type Severity } from "./ui";
 import { scrollBehavior } from "@/lib/motion";
-import { duoRead, explorerHref, kitsById, noteFor, type ChampionKit } from "@/lib/pairings";
+import { duoRead, explorerHref, kitsById, noteFor, topRead, type ChampionKit } from "@/lib/pairings";
 import type { PairingNote } from "@/lib/schema";
 import { rovingIndex, rovingKeys } from "./roving";
 import { isLaneRole, PAIR_LABEL, USAGE_LABEL, type MidPair, type TopUsageMark, type TopUsageMarks } from "@/lib/top-draft";
@@ -284,7 +284,8 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
   // Bot lane plan on a previewed row: with the other half of the bot lane locked, the pair's written read or kit read
   // (lib/pairings.ts, General Draft Logic) and a link to the Pairing Explorer. A line in the preview, never a score.
   const kitMap = useMemo(() => kitsById(data.champions), [data.champions]);
-  const duoPartner = active === "BOT" ? draft.SUPPORT : active === "SUPPORT" ? draft.BOT : undefined;
+  // Top + jungle (alan, 2026-11-14): the same line for a jungler previewed beside a locked top, or a top beside a jungler.
+  const duoPartner = active === "BOT" ? draft.SUPPORT : active === "SUPPORT" ? draft.BOT : active === "JUNGLE" ? draft.TOP : active === "TOP" ? draft.JUNGLE : undefined;
   const duo = active && duoPartner ? { role: active, partner: duoPartner, kits: kitMap, notes: data.pairingNotes } : undefined;
   const previewId = previewed && previewed.role === active && !takenNow.includes(previewed.id) ? previewed.id : undefined;
   const compared = useMemo(() => (active ? (compare[active] ?? []).filter((id) => !takenNow.includes(id)) : []), [active, compare, takenNow]);
@@ -452,7 +453,7 @@ export function DraftRoom({ data, sources, drawerData, initial, initialEnemy, in
         <UnplacedEnemies read={foeRead} names={names} onSet={setEnemyRole} />
       </div>
 
-      <LaneMatchups reads={laneReads} names={names} fresh={data.counterFreshness} unconfirmed={Object.fromEntries(ROLES.map((r) => [r, placementAt(r)?.status !== "confirmed"]))} />
+      <LaneMatchups reads={laneReads} names={names} fresh={data.counterFreshness} top={draft.TOP ? { id: draft.TOP, jungle: draft.JUNGLE } : undefined} unconfirmed={Object.fromEntries(ROLES.map((r) => [r, placementAt(r)?.status !== "confirmed"]))} />
 
       {/* Narrow screens put Comp Check below the list: one line says what the draft is missing, here and pinned */}
       <CompSummaryLine read={planRead} active={active} className="cc-summary-board" preview={previewLine} />
@@ -784,11 +785,16 @@ const OWN = "button, a, input, summary, [role='button'], .fit-detail, .fit-previ
 
 type DuoCtx = { role: Role; partner: string; kits: Map<string, ChampionKit>; notes: PairingNote[] };
 function laneLine(duo: DuoCtx, id: string, names: Record<string, string>) {
+  if (duo.role === "TOP" || duo.role === "JUNGLE") {
+    const [t, j] = duo.role === "TOP" ? [id, duo.partner] : [duo.partner, id];
+    const read = topRead(duo.kits.get(t), duo.kits.get(j), { top: names[t] ?? t, jungle: names[j] ?? j });
+    return read ? { label: read.plan.label, text: read.plan.text, href: explorerHref(t, j, undefined, "top-jungle"), title: "Gank plan" } : undefined;
+  }
   const [b, s] = duo.role === "BOT" ? [id, duo.partner] : [duo.partner, id];
   const note = noteFor(duo.notes, b, s);
   const read = duoRead(duo.kits.get(b), duo.kits.get(s), { bot: names[b] ?? b, sup: names[s] ?? s });
   const text = note?.plan ?? read?.plan.text;
-  return text ? { label: read?.plan.label, text, href: explorerHref(b, s) } : undefined;
+  return text ? { label: read?.plan.label, text, href: explorerHref(b, s), title: "Lane plan" } : undefined;
 }
 
 function FitRow({ c, duo, tier, bot, names, proCtx, hovered, previewed, compareAt, compareFull, effect, onHover, onPick, onOpen, onPreview, onCompare, top }: {
@@ -848,7 +854,7 @@ function FitRow({ c, duo, tier, bot, names, proCtx, hovered, previewed, compareA
           <dl className="cmp-effect">
             {why && <><dt>Why</dt><dd>{why}</dd></>}
             {rec.tradeoffs.length > 0 && <><dt>Tradeoff</dt><dd className="bad">{rec.tradeoffs.join("; ")}</dd></>}
-            {lane && <><dt>Lane plan</dt><dd title="Draft logic from the two kits, not a score">{lane.label && <b>{lane.label}. </b>}{lane.text} <Link className="xs" href={lane.href}>Pairing details</Link></dd></>}
+            {lane && <><dt>{lane.title}</dt><dd title="Draft logic from the two kits, not a score">{lane.label && <b>{lane.label}. </b>}{lane.text} <Link className="xs" href={lane.href}>Pairing details</Link></dd></>}
           </dl>
           {effect ? <EffectList e={effect} /> : <p className="xs faint">Reading the comp…</p>}
           <div className="cmp-actions">

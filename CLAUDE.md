@@ -840,6 +840,22 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   wave priority, side pressure against objective control, gold, damage mix, power curve), each line naming its values;
   never a lane matchup, win rate or ranking. `laneOf("JUNGLE")` stays the mid + jungle core: anything starting from a
   jungler in the top pairing passes its lane. No score, order or saved record reads it.
+  **Top-lane matchups** (alan, 2026-11-14; `lib/top-matchups.ts` pure, `components/TopMatchups.tsx`, `topLanes` in
+  `lib/data.ts`, `tests/top-matchups.test.ts`, smoke "matchups:"): on the existing Synergies Top "Matchups" tab, above
+  the pro matchups; no separate dashboard. One top's lane opponents from the stored DPM top rows (the Counter data,
+  unchanged, Counter thresholds: favourable 52%+ and difficult 48% or less with 300+ games, strong at 54 / 46, the rest
+  "Relatively even" or "Too few games to say"; a pair only the opponent's page lists is turned round and marked). One
+  opponent opens in place (`?vs=`) with its layers in separate blocks: Ranked statistic (DPM), Kit read (`matchupRead`,
+  run for the side the statistic favours, both sides shown; never sees the win rate) with "Early against late" from the
+  two stored curves, With a jungler (`jungleAngles`: can the opponent leave a gank, who holds whom, who has the early
+  wave, whose side time is on; names no jungler, the enemy jungler is not modelled), Pro evidence (recorded games in
+  the scope, game results not lanes) and the creator's top class lesson. "Picked blind" is counts over the qualified
+  lanes and the hardest ones beside the saved blind grade: never a safety rating, never a guaranteed counter, no
+  invented win rate. Synergies Top also has a "Junglers" tab (the explorer anchored on the top). Draft Room: with a
+  top locked the lane-matchups line links "<top> lane matchups · jungle partners" (enemy top or not), the Top matchup
+  card links to the opened matchup and says "if X is their top" while the enemy role is not confirmed, and a previewed
+  jungler (or a top beside a locked jungler) shows a "Gank plan" line with "Pairing details". Links and labels only: no
+  score, order, counter threshold or saved record changes, and nothing that scores reads `top-matchups` (tested).
 - **Identity-first headers** (alan, 2026-10-12, DPM.LOL as the hierarchy reference, never its branding or layout): a
   player or champion page leads with the subject, on one surface, not a card: a large portrait or champion icon, a
   large Space Grotesk name (`--fs-4xl` for a player profile, `--fs-3xl` elsewhere), team and role in medium weight

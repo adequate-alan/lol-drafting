@@ -1573,6 +1573,29 @@ await open("/insights/?view=pairings&lane=top-jungle&top=jax&jungle=sejuani");
   await page.locator(".ins-lane button", { hasText: "Mid + Jungle" }).click();
   check("pairings: switching the pairing type keeps the jungler", /lane=mid-jungle/.test(page.url()) && /jungle=sejuani/.test(page.url()) && /top=jax/.test(page.url()), page.url());
 }
+// Top-lane matchups (alan, 2026-11-14): the Counter data by opponent on Synergies Top, one matchup opened in place with
+// the statistic, the kit read, what a jungler changes and the pro games in separate blocks; Draft Room links for a locked top.
+await open("/synergies/top/?champ=jax&view=matchups");
+{
+  const tm = await text(".tm");
+  check("matchups: Jax's lanes are grouped from ranked data, counts and no rating", /Picked blind: of \d+ lanes with 300\+ games/.test(tm) && /not a safety rating/.test(tm) && /DPM\.LOL · Emerald\+, patch 26\.\d+/.test(tm) && (await page.locator(".tm-chip.difficult").count()) > 0 && (await page.locator(".tm-chip.favourable").count()) > 0, tm.slice(0, 120));
+  await page.locator(".tm-chip.difficult").first().click();
+  await page.waitForSelector("#tm-detail", { timeout: 8000 }).catch(() => {});
+  const labels = await page.locator("#tm-detail .layer-label").allTextContents();
+  check("matchups: an opened lane keeps statistic, kit read, jungler and pro evidence apart", /vs=/.test(page.url()) && ["Ranked statistic", "Kit read", "With a jungler", "Pro evidence"].every((l) => labels.some((x) => x.includes(l))) && /Difficult/.test(await text(".tm-verdict")) && /won \d+\.\d% of [\d,]+ games at top/.test(await text("#tm-detail .layer.counter")), labels.join(" | "));
+  check("matchups: the opened lane links to the junglers", (await page.locator("#tm-detail a[href*='lane=top-jungle'][href*='top=jax']").count()) >= 1, "");
+}
+await open("/synergies/top/?champ=jax&view=partners&partner=sejuani");
+check("matchups: Synergies Top lists its junglers in the explorer", (await page.locator(".top-report .px-slot[disabled]").count()) === 1 && (await page.locator(".px-group").count()) === 3 && /Jax \+ Sejuani/.test(await text(".px-detail h3")) && (await page.locator(".px-detail a[href*='view=matchups']").count()) === 1, "");
+await open("/?top=jax");
+check("matchups: Draft Room links a locked top to its lane matchups and junglers", (await page.locator(".lane-reads-more a[href*='view=matchups']").count()) === 1 && (await page.locator(".lane-reads-more a[href*='lane=top-jungle']").count()) === 1, await text(".lane-reads"));
+await open("/?top=jax&vs=renekton");
+{
+  const line = await text(".lane-reads");
+  await page.locator(".lane-read").first().click();
+  const card = await text(".ce-card").catch(() => "");
+  check("matchups: an automatically placed enemy top is not treated as confirmed", /Lane matchups/.test(line) && /role not confirmed/.test(card) && /if Renekton is their top/.test(card), card.slice(0, 160));
+}
 await open("/synergies/jungle/?champ=vi&view=partners&partner=vex");
 check("pairings: Synergies Jungle partners says whose record saves Vex + Vi", /on Vex.s record/.test(await text(".px-detail .layer.clash")) && /Vi.s record does not list Vex/.test(await text(".px-detail .layer.clash")), await text(".px-detail .layer.clash"));
 await open("/synergies/bot/?champ=yunara&view=pro");
