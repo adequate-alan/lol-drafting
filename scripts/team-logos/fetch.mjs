@@ -18,14 +18,21 @@ for (const [key, pages, searches] of TEAMS) {
     const j = await api("en.wikipedia.org", { action: "query", titles: p, prop: "images", imlimit: "max" });
     for (const pg of Object.values(j.query?.pages ?? {})) for (const i of pg.images ?? []) files.set(i.title, "en.wikipedia.org");
   }
+  // Commons search is a bonus: a rate limit there (429) is respected, noted and never retried in a loop.
   for (const s of searches) {
-    const j = await api("commons.wikimedia.org", { action: "query", list: "search", srsearch: s, srnamespace: "6", srlimit: "8" });
-    for (const h of j.query?.search ?? []) if (!files.has(h.title)) files.set(h.title, "commons.wikimedia.org");
+    try {
+      await new Promise((r) => setTimeout(r, 3000));
+      const j = await api("commons.wikimedia.org", { action: "query", list: "search", srsearch: s, srnamespace: "6", srlimit: "8" });
+      for (const h of j.query?.search ?? []) if (!files.has(h.title)) files.set(h.title, "commons.wikimedia.org");
+    } catch (e) { manifest.push({ team: key, search: s, error: String(e) }); break; }
   }
   let n = 0;
   for (const [title, host] of files) {
     if (!/gen\.?g|bilibili|blg/i.test(title) || !/logo|gen\.?g|blg|bilibili/i.test(title) || /\.(ogg|webm|pdf)$/i.test(title)) continue;
-    const j = await api(host, { action: "query", titles: title, prop: "imageinfo", iiprop: "url|size|mime|extmetadata", iiurlwidth: "512" });
+    await new Promise((r) => setTimeout(r, 1500));
+    let j;
+    try { j = await api(host, { action: "query", titles: title, prop: "imageinfo", iiprop: "url|size|mime|extmetadata", iiurlwidth: "512" }); }
+    catch (e) { manifest.push({ team: key, title, host, error: String(e) }); continue; }
     const info = Object.values(j.query?.pages ?? {})[0]?.imageinfo?.[0];
     if (!info) { manifest.push({ team: key, title, host, error: "no imageinfo" }); continue; }
     const meta = info.extmetadata ?? {};
