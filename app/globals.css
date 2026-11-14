@@ -2501,8 +2501,14 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 @media (prefers-reduced-motion: reduce) { .ins-body { animation: none; } }
 /* Explore Pairings: the page's default view. A heading with the lane switch, then the explorer as a workspace. */
 .ins-pairings { display: grid; gap: var(--s5); min-width: 0; }
-.ins-px-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: var(--s3) var(--s5); }
+.ins-px-head { display: grid; gap: var(--s4); justify-items: start; }
 .ins-px-head h2 { margin: 0 0 var(--s1); font-size: var(--fs-xl); }
+/* The pairing type sits with the selectors it changes (alan, 2026-11-14): choose the pairing, then the champions. A
+   larger two-option control, compact and left-aligned, the chosen option in restrained gold. */
+.ins-lane { gap: var(--s1); padding: var(--s1); }
+.ins-lane button { height: 40px; justify-content: center; padding: 0 var(--s5); font-size: var(--fs-sm); font-weight: var(--w-strong); border-radius: var(--r-sm); transition: background var(--t-fast), color var(--t-fast), box-shadow var(--t-fast); }
+.ins-lane button.active { color: var(--accent-text); background: var(--surface); box-shadow: inset 0 0 0 1px var(--accent); }
+@media (max-width: 620px) { .ins-lane { display: flex; width: 100%; } .ins-lane button { flex: 1; padding: 0 var(--s2); } }
 .ins-px-head p { margin: 0; max-width: 72ch; }
 .ins-list { display: grid; gap: var(--s4); }
 .ins-list > .pn-entry { margin-bottom: 0; }
@@ -2680,8 +2686,7 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .px-cmp-name:hover { text-decoration: underline; }
 /* Draft Insights workspace (alan, 2026-11-14): choosing on the left, the open pair on the right; one centred start
    while nothing is chosen; stacked below 1100px. */
-.px-start { justify-items: center; padding: var(--s6) 0 var(--s5); }
-.px-start .px-slots { justify-content: center; }
+.px-start { justify-items: start; padding-bottom: var(--s5); }
 .px-start .px-picker { width: 100%; max-width: 860px; }
 .px-quick { display: grid; gap: var(--s4); width: 100%; max-width: 860px; }
 .px-quick section { display: grid; gap: var(--s2); }

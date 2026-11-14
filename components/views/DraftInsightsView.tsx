@@ -106,7 +106,7 @@ export function DraftInsightsView({ data, names, drawerData, pairing }: { data: 
               <h2>Find the right champion pairing</h2>
               <p className="muted small">Explore partners, compare plans and see what professionals have played. Saved preferences, pro evidence and kit analysis stay apart.</p>
             </div>
-            <span className="seg" role="group" aria-label="Pairing">
+            <span className="seg ins-lane" role="group" aria-label="Pairing type">
               <button className={lane === "bot" ? "active" : undefined} aria-pressed={lane === "bot"} onClick={() => update({ lane: undefined, from: undefined, compare: undefined })}>Bot + Support</button>
               <button className={lane === "mid-jungle" ? "active" : undefined} aria-pressed={lane === "mid-jungle"} onClick={() => update({ lane: "mid-jungle", from: undefined, compare: undefined })}>Mid + Jungle</button>
             </span>
