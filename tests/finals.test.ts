@@ -1,7 +1,7 @@
 // Gen.G Worlds 2026 Finals hub (alan, 2026-11-14; lib/finals.ts). Fixed numbers are scoped to the games recorded before
 // the final (Gol.gg ids up to 83721), so the refresh that records the final can never break them; the states after the
 // final are tested on synthetic games.
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { labHref } from "../components/FinalsLab";
 import { BLG, FINAL_INFO, finalChanges, finalRead, GENG, isFinalGame, matchups, pickedAndBanned, preFinal, presence, repeatsInSeries, seriesOf, tendencies } from "../lib/finals";
@@ -148,5 +148,15 @@ describe("Finals Draft Lab", () => {
     expect(hub).not.toMatch(/>\s*Live\b|\blive now\b/i);
     expect(hub.match(/are the Worlds 2026 champions/g)?.length).toBe(2); // both only inside the complete branch
     expect(hub).toMatch(/final\.winner === GENG/);
+  });
+
+  it("team logos: the two finalists only, stored files, fixed size, alt text", () => {
+    const logo = readFileSync("components/TeamLogo.tsx", "utf8");
+    expect(logo).toMatch(/assets\/teams\/geng\.webp/);
+    expect(logo).toMatch(/assets\/teams\/blg\.webp/);
+    expect(logo).toMatch(/width=\{/);
+    expect(logo).toMatch(/alt=\{`\$\{name\} logo`\}/);
+    expect(readdirSync("assets/teams").sort()).toEqual(["blg.webp", "geng.webp"]);
+    expect(readFileSync("components/FinalsHub.tsx", "utf8").match(/<TeamLogo /g)).toHaveLength(2);
   });
 });

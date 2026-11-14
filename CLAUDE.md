@@ -443,7 +443,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   `https://dpm.lol/esport/players/<handle>.webp`, fetched on his Mac because dpm.lol challenges Claude's environments;
   dpm.lol states no reuse license, so the credit says "Photo via dpm.lol" and the Disclosure says none is claimed).
   dpm.lol's generic `nopicture.webp` is not a photo; a dpm.lol page for the handle on another team is not the player.
-  Credits are in the library and the Pinned Players "Photo credits" Disclosure; the avatar has no tooltip (alan, 2026-10-13). No team logos (trademarks).
+  Credits are in the library and the Pinned Players "Photo credits" Disclosure; the avatar has no tooltip (alan, 2026-10-13). No team logos here (the Finals hub is the one exception, below).
 - A portrait is added by hand and only when the photo is the same person: `scripts/find-player-portraits.mjs`
   (separate from the match refresh, never run by it; a missing photo never fails an import) matches each recorded
   player to a Wikidata League of Legends player item by exact handle, reads the Commons license metadata and writes
@@ -847,7 +847,12 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   against each team's earlier games). The preview is always counted over the main event before the final (`preFinal`),
   so it stays the pre-final read. A final game is Gen.G vs BLG at the main event in a final stage or dated from
   2026-11-14 (`isFinalGame`). Schedule, venue and the watch link (`FINAL_INFO`) were supplied by alan and are labelled
-  as supplied, not as Gol.gg records. No team logos (no permitted source): GenRang and wordmarks only. The Draft Room
+  as supplied, not as Gol.gg records. Team logos (alan, 2026-11-14, "use the
+  team logos"; `components/TeamLogo.tsx`, `assets/teams/`): the hub header shows both finalists' own logos, unaltered, on
+  an ivory tile in both themes, fixed size: Gen.G's shield (Wikipedia / Commons File:Gen.G Logo.svg, public domain,
+  trademarked) and Bilibili Gaming's current logo (Wikipedia File:Bilibili Gaming logo (2021).png, a non-free logo
+  there, used to name the team), both fetched once on a GitHub runner; the footer names both trademarks. Finals hub
+  only: no other team gets a logo and none is typed or drawn from memory. The Draft Room
   shows one `.finals-notice` line linking to the hub until the result is recorded, then drops it on its own.
   **Top + Jungle** (alan, 2026-11-14; `savedTop`, `topRead`, `LANE_KEYS` in `lib/pairings.ts`): the third pairing type on
   the same explorer (Bot + Support | Mid + Jungle | Top + Jungle; `?view=pairings&lane=top-jungle&top=&jungle=`; the two
@@ -885,7 +890,7 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   `MatchTable` render in every view; a column that repeats one value on every row (team, role) is left out. The
   same principles reached Pro Builds (`.builds-head`, `GameHeader` with the `lg` avatar), the Synergies scouting
   header, the Pro Drafts open-game head (`.game-panel-head`) and the Gen.G roster strip (`xl` portraits). Team logos
-  are not shown (no permitted source; trademarks) and real names are not shown (no verified source): never type
+  are not shown (trademarks; the Finals hub's two finalists are the one exception) and real names are not shown (no verified source): never type
   either from memory. Comp Library and the champion drawer were left alone.
 - **Champion Synergies** (`/synergies/<tab>/`, sidebar "Synergies"; alan renamed it from First Pick on 2026-10-10) is
   the champion synergy and pairing reference: rail, role tabs, saved / proposed partners, pro pairings, "Open in Draft

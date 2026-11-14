@@ -5,7 +5,7 @@
 import Link from "next/link";
 import { Disclosure } from "@/components/Disclosure";
 import { FinalsLab } from "@/components/FinalsLab";
-import { GenRang } from "@/components/GenRang";
+import { TeamLogo } from "@/components/TeamLogo";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { ChampionRow, SectionHeader } from "@/components/ui";
 import type { FinalsData } from "@/lib/data";
@@ -55,9 +55,9 @@ function Header({ data }: { data: FinalsData }) {
     <header className="finals-head" aria-labelledby="finals-title">
       <p className="finals-kicker">{FINAL_INFO.title}{done ? " · final result" : ""}</p>
       <h2 id="finals-title" className="finals-title">
-        <span className={`finals-team ${final.winner === GENG ? "won" : ""}`}><GenRang size={34} />Gen.G</span>
+        <span className={`finals-team ${final.winner === GENG ? "won" : ""}`}><TeamLogo team="geng" />Gen.G</span>
         {final.games.length ? <span className="finals-score tnum" aria-label={`Gen.G ${final.geng}, Bilibili Gaming ${final.blg}`}>{final.geng}<span className="faint">–</span>{final.blg}</span> : <span className="finals-vs">vs</span>}
-        <span className={`finals-team ${final.winner === BLG ? "won" : ""}`}>Bilibili Gaming</span>
+        <span className={`finals-team ${final.winner === BLG ? "won" : ""}`}><TeamLogo team="blg" />Bilibili Gaming</span>
       </h2>
       {done ? (
         <p className="finals-status">
