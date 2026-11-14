@@ -1478,7 +1478,26 @@ await open("/patch-notes/");
 }
 // Draft Insights (alan, 2026-11-12): lessons from approved videos, filters in the URL, every lesson linked to its moment,
 // a lesson link opens and marks the lesson, and the Videos view lists each video's lessons in order.
+// Reorganised (alan, 2026-11-14): the Pairing Explorer is the landing view with quick-start pairs and no open picker;
+// Learn Concepts and Video Library are explicit views, older lesson links still open Lessons, lessons open in place.
 await open("/insights/");
+{
+  check("insights: opens on Explore Pairings with quick-start pairs and no open picker", /Explore Pairings/.test(await text(".ins-nav button.active")) && (await page.locator(".px-quick-pair").count()) >= 6 && (await page.locator(".px-picker").count()) === 0, "");
+  await page.locator(".px-quick-pair").first().click();
+  await page.waitForSelector(".px-split .px-right .px-detail", { timeout: 8000 }).catch(() => {});
+  const pairUrl = page.url();
+  check("insights: a quick-start pair opens beside the partner lists", (await page.locator(".px-split .px-left .px-group").count()) === 3, "");
+  const link = page.locator(".px-lessons .px-lesson-links a").first();
+  if (await link.count()) {
+    await link.click();
+    await page.waitForSelector(".ins-entry.pn-target", { timeout: 8000 }).catch(() => {});
+    check("insights: a pairing's lesson opens in place and offers the way back", /Learn Concepts/.test(await text(".ins-nav button.active")) && /^← Back to /.test(await text(".ins-back")), await text(".ins-back"));
+    await page.goBack();
+    await page.waitForSelector(".px-detail", { timeout: 8000 }).catch(() => {});
+    check("insights: Back returns to the same pair", page.url() === pairUrl, page.url());
+  }
+}
+await open("/insights/?view=lessons");
 {
   const lessons = await page.locator(".ins-entry").count();
   const links = await page.$$eval(".ins-sources a", (as) => as.map((a) => a.href));
@@ -1493,17 +1512,20 @@ await open("/insights/");
   // Visual pass (alan, 2026-11-12): one video's lessons in video order under its intro, archetype groups with portraits,
   // duo-versus-duo comparisons, and a portrait opens the champion drawer.
   await open("/insights/?video=is1BFqUWweQ");
+  await page.locator("#lesson-adc-archetypes .ins-row").click();
   const groups = await page.$$eval("#lesson-adc-archetypes .ins-group h4", (hs) => hs.map((h) => h.childNodes[0].textContent.trim()));
   check("insights: the ADC guide shows its five archetypes with portraits", groups.join("|") === "Scalers|Lane bullies|Poke / casters|Skirmishers|Mage bots"
     && (await page.locator("#lesson-adc-archetypes .ins-group .champ[data-icon='image']").count()) >= 20, groups.join("|"));
   check("insights: a video opens with its intro and a learning list", (await page.locator(".ins-intro .ins-learn-list li").count()) >= 5 && (await page.locator(".ins-main > .pn-section").count()) === 0, "");
+  check("insights: a lesson offers its champions in Pairings", (await page.locator("#lesson-adc-archetypes .ins-try-champ").count()) >= 3, "");
   check("insights: Kalista + Alistar vs Ezreal + Bard shows four portraits", (await page.locator("#lesson-adc-archetypes .ins-matchup.wide .champ").count()) === 4, "");
   await page.locator("#lesson-adc-archetypes .ins-group .ins-portrait").first().click();
   await page.locator(".drawer").waitFor({ timeout: 4000 }).catch(() => {});
   check("insights: a portrait opens the champion drawer", (await text(".drawer h2")) === "Jinx", await text(".drawer h2"));
   await page.keyboard.press("Escape");
   await open("/insights/?view=videos");
-  check("insights: the Videos view lists every video with its lessons", (await page.locator(".ins-video").count()) === 4 && (await page.locator(".ins-video .ins-moments li").count()) >= 17, "");
+  check("insights: the Videos view lists every video with its lessons", (await page.locator(".ins-video").count()) === 4 && (await page.locator(".ins-video .ins-moments li").count()) >= 17
+    && (await page.locator(".ins-video a", { hasText: "Watch on YouTube" }).count()) === 4, "");
 }
 // Pairing Explorer (alan, 2026-11-13): an ADC + support by portrait, three separate partner groups, one pair open with its
 // read and recorded games, two partners side by side; Synergies Bot / Partners and the Pro pairings table count every game.

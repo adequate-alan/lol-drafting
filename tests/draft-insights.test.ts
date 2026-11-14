@@ -3,7 +3,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { clock, COUNTER_NO_READ_LESSON, FINDING_LESSONS, filterInsights, lessonsOfVideo, momentUrl, statPatches } from "@/lib/draft-insights";
+import { clock, COUNTER_NO_READ_LESSON, FINDING_LESSONS, filterInsights, insightsView, lessonHref, lessonsOfVideo, momentUrl, statPatches } from "@/lib/draft-insights";
 import { Files } from "@/lib/schema";
 
 const read = (f: string) => JSON.parse(readFileSync(join(process.cwd(), "data", f), "utf8"));
@@ -126,5 +126,22 @@ describe("a learning layer only", () => {
       const src = readFileSync(join(process.cwd(), f), "utf8");
       expect(src, f).not.toMatch(/getDraftInsights|draft-insights\.json/);
     }
+  });
+});
+
+// alan, 2026-11-14: the Pairing Explorer is the landing view; every older link still opens what it named.
+describe("which view a link opens", () => {
+  const view = (q: string) => insightsView(new URLSearchParams(q));
+  it("opens Pairings by default and honours an explicit view", () => {
+    expect(view("")).toBe("pairings");
+    expect(view("bot=ezreal&support=karma")).toBe("pairings");
+    expect(view("view=pairings&lesson=x")).toBe("pairings");
+    expect(view("view=lessons")).toBe("lessons");
+    expect(view("view=videos")).toBe("videos");
+    expect(view("view=nonsense")).toBe("pairings");
+  });
+  it("keeps older lesson, topic, champion, video and search links on Lessons", () => {
+    for (const q of ["lesson=disengage-is-a-cooldown", "category=bot-duo", "champion=jax", "video=is1BFqUWweQ", "q=engage"]) expect(view(q), q).toBe("lessons");
+    expect(view(lessonHref("match-support-to-adc").split("?")[1])).toBe("lessons");
   });
 });

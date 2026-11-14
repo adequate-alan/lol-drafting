@@ -60,6 +60,15 @@ export function statPatches(i: DraftInsight) {
   return ps.length ? (ps.length === 1 ? ps[0] : `${ps[0]}–${ps[ps.length - 1]}`) : undefined;
 }
 
+/** Which Draft Insights view a URL opens (alan, 2026-11-14): the Pairing Explorer by default; an explicit `view` wins; a
+ *  link that names a lesson, topic, champion, video or search without a view is an older Lessons link and still opens Lessons. */
+export type InsightsView = "pairings" | "lessons" | "videos";
+export function insightsView(p: { get(k: string): string | null }): InsightsView {
+  const v = p.get("view");
+  if (v === "pairings" || v === "lessons" || v === "videos") return v;
+  return ["lesson", "category", "champion", "video", "q"].some((k) => p.get(k)) ? "lessons" : "pairings";
+}
+
 /** Link to one lesson on the Draft Insights page (opens it). */
 export const lessonHref = (id: string) => `/insights?lesson=${id}`;
 
