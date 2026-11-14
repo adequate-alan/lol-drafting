@@ -152,8 +152,8 @@ export const FLAG_TEXT: Record<Champion["flags"][number], string> = {
 };
 
 export interface PairingDetail {
-  /** alan's saved link, from either side's record. `pro`: a pro-derived alternative, never hand-saved. */
-  saved?: { kind: "default" | "alt" | "fits" | "pro"; text: string; note?: string };
+  /** alan's saved link, from either side's record. A pairing only seen in pro games has none (alan, 2026-11-13). */
+  saved?: { kind: "default" | "alt" | "fits"; text: string; note?: string };
   proposed?: ProposedLink;
   /** A saved read on the record that names the partner (alan's own words). */
   read?: string;
@@ -168,14 +168,11 @@ export function pairingDetail(me: { id: string; role: Role }, partner: { id: str
   const name = (x: string) => index.names[x] ?? x;
   const slots = Object.fromEntries(ROLES.map((r) => [r, r === me.role ? me.id : r === partner.role ? partner.id : ""])) as Slots;
   const link = savedLinks(me.role, slots, data, name).find((l) => l.role === partner.role);
-  // A pro-derived alternative sits in the record's alternatives list but was never hand-saved.
   const bot = me.role === "BOT" ? me.id : partner.role === "BOT" ? partner.id : undefined;
   const sup = me.role === "SUPPORT" ? me.id : partner.role === "SUPPORT" ? partner.id : undefined;
   const botRec = bot && sup ? data.botPairings.find((b) => b.champion === bot) : undefined;
-  const mj = (["MID", "JUNGLE"] as const).map((r) => data.midJungle.find((m) => m.anchor === slots[r] && m.role === r)).find((m) => m && m.proAlternatives?.includes(slots[PARTNER_ROLE[m.role]]));
-  const proDerived = (botRec && sup && botRec.proAlternatives?.includes(sup)) || !!mj;
   const note = botRec && sup ? botRec.alternativeNotes[sup] : undefined;
-  const saved = link ? { kind: proDerived && link.kind === "alt" ? "pro" as const : link.kind, text: link.text.replace(/^Saved (pairing|comp): /, "").replace(/\s*\([^)]*\)$/, ""), note } : undefined;
+  const saved = link ? { kind: link.kind, text: link.text.replace(/^Saved (pairing|comp): /, "").replace(/\s*\([^)]*\)$/, ""), note } : undefined;
   const proposed = saved ? undefined : proposedLink(data.proposed, me.id, me.role, partner.id, partner.role);
   // A saved read counts when it names the other champion of the pair.
   const mine = recordFor(me.id, me.role, data), theirs = recordFor(partner.id, partner.role, data);

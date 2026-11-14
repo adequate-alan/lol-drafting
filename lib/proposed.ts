@@ -3,7 +3,7 @@
 // records (bot-pairings / mid-jungle / top):
 //   - never a saved default or alternative, and never part of the bot → support eligibility rule (savedSupports);
 //   - a smaller draft-fit bonus than any saved link (lib/recommend.ts), always labelled "Proposed · kit-based";
-//   - a pair alan already saved, or a pro-derived alternative, is dropped here, so a pairing is never both.
+//   - a pair alan already saved is dropped here, so a pairing is never both.
 // Synergy is symmetric: a record for Nunu listing Fizz as a mid partner also reads as Nunu for Fizz.
 import type { LinkData } from "./comp-links";
 import type { ProposedConfidence, ProposedRecord, ProposedSynergy, Role } from "./schema";
@@ -22,7 +22,7 @@ export const PROPOSED_LABEL = "Proposed · kit-based";
 export const CONFIDENCE_LABEL: Record<ProposedConfidence, string> = { strong: "Strong kit fit", moderate: "Moderate kit fit", provisional: "Provisional" };
 const CONF_RANK: Record<ProposedConfidence, number> = { strong: 0, moderate: 1, provisional: 2 };
 
-/** True when one of alan's confirmed records (or a pro-derived alternative on one) already links the two picks. */
+/** True when one of alan's confirmed records already links the two picks. */
 export function confirmedLink(a: string, ra: Role, b: string, rb: Role, data: LinkData): boolean {
   const pair = (x: Role, y: Role) => (ra === x && rb === y) || (ra === y && rb === x);
   const get = (r: Role) => (ra === r ? a : b);

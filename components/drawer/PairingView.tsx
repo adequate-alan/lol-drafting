@@ -12,7 +12,7 @@ import { describeLine } from "@/lib/evidence";
 import { CONFIDENCE_LABEL } from "@/lib/proposed";
 
 const KIND: Record<NonNullable<ReturnType<typeof pairingDetail>["saved"]>["kind"], string> = {
-  default: "Preferred", alt: "Alternative", fits: "Saved comp", pro: "From pro games",
+  default: "Preferred", alt: "Alternative", fits: "Saved comp",
 };
 
 export function PairingView({ env, partner, onBack }: { env: DrawerEnv; partner: Partner; onBack: () => void }) {
@@ -36,7 +36,7 @@ export function PairingView({ env, partner, onBack }: { env: DrawerEnv; partner:
 
       <Section layer="clash" title="Synergy" className={d.proposed ? "proposed" : ""}>
         {d.saved ? (
-          <p className="small"><b>{KIND[d.saved.kind]}</b>{d.saved.kind === "pro" && <span className="xs muted"> · not hand-saved</span>} · {d.saved.text}{d.saved.note && <span className="muted"> ({d.saved.note})</span>}</p>
+          <p className="small"><b>{KIND[d.saved.kind]}</b> · {d.saved.text}{d.saved.note && <span className="muted"> ({d.saved.note})</span>}</p>
         ) : d.proposed ? (
           <p className="small"><ProposedTag /> {d.proposed.tier === "alt" ? "Alternative" : "Preferred"} · {d.proposed.reason} <span className={`prop-conf ${d.proposed.confidence} xs`}>· {CONFIDENCE_LABEL[d.proposed.confidence]}</span></p>
         ) : <p className="xs muted">Not a saved or proposed pairing.</p>}

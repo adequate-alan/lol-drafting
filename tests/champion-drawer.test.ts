@@ -85,11 +85,12 @@ describe("pairing detail keeps the layers apart", () => {
     for (const g of d.games) { expect(g.picks.BOT).toBe("caitlyn"); expect(g.picks.SUPPORT).toBe("bard"); }
     expect(d.tradeoffs.join(" ")).toMatch(/Do not pair with a support/);
   });
-  it("a pro-derived alternative is marked as from pro games, never as hand-saved", () => {
+  it("a pairing only seen in pro games has no saved status and keeps its games", () => {
     const corki = data.botPairings.find((b) => b.champion === "corki")!;
     expect(corki.proAlternatives).toContain("alistar");
     const d = pairingDetail({ id: "corki", role: "BOT" }, { id: "alistar", role: "SUPPORT" }, data, index);
-    expect(d.saved?.kind).toBe("pro");
+    expect(d.saved).toBeUndefined();
+    expect(d.games.length).toBeGreaterThan(0);
   });
   it("a proposed partner shows the kit-based reason and confidence, with no saved status", () => {
     const rec = data.proposed.find((r) => r.partners.some((g) => g.preferred.length))!;

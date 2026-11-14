@@ -21,12 +21,14 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 2. **Observed Pro Evidence**: directly supported by Gol.gg (`observedProPairings`, `pro-drafts.json`, `geng.json`, `meta.json`), each with sources.
 3. **General Draft Logic**: reasoning without recent observed evidence (`logic`, `lib/evaluate.ts` rules).
 
-- A pro pairing never becomes a saved default. One pro game is not a "best pairing". Since alan's rule of 2026-10-10, a
-  pro pairing (`observedProPairings`, not earlier-2026) that is not already a default or alternative becomes an
-  alternative automatically: derived at load in `lib/pro-alternatives.ts`, never written to `data/`, listed in
-  `proAlternatives` and noted "from pro games, not hand-saved" wherever alternatives show. It gets the alternative
-  bonus and, for supports, the locked-bot eligibility like any alternative (rule confirmed by alan, 2026-11-05); its reason
-  reads "Pro-derived alternative: …", never "Saved pairing".
+- A pro pairing never becomes a saved default or a saved alternative, and never scores as one (alan, 2026-11-13,
+  replacing his rule of 2026-10-10 that made it an alternative automatically). One pro game is not a "best pairing". A
+  pro pairing (`observedProPairings`, not earlier-2026) that is not already a default or alternative is derived at load
+  in `lib/pro-alternatives.ts`, never written to `data/`, and listed in `proAlternatives` for display only ("From pro
+  games" in the drawer and Pool, the Observed group in the Pairing Explorer, a Pro label in the Draft Room): no saved
+  bonus, no locked-bot support eligibility, never "Saved pairing". Only an alternative alan saved by hand scores, from
+  the record that lists it (Vex's record lists Vi, Cho'Gath's lists Ryze; the reverse direction is pro evidence only).
+  New pro pairings, Worlds included, stay informational until alan approves them as saved preferences.
 - Pro usage informs alan's defaults but never silently overwrites them. Ask before changing a saved-pairing field.
 - Never delete valid pro evidence because it is not one of alan's saved picks. Pairings the workbook cites without a
   recorded draft stay, flagged `backedByGame: false`.
@@ -141,7 +143,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   2026-10-14): before the 4th pick the draft is read with the team-wide rules on, so an inherited weakness is
   "unresolved", not "Creates" (`weaknessChanges`: creates / worsens / unresolved / improves / fixes; only Creates costs a
   point; `tests/fourth-pick.test.ts`). Every point comes with a written reason. Saved defaults must still lead an early draft (one pick
-  locked). **Pro evidence never adds to the score** (a pro-derived alternative scores only as an alternative); it is a Pro
+  locked). **Pro evidence never adds to the score** (a pairing only seen in pro games gets no saved bonus; alan, 2026-11-13); it is a Pro
   label on the candidate row. A saved `botShapes` entry needs a bot whose record lists the support.
 - **One candidate list per open role** (alan, 2026-10-11; `lib/candidates.ts`, `tests/unified-candidates.test.ts`): the
   Draft Room shows each champion once with independent labels: Synergy (saved or proposed), Pro (games next to a locked
@@ -198,7 +200,7 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
   kit-fit confidence `strong` / `moderate` / `provisional` per partner). It sits inside Synergy but apart from alan's
   Confirmed records: labelled "Proposed · kit-based" with dashed styling, never a saved default or alternative, never in
   `savedSupports`, a draft-fit bonus below any saved link (`lib/recommend.ts` `proposedParts`), and a pair alan confirmed
-  (or a pro-derived alternative) is dropped at load (`lib/proposed.ts` `withoutConfirmed`). A saved bot's profile never
+  is dropped at load (`lib/proposed.ts` `withoutConfirmed`). A saved bot's profile never
   lists proposed supports (`shownPartners`). Confidence is about the kit fit; pro games show beside a proposal, never raise
   it. Promoting a proposal to Confirmed means alan says so and it moves into the saved record files.
   `tests/proposed-synergy.test.ts` holds coverage and separation.
@@ -578,13 +580,13 @@ Every recommendation, card and suggestion keeps these apart, in separate fields 
 
 Change these only when alan explicitly says so, then update the test in the same commit.
 
-- Corki → Nami. Alistar is a pro-derived alternative only.
+- Corki → Nami. Alistar is a pro pairing only (Pro Evidence, never saved, never scored as saved).
 - Caitlyn → Bard / Karma.
 - Sivir → Lulu. Karma is the observed playoff / tempo alternative; alternatives Karma, Bard, Rakan, Seraphine.
 - Ezreal → Karma. Alternatives Seraphine, Bard, Milio, Neeko, Nautilus; never the default.
 - Yunara → Lulu. Braum is the anti-dive option.
 - Ziggs → Nautilus / Leona preferred; Camille and Alistar are saved alternatives (alan, 2026-10-10). No Bard, no Karma.
-  Pyke is a pro-derived alternative only; Camille's LCK game stays Pro Evidence beside her saved alternative.
+  Pyke is a pro pairing only; Camille's LCK game stays Pro Evidence beside her saved alternative.
   General Draft Logic: "Ziggs needs reliable engage or catch somewhere else in the composition if support is not providing it."
 - Xayah → Rakan. Kalista → Renata. Zeri → Yuumi.
 - Viktor also plays BOT (alan, 2026-10-10): Leona + Nautilus joint preferred, Camille an alternative; his MID record is separate.
@@ -808,8 +810,7 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   "Pairing details" when the other half of the bot lane is locked. "Use in Draft Room" writes the pair into the stored
   board (`withPair`, every other pick kept) and opens the room; nothing locks from the explorer. Synergies' Pro pairings
   tables count from the recorded games (games, teams, W–L, events, latest), workbook citations without a game listed
-  under "Cited without a recorded game"; the stored `observedProPairings` still drive `withProAlternatives` (scores
-  unchanged). Nothing that scores, orders or picks candidates reads it (tested).
+  under "Cited without a recorded game"; the stored `observedProPairings` only list `proAlternatives` for display (never scored). Nothing that scores, orders or picks candidates reads it (tested).
 - **Identity-first headers** (alan, 2026-10-12, DPM.LOL as the hierarchy reference, never its branding or layout): a
   player or champion page leads with the subject, on one surface, not a card: a large portrait or champion icon, a
   large Space Grotesk name (`--fs-4xl` for a player profile, `--fs-3xl` elsewhere), team and role in medium weight

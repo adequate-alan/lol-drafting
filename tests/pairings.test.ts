@@ -70,8 +70,10 @@ describe("partner groups", () => {
     expect(g.saved.some((o) => o.id === "karma")).toBe(false);
   });
 
-  it("labels a pro-derived alternative as such", () => {
-    expect(savedLink("corki", "alistar", bots)?.kind).toBe("pro");
+  it("a pairing only seen in pro games is observed, never saved", () => {
+    expect(savedLink("corki", "alistar", bots)).toBeUndefined();
+    const g = partnerOptions({ id: "corki", role: "BOT" }, { botPairings: bots, proposed, rows: data.rows, playable, newestPatch: data.newestPatch });
+    expect(g.observed.map((o) => o.id)).toContain("alistar");
     expect(savedLink("corki", "nami", bots)?.kind).toBe("default");
   });
 });

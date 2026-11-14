@@ -232,7 +232,7 @@ function PartnerCard({ o, names, from, read, open, comparing, onOpen, onCompare 
         <span className="px-card-text">
           <span className="px-card-name">{name}</span>
           <span className="px-tags">
-            {o.saved && <span className={`px-tag clash${o.saved.kind === "pro" ? " derived" : ""}`} title={o.saved.kind === "pro" ? "Added from pro games under your Oct 10 rule, not hand-saved" : o.saved.note}>{SAVED_LABEL[o.saved.kind]}</span>}
+            {o.saved && <span className="px-tag clash" title={o.saved.note}>{SAVED_LABEL[o.saved.kind]}</span>}
             {o.evidence && <span className="px-tag pro tnum" title={`Recorded pro games with both on one team: ${o.evidence.wins}–${o.evidence.losses}, ${o.evidence.teams.join(", ")}`}>Pro · {evidenceText(o.evidence)}</span>}
             {o.proposed && !o.saved && <span className="px-tag proposed" title={o.proposed.reason}>Proposed · {CONFIDENCE_LABEL[o.proposed.confidence].toLowerCase()}</span>}
           </span>
@@ -301,7 +301,7 @@ function PairDetail({ bot, support, names, data, botPairings, proposed, read, no
 
       <section className={`layer clash${!saved && prop ? " proposed" : ""}`}>
         <div className="layer-label"><span className="ldot" />Synergy{!saved && prop && <span className="push"><ProposedTag /></span>}</div>
-        {saved ? <p className="small"><b>{SAVED_LABEL[saved.kind]}</b> for {nm(bot)}{saved.kind === "pro" && <span className="muted"> · added from pro games, not hand-saved</span>}{saved.note && <span className="muted"> · {saved.note}</span>}</p>
+        {saved ? <p className="small"><b>{SAVED_LABEL[saved.kind]}</b> for {nm(bot)}{saved.note && <span className="muted"> · {saved.note}</span>}</p>
           : prop ? <p className="small">{prop.reason} <span className={`prop-conf ${prop.confidence} xs`}>· {CONFIDENCE_LABEL[prop.confidence]}</span></p>
           : <p className="small muted">Not one of your saved pairings{botPairings.some((b) => b.champion === bot) ? `: ${nm(bot)}'s saved record decides the Draft Room's supports` : ""}.</p>}
         {savedDefault && !beside && (

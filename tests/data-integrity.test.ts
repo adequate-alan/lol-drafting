@@ -6,7 +6,6 @@ import {
   getBotPairings, getChampions, getCompShells, getGenG, getMeta, getMidJungle, getPool, getProDrafts, getSources, getTopPicks,
 } from "@/lib/data";
 import { eventStats, presenceOf } from "@/lib/pool-stats";
-import { PRO_ALT_NOTE } from "@/lib/pro-alternatives";
 import { Files, ROLES } from "@/lib/schema";
 
 const dataDir = join(process.cwd(), "data");
@@ -82,7 +81,7 @@ describe("layer separation", () => {
     }
   });
 
-  it("pro pairings not already saved become marked alternatives, never defaults (alan, 2026-10-10)", () => {
+  it("pro pairings not already saved are listed apart and never become saved alternatives (alan, 2026-11-13)", () => {
     const raw = (f: string) => JSON.parse(readFileSync(join(process.cwd(), "data", f), "utf8")) as Record<string, unknown>[];
     // Derived at load, never written to the data files.
     for (const f of ["bot-pairings.json", "mid-jungle.json"]) for (const r of raw(f)) expect(r).not.toHaveProperty("proAlternatives");
@@ -90,11 +89,12 @@ describe("layer separation", () => {
       const name = "champion" in r ? r.champion : r.anchor;
       for (const o of r.observedProPairings) {
         if (o.era === "earlier-2026") continue;
-        expect([...r.clashDefault, ...r.alternatives], `${name}+${o.champion}`).toContain(o.champion);
+        expect([...r.clashDefault, ...r.alternatives, ...(r.proAlternatives ?? [])], `${name}+${o.champion}`).toContain(o.champion);
       }
       for (const id of r.proAlternatives ?? []) {
         expect(r.clashDefault, `${name}: ${id}`).not.toContain(id);
-        expect(r.alternativeNotes[id], `${name}: ${id}`).toBe(PRO_ALT_NOTE);
+        expect(r.alternatives, `${name}: ${id}`).not.toContain(id);
+        expect(r.alternativeNotes[id], `${name}: ${id}`).toBeUndefined();
         expect(r.observedProPairings.some((o) => o.champion === id)).toBe(true);
       }
     }

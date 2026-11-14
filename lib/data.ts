@@ -46,7 +46,7 @@ export const getProGames = () => load("pro-games.json");
 let sources: Parsed<"sources.json"> | undefined, drafts: Parsed<"pro-drafts.json"> | undefined, counters: Parsed<"counters.json"> | undefined;
 export const getSources = () => (sources ??= [...load("sources.json"), ...sourcesFromGames(getProGames().games, load("sources.json"))]);
 export const getProFreshness = () => freshness(getProGames());
-// Pro pairings not already saved join the alternatives, marked as pro-derived (alan, 2026-10-10).
+// Pro pairings not already saved are listed in `proAlternatives` for display only, never scored (alan, 2026-11-13).
 let bots: Parsed<"bot-pairings.json"> | undefined, midJungle: Parsed<"mid-jungle.json"> | undefined;
 export const getBotPairings = () => (bots ??= load("bot-pairings.json").map(withProAlternatives));
 export const getMidJungle = () => (midJungle ??= load("mid-jungle.json").map(withProAlternatives));

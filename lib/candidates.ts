@@ -41,7 +41,7 @@ export interface Candidate {
   meta: StartingPick | null; // label only (see above)
   bestFit: boolean; // top BEST_FIT on comp fit among eligible candidates
   theoretical: boolean; // a support outside the locked bot's saved supports with no pro games: counter reference only
-  signals: SignalKey[]; // independent signals: a pro-derived alternative counts as Pro, not twice
+  signals: SignalKey[]; // independent signals: a pro pairing is Pro only, never Synergy
 }
 
 export const BEST_FIT = 3;
@@ -53,7 +53,7 @@ export const compFitOf = (r: Recommendation) => round(r.parts.filter((p) => !BON
 
 /** A row for a champion with no draft-fit read (roster-only champion seen in a pro game): no reasons, no score. */
 export const blank = (champion: string, role: Role, eligible: boolean): Recommendation => ({
-  champion, role, score: 0, parts: [], saved: null, proposed: null, proGames: 0, fixes: [], also: [], tradeoffs: [], bestFix: false, eligible, savedFromPro: false,
+  champion, role, score: 0, parts: [], saved: null, proposed: null, proGames: 0, fixes: [], also: [], tradeoffs: [], bestFix: false, eligible,
 });
 
 export const hasSignal = (c: Candidate, f: Filter) =>
@@ -90,7 +90,7 @@ export function unifiedCandidates(fits: Recommendations, pro: ProByRole, counter
       const fit = byId.get(id) ?? blank(id, role, !counter?.theoretical);
       const bestFit = fit.eligible && best.has(id);
       const signals: SignalKey[] = [];
-      if (fit.eligible && fit.saved && !fit.savedFromPro) signals.push("synergy");
+      if (fit.eligible && fit.saved) signals.push("synergy");
       if (p) signals.push("pro");
       if (bestFit || fit.bestFix) signals.push("fit");
       if (counter) signals.push("counter");

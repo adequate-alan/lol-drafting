@@ -2604,7 +2604,6 @@ details.rules ul { margin: 4px 0 0; padding-left: 16px; font-size: var(--fs-xs);
 .px-tags { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s2); font-size: var(--fs-2xs); }
 .px-tag { color: var(--text-muted); }
 .px-tag.clash { color: var(--clash); font-weight: var(--w-strong); }
-.px-tag.clash.derived { font-weight: 400; }
 .px-tag.pro { color: var(--pro); }
 .px-tag.proposed { color: var(--text-muted); }
 .px-plan { font-size: var(--fs-xs); color: var(--text-muted); }

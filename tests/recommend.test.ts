@@ -3,6 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { getCounters, getDraftData } from "@/lib/data";
 import type { Draft } from "@/lib/evaluate";
+import type { Role } from "@/lib/schema";
 import { counterPicks } from "@/lib/counters";
 import { bestFix } from "@/lib/model-v2/analyze";
 import { convertKits } from "@/lib/model-v2/kits";
@@ -112,24 +113,31 @@ describe("pro evidence never moves a score", () => {
     }
     }, 30_000); // ~75 full drafts ranked twice; slower than vitest's 5s default on CI runners
 
-  it("a pro pairing counts only as a marked alternative, never as a preferred pick (alan, 2026-10-10)", () => {
-    for (const [b, s] of [["corki", "alistar"], ["ziggs", "pyke"]]) {
-      const r = recommend({ BOT: b }, [], data, 50).SUPPORT!.find((x) => x.champion === s)!;
-      expect(r.saved, `${b}+${s}`).toBe("alt");
-      expect(r.parts.find((p) => p.kind === "saved")!.text).toMatch(/from pro games, not hand-saved/);
-      // Never worded as a hand-saved pairing (alan, 2026-11-05).
-      expect(r.parts.find((p) => p.kind === "saved")!.text).toMatch(/^Pro-derived alternative: /);
+  it("a pairing only seen in pro games gets no saved bonus, in either direction (alan, 2026-11-13)", () => {
+    // Every pro pairing the records list apart from alan's own alternatives: bot + support and mid + jungle.
+    const pairs: [Role, string, Role, string][] = [
+      ...data.botPairings.flatMap((b) => (b.proAlternatives ?? []).map((s): [Role, string, Role, string] => ["BOT", b.champion, "SUPPORT", s])),
+      ...data.midJungle.flatMap((m) => (m.proAlternatives ?? []).map((p): [Role, string, Role, string] => [m.role, m.anchor, m.role === "MID" ? "JUNGLE" : "MID", p])),
+    ];
+    expect(pairs.length).toBeGreaterThanOrEqual(9);
+    for (const [ra, a, rb, b] of pairs) {
+      const r = recommend({ [ra]: a }, [], data, Infinity)[rb]?.find((x) => x.champion === b);
+      expect(r?.parts.filter((p) => p.kind === "saved") ?? [], `${a}+${b}`).toEqual([]);
+      expect(r?.saved ?? null, `${a}+${b}`).toBeNull();
     }
+    // A hand-saved link keeps its bonus: Vex's own record lists Vi, Cho'Gath's lists Ryze.
+    const vi = recommend({ MID: "vex" }, [], data, Infinity).JUNGLE!.find((x) => x.champion === "vi")!;
+    expect(vi.parts.find((p) => p.kind === "saved")).toMatchObject({ points: 1.5 });
+    const ryze = recommend({ JUNGLE: "chogath" }, [], data, Infinity).MID!.find((x) => x.champion === "ryze")!;
+    expect(ryze.parts.find((p) => p.kind === "saved")).toMatchObject({ points: 1.5 });
     const nautilus = recommend({ BOT: "ziggs" }, [], data, 50).SUPPORT!.find((x) => x.champion === "nautilus")!;
     expect(nautilus.parts.find((p) => p.kind === "saved")!.text).toMatch(/^Saved pairing: /);
-    const skarner = recommend({ MID: "syndra" }, [], data, 50).JUNGLE!.find((x) => x.champion === "skarner")!;
-    expect(skarner.parts.find((p) => p.kind === "saved")!.text).toMatch(/^Pro-derived alternative: secondary jungle/);
   });
 });
 
 describe("with a bot locked, only its saved supports are actionable (alan, 2026-10-10)", () => {
   const THEORETICAL = ["maokai", "rell", "braum", "shen"];
-  const ZIGGS = ["nautilus", "leona", "camille", "alistar", "pyke"]; // Pyke: pro-derived alternative
+  const ZIGGS = ["nautilus", "leona", "camille", "alistar"]; // Pyke is a pro pairing only (alan, 2026-11-13)
 
   it("Ziggs: Maokai, Rell, Braum and Shen never appear in the Draft Room ranking, whatever else is locked", () => {
     const drafts: Draft[] = [...others, { TOP: "jayce", JUNGLE: "lee-sin", MID: "viktor" }, { TOP: "fiora", JUNGLE: "nidalee", MID: "azir" }];

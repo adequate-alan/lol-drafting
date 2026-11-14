@@ -162,8 +162,8 @@ export const PAIR_FEW_TEAMS = 3;
 // ---------- partners of one anchor, in three groups ----------
 
 export type DuoRole = "BOT" | "SUPPORT";
-export type SavedKind = "default" | "alt" | "pro";
-export const SAVED_LABEL: Record<SavedKind, string> = { default: "Saved preferred", alt: "Saved alternative", pro: "Pro-derived alternative" };
+export type SavedKind = "default" | "alt";
+export const SAVED_LABEL: Record<SavedKind, string> = { default: "Saved preferred", alt: "Saved alternative" };
 
 export interface PartnerOption {
   id: string; // the partner
@@ -178,12 +178,11 @@ export interface PartnerGroups { saved: PartnerOption[]; observed: PartnerOption
 
 export const partnerRoleOf = (r: DuoRole): DuoRole => (r === "BOT" ? "SUPPORT" : "BOT");
 
-/** alan's saved link between a bot and a support, from the bot's record (a pro-derived alternative says so). */
+/** alan's saved link between a bot and a support, from the bot's record. A pairing only seen in pro games is never one (alan, 2026-11-13). */
 export function savedLink(bot: string, support: string, botPairings: BotPairing[]): PartnerOption["saved"] {
   const rec = botPairings.find((b) => b.champion === bot);
   if (!rec) return undefined;
   if (rec.clashDefault.includes(support)) return { kind: "default", note: rec.alternativeNotes[support] };
-  if (rec.proAlternatives?.includes(support)) return { kind: "pro", note: rec.alternativeNotes[support] };
   if (rec.alternatives.includes(support)) return { kind: "alt", note: rec.alternativeNotes[support] };
   return undefined;
 }
@@ -191,11 +190,11 @@ export function savedLink(bot: string, support: string, botPairings: BotPairing[
 const byEvidence = (a: PartnerOption, b: PartnerOption) =>
   (b.evidence?.teams.length ?? 0) - (a.evidence?.teams.length ?? 0) || (b.evidence?.games.length ?? 0) - (a.evidence?.games.length ?? 0)
   || (b.evidence?.newest ?? "").localeCompare(a.evidence?.newest ?? "");
-const KIND_ORDER: Record<SavedKind, number> = { default: 0, alt: 1, pro: 2 };
+const KIND_ORDER: Record<SavedKind, number> = { default: 0, alt: 1 };
 
 /**
  * The partners of one champion, grouped and ordered without a score:
- *   saved     alan's record order (preferred, hand-saved alternatives, pro-derived alternatives); for a support, the bots
+ *   saved     alan's record order (preferred, then alternatives); for a support, the bots
  *             whose records list it, preferred first, then by recorded teams
  *   observed  recorded together, not saved: most unique teams first, then games, then the newest game (never win rate)
  *   proposed  kit-based proposals not already above: the proposed layer's own order (preferred, then confidence)
@@ -216,7 +215,7 @@ export function partnerOptions(anchor: { id: string; role: DuoRole }, input: { b
   let saved: PartnerOption[];
   if (anchor.role === "BOT") {
     const rec = input.botPairings.find((b) => b.champion === anchor.id);
-    saved = rec ? [...rec.clashDefault, ...handAlts(rec), ...(rec.proAlternatives ?? [])].filter((id) => !seen.has(id)).map((id) => make(id, "saved")) : [];
+    saved = rec ? [...rec.clashDefault, ...handAlts(rec)].filter((id) => !seen.has(id)).map((id) => make(id, "saved")) : [];
   } else {
     saved = input.botPairings.filter((b) => b.clashDefault.includes(anchor.id) || b.alternatives.includes(anchor.id)).map((b) => make(b.champion, "saved"))
       .sort((a, b) => KIND_ORDER[a.saved!.kind] - KIND_ORDER[b.saved!.kind] || byEvidence(a, b));
