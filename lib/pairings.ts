@@ -481,7 +481,7 @@ export const pairRead = (lane: LaneKey, a: ChampionKit | undefined, b: ChampionK
 export interface PairLesson {
   lesson: string; // Draft Insights lesson id
   title: string;
-  kind: "pair" | "adc" | "support" | "note";
+  kind: "pair" | "adc" | "support" | "jungle" | "note";
   text: string;
   fit?: "fits" | "clashes";
   stat?: { text: string; patch: string };
@@ -512,8 +512,8 @@ export function pairLessons(insights: LessonBook, bot: string, support: string, 
       out.push({ lesson: i.id, title: i.title, kind: "pair", text: m.text, fit: m.kind === "pair" ? m.fit : undefined, stat: m.stat, period: period(m.source), source: src(m.source) });
     }
   }
-  // The ADC and support archetype lessons speak to bot lanes only.
-  for (const [lid, id, kind] of lane === "bot" ? ([["adc-archetypes", bot, "adc"], ["support-types", support, "support"]] as const) : []) {
+  // The ADC and support archetype lessons speak to bot lanes only, the jungle archetype lesson to the jungler.
+  for (const [lid, id, kind] of lane === "bot" ? ([["adc-archetypes", bot, "adc"], ["support-types", support, "support"]] as const) : ([["jungle-archetypes", support, "jungle"]] as const)) {
     const i = insights.insights.find((x) => x.id === lid);
     const g = i?.groups?.find((x) => x.champions.includes(id));
     if (i && g) out.push({ lesson: i.id, title: `${g.label}`, kind, text: g.plan, period: period(g.source), source: src(g.source) });

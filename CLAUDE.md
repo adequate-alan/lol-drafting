@@ -796,6 +796,18 @@ inconsistent, critique finds what is ineffective, polish improves what already w
   the video names for that point; a champion sits in one group per lesson and hybrids go in the group's note. `?video=`
   shows the video's intro and its lessons in video order. Commentary on one pro game goes to Analyst perspectives instead. New videos go through a review in the
   thread first; never auto-ingest a creator.
+- **Draft Insights layout** (alan, 2026-11-14; `insightsView` in `lib/draft-insights.ts`, smoke "insights: opens on Explore
+  Pairings"): three connected views, Explore Pairings | Learn Concepts | Video Library. `/insights/` opens Pairings; an
+  explicit `?view=` wins; a link naming a lesson, topic, champion, video or search without a view still opens Lessons.
+  Each view keeps its own parameters in the URL while another is shown; moving between views (a pairing's lesson, a
+  lesson's "Explore this pair" / "Try it in Pairings", "← Back to <pair>") is a history step, filters replace. Pairings
+  is a workspace: nothing chosen = a centred start (two slots, quick-start pairs from saved records and the newest
+  recorded games, labelled as shortcuts, never a ranking; the picker opens only on a slot click); with a champion, the
+  partner lists on the left and the open pair, comparison or a short guide on the right (sticky from 1100px, stacked
+  below; Synergies keeps the stacked explorer). Lessons are compact rows (title, takeaway, champion strip) that open in
+  place under a topic chip row (no sticky index); a linked lesson arrives open. A pairing lists a lesson only when the
+  lesson names the pair or the champion's archetype group, or the written read cites it. Videos are a two-column source
+  list. IA only: no score, kit, saved pairing or pool tier reads any of it.
 - **Pairing Explorer** (alan, 2026-11-13; `lib/pairings.ts`, `components/PairingExplorer.tsx`, `data/pairing-notes.json`,
   `tests/pairings.test.ts`, smoke "pairings:"; audit script `scripts/pairing-audit.ts`): Bot + Support first. Choose an ADC
   or a support by portrait, see partners in three groups that never merge (Saved preferences in record order, Observed in
