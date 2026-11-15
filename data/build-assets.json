@@ -9431,6 +9431,14 @@
           "from": [2021, 3133],
           "kind": "completed"
         },
+        "6616": {
+          "name": "Staff of Flowing Water",
+          "gold": 2250,
+          "stats": ["35 Ability Power", "10% Heal and Shield Power", "125% Base Mana Regen", "10 Ability Haste"],
+          "text": "Your heals and shields reduce crowd control and grant Move Speed",
+          "from": [3108, 3114],
+          "kind": "completed"
+        },
         "6617": {
           "name": "Moonstone Renewer",
           "gold": 2200,
