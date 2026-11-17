@@ -2,8 +2,13 @@
   "note": "Summoner's Rift item history for historical Pro Builds. `archive` and `changes` are generated from patch-notes.json by scripts/item-history.ts (daily patch-notes workflow); `external` holds earlier changes with their source and check status; `ids` are Data Dragon item ids read on a runner.",
   "archive": {
     "first": "26.16",
-    "latest": "26.22",
+    "latest": "26.23",
     "patches": [
+      {
+        "patch": "26.23",
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-23-notes/",
+        "published": "2026-11-17"
+      },
       {
         "patch": "26.22",
         "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-22-notes/",
@@ -42,6 +47,31 @@
     ]
   },
   "changes": [
+    {
+      "id": "26.23/item-voltaic-cyclosword",
+      "item": "Voltaic Cyclosword",
+      "itemId": "6699",
+      "patch": "26.23",
+      "type": "changed",
+      "basis": "unstated",
+      "mode": "summoners-rift",
+      "source": {
+        "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-23-notes/",
+        "anchor": "patch-Voltaic-Cyclosword",
+        "entry": "item-voltaic-cyclosword"
+      },
+      "lines": [
+        {
+          "label": "Bonus Damage",
+          "before": "[9% || 7%] target's current hp",
+          "after": "[8% || 6%] target's current hp"
+        }
+      ],
+      "context": "Voltaic has been a bit too dominant as both an all-in and a poke lethality item. All-inning power is of higher importance to assassin functionality than the raw poke it's providing, so we're tuning down its trigger damage.",
+      "origin": "riot-patch-notes",
+      "refreshStatus": "verified",
+      "lastChecked": "2026-11-17"
+    },
     {
       "id": "26.22/item-dorans-bow",
       "item": "Doran's Bow",

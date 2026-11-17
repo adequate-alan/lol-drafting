@@ -3,6 +3,504 @@
   "source": "https://www.leagueoflegends.com/en-us/news/tags/patch-notes/",
   "patches": [
     {
+      "patch": "26.23",
+      "short": "16.23",
+      "title": "League of Legends Patch 26.23 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-23-notes/",
+      "published": "2026-11-17",
+      "rev": "pHSm8AweEFyFTPghG7f3NL",
+      "midPatch": [],
+      "excluded": [
+        "Patch Highlights",
+        "Team Voice Chat",
+        "Winter Map",
+        "Classic",
+        "ARAM: Mayhem",
+        "ARAM",
+        "Arena",
+        "Replay Download Limit",
+        "DJ Sona Interactive Music",
+        "Upcoming Skins & Chromas"
+      ],
+      "bugfixesLeftOut": 1,
+      "entries": [
+        {
+          "id": "champion-annie",
+          "kind": "champion",
+          "subject": "Annie",
+          "anchor": "patch-annie",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/champion/Annie.png",
+          "context": "Annie has been underperforming a bit for a while now for the average player, so we're looking to give a little more fire-power and also help support her burning Tibbers build.",
+          "groups": [
+            {
+              "title": "R - Summon: Tibbers",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/spell/AnnieR.png",
+              "changes": [
+                {
+                  "text": "Tibbers Health: 1150 - 3500 (Scaling with Champion Level) (+50% AP) ⇒ 1275 - 4000 (Scaling with Champion Level) (+50% AP) (+150% Bonus HP)",
+                  "label": "Tibbers Health",
+                  "before": "1150 - 3500 (Scaling with Champion Level) (+50% AP)",
+                  "after": "1275 - 4000 (Scaling with Champion Level) (+50% AP) (+150% Bonus HP)"
+                },
+                {
+                  "text": "Tibbers Aura Damage per Second: 8 / 12 / 16 (+4% AP) ⇒ 10 / 15 / 20 (+4% AP)",
+                  "label": "Tibbers Aura Damage per Second",
+                  "before": "8 / 12 / 16 (+4% AP)",
+                  "after": "10 / 15 / 20 (+4% AP)"
+                },
+                {
+                  "text": "Tibbers Attack Damage: 30 / 45 / 60 (+10% AP) ⇒ 30 / 50 / 70 (+10% AP)",
+                  "label": "Tibbers Attack Damage",
+                  "before": "30 / 45 / 60 (+10% AP)",
+                  "after": "30 / 50 / 70 (+10% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "annie",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-17T21:54:03.734Z"
+        },
+        {
+          "id": "champion-azir",
+          "kind": "champion",
+          "subject": "Azir",
+          "anchor": "patch-azir",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/champion/Azir.png",
+          "context": "Hello again, bird gang. We've been keeping an eye on Azir's performance as he shifts from PTA to Lethal Tempo usage. His buffs from 26.21 landed a little lower than expected, so we're giving him a little more love. Note that the attack range increase does not impact his attack range with soldiers—only when he's stuck with his own basic attacks!",
+          "groups": [
+            {
+              "title": "Base Stats",
+              "changes": [
+                {
+                  "text": "Attack Range: 525 ⇒ 550",
+                  "label": "Attack Range",
+                  "before": "525",
+                  "after": "550"
+                }
+              ]
+            },
+            {
+              "title": "W - Arise!",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/spell/AzirW.png",
+              "changes": [
+                {
+                  "text": "On Hit / Attack Damage Ratio: 50% ⇒ 67%",
+                  "label": "On Hit / Attack Damage Ratio",
+                  "before": "50%",
+                  "after": "67%"
+                }
+              ]
+            }
+          ],
+          "ref": "azir",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-17T21:54:03.734Z"
+        },
+        {
+          "id": "champion-bard",
+          "kind": "champion",
+          "subject": "Bard",
+          "anchor": "patch-bard",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/champion/Bard.png",
+          "context": "Bard has been in a pretty weak state after pro focused nerfs earlier this year, and has stopped building AP entirely. So, we're giving him a little boost to his Q base damage and ratio.",
+          "groups": [
+            {
+              "title": "Q - Cosmic Binding",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/spell/BardQ.png",
+              "changes": [
+                {
+                  "text": "Damage: 80 / 120 / 160 / 200 / 240 (+80% AP) ⇒ 80 / 125 / 170 / 215 / 260 (+100% AP)",
+                  "label": "Damage",
+                  "before": "80 / 120 / 160 / 200 / 240 (+80% AP)",
+                  "after": "80 / 125 / 170 / 215 / 260 (+100% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "bard",
+          "category": "buff",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-17T21:54:03.734Z"
+        },
+        {
+          "id": "champion-ezreal",
+          "kind": "champion",
+          "subject": "Ezreal",
+          "anchor": "patch-ezreal",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/champion/Ezreal.png",
+          "context": "Ezreal has been underperforming at most ranks this entire year, despite still being very meta in pro play. Now that we are in the post pro play season, we're giving him a few buffs to help him succeed more in your games at home.",
+          "groups": [
+            {
+              "title": "W - Essence Flux",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/spell/EzrealW.png",
+              "changes": [
+                {
+                  "text": "Damage: 80 / 135 / 190 / 245 / 300 (+100% bonus AD) (+90% AP) ⇒ 80 / 135 / 190 / 245 / 300 (+115% bonus AD) (+100% AP)",
+                  "label": "Damage",
+                  "before": "80 / 135 / 190 / 245 / 300 (+100% bonus AD) (+90% AP)",
+                  "after": "80 / 135 / 190 / 245 / 300 (+115% bonus AD) (+100% AP)"
+                }
+              ]
+            },
+            {
+              "title": "R - Trueshot Barrage",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/spell/EzrealR.png",
+              "changes": [
+                {
+                  "text": "Champion Damage: 350 / 550 / 750 (+100% bonus AD) (+110% AP) ⇒ 350 / 600 / 850 (+110% bonus AD) (+120% AP)",
+                  "label": "Champion Damage",
+                  "before": "350 / 550 / 750 (+100% bonus AD) (+110% AP)",
+                  "after": "350 / 600 / 850 (+110% bonus AD) (+120% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "ezreal",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-17T21:54:03.734Z"
+        },
+        {
+          "id": "champion-galio",
+          "kind": "champion",
+          "subject": "Galio",
+          "anchor": "patch-galio",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/champion/Galio.png",
+          "context": "Galio's been a bit weak lately, and we want to take the time to buff him, especially to help out his weaker AP bruiser-y builds rather than only helping his current heavy AP one.",
+          "groups": [
+            {
+              "title": "W - Shield of Durand",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/spell/GalioW.png",
+              "changes": [
+                {
+                  "text": "Shield Amount (Also affects R): 7.5 / 9 / 10.5 / 12 / 13.5% of his Max HP ⇒ 8 / 11 / 14 / 17 / 20% of his Max HP",
+                  "label": "Shield Amount (Also affects R)",
+                  "before": "7.5 / 9 / 10.5 / 12 / 13.5% of his Max HP",
+                  "after": "8 / 11 / 14 / 17 / 20% of his Max HP"
+                }
+              ]
+            }
+          ],
+          "ref": "galio",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-17T21:54:03.734Z"
+        },
+        {
+          "id": "champion-gnar",
+          "kind": "champion",
+          "subject": "Gnar",
+          "anchor": "patch-gnar",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/champion/Gnar.png",
+          "context": "Like Ezreal, Gnar may be a top pick for pros, but he hasn't been performing as well in the rest of skill brackets, so we're giving his throwing arm a buff to give him a helping hand.",
+          "groups": [
+            {
+              "title": "Q - Boomerang Throw",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/spell/GnarQ.png",
+              "changes": [
+                {
+                  "text": "Mini Damage: 5 / 45 / 85 / 125 / 165 (+125% AD) ⇒ 5 / 45 / 85 / 125 / 165 (+135% AD)",
+                  "label": "Mini Damage",
+                  "before": "5 / 45 / 85 / 125 / 165 (+125% AD)",
+                  "after": "5 / 45 / 85 / 125 / 165 (+135% AD)"
+                },
+                {
+                  "text": "Mega Damage: 45 / 90 / 135 / 180 / 225 (+140% AD) ⇒ 45 / 90 / 135 / 180 / 225 (+150% AD)",
+                  "label": "Mega Damage",
+                  "before": "45 / 90 / 135 / 180 / 225 (+140% AD)",
+                  "after": "45 / 90 / 135 / 180 / 225 (+150% AD)"
+                }
+              ]
+            }
+          ],
+          "ref": "gnar",
+          "category": "buff",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-17T21:54:03.734Z"
+        },
+        {
+          "id": "champion-ksante",
+          "kind": "champion",
+          "subject": "K'Sante",
+          "anchor": "patch-ksante",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/champion/KSante.png",
+          "context": "K'Sante is another staple in pro play at Worlds, but he isn't nearly as performant for everyone else, especially in late game where he falls off a cliff unlike most tanks.",
+          "groups": [
+            {
+              "title": "W - Path Maker",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/spell/KSanteW.png",
+              "changes": [
+                {
+                  "text": "Mana: 45 / 50 / 55 / 60 / 65 ⇒ 45",
+                  "label": "Mana",
+                  "before": "45 / 50 / 55 / 60 / 65",
+                  "after": "45"
+                },
+                {
+                  "text": "Base Damage: 45 / 75 / 105 / 135 / 165 ⇒ 45 / 85 / 125 / 165 / 205",
+                  "label": "Base Damage",
+                  "before": "45 / 75 / 105 / 135 / 165",
+                  "after": "45 / 85 / 125 / 165 / 205"
+                },
+                {
+                  "text": "All Out Charge Time Damage Increase: 10 / 27.5 / 45 / 62.5 / 80% damage ⇒ 10 / 26.25 / 42.5 / 58.75 / 75% damage",
+                  "label": "All Out Charge Time Damage Increase",
+                  "before": "10 / 27.5 / 45 / 62.5 / 80% damage",
+                  "after": "10 / 26.25 / 42.5 / 58.75 / 75% damage"
+                }
+              ]
+            }
+          ],
+          "ref": "ksante",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-17T21:54:03.734Z"
+        },
+        {
+          "id": "champion-leblanc",
+          "kind": "champion",
+          "subject": "LeBlanc",
+          "anchor": "patch-leblanc",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/champion/Leblanc.png",
+          "context": "LeBlanc's damage is sitting a little too high, especially on her very dependable Q, so we're tamping down her scaling ratio to make her less oppressive, especially when snowballing.",
+          "groups": [
+            {
+              "title": "Q - Sigil of Malice",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/spell/LeblancQ.png",
+              "changes": [
+                {
+                  "text": "Ability Power Ratio (Both Initial and Mark): 40% AP ⇒ 35% AP",
+                  "label": "Ability Power Ratio (Both Initial and Mark)",
+                  "before": "40% AP",
+                  "after": "35% AP"
+                }
+              ]
+            }
+          ],
+          "ref": "leblanc",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-17T21:54:03.734Z"
+        },
+        {
+          "id": "champion-master-yi",
+          "kind": "champion",
+          "subject": "Master Yi",
+          "anchor": "patch-masteryi",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/champion/MasterYi.png",
+          "context": "We've been keeping an eye on Master Yi for a few patches as the buffs, his Q Cooldown Refund, QoL adjustments, and jungle meta changes have settled. We think he's still a bit strong, and are tapping him down in a way that should mostly impact his crit build which has become his dominant play style, rather than his on-hit.",
+          "groups": [
+            {
+              "title": "Q - Alpha Strike",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/spell/AlphaStrike.png",
+              "changes": [
+                {
+                  "text": "Damage: 20 / 40 / 60 / 80 / 100 (+70% AD) ⇒ 20 / 40 / 60 / 80 / 100 (+60% AD)",
+                  "label": "Damage",
+                  "before": "20 / 40 / 60 / 80 / 100 (+70% AD)",
+                  "after": "20 / 40 / 60 / 80 / 100 (+60% AD)"
+                },
+                {
+                  "text": "Maximum Single Target Damage: 35 / 70 / 105 / 140 / 175 (+122.5% AD) ⇒ 35 / 70 / 105 / 140 / 175 (+105% AD). Reminder that this can also Critically Strike for bonus damage.",
+                  "label": "Maximum Single Target Damage",
+                  "before": "35 / 70 / 105 / 140 / 175 (+122.5% AD)",
+                  "after": "35 / 70 / 105 / 140 / 175 (+105% AD). Reminder that this can also Critically Strike for bonus damage."
+                }
+              ]
+            }
+          ],
+          "ref": "master-yi",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-17T21:54:03.734Z"
+        },
+        {
+          "id": "champion-mel",
+          "kind": "champion",
+          "subject": "Mel",
+          "anchor": "patch-mel",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/champion/Mel.png",
+          "context": "Mel's rework has landed directionally as we hoped as a moderate buff without affecting her ban rate. She's still a bit weaker than a standard champion and could use a little more firepower, so we're giving a little more strength to her Q and W.",
+          "groups": [
+            {
+              "title": "Q - Radiant Barrage",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/spell/MelQ.png",
+              "changes": [
+                {
+                  "text": "Subsequent Bolt Damage: 5 / 10 / 15 / 20 / 25 (+8% AP) ⇒ 6 / 11 / 16 / 21 / 26 (+9% AP)",
+                  "label": "Subsequent Bolt Damage",
+                  "before": "5 / 10 / 15 / 20 / 25 (+8% AP)",
+                  "after": "6 / 11 / 16 / 21 / 26 (+9% AP)"
+                },
+                {
+                  "text": "Maximum Damage: 85 / 120 / 165 / 220 / 285 (+65 / 73 / 81 / 89 / 97% AP) ⇒ 90 / 126 / 172 / 228 / 294 (+70 / 79 / 88 / 97 / 106% AP)",
+                  "label": "Maximum Damage",
+                  "before": "85 / 120 / 165 / 220 / 285 (+65 / 73 / 81 / 89 / 97% AP)",
+                  "after": "90 / 126 / 172 / 228 / 294 (+70 / 79 / 88 / 97 / 106% AP)"
+                }
+              ]
+            },
+            {
+              "title": "W - Rebuttal",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/spell/MelW.png",
+              "changes": [
+                {
+                  "text": "Shield: 50 / 80 / 110 / 140 / 170 (+50% AP) ⇒ 50 / 90 / 130 / 170 / 210 (+50% AP)",
+                  "label": "Shield",
+                  "before": "50 / 80 / 110 / 140 / 170 (+50% AP)",
+                  "after": "50 / 90 / 130 / 170 / 210 (+50% AP)"
+                },
+                {
+                  "text": "Retaliation: 35 / 40 / 45 / 50 / 55 (+10% AP) ⇒ 35 / 45 / 55 / 65 / 75 (+10% AP)",
+                  "label": "Retaliation",
+                  "before": "35 / 40 / 45 / 50 / 55 (+10% AP)",
+                  "after": "35 / 45 / 55 / 65 / 75 (+10% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "mel",
+          "category": "rework",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-17T21:54:03.734Z"
+        },
+        {
+          "id": "champion-syndra",
+          "kind": "champion",
+          "subject": "Syndra",
+          "anchor": "patch-syndra",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/champion/Syndra.png",
+          "context": "Syndra's stun feels a bit too available, so we're making it both more costly and higher cooldown early. These changes are also designed to make sure we're not pushing her into further reliance on high haste builds, and curb the ability to avoid mana investment.",
+          "groups": [
+            {
+              "title": "E - Scatter the Weak",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/spell/SyndraE.png",
+              "changes": [
+                {
+                  "text": "Mana Cost: 50 ⇒ 60",
+                  "label": "Mana Cost",
+                  "before": "50",
+                  "after": "60"
+                },
+                {
+                  "text": "Cooldown: 15 ⇒ 17 / 16.5 / 16 / 15.5 / 15",
+                  "label": "Cooldown",
+                  "before": "15",
+                  "after": "17 / 16.5 / 16 / 15.5 / 15"
+                }
+              ]
+            }
+          ],
+          "ref": "syndra",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-17T21:54:03.734Z"
+        },
+        {
+          "id": "champion-velkoz",
+          "kind": "champion",
+          "subject": "Vel'Koz",
+          "anchor": "patch-velkoz",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/champion/Velkoz.png",
+          "context": "We made a small error in Vel'Koz's math. He is very displeased with us. This won't have any realistic impact on his power level.",
+          "groups": [
+            {
+              "title": "R - Life Form Disintegration Ray",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/spell/VelkozR.png",
+              "changes": [
+                {
+                  "text": "Total Damage: 450 / 700 / 925 ⇒ 450 / 700 / 950",
+                  "label": "Total Damage",
+                  "before": "450 / 700 / 925",
+                  "after": "450 / 700 / 950"
+                }
+              ]
+            }
+          ],
+          "ref": "velkoz",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-17T21:54:03.734Z"
+        },
+        {
+          "id": "champion-vi",
+          "kind": "champion",
+          "subject": "Vi",
+          "anchor": "patch-vi",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/champion/Vi.png",
+          "context": "Now that the pro season is over, we want to give Vi a little more strength to boost her numbers in the rest of the ladder.",
+          "groups": [
+            {
+              "title": "E - Relentless Force",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/spell/ViE.png",
+              "changes": [
+                {
+                  "text": "Damage: 10 / 30 / 50 / 70 / 90 (+110% AD) (+100% AP) ⇒ 10 / 35 / 60 / 85 / 110 (+110% AD) (+100% AP)",
+                  "label": "Damage",
+                  "before": "10 / 30 / 50 / 70 / 90 (+110% AD) (+100% AP)",
+                  "after": "10 / 35 / 60 / 85 / 110 (+110% AD) (+100% AP)"
+                }
+              ]
+            }
+          ],
+          "ref": "vi",
+          "category": "adjustment",
+          "categoryBasis": "riot-wording",
+          "updatedAt": "2026-11-17T21:54:03.734Z"
+        },
+        {
+          "id": "item-voltaic-cyclosword",
+          "kind": "item",
+          "subject": "Voltaic Cyclosword",
+          "anchor": "patch-Voltaic-Cyclosword",
+          "icon": "https://ddragon.leagueoflegends.com/cdn/16.22.1/img/item/6699.png",
+          "context": "Voltaic has been a bit too dominant as both an all-in and a poke lethality item. All-inning power is of higher importance to assassin functionality than the raw poke it's providing, so we're tuning down its trigger damage.",
+          "groups": [
+            {
+              "title": "Firmament Unique",
+              "changes": [
+                {
+                  "text": "Bonus Damage: [9% || 7%] target's current hp ⇒ [8% || 6%] target's current hp",
+                  "label": "Bonus Damage",
+                  "before": "[9% || 7%] target's current hp",
+                  "after": "[8% || 6%] target's current hp"
+                }
+              ]
+            }
+          ],
+          "ref": "voltaic-cyclosword",
+          "itemId": "6699",
+          "categories": [
+            "effect"
+          ],
+          "updatedAt": "2026-11-17T21:54:03.734Z"
+        },
+        {
+          "id": "system-bug-fixes",
+          "kind": "system",
+          "subject": "Bug fixes",
+          "category": "bugfix",
+          "groups": [
+            {
+              "changes": [
+                {
+                  "text": "Fixed an issue impacting Illaoi W functionality when a spell shield was active."
+                }
+              ]
+            }
+          ],
+          "affects": [
+            "illaoi"
+          ],
+          "updatedAt": "2026-11-17T21:54:03.734Z"
+        }
+      ],
+      "updatedAt": "2026-11-17T21:54:03.734Z"
+    },
+    {
       "patch": "26.22",
       "short": "16.22",
       "title": "League of Legends Patch 26.22 Notes",
